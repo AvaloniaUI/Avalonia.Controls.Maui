@@ -5,10 +5,12 @@
     <NoWarn>$(NoWarn);CS0618</NoWarn>
     <IsAotCompatible>true</IsAotCompatible>
     <AddMauiInternals>true</AddMauiInternals>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
-  
+    
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
   </ItemGroup>
+    
 </Project>
