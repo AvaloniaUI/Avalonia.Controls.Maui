@@ -55,9 +55,11 @@ public static class MauiAppBuilderExtensions
 
         // Set Avalonia AppInfo implementation for theme detection using reflection
         // HACK: There is no public API to set the AppInfo implementation, we need this to be opened or any alternative
+        // TODO: Remove reflection when possible or replace with UnsafeAccessor in .NET 10
         var setCurrentMethod = typeof(Microsoft.Maui.ApplicationModel.AppInfo).GetMethod("SetCurrent",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-        setCurrentMethod?.Invoke(null, new object?[] { new AvaloniaAppInfoImplementation() });
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static,
+            [typeof(Microsoft.Maui.ApplicationModel.IAppInfo)]);
+        setCurrentMethod?.Invoke(null, [new AvaloniaAppInfoImplementation()]);
 
         builder.Services.AddSingleton<Microsoft.Maui.Dispatching.IDispatcher>(services =>
         {
