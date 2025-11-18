@@ -9,7 +9,42 @@ on:
     branches: [ "main" ]
 jobs:
 
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      maui-changes: ${{ steps.filter.outputs.maui }}
+      test-changes: ${{ steps.filter.outputs.test }}
+      build-changes: ${{ steps.filter.outputs.build }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            maui:
+              - 'src/Avalonia.Controls.Maui/**'
+              - 'src/Avalonia.Controls.Maui.Graphics/**'
+              - 'Directory.*.props'
+              - 'Directory.*.targets'
+              - 'global.json'
+              - 'build/**'
+            test:
+              - 'tests/Avalonia.Controls.Maui.*/**'
+              - 'Directory.*.props'
+              - 'Directory.*.targets'
+              - 'global.json'
+              - 'build/**'
+            build:
+              - 'build/**'
+              - '*.ps1'
+              - '*.sh'
+              - 'Directory.*.props'
+              - 'Directory.*.targets'
+              - 'global.json'
+
   build:
+    needs: check-changes
+    if: needs.check-changes.outputs.test-changes == 'true' || needs.check-changes.outputs.maui-changes == 'true' || needs.check-changes.outputs.build-changes == 'true'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
