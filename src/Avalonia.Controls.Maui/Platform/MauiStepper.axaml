@@ -1,0 +1,38 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:Avalonia.Controls.Maui.Controls">
+
+    <Style Selector="controls|MauiStepper">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="4">
+                    <StackPanel Orientation="Horizontal" Spacing="0">
+                        <Button Name="PART_MinusButton"
+                                Content="-"
+                                Width="40"
+                                Height="32"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                Padding="0"
+                                CornerRadius="4 0 0 4" />
+                        <Button Name="PART_PlusButton"
+                                Content="+"
+                                Width="40"
+                                Height="32"
+                                FontSize="18"
+                                FontWeight="Bold"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                Padding="0"
+                                CornerRadius="0 4 4 0" />
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>

@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(DotNetTfm)</TargetFramework>
+    <NoWarn>$(NoWarn);CS0618</NoWarn>
+    <IsAotCompatible>true</IsAotCompatible>
+    <AddMauiInternals>true</AddMauiInternals>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
+  </ItemGroup>
+</Project>

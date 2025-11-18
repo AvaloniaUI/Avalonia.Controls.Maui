@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:platform="clr-namespace:Avalonia.Controls.Maui.Platform"
+        x:Class="Avalonia.Controls.Maui.Platform.MauiAlertDialog"
+        x:DataType="platform:MauiAlertDialog"
+        Title="{Binding AlertTitle}"
+        Width="400"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False">
+    <StackPanel Margin="20">
+        <TextBlock Text="{Binding AlertMessage}"
+                   TextWrapping="Wrap"
+                   Margin="0,0,0,20"/>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10">
+            <Button Name="AcceptButton"
+                    Content="{Binding AcceptText}"
+                    IsVisible="{Binding HasAcceptButton}"
+                    Click="OnAcceptClicked"
+                    MinWidth="75"/>
+            <Button Name="CancelButton"
+                    Content="{Binding CancelText}"
+                    Click="OnCancelClicked"
+                    MinWidth="75"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

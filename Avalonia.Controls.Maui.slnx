@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/Source/">
+    <Project Path="src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
+    <Project Path="src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+  </Folder>
+</Solution>

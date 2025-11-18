@@ -1,0 +1,128 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Avalonia;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using Microsoft.Extensions.Logging;
+using Microsoft.Maui;
+
+namespace Avalonia.Controls.Maui.Services;
+
+public class AvaloniaFontImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IFontImageSource>
+{
+    private readonly ILogger<AvaloniaFontImageSourceService>? _logger;
+    private const int DefaultSize = 100;
+
+    public AvaloniaFontImageSourceService(ILogger<AvaloniaFontImageSourceService>? logger = null)
+    {
+        _logger = logger;
+    }
+
+    public AvaloniaFontImageSourceService()
+    {
+    }
+
+    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+        IImageSource imageSource,
+        float scale = 1,
+        CancellationToken cancellationToken = default)
+    {
+        if (imageSource is IFontImageSource fontImageSource)
+        {
+            return GetImageAsync(fontImageSource, scale, cancellationToken);
+        }
+
+        return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+    }
+
+    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+        IFontImageSource imageSource,
+        float scale = 1,
+        CancellationToken cancellationToken = default)
+    {
+        if (imageSource == null || string.IsNullOrEmpty(imageSource.Glyph))
+            return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+
+        try
+        {
+            _logger?.LogDebug("Rendering font glyph: {Glyph}", imageSource.Glyph);
+
+            var font = imageSource.Font;
+            var fontSize = font.Size > 0 ? font.Size : DefaultSize;
+            var size = (int)(fontSize * scale * 1.5); // Add some padding
+
+            // Create a render target bitmap
+            var pixelSize = new PixelSize(size, size);
+            var dpi = new Vector(96 * scale, 96 * scale);
+            var renderTarget = new RenderTargetBitmap(pixelSize, dpi);
+
+            // Create Avalonia font
+            var fontFamily = string.IsNullOrEmpty(font.Family) ? FontFamily.Default : new FontFamily(font.Family);
+            var fontWeight = GetAvaloniaFontWeight(font.Weight);
+            var fontStyle = font.Slant == Microsoft.Maui.FontSlant.Italic ? FontStyle.Italic : FontStyle.Normal;
+
+            var typeface = new Typeface(fontFamily, fontStyle, fontWeight);
+            var avaloniaColor = GetAvaloniaColor(imageSource.Color);
+
+            // Create formatted text
+            var formattedText = new FormattedText(
+                imageSource.Glyph,
+                System.Globalization.CultureInfo.CurrentCulture,
+                Avalonia.Media.FlowDirection.LeftToRight,
+                typeface,
+                fontSize * scale,
+                new SolidColorBrush(avaloniaColor));
+
+            // Render to bitmap
+            using (var context = renderTarget.CreateDrawingContext())
+            {
+                // Calculate centered position
+                var textWidth = formattedText.Width;
+                var textHeight = formattedText.Height;
+                var x = (size - textWidth) / 2;
+                var y = (size - textHeight) / 2;
+
+                context.DrawText(formattedText, new Point(x, y));
+            }
+
+            _logger?.LogDebug("Successfully rendered font glyph");
+
+            return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(new ImageSourceServiceResult(renderTarget));
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error rendering font glyph: {Glyph}", imageSource.Glyph);
+            throw;
+        }
+    }
+
+    private static Color GetAvaloniaColor(Microsoft.Maui.Graphics.Color? mauiColor)
+    {
+        if (mauiColor == null)
+            return Colors.Black;
+
+        return Color.FromArgb(
+            (byte)(mauiColor.Alpha * 255),
+            (byte)(mauiColor.Red * 255),
+            (byte)(mauiColor.Green * 255),
+            (byte)(mauiColor.Blue * 255)
+        );
+    }
+
+    private static Avalonia.Media.FontWeight GetAvaloniaFontWeight(Microsoft.Maui.FontWeight mauiWeight)
+    {
+        // MAUI FontWeight is an enum, need to convert to Avalonia's int-based FontWeight
+        return mauiWeight switch
+        {
+            Microsoft.Maui.FontWeight.Thin => Avalonia.Media.FontWeight.Thin,
+            Microsoft.Maui.FontWeight.Light => Avalonia.Media.FontWeight.Light,
+            Microsoft.Maui.FontWeight.Regular => Avalonia.Media.FontWeight.Regular,
+            Microsoft.Maui.FontWeight.Medium => Avalonia.Media.FontWeight.Medium,
+            Microsoft.Maui.FontWeight.Bold => Avalonia.Media.FontWeight.Bold,
+            Microsoft.Maui.FontWeight.Black => Avalonia.Media.FontWeight.Black,
+            _ => Avalonia.Media.FontWeight.Regular
+        };
+    }
+}

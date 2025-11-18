@@ -1,0 +1,47 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:Avalonia.Controls.Maui.Controls">
+
+    <Style Selector="controls|MauiSwipeView">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid Name="PART_SwipeContainer">
+                    <!-- Swipe Items Panels -->
+                    <StackPanel Name="PART_LeftItems"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Stretch"
+                                IsVisible="False"
+                                Background="{TemplateBinding Background}" />
+
+                    <StackPanel Name="PART_RightItems"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Stretch"
+                                IsVisible="False"
+                                Background="{TemplateBinding Background}" />
+
+                    <StackPanel Name="PART_TopItems"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Top"
+                                IsVisible="False"
+                                Background="{TemplateBinding Background}" />
+
+                    <StackPanel Name="PART_BottomItems"
+                                Orientation="Horizontal"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Bottom"
+                                IsVisible="False"
+                                Background="{TemplateBinding Background}" />
+
+                    <!-- Main Content -->
+                    <ContentPresenter Name="PART_ContentPresenter"
+                                      Content="{TemplateBinding Content}"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch" />
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+</Styles>
