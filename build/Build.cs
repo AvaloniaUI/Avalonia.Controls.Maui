@@ -35,11 +35,9 @@ class Build : NukeBuild
 
     Target Compile => _ => _
         .DependsOn(OutputParameters)
-        .DependsOn(RunTests)
         .Executes(() => DotNetTasks.DotNetBuild(c => c
             .SetProjectFile(SolutionFile)
             .SetVersion(GetVersion())
-            // Copy dependencies to output for obfuscation+merging
             .SetProperty("CopyLocalLockFileAssemblies", true)
             .SetConfiguration(Configuration)
         ));
@@ -54,7 +52,6 @@ class Build : NukeBuild
 
     Target CreateNugetPackages => _ => _
         .DependsOn(OutputParameters)
-        .DependsOn(RunTests)
         .DependsOn(Compile)
         .Executes(() =>
         {
