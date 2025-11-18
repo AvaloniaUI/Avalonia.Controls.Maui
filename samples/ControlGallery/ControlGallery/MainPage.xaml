@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			xmlns:word="clr-namespace:WordPuzzle"
+			FlyoutLayoutBehavior="Split"
+			x:Class="ControlGallery.MainPage">
+	<FlyoutPage.Flyout>
+		<ContentPage
+			x:Name="FlyoutPageMenu"
+			Title="Control Gallery">
+			<TableView Intent="Menu">
+				<TableRoot>
+					<TableSection Title="Apps">
+						<TextCell Text="Word Puzzle"
+								  Detail="A word puzzle game"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type word:MainPage}"/>
+					</TableSection>
+				</TableRoot>
+			</TableView>
+		</ContentPage>
+	</FlyoutPage.Flyout>
+	<FlyoutPage.Detail>
+		<ContentPage>
+
+		</ContentPage>
+	</FlyoutPage.Detail>
+</FlyoutPage>
