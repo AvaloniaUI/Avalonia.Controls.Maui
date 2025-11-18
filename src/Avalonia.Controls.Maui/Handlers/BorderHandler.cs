@@ -67,7 +67,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
 
-        ((PlatformView)handler.PlatformView).Background = border.Background?.ToPlatform();
+        ((PlatformView)handler.PlatformView).Background = border.Background?.ToPlatform() ?? global::Avalonia.Media.Brushes.Transparent;
     }
 
     public static void MapStroke(IBorderHandler handler, IBorderView border)
