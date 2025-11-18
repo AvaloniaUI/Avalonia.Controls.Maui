@@ -80,6 +80,7 @@ public class SwitchCellHandler : ElementHandler<SwitchCell, global::Avalonia.Con
         return new global::Avalonia.Controls.Border
         {
             Child = grid,
+            Background = global::Avalonia.Media.Brushes.Transparent,
             MinHeight = 44
         };
     }

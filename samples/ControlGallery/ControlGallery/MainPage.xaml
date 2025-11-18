@@ -2,10 +2,12 @@
 <FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			xmlns:word="clr-namespace:WordPuzzle"
+			xmlns:views="clr-namespace:ControlGallery.Views"
 			FlyoutLayoutBehavior="Split"
 			x:Class="ControlGallery.MainPage">
 	<FlyoutPage.Flyout>
 		<ContentPage
+			BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
 			x:Name="FlyoutPageMenu"
 			Title="Control Gallery">
 			<TableView Intent="Menu">
@@ -16,13 +18,18 @@
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type word:MainPage}"/>
 					</TableSection>
+					<TableSection Title="Views">
+						<TextCell Text="Label Demo"
+								  Detail="A label control demo"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type views:LabelDemoPage}"/>
+					</TableSection>
 				</TableRoot>
 			</TableView>
 		</ContentPage>
 	</FlyoutPage.Flyout>
 	<FlyoutPage.Detail>
 		<ContentPage>
-
 		</ContentPage>
 	</FlyoutPage.Detail>
 </FlyoutPage>
