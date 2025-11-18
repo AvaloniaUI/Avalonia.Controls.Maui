@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/Samples/">
     <Project Path="samples/SandboxApp/SandboxApp.csproj" />
+    <Project Path="samples/SandboxAppWasm/SandboxAppWasm.csproj" />
   </Folder>
   <Folder Name="/Source/">
     <Project Path="src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />

@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+	<PropertyGroup>
+		<TargetFramework>$(DotNetTfm)-browser</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Nullable>enable</Nullable>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<UseMaui>true</UseMaui>
+		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
+		<RootNamespace>SandboxApp</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Images -->
+		<MauiImage Include="Resources\Images\*" />
+		<MauiImage Update="Resources\Images\dotnet_bot.png" />
+
+		<!-- Custom Fonts -->
+		<MauiFont Include="Resources\Fonts\*" />
+
+		<!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+		<!--Condition
+		below is needed to remove Avalonia.Diagnostics package from build output in Release
+		configuration.-->
+		<PackageReference Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)">
+			<IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+			<PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
+		<ProjectReference Include="..\..\src\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
+	</ItemGroup>
+
+	<Import Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.targets" />
+</Project>
