@@ -24,9 +24,11 @@
     "ExecutableTarget": {
       "type": "string",
       "enum": [
-        "Clean",
         "Compile",
-        "Restore"
+        "CopyPackagesToNuGetCache",
+        "CreateNugetPackages",
+        "OutputParameters",
+        "RunTests"
       ]
     },
     "Verbosity": {
@@ -107,6 +109,9 @@
             "Debug",
             "Release"
           ]
+        },
+        "Output": {
+          "type": "string"
         }
       }
     },
