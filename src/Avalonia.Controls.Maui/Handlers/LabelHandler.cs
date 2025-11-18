@@ -65,16 +65,7 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>, ILabelHandle
     public static void MapBackground(ILabelHandler handler, ILabel label)
     {
         handler.UpdateValue(nameof(IViewHandler.ContainerView));
-
-        // If we have a container, the background is applied to the container, not the TextBlock
-        if (handler.ContainerView != null)
-        {
-            ((PlatformView)handler.ContainerView)?.UpdateBackground(label);
-        }
-        else
-        {
-            ((AvaloniaTextBlock)handler.PlatformView)?.UpdateBackground(label);
-        }
+        ((AvaloniaTextBlock)handler.PlatformView)?.UpdateBackground(label);
     }
 
     public static void MapText(ILabelHandler handler, ILabel label) =>
