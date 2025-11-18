@@ -1,14 +1,10 @@
 using System;
 using System.Linq;
 using Nuke.Common;
-using Nuke.Common.CI;
-using Nuke.Common.Execution;
 using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
+using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.PathConstruction;
+using Serilog;
 
 class Build : NukeBuild
 {
@@ -18,26 +14,71 @@ class Build : NukeBuild
     ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
     ///   - Microsoft VSCode           https://nuke.build/vscode
 
-    public static int Main () => Execute<Build>(x => x.Compile);
+    public static int Main() => IsLocalBuild ?
+        Execute<Build>(x => x.CopyPackagesToNuGetCache) :
+        Execute<Build>(x => x.CreateNugetPackages);
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    readonly Configuration Configuration = Configuration.Release;
+    [Parameter]
+    readonly AbsolutePath Output = RootDirectory / "artifacts" / "packages";
 
-    Target Clean => _ => _
-        .Before(Restore)
-        .Executes(() =>
-        {
-        });
+    readonly AbsolutePath SolutionFile = RootDirectory / "Avalonia.Controls.Maui.nupkg.slnf";
 
-    Target Restore => _ => _
-        .Executes(() =>
-        {
-        });
+    Target OutputParameters => _ => _
+    .Executes(() =>
+    {
+        Log.Information("Configuration: {Configuration}", Configuration);
+        Log.Information("Output: {AbsolutePath}", Output);
+        Log.Information("Version: {GetVersion}", GetVersion());
+    });
 
     Target Compile => _ => _
-        .DependsOn(Restore)
+        .DependsOn(OutputParameters)
+        .DependsOn(RunTests)
+        .Executes(() => DotNetTasks.DotNetBuild(c => c
+            .SetProjectFile(SolutionFile)
+            .SetVersion(GetVersion())
+            // Copy dependencies to output for obfuscation+merging
+            .SetProperty("CopyLocalLockFileAssemblies", true)
+            .SetConfiguration(Configuration)
+        ));
+
+    Target RunTests => _ => _
+        .DependsOn(OutputParameters)
+        .Executes(() => DotNetTasks.DotNetTest(c => c
+            .SetProjectFile(SolutionFile)
+            .SetVerbosity(DotNetVerbosity.minimal)
+            .SetConfiguration(Configuration)
+        ));
+
+    Target CreateNugetPackages => _ => _
+        .DependsOn(OutputParameters)
+        .DependsOn(RunTests)
+        .DependsOn(Compile)
         .Executes(() =>
         {
+            DotNetTasks.DotNetPack(c => c
+                .SetProject(SolutionFile)
+                .SetNoBuild(true)
+                .SetNoRestore(true)
+                .SetContinuousIntegrationBuild(true)
+                .SetProperty("PackageVersion", GetVersion())
+                .SetConfiguration(Configuration)
+                .SetOutputDirectory(Output)
+            );
         });
+    Target CopyPackagesToNuGetCache => _ => _
+        .DependsOn(CreateNugetPackages)
+        .Executes(() => NugetCache.InstallLibraryToNuGetCache(
+            Output.GlobFiles("*.nupkg"),
+            RootDirectory,
+            GetVersion()));
 
+    string GetVersion() => VersionResolver
+        .GetGitHubVersion(
+            baseVersionNumber: new Version(11, 3, 999),
+            isPackingToLocalCache: RunningTargets.Concat(ScheduledTargets)
+                .Any(t => t.Name == nameof(CopyPackagesToNuGetCache)))
+        .ToString();
 }
