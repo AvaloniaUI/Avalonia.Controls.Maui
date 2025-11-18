@@ -98,6 +98,7 @@ public class ImageCellHandler : ElementHandler<ImageCell, global::Avalonia.Contr
         {
             Child = _contentStack,
             MinHeight = 64,
+            Background = global::Avalonia.Media.Brushes.Transparent,
             Cursor = new global::Avalonia.Input.Cursor(global::Avalonia.Input.StandardCursorType.Hand)
         };
 
