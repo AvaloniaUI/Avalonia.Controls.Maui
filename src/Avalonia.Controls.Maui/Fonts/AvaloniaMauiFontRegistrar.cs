@@ -99,15 +99,15 @@ public class AvaloniaMauiFontRegistrar : IFontRegistrar
             // For OpenSans-Regular.ttf -> "Open Sans"
             // For Roboto-Bold.ttf -> "Roboto"
             var filename = System.IO.Path.GetFileNameWithoutExtension(registration.Filename);
-            
+
             // First, try to extract just the base name before any hyphen/underscore
             var separatorIndex = filename.IndexOfAny(new[] { '-', '_' });
             var baseName = separatorIndex > 0 ? filename.Substring(0, separatorIndex) : filename;
-            
+
             // Insert spaces before capital letters (e.g., "OpenSans" -> "Open Sans")
             var fontFamilyName = System.Text.RegularExpressions.Regex.Replace(
-                baseName, 
-                "([a-z])([A-Z])", 
+                baseName,
+                "([a-z])([A-Z])",
                 "$1 $2"
             );
 

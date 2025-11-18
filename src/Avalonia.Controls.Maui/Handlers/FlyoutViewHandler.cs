@@ -57,7 +57,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>,
     protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
-        
+
         platformView.FlyoutOpened += OnFlyoutOpened;
         platformView.FlyoutClosed += OnFlyoutClosed;
     }
@@ -66,7 +66,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>,
     {
         platformView.FlyoutOpened -= OnFlyoutOpened;
         platformView.FlyoutClosed -= OnFlyoutClosed;
-        
+
         base.DisconnectHandler(platformView);
     }
 

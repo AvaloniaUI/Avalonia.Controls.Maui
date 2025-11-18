@@ -23,7 +23,7 @@ public static class MauiAppBuilderExtensions
 
         return builder;
     }
-    
+
     public static MauiAppBuilder ConfigureImageSources(this MauiAppBuilder builder, Action<IImageSourceServiceCollection>? configureDelegate)
     {
         if (configureDelegate != null)
@@ -145,7 +145,7 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.SwipeView, Avalonia.Controls.Maui.Handlers.SwipeViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.SwipeItemView, Avalonia.Controls.Maui.Handlers.SwipeItemViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.RefreshView, Avalonia.Controls.Maui.Handlers.RefreshViewHandler>();
-    
+
             })
             .ConfigureImageSources();
     }

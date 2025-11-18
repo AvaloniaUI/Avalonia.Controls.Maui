@@ -7,13 +7,13 @@ namespace SandboxApp;
 
 public partial class MauiAppStub : Application
 {
-	public MauiAppStub()
-	{
-		InitializeComponent();
-	}
+    public MauiAppStub()
+    {
+        InitializeComponent();
+    }
 
-	protected override Window CreateWindow(IActivationState? activationState)
-	{
-		return new Window(new AppShell());
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        return new Window(new AppShell());
     }
 }

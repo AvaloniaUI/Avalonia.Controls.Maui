@@ -23,8 +23,8 @@ public static class MauiProgram
              .UseAvaloniaApp()
              .UseAvaloniaGraphics()
              .ConfigureFonts(fonts =>
-			{
-				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("bpg-banner-webfont.ttf", "BgpBanner");
             });
