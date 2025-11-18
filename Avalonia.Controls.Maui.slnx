@@ -7,6 +7,7 @@
     <Project Path="samples/SandboxAppWasm/SandboxAppWasm.csproj" />
   </Folder>
   <Folder Name="/Samples/ControlGallery/">
+    <Project Path="samples/ControlGallery/ControlGallery.Browser/ControlGallery.Browser.csproj" />
     <Project Path="samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj" />
     <Project Path="samples/ControlGallery/ControlGallery/ControlGallery.csproj" />
   </Folder>
