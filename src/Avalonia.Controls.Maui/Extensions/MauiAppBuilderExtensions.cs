@@ -97,6 +97,7 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.Label, Avalonia.Controls.Maui.Handlers.LabelHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.ScrollView, Avalonia.Controls.Maui.Handlers.ScrollViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Layout, Avalonia.Controls.Maui.Handlers.LayoutHandler>();
+                handlers.AddHandler<Microsoft.Maui.Controls.BoxView, Avalonia.Controls.Maui.Handlers.BoxViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Button, Avalonia.Controls.Maui.Handlers.ButtonHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.ImageButton, Avalonia.Controls.Maui.Handlers.ImageButtonHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Entry, Avalonia.Controls.Maui.Handlers.EntryHandler>();
@@ -134,7 +135,6 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.Shapes.Polygon, Avalonia.Controls.Maui.Handlers.Shapes.PolygonHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Shapes.Polyline, Avalonia.Controls.Maui.Handlers.Shapes.PolylineHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Shapes.Path, Avalonia.Controls.Maui.Handlers.Shapes.PathHandler>();
-                handlers.AddHandler<Microsoft.Maui.Controls.BoxView, Avalonia.Controls.Maui.Handlers.Shapes.BoxViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Shapes.RoundRectangle, Avalonia.Controls.Maui.Handlers.Shapes.RoundRectangleHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.MenuBar, Avalonia.Controls.Maui.Handlers.MenuBarHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.MenuBarItem, Avalonia.Controls.Maui.Handlers.MenuBarItemHandler>();
