@@ -10,7 +10,7 @@
                FontAttributes="Bold"
                HorizontalOptions="Center" />
 
-        <Label Text=
+        <Label x:Name="DescriptionLabel" Text=
 ".NET Multi-platform App UI (.NET MAUI) is a cross-platform natively
 backed UI toolkit abstraction that allows
 developers to easily create user interfaces
@@ -19,7 +19,6 @@ Windows."
                FontSize="20"
                VerticalOptions="CenterAndExpand"
                LineBreakMode="WordWrap"
-               MaxLines="0"
                Margin="10, 0" />
     </StackLayout>
 </ContentPage>
