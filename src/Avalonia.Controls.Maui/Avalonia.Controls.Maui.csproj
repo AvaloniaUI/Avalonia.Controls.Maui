@@ -6,13 +6,15 @@
     <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
     <IsAotCompatible>true</IsAotCompatible>
     <AddMauiInternals>true</AddMauiInternals>
+    <LangVersion>preview</LangVersion>
     <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
     <PackageDescription>Avalonia.Controls.Maui are the handlers and renderers for .NET MAUI apps, replacing their default implementations with Avalonia-based ones.</PackageDescription>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
-  
+    
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
   </ItemGroup>
+    
 </Project>
