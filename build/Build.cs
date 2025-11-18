@@ -23,6 +23,8 @@ class Build : NukeBuild
     [Parameter]
     readonly AbsolutePath Output = RootDirectory / "artifacts" / "packages";
 
+    readonly AbsolutePath TestResultsDirectory = RootDirectory / "artifacts" / "test-results";
+
     readonly AbsolutePath SolutionFile = RootDirectory / "Avalonia.Controls.Maui.nupkg.slnf";
 
     Target OutputParameters => _ => _
@@ -44,11 +46,18 @@ class Build : NukeBuild
 
     Target RunTests => _ => _
         .DependsOn(OutputParameters)
-        .Executes(() => DotNetTasks.DotNetTest(c => c
-            .SetProjectFile(SolutionFile)
-            .SetVerbosity(DotNetVerbosity.minimal)
-            .SetConfiguration(Configuration)
-        ));
+        .Executes(() =>
+        {
+            TestResultsDirectory.CreateOrCleanDirectory();
+
+            DotNetTasks.DotNetTest(c => c
+                .SetProjectFile(SolutionFile)
+                .SetVerbosity(DotNetVerbosity.minimal)
+                .SetConfiguration(Configuration)
+                .SetResultsDirectory(TestResultsDirectory)
+                .SetLoggers("trx;LogFileName=test-results.trx")
+            );
+        });
 
     Target CreateNugetPackages => _ => _
         .DependsOn(OutputParameters)

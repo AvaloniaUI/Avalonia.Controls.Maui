@@ -74,8 +74,5 @@ jobs:
       if: always()
       with:
         name: test-results
-        path: |
-          **/TestResults/**/*.xml
-          **/TestResults/**/*.trx
-          **/TestResults/**/*.json
+        path: ${{github.workspace}}/artifacts/test-results/**/*.trx
         retention-days: 7
