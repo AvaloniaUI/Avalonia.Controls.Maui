@@ -2,8 +2,7 @@
 
   <Target Name="ConvertMauiImagesToAvaloniaResources"
           AfterTargets="ResizetizeImages"
-          BeforeTargets="GenerateAvaloniaResources"
-          Condition="'$(_MauiTargetPlatformIsAvalonia)' == 'True'">
+          BeforeTargets="GenerateAvaloniaResources">
 
     <ItemGroup>
       <!-- Cheap hack to get images from MAUI to Avalonia. We need to add some way for ResizetizeImages to work with generic apps. -->
@@ -16,7 +15,7 @@
 
   <Target Name="ConvertMauiFontsToAvaloniaResources"
           BeforeTargets="GenerateAvaloniaResources;CoreCompile"
-          Condition="'$(_MauiTargetPlatformIsAvalonia)' == 'True' And '@(MauiFont)' != ''">
+          Condition="'@(MauiFont)' != ''">
 
     <ItemGroup>
       <!-- Embed fonts as AvaloniaResource so they can be accessed via avares:// URI -->
@@ -28,7 +27,7 @@
     <Message Text="Converted MAUI fonts to Avalonia resources: @(MauiFont)" Importance="high" />
   </Target>
 
-  <PropertyGroup Condition="'$(_MauiTargetPlatformIsAvalonia)' == 'True'">
+  <PropertyGroup>
     <EnableAvaloniaXamlCompilation Condition="'$(EnableAvaloniaXamlCompilation)' == ''">true</EnableAvaloniaXamlCompilation>
   </PropertyGroup>
 </Project>

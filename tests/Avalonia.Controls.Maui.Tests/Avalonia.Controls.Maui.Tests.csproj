@@ -5,6 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);CS8002</NoWarn> <!-- ignore signing warnings for unit tests -->
   </PropertyGroup>
 
   <ItemGroup>

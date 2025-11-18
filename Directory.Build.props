@@ -3,7 +3,8 @@
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0059901-alpha</AvaloniaVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net9.0</DotNetTfm>
-        <MauiSrcDirectory>$(MSBuildThisFileDirectory)</MauiSrcDirectory>
+        <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
+        <BuildDirectory>$(MSBuildThisFileDirectory)/build/</BuildDirectory>
         <DebugType>portable</DebugType>
         <DebugSymbols>true</DebugSymbols>
         <LangVersion>Latest</LangVersion>
