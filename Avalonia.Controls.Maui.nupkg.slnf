@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "Avalonia.Controls.Maui.slnx",
+    "projects": [
+            "src\\Avalonia.Controls.Maui.Graphics\\Avalonia.Controls.Maui.Graphics.csproj",
+            "src\\Avalonia.Controls.Maui\\Avalonia.Controls.Maui.csproj"
+        ]
+    }
+}
