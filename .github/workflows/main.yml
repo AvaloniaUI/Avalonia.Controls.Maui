@@ -1,0 +1,29 @@
+name: CICD
+
+on:
+  push:
+    branches: [ "main", "release/*" ]
+    tags:
+      - '*'
+  pull_request:
+    branches: [ "main" ]
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+          # https://github.com/actions/checkout/issues/116#issuecomment-644419389
+          token: ${{ secrets.SUBMODULE_TOKEN }}
+          submodules: 'recursive'
+
+    - name: Create NuGet Packages
+      run: dotnet run --project ${{github.workspace}}/build/_build.csproj -- --target CreateNugetPackages --configuration Release --output ${{github.workspace}}/artifacts/packages/
+
+    - name: Upload nupkg artifacts
+      uses: actions/upload-artifact@v4
+      with:
+          name: nupkgs
+          path: ${{github.workspace}}/artifacts/**/*.nupkg
+          retention-days: 1
