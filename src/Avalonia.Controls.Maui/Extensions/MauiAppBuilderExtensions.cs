@@ -42,8 +42,6 @@ public static class MauiAppBuilderExtensions
     /// </summary>
     public static MauiAppBuilder UseAvaloniaApp(this MauiAppBuilder builder, bool useSingleViewLifetime = false)
     {
-        Avalonia.Controls.Maui.Hosting.NavigationPageConfiguration.ConfigureForMauiHandlers();
-
         Microsoft.Maui.Dispatching.DispatcherProvider.SetCurrent(new Avalonia.Controls.Maui.Dispatching.AvaloniaDispatcherProvider());
 
         // Initialize compatibility DependencyService
