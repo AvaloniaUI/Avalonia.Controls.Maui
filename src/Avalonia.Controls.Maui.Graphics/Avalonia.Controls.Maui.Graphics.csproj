@@ -2,8 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>$(DotNetTfm)</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
     <IsAotCompatible>true</IsAotCompatible>
     <AddMauiInternals>true</AddMauiInternals>
+    <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
+    <PackageDescription>Avalonia.Controls.Maui.Graphics are the handlers and renderers for .NET MAUI apps,
+      replacing their default implementations with Avalonia-based ones.</PackageDescription>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
