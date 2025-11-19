@@ -25,7 +25,7 @@
                     <ProgressBar x:Name="DefaultProgressBar"
                                  Progress="{Binding Progress}"
                                  HeightRequest="20"/>
-                    <Label Text="{Binding ProgressPercent, StringFormat='Progress: {0}%'}"
+                    <Label Text="{Binding ProgressPercent, StringFormat='Progress: {0:F2}%'}"
                            HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
