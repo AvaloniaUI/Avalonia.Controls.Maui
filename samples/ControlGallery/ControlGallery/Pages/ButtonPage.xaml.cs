@@ -1,53 +1,14 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Windows.Input;
-
 namespace ControlGallery.Pages;
 
-public partial class ButtonPage : ContentPage, INotifyPropertyChanged
+public partial class ButtonPage : ContentPage
 {
     private int _clickCount = 0;
-    private Color _buttonColor = Colors.Blue;
-    private int _buttonCornerRadius = 8;
     private int _interactiveClickCount = 0;
 
     public ButtonPage()
     {
         InitializeComponent();
-        BindingContext = this;
-        
-        SetButtonColorCommand = new Command<string>(OnSetButtonColor);
-        SetCornerRadiusCommand = new Command<string>(OnSetCornerRadius);
     }
-
-    public Color ButtonColor
-    {
-        get => _buttonColor;
-        set
-        {
-            if (_buttonColor != value)
-            {
-                _buttonColor = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    public int ButtonCornerRadius
-    {
-        get => _buttonCornerRadius;
-        set
-        {
-            if (_buttonCornerRadius != value)
-            {
-                _buttonCornerRadius = value;
-                OnPropertyChanged();
-            }
-        }
-    }
-
-    public ICommand SetButtonColorCommand { get; }
-    public ICommand SetCornerRadiusCommand { get; }
 
     private void OnButtonClicked(object? sender, EventArgs e)
     {
@@ -62,30 +23,45 @@ public partial class ButtonPage : ContentPage, INotifyPropertyChanged
         InteractionLabel.TextColor = Colors.Green;
     }
 
-    private void OnSetButtonColor(string colorName)
+    // Color change handlers
+    private void OnSetBlue(object? sender, EventArgs e)
     {
-        ButtonColor = colorName switch
-        {
-            "Blue" => Colors.Blue,
-            "Green" => Colors.Green,
-            "Red" => Colors.Red,
-            "Orange" => Colors.Orange,
-            _ => Colors.Blue
-        };
+        InteractiveButton.BackgroundColor = Colors.Blue;
     }
 
-    private void OnSetCornerRadius(string radiusValue)
+    private void OnSetGreen(object? sender, EventArgs e)
     {
-        if (int.TryParse(radiusValue, out int radius))
-        {
-            ButtonCornerRadius = radius;
-        }
+        InteractiveButton.BackgroundColor = Colors.Green;
     }
 
-    public new event PropertyChangedEventHandler? PropertyChanged;
-
-    protected new void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    private void OnSetRed(object? sender, EventArgs e)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        InteractiveButton.BackgroundColor = Colors.Red;
+    }
+
+    private void OnSetOrange(object? sender, EventArgs e)
+    {
+        InteractiveButton.BackgroundColor = Colors.Orange;
+    }
+
+    // Corner radius change handlers
+    private void OnSetRadius0(object? sender, EventArgs e)
+    {
+        InteractiveButton.CornerRadius = 0;
+    }
+
+    private void OnSetRadius5(object? sender, EventArgs e)
+    {
+        InteractiveButton.CornerRadius = 5;
+    }
+
+    private void OnSetRadius15(object? sender, EventArgs e)
+    {
+        InteractiveButton.CornerRadius = 15;
+    }
+
+    private void OnSetRadius30(object? sender, EventArgs e)
+    {
+        InteractiveButton.CornerRadius = 30;
     }
 }

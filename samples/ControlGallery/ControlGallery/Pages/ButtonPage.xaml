@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ControlGallery.Pages"
              x:Class="ControlGallery.Pages.ButtonPage"
-             x:DataType="pages:ButtonPage"
-             Title="Button Page">
+             Title="Button">
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="20">
@@ -316,9 +315,9 @@
                     <Button x:Name="InteractiveButton"
                             Text="Click Me!"
                             TextColor="White"
-                            BackgroundColor="{Binding ButtonColor}"
+                            BackgroundColor="Blue"
                             Padding="20,10"
-                            CornerRadius="{Binding ButtonCornerRadius}"
+                            CornerRadius="8"
                             BorderColor="Black"
                             BorderWidth="2"
                             Clicked="OnInteractiveButtonClicked"/>
@@ -329,26 +328,22 @@
                     <HorizontalStackLayout Spacing="10"
                                            HorizontalOptions="Center">
                         <Button Text="Blue"
-                                Command="{Binding SetButtonColorCommand}"
-                                CommandParameter="Blue"
+                                Clicked="OnSetBlue"
                                 BackgroundColor="Blue"
                                 TextColor="White"
                                 WidthRequest="80"/>
                         <Button Text="Green"
-                                Command="{Binding SetButtonColorCommand}"
-                                CommandParameter="Green"
+                                Clicked="OnSetGreen"
                                 BackgroundColor="Green"
                                 TextColor="White"
                                 WidthRequest="80"/>
                         <Button Text="Red"
-                                Command="{Binding SetButtonColorCommand}"
-                                CommandParameter="Red"
+                                Clicked="OnSetRed"
                                 BackgroundColor="Red"
                                 TextColor="White"
                                 WidthRequest="80"/>
                         <Button Text="Orange"
-                                Command="{Binding SetButtonColorCommand}"
-                                CommandParameter="Orange"
+                                Clicked="OnSetOrange"
                                 BackgroundColor="Orange"
                                 TextColor="Black"
                                 WidthRequest="80"/>
@@ -360,20 +355,16 @@
                     <HorizontalStackLayout Spacing="10"
                                            HorizontalOptions="Center">
                         <Button Text="0"
-                                Command="{Binding SetCornerRadiusCommand}"
-                                CommandParameter="0"
+                                Clicked="OnSetRadius0"
                                 WidthRequest="60"/>
                         <Button Text="5"
-                                Command="{Binding SetCornerRadiusCommand}"
-                                CommandParameter="5"
+                                Clicked="OnSetRadius5"
                                 WidthRequest="60"/>
                         <Button Text="15"
-                                Command="{Binding SetCornerRadiusCommand}"
-                                CommandParameter="15"
+                                Clicked="OnSetRadius15"
                                 WidthRequest="60"/>
                         <Button Text="30"
-                                Command="{Binding SetCornerRadiusCommand}"
-                                CommandParameter="30"
+                                Clicked="OnSetRadius30"
                                 WidthRequest="60"/>
                     </HorizontalStackLayout>
                     
