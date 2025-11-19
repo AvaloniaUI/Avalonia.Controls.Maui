@@ -71,10 +71,18 @@ public static class ButtonExtensions
     /// <param name="button">The cross-platform button.</param>
     public static void UpdateText(this PlatformView platformView, IButton button)
     {
-        if (button is not Microsoft.Maui.Controls.Button mauiButton)
+        // Try to apply text transformation
+        if (button is Microsoft.Maui.Controls.Button mauiButton)
+        {
+            platformView.Text = TextTransformUtilities.GetTransformedText(mauiButton.Text, mauiButton.TextTransform);
             return;
+        }
 
-        platformView.Text = TextTransformUtilities.GetTransformedText(mauiButton.Text, mauiButton.TextTransform);
+        // Fall back to just use the text
+        if (button is IText text)
+        {
+            platformView.Text = text.Text;
+        }
     }
 
     /// <summary>

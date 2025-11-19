@@ -19,6 +19,11 @@ public class ButtonStub : StubBase, IButton, IText, ITextStyle, IPadding, IButto
     private IImageSource? _imageSource;
     private MauiGraphics.Paint? _background;
 
+    // Event counters for testing
+    public int ClickedCount { get; private set; }
+    public int PressedCount { get; private set; }
+    public int ReleasedCount { get; private set; }
+
     public string Text
     {
         get => _text;
@@ -85,17 +90,17 @@ public class ButtonStub : StubBase, IButton, IText, ITextStyle, IPadding, IButto
 
     public void Clicked()
     {
-        // Hook for testing events
+        ClickedCount++;
     }
 
     public void Pressed()
     {
-        // Hook for testing events
+        PressedCount++;
     }
 
     public void Released()
     {
-        // Hook for testing events
+        ReleasedCount++;
     }
 
     public void UpdateImageSource(object? nativeImageSource)
