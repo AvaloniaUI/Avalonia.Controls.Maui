@@ -86,6 +86,7 @@ public class EntryCellHandler : ElementHandler<EntryCell, global::Avalonia.Contr
         return new global::Avalonia.Controls.Border
         {
             Child = grid,
+            Background = global::Avalonia.Media.Brushes.Transparent,
             MinHeight = 44
         };
     }

@@ -26,7 +26,7 @@ public class FlyoutContainer : Panel
         AvaloniaProperty.Register<FlyoutContainer, double>(nameof(FlyoutWidth), 320);
 
     public static readonly StyledProperty<FlyoutBehavior> FlyoutBehaviorProperty =
-        AvaloniaProperty.Register<FlyoutContainer, FlyoutBehavior>(nameof(FlyoutBehavior), FlyoutBehavior.Flyout);
+        AvaloniaProperty.Register<FlyoutContainer, FlyoutBehavior>(nameof(FlyoutBehavior), FlyoutBehavior.Default);
 
     public static readonly StyledProperty<bool> IsGestureEnabledProperty =
         AvaloniaProperty.Register<FlyoutContainer, bool>(nameof(IsGestureEnabled), true);
@@ -60,6 +60,7 @@ public class FlyoutContainer : Panel
 
     private Point? _gestureStartPoint;
     private double _gestureStartOffset;
+    private bool _isLandscape;
 
     public FlyoutContainer()
     {
@@ -137,22 +138,62 @@ public class FlyoutContainer : Panel
         }
     }
 
+    /// <summary>
+    /// Determines if the current behavior and orientation should use split mode
+    /// </summary>
+    private bool IsSplitMode()
+    {
+        var behavior = FlyoutBehavior;
+
+        return behavior switch
+        {
+            FlyoutBehavior.Split => true,
+            FlyoutBehavior.Locked => true,
+            FlyoutBehavior.SplitOnLandscape => _isLandscape,
+            FlyoutBehavior.SplitOnPortrait => !_isLandscape,
+            FlyoutBehavior.Default => _isLandscape, // Default behavior: split on landscape
+            _ => false
+        };
+    }
+
     protected override Size MeasureOverride(Size availableSize)
     {
         var flyoutWidth = FlyoutWidth;
-        var behavior = FlyoutBehavior;
+        var isSplitMode = IsSplitMode();
 
-        // Measure detail content (always full size)
-        _detailContent?.Measure(availableSize);
+        // Update landscape/portrait state based on available size
+        _isLandscape = availableSize.Width > availableSize.Height;
 
-        // Measure scrim (always full size)
-        _scrim?.Measure(availableSize);
-
-        // Measure flyout content
-        if (_flyoutContent != null)
+        if (isSplitMode)
         {
-            var flyoutSize = new Size(flyoutWidth, availableSize.Height);
-            _flyoutContent.Measure(flyoutSize);
+            // In split mode, detail takes remaining space after flyout
+            var detailWidth = Math.Max(0, availableSize.Width - flyoutWidth);
+            _detailContent?.Measure(new Size(detailWidth, availableSize.Height));
+
+            // Scrim not used in split mode
+            _scrim?.Measure(new Size(0, 0));
+
+            // Flyout gets its defined width
+            if (_flyoutContent != null)
+            {
+                var flyoutSize = new Size(flyoutWidth, availableSize.Height);
+                _flyoutContent.Measure(flyoutSize);
+            }
+        }
+        else
+        {
+            // In popover mode, detail content takes full size
+            _detailContent?.Measure(availableSize);
+
+            // Measure scrim (full size)
+            _scrim?.Measure(availableSize);
+
+            // Measure flyout content
+            if (_flyoutContent != null)
+            {
+                var flyoutSize = new Size(flyoutWidth, availableSize.Height);
+                _flyoutContent.Measure(flyoutSize);
+            }
         }
 
         return availableSize;
@@ -161,25 +202,55 @@ public class FlyoutContainer : Panel
     protected override Size ArrangeOverride(Size finalSize)
     {
         var flyoutWidth = FlyoutWidth;
-        var behavior = FlyoutBehavior;
+        var isSplitMode = IsSplitMode();
 
-        // Arrange detail content (always full size)
-        if (_detailContent != null)
+        if (isSplitMode)
         {
-            _detailContent.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
+            // Split mode: flyout on left, detail on right, no scrim
+            var detailWidth = Math.Max(0, finalSize.Width - flyoutWidth);
+
+            // Arrange flyout on the left
+            if (_flyoutContent != null)
+            {
+                var flyoutRect = new Rect(0, 0, flyoutWidth, finalSize.Height);
+                _flyoutContent.Arrange(flyoutRect);
+            }
+
+            // Arrange detail on the right
+            if (_detailContent != null)
+            {
+                var detailRect = new Rect(flyoutWidth, 0, detailWidth, finalSize.Height);
+                _detailContent.Arrange(detailRect);
+            }
+
+            // Hide scrim in split mode
+            if (_scrim != null)
+            {
+                _scrim.Arrange(new Rect(0, 0, 0, 0));
+                _scrim.IsVisible = false;
+            }
         }
-
-        // Arrange scrim (always full size, but visibility controlled separately)
-        if (_scrim != null)
+        else
         {
-            _scrim.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
-        }
+            // Popover mode: detail takes full size, flyout overlays from left
+            // Arrange detail content (full size)
+            if (_detailContent != null)
+            {
+                _detailContent.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
+            }
 
-        // Arrange flyout content
-        if (_flyoutContent != null)
-        {
-            var flyoutRect = new Rect(0, 0, flyoutWidth, finalSize.Height);
-            _flyoutContent.Arrange(flyoutRect);
+            // Arrange scrim (full size, but visibility controlled separately)
+            if (_scrim != null)
+            {
+                _scrim.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
+            }
+
+            // Arrange flyout content (positioned at 0, but transform will move it)
+            if (_flyoutContent != null)
+            {
+                var flyoutRect = new Rect(0, 0, flyoutWidth, finalSize.Height);
+                _flyoutContent.Arrange(flyoutRect);
+            }
         }
 
         return finalSize;
@@ -204,6 +275,9 @@ public class FlyoutContainer : Panel
 
     private void OnFlyoutBehaviorChanged(AvaloniaPropertyChangedEventArgs e)
     {
+        // Behavior change may affect split mode, so invalidate measure and arrangement
+        InvalidateMeasure();
+        InvalidateArrange();
         UpdateFlyoutPosition(false);
     }
 
@@ -215,31 +289,38 @@ public class FlyoutContainer : Panel
         var behavior = FlyoutBehavior;
         var isOpen = IsFlyoutOpen;
         var flyoutWidth = FlyoutWidth;
+        var isSplitMode = IsSplitMode();
 
         double targetX;
         bool showScrim;
 
-        switch (behavior)
+        if (isSplitMode)
         {
-            case FlyoutBehavior.Disabled:
-                targetX = -flyoutWidth;
-                showScrim = false;
-                break;
+            // In split mode, flyout is always visible at position 0, no transform needed
+            targetX = 0;
+            showScrim = false;
+        }
+        else
+        {
+            // Popover mode behaviors
+            switch (behavior)
+            {
+                case FlyoutBehavior.Disabled:
+                    targetX = -flyoutWidth;
+                    showScrim = false;
+                    break;
 
-            case FlyoutBehavior.Flyout:
-                targetX = isOpen ? 0 : -flyoutWidth;
-                showScrim = isOpen;
-                break;
+                case FlyoutBehavior.Popover:
+                case FlyoutBehavior.Default:
+                    targetX = isOpen ? 0 : -flyoutWidth;
+                    showScrim = isOpen;
+                    break;
 
-            case FlyoutBehavior.Locked:
-                targetX = 0;
-                showScrim = false;
-                break;
-
-            default:
-                targetX = -flyoutWidth;
-                showScrim = false;
-                break;
+                default:
+                    targetX = isOpen ? 0 : -flyoutWidth;
+                    showScrim = isOpen;
+                    break;
+            }
         }
 
         if (animate && !_isAnimating)
@@ -307,8 +388,8 @@ public class FlyoutContainer : Panel
 
     private void OnScrimPressed(object? sender, PointerPressedEventArgs e)
     {
-        // Close flyout when scrim is clicked
-        if (IsFlyoutOpen && FlyoutBehavior == FlyoutBehavior.Flyout)
+        // Close flyout when scrim is clicked (only in popover mode)
+        if (IsFlyoutOpen && !IsSplitMode())
         {
             IsFlyoutOpen = false;
         }
@@ -317,7 +398,7 @@ public class FlyoutContainer : Panel
     // Gesture handling for detail content (swipe from left edge to open)
     private void OnDetailPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (!IsGestureEnabled || FlyoutBehavior != FlyoutBehavior.Flyout)
+        if (!IsGestureEnabled || IsSplitMode())
             return;
 
         var point = e.GetPosition(_detailContent);
@@ -379,7 +460,7 @@ public class FlyoutContainer : Panel
     // Gesture handling for flyout content (swipe left to close)
     private void OnFlyoutPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (!IsGestureEnabled || FlyoutBehavior != FlyoutBehavior.Flyout)
+        if (!IsGestureEnabled || IsSplitMode())
             return;
 
         _gestureStartPoint = e.GetPosition(_flyoutContent);
@@ -433,9 +514,43 @@ public class FlyoutContainer : Panel
     }
 }
 
+/// <summary>
+/// Flyout behavior that matches MAUI's FlyoutLayoutBehavior enum values
+/// </summary>
 public enum FlyoutBehavior
 {
-    Disabled = 0,
-    Flyout = 1,
-    Locked = 2
+    /// <summary>
+    /// Platform default behavior
+    /// </summary>
+    Default = 0,
+
+    /// <summary>
+    /// Split layout when in landscape orientation
+    /// </summary>
+    SplitOnLandscape = 1,
+
+    /// <summary>
+    /// Always show split layout (flyout on left, detail on right)
+    /// </summary>
+    Split = 2,
+
+    /// <summary>
+    /// Popover mode - flyout overlays detail page
+    /// </summary>
+    Popover = 3,
+
+    /// <summary>
+    /// Split layout when in portrait orientation
+    /// </summary>
+    SplitOnPortrait = 4,
+
+    /// <summary>
+    /// Flyout is always visible and locked open
+    /// </summary>
+    Locked = 6,
+
+    /// <summary>
+    /// Flyout is disabled
+    /// </summary>
+    Disabled = 7
 }

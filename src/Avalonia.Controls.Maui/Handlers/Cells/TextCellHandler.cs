@@ -72,6 +72,7 @@ public class TextCellHandler : ElementHandler<TextCell, global::Avalonia.Control
         {
             Child = _stackPanel,
             MinHeight = 44,
+            Background = global::Avalonia.Media.Brushes.Transparent,
             Cursor = new global::Avalonia.Input.Cursor(global::Avalonia.Input.StandardCursorType.Hand)
         };
 

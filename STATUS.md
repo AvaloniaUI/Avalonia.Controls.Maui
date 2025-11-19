@@ -46,8 +46,8 @@ Draws a rectangle or square, of a specified width, height, and color.
 
 | Property | Status |
 |----------|--------|
-| Color | ⏳ TODO |
-| CornerRadius | ⏳ TODO |
+| Color | ✅ Implemented |
+| CornerRadius | ✅ Implemented |
 
 ---
 

@@ -40,6 +40,7 @@ public class ViewCellHandler : ElementHandler<ViewCell, global::Avalonia.Control
         return new global::Avalonia.Controls.Border
         {
             Padding = new Thickness(0),
+            Background = global::Avalonia.Media.Brushes.Transparent,
             MinHeight = 44
         };
     }

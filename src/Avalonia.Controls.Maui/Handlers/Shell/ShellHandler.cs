@@ -66,7 +66,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         _flyoutContainer = new FlyoutContainer
         {
             FlyoutWidth = 300,
-            FlyoutBehavior = Platform.FlyoutBehavior.Flyout,
+            FlyoutBehavior = Platform.FlyoutBehavior.Popover,
             IsFlyoutOpen = false
         };
 
@@ -264,7 +264,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
                     handler._hamburgerButton.IsVisible = false;
                 break;
             case Microsoft.Maui.FlyoutBehavior.Flyout:
-                handler._flyoutContainer.FlyoutBehavior = Platform.FlyoutBehavior.Flyout;
+                handler._flyoutContainer.FlyoutBehavior = Platform.FlyoutBehavior.Popover;
                 if (handler._hamburgerButton != null)
                     handler._hamburgerButton.IsVisible = true;
                 break;
