@@ -30,7 +30,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         [nameof(IButtonStroke.CornerRadius)] = MapCornerRadius,
         
         // IImage properties
-        [nameof(IImage.Source)] = MapImageSource
+        [nameof(IImage.Source)] = MapImageSource,
     };
 
     public static CommandMapper<IButton, IButtonHandler> CommandMapper = new(ViewCommandMapper);
@@ -147,15 +147,15 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
     {
         base.ConnectHandler(platformView);
         
-        platformView.PointerPressed += OnPointerPressed;
-        platformView.PointerReleased += OnPointerReleased;
+        platformView.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
+        platformView.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
         platformView.Click += OnClick;
     }
 
     protected override void DisconnectHandler(PlatformView platformView)
     {
-        platformView.PointerPressed -= OnPointerPressed;
-        platformView.PointerReleased -= OnPointerReleased;
+        platformView.RemoveHandler(InputElement.PointerPressedEvent, OnPointerPressed);
+        platformView.RemoveHandler(InputElement.PointerReleasedEvent, OnPointerReleased);
         platformView.Click -= OnClick;
         
         base.DisconnectHandler(platformView);

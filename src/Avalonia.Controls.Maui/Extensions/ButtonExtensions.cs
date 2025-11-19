@@ -71,10 +71,10 @@ public static class ButtonExtensions
     /// <param name="button">The cross-platform button.</param>
     public static void UpdateText(this PlatformView platformView, IButton button)
     {
-        if (button is not IText text)
+        if (button is not Microsoft.Maui.Controls.Button mauiButton)
             return;
 
-        platformView.Text = text.Text;
+        platformView.Text = TextTransformUtilities.GetTransformedText(mauiButton.Text, mauiButton.TextTransform);
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public static class ButtonExtensions
         if (button is not ITextStyle textStyle)
             return;
 
-        if(textStyle.TextColor != null)
+        if (textStyle.TextColor != null)
         {
             platformView.Foreground = textStyle.TextColor.ToPlatform();
         }
@@ -108,7 +108,7 @@ public static class ButtonExtensions
             return;
 
         platformView.CharacterSpacing = textStyle.CharacterSpacing;
-        
+
         var textBlock = platformView.GetTextBlock();
 
         if (textBlock != null)
@@ -129,7 +129,7 @@ public static class ButtonExtensions
             return;
 
         var textBlock = platformView.GetTextBlock();
-        
+
         if (textBlock is null)
             return;
 
@@ -155,7 +155,7 @@ public static class ButtonExtensions
     /// </summary>
     /// <param name="platformView">The platform button control.</param>
     /// <param name="button">The cross-platform button.</param>
-    [NotImplemented("Image loading infrastructure not yet available", DependsOn = "ImageSourceLoader")]
+    [NotImplemented("Image loading infrastructure not yet available.", DependsOn = "ImageSourceLoader")]
     public static void UpdateImageSource(this PlatformView platformView, IButton button)
     {
         // This will require integration with the image loading pipeline and proper

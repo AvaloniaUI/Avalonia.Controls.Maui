@@ -62,21 +62,20 @@ Displays text and responds to a tap or click that directs the app to carry out a
 | BorderColor | ✅ Implemented |
 | BorderWidth | ✅ Implemented |
 | CharacterSpacing | ✅ Implemented |
-| Command | ⏳ TODO |
-| CommandParameter | ⏳ TODO |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
 | ContentLayout | ⏳ TODO |
 | CornerRadius | ✅ Implemented |
 | FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
 | FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
+| FontSize | ✅ Implemented |
 | ImageSource | ⏳ TODO |
 | IsPressed | ⏳ TODO |
 | LineBreakMode | ⏳ TODO |
 | Padding | ✅ Implemented |
 | Text | ✅ Implemented |
 | TextColor | ✅ Implemented |
-| TextTransform | ⏳ TODO |
+| TextTransform | ✅ Implemented |
 
 ### Events
 

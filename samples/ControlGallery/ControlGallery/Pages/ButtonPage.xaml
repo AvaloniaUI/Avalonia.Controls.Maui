@@ -181,6 +181,131 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Font Options -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Options"
+                           FontAttributes="Bold"/>
+                    
+                    <!-- FontSize -->
+                    <Button Text="Small Font (12)"
+                            FontSize="12"/>
+                    <Button Text="Default Font (14)"
+                            FontSize="14"/>
+                    <Button Text="Large Font (20)"
+                            FontSize="20"/>
+                    <Button Text="Extra Large (28)"
+                            FontSize="28"/>
+                    
+                    <!-- FontAttributes -->
+                    <Button Text="Normal Font"
+                            FontAttributes="None"/>
+                    <Button Text="Bold Font"
+                            FontAttributes="Bold"/>
+                    <Button Text="Italic Font"
+                            FontAttributes="Italic"/>
+                    <Button Text="Bold Italic Font"
+                            FontAttributes="Bold,Italic"/>
+                    
+                    <!-- FontFamily -->
+                    <Button Text="Default Font Family"/>
+                    <Button Text="Courier New"
+                            FontFamily="Courier New"/>
+                    <Button Text="Georgia"
+                            FontFamily="Georgia"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- TextTransform -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Transform"
+                           FontAttributes="Bold"/>
+                    <Button Text="Default Transform"
+                            TextTransform="Default"/>
+                    <Button Text="uppercase text"
+                            TextTransform="Uppercase"/>
+                    <Button Text="LOWERCASE TEXT"
+                            TextTransform="Lowercase"/>
+                    <Button Text="None Transform"
+                            TextTransform="None"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Command and CommandParameter -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Command and CommandParameter"
+                           FontAttributes="Bold"/>
+                    <Button Text="Execute Command"
+                            Command="{Binding MyCommand}"/>
+                    <Button Text="Command with Parameter (Action1)"
+                            Command="{Binding ParameterizedCommand}"
+                            CommandParameter="Action1"/>
+                    <Button Text="Command with Parameter (Action2)"
+                            Command="{Binding ParameterizedCommand}"
+                            CommandParameter="Action2"/>
+                    <Button Text="Command with Parameter (Delete)"
+                            Command="{Binding ParameterizedCommand}"
+                            CommandParameter="Delete"
+                            BackgroundColor="Red"
+                            TextColor="White"/>
+                    <Button Text="Disabled Command"
+                            Command="{Binding DisabledCommand}"/>
+                    <Label x:Name="CommandResultLabel"
+                           Text="No command executed yet"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Pressed and Released Events -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Pressed and Released Events"
+                           FontAttributes="Bold"/>
+                    <Label Text="Press and hold to see state changes:"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Button Text="Press Me"
+                            BackgroundColor="LightBlue"
+                            TextColor="Black"
+                            Pressed="OnButton1Pressed"
+                            Released="OnButton1Released"/>
+                    
+                    <Button Text="Interactive Button"
+                            BackgroundColor="Green"
+                            TextColor="White"
+                            BorderColor="DarkGreen"
+                            BorderWidth="2"
+                            Pressed="OnButton2Pressed"
+                            Released="OnButton2Released"/>
+                    
+                    <Button Text="Animated Press"
+                            BackgroundColor="Purple"
+                            TextColor="White"
+                            Pressed="OnButton3Pressed"
+                            Released="OnButton3Released"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Styled Buttons -->
             <Border Stroke="Gray"
                     Padding="10">
