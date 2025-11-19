@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.ProgressBarPage"
+             x:DataType="pages:ProgressBarPage"
+             Title="ProgressBar">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="ProgressBar Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Default ProgressBar"
+                           FontAttributes="Bold"/>
+                    <ProgressBar x:Name="DefaultProgressBar"
+                                 Progress="{Binding Progress}"
+                                 HeightRequest="20"/>
+                    <Label Text="{Binding ProgressPercent, StringFormat='Progress: {0}%'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Colored ProgressBar"
+                           FontAttributes="Bold"/>
+                    <ProgressBar x:Name="ColoredProgressBar"
+                                 Progress="{Binding Progress}"
+                                 ProgressColor="{Binding ProgressColor}"
+                                 HeightRequest="20"/>
+                    <Label Text="Color:"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Red"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Red"
+                                BackgroundColor="Red"
+                                TextColor="White"/>
+                        <Button Text="Green"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Green"
+                                BackgroundColor="Green"
+                                TextColor="White"/>
+                        <Button Text="Blue"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Blue"
+                                BackgroundColor="Blue"
+                                TextColor="White"/>
+                        <Button Text="Orange"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Orange"
+                                BackgroundColor="Orange"
+                                TextColor="Black"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Progress Control"
+                           FontAttributes="Bold"/>
+                    <Slider x:Name="ProgressSlider"
+                            Minimum="0"
+                            Maximum="100"
+                            Value="{Binding ProgressPercent}"
+                            HeightRequest="40"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="0%"
+                                Command="{Binding SetProgressCommand}"
+                                CommandParameter="0"/>
+                        <Button Text="25%"
+                                Command="{Binding SetProgressCommand}"
+                                CommandParameter="25"/>
+                        <Button Text="50%"
+                                Command="{Binding SetProgressCommand}"
+                                CommandParameter="50"/>
+                        <Button Text="75%"
+                                Command="{Binding SetProgressCommand}"
+                                CommandParameter="75"/>
+                        <Button Text="100%"
+                                Command="{Binding SetProgressCommand}"
+                                CommandParameter="100"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

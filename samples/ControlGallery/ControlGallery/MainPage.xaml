@@ -2,12 +2,15 @@
 <FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			xmlns:word="clr-namespace:WordPuzzle"
+			xmlns:pages="clr-namespace:ControlGallery.Pages"
+			xmlns:local="clr-namespace:ControlGallery"
 			FlyoutLayoutBehavior="Split"
 			x:Class="ControlGallery.MainPage">
 	<FlyoutPage.Flyout>
 		<ContentPage
 			BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
 			x:Name="FlyoutPageMenu"
+			x:DataType="local:MainPage"
 			Title="Control Gallery">
 			<TableView Intent="Menu">
 				<TableRoot>
@@ -18,6 +21,10 @@
 								  CommandParameter="{x:Type word:MainPage}"/>
 					</TableSection>
 					<TableSection Title="Views">
+						<TextCell Text="ProgressBar"
+								  Detail="Progress indicator control"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:ProgressBarPage}"/>
 					</TableSection>
 				</TableRoot>
 			</TableView>
