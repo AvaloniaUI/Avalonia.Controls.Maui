@@ -1,38 +1,36 @@
-using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using PlatformView = Avalonia.Controls.Maui.Platform.MauiButton;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class ButtonHandler : ViewHandler<IButton, MauiButton>, IButtonHandler
+public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
 {
-    public static IPropertyMapper<ITextButton, IButtonHandler> TextButtonMapper = new PropertyMapper<ITextButton, IButtonHandler>()
+    public static IPropertyMapper<IButton, IButtonHandler> Mapper = new PropertyMapper<IButton, IButtonHandler>(ViewHandler.ViewMapper)
     {
+        // IText properties
+        [nameof(IText.Text)] = MapText,
+        
+        // ITextStyle properties
         [nameof(ITextStyle.CharacterSpacing)] = MapCharacterSpacing,
         [nameof(ITextStyle.Font)] = MapFont,
         [nameof(ITextStyle.TextColor)] = MapTextColor,
-        [nameof(IText.Text)] = MapText
-    };
-
-    public static IPropertyMapper<IImage, IButtonHandler> ImageButtonMapper = new PropertyMapper<IImage, IButtonHandler>()
-    {
-        [nameof(IImage.Source)] = MapImageSource
-    };
-
-    public static IPropertyMapper<IButton, IButtonHandler> Mapper = new PropertyMapper<IButton, IButtonHandler>(TextButtonMapper, ImageButtonMapper, ViewHandler.ViewMapper)
-    {
+        
+        // IButton properties
         [nameof(IButton.Background)] = MapBackground,
         [nameof(IButton.Padding)] = MapPadding,
+        
+        // IButtonStroke properties
         [nameof(IButtonStroke.StrokeThickness)] = MapStrokeThickness,
         [nameof(IButtonStroke.StrokeColor)] = MapStrokeColor,
-        [nameof(IButtonStroke.CornerRadius)] = MapCornerRadius
+        [nameof(IButtonStroke.CornerRadius)] = MapCornerRadius,
+        
+        // IImage properties
+        [nameof(IImage.Source)] = MapImageSource
     };
 
     public static CommandMapper<IButton, IButtonHandler> CommandMapper = new(ViewCommandMapper);
@@ -40,7 +38,6 @@ public class ButtonHandler : ViewHandler<IButton, MauiButton>, IButtonHandler
     public ButtonHandler()
         : base(Mapper, CommandMapper)
     {
-
     }
 
     public ButtonHandler(IPropertyMapper? mapper)
@@ -66,128 +63,124 @@ public class ButtonHandler : ViewHandler<IButton, MauiButton>, IButtonHandler
 
     public static void MapBackground(IButtonHandler handler, IButton button)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
-        ((PlatformView)(handler.PlatformView)).Background = button.Background?.ToPlatform();
+
+        platformView.UpdateBackground(handler.VirtualView);
     }
 
-    public static void MapStrokeColor(IButtonHandler handler, IButtonStroke buttonStroke)
+    public static void MapStrokeColor(IButtonHandler handler, IButton button)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
-        if (buttonStroke.StrokeColor == null)
-            return;
-        ((PlatformView)(handler.PlatformView)).BorderBrush = buttonStroke.StrokeColor.ToPlatform();
+
+        platformView.UpdateStrokeColor(handler.VirtualView);
     }
 
-    public static void MapStrokeThickness(IButtonHandler handler, IButtonStroke buttonStroke)
+    public static void MapStrokeThickness(IButtonHandler handler, IButton button)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-        ((PlatformView)(handler.PlatformView)).BorderThickness = new global::Avalonia.Thickness(buttonStroke.StrokeThickness);
-    }
-
-    public static void MapCornerRadius(IButtonHandler handler, IButtonStroke buttonStroke)
-    {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-        ((PlatformView)(handler.PlatformView)).CornerRadius = new global::Avalonia.CornerRadius(buttonStroke.CornerRadius);
-    }
-
-    public static void MapText(IButtonHandler handler, IText button)
-    {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
 
-        var mauiButton = (MauiButton)handler.PlatformView;
-        mauiButton.Text = button.Text;
+        platformView.UpdateStrokeThickness(handler.VirtualView);
     }
 
-    public static void MapTextColor(IButtonHandler handler, ITextStyle button)
+    public static void MapCornerRadius(IButtonHandler handler, IButton button)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null || button.TextColor is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
 
-        var mauiButton = (MauiButton)handler.PlatformView;
-        var textBlock = mauiButton.GetTextBlock();
-        if (textBlock != null)
-        {
-            textBlock.Foreground = button.TextColor.ToPlatform();
-        }
+        platformView.UpdateCornerRadius(handler.VirtualView);
     }
 
-    public static void MapCharacterSpacing(IButtonHandler handler, ITextStyle button)
+    public static void MapText(IButtonHandler handler, IButton button)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
 
-        var mauiButton = (MauiButton)handler.PlatformView;
-        mauiButton.CharacterSpacing = button.CharacterSpacing;
-
-        // Apply to TextBlock if available
-        var textBlock = mauiButton.GetTextBlock();
-        if (textBlock != null)
-        {
-            textBlock.LetterSpacing = button.CharacterSpacing;
-        }
+        platformView.UpdateText(handler.VirtualView);
     }
 
-    public static void MapFont(IButtonHandler handler, ITextStyle button)
+    public static void MapTextColor(IButtonHandler handler, IButton button)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
+            return;
+
+        platformView.UpdateTextColor(handler.VirtualView);
+    }
+
+    public static void MapCharacterSpacing(IButtonHandler handler, IButton button)
+    {
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
+            return;
+
+        platformView.UpdateCharacterSpacing(handler.VirtualView);
+    }
+
+    public static void MapFont(IButtonHandler handler, IButton button)
+    {
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
 
         var fontManager = handler.GetRequiredService<IFontManager>();
-        var mauiButton = (MauiButton)handler.PlatformView;
-        var textBlock = mauiButton.GetTextBlock();
-
-        if (textBlock == null)
-            return;
-
-        textBlock.UpdateFont(button, fontManager);
+        platformView.UpdateFont(handler.VirtualView, fontManager);
     }
 
     public static void MapPadding(IButtonHandler handler, IButton button)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
-        ((PlatformView)(handler.PlatformView)).Padding = button.Padding.ToThickness();
+
+        platformView.UpdatePadding(handler.VirtualView);
     }
-
-    public static void MapImageSource(IButtonHandler handler, IImage button)
+    
+    [NotImplemented("Implement proper image source loading when image infrastructure is ready")]
+    public static void MapImageSource(IButtonHandler handler, IButton button)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
 
-        var mauiButton = (MauiButton)handler.PlatformView;
-
-        // For now, just set a placeholder for image source
-        // Full implementation would require image loading infrastructure
-        // TODO: Implement proper image source loading when image infrastructure is ready
-        if (button.Source != null)
-        {
-            // mauiButton.ImageSource = ...
-        }
+        platformView.UpdateImageSource(handler.VirtualView);
     }
 
     protected override void ConnectHandler(PlatformView platformView)
     {
-        platformView.Click += OnClick;
         base.ConnectHandler(platformView);
+        
+        platformView.PointerPressed += OnPointerPressed;
+        platformView.PointerReleased += OnPointerReleased;
+        platformView.Click += OnClick;
     }
 
     protected override void DisconnectHandler(PlatformView platformView)
     {
+        platformView.PointerPressed -= OnPointerPressed;
+        platformView.PointerReleased -= OnPointerReleased;
         platformView.Click -= OnClick;
+        
         base.DisconnectHandler(platformView);
+    }
+
+    void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (VirtualView is IButton button)
+        {
+            button.Pressed();
+        }
     }
 
     void OnClick(object? sender, RoutedEventArgs e)
     {
-        // Check if handler is still connected before accessing VirtualView
-        if (base.VirtualView is IButton button)
+        if (VirtualView is IButton button)
         {
             button.Clicked();
+        }
+    }
+
+    void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (VirtualView is IButton button)
+        {
             button.Released();
         }
     }

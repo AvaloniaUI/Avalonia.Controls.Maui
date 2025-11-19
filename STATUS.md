@@ -59,13 +59,13 @@ Displays text and responds to a tap or click that directs the app to carry out a
 
 | Property | Status |
 |----------|--------|
-| BorderColor | ⏳ TODO |
-| BorderWidth | ⏳ TODO |
-| CharacterSpacing | ⏳ TODO |
+| BorderColor | ✅ Implemented |
+| BorderWidth | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
 | Command | ⏳ TODO |
 | CommandParameter | ⏳ TODO |
 | ContentLayout | ⏳ TODO |
-| CornerRadius | ⏳ TODO |
+| CornerRadius | ✅ Implemented |
 | FontAttributes | ⏳ TODO |
 | FontAutoScalingEnabled | ⏳ TODO |
 | FontFamily | ⏳ TODO |
@@ -73,18 +73,18 @@ Displays text and responds to a tap or click that directs the app to carry out a
 | ImageSource | ⏳ TODO |
 | IsPressed | ⏳ TODO |
 | LineBreakMode | ⏳ TODO |
-| Padding | ⏳ TODO |
-| Text | ⏳ TODO |
-| TextColor | ⏳ TODO |
+| Padding | ✅ Implemented |
+| Text | ✅ Implemented |
+| TextColor | ✅ Implemented |
 | TextTransform | ⏳ TODO |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Clicked | ⏳ TODO |
-| Pressed | ⏳ TODO |
-| Released | ⏳ TODO |
+| Clicked | ✅ Implemented |
+| Pressed | ✅ Implemented |
+| Released | ✅ Implemented |
 
 ---
 
