@@ -108,6 +108,13 @@ public static class ButtonExtensions
             return;
 
         platformView.CharacterSpacing = textStyle.CharacterSpacing;
+        
+        var textBlock = platformView.GetTextBlock();
+
+        if (textBlock != null)
+        {
+            textBlock.LetterSpacing = textStyle.CharacterSpacing;
+        }
     }
 
     /// <summary>
