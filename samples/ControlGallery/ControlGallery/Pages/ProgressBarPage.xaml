@@ -44,10 +44,11 @@
                                  HeightRequest="20"/>
                     <Label Text="Color:"
                            FontAttributes="Bold"/>
-                    <HorizontalStackLayout Spacing="10"
+                    <HorizontalStackLayout x:Name="ButtonStack"
+                                           Spacing="10"
                                            HorizontalOptions="Center">
                         <Button Text="Red"
-                                Command="{Binding SetColorCommand}"
+                                Command="{Binding Path=SetColorCommand}"
                                 CommandParameter="Red"
                                 BackgroundColor="Red"
                                 TextColor="White"/>

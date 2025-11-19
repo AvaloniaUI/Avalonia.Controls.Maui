@@ -14,7 +14,6 @@ public partial class ProgressBarPage : ContentPage, INotifyPropertyChanged
     public ProgressBarPage()
     {
         InitializeComponent();
-        BindingContext = this;
 
         SetProgressCommand = new Command<string>(percent =>
         {
@@ -35,6 +34,7 @@ public partial class ProgressBarPage : ContentPage, INotifyPropertyChanged
                 _ => Colors.Blue
             };
         });
+        BindingContext = this;
     }
 
     public double Progress

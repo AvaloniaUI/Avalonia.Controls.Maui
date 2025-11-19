@@ -4,13 +4,13 @@
 			xmlns:word="clr-namespace:WordPuzzle"
 			xmlns:pages="clr-namespace:ControlGallery.Pages"
 			xmlns:local="clr-namespace:ControlGallery"
+			x:DataType="local:MainPage"
 			FlyoutLayoutBehavior="Split"
 			x:Class="ControlGallery.MainPage">
 	<FlyoutPage.Flyout>
 		<ContentPage
 			BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
 			x:Name="FlyoutPageMenu"
-			x:DataType="local:MainPage"
 			Title="Control Gallery">
 			<TableView Intent="Menu">
 				<TableRoot>
