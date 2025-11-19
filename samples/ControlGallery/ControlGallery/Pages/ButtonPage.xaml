@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.ButtonPage"
+             x:DataType="pages:ButtonPage"
+             Title="Button Page">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="Button Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic Buttons -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Buttons"
+                           FontAttributes="Bold"/>
+                    <Button Text="Default Button"
+                            Clicked="OnButtonClicked"/>
+                    <Button Text="Disabled Button"
+                            IsEnabled="False"/>
+                    <Button Text="Button with Long Text That Might Wrap"/>
+                    <Label x:Name="ClickCountLabel"
+                           Text="Click count: 0"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Colors"
+                           FontAttributes="Bold"/>
+                    <Button Text="Red Text"
+                            TextColor="Red"/>
+                    <Button Text="Green Text"
+                            TextColor="Green"/>
+                    <Button Text="Blue Text"
+                            TextColor="Blue"/>
+                    <Button Text="White Text"
+                            TextColor="White"
+                            BackgroundColor="Black"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Background Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Background Colors"
+                           FontAttributes="Bold"/>
+                    <Button Text="Light Blue"
+                            BackgroundColor="LightBlue"/>
+                    <Button Text="Light Green"
+                            BackgroundColor="LightGreen"/>
+                    <Button Text="Light Coral"
+                            BackgroundColor="LightCoral"/>
+                    <Button Text="Gold"
+                            BackgroundColor="Gold"
+                            TextColor="Black"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Borders and Strokes -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Borders and Strokes"
+                           FontAttributes="Bold"/>
+                    <Button Text="Red Border (2px)"
+                            BorderColor="Red"
+                            BorderWidth="2"/>
+                    <Button Text="Blue Border (5px)"
+                            BorderColor="Blue"
+                            BorderWidth="5"/>
+                    <Button Text="Green Dashed Look"
+                            BorderColor="Green"
+                            BorderWidth="3"
+                            BackgroundColor="Transparent"
+                            TextColor="Green"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Corner Radius -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Corner Radius Variations"
+                           FontAttributes="Bold"/>
+                    <Button Text="No Radius (0)"
+                            BorderColor="Black"
+                            BorderWidth="2"
+                            BackgroundColor="LightGray"
+                            CornerRadius="0"/>
+                    <Button Text="Small Radius (5)"
+                            BorderColor="Black"
+                            BorderWidth="2"
+                            BackgroundColor="LightGray"
+                            CornerRadius="5"/>
+                    <Button Text="Medium Radius (15)"
+                            BorderColor="Black"
+                            BorderWidth="2"
+                            BackgroundColor="LightGray"
+                            CornerRadius="15"/>
+                    <Button Text="Pill Shape (50)"
+                            BorderColor="Black"
+                            BorderWidth="2"
+                            BackgroundColor="LightGray"
+                            CornerRadius="50"
+                            HeightRequest="50"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Padding -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Padding Variations"
+                           FontAttributes="Bold"/>
+                    <Button Text="No Padding"
+                            Padding="0"
+                            BackgroundColor="LightBlue"/>
+                    <Button Text="Small Padding (5)"
+                            Padding="5"
+                            BackgroundColor="LightBlue"/>
+                    <Button Text="Medium Padding (15)"
+                            Padding="15"
+                            BackgroundColor="LightBlue"/>
+                    <Button Text="Large Padding (30)"
+                            Padding="30"
+                            BackgroundColor="LightBlue"/>
+                    <Button Text="Asymmetric Padding"
+                            Padding="40,10,40,10"
+                            BackgroundColor="LightBlue"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Character Spacing -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Character Spacing"
+                           FontAttributes="Bold"/>
+                    <Button Text="Normal Spacing (0)"
+                            CharacterSpacing="0"/>
+                    <Button Text="Tight Spacing (-1)"
+                            CharacterSpacing="-1"/>
+                    <Button Text="Loose Spacing (2)"
+                            CharacterSpacing="2"/>
+                    <Button Text="Very Loose (5)"
+                            CharacterSpacing="5"/>
+                    <Button Text="UPPERCASE SPACED"
+                            CharacterSpacing="3"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Styled Buttons -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Styled Button Examples"
+                           FontAttributes="Bold"/>
+                    
+                    <!-- Primary Button -->
+                    <Button Text="Primary Button"
+                            TextColor="White"
+                            BackgroundColor="DarkBlue"
+                            Padding="20,10"
+                            CornerRadius="8"
+                            BorderColor="Navy"
+                            BorderWidth="2"
+                            CharacterSpacing="1"/>
+                    
+                    <!-- Secondary Button -->
+                    <Button Text="Secondary Button"
+                            TextColor="DarkBlue"
+                            BackgroundColor="White"
+                            Padding="20,10"
+                            CornerRadius="8"
+                            BorderColor="DarkBlue"
+                            BorderWidth="2"/>
+                    
+                    <!-- Success Button -->
+                    <Button Text="Success"
+                            TextColor="White"
+                            BackgroundColor="Green"
+                            Padding="20,10"
+                            CornerRadius="6"/>
+                    
+                    <!-- Danger Button -->
+                    <Button Text="Danger"
+                            TextColor="White"
+                            BackgroundColor="Red"
+                            Padding="20,10"
+                            CornerRadius="6"/>
+                    
+                    <!-- Warning Button -->
+                    <Button Text="Warning"
+                            TextColor="Black"
+                            BackgroundColor="Gold"
+                            Padding="20,10"
+                            CornerRadius="6"/>
+                    
+                    <!-- Info Button -->
+                    <Button Text="Info"
+                            TextColor="White"
+                            BackgroundColor="CornflowerBlue"
+                            Padding="20,10"
+                            CornerRadius="6"/>
+                    
+                    <!-- Ghost Button -->
+                    <Button Text="Ghost Button"
+                            TextColor="DarkSlateGray"
+                            BackgroundColor="Transparent"
+                            Padding="20,10"
+                            BorderColor="DarkSlateGray"
+                            BorderWidth="1"
+                            CornerRadius="6"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Button Layouts -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Button Layouts"
+                           FontAttributes="Bold"/>
+                    
+                    <Label Text="Horizontal Button Group:"
+                           FontSize="12"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Option A"
+                                WidthRequest="100"/>
+                        <Button Text="Option B"
+                                WidthRequest="100"/>
+                        <Button Text="Option C"
+                                WidthRequest="100"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label Text="Full Width Button:"
+                           FontSize="12"/>
+                    <Button Text="Full Width Button"
+                            HorizontalOptions="Fill"/>
+                    
+                    <Label Text="Centered Button:"
+                           FontSize="12"/>
+                    <Button Text="Centered"
+                            HorizontalOptions="Center"
+                            WidthRequest="200"/>
+                    
+                    <Label Text="Small Buttons:"
+                           FontSize="12"/>
+                    <HorizontalStackLayout Spacing="5"
+                                           HorizontalOptions="Center">
+                        <Button Text="Yes"
+                                WidthRequest="80"
+                                HeightRequest="30"
+                                Padding="5"/>
+                        <Button Text="No"
+                                WidthRequest="80"
+                                HeightRequest="30"
+                                Padding="5"/>
+                        <Button Text="Cancel"
+                                WidthRequest="80"
+                                HeightRequest="30"
+                                Padding="5"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Interactive Demo -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive Button Demo"
+                           FontAttributes="Bold"/>
+                    
+                    <Button x:Name="InteractiveButton"
+                            Text="Click Me!"
+                            TextColor="White"
+                            BackgroundColor="{Binding ButtonColor}"
+                            Padding="20,10"
+                            CornerRadius="{Binding ButtonCornerRadius}"
+                            BorderColor="Black"
+                            BorderWidth="2"
+                            Clicked="OnInteractiveButtonClicked"/>
+                    
+                    <Label Text="Background Color:"
+                           FontSize="12"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Blue"
+                                Command="{Binding SetButtonColorCommand}"
+                                CommandParameter="Blue"
+                                BackgroundColor="Blue"
+                                TextColor="White"
+                                WidthRequest="80"/>
+                        <Button Text="Green"
+                                Command="{Binding SetButtonColorCommand}"
+                                CommandParameter="Green"
+                                BackgroundColor="Green"
+                                TextColor="White"
+                                WidthRequest="80"/>
+                        <Button Text="Red"
+                                Command="{Binding SetButtonColorCommand}"
+                                CommandParameter="Red"
+                                BackgroundColor="Red"
+                                TextColor="White"
+                                WidthRequest="80"/>
+                        <Button Text="Orange"
+                                Command="{Binding SetButtonColorCommand}"
+                                CommandParameter="Orange"
+                                BackgroundColor="Orange"
+                                TextColor="Black"
+                                WidthRequest="80"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label Text="Corner Radius:"
+                           FontSize="12"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="0"
+                                Command="{Binding SetCornerRadiusCommand}"
+                                CommandParameter="0"
+                                WidthRequest="60"/>
+                        <Button Text="5"
+                                Command="{Binding SetCornerRadiusCommand}"
+                                CommandParameter="5"
+                                WidthRequest="60"/>
+                        <Button Text="15"
+                                Command="{Binding SetCornerRadiusCommand}"
+                                CommandParameter="15"
+                                WidthRequest="60"/>
+                        <Button Text="30"
+                                Command="{Binding SetCornerRadiusCommand}"
+                                CommandParameter="30"
+                                WidthRequest="60"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label x:Name="InteractionLabel"
+                           Text="Button not clicked yet"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"
+                           TextColor="Gray"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
