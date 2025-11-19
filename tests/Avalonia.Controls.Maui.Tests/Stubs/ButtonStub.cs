@@ -85,17 +85,17 @@ public class ButtonStub : StubBase, IButton, IText, ITextStyle, IPadding, IButto
 
     public void Clicked()
     {
-        // Hook for testing - can be overridden or monitored
+        // Hook for testing events
     }
 
     public void Pressed()
     {
-        // Hook for testing - can be overridden or monitored
+        // Hook for testing events
     }
 
     public void Released()
     {
-        // Hook for testing - can be overridden or monitored
+        // Hook for testing events
     }
 
     public void UpdateImageSource(object? nativeImageSource)
