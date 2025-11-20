@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.CheckBoxPage"
+             Title="CheckBox Page">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="CheckBox Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic CheckBoxes -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic CheckBoxes"
+                           FontAttributes="Bold"/>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="False"
+                                  CheckedChanged="OnCheckBoxChanged"/>
+                        <Label Text="Unchecked by default"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="True"
+                                  CheckedChanged="OnCheckBoxChanged"/>
+                        <Label Text="Checked by default"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsEnabled="False"/>
+                        <Label Text="Disabled (unchecked)"
+                               VerticalOptions="Center"
+                               TextColor="Gray"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="True"
+                                  IsEnabled="False"/>
+                        <Label Text="Disabled (checked)"
+                               VerticalOptions="Center"
+                               TextColor="Gray"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label x:Name="CheckCountLabel"
+                           Text="Check/Uncheck count: 0"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"
+                           Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Colored CheckBoxes"
+                           FontAttributes="Bold"/>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="True"
+                                  Color="Red"/>
+                        <Label Text="Red"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="True"
+                                  Color="Green"/>
+                        <Label Text="Green"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="True"
+                                  Color="Blue"/>
+                        <Label Text="Blue"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="True"
+                                  Color="Orange"/>
+                        <Label Text="Orange"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="True"
+                                  Color="Purple"/>
+                        <Label Text="Purple"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Grouped CheckBoxes - Single Selection -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Preference Selection (Multiple Choice)"
+                           FontAttributes="Bold"/>
+                    <Label Text="Select your favorite fruits:"
+                           FontSize="12"/>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="AppleCheckBox"
+                                  CheckedChanged="OnFruitCheckedChanged"/>
+                        <Label Text="Apple"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="BananaCheckBox"
+                                  CheckedChanged="OnFruitCheckedChanged"/>
+                        <Label Text="Banana"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="OrangeCheckBox"
+                                  CheckedChanged="OnFruitCheckedChanged"/>
+                        <Label Text="Orange"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="GrapeCheckBox"
+                                  CheckedChanged="OnFruitCheckedChanged"/>
+                        <Label Text="Grape"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label x:Name="FruitSelectionLabel"
+                           Text="No fruits selected"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"
+                           TextColor="DarkBlue"
+                           Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Settings Example -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Settings Example"
+                           FontAttributes="Bold"/>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="NotificationsCheckBox"
+                                  IsChecked="True"
+                                  CheckedChanged="OnSettingChanged"/>
+                        <Label Text="Enable Notifications"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="DarkModeCheckBox"
+                                  CheckedChanged="OnSettingChanged"/>
+                        <Label Text="Dark Mode"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="AutoSaveCheckBox"
+                                  IsChecked="True"
+                                  CheckedChanged="OnSettingChanged"/>
+                        <Label Text="Auto-Save"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="LocationCheckBox"
+                                  CheckedChanged="OnSettingChanged"/>
+                        <Label Text="Share Location"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label x:Name="SettingsLabel"
+                           Text="Settings: Notifications ✓, Auto-Save ✓"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"
+                           TextColor="DarkGreen"
+                           Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Task List Example -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Task List Example"
+                           FontAttributes="Bold"/>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="Task1CheckBox"
+                                  CheckedChanged="OnTaskCheckedChanged"
+                                  Color="Green"/>
+                        <Label Text="Complete project proposal"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="Task2CheckBox"
+                                  CheckedChanged="OnTaskCheckedChanged"
+                                  Color="Green"/>
+                        <Label Text="Review code changes"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="Task3CheckBox"
+                                  CheckedChanged="OnTaskCheckedChanged"
+                                  Color="Green"/>
+                        <Label Text="Update documentation"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="Task4CheckBox"
+                                  CheckedChanged="OnTaskCheckedChanged"
+                                  Color="Green"/>
+                        <Label Text="Attend team meeting"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox x:Name="Task5CheckBox"
+                                  CheckedChanged="OnTaskCheckedChanged"
+                                  Color="Green"/>
+                        <Label Text="Send weekly report"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label x:Name="TaskProgressLabel"
+                           Text="Progress: 0/5 tasks completed (0%)"
+                           HorizontalOptions="Center"
+                           FontAttributes="Bold"
+                           TextColor="DarkOrange"
+                           Margin="0,10,0,0"/>
+                    
+                    <ProgressBar x:Name="TaskProgressBar"
+                                 Progress="0"
+                                 ProgressColor="Green"
+                                 HeightRequest="10"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Interactive Demo -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive CheckBox Demo"
+                           FontAttributes="Bold"/>
+                    
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <CheckBox x:Name="InteractiveCheckBox"
+                                  IsChecked="False"
+                                  Color="Blue"
+                                  CheckedChanged="OnInteractiveCheckChanged"/>
+                        <Label x:Name="InteractiveLabel"
+                               Text="I'm unchecked"
+                               VerticalOptions="Center"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label Text="Change CheckBox Color:"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           Margin="0,10,0,0"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Red"
+                                Clicked="OnSetColorRed"
+                                BackgroundColor="Red"
+                                TextColor="White"
+                                WidthRequest="80"/>
+                        <Button Text="Green"
+                                Clicked="OnSetColorGreen"
+                                BackgroundColor="Green"
+                                TextColor="White"
+                                WidthRequest="80"/>
+                        <Button Text="Blue"
+                                Clicked="OnSetColorBlue"
+                                BackgroundColor="Blue"
+                                TextColor="White"
+                                WidthRequest="80"/>
+                        <Button Text="Purple"
+                                Clicked="OnSetColorPurple"
+                                BackgroundColor="Purple"
+                                TextColor="White"
+                                WidthRequest="80"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label Text="Quick Actions:"
+                           FontSize="12"
+                           FontAttributes="Bold"
+                           Margin="0,10,0,0"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Check"
+                                Clicked="OnCheckInteractive"
+                                WidthRequest="100"/>
+                        <Button Text="Uncheck"
+                                Clicked="OnUncheckInteractive"
+                                WidthRequest="100"/>
+                        <Button Text="Toggle"
+                                Clicked="OnToggleInteractive"
+                                WidthRequest="100"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label x:Name="InteractionCountLabel"
+                           Text="Interactions: 0"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"
+                           TextColor="Gray"
+                           Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

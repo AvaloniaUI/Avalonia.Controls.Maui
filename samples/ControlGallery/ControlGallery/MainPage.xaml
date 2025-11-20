@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			xmlns:pages="clr-namespace:ControlGallery.Pages"
 			xmlns:word="clr-namespace:WordPuzzle"
 			FlyoutLayoutBehavior="Split"
 			x:Class="ControlGallery.MainPage">
@@ -18,6 +19,10 @@
 								  CommandParameter="{x:Type word:MainPage}"/>
 					</TableSection>
 					<TableSection Title="Views">
+						<TextCell Text="CheckBox"
+						          Detail="CheckBox control for selections"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:CheckBoxPage}"/>
 					</TableSection>
 				</TableRoot>
 			</TableView>
