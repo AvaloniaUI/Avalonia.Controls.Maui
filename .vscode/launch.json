@@ -6,10 +6,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_sandbox",
-            "program": "${workspaceFolder}/src/SandboxApp/bin/Debug/net9.0/SandboxApp.dll",
+            "program": "${workspaceFolder}/samples/SandboxApp/bin/Debug/net9.0/SandboxApp.dll",
             "args": [ 
             ],
-            "cwd": "${workspaceFolder}/src/SandboxApp/bin/Debug/net9.0",
+            "cwd": "${workspaceFolder}/samples/SandboxApp/bin/Debug/net9.0",
             "console": "internalConsole",
             "stopAtEntry": false
         },
