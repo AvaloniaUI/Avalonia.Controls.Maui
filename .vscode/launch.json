@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Sandbox",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_sandbox",
+            "program": "${workspaceFolder}/src/SandboxApp/bin/Debug/net9.0/SandboxApp.dll",
+            "args": [ 
+            ],
+            "cwd": "${workspaceFolder}/src/SandboxApp/bin/Debug/net9.0",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "ControlGallery Desktop",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_controlgallery_desktop",
+            "program": "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/bin/Debug/net9.0/ControlGallery.Desktop.dll",
+            "args": [ 
+            ],
+            "cwd": "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/bin/Debug/net9.0",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": ".NET Core Attach",
+            "type": "coreclr",
+            "request": "attach"
+        }
+    ]
+}
