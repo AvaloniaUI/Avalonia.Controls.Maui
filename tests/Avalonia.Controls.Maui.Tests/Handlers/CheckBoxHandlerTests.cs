@@ -243,6 +243,62 @@ public partial class CheckBoxHandlerTests : HandlerTestBase<MauiCheckBoxHandler,
         Assert.True(checkBox.IsChecked);
     }
     
+    [AvaloniaFact(DisplayName = "CheckedChanged Event Fires When Checked")]
+    public async Task CheckedChangedEventFiresWhenChecked()
+    {
+        var checkBox = new CheckBoxStub
+        {
+            IsChecked = false
+        };
+
+        bool eventFired = false;
+        bool eventValue = false;
+
+        checkBox.CheckedChanged += (sender, e) =>
+        {
+            eventFired = true;
+            eventValue = e.Value;
+        };
+
+        var handler = await CreateHandlerAsync(checkBox);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            checkBox.IsChecked = true;
+        });
+
+        Assert.True(eventFired, "CheckedChanged event should fire");
+        Assert.True(eventValue, "Event value should be true");
+    }
+
+    [AvaloniaFact(DisplayName = "CheckedChanged Event Fires When Unchecked")]
+    public async Task CheckedChangedEventFiresWhenUnchecked()
+    {
+        var checkBox = new CheckBoxStub
+        {
+            IsChecked = true
+        };
+
+        bool eventFired = false;
+        bool eventValue = true;
+
+        checkBox.CheckedChanged += (sender, e) =>
+        {
+            eventFired = true;
+            eventValue = e.Value;
+        };
+
+        var handler = await CreateHandlerAsync(checkBox);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            checkBox.IsChecked = false;
+        });
+
+        Assert.True(eventFired, "CheckedChanged event should fire");
+        Assert.False(eventValue, "Event value should be false");
+    }
+    
     bool GetNativeIsChecked(MauiCheckBoxHandler handler)
     {
         var checkBox = handler.PlatformView;
