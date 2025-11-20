@@ -12,8 +12,8 @@ Uses an animation to show that the app is engaged in a lengthy activity, without
 
 | Property | Status |
 |----------|--------|
-| Color | ⏳ TODO |
-| IsRunning | ⏳ TODO |
+| Color | ✅ Implemented |
+| IsRunning | ✅ Implemented |
 
 ---
 

@@ -20,5 +20,6 @@ class Program
             .UsePlatformDetect()
             .WithInterFont()
             .WithMauiFonts()
+            .WithControls()
             .LogToTrace();
 }
