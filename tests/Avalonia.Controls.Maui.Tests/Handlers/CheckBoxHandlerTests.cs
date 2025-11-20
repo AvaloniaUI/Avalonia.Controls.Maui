@@ -298,6 +298,75 @@ public partial class CheckBoxHandlerTests : HandlerTestBase<MauiCheckBoxHandler,
         Assert.True(eventFired, "CheckedChanged event should fire");
         Assert.False(eventValue, "Event value should be false");
     }
+
+    [AvaloniaFact(DisplayName = "Color Initializes Correctly")]
+    public async Task ColorInitializesCorrectly()
+    {
+        var checkBox = new CheckBoxStub
+        {
+            Color = Colors.Red
+        };
+
+        var values = await GetValueAsync(checkBox, (handler) =>
+        {
+            return new
+            {
+                ViewValue = checkBox.Color,
+                PlatformViewValue = GetNativeForeground(handler)
+            };
+        });
+
+        Assert.NotNull(values.PlatformViewValue);
+        ColorComparisonHelpers.AssertColorsAreEqual(Colors.Red, values.PlatformViewValue);
+    }
+
+    [AvaloniaTheory(DisplayName = "Color Updates Correctly")]
+    [InlineData(255, 0, 0)]      // Red
+    [InlineData(0, 255, 0)]      // Green
+    [InlineData(0, 0, 255)]      // Blue
+    [InlineData(128, 0, 128)]    // Purple
+    public async Task ColorUpdatesCorrectly(byte r, byte g, byte b)
+    {
+        var color = Color.FromRgb(r, g, b);
+        var checkBox = new CheckBoxStub
+        {
+            Color = Colors.Black
+        };
+
+        var handler = await CreateHandlerAsync(checkBox);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            checkBox.Color = color;
+            handler.UpdateValue("Color"); // Color is on CheckBox class, not ICheckBox interface
+        });
+
+        var nativeColor = await GetValueAsync(checkBox, GetNativeForeground);
+
+        Assert.NotNull(nativeColor);
+        ColorComparisonHelpers.AssertColorsAreEqual(color, nativeColor);
+    }
+
+    [AvaloniaFact(DisplayName = "Color Updates BorderBrush")]
+    public async Task ColorUpdatesBorderBrush()
+    {
+        var checkBox = new CheckBoxStub
+        {
+            Color = Colors.Green
+        };
+
+        var values = await GetValueAsync(checkBox, (handler) =>
+        {
+            return new
+            {
+                ViewValue = checkBox.Color,
+                PlatformBorderBrushValue = GetNativeBorderBrush(handler)
+            };
+        });
+
+        Assert.NotNull(values.PlatformBorderBrushValue);
+        ColorComparisonHelpers.AssertColorsAreEqual(Colors.Green, values.PlatformBorderBrushValue);
+    }
     
     bool GetNativeIsChecked(MauiCheckBoxHandler handler)
     {

@@ -9,10 +9,11 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>, ICheckBoxHa
 {
     public static IPropertyMapper<ICheckBox, ICheckBoxHandler> Mapper =
         new PropertyMapper<ICheckBox, ICheckBoxHandler>(ViewHandler.ViewMapper)
-        {    
+        {
             [nameof(ICheckBox.Background)] = MapBackground,
             [nameof(ICheckBox.IsChecked)] = MapIsChecked,
             [nameof(ICheckBox.Foreground)] = MapForeground,
+            ["Color"] = MapColor, // Color is on CheckBox class, not ICheckBox interface
         };
 
     public static CommandMapper<ICheckBox, CheckBoxHandler> CommandMapper = new(ViewCommandMapper)
@@ -75,4 +76,7 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>, ICheckBoxHa
 
     public static void MapForeground(ICheckBoxHandler handler, ICheckBox checkBox) =>
         ((PlatformView)handler.PlatformView)?.UpdateForeground(checkBox);
+
+    public static void MapColor(ICheckBoxHandler handler, ICheckBox checkBox) =>
+        ((PlatformView)handler.PlatformView)?.UpdateColor(checkBox);
 }
