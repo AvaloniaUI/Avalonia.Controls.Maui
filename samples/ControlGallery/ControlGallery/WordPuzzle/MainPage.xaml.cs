@@ -170,7 +170,7 @@ public partial class MainPage : ContentPage
         squares[newRow, newCol] = animaSquare;
         animaSquare.Row = newRow;
         animaSquare.Col = newCol;
-        squares[row, col] = null;
+        squares[row, col] = null!;
         emptyRow = row;
         emptyCol = col;
     }

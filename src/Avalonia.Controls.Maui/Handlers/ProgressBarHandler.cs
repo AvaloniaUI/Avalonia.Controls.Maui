@@ -1,4 +1,5 @@
 using Avalonia.Media;
+using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using AvaloniaProgressBar = global::Avalonia.Controls.ProgressBar;
@@ -51,26 +52,17 @@ public class ProgressBarHandler : ViewHandler<Microsoft.Maui.IProgress, Avalonia
 
     public static void MapProgress(IProgressBarHandler handler, Microsoft.Maui.IProgress progress)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        var platformView = (AvaloniaProgressBar)handler.PlatformView;
-
-        // Clamp progress value between 0 and 1 as per IProgress contract
-        var clampedProgress = Math.Max(0, Math.Min(1, progress.Progress));
-        platformView.Value = clampedProgress;
+        if (handler.PlatformView is AvaloniaProgressBar platformView)
+        {
+            platformView.UpdateProgress(progress);
+        }
     }
 
     public static void MapProgressColor(IProgressBarHandler handler, Microsoft.Maui.IProgress progress)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        var platformView = (AvaloniaProgressBar)handler.PlatformView;
-
-        if (progress.ProgressColor != null)
+        if (handler.PlatformView is AvaloniaProgressBar platformView)
         {
-            platformView.Foreground = progress.ProgressColor.ToPlatform();
+            platformView.UpdateProgressColor(progress);
         }
     }
 }

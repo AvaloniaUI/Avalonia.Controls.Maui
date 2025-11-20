@@ -12,8 +12,8 @@ Uses an animation to show that the app is engaged in a lengthy activity, without
 
 | Property | Status |
 |----------|--------|
-| Color | ⏳ TODO |
-| IsRunning | ⏳ TODO |
+| Color | ✅ Implemented |
+| IsRunning | ✅ Implemented |
 
 ---
 
@@ -640,8 +640,8 @@ Uses an animation to show that the app is progressing through a lengthy activity
 
 | Property | Status |
 |----------|--------|
-| Progress | ⏳ TODO |
-| ProgressColor | ⏳ TODO |
+| Progress | ✅ Implemented |
+| ProgressColor | ✅ Implemented |
 
 ---
 
