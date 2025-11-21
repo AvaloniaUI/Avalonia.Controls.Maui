@@ -1,0 +1,225 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Avalonia.Controls.Maui">
+    
+    <SolidColorBrush x:Key="ProgressRingTrackBrush" Color="#20000000" />
+    <SolidColorBrush x:Key="ProgressRingTrackBrush:dark" Color="#20FFFFFF" />
+
+    <ControlTheme x:Key="{x:Type controls:ProgressRing}" TargetType="controls:ProgressRing">
+        <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+        <Setter Property="Background" Value="{DynamicResource ProgressRingTrackBrush}" />
+        <Setter Property="Width" Value="32" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <controls:ProgressRingVisual
+                    RingForeground="{TemplateBinding Foreground}"
+                    RingBackground="{TemplateBinding Background}"
+                    IsIndeterminate="{TemplateBinding IsIndeterminate}"
+                    Value="{TemplateBinding Value}"
+                    Minimum="{TemplateBinding Minimum}"
+                    Maximum="{TemplateBinding Maximum}"
+                    FlowDirection="{TemplateBinding FlowDirection}"
+                    StrokeThickness="4" />
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^:not(:active)">
+            <Setter Property="Opacity" Value="0" />
+        </Style>
+    </ControlTheme>
+
+    <!-- Custom themes inherit the theme-aware colors -->
+    <ControlTheme x:Key="ThreeDotsLoader" TargetType="controls:ProgressRing">
+        <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+        <Setter Property="Width" Value="60" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Canvas Width="60" Height="20">
+                    <Ellipse Name="Dot1" 
+                             Width="12" Height="12" 
+                             Fill="{TemplateBinding Foreground}" 
+                             Canvas.Left="4" Canvas.Top="4">
+                        <Ellipse.Styles>
+                            <Style Selector="Ellipse">
+                                <Style.Animations>
+                                    <Animation Duration="0:0:1.2" IterationCount="Infinite">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="Opacity" Value="0.3"/>
+                                            <Setter Property="(Canvas.Top)" Value="4"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="15%">
+                                            <Setter Property="Opacity" Value="1.0"/>
+                                            <Setter Property="(Canvas.Top)" Value="0"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="30%">
+                                            <Setter Property="Opacity" Value="0.3"/>
+                                            <Setter Property="(Canvas.Top)" Value="4"/>
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                            </Style>
+                        </Ellipse.Styles>
+                    </Ellipse>
+                    <Ellipse Name="Dot2" 
+                             Width="12" Height="12" 
+                             Fill="{TemplateBinding Foreground}" 
+                             Canvas.Left="24" Canvas.Top="4">
+                        <Ellipse.Styles>
+                            <Style Selector="Ellipse">
+                                <Style.Animations>
+                                    <Animation Duration="0:0:1.2" IterationCount="Infinite" Delay="0:0:0.15">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="Opacity" Value="0.3"/>
+                                            <Setter Property="(Canvas.Top)" Value="4"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="15%">
+                                            <Setter Property="Opacity" Value="1.0"/>
+                                            <Setter Property="(Canvas.Top)" Value="0"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="30%">
+                                            <Setter Property="Opacity" Value="0.3"/>
+                                            <Setter Property="(Canvas.Top)" Value="4"/>
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                            </Style>
+                        </Ellipse.Styles>
+                    </Ellipse>
+                    <Ellipse Name="Dot3" 
+                             Width="12" Height="12" 
+                             Fill="{TemplateBinding Foreground}" 
+                             Canvas.Left="44" Canvas.Top="4">
+                        <Ellipse.Styles>
+                            <Style Selector="Ellipse">
+                                <Style.Animations>
+                                    <Animation Duration="0:0:1.2" IterationCount="Infinite" Delay="0:0:0.3">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="Opacity" Value="0.3"/>
+                                            <Setter Property="(Canvas.Top)" Value="4"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="15%">
+                                            <Setter Property="Opacity" Value="1.0"/>
+                                            <Setter Property="(Canvas.Top)" Value="0"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="30%">
+                                            <Setter Property="Opacity" Value="0.3"/>
+                                            <Setter Property="(Canvas.Top)" Value="4"/>
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                            </Style>
+                        </Ellipse.Styles>
+                    </Ellipse>
+                </Canvas>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="SpinningSquares" TargetType="controls:ProgressRing">
+        <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+        <Setter Property="Width" Value="48" />
+        <Setter Property="Height" Value="48" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Canvas Width="48" Height="48">
+                    <Rectangle Width="16" Height="16" 
+                               Fill="{TemplateBinding Foreground}"
+                               Canvas.Left="16" Canvas.Top="0">
+                        <Rectangle.RenderTransform>
+                            <RotateTransform Angle="0" CenterX="8" CenterY="24" />
+                        </Rectangle.RenderTransform>
+                        <Rectangle.Styles>
+                            <Style Selector="Rectangle">
+                                <Style.Animations>
+                                    <Animation Duration="0:0:2" IterationCount="Infinite">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="RenderTransform">
+                                                <RotateTransform Angle="0" CenterX="8" CenterY="24" />
+                                            </Setter>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="100%">
+                                            <Setter Property="RenderTransform">
+                                                <RotateTransform Angle="360" CenterX="8" CenterY="24" />
+                                            </Setter>
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                            </Style>
+                        </Rectangle.Styles>
+                    </Rectangle>
+                    <Rectangle Width="12" Height="12" 
+                               Fill="{TemplateBinding Foreground}"
+                               Opacity="0.7"
+                               Canvas.Left="18" Canvas.Top="2">
+                        <Rectangle.RenderTransform>
+                            <RotateTransform Angle="0" CenterX="6" CenterY="22" />
+                        </Rectangle.RenderTransform>
+                        <Rectangle.Styles>
+                            <Style Selector="Rectangle">
+                                <Style.Animations>
+                                    <Animation Duration="0:0:2" IterationCount="Infinite" Delay="0:0:0.15">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="RenderTransform">
+                                                <RotateTransform Angle="0" CenterX="6" CenterY="22" />
+                                            </Setter>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="100%">
+                                            <Setter Property="RenderTransform">
+                                                <RotateTransform Angle="-360" CenterX="6" CenterY="22" />
+                                            </Setter>
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                            </Style>
+                        </Rectangle.Styles>
+                    </Rectangle>
+                </Canvas>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+    <ControlTheme x:Key="PulsingRing" TargetType="controls:ProgressRing">
+        <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+        <Setter Property="Width" Value="40" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Ellipse Width="40" Height="40" 
+                             Stroke="{TemplateBinding Foreground}"
+                             StrokeThickness="3"
+                             Opacity="0.3">
+                        <Ellipse.Styles>
+                            <Style Selector="Ellipse">
+                                <Style.Animations>
+                                    <Animation Duration="0:0:1.5" IterationCount="Infinite">
+                                        <KeyFrame Cue="0%">
+                                            <Setter Property="Opacity" Value="0.3"/>
+                                            <Setter Property="Width" Value="40"/>
+                                            <Setter Property="Height" Value="40"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="50%">
+                                            <Setter Property="Opacity" Value="1.0"/>
+                                            <Setter Property="Width" Value="48"/>
+                                            <Setter Property="Height" Value="48"/>
+                                        </KeyFrame>
+                                        <KeyFrame Cue="100%">
+                                            <Setter Property="Opacity" Value="0.3"/>
+                                            <Setter Property="Width" Value="40"/>
+                                            <Setter Property="Height" Value="40"/>
+                                        </KeyFrame>
+                                    </Animation>
+                                </Style.Animations>
+                            </Style>
+                        </Ellipse.Styles>
+                    </Ellipse>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

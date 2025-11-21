@@ -10,6 +10,7 @@ internal sealed partial class Program
     private static Task Main(string[] args) => BuildAvaloniaApp()
             .WithInterFont()
             .WithMauiFonts()
+            .WithControls()
             .StartBrowserAppAsync("out");
 
     public static AppBuilder BuildAvaloniaApp()

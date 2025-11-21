@@ -1,11 +1,11 @@
-using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
-using PlatformView = Avalonia.Controls.Maui.Platform.MauiActivityIndicator;
+using PlatformView = Avalonia.Controls.Maui.ProgressRing;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, MauiActivityIndicator>, IActivityIndicatorHandler
+public partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, ProgressRing>, IActivityIndicatorHandler
 {
     public static IPropertyMapper<IActivityIndicator, IActivityIndicatorHandler> Mapper = new PropertyMapper<IActivityIndicator, IActivityIndicatorHandler>(ViewHandler.ViewMapper)
     {
@@ -33,27 +33,27 @@ public partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, 
 
     object IActivityIndicatorHandler.PlatformView => PlatformView;
 
-    protected override MauiActivityIndicator CreatePlatformView()
+    protected override ProgressRing CreatePlatformView()
     {
-        return new MauiActivityIndicator();
+        return new ProgressRing
+        {
+            IsIndeterminate = true
+        };
     }
 
     public static void MapIsRunning(IActivityIndicatorHandler handler, IActivityIndicator activityIndicator)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        ((PlatformView)handler.PlatformView).IsRunning = activityIndicator.IsRunning;
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateIsRunning(activityIndicator);
+        }
     }
 
     public static void MapColor(IActivityIndicatorHandler handler, IActivityIndicator activityIndicator)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (activityIndicator.Color != null)
+        if (handler.PlatformView is PlatformView platformView)
         {
-            ((PlatformView)handler.PlatformView).Color = activityIndicator.Color.ToPlatform();
+            platformView.UpdateColor(activityIndicator);
         }
     }
 }
