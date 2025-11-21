@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.StepperPage"
+             x:DataType="pages:StepperPage"
+             Title="Stepper">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="Stepper Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <Label Text="The Stepper control enables users to increment or decrement a numeric value using plus and minus buttons."
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,0,0,10"/>
+
+            <!-- Basic Stepper Example -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Stepper"
+                           FontAttributes="Bold"/>
+                    <Label Text="Default stepper with range 0-10, increment 1"
+                           FontSize="12"
+                           TextColor="Gray"/>
+                    <Stepper x:Name="BasicStepper"
+                             Value="{Binding BasicValue}"
+                             Minimum="0"
+                             Maximum="10"
+                             Increment="1"
+                             BackgroundColor="LightGray"
+                             HorizontalOptions="Center"/>
+                    <Label Text="{Binding BasicValue, StringFormat='Value: {0}'}"
+                           HorizontalOptions="Center"
+                           FontSize="18"
+                           FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Custom Increment Example -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Custom Increment"
+                           FontAttributes="Bold"/>
+                    <Label Text="Increment by 5, range 0-100"
+                           FontSize="12"
+                           TextColor="Gray"/>
+                    <Stepper x:Name="CustomIncrementStepper"
+                             Value="{Binding CustomIncrementValue}"
+                             Minimum="0"
+                             Maximum="100"
+                             Increment="5"
+                             HorizontalOptions="Center"/>
+                    <Label Text="{Binding CustomIncrementValue, StringFormat='Value: {0}'}"
+                           HorizontalOptions="Center"
+                           FontSize="18"
+                           FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Decimal Stepper Example -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Decimal Stepper"
+                           FontAttributes="Bold"/>
+                    <Label Text="Increment by 0.1, range 0-5"
+                           FontSize="12"
+                           TextColor="Gray"/>
+                    <Stepper x:Name="DecimalStepper"
+                             Value="{Binding DecimalValue}"
+                             Minimum="0"
+                             Maximum="5"
+                             Increment="0.1"
+                             HorizontalOptions="Center"/>
+                    <Label Text="{Binding DecimalValue, StringFormat='Value: {0:F1}'}"
+                           HorizontalOptions="Center"
+                           FontSize="18"
+                           FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Temperature Control Example -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Temperature Control"
+                           FontAttributes="Bold"/>
+                    <Label Text="Thermostat-style control (15-30°C)"
+                           FontSize="12"
+                           TextColor="Gray"/>
+                    <Stepper x:Name="TemperatureStepper"
+                             Value="{Binding Temperature}"
+                             Minimum="15"
+                             Maximum="30"
+                             Increment="0.5"
+                             HorizontalOptions="Center"/>
+                    <Label Text="{Binding Temperature, StringFormat='{0:F1}°C'}"
+                           HorizontalOptions="Center"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{Binding TemperatureColor}"/>
+                    <Label Text="{Binding TemperatureDescription}"
+                           HorizontalOptions="Center"
+                           TextColor="Gray"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Volume Control Example -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Volume Control"
+                           FontAttributes="Bold"/>
+                    <Label Text="Volume level (0-100)"
+                           FontSize="12"
+                           TextColor="Gray"/>
+                    <Stepper x:Name="VolumeStepper"
+                             Value="{Binding Volume}"
+                             Minimum="0"
+                             Maximum="100"
+                             Increment="10"
+                             HorizontalOptions="Center"/>
+                    <Label Text="{Binding VolumeDisplay}"
+                           HorizontalOptions="Center"
+                           FontSize="18"
+                           FontAttributes="Bold"/>
+                    <ProgressBar Progress="{Binding VolumeProgress}"
+                                 ProgressColor="DarkGreen"
+                                 HeightRequest="10"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Styled Stepper Example -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Styled Stepper"
+                           FontAttributes="Bold"/>
+                    <Label Text="Custom background color"
+                           FontSize="12"
+                           TextColor="Gray"/>
+                    <Stepper x:Name="StyledStepper"
+                             Value="{Binding StyledValue}"
+                             Minimum="0"
+                             Maximum="50"
+                             Increment="1"
+                             BackgroundColor="Green"
+                             HorizontalOptions="Center"/>
+                    <Label Text="{Binding StyledValue, StringFormat='Value: {0}'}"
+                           HorizontalOptions="Center"
+                           FontSize="18"
+                           FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Quantity Selector Example -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Quantity Selector"
+                           FontAttributes="Bold"/>
+                    <Label Text="Shopping cart item quantity (1-99)"
+                           FontSize="12"
+                           TextColor="Gray"/>
+                    <HorizontalStackLayout Spacing="15"
+                                          HorizontalOptions="Center">
+                        <Label Text="Quantity:"
+                               VerticalOptions="Center"
+                               FontSize="16"/>
+                        <Stepper x:Name="QuantityStepper"
+                                 Value="{Binding Quantity}"
+                                 Minimum="1"
+                                 Maximum="99"
+                                 Increment="1"
+                                 VerticalOptions="Center"/>
+                        <Label Text="{Binding Quantity, StringFormat='{0}'}"
+                               VerticalOptions="Center"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               WidthRequest="40"
+                               HorizontalTextAlignment="Center"/>
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding TotalPrice, StringFormat='Total: ${0:F2}'}"
+                           HorizontalOptions="Center"
+                           FontSize="16"
+                           TextColor="Green"
+                           FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Interactive Controls -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive Controls"
+                           FontAttributes="Bold"/>
+                    <Label Text="Control the basic stepper value with buttons"
+                           FontSize="12"
+                           TextColor="Gray"/>
+                    <HorizontalStackLayout Spacing="10"
+                                          HorizontalOptions="Center">
+                        <Button Text="Reset"
+                                Command="{Binding ResetCommand}"
+                                BackgroundColor="Red"
+                                TextColor="White"/>
+                        <Button Text="Min"
+                                Command="{Binding SetMinCommand}"
+                                BackgroundColor="Gray"
+                                TextColor="White"/>
+                        <Button Text="Mid"
+                                Command="{Binding SetMidCommand}"
+                                BackgroundColor="Blue"
+                                TextColor="White"/>
+                        <Button Text="Max"
+                                Command="{Binding SetMaxCommand}"
+                                BackgroundColor="Green"
+                                TextColor="White"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Property Information -->
+            <Border Stroke="DarkGray"
+                    Padding="15"
+                    BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2B2B2B}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Stepper Properties"
+                           FontAttributes="Bold"
+                           FontSize="16"/>
+                    <Label FontSize="12">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="• Minimum: " FontAttributes="Bold"/>
+                                <Span Text="The minimum value (default: 0)"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label FontSize="12">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="• Maximum: " FontAttributes="Bold"/>
+                                <Span Text="The maximum value (default: 100)"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label FontSize="12">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="• Increment: " FontAttributes="Bold"/>
+                                <Span Text="The amount to change per step (default: 1)"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label FontSize="12">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="• Value: " FontAttributes="Bold"/>
+                                <Span Text="The current value"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

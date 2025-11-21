@@ -5,7 +5,7 @@ using Avalonia.Interactivity;
 
 namespace Avalonia.Controls.Maui;
 
-internal class Stepper : TemplatedControl
+public class Stepper : TemplatedControl
 {
     private Button? _plusButton;
     private Button? _minusButton;

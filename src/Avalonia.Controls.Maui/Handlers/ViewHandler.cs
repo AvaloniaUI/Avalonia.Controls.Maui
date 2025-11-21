@@ -886,6 +886,17 @@ public static class ControlExtensions
                 panel.ClearValue(global::Avalonia.Controls.Panel.BackgroundProperty);
             }
         }
+        else if (control is global::Avalonia.Controls.Primitives.TemplatedControl templatedControl)
+        {
+            if (view.Background != null)
+            {
+                templatedControl.Background = view.Background.ToPlatform();
+            }
+            else
+            {
+                templatedControl.ClearValue(global::Avalonia.Controls.Primitives.TemplatedControl.BackgroundProperty);
+            }
+        }
     }
 
     public static Task UpdateBackgroundImageSourceAsync(this PlatformView control, IImageSource? imageSource, IImageSourceServiceProvider provider)

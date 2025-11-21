@@ -47,6 +47,7 @@ public static class AvaloniaAppBuilderExtensions
                 var themeUris = new[]
                 {
                     "avares://Avalonia.Controls.Maui/Controls/ProgressRing/ProgressRing.axaml",
+                    "avares://Avalonia.Controls.Maui/Controls/Stepper/Stepper.axaml",
                 };
 
                 foreach (var uriString in themeUris)
