@@ -15,7 +15,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI CarouselView to Avalonia Carousel mapping
 /// </summary>
-public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.CarouselView, PlatformView>
+internal partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.CarouselView, PlatformView>
 {
     public static IPropertyMapper<Microsoft.Maui.Controls.CarouselView, CarouselViewHandler> Mapper =
         new PropertyMapper<Microsoft.Maui.Controls.CarouselView, CarouselViewHandler>(ViewHandler.ViewMapper)

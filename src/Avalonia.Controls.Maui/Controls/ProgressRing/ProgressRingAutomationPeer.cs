@@ -5,7 +5,7 @@ namespace Avalonia.Controls.Maui
     /// <summary>
     /// Automation peer for ProgressRing to support screen readers and assistive technologies.
     /// </summary>
-    public class ProgressRingAutomationPeer : RangeBaseAutomationPeer
+    internal class ProgressRingAutomationPeer : RangeBaseAutomationPeer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgressRingAutomationPeer"/> class.

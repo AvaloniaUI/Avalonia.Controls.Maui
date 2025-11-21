@@ -12,7 +12,7 @@ namespace Avalonia.Controls.Maui.Controls;
 /// HACK: This is a simplified implementation of MAUI's SwipeView for Avalonia.
 /// It's here as a placeholder. It doesn't "work" fully, but provides basic structure.
 /// </summary>
-public class MauiSwipeView : TemplatedControl
+internal class MauiSwipeView : TemplatedControl
 {
     private ContentPresenter? _contentPresenter;
     private Panel? _swipeContainer;
@@ -219,7 +219,7 @@ public class MauiSwipeView : TemplatedControl
     }
 }
 
-public class SwipeEventArgs : EventArgs
+internal class SwipeEventArgs : EventArgs
 {
     public Point Position { get; }
 
@@ -229,7 +229,7 @@ public class SwipeEventArgs : EventArgs
     }
 }
 
-public enum SwipeDirection
+internal enum SwipeDirection
 {
     Left,
     Right,

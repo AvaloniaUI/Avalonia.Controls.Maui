@@ -11,7 +11,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// Handler for MAUI NavigationPage that uses Avalonia's TransitioningContentControl
 /// to provide animated page navigation.
 /// </summary>
-public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, NavigationView>, INavigationViewHandler
+internal partial class NavigationViewHandler : ViewHandler<IStackNavigationView, NavigationView>, INavigationViewHandler
 {
     private StackNavigationManager? _navigationManager;
     private ILogger<NavigationViewHandler>? _logger;
@@ -128,7 +128,7 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, N
 /// <summary>
 /// Interface for navigation view handlers.
 /// </summary>
-public partial interface INavigationViewHandler : IViewHandler
+internal partial interface INavigationViewHandler : IViewHandler
 {
     new IStackNavigationView VirtualView { get; }
     new NavigationView PlatformView { get; }

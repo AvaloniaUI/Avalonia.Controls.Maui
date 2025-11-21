@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public abstract class MauiView : Panel, ICrossPlatformLayoutBacking, IVisualTreeElementProvidable
+internal abstract class MauiView : Panel, ICrossPlatformLayoutBacking, IVisualTreeElementProvidable
 {
     bool _invalidateParentWhenMovedToWindow;
     double _lastMeasureHeight = double.NaN;

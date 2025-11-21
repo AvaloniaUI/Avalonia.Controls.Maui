@@ -12,7 +12,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI FlyoutView to Avalonia SplitView mapping
 /// </summary>
-public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>, IFlyoutViewHandler
+internal partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>, IFlyoutViewHandler
 {
     // Like IViewHandler.ContainerView, those properties should be set with priority because other mappers depend on them.
     private static readonly IPropertyMapper<IFlyoutView, IFlyoutViewHandler> FlyoutLayoutMapper = new PropertyMapper<IFlyoutView, IFlyoutViewHandler>()

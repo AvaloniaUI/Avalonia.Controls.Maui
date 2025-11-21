@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public class MauiAvaloniaWindow : Window, IDisposable
+internal class MauiAvaloniaWindow : Window, IDisposable
 {
     private readonly Stack<Window> _modalWindows = new Stack<Window>();
 

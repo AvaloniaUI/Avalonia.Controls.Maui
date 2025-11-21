@@ -6,6 +6,6 @@ using MauiRect = Microsoft.Maui.Graphics.Rect;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public class ContentView : MauiView
+internal class ContentView : MauiView
 {
 }

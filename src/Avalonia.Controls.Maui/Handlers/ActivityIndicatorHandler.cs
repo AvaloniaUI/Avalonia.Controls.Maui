@@ -5,7 +5,7 @@ using PlatformView = Avalonia.Controls.Maui.ProgressRing;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, ProgressRing>, IActivityIndicatorHandler
+internal partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, ProgressRing>, IActivityIndicatorHandler
 {
     public static IPropertyMapper<IActivityIndicator, IActivityIndicatorHandler> Mapper = new PropertyMapper<IActivityIndicator, IActivityIndicatorHandler>(ViewHandler.ViewMapper)
     {

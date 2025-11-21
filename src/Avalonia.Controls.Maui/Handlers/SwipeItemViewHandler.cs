@@ -9,7 +9,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI SwipeItemView to Avalonia ContentControl mapping
 /// </summary>
-public partial class SwipeItemViewHandler : ContentViewHandler, ISwipeItemViewHandler
+internal partial class SwipeItemViewHandler : ContentViewHandler, ISwipeItemViewHandler
 {
     public static new IPropertyMapper<ISwipeItemView, ISwipeItemViewHandler> Mapper =
         new PropertyMapper<ISwipeItemView, ISwipeItemViewHandler>(ContentViewHandler.Mapper)

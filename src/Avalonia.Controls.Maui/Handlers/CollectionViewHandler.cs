@@ -13,7 +13,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI CollectionView to Avalonia MauiCollectionView mapping
 /// </summary>
-public class CollectionViewHandler : ViewHandler<Microsoft.Maui.Controls.CollectionView, MauiCollectionView>
+internal class CollectionViewHandler : ViewHandler<Microsoft.Maui.Controls.CollectionView, MauiCollectionView>
 {
     public static IPropertyMapper<Microsoft.Maui.Controls.ItemsView, CollectionViewHandler> Mapper =
         new PropertyMapper<Microsoft.Maui.Controls.ItemsView, CollectionViewHandler>(ViewHandler.ViewMapper)

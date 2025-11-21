@@ -6,7 +6,7 @@ using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public class NavigationView : DockPanel
+internal class NavigationView : DockPanel
 {
     private readonly TransitioningContentControl _contentControl;
     private readonly ContentControl _titleViewContainer;

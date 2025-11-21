@@ -7,7 +7,7 @@ using Avalonia.Media;
 
 namespace Avalonia.Controls.Maui.Controls;
 
-public class MauiSearchBar : TemplatedControl
+internal class MauiSearchBar : TemplatedControl
 {
     internal TextBox? _textBox;
     private Button? _clearButton;

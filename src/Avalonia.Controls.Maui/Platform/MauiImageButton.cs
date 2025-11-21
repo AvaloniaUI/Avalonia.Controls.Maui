@@ -4,7 +4,7 @@ using Avalonia.Media;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public class MauiImageButton : Button
+internal class MauiImageButton : Button
 {
     private Image? _image;
 

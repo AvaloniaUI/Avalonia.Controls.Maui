@@ -11,7 +11,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// <summary>
 /// Custom flyout container that manages flyout/detail layout without using SplitView
 /// </summary>
-public class FlyoutContainer : Panel
+internal class FlyoutContainer : Panel
 {
     private Control? _flyoutContent;
     private Control? _detailContent;
@@ -517,7 +517,7 @@ public class FlyoutContainer : Panel
 /// <summary>
 /// Flyout behavior that matches MAUI's FlyoutLayoutBehavior enum values
 /// </summary>
-public enum FlyoutBehavior
+internal enum FlyoutBehavior
 {
     /// <summary>
     /// Platform default behavior

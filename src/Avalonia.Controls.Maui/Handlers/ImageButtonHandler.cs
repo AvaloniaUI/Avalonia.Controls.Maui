@@ -7,7 +7,7 @@ using PlatformView = Avalonia.Controls.Maui.Platform.MauiImageButton;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class ImageButtonHandler : ViewHandler<IImageButton, MauiImageButton>, IImageButtonHandler
+internal class ImageButtonHandler : ViewHandler<IImageButton, MauiImageButton>, IImageButtonHandler
 {
     public static IPropertyMapper<IImage, IImageHandler> ImageMapper = new PropertyMapper<IImage, IImageHandler>(ImageHandler.Mapper);
 

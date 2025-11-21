@@ -11,7 +11,7 @@ namespace Avalonia.Controls.Maui;
 /// Supports both determinate and indeterminate modes.
 /// </summary>
 [PseudoClasses(":active", ":indeterminate", ":determinate")]
-public class ProgressRing : RangeBase
+internal class ProgressRing : RangeBase
 {
     static ProgressRing()
     {

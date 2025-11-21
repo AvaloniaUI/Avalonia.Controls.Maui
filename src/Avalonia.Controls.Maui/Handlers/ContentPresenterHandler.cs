@@ -9,7 +9,7 @@ using PlatformView = System.Object;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class ContentPresenterHandler : ViewHandler<IContentView, Avalonia.Controls.Maui.Platform.MauiContentPresenter>, IContentViewHandler
+internal partial class ContentPresenterHandler : ViewHandler<IContentView, Avalonia.Controls.Maui.Platform.MauiContentPresenter>, IContentViewHandler
 {
     public static IPropertyMapper<IContentView, IContentViewHandler> Mapper =
         new PropertyMapper<IContentView, IContentViewHandler>(ViewMapper)

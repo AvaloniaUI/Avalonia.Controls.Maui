@@ -7,7 +7,7 @@ using Avalonia.Media;
 
 namespace Avalonia.Controls.Maui.Controls;
 
-public class MauiIndicatorView : TemplatedControl
+internal class MauiIndicatorView : TemplatedControl
 {
     private StackPanel? _indicatorPanel;
 

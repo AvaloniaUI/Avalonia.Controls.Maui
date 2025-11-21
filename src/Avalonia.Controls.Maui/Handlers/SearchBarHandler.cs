@@ -14,7 +14,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI SearchBar to Avalonia MauiSearchBar mapping
 /// </summary>
-public partial class SearchBarHandler : ViewHandler<ISearchBar, PlatformView>, ISearchBarHandler
+internal partial class SearchBarHandler : ViewHandler<ISearchBar, PlatformView>, ISearchBarHandler
 {
     public static IPropertyMapper<ISearchBar, ISearchBarHandler> Mapper =
         new PropertyMapper<ISearchBar, ISearchBarHandler>(ViewHandler.ViewMapper)

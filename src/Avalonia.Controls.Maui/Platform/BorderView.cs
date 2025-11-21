@@ -4,7 +4,7 @@ using MauiGraphics = Microsoft.Maui.Graphics;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public class BorderView : Decorator
+internal class BorderView : Decorator
 {
     /// <summary>
     /// Defines the <see cref="Background"/> property.

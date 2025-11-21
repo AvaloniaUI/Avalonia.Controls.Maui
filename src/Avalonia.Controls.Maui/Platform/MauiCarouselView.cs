@@ -16,7 +16,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// <summary>
 /// Custom Avalonia control for MAUI CarouselView with swipe gesture support
 /// </summary>
-public class MauiCarouselView : ContentControl
+internal class MauiCarouselView : ContentControl
 {
     private Canvas? _containerCanvas;
     private ContentControl? _currentItemContainer;

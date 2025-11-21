@@ -9,7 +9,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// <summary>
 /// Platform touch graphics view that handles pointer interactions for GraphicsView
 /// </summary>
-public class PlatformTouchGraphicsView : UserControl
+internal class PlatformTouchGraphicsView : UserControl
 {
     private IGraphicsView? _graphicsView;
     private readonly PlatformGraphicsView _platformGraphicsView;

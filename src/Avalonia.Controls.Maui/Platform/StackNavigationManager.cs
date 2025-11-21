@@ -10,7 +10,7 @@ using Microsoft.Maui.Platform;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public class StackNavigationManager
+internal class StackNavigationManager
 {
     private readonly IMauiContext _mauiContext;
     private IView? _currentPage;

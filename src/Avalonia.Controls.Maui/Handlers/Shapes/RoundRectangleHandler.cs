@@ -7,7 +7,7 @@ using PlatformView = Avalonia.Controls.Maui.Platform.MauiRoundRectangle;
 
 namespace Avalonia.Controls.Maui.Handlers.Shapes;
 
-public partial class RoundRectangleHandler : ShapeViewHandler<RoundRectangle, PlatformView>
+internal partial class RoundRectangleHandler : ShapeViewHandler<RoundRectangle, PlatformView>
 {
     public static new IPropertyMapper<RoundRectangle, IShapeViewHandler> Mapper = new PropertyMapper<RoundRectangle, IShapeViewHandler>(ShapeViewHandler.Mapper)
     {

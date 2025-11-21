@@ -12,7 +12,7 @@ public static class ActivityIndicatorExtensions
     /// </summary>
     /// <param name="control">The ProgressRing control to update.</param>
     /// <param name="activityIndicator">The .NET MAUI ActivityIndicator providing the state.</param>
-    public static void UpdateIsRunning(this ProgressRing control, IActivityIndicator activityIndicator)
+    internal static void UpdateIsRunning(this ProgressRing control, IActivityIndicator activityIndicator)
     {
         control.IsActive = activityIndicator.IsRunning;
     }
@@ -22,7 +22,7 @@ public static class ActivityIndicatorExtensions
     /// </summary>
     /// <param name="control">The ProgressRing control to update.</param>
     /// <param name="activityIndicator">The .NET MAUI ActivityIndicator providing the color.</param>
-    public static void UpdateColor(this ProgressRing control, IActivityIndicator activityIndicator)
+    internal static void UpdateColor(this ProgressRing control, IActivityIndicator activityIndicator)
     {
         if (activityIndicator.Color != null)
         {

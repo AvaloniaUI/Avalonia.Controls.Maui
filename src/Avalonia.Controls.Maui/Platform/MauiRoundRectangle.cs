@@ -5,7 +5,7 @@ using global::Avalonia.Media;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public class MauiRoundRectangle : Shape
+internal class MauiRoundRectangle : Shape
 {
     public static readonly StyledProperty<CornerRadius> CornerRadiusProperty =
         AvaloniaProperty.Register<MauiRoundRectangle, CornerRadius>(nameof(CornerRadius));

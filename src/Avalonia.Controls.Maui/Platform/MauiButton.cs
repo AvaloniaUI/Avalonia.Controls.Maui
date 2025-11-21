@@ -8,7 +8,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// <summary>
 /// Custom Avalonia Button with Image and Text support for MAUI's Button
 /// </summary>
-public class MauiButton : Button
+internal class MauiButton : Button
 {
     private StackPanel? _contentPanel;
     private TextBlock? _textBlock;

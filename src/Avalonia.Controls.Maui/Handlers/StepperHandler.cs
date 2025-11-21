@@ -5,7 +5,7 @@ using PlatformView = Avalonia.Controls.Maui.Controls.MauiStepper;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStepperHandler
+internal partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStepperHandler
 {
     public static IPropertyMapper<IStepper, IStepperHandler> Mapper = new PropertyMapper<IStepper, IStepperHandler>(ViewHandler.ViewMapper)
     {

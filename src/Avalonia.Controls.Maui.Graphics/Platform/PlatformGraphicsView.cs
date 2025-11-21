@@ -14,7 +14,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// <summary>
 /// Platform graphics view that integrates Microsoft.Maui.Graphics IDrawable with Avalonia rendering
 /// </summary>
-public class PlatformGraphicsView : Control
+internal class PlatformGraphicsView : Control
 {
     private IGraphicsView? _graphicsView;
     private IDrawable? _drawable;

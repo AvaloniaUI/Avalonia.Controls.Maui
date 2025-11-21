@@ -6,7 +6,7 @@ using MauiRect = Microsoft.Maui.Graphics.Rect;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public class LayoutPanel : Panel
+internal class LayoutPanel : Panel
 {
     internal Func<double, double, MauiSize>? CrossPlatformMeasure { get; set; }
     internal Func<MauiRect, MauiSize>? CrossPlatformArrange { get; set; }

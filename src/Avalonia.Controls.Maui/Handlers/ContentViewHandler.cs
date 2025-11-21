@@ -11,7 +11,7 @@ using PlatformView = System.Object;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Controls.Maui.Platform.ContentView>, IContentViewHandler
+internal partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Controls.Maui.Platform.ContentView>, IContentViewHandler
 {
     public static IPropertyMapper<IContentView, IContentViewHandler> Mapper =
         new PropertyMapper<IContentView, IContentViewHandler>(ViewMapper)

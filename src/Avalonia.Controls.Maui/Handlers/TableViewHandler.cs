@@ -9,7 +9,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI TableView to Avalonia MauiTableView mapping
 /// </summary>
-public class TableViewHandler : ViewHandler<Microsoft.Maui.Controls.TableView, MauiTableView>
+internal class TableViewHandler : ViewHandler<Microsoft.Maui.Controls.TableView, MauiTableView>
 {
     public static IPropertyMapper<Microsoft.Maui.Controls.TableView, TableViewHandler> Mapper =
         new PropertyMapper<Microsoft.Maui.Controls.TableView, TableViewHandler>(ViewHandler.ViewMapper)

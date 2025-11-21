@@ -11,7 +11,7 @@ using PlatformView = Avalonia.Controls.Maui.Platform.MauiButton;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class ButtonHandler : ViewHandler<IButton, MauiButton>, IButtonHandler
+internal class ButtonHandler : ViewHandler<IButton, MauiButton>, IButtonHandler
 {
     public static IPropertyMapper<ITextButton, IButtonHandler> TextButtonMapper = new PropertyMapper<ITextButton, IButtonHandler>()
     {

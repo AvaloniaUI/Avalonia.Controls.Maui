@@ -4,7 +4,7 @@ using AvaloniaPanel = Avalonia.Controls.Panel;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class PageHandler : ContentViewHandler, IPageHandler
+internal partial class PageHandler : ContentViewHandler, IPageHandler
 {
     public static new IPropertyMapper<IContentView, IPageHandler> Mapper =
         new PropertyMapper<IContentView, IPageHandler>(ContentViewHandler.Mapper)

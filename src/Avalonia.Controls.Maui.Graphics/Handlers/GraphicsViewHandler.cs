@@ -5,7 +5,7 @@ using PlatformView = System.Object;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class GraphicsViewHandler : ViewHandler<IGraphicsView, PlatformTouchGraphicsView>, IGraphicsViewHandler
+internal partial class GraphicsViewHandler : ViewHandler<IGraphicsView, PlatformTouchGraphicsView>, IGraphicsViewHandler
 {
     public static IPropertyMapper<IGraphicsView, IGraphicsViewHandler> Mapper = new PropertyMapper<IGraphicsView, IGraphicsViewHandler>(ViewMapper)
     {

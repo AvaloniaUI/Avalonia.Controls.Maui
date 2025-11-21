@@ -6,6 +6,6 @@ namespace Avalonia.Controls.Maui.Platform;
 /// Custom Avalonia ContentPresenter for MAUI's ContentPresenter
 /// This control is used to display content within control templates
 /// </summary>
-public class MauiContentPresenter : MauiView
+internal class MauiContentPresenter : MauiView
 {
 }

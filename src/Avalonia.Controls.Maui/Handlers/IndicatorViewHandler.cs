@@ -9,7 +9,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI IndicatorView to Avalonia MauiIndicatorView mapping
 /// </summary>
-public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, PlatformView>, IIndicatorViewHandler
+internal partial class IndicatorViewHandler : ViewHandler<IIndicatorView, PlatformView>, IIndicatorViewHandler
 {
     public static IPropertyMapper<IIndicatorView, IIndicatorViewHandler> Mapper =
         new PropertyMapper<IIndicatorView, IIndicatorViewHandler>(ViewHandler.ViewMapper)

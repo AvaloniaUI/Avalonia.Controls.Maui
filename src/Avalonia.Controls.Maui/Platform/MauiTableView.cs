@@ -15,7 +15,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// <summary>
 /// Avalonia platform control for MAUI TableView
 /// </summary>
-public class MauiTableView : MauiView
+internal class MauiTableView : MauiView
 {
     private readonly ItemsControl _itemsControl;
     private readonly ScrollViewer _scrollViewer;

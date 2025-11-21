@@ -10,7 +10,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI Border control using custom Avalonia BorderView.
 /// </summary>
-public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHandler
+internal class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHandler
 {
     public static IPropertyMapper<IBorderView, IBorderHandler> Mapper =
         new PropertyMapper<IBorderView, IBorderHandler>(ViewMapper)

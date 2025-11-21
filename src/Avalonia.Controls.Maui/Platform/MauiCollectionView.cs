@@ -10,7 +10,7 @@ using System.Collections.Specialized;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public class MauiCollectionView : TemplatedControl
+internal class MauiCollectionView : TemplatedControl
 {
     private ItemsControl? _itemsControl;
     private ScrollViewer? _scrollViewer;

@@ -11,7 +11,7 @@ namespace Avalonia.Controls.Maui;
 /// Visual component for rendering the <see cref="ProgressRing"/> animation.
 /// This is a template part that can be replaced for custom visualizations.
 /// </summary>
-public class ProgressRingVisual : Control
+internal class ProgressRingVisual : Control
 {
     private Stopwatch? _animationStopwatch;
     private DispatcherTimer? _animationTimer;

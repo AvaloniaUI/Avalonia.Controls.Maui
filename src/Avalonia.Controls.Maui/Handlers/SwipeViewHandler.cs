@@ -11,7 +11,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI SwipeView to Avalonia MauiSwipeView mapping
 /// </summary>
-public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, ISwipeViewHandler
+internal partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, ISwipeViewHandler
 {
     public static IPropertyMapper<ISwipeView, ISwipeViewHandler> Mapper =
         new PropertyMapper<ISwipeView, ISwipeViewHandler>(ViewHandler.ViewMapper)
