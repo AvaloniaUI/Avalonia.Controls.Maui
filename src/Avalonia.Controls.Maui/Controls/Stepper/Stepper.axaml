@@ -1,8 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:Avalonia.Controls.Maui.Controls">
+        xmlns:controls="using:Avalonia.Controls.Maui">
 
-    <Style Selector="controls|MauiStepper">
+    <Style Selector="controls|Stepper">
         <Setter Property="Template">
             <ControlTemplate>
                 <Border Background="{TemplateBinding Background}"

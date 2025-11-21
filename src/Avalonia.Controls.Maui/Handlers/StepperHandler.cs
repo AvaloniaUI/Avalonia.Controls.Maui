@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
-using PlatformView = Avalonia.Controls.Maui.Controls.MauiStepper;
+using PlatformView = Avalonia.Controls.Control;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -42,12 +42,18 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
     protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
-        platformView.ValueChanged += OnValueChanged;
+        if (platformView is Stepper stepper)
+        {
+            stepper.ValueChanged += OnValueChanged;
+        }
     }
 
     protected override void DisconnectHandler(PlatformView platformView)
     {
-        platformView.ValueChanged -= OnValueChanged;
+        if (platformView is Stepper stepper)
+        {
+            stepper.ValueChanged -= OnValueChanged;
+        }
         base.DisconnectHandler(platformView);
     }
 
@@ -56,12 +62,15 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
         if (VirtualView == null || PlatformView == null)
             return;
 
-        VirtualView.Value = PlatformView.Value;
+        if (PlatformView is Stepper stepper)
+        {
+            VirtualView.Value = stepper.Value;
+        }
     }
 
     public static void MapMinimum(IStepperHandler handler, IStepper stepper)
     {
-        if (handler.PlatformView is PlatformView platformView)
+        if (handler.PlatformView is Stepper platformView)
         {
             platformView.Minimum = stepper.Minimum;
         }
@@ -69,7 +78,7 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
 
     public static void MapMaximum(IStepperHandler handler, IStepper stepper)
     {
-        if (handler.PlatformView is PlatformView platformView)
+        if (handler.PlatformView is Stepper platformView)
         {
             platformView.Maximum = stepper.Maximum;
         }
@@ -77,7 +86,7 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
 
     public static void MapIncrement(IStepperHandler handler, IStepper stepper)
     {
-        if (handler.PlatformView is PlatformView platformView)
+        if (handler.PlatformView is Stepper platformView)
         {
             platformView.Increment = stepper.Interval;
         }
@@ -85,7 +94,7 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
 
     public static void MapValue(IStepperHandler handler, IStepper stepper)
     {
-        if (handler.PlatformView is PlatformView platformView)
+        if (handler.PlatformView is Stepper platformView)
         {
             platformView.Value = stepper.Value;
         }
