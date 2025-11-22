@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+		     xmlns:shimmer="http://schemas.syncfusion.com/maui/toolkit"
+			 x:Class="ControlGallery.Pages.FontsPage"
+             Title="Font Test">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+            <Label Text="Font Integration Test"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,20"/>
+
+            <!-- Test OpenSansRegular alias -->
+            <Label Text="OpenSansRegular (alias)"
+                   FontFamily="OpenSansRegular"
+                   FontSize="18"/>
+
+            <!-- Test OpenSansSemibold alias -->
+            <Label Text="OpenSansSemibold (alias)"
+                   FontFamily="OpenSansSemibold"
+                   FontSize="18"/>
+
+            <!-- Test BgpBanner alias -->
+            <Label Text="BgpBanner (alias)"
+                   FontFamily="BgpBanner"
+                   FontSize="18"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
