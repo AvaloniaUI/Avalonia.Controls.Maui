@@ -15,25 +15,6 @@ namespace Avalonia.Controls.Maui;
 public static class AvaloniaAppBuilderExtensions
 {
     /// <summary>
-    /// Configures embedded MAUI fonts for use in Avalonia.
-    /// </summary>
-    public static AppBuilder WithMauiFonts(this AppBuilder builder)
-    {
-        return builder.ConfigureFonts(fontManager =>
-        {
-            var assemblyName = Assembly.GetEntryAssembly()?.GetName().Name;
-            if (!string.IsNullOrEmpty(assemblyName))
-            {
-                var fontUri = new Uri($"fonts:{assemblyName}", UriKind.Absolute);
-                var sourceUri = new Uri($"avares://{assemblyName}/Assets/Fonts", UriKind.Absolute);
-
-                var fontCollection = new EmbeddedFontCollection(fontUri, sourceUri);
-                fontManager.AddFontCollection(fontCollection);
-            }
-        });
-    }
-    
-    /// <summary>
     /// Configures Avalonia controls themes used in Handlers.
     /// </summary>
     [UnconditionalSuppressMessage("Trimming", "IL2026", 

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Avalonia.Media;
 using Avalonia.Media.Fonts;
+using Avalonia.Platform;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 
@@ -72,7 +74,6 @@ public class AvaloniaMauiFontRegistrar : IFontRegistrar
         _logger?.LogDebug("Registered native font: {Filename} with alias: {Alias}", filename, alias);
     }
 
-
     /// <inheritdoc/>
     public string? GetFont(string font)
     {
@@ -88,35 +89,40 @@ public class AvaloniaMauiFontRegistrar : IFontRegistrar
 
         try
         {
-            var assemblyName = Assembly.GetEntryAssembly()?.GetName().Name;
+            var assemblyName = string.Empty;
+
+            if (registration.Assembly is not null)
+            {
+                assemblyName = registration.Assembly.GetName().Name ?? string.Empty;
+            }
+            else
+            {
+                assemblyName = Assembly.GetEntryAssembly()?.GetName().Name ?? string.Empty;
+            }
+
             if (string.IsNullOrEmpty(assemblyName))
             {
                 _logger?.LogWarning("Could not determine entry assembly name");
                 return null;
             }
 
-            // Derive the font family name from the filename
-            // For OpenSans-Regular.ttf -> "Open Sans"
-            // For Roboto-Bold.ttf -> "Roboto"
-            var filename = System.IO.Path.GetFileNameWithoutExtension(registration.Filename);
+            // The Avalonia.Controls.Maui.targets link MauiFont files to Assets/Fonts/
+            var fontPathUri = new Uri($"avares://{assemblyName}/Assets/Fonts/{registration.Filename}");
+            var fontStream = AssetLoader.Open(fontPathUri);
+            var fontFamilyName = GetFontFamilyName(fontStream);
+            if (string.IsNullOrEmpty(fontFamilyName))
+            {
+                _logger?.LogWarning("Could not determine font family name for font '{Font}'", font);
+                return null;
+            }
 
-            // First, try to extract just the base name before any hyphen/underscore
-            var separatorIndex = filename.IndexOfAny(new[] { '-', '_' });
-            var baseName = separatorIndex > 0 ? filename.Substring(0, separatorIndex) : filename;
-
-            // Insert spaces before capital letters (e.g., "OpenSans" -> "Open Sans")
-            var fontFamilyName = System.Text.RegularExpressions.Regex.Replace(
-                baseName,
-                "([a-z])([A-Z])",
-                "$1 $2"
-            );
-
-            // Return the font family in the format: fonts:AssemblyName#FontFamilyName
-            // This matches how EmbeddedFontCollection fonts are referenced
             var fontUri = $"fonts:{assemblyName}#{fontFamilyName}";
 
             _logger?.LogDebug("Retrieved font: {Font} -> {FontUri} (from {Filename})", font, fontUri, registration.Filename);
-            return fontUri;
+
+            // Return the full URI, as the same font family name can exist in multiple font files
+            // Ex. OpenSans-Regular.ttf and OpenSans-Semibold.ttf both define "Open Sans" family
+            return $"{fontPathUri}#{fontFamilyName}";
         }
         catch (Exception ex)
         {
@@ -125,21 +131,97 @@ public class AvaloniaMauiFontRegistrar : IFontRegistrar
         }
     }
 
-    /// <summary>
-    /// Gets the full filename for a registered font.
-    /// </summary>
-    /// <param name="font">The font name or alias to look up.</param>
-    /// <returns>The full filename if found; otherwise, null.</returns>
-    public string? GetFontFilename(string font)
+    internal string? GetFontFamilyName(Stream fontStream)
     {
-        if (string.IsNullOrWhiteSpace(font))
-            return null;
-
-        if (_fonts.TryGetValue(font, out var registration))
+        using (BinaryReader reader = new BinaryReader(fontStream))
         {
-            return registration.Filename;
+            // Read the offset table
+            reader.ReadUInt32(); // sfnt version
+            ushort numTables = ReadUInt16BigEndian(reader);
+            reader.ReadUInt16(); // searchRange
+            reader.ReadUInt16(); // entrySelector
+            reader.ReadUInt16(); // rangeShift
+
+            // Find the 'name' table
+            uint nameTableOffset = 0;
+            uint nameTableLength = 0;
+
+            for (int i = 0; i < numTables; i++)
+            {
+                string tag = Encoding.ASCII.GetString(reader.ReadBytes(4));
+                reader.ReadUInt32(); // checksum
+                uint offset = ReadUInt32BigEndian(reader);
+                uint length = ReadUInt32BigEndian(reader);
+
+                if (tag == "name")
+                {
+                    nameTableOffset = offset;
+                    nameTableLength = length;
+                    break;
+                }
+            }
+
+            if (nameTableOffset == 0)
+                return null;
+
+            // Read the 'name' table
+            fontStream.Seek(nameTableOffset, SeekOrigin.Begin);
+
+            ushort format = ReadUInt16BigEndian(reader);
+            ushort count = ReadUInt16BigEndian(reader);
+            ushort stringOffset = ReadUInt16BigEndian(reader);
+
+            // Look for font family name (nameID = 1)
+            for (int i = 0; i < count; i++)
+            {
+                ushort platformID = ReadUInt16BigEndian(reader);
+                ushort encodingID = ReadUInt16BigEndian(reader);
+                ushort languageID = ReadUInt16BigEndian(reader);
+                ushort nameID = ReadUInt16BigEndian(reader);
+                ushort length = ReadUInt16BigEndian(reader);
+                ushort offset = ReadUInt16BigEndian(reader);
+
+                if (nameID == 1) // Font Family name
+                {
+                    long pos = fontStream.Position;
+                    fontStream.Seek(nameTableOffset + stringOffset + offset, SeekOrigin.Begin);
+
+                    byte[] nameBytes = reader.ReadBytes(length);
+
+                    // Decode based on platform
+                    string familyName;
+                    if (platformID == 3) // Windows
+                    {
+                        familyName = Encoding.BigEndianUnicode.GetString(nameBytes);
+                    }
+                    else if (platformID == 1) // Macintosh
+                    {
+                        familyName = Encoding.ASCII.GetString(nameBytes);
+                    }
+                    else
+                    {
+                        familyName = Encoding.UTF8.GetString(nameBytes);
+                    }
+
+                    return familyName;
+                }
+            }
         }
 
         return null;
+    }
+
+    private ushort ReadUInt16BigEndian(BinaryReader reader)
+    {
+        byte[] bytes = reader.ReadBytes(2);
+        Array.Reverse(bytes);
+        return BitConverter.ToUInt16(bytes, 0);
+    }
+
+    private uint ReadUInt32BigEndian(BinaryReader reader)
+    {
+        byte[] bytes = reader.ReadBytes(4);
+        Array.Reverse(bytes);
+        return BitConverter.ToUInt32(bytes, 0);
     }
 }
