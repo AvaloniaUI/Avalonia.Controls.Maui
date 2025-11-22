@@ -131,6 +131,12 @@ public class AvaloniaMauiFontRegistrar : IFontRegistrar
         }
     }
 
+    /// <summary>
+    /// Extracts the font family name from a font stream by parsing the font's 'name' table.
+    /// For ttf and otf font formats.
+    /// </summary>
+    /// <param name="fontStream">The font stream to read.</param>
+    /// <returns>The font family name if found; otherwise, null.</returns>
     internal string? GetFontFamilyName(Stream fontStream)
     {
         using (BinaryReader reader = new BinaryReader(fontStream))
