@@ -1,16 +1,62 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <!-- Enable Resizetizer for Avalonia.Controls.Maui applications -->
+  <PropertyGroup>
+    <_ResizetizerIsAvaloniaApp>True</_ResizetizerIsAvaloniaApp>
+    <!-- Use 'wpf' platform type for Resizetizer so it generates images -->
+    <ResizetizerPlatformType>wpf</ResizetizerPlatformType>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <_ResizetizerIsCompatibleApp>True</_ResizetizerIsCompatibleApp>
+
+    <ResizetizeDependsOnTargets>
+      $(ResizetizeDependsOnTargets);
+      ResizetizeCollectItems;
+      ProcessMauiSplashScreens;
+      _ReadResizetizeImagesOutputs;
+    </ResizetizeDependsOnTargets>
+
+    <ProcessMauiFontsDependsOnTargets>
+      $(ProcessMauiFontsDependsOnTargets);
+      ResizetizeCollectItems;
+      ProcessMauiAssets;
+      ProcessMauiSplashScreens;
+    </ProcessMauiFontsDependsOnTargets>
+
+    <ResizetizeBeforeTargets>
+      $(ResizetizeBeforeTargets);
+      GenerateAvaloniaResources;
+    </ResizetizeBeforeTargets>
+
+    <ProcessMauiFontsBeforeTargets>
+      $(ProcessMauiFontsBeforeTargets);
+      GenerateAvaloniaResources;
+    </ProcessMauiFontsBeforeTargets>
+  </PropertyGroup>
+
   <Target Name="ConvertMauiImagesToAvaloniaResources"
           AfterTargets="ResizetizeImages"
-          BeforeTargets="GenerateAvaloniaResources">
+          BeforeTargets="GenerateAvaloniaResources"
+          DependsOnTargets="_ReadResizetizeImagesOutputs">
 
     <ItemGroup>
-      <!-- Cheap hack to get images from MAUI to Avalonia. We need to add some way for ResizetizeImages to work with generic apps. -->
-      <AvaloniaResource Include="@(MauiImage)"
-                        Link="Images/%(Filename)%(Extension)" />
+      <!-- Include resized images from Resizetizer output -->
+      <_ResizetizerCollectedImages Include="$(_MauiIntermediateImages)**\*" Condition="Exists('$(_MauiIntermediateImages)')" />
+
+      <!-- Add all resized images as Avalonia resources -->
+      <AvaloniaResource Include="@(_ResizetizerCollectedImages)" Condition="'@(_ResizetizerCollectedImages)' != ''">
+        <Link>Images/%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</Link>
+      </AvaloniaResource>
+
+      <!-- Also include original MAUI images that weren't processed by Resizetizer (if any) -->
+      <AvaloniaResource Include="@(MauiImage)" Condition="'@(_ResizetizerCollectedImages)' == ''">
+        <Link>Images/%(Filename)%(Extension)</Link>
+      </AvaloniaResource>
     </ItemGroup>
 
-    <Message Text="Converted MAUI images to Avalonia resources: @(AvaloniaResource)" Importance="low" />
+    <Message Text="Converted MAUI Resizetizer images to Avalonia resources: @(_ResizetizerCollectedImages)" Importance="high" Condition="'@(_ResizetizerCollectedImages)' != ''" />
+    <Message Text="Converted MAUI images to Avalonia resources: @(MauiImage)" Importance="low" Condition="'@(_ResizetizerCollectedImages)' == ''" />
   </Target>
 
   <Target Name="ConvertMauiFontsToAvaloniaResources"
