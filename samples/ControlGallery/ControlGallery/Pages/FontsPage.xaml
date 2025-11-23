@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+		     xmlns:shimmer="http://schemas.syncfusion.com/maui/toolkit"
+			 x:Class="ControlGallery.Pages.FontsPage"
+             Title="Font Test">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Label Text="Font Integration Test"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Font Family Tests -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Family Examples"
+                           FontAttributes="Bold"/>
+
+                    <Label Text="OpenSansRegular (alias)"
+                           FontFamily="OpenSansRegular"
+                           FontSize="18"/>
+
+                    <Label Text="OpenSansSemibold (alias)"
+                           FontFamily="OpenSansSemibold"
+                           FontSize="18"/>
+
+                    <Label Text="BgpBanner (alias)"
+                           FontFamily="BgpBanner"
+                           FontSize="18"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Font Size Tests -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Size Examples"
+                           FontAttributes="Bold"/>
+
+                    <Label Text="Font Size 12" FontSize="12"/>
+                    <Label Text="Font Size 14" FontSize="14"/>
+                    <Label Text="Font Size 16" FontSize="16"/>
+                    <Label Text="Font Size 18" FontSize="18"/>
+                    <Label Text="Font Size 20" FontSize="20"/>
+                    <Label Text="Font Size 24" FontSize="24"/>
+                    <Label Text="Font Size 28" FontSize="28"/>
+                    <Label Text="Font Size 32" FontSize="32"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Font Attributes Tests -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Attributes Examples"
+                           FontAttributes="Bold"/>
+
+                    <Label Text="Normal Text" FontSize="16"/>
+                    <Label Text="Bold Text" FontSize="16" FontAttributes="Bold"/>
+                    <Label Text="Italic Text" FontSize="16" FontAttributes="Italic"/>
+                    <Label Text="Bold + Italic Text" FontSize="16" FontAttributes="Bold,Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Combined Font Tests -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Combined Font Properties"
+                           FontAttributes="Bold"/>
+
+                    <Label Text="OpenSansRegular - Size 20 - Bold"
+                           FontFamily="OpenSansRegular"
+                           FontSize="20"
+                           FontAttributes="Bold"/>
+
+                    <Label Text="OpenSansSemibold - Size 18 - Italic"
+                           FontFamily="OpenSansSemibold"
+                           FontSize="18"
+                           FontAttributes="Italic"/>
+
+                    <Label Text="BgpBanner - Size 22 - Bold+Italic"
+                           FontFamily="BgpBanner"
+                           FontSize="22"
+                           FontAttributes="Bold,Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Decoration Tests -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Decoration Examples"
+                           FontAttributes="Bold"/>
+
+                    <Label Text="Normal Text" FontSize="16"/>
+                    <Label Text="Underlined Text" FontSize="16" TextDecorations="Underline"/>
+                    <Label Text="Strikethrough Text" FontSize="16" TextDecorations="Strikethrough"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Alignment Tests -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Alignment Examples"
+                           FontAttributes="Bold"/>
+
+                    <Label Text="Left Aligned (Default)" FontSize="16" HorizontalTextAlignment="Start"/>
+                    <Label Text="Center Aligned" FontSize="16" HorizontalTextAlignment="Center"/>
+                    <Label Text="Right Aligned" FontSize="16" HorizontalTextAlignment="End"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Multiline Text Tests -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Multiline Text Examples"
+                           FontAttributes="Bold"/>
+
+                    <Label Text="This is a longer text that demonstrates how fonts render across multiple lines. It includes various characters and punctuation to test font rendering quality."
+                           FontSize="16"
+                           FontFamily="OpenSansRegular"
+                           LineBreakMode="WordWrap"/>
+
+                    <Label Text="This text uses the OpenSansSemibold font family with bold attributes applied."
+                           FontSize="16"
+                           FontFamily="OpenSansSemibold"
+                           FontAttributes="Bold"
+                           LineBreakMode="WordWrap"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Character Set Tests -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Character Set Examples"
+                           FontAttributes="Bold"/>
+
+                    <Label Text="Numbers: 0123456789" FontSize="16"/>
+                    <Label Text="Special: !@#$%^&amp;*()_+-=[]{}|;:',./&lt;&gt;?" FontSize="16"/>
+                    <Label Text="Mixed: ABC123xyz!@# OpenSans" FontSize="16" FontFamily="OpenSansRegular"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
