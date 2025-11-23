@@ -21,12 +21,22 @@
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type word:MainPage}"/>
 					</TableSection>
+					<TableSection Title="Services">
+						<TextCell Text="Fonts"
+								  Detail="Font integration test"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:FontsPage}"/>
+					</TableSection>
 					<TableSection Title="Views">
+            <TextCell Text="Button"
+                  Detail="Button control"
+                  Command="{Binding NavigateCommand}"
+                  CommandParameter="{x:Type pages:ButtonPage}"/>
 						<TextCell Text="CheckBox"
                   Detail="CheckBox control for selections"
                   Command="{Binding NavigateCommand}"
                   CommandParameter="{x:Type pages:CheckBoxPage}"/>
-            <TextCell Text="ProgressBar"
+						<TextCell Text="ProgressBar"
 								  Detail="Progress indicator control"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:ProgressBarPage}"/>

@@ -875,10 +875,10 @@ public static class ControlExtensions
 
     public static void UpdateBackground(this PlatformView control, IView view)
     {
-        // Background is handled by specific control types (Panel, TextBlock, etc.)
-        // For Panel-based controls (like ContentView), set the background
         if (control is Panel panel)
         {
+            // Background is handled by specific control types (Panel, TextBlock, etc.)
+            // For Panel-based controls (like ContentView), set the background
             if (view.Background != null)
             {
                 panel.Background = view.Background.ToPlatform();
@@ -887,7 +887,8 @@ public static class ControlExtensions
             {
                 panel.ClearValue(Panel.BackgroundProperty);
             }
-        } else if (control is TemplatedControl templatedControl)
+        }
+        else if (control is TemplatedControl templatedControl)
         {
             if (view.Background != null)
             {
