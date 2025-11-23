@@ -1,6 +1,7 @@
 using Avalonia.Headless.XUnit;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
+using Avalonia.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using MauiButtonHandler = Avalonia.Controls.Maui.Handlers.ButtonHandler;
@@ -566,6 +567,75 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
 
         var platformImageSource = GetPlatformImageSource(handler);
         Assert.Null(platformImageSource);
+    }
+
+    [AvaloniaFact(DisplayName = "Image Only Button Has No Margin")]
+    public async Task ImageOnlyButtonHasNoMargin()
+    {
+        var button = new ButtonStub
+        {
+            ImageSource = new FileImageSourceStub { File = "test.png" }
+        };
+        var handler = await CreateHandlerAsync(button);
+
+        // Give async operation time to complete
+        await Task.Delay(100);
+
+        var image = handler.PlatformView?.GetImage();
+        Assert.NotNull(image);
+        Assert.Equal(0, image.Margin.Left);
+        Assert.Equal(0, image.Margin.Top);
+        Assert.Equal(0, image.Margin.Right);
+        Assert.Equal(0, image.Margin.Bottom);
+    }
+
+    [AvaloniaFact(DisplayName = "Image And Text Button Has Right Margin On Image")]
+    public async Task ImageAndTextButtonHasRightMarginOnImage()
+    {
+        var button = new ButtonStub
+        {
+            Text = "Button Text"
+        };
+        var handler = await CreateHandlerAsync(button);
+
+        // Directly set the ImageSource property on the platform button
+        // This simulates what happens after the async image loading completes
+        using var bitmap = new Media.Imaging.Bitmap(
+            PixelFormat.Bgra8888,
+            AlphaFormat.Premul,
+            IntPtr.Zero,
+            new PixelSize(1, 1),
+            new Vector(96, 96),
+            4);
+
+        handler.PlatformView!.Text = "Button Text";
+        handler.PlatformView.ImageSource = bitmap;
+
+        // The UpdateContent method should have been called and set the margin
+        var image = handler.PlatformView.GetImage();
+        Assert.NotNull(image);
+        Assert.Equal(0, image.Margin.Left);
+        Assert.Equal(0, image.Margin.Top);
+        Assert.Equal(5, image.Margin.Right);
+        Assert.Equal(0, image.Margin.Bottom);
+    }
+
+    [AvaloniaFact(DisplayName = "Text Only Button Image Has No Margin")]
+    public async Task TextOnlyButtonImageHasNoMargin()
+    {
+        var button = new ButtonStub
+        {
+            Text = "Button Text"
+        };
+        var handler = await CreateHandlerAsync(button);
+
+        var image = handler.PlatformView?.GetImage();
+        Assert.NotNull(image);
+        // Image exists but has no margin since no ImageSource is set
+        Assert.Equal(0, image.Margin.Left);
+        Assert.Equal(0, image.Margin.Top);
+        Assert.Equal(0, image.Margin.Right);
+        Assert.Equal(0, image.Margin.Bottom);
     }
 
     AvaloniaImage? GetPlatformImageSource(MauiButtonHandler handler) =>
