@@ -12,28 +12,6 @@
 			<LogicalName>%(RecursiveDir)%(Filename)%(Extension)</LogicalName>
 		</MauiAsset>
 	</ItemGroup>
-	<ItemGroup>
-		<MauiFont Include="Resources\Fonts\OpenSans-Regular.ttf" />
-		<MauiFont Include="Resources\Fonts\OpenSans-Semibold.ttf" />
-	</ItemGroup>
-	<ItemGroup>
-		<MauiIcon Include="Resources\AppIcon\appicon.svg">
-			<Color>#512BD4</Color>
-			<ForegroundFile>Resources\AppIcon\appiconfg.svg</ForegroundFile>
-		</MauiIcon>
-	</ItemGroup>
-	<ItemGroup>
-		<MauiImage Include="Resources\Images\dotnet_bot.png">
-			<Resize>True</Resize>
-			<BaseSize>300,185</BaseSize>
-		</MauiImage>
-	</ItemGroup>
-	<ItemGroup>
-		<MauiSplashScreen Include="Resources\Splash\splash.svg">
-			<Color>#512BD4</Color>
-			<BaseSize>128,128</BaseSize>
-		</MauiSplashScreen>
-	</ItemGroup>
 
 	<ItemGroup>
 		<!-- App Icon -->
