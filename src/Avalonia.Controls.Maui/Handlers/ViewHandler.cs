@@ -5,7 +5,9 @@ using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
+using Avalonia.Controls.Primitives;
 using PlatformView = Avalonia.Controls.Control;
 
 namespace Avalonia.Controls.Maui.Handlers;
@@ -873,17 +875,28 @@ public static class ControlExtensions
 
     public static void UpdateBackground(this PlatformView control, IView view)
     {
-        // Background is handled by specific control types (Panel, TextBlock, etc.)
-        // For Panel-based controls (like ContentView), set the background
-        if (control is global::Avalonia.Controls.Panel panel)
+        if (control is Panel panel)
         {
+            // Background is handled by specific control types (Panel, TextBlock, etc.)
+            // For Panel-based controls (like ContentView), set the background
             if (view.Background != null)
             {
                 panel.Background = view.Background.ToPlatform();
             }
             else
             {
-                panel.ClearValue(global::Avalonia.Controls.Panel.BackgroundProperty);
+                panel.ClearValue(Panel.BackgroundProperty);
+            }
+        }
+        else if (control is TemplatedControl templatedControl)
+        {
+            if (view.Background != null)
+            {
+                templatedControl.Background = view.Background.ToPlatform();
+            }
+            else
+            {
+                templatedControl.ClearValue(TemplatedControl.BackgroundProperty);
             }
         }
     }

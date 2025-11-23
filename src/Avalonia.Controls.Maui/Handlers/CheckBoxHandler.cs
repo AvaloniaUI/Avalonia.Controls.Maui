@@ -1,19 +1,20 @@
-using Avalonia.Controls;
-using Avalonia.Media;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
-using AvaloniaCheckBox = Avalonia.Controls.CheckBox;
+using Avalonia.Controls.Maui.Platform;
+using PlatformView = Avalonia.Controls.CheckBox;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class CheckBoxHandler : ViewHandler<ICheckBox, AvaloniaCheckBox>, ICheckBoxHandler
+public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>, ICheckBoxHandler
 {
-    public static IPropertyMapper<ICheckBox, ICheckBoxHandler> Mapper = new PropertyMapper<ICheckBox, ICheckBoxHandler>(ViewHandler.ViewMapper)
-    {
-        [nameof(ICheckBox.Background)] = MapBackground,
-        [nameof(ICheckBox.IsChecked)] = MapIsChecked,
-        [nameof(ICheckBox.Foreground)] = MapForeground,
-    };
+    public static IPropertyMapper<ICheckBox, ICheckBoxHandler> Mapper =
+        new PropertyMapper<ICheckBox, ICheckBoxHandler>(ViewHandler.ViewMapper)
+        {
+            [nameof(ICheckBox.Background)] = MapBackground,
+            [nameof(ICheckBox.IsChecked)] = MapIsChecked,
+            [nameof(ICheckBox.Foreground)] = MapForeground,
+            ["Color"] = MapColor, // Color is on CheckBox class, not ICheckBox interface
+        };
 
     public static CommandMapper<ICheckBox, CheckBoxHandler> CommandMapper = new(ViewCommandMapper)
     {
@@ -37,26 +38,26 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, AvaloniaCheckBox>, ICheckB
 
     System.Object ICheckBoxHandler.PlatformView => PlatformView;
 
-    protected override AvaloniaCheckBox CreatePlatformView()
+    protected override PlatformView CreatePlatformView()
     {
-        return new AvaloniaCheckBox();
+        return new PlatformView();
     }
 
-    protected override void ConnectHandler(AvaloniaCheckBox platformView)
+    protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
         platformView.IsCheckedChanged += OnIsCheckedChanged;
     }
 
-    protected override void DisconnectHandler(AvaloniaCheckBox platformView)
+    protected override void DisconnectHandler(PlatformView platformView)
     {
         base.DisconnectHandler(platformView);
         platformView.IsCheckedChanged -= OnIsCheckedChanged;
     }
 
-    void OnIsCheckedChanged(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
+    void OnIsCheckedChanged(object? sender, Interactivity.RoutedEventArgs e)
     {
-        if (sender is AvaloniaCheckBox platformView && VirtualView != null)
+        if (sender is PlatformView platformView && VirtualView != null)
         {
             VirtualView.IsChecked = platformView.IsChecked ?? false;
         }
@@ -67,47 +68,15 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, AvaloniaCheckBox>, ICheckB
     public static void MapBackground(ICheckBoxHandler handler, ICheckBox checkBox)
     {
         handler.UpdateValue(nameof(IViewHandler.ContainerView));
-        ((AvaloniaCheckBox)handler.PlatformView)?.UpdateBackground(checkBox);
+        ((PlatformView)handler.PlatformView)?.UpdateBackground(checkBox);
     }
 
     public static void MapIsChecked(ICheckBoxHandler handler, ICheckBox checkBox) =>
-        ((AvaloniaCheckBox)handler.PlatformView)?.UpdateIsChecked(checkBox);
+        ((PlatformView)handler.PlatformView)?.UpdateIsChecked(checkBox);
 
     public static void MapForeground(ICheckBoxHandler handler, ICheckBox checkBox) =>
-        ((AvaloniaCheckBox)handler.PlatformView)?.UpdateForeground(checkBox);
-}
+        ((PlatformView)handler.PlatformView)?.UpdateForeground(checkBox);
 
-public static class CheckBoxExtensions
-{
-    public static void UpdateIsChecked(this AvaloniaCheckBox checkBox, ICheckBox virtualCheckBox)
-    {
-        checkBox.IsChecked = virtualCheckBox.IsChecked;
-    }
-
-    public static void UpdateForeground(this AvaloniaCheckBox checkBox, ICheckBox virtualCheckBox)
-    {
-        if (virtualCheckBox.Foreground != null)
-        {
-            var brush = virtualCheckBox.Foreground.ToPlatform();
-            checkBox.BorderBrush = brush;
-            checkBox.Foreground = brush;
-        }
-        else
-        {
-            checkBox.ClearValue(AvaloniaCheckBox.BorderBrushProperty);
-            checkBox.ClearValue(AvaloniaCheckBox.ForegroundProperty);
-        }
-    }
-
-    internal static void UpdateBackground(this AvaloniaCheckBox checkBox, IView view)
-    {
-        if (view.Background != null)
-        {
-            checkBox.Background = view.Background.ToPlatform();
-        }
-        else
-        {
-            checkBox.ClearValue(AvaloniaCheckBox.BackgroundProperty);
-        }
-    }
+    public static void MapColor(ICheckBoxHandler handler, ICheckBox checkBox) =>
+        ((PlatformView)handler.PlatformView)?.UpdateColor(checkBox);
 }

@@ -59,32 +59,31 @@ Displays text and responds to a tap or click that directs the app to carry out a
 
 | Property | Status |
 |----------|--------|
-| BorderColor | ⏳ TODO |
-| BorderWidth | ⏳ TODO |
-| CharacterSpacing | ⏳ TODO |
-| Command | ⏳ TODO |
-| CommandParameter | ⏳ TODO |
+| BorderColor | ✅ Implemented |
+| BorderWidth | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
 | ContentLayout | ⏳ TODO |
-| CornerRadius | ⏳ TODO |
+| CornerRadius | ✅ Implemented |
 | FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
 | FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
+| FontSize | ✅ Implemented |
 | ImageSource | ⏳ TODO |
 | IsPressed | ⏳ TODO |
 | LineBreakMode | ⏳ TODO |
-| Padding | ⏳ TODO |
-| Text | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| TextTransform | ⏳ TODO |
+| Padding | ✅ Implemented |
+| Text | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| TextTransform | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Clicked | ⏳ TODO |
-| Pressed | ⏳ TODO |
-| Released | ⏳ TODO |
+| Clicked | ✅ Implemented |
+| Pressed | ✅ Implemented |
+| Released | ✅ Implemented |
 
 ---
 
@@ -118,14 +117,14 @@ Enables you to select a boolean value using a type of button that can either be 
 
 | Property | Status |
 |----------|--------|
-| IsChecked | ⏳ TODO |
-| Color | ⏳ TODO |
+| IsChecked | ✅ Implemented |
+| Color | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| CheckedChanged | ⏳ TODO |
+| CheckedChanged | ✅ Implemented |
 
 ---
 
