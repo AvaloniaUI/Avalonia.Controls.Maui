@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls.Primitives;
 using Microsoft.Maui;
 using PlatformView = Avalonia.Controls.CheckBox;
@@ -62,11 +61,11 @@ public static class CheckBoxExtensions
     /// <summary>
     /// Updates the color of the Avalonia CheckBox from the .NET MAUI CheckBox.
     /// The Color property is on the concrete CheckBox class, not the ICheckBox interface.
-    /// Uses reflection to access the Color property.
+    /// Currently delegates to UpdateForeground.
     /// </summary>
     /// <param name="platformView">The Avalonia CheckBox control to update.</param>
     /// <param name="virtualCheckBox">The .NET MAUI ICheckBox providing the color.</param>
-    public static void UpdateColor(this PlatformView platformView, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicProperties)] ICheckBox virtualCheckBox)
+    public static void UpdateColor(this PlatformView platformView, ICheckBox virtualCheckBox)
     {
         platformView.UpdateForeground(virtualCheckBox);
     }
