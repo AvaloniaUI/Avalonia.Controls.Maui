@@ -117,14 +117,14 @@ Enables you to select a boolean value using a type of button that can either be 
 
 | Property | Status |
 |----------|--------|
-| IsChecked | ⏳ TODO |
-| Color | ⏳ TODO |
+| IsChecked | ✅ Implemented |
+| Color | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| CheckedChanged | ⏳ TODO |
+| CheckedChanged | ✅ Implemented |
 
 ---
 

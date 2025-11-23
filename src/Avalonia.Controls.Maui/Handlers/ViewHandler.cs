@@ -875,29 +875,28 @@ public static class ControlExtensions
 
     public static void UpdateBackground(this PlatformView control, IView view)
     {
-        if (control is TemplatedControl templatedControl)
-        {
-            if (view.Background is not null)
-            {
-                templatedControl.Background = view.Background.ToPlatform();
-            }
-            else
-            {
-                templatedControl.ClearValue(TemplatedControl.BackgroundProperty);
-            }
-        }
-        else if (control is Panel panel)
+        if (control is Panel panel)
         {
             // Background is handled by specific control types (Panel, TextBlock, etc.)
             // For Panel-based controls (like ContentView), set the background
-            
             if (view.Background != null)
             {
                 panel.Background = view.Background.ToPlatform();
             }
             else
             {
-                panel.ClearValue(global::Avalonia.Controls.Panel.BackgroundProperty);
+                panel.ClearValue(Panel.BackgroundProperty);
+            }
+        }
+        else if (control is TemplatedControl templatedControl)
+        {
+            if (view.Background != null)
+            {
+                templatedControl.Background = view.Background.ToPlatform();
+            }
+            else
+            {
+                templatedControl.ClearValue(TemplatedControl.BackgroundProperty);
             }
         }
     }
