@@ -70,7 +70,6 @@ public static class MauiAppBuilderExtensions
         // Register Avalonia-specific font services
         // Replace existing registrations to ensure our Avalonia implementations are used
         var fontRegistrar = new Avalonia.Controls.Maui.AvaloniaMauiFontRegistrar();
-        builder.Services.Replace(ServiceDescriptor.Singleton<IEmbeddedFontLoader>(svcs => new Avalonia.Controls.Maui.AvaloniaEmbeddedFontLoader(svcs)));
         builder.Services.Replace(ServiceDescriptor.Singleton<IFontRegistrar>(fontRegistrar));
         builder.Services.Replace(ServiceDescriptor.Singleton<IFontManager>(svcs => new Avalonia.Controls.Maui.FontManager(svcs.GetRequiredService<IFontRegistrar>(), svcs)));
 
