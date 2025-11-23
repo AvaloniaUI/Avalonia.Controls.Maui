@@ -492,8 +492,6 @@
                     <!-- Disabled Image Button -->
                     <Button Text="Disabled with Image"
                             ImageSource="dotnet_bot_og.png"
-                            BackgroundColor="LightGray"
-                            TextColor="Gray"
                             IsEnabled="False"
                             Padding="15,10"
                             CornerRadius="6"/>
