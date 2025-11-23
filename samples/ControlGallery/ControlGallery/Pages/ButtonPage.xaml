@@ -384,7 +384,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Button Layouts"
                            FontAttributes="Bold"/>
-                    
+
                     <Label Text="Horizontal Button Group:"
                            FontSize="12"/>
                     <HorizontalStackLayout Spacing="10"
@@ -396,18 +396,18 @@
                         <Button Text="Option C"
                                 WidthRequest="100"/>
                     </HorizontalStackLayout>
-                    
+
                     <Label Text="Full Width Button:"
                            FontSize="12"/>
                     <Button Text="Full Width Button"
                             HorizontalOptions="Fill"/>
-                    
+
                     <Label Text="Centered Button:"
                            FontSize="12"/>
                     <Button Text="Centered"
                             HorizontalOptions="Center"
                             WidthRequest="200"/>
-                    
+
                     <Label Text="Small Buttons:"
                            FontSize="12"/>
                     <HorizontalStackLayout Spacing="5"
@@ -427,7 +427,79 @@
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
-            
+
+            <!-- Image Buttons -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Image Buttons"
+                           FontAttributes="Bold"/>
+                    <Label Text="Buttons with images from local files using FileImageSource"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <!-- Button with Image Only -->
+                    <Button ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="LightBlue"
+                            Padding="10"
+                            CornerRadius="8"
+                            HorizontalOptions="Center"
+                            WidthRequest="60"
+                            HeightRequest="60"
+                            Clicked="OnButtonClicked"/>
+
+                    <!-- Button with Image and Text -->
+                    <Button Text="Click Me"
+                            ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="White"
+                            TextColor="Black"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            Padding="15,10"
+                            CornerRadius="6"/>
+
+                    <!-- Button with Image and Styled Text -->
+                    <Button Text="Action Button"
+                            ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="DarkBlue"
+                            TextColor="White"
+                            Padding="20,12"
+                            CornerRadius="10"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+
+                    <!-- Colored Background Image Button -->
+                    <Button Text="Success"
+                            ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="Green"
+                            TextColor="White"
+                            Padding="15,10"
+                            CornerRadius="6"/>
+
+                    <!-- Large Image Button -->
+                    <Button Text="Large Image Button"
+                            ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="Purple"
+                            TextColor="White"
+                            Padding="25,15"
+                            CornerRadius="12"
+                            FontSize="18"
+                            HorizontalOptions="Fill"/>
+
+                    <!-- Disabled Image Button -->
+                    <Button Text="Disabled with Image"
+                            ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="LightGray"
+                            TextColor="Gray"
+                            IsEnabled="False"
+                            Padding="15,10"
+                            CornerRadius="6"/>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

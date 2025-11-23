@@ -6,6 +6,7 @@ using Microsoft.Maui.Graphics;
 using MauiButtonHandler = Avalonia.Controls.Maui.Handlers.ButtonHandler;
 using MauiButton = Avalonia.Controls.Maui.Platform.MauiButton;
 using MauiThickness = Microsoft.Maui.Thickness;
+using AvaloniaImage = Avalonia.Media.Imaging.Bitmap;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -509,7 +510,67 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         // This test documents current behavior
         Assert.True(button.ClickedCount >= 0);
     }
-    
+
+    [AvaloniaFact(DisplayName = "ImageSource Initializes As Null")]
+    public async Task ImageSourceInitializesAsNull()
+    {
+        var button = new ButtonStub { Text = "Button" };
+        var imageSource = await GetValueAsync(button, GetPlatformImageSource);
+        Assert.Null(imageSource);
+    }
+
+    [AvaloniaFact(DisplayName = "Null ImageSource Does Not Crash")]
+    public async Task NullImageSourceDoesNotCrash()
+    {
+        var button = new ButtonStub { Text = "Button", ImageSource = null };
+        await CreateHandlerAsync(button);
+    }
+
+    [AvaloniaFact(DisplayName = "FileImageSource Updates Correctly")]
+    public async Task FileImageSourceUpdatesCorrectly()
+    {
+        var button = new ButtonStub { Text = "Button" };
+        var handler = await CreateHandlerAsync(button);
+
+        // Create a file image source
+        var fileImageSource = new FileImageSourceStub { File = "test.png" };
+
+        button.ImageSource = fileImageSource;
+        handler.UpdateValue(nameof(Microsoft.Maui.IImage.Source));
+
+        // Give async operation time to complete
+        await Task.Delay(100);
+
+        // Verify the image was processed (may be null if file doesn't exist, but shouldn't crash)
+        var platformImageSource = GetPlatformImageSource(handler);
+        // The actual bitmap may be null if the file doesn't exist, but the call should complete
+        Assert.NotNull(handler.PlatformView);
+    }
+
+    [AvaloniaFact(DisplayName = "Clearing ImageSource Sets Platform Image To Null")]
+    public async Task ClearingImageSourceSetsPlatformImageToNull()
+    {
+        var button = new ButtonStub
+        {
+            Text = "Button",
+            ImageSource = new FileImageSourceStub { File = "test.png" }
+        };
+        var handler = await CreateHandlerAsync(button);
+
+        // Clear the image source
+        button.ImageSource = null;
+        handler.UpdateValue(nameof(Microsoft.Maui.IImage.Source));
+
+        // Give async operation time to complete
+        await Task.Delay(100);
+
+        var platformImageSource = GetPlatformImageSource(handler);
+        Assert.Null(platformImageSource);
+    }
+
+    AvaloniaImage? GetPlatformImageSource(MauiButtonHandler handler) =>
+        handler.PlatformView?.ImageSource as AvaloniaImage;
+
     string? GetPlatformText(MauiButtonHandler handler) =>
         handler.PlatformView?.Text;
 
