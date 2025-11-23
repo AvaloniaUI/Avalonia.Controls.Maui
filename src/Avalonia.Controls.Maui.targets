@@ -36,27 +36,24 @@
   </PropertyGroup>
 
   <Target Name="ConvertMauiImagesToAvaloniaResources"
+          BeforeTargets="AddAvaloniaResources"
           AfterTargets="ResizetizeImages"
-          BeforeTargets="GenerateAvaloniaResources"
           DependsOnTargets="_ReadResizetizeImagesOutputs">
+    <ItemGroup>
+      <_ResizetizerCollectedImages Include="$(_MauiIntermediateImages)**\*" Condition="Exists('$(_MauiIntermediateImages)')" />
+    </ItemGroup>
+
+    <Message Text="Resizetizer intermediate path: $(_MauiIntermediateImages)" Importance="high" />
+    <Message Text="Collected MAUI Resizetizer images: @(_ResizetizerCollectedImages)" Importance="high" Condition="'@(_ResizetizerCollectedImages)' != ''" />
+    <Message Text="No Resizetizer images found" Importance="high" Condition="'@(_ResizetizerCollectedImages)' == ''" />
 
     <ItemGroup>
-      <!-- Include resized images from Resizetizer output -->
-      <_ResizetizerCollectedImages Include="$(_MauiIntermediateImages)**\*" Condition="Exists('$(_MauiIntermediateImages)')" />
-
-      <!-- Add all resized images as Avalonia resources -->
       <AvaloniaResource Include="@(_ResizetizerCollectedImages)" Condition="'@(_ResizetizerCollectedImages)' != ''">
         <Link>Images/%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</Link>
-      </AvaloniaResource>
-
-      <!-- Also include original MAUI images that weren't processed by Resizetizer (if any) -->
-      <AvaloniaResource Include="@(MauiImage)" Condition="'@(_ResizetizerCollectedImages)' == ''">
-        <Link>Images/%(Filename)%(Extension)</Link>
       </AvaloniaResource>
     </ItemGroup>
 
     <Message Text="Converted MAUI Resizetizer images to Avalonia resources: @(_ResizetizerCollectedImages)" Importance="high" Condition="'@(_ResizetizerCollectedImages)' != ''" />
-    <Message Text="Converted MAUI images to Avalonia resources: @(MauiImage)" Importance="low" Condition="'@(_ResizetizerCollectedImages)' == ''" />
   </Target>
 
   <Target Name="ConvertMauiFontsToAvaloniaResources"

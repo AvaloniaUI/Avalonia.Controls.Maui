@@ -6,7 +6,6 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<UseMaui>true</UseMaui>
-		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
 		<RootNamespace>ControlGallery</RootNamespace>
 	</PropertyGroup>
 
@@ -21,14 +20,15 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
-    <PropertyGroup Label="AOT Validation">
-        <IsTrimmable>true</IsTrimmable>
-        <IsAotCompatible>true</IsAotCompatible>
-        <TrimmerSingleWarn>false</TrimmerSingleWarn>
-        <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
-        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
-        <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
-    </PropertyGroup>
+	<PropertyGroup Label="AOT Validation">
+		<IsTrimmable>true</IsTrimmable>
+		<IsAotCompatible>true</IsAotCompatible>
+		<TrimmerSingleWarn>false</TrimmerSingleWarn>
+		<SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+		<EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+		<ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
+		<PublishAot>True</PublishAot>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
@@ -37,7 +37,9 @@
 		<PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
 		<PackageReference Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" />
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-		<!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+		<!--Condition
+		below is needed to remove Avalonia.Diagnostics package from build output in Release
+		configuration.-->
 		<PackageReference Include="Avalonia.Diagnostics" Version="$(AvaloniaVersion)">
 			<IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
 			<PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
@@ -46,8 +48,10 @@
 
 	<ItemGroup>
 		<ProjectReference Include="../ControlGallery/ControlGallery.csproj" />
-		<ProjectReference Include="..\..\..\src\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
-		<ProjectReference Include="..\..\..\src\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
+		<ProjectReference
+			Include="..\..\..\src\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
+		<ProjectReference
+			Include="..\..\..\src\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
 	</ItemGroup>
 
 	<Import Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.targets" />

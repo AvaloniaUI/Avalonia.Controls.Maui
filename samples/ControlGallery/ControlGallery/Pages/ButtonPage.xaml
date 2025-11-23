@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ControlGallery.Pages"
              x:Class="ControlGallery.Pages.ButtonPage"
+             x:DataType="pages:ButtonPage"
              Title="Button">
     <ScrollView>
         <VerticalStackLayout Padding="20"

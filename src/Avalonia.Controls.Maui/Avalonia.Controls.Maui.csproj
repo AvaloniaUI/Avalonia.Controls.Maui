@@ -16,5 +16,10 @@
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
   </ItemGroup>
-    
+
+  <ItemGroup>
+    <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="build/$(TargetFramework)/Avalonia.Controls.Maui.targets" />
+    <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="buildTransitive/$(TargetFramework)/Avalonia.Controls.Maui.targets" />
+  </ItemGroup>
+
 </Project>
