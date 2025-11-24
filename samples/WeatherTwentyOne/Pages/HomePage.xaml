@@ -31,7 +31,7 @@
     </ContentPage.MenuBarItems>
 
     <Grid
-        ColumnDefinitions="*,500"
+        ColumnDefinitions="*,Auto"
         RowDefinitions="*"
         >
 

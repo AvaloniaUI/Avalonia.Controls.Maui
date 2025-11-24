@@ -317,12 +317,12 @@
         <Setter Property="Orientation" Value="Horizontal"/>
     </Style>
 
-    <!-- <Style TargetType="ScrollView">
+    <Style TargetType="ScrollView">
         <Setter Property="VerticalScrollBarVisibility"
                 Value="Never"/>
         <Setter Property="HorizontalScrollBarVisibility"
                 Value="Never"/>
-    </Style> -->
+    </Style>
 
     <!-- Misc -->
     <Style TargetType="BoxView">

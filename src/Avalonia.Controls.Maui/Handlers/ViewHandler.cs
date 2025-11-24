@@ -51,6 +51,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
             [nameof(IContextFlyoutElement.ContextFlyout)] = MapContextFlyout,
             [nameof(IView.HorizontalLayoutAlignment)] = MapHorizontalLayoutAlignment,
             [nameof(IView.VerticalLayoutAlignment)] = MapVerticalLayoutAlignment,
+            [nameof(IView.Margin)] = MapMargin,
         };
 
     /// <summary>
@@ -272,6 +273,16 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         }
 
         ((PlatformView?)handler.PlatformView)?.UpdateMaximumWidth(view);
+    }
+
+    /// <summary>
+    /// Maps the abstract <see cref="IView.Margin"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
+    public static void MapMargin(IViewHandler handler, IView view)
+    {
+        ((PlatformView?)handler.PlatformView)?.UpdateMargin(view);
     }
 
     /// <summary>
@@ -708,17 +719,45 @@ public static class ControlExtensions
     public static void UpdateWidth(this PlatformView control, IView view)
     {
         if (!double.IsNaN(view.Width))
+        {
+            // Use both Width and MinWidth to ensure the control sizes properly
+            // Width gives the desired size, MinWidth ensures it's respected in layout
             control.Width = view.Width;
+            control.MinWidth = view.Width;
+
+            // Force a layout invalidation to ensure the new width is applied
+            control.InvalidateMeasure();
+
+            // Also invalidate the parent so it can re-layout with the new child size
+            (control.Parent as global::Avalonia.Controls.Control)?.InvalidateMeasure();
+        }
         else
+        {
             control.ClearValue(PlatformView.WidthProperty);
+            control.ClearValue(PlatformView.MinWidthProperty);
+        }
     }
 
     public static void UpdateHeight(this PlatformView control, IView view)
     {
         if (!double.IsNaN(view.Height))
+        {
+            // Use both Height and MinHeight to ensure the control sizes properly
+            // Height gives the desired size, MinHeight ensures it's respected in layout
             control.Height = view.Height;
+            control.MinHeight = view.Height;
+
+            // Force a layout invalidation to ensure the new height is applied
+            control.InvalidateMeasure();
+
+            // Also invalidate the parent so it can re-layout with the new child size
+            (control.Parent as global::Avalonia.Controls.Control)?.InvalidateMeasure();
+        }
         else
+        {
             control.ClearValue(PlatformView.HeightProperty);
+            control.ClearValue(PlatformView.MinHeightProperty);
+        }
     }
 
     public static void UpdateMinimumHeight(this PlatformView control, IView view)
@@ -751,6 +790,12 @@ public static class ControlExtensions
             control.MaxWidth = view.MaximumWidth;
         else
             control.ClearValue(PlatformView.MaxWidthProperty);
+    }
+
+    public static void UpdateMargin(this PlatformView control, IView view)
+    {
+        var margin = view.Margin;
+        control.Margin = new global::Avalonia.Thickness(margin.Left, margin.Top, margin.Right, margin.Bottom);
     }
 
     public static void UpdateIsEnabled(this PlatformView control, IView view)

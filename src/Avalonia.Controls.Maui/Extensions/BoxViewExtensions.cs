@@ -15,9 +15,15 @@ public static class BoxViewExtensions
     /// <param name="boxView">The .NET MAUI BoxView providing the color.</param>
     public static void UpdateColor(this Border border, BoxView boxView)
     {
+        // BoxView can use either Color property or BackgroundColor property
+        // Color takes precedence if both are set
         if (boxView.Color != null)
         {
             border.Background = boxView.Color.ToPlatform();
+        }
+        else if (boxView.BackgroundColor != null)
+        {
+            border.Background = boxView.BackgroundColor.ToPlatform();
         }
         else
         {
