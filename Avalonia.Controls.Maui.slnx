@@ -5,12 +5,16 @@
   <Folder Name="/Samples/">
     <Project Path="samples/SandboxApp/SandboxApp.csproj" />
     <Project Path="samples/SandboxAppWasm/SandboxAppWasm.csproj" />
-    <Project Path="samples/WeatherTwentyOne/WeatherTwentyOne.csproj" />
   </Folder>
   <Folder Name="/Samples/ControlGallery/">
     <Project Path="samples/ControlGallery/ControlGallery.Browser/ControlGallery.Browser.csproj" />
     <Project Path="samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj" />
     <Project Path="samples/ControlGallery/ControlGallery/ControlGallery.csproj" />
+  </Folder>
+  <Folder Name="/Samples/WeatherTwentyOne/">
+    <Project Path="samples/WeatherTwentyOne/WeatherTwentyOne.Browser/WeatherTwentyOne.Browser.csproj" />
+    <Project Path="samples/WeatherTwentyOne/WeatherTwentyOne.Desktop/WeatherTwentyOne.Desktop.csproj" />
+    <Project Path="samples/WeatherTwentyOne/WeatherTwentyOne/WeatherTwentyOne.csproj" />
   </Folder>
   <Folder Name="/Source/">
     <Project Path="src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
