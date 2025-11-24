@@ -27,6 +27,7 @@ public partial class MainPage : FlyoutPage
             nameof(ButtonPage) => new ButtonPage(),
             nameof(CheckBoxPage) => new CheckBoxPage(),
             nameof(ProgressBarPage) => new ProgressBarPage(),
+            nameof(SwipeViewPage) => new SwipeViewPage(),
             "MainPage" when pageType.Namespace == "WordPuzzle" => new WordPuzzle.MainPage(),
             _ => throw new ArgumentException($"Unknown page type: {pageType.FullName}", nameof(pageType))
         };
