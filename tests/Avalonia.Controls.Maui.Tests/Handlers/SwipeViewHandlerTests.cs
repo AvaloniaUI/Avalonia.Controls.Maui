@@ -232,8 +232,12 @@ public partial class SwipeViewHandlerTests : HandlerTestBase<SwipeViewHandler, S
         rightItems.Mode = Microsoft.Maui.SwipeMode.Execute;
         var swipeView = new SwipeViewStub { RightItems = rightItems };
 
-        // In Execute mode, invoke happens directly on the swipe item via OnInvoked.
-        swipeItem.OnInvoked();
+        var handler = await CreateHandlerAsync(swipeView);
+        var platformView = handler.PlatformView;
+
+        var onExecute = typeof(SwipeViewHandler).GetMethod("OnExecuteRequested", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+        onExecute?.Invoke(handler, new object?[] { platformView, SwipeDirection.Left });
+
         Assert.Equal(1, swipeItem.InvokedCount);
     }
 

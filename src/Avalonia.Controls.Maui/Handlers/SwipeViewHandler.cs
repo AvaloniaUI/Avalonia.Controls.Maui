@@ -53,6 +53,7 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
         platformView.SwipeStarted += OnSwipeStarted;
         platformView.SwipeChanging += OnSwipeChanging;
         platformView.SwipeEnded += OnSwipeEnded;
+        platformView.ExecuteRequested += OnExecuteRequested;
     }
 
     protected override void DisconnectHandler(PlatformView platformView)
@@ -60,6 +61,7 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
         platformView.SwipeStarted -= OnSwipeStarted;
         platformView.SwipeChanging -= OnSwipeChanging;
         platformView.SwipeEnded -= OnSwipeEnded;
+        platformView.ExecuteRequested -= OnExecuteRequested;
         base.DisconnectHandler(platformView);
     }
     
@@ -150,6 +152,31 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
 
         var direction = e.SwipeDirection.ToMauiSwipeDirection();
         VirtualView.SwipeEnded(new SwipeViewSwipeEnded(direction, e.IsOpen));
+    }
+
+    private void OnExecuteRequested(object? sender, SwipeDirection direction)
+    {
+        if (VirtualView == null)
+            return;
+
+        var items = GetItemsForDirection(direction.ToMauiSwipeDirection());
+
+        if (items is { Count: > 0 } && items[0] is ISwipeItem swipeItem)
+        {
+            swipeItem.OnInvoked();
+        }
+    }
+
+    private ISwipeItems? GetItemsForDirection(Microsoft.Maui.SwipeDirection direction)
+    {
+        return direction switch
+        {
+            Microsoft.Maui.SwipeDirection.Left => VirtualView?.RightItems,
+            Microsoft.Maui.SwipeDirection.Right => VirtualView?.LeftItems,
+            Microsoft.Maui.SwipeDirection.Up => VirtualView?.BottomItems,
+            Microsoft.Maui.SwipeDirection.Down => VirtualView?.TopItems,
+            _ => null
+        };
     }
 
     ISwipeView ISwipeViewHandler.VirtualView => VirtualView;

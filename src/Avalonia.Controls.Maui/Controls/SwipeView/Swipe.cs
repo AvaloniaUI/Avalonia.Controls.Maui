@@ -285,6 +285,7 @@ public class Swipe : Grid
     
     // Cache this object to avoid allocating it on every frame during a swipe.
     private readonly SwipeChangingEventArgs _cachedSwipeChangingArgs;
+    internal event EventHandler<SwipeDirection>? ExecuteRequested;
 
     private double _initialX;
     private double _currentX;
@@ -745,7 +746,39 @@ public class Swipe : Grid
         var finalY = _isVerticalSwipe ? _initialY + e.TotalY : _initialY;
         
         var newState = CalculateState(finalX, finalY);
-        
+
+        if (newState != SwipeState.Hidden)
+        {
+            SwipeMode activeMode = SwipeMode.Reveal;
+            SwipeDirection activeDirection = SwipeDirection.Right;
+
+            switch (newState)
+            {
+                case SwipeState.LeftVisible:
+                    activeMode = LeftMode;
+                    activeDirection = SwipeDirection.Right;
+                    break;
+                case SwipeState.RightVisible:
+                    activeMode = RightMode;
+                    activeDirection = SwipeDirection.Left;
+                    break;
+                case SwipeState.TopVisible:
+                    activeMode = TopMode;
+                    activeDirection = SwipeDirection.Down;
+                    break;
+                case SwipeState.BottomVisible:
+                    activeMode = BottomMode;
+                    activeDirection = SwipeDirection.Up;
+                    break;
+            }
+
+            if (activeMode == SwipeMode.Execute)
+            {
+                ExecuteRequested?.Invoke(this, activeDirection);
+                newState = SwipeState.Hidden;
+            }
+        }
+
         if (newState == SwipeState.Hidden && SwipeState == SwipeState.Hidden)
         {
             if (_bodyContainer.Transitions != null && !_bodyContainer.Transitions.Contains(_transition))
