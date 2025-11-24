@@ -6,9 +6,9 @@ public class MaxTempOffsetConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        const double max = 90 * 3;
+        const double max = 90;
 
-        var maxTemp = System.Convert.ToDouble(value) * 3;
+        var maxTemp = System.Convert.ToDouble(value);
         var topMargin = max - maxTemp;
 
         return new Thickness(0, topMargin, 0, 0);

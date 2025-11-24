@@ -7,7 +7,7 @@
 
     <Label
         Text="Next 24 Hours"
-        Margin="{OnIdiom Phone='15,0',Default='25,0'}"
+        Margin="15,0"
         class="SectionTitle"/>
 
     <ScrollView
