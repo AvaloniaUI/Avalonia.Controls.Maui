@@ -37,5 +37,5 @@ public partial class SwipeItemViewHandler : ContentViewHandler, ISwipeItemViewHa
 
     ISwipeItemView ISwipeItemViewHandler.VirtualView => (ISwipeItemView)VirtualView;
 
-    object ISwipeItemViewHandler.PlatformView => PlatformView!;
+    object ISwipeItemViewHandler.PlatformView => PlatformView;
 }
