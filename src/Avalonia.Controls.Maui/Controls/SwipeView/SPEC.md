@@ -39,8 +39,6 @@ public class Swipe : Grid
     public event EventHandler<SwipeStartedEventArgs>? SwipeStarted;
     public event EventHandler<SwipeChangingEventArgs>? SwipeChanging;
     public event EventHandler<SwipeEndedEventArgs>? SwipeEnded;
-    public event EventHandler<SwipeStartedEventArgs>? SwipeExecuted;
-
     public void Open(OpenSwipeItem openSwipeItem, bool animated = true);
     public void Close(bool animated = true);
 }

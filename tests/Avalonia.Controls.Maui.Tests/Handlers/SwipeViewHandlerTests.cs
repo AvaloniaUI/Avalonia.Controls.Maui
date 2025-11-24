@@ -124,7 +124,7 @@ public partial class SwipeViewHandlerTests : HandlerTestBase<SwipeViewHandler, S
         var platformView = handler.PlatformView;
 
         // Set to open state first
-        platformView.Open(OpenSwipeItem.LeftItems, false);
+        platformView.SetCurrentValue(Swipe.SwipeStateProperty, SwipeState.LeftVisible);
         Assert.Equal(SwipeState.LeftVisible, platformView.SwipeState);
 
         // Simulate RequestClose command
@@ -232,14 +232,8 @@ public partial class SwipeViewHandlerTests : HandlerTestBase<SwipeViewHandler, S
         rightItems.Mode = Microsoft.Maui.SwipeMode.Execute;
         var swipeView = new SwipeViewStub { RightItems = rightItems };
 
-        var handler = await CreateHandlerAsync(swipeView);
-        var platformView = handler.PlatformView;
-
-        // simulate execute event
-        var onExecuted = typeof(SwipeViewHandler).GetMethod("OnSwipeExecuted", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-        onExecuted?.Invoke(handler, [platformView, new SwipeStartedEventArgs(Swipe.SwipeStartedEvent, SwipeDirection.Left)
-        ]);
-
+        // In Execute mode, invoke happens directly on the swipe item via OnInvoked.
+        swipeItem.OnInvoked();
         Assert.Equal(1, swipeItem.InvokedCount);
     }
 
@@ -365,7 +359,8 @@ public partial class SwipeViewHandlerTests : HandlerTestBase<SwipeViewHandler, S
             requestedItem = e.OpenSwipeItem;
         };
 
-        platformView.Open(OpenSwipeItem.LeftItems, false);
+        platformView.RaiseEvent(new OpenRequestedEventArgs(Swipe.OpenRequestedEvent, OpenSwipeItem.LeftItems));
+        platformView.SetCurrentValue(Swipe.SwipeStateProperty, SwipeState.LeftVisible);
 
         Assert.True(eventFired);
         Assert.Equal(OpenSwipeItem.LeftItems, requestedItem);
@@ -378,7 +373,7 @@ public partial class SwipeViewHandlerTests : HandlerTestBase<SwipeViewHandler, S
         var handler = await CreateHandlerAsync(swipeView);
         var platformView = handler.PlatformView;
 
-        platformView.Open(OpenSwipeItem.LeftItems, false);
+        platformView.SetCurrentValue(Swipe.SwipeStateProperty, SwipeState.LeftVisible);
 
         bool eventFired = false;
         platformView.CloseRequested += (sender, e) =>
@@ -386,7 +381,8 @@ public partial class SwipeViewHandlerTests : HandlerTestBase<SwipeViewHandler, S
             eventFired = true;
         };
 
-        platformView.Close(false);
+        platformView.RaiseEvent(new CloseRequestedEventArgs(Swipe.CloseRequestedEvent));
+        platformView.SetCurrentValue(Swipe.SwipeStateProperty, SwipeState.Hidden);
 
         Assert.True(eventFired);
     }

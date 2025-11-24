@@ -53,7 +53,6 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
         platformView.SwipeStarted += OnSwipeStarted;
         platformView.SwipeChanging += OnSwipeChanging;
         platformView.SwipeEnded += OnSwipeEnded;
-        platformView.SwipeExecuted += OnSwipeExecuted;
     }
 
     protected override void DisconnectHandler(PlatformView platformView)
@@ -61,7 +60,6 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
         platformView.SwipeStarted -= OnSwipeStarted;
         platformView.SwipeChanging -= OnSwipeChanging;
         platformView.SwipeEnded -= OnSwipeEnded;
-        platformView.SwipeExecuted -= OnSwipeExecuted;
         base.DisconnectHandler(platformView);
     }
     
@@ -111,14 +109,23 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
     {
         if (handler.PlatformView is PlatformView platformView && args is SwipeViewOpenRequest request)
         {
-            platformView.RequestOpen(request);
+            var target = request.OpenSwipeItem switch
+            {
+                Microsoft.Maui.OpenSwipeItem.LeftItems => SwipeState.LeftVisible,
+                Microsoft.Maui.OpenSwipeItem.RightItems => SwipeState.RightVisible,
+                Microsoft.Maui.OpenSwipeItem.TopItems => SwipeState.TopVisible,
+                Microsoft.Maui.OpenSwipeItem.BottomItems => SwipeState.BottomVisible,
+                _ => SwipeState.Hidden
+            };
+
+            platformView.SetSwipeState(target, request.Animated);
         }
     }
 
     public static void MapRequestClose(ISwipeViewHandler handler, ISwipeView swipeView, object? args)
     {
         if (handler.PlatformView is PlatformView platformView)
-            platformView.RequestClose(swipeView);
+            platformView.SetSwipeState(SwipeState.Hidden, animated: true);
     }
     
     private void OnSwipeStarted(object? sender, SwipeStartedEventArgs e)
@@ -145,32 +152,6 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
         VirtualView.SwipeEnded(new SwipeViewSwipeEnded(direction, e.IsOpen));
     }
 
-    private void OnSwipeExecuted(object? sender, SwipeStartedEventArgs e)
-    {
-        if (VirtualView == null)
-            return;
-
-        var mauiDirection = e.SwipeDirection.ToMauiSwipeDirection();
-        var items = GetItemsForDirection(mauiDirection);
-
-        if (items is { Count: > 0 } && items[0] is ISwipeItem swipeItem)
-        {
-            swipeItem.OnInvoked();
-        }
-    }
-
-    private ISwipeItems? GetItemsForDirection(Microsoft.Maui.SwipeDirection direction)
-    {
-        return direction switch
-        {
-            Microsoft.Maui.SwipeDirection.Left => VirtualView?.RightItems,
-            Microsoft.Maui.SwipeDirection.Right => VirtualView?.LeftItems,
-            Microsoft.Maui.SwipeDirection.Up => VirtualView?.BottomItems,
-            Microsoft.Maui.SwipeDirection.Down => VirtualView?.TopItems,
-            _ => null
-        };
-    }
-    
     ISwipeView ISwipeViewHandler.VirtualView => VirtualView;
     object ISwipeViewHandler.PlatformView => PlatformView;
 }

@@ -1,4 +1,3 @@
-using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Microsoft.Maui;
@@ -13,29 +12,11 @@ namespace Avalonia.Controls.Maui;
 public static class SwipeViewExtensions
 {
     /// <summary>
-    /// Updates the background of the Swipe control.
-    /// </summary>
-    /// <param name="platformView">The native Avalonia Swipe control.</param>
-    /// <param name="swipeView">The virtual .NET MAUI SwipeView.</param>
-    public static void UpdateBackground(this PlatformView platformView, ISwipeView swipeView)
-    {
-        // Swipe is a Grid (Panel), so we can directly update its background
-        if (swipeView.Background != null)
-        {
-            platformView.Background = swipeView.Background.ToPlatform();
-        }
-        else
-        {
-            platformView.ClearValue(Panel.BackgroundProperty);
-        }
-    }
-
-    /// <summary>
     /// Updates the main content of the Swipe control.
     /// </summary>
     /// <param name="platformView">The native Avalonia Swipe control.</param>
     /// <param name="swipeView">The virtual .NET MAUI SwipeView.</param>
-    /// <param name="context">The .NET MAUI context.</param>
+    /// <param name="context">The .NET MAUI context used to inflate the content.</param>
     public static void UpdateContent(this PlatformView platformView, ISwipeView swipeView, IMauiContext? context)
     {
         if (context == null) return;
@@ -51,7 +32,7 @@ public static class SwipeViewExtensions
     }
 
     /// <summary>
-    /// Updates the items reachable by swiping from the left.
+    /// Updates items shown when swiping from left to right.
     /// </summary>
     /// <param name="platformView">The native Avalonia Swipe control.</param>
     /// <param name="swipeView">The virtual .NET MAUI SwipeView.</param>
@@ -60,7 +41,6 @@ public static class SwipeViewExtensions
     {
         platformView.Left = CreateItemsTemplate(platformView, swipeView.LeftItems, context, stretchToWidth: false);
 
-        // Update the swipe mode for left items
         if (swipeView.LeftItems != null)
         {
             platformView.LeftMode = swipeView.LeftItems.Mode == Microsoft.Maui.SwipeMode.Execute
@@ -70,7 +50,7 @@ public static class SwipeViewExtensions
     }
 
     /// <summary>
-    /// Updates the items reachable by swiping from the right.
+    /// Updates items shown when swiping from right to left.
     /// </summary>
     /// <param name="platformView">The native Avalonia Swipe control.</param>
     /// <param name="swipeView">The virtual .NET MAUI SwipeView.</param>
@@ -79,7 +59,6 @@ public static class SwipeViewExtensions
     {
         platformView.Right = CreateItemsTemplate(platformView, swipeView.RightItems, context, stretchToWidth: false);
 
-        // Update the swipe mode for right items
         if (swipeView.RightItems != null)
         {
             platformView.RightMode = swipeView.RightItems.Mode == Microsoft.Maui.SwipeMode.Execute
@@ -89,7 +68,7 @@ public static class SwipeViewExtensions
     }
 
     /// <summary>
-    /// Updates the items reachable by swiping from the top.
+    /// Updates items shown when swiping down.
     /// </summary>
     /// <param name="platformView">The native Avalonia Swipe control.</param>
     /// <param name="swipeView">The virtual .NET MAUI SwipeView.</param>
@@ -98,7 +77,6 @@ public static class SwipeViewExtensions
     {
         platformView.Top = CreateItemsTemplate(platformView, swipeView.TopItems, context, stretchToWidth: true);
 
-        // Update the swipe mode for top items
         if (swipeView.TopItems != null)
         {
             platformView.TopMode = swipeView.TopItems.Mode == Microsoft.Maui.SwipeMode.Execute
@@ -108,7 +86,7 @@ public static class SwipeViewExtensions
     }
 
     /// <summary>
-    /// Updates the items reachable by swiping from the bottom.
+    /// Updates items shown when swiping up.
     /// </summary>
     /// <param name="platformView">The native Avalonia Swipe control.</param>
     /// <param name="swipeView">The virtual .NET MAUI SwipeView.</param>
@@ -117,7 +95,6 @@ public static class SwipeViewExtensions
     {
         platformView.Bottom = CreateItemsTemplate(platformView, swipeView.BottomItems, context, stretchToWidth: true);
 
-        // Update the swipe mode for bottom items
         if (swipeView.BottomItems != null)
         {
             platformView.BottomMode = swipeView.BottomItems.Mode == Microsoft.Maui.SwipeMode.Execute
@@ -137,35 +114,6 @@ public static class SwipeViewExtensions
     }
 
     /// <summary>
-    /// Requests the Swipe control to open a specific direction.
-    /// </summary>
-    /// <param name="platformView">The native Avalonia Swipe control.</param>
-    /// <param name="request">The open request details.</param>
-    public static void RequestOpen(this PlatformView platformView, SwipeViewOpenRequest request)
-    {
-        var direction = request.OpenSwipeItem switch
-        {
-            Microsoft.Maui.OpenSwipeItem.LeftItems => OpenSwipeItem.LeftItems,
-            Microsoft.Maui.OpenSwipeItem.RightItems => OpenSwipeItem.RightItems,
-            Microsoft.Maui.OpenSwipeItem.TopItems => OpenSwipeItem.TopItems,
-            Microsoft.Maui.OpenSwipeItem.BottomItems => OpenSwipeItem.BottomItems,
-            _ => OpenSwipeItem.RightItems
-        };
-
-        platformView.Open(direction, request.Animated);
-    }
-
-    /// <summary>
-    /// Requests the Swipe control to close.
-    /// </summary>
-    /// <param name="platformView">The native Avalonia Swipe control.</param>
-    /// <param name="swipeView">The virtual .NET MAUI SwipeView.</param>
-    public static void RequestClose(this PlatformView platformView, ISwipeView swipeView)
-    {
-        platformView.Close(animated: true);
-    }
-    
-    /// <summary>
     /// Converts Avalonia SwipeDirection to .NET MAUI SwipeDirection.
     /// </summary>
     public static Microsoft.Maui.SwipeDirection ToMauiSwipeDirection(this SwipeDirection direction)
@@ -179,8 +127,7 @@ public static class SwipeViewExtensions
             _ => Microsoft.Maui.SwipeDirection.Right
         };
     }
-    
-    // Create a data template for SwipeItems using proper handlers
+
     private static IDataTemplate? CreateItemsTemplate(PlatformView owner, ISwipeItems? swipeItems, IMauiContext? context, bool stretchToWidth)
     {
         if (swipeItems == null || swipeItems.Count == 0 || context == null)
@@ -223,7 +170,6 @@ public static class SwipeViewExtensions
 
                 if (item is ISwipeItemView swipeItemView)
                 {
-                    // Use SwipeItemViewHandler for SwipeItemView
                     if (swipeItemView.Handler == null)
                     {
                         swipeItemView.ToHandler(context);
@@ -236,7 +182,6 @@ public static class SwipeViewExtensions
                 }
                 else if (item is ISwipeItemMenuItem menuItem)
                 {
-                    // Use SwipeItemMenuItemHandler for SwipeItem
                     if (menuItem.Handler == null)
                     {
                         menuItem.ToHandler(context);
@@ -248,12 +193,13 @@ public static class SwipeViewExtensions
                     }
                 }
 
-                    if (avaloniaControl != null)
-                    {
-                        avaloniaControl.HorizontalAlignment = HorizontalAlignment.Stretch;
-                        avaloniaControl.VerticalAlignment = VerticalAlignment.Stretch;
+                if (avaloniaControl != null)
+                {
+                    avaloniaControl.HorizontalAlignment = HorizontalAlignment.Stretch;
+                    avaloniaControl.VerticalAlignment = VerticalAlignment.Stretch;
 
-                        avaloniaControl.SetValue(Control.TagProperty, (swipeItems.SwipeBehaviorOnInvoked, owner));
+                    // Tag used for auto-close behavior
+                    avaloniaControl.Tag = (swipeItems.SwipeBehaviorOnInvoked, owner);
 
                     if (panel is Grid grid)
                     {

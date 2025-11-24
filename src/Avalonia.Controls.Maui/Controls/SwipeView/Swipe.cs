@@ -275,12 +275,6 @@ public class Swipe : Grid
         remove => RemoveHandler(SwipeEndedEvent, value);
     }
 
-    /// <summary>
-    /// Occurs when a swipe is triggered in Execute mode.
-    /// The argument contains the direction of the executed swipe.
-    /// </summary>
-    public event EventHandler<SwipeStartedEventArgs>? SwipeExecuted;
-
     private readonly ContentPresenter _rightContainer;
     private readonly ContentPresenter _leftContainer;
     private readonly ContentPresenter _topContainer;
@@ -365,19 +359,19 @@ public class Swipe : Grid
             switch (e.Key)
             {
                 case Key.Left:
-                    Open(OpenSwipeItem.LeftItems);
+                    SetSwipeState(SwipeState.LeftVisible);
                     e.Handled = true;
                     return;
                 case Key.Right:
-                    Open(OpenSwipeItem.RightItems);
+                    SetSwipeState(SwipeState.RightVisible);
                     e.Handled = true;
                     return;
                 case Key.Up:
-                    Open(OpenSwipeItem.TopItems);
+                    SetSwipeState(SwipeState.TopVisible);
                     e.Handled = true;
                     return;
                 case Key.Down:
-                    Open(OpenSwipeItem.BottomItems);
+                    SetSwipeState(SwipeState.BottomVisible);
                     e.Handled = true;
                     return;
             }
@@ -385,7 +379,7 @@ public class Swipe : Grid
 
         if (e.Key == Key.Escape)
         {
-            Close();
+            SetSwipeState(SwipeState.Hidden);
             e.Handled = true;
         }
     }
@@ -752,42 +746,6 @@ public class Swipe : Grid
         
         var newState = CalculateState(finalX, finalY);
         
-        // Check for Execute Mode trigger
-        if (newState != SwipeState.Hidden)
-        {
-            SwipeMode activeMode = SwipeMode.Reveal;
-            SwipeDirection activeDirection = SwipeDirection.Right;
-
-            switch (newState)
-            {
-                case SwipeState.LeftVisible:
-                    activeMode = LeftMode;
-                    activeDirection = SwipeDirection.Right; 
-                    break;
-                case SwipeState.RightVisible:
-                    activeMode = RightMode;
-                    activeDirection = SwipeDirection.Left;
-                    break;
-                case SwipeState.TopVisible:
-                    activeMode = TopMode;
-                    activeDirection = SwipeDirection.Down;
-                    break;
-                case SwipeState.BottomVisible:
-                    activeMode = BottomMode;
-                    activeDirection = SwipeDirection.Up;
-                    break;
-            }
-
-            if (activeMode == SwipeMode.Execute)
-            {
-                // Fire execution event
-                SwipeExecuted?.Invoke(this, new SwipeStartedEventArgs(SwipeStartedEvent, activeDirection));
-                
-                // In Execute mode, items are closed immediately after execution
-                newState = SwipeState.Hidden;
-            }
-        }
-        
         if (newState == SwipeState.Hidden && SwipeState == SwipeState.Hidden)
         {
             if (_bodyContainer.Transitions != null && !_bodyContainer.Transitions.Contains(_transition))
@@ -813,44 +771,36 @@ public class Swipe : Grid
     }
 
     /// <summary>
-    /// Opens the swipe to reveal items in the specified direction.
-    /// </summary>
-    /// <param name="openSwipeItem">The direction to open.</param>
-    /// <param name="animated">Whether to animate the opening (default: true).</param>
-    public void Open(OpenSwipeItem openSwipeItem, bool animated = true)
+    internal void SetSwipeState(SwipeState targetState, bool animated = true)
     {
-        var eventArgs = new OpenRequestedEventArgs(OpenRequestedEvent, openSwipeItem);
-        RaiseEvent(eventArgs);
-
-        if (eventArgs.Cancel) return;
-
-        ApplyStateWithAnimationCheck(animated, () =>
+        var requested = targetState;
+        if (requested != SwipeState.Hidden)
         {
-            SetCurrentValue(SwipeStateProperty, openSwipeItem switch
+            var openItem = requested switch
             {
-                OpenSwipeItem.LeftItems => SwipeState.LeftVisible,
-                OpenSwipeItem.TopItems => SwipeState.TopVisible,
-                OpenSwipeItem.RightItems => SwipeState.RightVisible,
-                OpenSwipeItem.BottomItems => SwipeState.BottomVisible,
-                _ => SwipeState.Hidden
-            });
-        });
-    }
+                SwipeState.LeftVisible => OpenSwipeItem.LeftItems,
+                SwipeState.RightVisible => OpenSwipeItem.RightItems,
+                SwipeState.TopVisible => OpenSwipeItem.TopItems,
+                SwipeState.BottomVisible => OpenSwipeItem.BottomItems,
+                _ => OpenSwipeItem.RightItems
+            };
 
-    /// <summary>
-    /// Closes the swipe to hide all swipe items.
-    /// </summary>
-    /// <param name="animated">Whether to animate the closing (default: true).</param>
-    public void Close(bool animated = true)
-    {
-        var eventArgs = new CloseRequestedEventArgs(CloseRequestedEvent);
-        RaiseEvent(eventArgs);
-
-        if (eventArgs.Cancel) return;
+            var eventArgs = new OpenRequestedEventArgs(OpenRequestedEvent, openItem);
+            RaiseEvent(eventArgs);
+            if (eventArgs.Cancel)
+                return;
+        }
+        else
+        {
+            var eventArgs = new CloseRequestedEventArgs(CloseRequestedEvent);
+            RaiseEvent(eventArgs);
+            if (eventArgs.Cancel)
+                return;
+        }
 
         ApplyStateWithAnimationCheck(animated, () =>
         {
-            SetCurrentValue(SwipeStateProperty, SwipeState.Hidden);
+            SetCurrentValue(SwipeStateProperty, requested);
         });
     }
 

@@ -4,6 +4,10 @@ using PlatformView = Avalonia.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>
+/// Handler for .NET MAUI SwipeItemMenuItem to Avalonia platform-native menu item mapping.
+/// Maps ISwipeItemMenuItem cross-platform interface to platform-specific menu item implementations.
+/// </summary>
 public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuItem, PlatformView>, ISwipeItemMenuItemHandler
 {
     public static IPropertyMapper<ISwipeItemMenuItem, ISwipeItemMenuItemHandler> Mapper =
@@ -62,47 +66,11 @@ public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuIte
         platformView.Click -= OnButtonClick;
         base.DisconnectHandler(platformView);
     }
+    
+    ISwipeItemMenuItem ISwipeItemMenuItemHandler.VirtualView => VirtualView;
 
-    private void OnButtonClick(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        VirtualView?.OnInvoked();
-        TryCloseParentSwipeView();
-    }
-
-    private void TryCloseParentSwipeView()
-    {
-        if (PlatformView?.Tag is ValueTuple<SwipeBehaviorOnInvoked, Avalonia.Controls.Maui.Swipe> tag)
-        {
-            var (behavior, swipe) = tag;
-            if (behavior == SwipeBehaviorOnInvoked.Close)
-            {
-                swipe.Close(animated: true);
-            }
-        }
-        else if (VirtualView is IElement element)
-        {
-            ISwipeItems? swipeItems = null;
-            ISwipeView? swipeView = null;
-            IElement? current = element;
-
-            while (current != null && (swipeItems == null || swipeView == null))
-            {
-                if (swipeItems == null && current is ISwipeItems si)
-                    swipeItems = si;
-
-                if (swipeView == null && current is ISwipeView sv)
-                    swipeView = sv;
-
-                current = current.Parent;
-            }
-
-            if (swipeItems?.SwipeBehaviorOnInvoked == SwipeBehaviorOnInvoked.Close && swipeView != null)
-            {
-                swipeView.RequestClose(new SwipeViewCloseRequest(true));
-            }
-        }
-    }
-
+    object ISwipeItemMenuItemHandler.PlatformView => PlatformView;
+    
     public static void MapVisibility(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
@@ -149,8 +117,45 @@ public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuIte
 
         await platformView.UpdateSourceAsync(view, handler);
     }
+    
+    private void OnButtonClick(object? sender, Interactivity.RoutedEventArgs e)
+    {
+        VirtualView?.OnInvoked();
+        TryCloseParentSwipeView();
+    }
 
-    ISwipeItemMenuItem ISwipeItemMenuItemHandler.VirtualView => VirtualView;
+    private void TryCloseParentSwipeView()
+    {
+        // Use Tag is set when building swipe items for auto-close behavior.
+        if (PlatformView?.Tag is ValueTuple<SwipeBehaviorOnInvoked, Swipe> tag)
+        {
+            var (behavior, swipe) = tag;
+            if (behavior == SwipeBehaviorOnInvoked.Close)
+            {
+                swipe.SetSwipeState(SwipeState.Hidden, animated: true);
+            }
+            return;
+        }
 
-    object ISwipeItemMenuItemHandler.PlatformView => PlatformView;
+        // Walk up the element tree to find owning swipe items and swipe view.
+        if (VirtualView is not IElement element)
+            return;
+
+        ISwipeItems? swipeItems = null;
+        ISwipeView? swipeView = null;
+
+        for (var current = element; current != null && (swipeItems == null || swipeView == null); current = current.Parent)
+        {
+            if (swipeItems == null && current is ISwipeItems si)
+                swipeItems = si;
+
+            if (swipeView == null && current is ISwipeView sv)
+                swipeView = sv;
+        }
+
+        if (swipeItems?.SwipeBehaviorOnInvoked == SwipeBehaviorOnInvoked.Close && swipeView != null)
+        {
+            swipeView.RequestClose(new SwipeViewCloseRequest(true));
+        }
+    }
 }
