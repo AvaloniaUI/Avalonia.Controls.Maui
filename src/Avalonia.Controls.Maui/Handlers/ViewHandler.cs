@@ -168,7 +168,21 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     {
         if (PlatformView is null)
             return;
-        PlatformView.Arrange(new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height));
+
+        var safeFrame = new global::Avalonia.Rect(
+            double.IsFinite(frame.X) ? frame.X : 0,
+            double.IsFinite(frame.Y) ? frame.Y : 0,
+            double.IsFinite(frame.Width) && frame.Width >= 0 ? frame.Width : 0,
+            double.IsFinite(frame.Height) && frame.Height >= 0 ? frame.Height : 0);
+
+        try
+        {
+            PlatformView.Arrange(safeFrame);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Exception during PlatformArrange: {ex}");
+        }
     }
 
     private protected abstract PlatformView OnCreatePlatformView();
