@@ -538,7 +538,8 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         foreach (var item in VirtualView.Items)
         {
-            if (!item.IsVisible)
+            // Check both IsVisible and FlyoutItemIsVisible
+            if (!item.IsVisible || !item.FlyoutItemIsVisible)
                 continue;
 
             // Create flyout item button with dynamic content
