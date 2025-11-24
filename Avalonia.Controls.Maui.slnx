@@ -5,6 +5,7 @@
   <Folder Name="/Samples/">
     <Project Path="samples/SandboxApp/SandboxApp.csproj" />
     <Project Path="samples/SandboxAppWasm/SandboxAppWasm.csproj" />
+    <Project Path="samples/WeatherTwentyOne/WeatherTwentyOne.csproj" />
   </Folder>
   <Folder Name="/Samples/ControlGallery/">
     <Project Path="samples/ControlGallery/ControlGallery.Browser/ControlGallery.Browser.csproj" />
