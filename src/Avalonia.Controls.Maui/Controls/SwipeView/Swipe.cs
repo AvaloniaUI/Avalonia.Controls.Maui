@@ -1,6 +1,7 @@
 using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls.Templates;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media.Transformation;
@@ -306,6 +307,7 @@ public class Swipe : Grid
     public Swipe()
     {
         ClipToBounds = true;
+        Focusable = true;
 
         _rightContainer = CreateSideContainer(HorizontalAlignment.Right, VerticalAlignment.Stretch);
         _leftContainer = CreateSideContainer(HorizontalAlignment.Left, VerticalAlignment.Stretch);
@@ -343,6 +345,49 @@ public class Swipe : Grid
         Children.Add(_topContainer);
         Children.Add(_bottomContainer);
         Children.Add(_bodyContainer);
+    }
+
+    /// <summary>
+    /// Handle keyboard shortcuts for accessibility (Ctrl+Arrows to open, Esc to close).
+    /// </summary>
+    /// <param name="e">Key event args.</param>
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        base.OnKeyDown(e);
+
+        if (e.Handled)
+            return;
+
+        var ctrl = e.KeyModifiers.HasFlag(KeyModifiers.Control);
+
+        if (ctrl)
+        {
+            switch (e.Key)
+            {
+                case Key.Left:
+                    Open(OpenSwipeItem.LeftItems);
+                    e.Handled = true;
+                    return;
+                case Key.Right:
+                    Open(OpenSwipeItem.RightItems);
+                    e.Handled = true;
+                    return;
+                case Key.Up:
+                    Open(OpenSwipeItem.TopItems);
+                    e.Handled = true;
+                    return;
+                case Key.Down:
+                    Open(OpenSwipeItem.BottomItems);
+                    e.Handled = true;
+                    return;
+            }
+        }
+
+        if (e.Key == Key.Escape)
+        {
+            Close();
+            e.Handled = true;
+        }
     }
 
     private ContentPresenter CreateSideContainer(HorizontalAlignment hAlign, VerticalAlignment vAlign)
@@ -436,30 +481,57 @@ public class Swipe : Grid
                 _rightContainer.IsVisible = true;
                 MaterializeDataTemplate(_rightContainer, Right);
                 ApplySwipeTransform(() => SetTranslate(-_rightContainer.Bounds.Width, 0), _rightContainer);
+                FocusFirstFocusable(_rightContainer);
                 break;
 
             case SwipeState.LeftVisible:
                 _leftContainer.IsVisible = true;
                 MaterializeDataTemplate(_leftContainer, Left);
                 ApplySwipeTransform(() => SetTranslate(_leftContainer.Bounds.Width, 0), _leftContainer);
+                FocusFirstFocusable(_leftContainer);
                 break;
 
             case SwipeState.TopVisible:
                 _topContainer.IsVisible = true;
                 MaterializeDataTemplate(_topContainer, Top);
                 ApplySwipeTransform(() => SetTranslate(0, _topContainer.Bounds.Height), _topContainer);
+                FocusFirstFocusable(_topContainer);
                 break;
 
             case SwipeState.BottomVisible:
                 _bottomContainer.IsVisible = true;
                 MaterializeDataTemplate(_bottomContainer, Bottom);
                 ApplySwipeTransform(() => SetTranslate(0, -_bottomContainer.Bounds.Height), _bottomContainer);
+                FocusFirstFocusable(_bottomContainer);
                 break;
 
             case SwipeState.Hidden:
             default:
                 SetTranslate(0, 0);
+                // Return focus to the main body when closed.
+                _bodyContainer.Focus();
                 break;
+        }
+    }
+
+    private void FocusFirstFocusable(ContentPresenter presenter)
+    {
+        if (presenter.Content is Control control && control.Focusable)
+        {
+            control.Focus();
+            return;
+        }
+
+        if (presenter.Content is Panel panel)
+        {
+            foreach (var child in panel.Children)
+            {
+                if (child is Control c && c.Focusable)
+                {
+                    c.Focus();
+                    return;
+                }
+            }
         }
     }
 
