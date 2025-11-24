@@ -320,9 +320,12 @@ public class Swipe : Grid
         _transition = new TransformOperationsTransition
         {
             Property = RenderTransformProperty,
-            Duration = AnimationDuration,
+            Duration = AnimationDuration, 
             Easing = new CubicEaseOut()
         };
+
+        _bodyContainer.Transitions ??= new Transitions();
+        _bodyContainer.Transitions.Add(_transition);
 
         _panGestureRecognizer = new PanGestureRecognizer
         {
@@ -392,9 +395,7 @@ public class Swipe : Grid
         if (absX > absY)
         {
             var sideContainer = translationX < 0 ? _rightContainer : _leftContainer;
-            EnsureContainerSize(sideContainer);
-            double containerWidth = sideContainer.Bounds.Width;
-            containerWidth = Math.Max(containerWidth, GetContainerExtent(true, translationX < 0 ? _rightContainer : _leftContainer));
+            double containerWidth = Math.Max(sideContainer.Bounds.Width, GetContainerExtent(true, sideContainer));
         
             if (containerWidth <= 0) 
                 return SwipeState.Hidden;
@@ -411,9 +412,7 @@ public class Swipe : Grid
         else
         {
             var sideContainer = translationY < 0 ? _bottomContainer : _topContainer;
-            EnsureContainerSize(sideContainer);
-            double containerHeight = sideContainer.Bounds.Height;
-            containerHeight = Math.Max(containerHeight, GetContainerExtent(false, translationY < 0 ? _bottomContainer : _topContainer));
+            double containerHeight = Math.Max(sideContainer.Bounds.Height, GetContainerExtent(false, sideContainer));
        
             if (containerHeight <= 0)
                 return SwipeState.Hidden;
@@ -474,47 +473,16 @@ public class Swipe : Grid
         return Math.Max(container.Bounds.Height, container.DesiredSize.Height);
     }
 
-    private void EnsureContainerSize(ContentPresenter container)
-    {
-        if (container == _topContainer || container == _bottomContainer)
-        {
-            var targetWidth = Math.Max(Bounds.Width, _bodyContainer.Bounds.Width);
-            if (!double.IsNaN(targetWidth) && targetWidth > 0)
-                container.Width = targetWidth;
-        }
-        else if (container == _leftContainer || container == _rightContainer)
-        {
-            var targetHeight = Math.Max(Bounds.Height, _bodyContainer.Bounds.Height);
-            if (!double.IsNaN(targetHeight) && targetHeight > 0)
-                container.Height = targetHeight;
-        }
-        
-        container.InvalidateMeasure();
-        container.UpdateLayout();
-    }
-
     private void ApplySwipeTransform(Action transformAction, ContentPresenter container)
     {
-        EnsureContainerSize(container);
-
         if (container.Bounds.Width > 0 || container.Bounds.Height > 0)
         {
             transformAction();
         }
         else
         {
-            // Force layout if bounds not available yet
-            container.UpdateLayout();
-
-            if (container.Bounds.Width > 0 || container.Bounds.Height > 0)
-            {
-                transformAction();
-            }
-            else
-            {
-                // Still no bounds, defer to next render pass
-                Dispatcher.UIThread.Post(transformAction, DispatcherPriority.Render);
-            }
+            // If bounds are not ready, defer to next render pass.
+            Dispatcher.UIThread.Post(transformAction, DispatcherPriority.Render);
         }
 
     }
@@ -543,20 +511,20 @@ public class Swipe : Grid
 
     private void MaterializeDataTemplate(ContentPresenter contentView, IDataTemplate? dataTemplate)
     {
-        if (contentView.Content is not null || dataTemplate is null)
+        if (dataTemplate is null)
         {
+            contentView.ContentTemplate = null;
+            contentView.Content = null;
             return;
         }
 
-        var view = dataTemplate.Build(DataContext);
-        contentView.Content = view;
-
-        // Force a layout update to ensure the container measures its content
-        if (view is Control control)
+        if (contentView.ContentTemplate != dataTemplate)
         {
-            control.InvalidateMeasure();
+            contentView.ContentTemplate = dataTemplate;
         }
-        contentView.InvalidateMeasure();
+
+        // Keep content synced so virtualization can rebuild with the current DataContext.
+        contentView.Content = DataContext;
     }
 
     private void PanUpdated(object? sender, PanUpdatedEventArgs e)
@@ -582,9 +550,6 @@ public class Swipe : Grid
         _initialX = _currentX;
         _initialY = _currentY;
 
-        if (_bodyContainer.Transitions != null)
-            _bodyContainer.Transitions.Remove(_transition);
-
         _isHorizontalSwipe = false;
         _isVerticalSwipe = false;
 
@@ -594,8 +559,6 @@ public class Swipe : Grid
         MaterializeDataTemplate(_topContainer, Top);
         MaterializeDataTemplate(_bottomContainer, Bottom);
 
-        // Force immediate layout update to ensure containers have valid bounds
-        UpdateLayout();
     }
 
     private void HandlePanRunning(PanUpdatedEventArgs e)
@@ -638,9 +601,8 @@ public class Swipe : Grid
             {
                 if (Left != null && _leftContainer.Bounds.Width > 0)
                 {
-                    EnsureContainerSize(_leftContainer);
                     var extent = GetContainerExtent(true, _leftContainer);
- 
+
                     var maxDistance = extent;
                     x = Math.Min(x, maxDistance);
                 }
@@ -654,7 +616,6 @@ public class Swipe : Grid
             {
                 if (Right != null && _rightContainer.Bounds.Width > 0)
                 {
-                    EnsureContainerSize(_rightContainer);
                     var extent = GetContainerExtent(true, _rightContainer);
                     var maxDistance = extent;
                     x = Math.Max(x, -maxDistance);
@@ -674,7 +635,6 @@ public class Swipe : Grid
             {
                 if (Top != null && _topContainer.Bounds.Height > 0)
                 {
-                    EnsureContainerSize(_topContainer);
                     var extent = GetContainerExtent(false, _topContainer);
                     y = Math.Min(y, extent);
                 }
@@ -688,7 +648,6 @@ public class Swipe : Grid
             {
                 if (Bottom != null && _bottomContainer.Bounds.Height > 0)
                 {
-                    EnsureContainerSize(_bottomContainer);
                     var extent = GetContainerExtent(false, _bottomContainer);
                     y = Math.Max(y, -extent);
                 }
@@ -716,9 +675,6 @@ public class Swipe : Grid
 
     private void HandlePanCompleted(PanUpdatedEventArgs e)
     {
-        if (_bodyContainer.Transitions != null && !_bodyContainer.Transitions.Contains(_transition))
-            _bodyContainer.Transitions.Add(_transition);
-
         var finalX = _isHorizontalSwipe ? _initialX + e.TotalX : _initialX;
         var finalY = _isVerticalSwipe ? _initialY + e.TotalY : _initialY;
         
@@ -774,7 +730,7 @@ public class Swipe : Grid
         }
         else
         {
-            SwipeState = newState;
+            SetCurrentValue(SwipeStateProperty, newState);
         }
 
         bool isOpen = newState != SwipeState.Hidden;
@@ -798,14 +754,14 @@ public class Swipe : Grid
 
         ApplyStateWithAnimationCheck(animated, () =>
         {
-            SwipeState = openSwipeItem switch
+            SetCurrentValue(SwipeStateProperty, openSwipeItem switch
             {
                 OpenSwipeItem.LeftItems => SwipeState.LeftVisible,
                 OpenSwipeItem.TopItems => SwipeState.TopVisible,
                 OpenSwipeItem.RightItems => SwipeState.RightVisible,
                 OpenSwipeItem.BottomItems => SwipeState.BottomVisible,
                 _ => SwipeState.Hidden
-            };
+            });
         });
     }
 
@@ -822,34 +778,23 @@ public class Swipe : Grid
 
         ApplyStateWithAnimationCheck(animated, () =>
         {
-            SwipeState = SwipeState.Hidden;
+            SetCurrentValue(SwipeStateProperty, SwipeState.Hidden);
         });
     }
 
     private void ApplyStateWithAnimationCheck(bool animated, Action action)
     {
-        var transitions = _bodyContainer.Transitions;
-        bool hadTransition = transitions != null && transitions.Contains(_transition);
+        var originalDuration = _transition.Duration;
 
-        if (!animated && hadTransition)
-        {
-            transitions!.Remove(_transition);
-        }
-        else if (animated && !hadTransition)
-        {
-            transitions ??= new Transitions();
-            transitions.Add(_transition);
-            _bodyContainer.Transitions = transitions;
-        }
+        _transition.Duration = animated ? AnimationDuration : TimeSpan.Zero;
 
         action();
 
-        if (!animated && hadTransition)
+        if (!animated)
         {
             Dispatcher.UIThread.Post(() =>
             {
-                if (_bodyContainer.Transitions != null && !_bodyContainer.Transitions.Contains(_transition))
-                    _bodyContainer.Transitions.Add(_transition);
+                _transition.Duration = originalDuration;
             }, DispatcherPriority.Render);
         }
     }

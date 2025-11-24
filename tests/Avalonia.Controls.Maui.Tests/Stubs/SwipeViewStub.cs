@@ -39,6 +39,8 @@ public class SwipeViewStub : StubBase, ISwipeView
     public bool LastSwipeEndedIsOpen { get; private set; }
 
     public bool IsOpen { get; set; }
+    
+    public SwipeTransitionMode SwipeTransitionMode  { get; set; }
 
     public SwipeViewStub()
     {
