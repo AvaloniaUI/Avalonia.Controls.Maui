@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Specialized;
+using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Controls.Maui.Services;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
@@ -50,6 +53,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     TextBlock? _titleTextBlock;
     ContentControl? _mainContentControl;
     ShellItemHandler? _currentItemHandler;
+    Dictionary<ShellItem, Avalonia.Controls.Button> _flyoutItemButtons = new();
 
     public ShellHandler() : base(Mapper, CommandMapper)
     {
@@ -206,6 +210,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             UpdateCurrentItem();
             UpdateFlyoutHeader();
             UpdateFlyoutFooter();
+            UpdateItemCheckedStates(); // Initialize checked states
 
             // Apply flyout background if set
             if (VirtualView.FlyoutBackground != null)
@@ -247,6 +252,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (handler.MauiContext != null)
         {
             handler.UpdateCurrentItem();
+            handler.UpdateItemCheckedStates();
         }
     }
 
@@ -513,53 +519,109 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (_flyoutPanel == null || VirtualView == null)
             return;
 
+        // Unsubscribe from old items
+        foreach (var kvp in _flyoutItemButtons)
+        {
+            kvp.Key.PropertyChanged -= OnFlyoutItemPropertyChanged;
+        }
+
         _flyoutPanel.Children.Clear();
+        _flyoutItemButtons.Clear();
 
         foreach (var item in VirtualView.Items)
         {
             if (!item.IsVisible)
                 continue;
 
-            // Create flyout item button
-            var button = new Avalonia.Controls.Button
-            {
-                Content = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    Spacing = 8,
-                    Children =
-                    {
-                        CreateIcon(item.Icon),
-                        new TextBlock
-                        {
-                            Text = item.Title ?? string.Empty,
-                            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-                        }
-                    }
-                },
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Left,
-                Padding = new Thickness(16, 12)
-            };
-
+            // Create flyout item button with dynamic content
+            var button = CreateFlyoutItemButton(item);
             button.Click += (s, e) => OnFlyoutItemSelected(item);
 
             _flyoutPanel.Children.Add(button);
+            _flyoutItemButtons[item] = button;
+
+            // Subscribe to property changes for this item
+            item.PropertyChanged += OnFlyoutItemPropertyChanged;
+
+            // Load initial icon based on IsChecked state
+            UpdateFlyoutItemIcon(button, item);
         }
     }
 
-    private AvaloniaControl CreateIcon(ImageSource? imageSource)
+    private Avalonia.Controls.Button CreateFlyoutItemButton(ShellItem item)
     {
-        if (imageSource == null)
-            return new Avalonia.Controls.Border { Width = 24, Height = 24 };
-
-        // TODO: Implement proper icon rendering
-        return new Avalonia.Controls.Border
+        var contentPanel = new StackPanel
         {
-            Width = 24,
-            Height = 24,
-            Background = Avalonia.Media.Brushes.Gray
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
         };
+
+        bool hasText = !string.IsNullOrEmpty(item.Title);
+
+        // Add image placeholder that will be populated asynchronously
+        var icon = item.FlyoutIcon ?? item.Icon;
+        if (icon != null)
+        {
+            var image = new Image
+            {
+                Width = 24,
+                Height = 24,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                // Add margin only when both image and text are present
+                Margin = hasText ? new Thickness(0, 0, 8, 0) : new Thickness(0)
+            };
+            contentPanel.Children.Add(image);
+        }
+
+        // Add text if present
+        if (hasText)
+        {
+            var textBlock = new TextBlock
+            {
+                Text = item.Title ?? string.Empty,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+            };
+            contentPanel.Children.Add(textBlock);
+        }
+
+        return new Avalonia.Controls.Button
+        {
+            Content = contentPanel,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+            Padding = new Thickness(16, 12)
+        };
+    }
+
+    private async Task LoadFlyoutItemIconAsync(Avalonia.Controls.Button button, ImageSource imageSource)
+    {
+        if (MauiContext == null || button.Content is not StackPanel contentPanel)
+            return;
+
+        // Find the image control in the content panel
+        var image = contentPanel.Children.OfType<Image>().FirstOrDefault();
+        if (image == null)
+            return;
+
+        try
+        {
+            var imageSourceServiceProvider = this.GetRequiredService<IImageSourceServiceProvider>();
+            var serviceSource = imageSourceServiceProvider.GetImageSourceService(imageSource.GetType());
+
+            if (serviceSource is IAvaloniaImageSourceService avaloniaService)
+            {
+                var result = await avaloniaService.GetImageAsync(imageSource, 1.0f);
+                if (result?.Value is global::Avalonia.Media.Imaging.Bitmap bitmap)
+                {
+                    image.Source = bitmap;
+                }
+            }
+        }
+        catch
+        {
+            // If image loading fails, the placeholder remains empty
+        }
     }
 
     private void OnFlyoutItemSelected(ShellItem item)
@@ -619,5 +681,63 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
 
         _backButton.IsVisible = canGoBack;
+    }
+
+    /// <summary>
+    /// Updates the IsChecked state of all shell items based on the current selection.
+    /// This method uses reflection to access the internal IsCheckedPropertyKey from BaseShellItem.
+    /// </summary>
+    private void UpdateItemCheckedStates()
+    {
+        if (VirtualView == null)
+            return;
+
+        // Get the IsCheckedPropertyKey using reflection
+        var baseShellItemType = typeof(BaseShellItem);
+        var isCheckedPropertyKeyField = baseShellItemType.GetField("IsCheckedPropertyKey",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        if (isCheckedPropertyKeyField == null)
+            return;
+
+        var isCheckedPropertyKey = isCheckedPropertyKeyField.GetValue(null) as BindablePropertyKey;
+        if (isCheckedPropertyKey == null)
+            return;
+
+        // Update all items
+        foreach (var item in VirtualView.Items)
+        {
+            bool isChecked = item == VirtualView.CurrentItem;
+            item.SetValue(isCheckedPropertyKey, isChecked);
+        }
+    }
+
+    /// <summary>
+    /// Handles property changes on flyout items, particularly the IsChecked and FlyoutIcon properties.
+    /// </summary>
+    private void OnFlyoutItemPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (sender is not ShellItem item)
+            return;
+
+        if (e.PropertyName == nameof(BaseShellItem.FlyoutIcon))
+        {
+            if (_flyoutItemButtons.TryGetValue(item, out var button))
+            {
+                UpdateFlyoutItemIcon(button, item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Updates the flyout item button's icon based on the item's IsChecked state.
+    /// </summary>
+    private void UpdateFlyoutItemIcon(Avalonia.Controls.Button button, ShellItem item)
+    {
+        var icon = item.FlyoutIcon ?? item.Icon;
+        if (icon != null && MauiContext != null)
+        {
+            LoadFlyoutItemIconAsync(button, icon).ConfigureAwait(false);
+        }
     }
 }
