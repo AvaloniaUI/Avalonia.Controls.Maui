@@ -563,6 +563,8 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
             HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Left,
             Padding = new Thickness(16, 12),
+            Background = Brushes.Transparent,
+            BorderBrush = Brushes.Transparent
         };
 
         // Check if there's a custom ItemTemplate defined
