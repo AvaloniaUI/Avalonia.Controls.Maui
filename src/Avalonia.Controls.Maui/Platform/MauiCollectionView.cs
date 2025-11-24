@@ -270,6 +270,15 @@ public class MauiCollectionView : TemplatedControl
             Cursor = new global::Avalonia.Input.Cursor(global::Avalonia.Input.StandardCursorType.Hand)
         };
 
+        // Apply spacing as margin if grid spacing is specified
+        if (_horizontalItemSpacing > 0 || _verticalItemSpacing > 0)
+        {
+            // Apply half spacing on each side so items are evenly spaced
+            var halfHorizontal = _horizontalItemSpacing / 2;
+            var halfVertical = _verticalItemSpacing / 2;
+            border.Margin = new global::Avalonia.Thickness(halfHorizontal, halfVertical, halfHorizontal, halfVertical);
+        }
+
         border.PointerPressed += (sender, e) =>
         {
             if (SelectionMode != global::Avalonia.Controls.SelectionMode.Single &&
@@ -337,6 +346,10 @@ public class MauiCollectionView : TemplatedControl
                 });
                 _itemsControl.ItemsPanel = uniformGrid;
             }
+
+            // Apply item spacing by wrapping items with appropriate container styles
+            // We need to update the item template to add spacing
+            UpdateItemTemplateWithSpacing(gridLayout.HorizontalItemSpacing, gridLayout.VerticalItemSpacing);
         }
         else if (e.NewValue is Microsoft.Maui.Controls.LinearItemsLayout linearLayout)
         {
@@ -349,8 +362,24 @@ public class MauiCollectionView : TemplatedControl
                 Spacing = linearLayout.ItemSpacing
             });
             _itemsControl.ItemsPanel = stackPanel;
+
+            // Clear any spacing wrappers for linear layout since StackPanel handles it
+            UpdateItemTemplateWithSpacing(0, 0);
         }
     }
+
+    private void UpdateItemTemplateWithSpacing(double horizontalSpacing, double verticalSpacing)
+    {
+        // Store spacing values for use in WrapItemForSelection
+        _horizontalItemSpacing = horizontalSpacing;
+        _verticalItemSpacing = verticalSpacing;
+
+        // Re-apply the item template to pick up the new spacing
+        UpdateItemTemplate();
+    }
+
+    private double _horizontalItemSpacing = 0;
+    private double _verticalItemSpacing = 0;
 
     private void OnItemsSourceChanged(AvaloniaPropertyChangedEventArgs e)
     {
