@@ -36,6 +36,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [nameof(MauiShell.FlyoutFooter)] = MapFlyoutFooter,
             [nameof(MauiShell.FlyoutFooterTemplate)] = MapFlyoutFooter,
             [nameof(MauiShell.Items)] = MapItems,
+            [nameof(MauiShell.ItemTemplate)] = MapItemTemplate,
         };
 
     public static CommandMapper<MauiShell, ShellHandler> CommandMapper =
@@ -77,8 +78,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         // Create flyout pane structure
         var flyoutPaneContainer = new DockPanel
         {
-            LastChildFill = true,
-            MinWidth = 300
+            LastChildFill = true
         };
 
         flyoutPaneContainer.Background = null; // Inherit from theme
@@ -354,6 +354,14 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
     }
 
+    public static void MapItemTemplate(ShellHandler handler, MauiShell shell)
+    {
+        if (handler.MauiContext != null)
+        {
+            handler.UpdateFlyoutItems();
+        }
+    }
+
     private void UpdateCurrentItem()
     {
         if (VirtualView?.CurrentItem == null || _mainContentControl == null || MauiContext == null)
@@ -550,48 +558,73 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
     private Avalonia.Controls.Button CreateFlyoutItemButton(ShellItem item)
     {
-        var contentPanel = new StackPanel
+        var button = new Avalonia.Controls.Button
         {
-            Orientation = Orientation.Horizontal,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-        };
-
-        bool hasText = !string.IsNullOrEmpty(item.Title);
-
-        // Add image placeholder that will be populated asynchronously
-        var icon = item.FlyoutIcon ?? item.Icon;
-        if (icon != null)
-        {
-            var image = new Image
-            {
-                Width = 24,
-                Height = 24,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                // Add margin only when both image and text are present
-                Margin = hasText ? new Thickness(0, 0, 8, 0) : new Thickness(0)
-            };
-            contentPanel.Children.Add(image);
-        }
-
-        // Add text if present
-        if (hasText)
-        {
-            var textBlock = new TextBlock
-            {
-                Text = item.Title ?? string.Empty,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-            };
-            contentPanel.Children.Add(textBlock);
-        }
-
-        return new Avalonia.Controls.Button
-        {
-            Content = contentPanel,
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
             HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Left,
-            Padding = new Thickness(16, 12)
+            Padding = new Thickness(16, 12),
         };
+
+        // Check if there's a custom ItemTemplate defined
+        if (VirtualView?.ItemTemplate != null && MauiContext != null)
+        {
+            // Create content from the DataTemplate
+            var templateContent = VirtualView.ItemTemplate.CreateContent();
+            if (templateContent is Microsoft.Maui.Controls.View mauiView)
+            {
+                // Set the binding context to the ShellItem
+                mauiView.BindingContext = item;
+
+                // Convert the MAUI view to an Avalonia control
+                var handler = mauiView.ToHandler(MauiContext);
+                if (handler?.PlatformView is AvaloniaControl avaloniaControl)
+                {
+                    button.Content = avaloniaControl;
+                }
+            }
+        }
+        else
+        {
+            // Use default layout
+            var contentPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+            };
+
+            bool hasText = !string.IsNullOrEmpty(item.Title);
+
+            // Add image placeholder that will be populated asynchronously
+            var icon = item.FlyoutIcon ?? item.Icon;
+            if (icon != null)
+            {
+                var image = new Image
+                {
+                    Width = 24,
+                    Height = 24,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    // Add margin only when both image and text are present
+                    Margin = hasText ? new Thickness(0, 0, 8, 0) : new Thickness(0)
+                };
+                contentPanel.Children.Add(image);
+            }
+
+            // Add text if present
+            if (hasText)
+            {
+                var textBlock = new TextBlock
+                {
+                    Text = item.Title ?? string.Empty,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                };
+                contentPanel.Children.Add(textBlock);
+            }
+
+            button.Content = contentPanel;
+        }
+
+        return button;
     }
 
     private async Task LoadFlyoutItemIconAsync(Avalonia.Controls.Button button, ImageSource imageSource)
@@ -734,10 +767,16 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     /// </summary>
     private void UpdateFlyoutItemIcon(Avalonia.Controls.Button button, ShellItem item)
     {
-        var icon = item.FlyoutIcon ?? item.Icon;
-        if (icon != null && MauiContext != null)
+        // If using ItemTemplate, the binding context will automatically update the content
+        // through MAUI's binding system, so we only need to handle the default case
+        if (VirtualView?.ItemTemplate == null)
         {
-            LoadFlyoutItemIconAsync(button, icon).ConfigureAwait(false);
+            var icon = item.FlyoutIcon ?? item.Icon;
+            if (icon != null && MauiContext != null)
+            {
+                LoadFlyoutItemIconAsync(button, icon).ConfigureAwait(false);
+            }
         }
+        // For templates, the MAUI binding system handles updates automatically
     }
 }
