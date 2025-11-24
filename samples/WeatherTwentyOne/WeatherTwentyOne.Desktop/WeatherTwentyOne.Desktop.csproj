@@ -6,11 +6,11 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<UseMaui>true</UseMaui>
+		<RootNamespace>WeatherTwentyOne</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<MauiIcon Include="Resources\appicon.svg" ForegroundFile="Resources\appiconfg.svg"
-			Color="#081B25" />
+		<MauiIcon Include="Resources\appicon.svg" ForegroundFile="Resources\appiconfg.svg" Color="#081B25" />
 		<MauiSplashScreen Include="Resources\appiconfg.svg" Color="#081B25" />
 		<MauiImage Include="Resources\Images\*" />
 		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
@@ -44,8 +44,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
-		<ProjectReference Include="..\..\src\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
+		<ProjectReference Include="../WeatherTwentyOne/WeatherTwentyOne.csproj" />
+		<ProjectReference Include="..\..\..\src\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
+		<ProjectReference Include="..\..\..\src\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
 	</ItemGroup>
 
 	<Import Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.targets" />

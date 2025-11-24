@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+	<PropertyGroup>
+		<TargetFramework>$(DotNetTfm)-browser</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Nullable>enable</Nullable>
+		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
+		<UseMaui>true</UseMaui>
+		<RootNamespace>WeatherTwentyOne</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<MauiIcon Include="Resources\appicon.svg" ForegroundFile="Resources\appiconfg.svg"
+			Color="#081B25" />
+		<MauiSplashScreen Include="Resources\appiconfg.svg" Color="#081B25" />
+		<MauiImage Include="Resources\Images\*" />
+		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
+		<MauiFont Include="Resources\Fonts\*" />
+		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference
+			Include="..\..\..\src\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
+		<ProjectReference
+			Include="..\..\..\src\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
+		<ProjectReference Include="..\WeatherTwentyOne\WeatherTwentyOne.csproj" />
+	</ItemGroup>
+
+	<Import Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.targets" />
+</Project>

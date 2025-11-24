@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using Avalonia.Controls.Maui;
-using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 
