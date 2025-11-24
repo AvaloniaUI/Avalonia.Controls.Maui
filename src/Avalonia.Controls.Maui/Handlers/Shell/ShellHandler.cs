@@ -477,6 +477,28 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (_flyoutHeaderControl == null || VirtualView == null || MauiContext == null)
             return;
 
+        // Check if there's a template first
+        if (VirtualView.FlyoutHeaderTemplate != null)
+        {
+            var templateContent = VirtualView.FlyoutHeaderTemplate.CreateContent();
+            if (templateContent is Microsoft.Maui.Controls.View templateView)
+            {
+                // Set binding context if FlyoutHeader is set (acts as data context for template)
+                if (VirtualView.FlyoutHeader != null)
+                {
+                    templateView.BindingContext = VirtualView.FlyoutHeader;
+                }
+
+                var handler = templateView.ToHandler(MauiContext);
+                if (handler?.PlatformView is AvaloniaControl control)
+                {
+                    _flyoutHeaderControl.Content = control;
+                }
+            }
+            return;
+        }
+
+        // Fallback to direct content
         object? header = VirtualView.FlyoutHeader;
 
         if (header is Microsoft.Maui.Controls.View headerView)
@@ -502,6 +524,28 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (_flyoutFooterControl == null || VirtualView == null || MauiContext == null)
             return;
 
+        // Check if there's a template first
+        if (VirtualView.FlyoutFooterTemplate != null)
+        {
+            var templateContent = VirtualView.FlyoutFooterTemplate.CreateContent();
+            if (templateContent is Microsoft.Maui.Controls.View templateView)
+            {
+                // Set binding context if FlyoutFooter is set (acts as data context for template)
+                if (VirtualView.FlyoutFooter != null)
+                {
+                    templateView.BindingContext = VirtualView.FlyoutFooter;
+                }
+
+                var handler = templateView.ToHandler(MauiContext);
+                if (handler?.PlatformView is AvaloniaControl control)
+                {
+                    _flyoutFooterControl.Content = control;
+                }
+            }
+            return;
+        }
+
+        // Fallback to direct content
         object? footer = VirtualView.FlyoutFooter;
 
         if (footer is Microsoft.Maui.Controls.View footerView)
