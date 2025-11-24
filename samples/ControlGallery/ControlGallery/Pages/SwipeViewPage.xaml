@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.SwipeViewPage"
+             x:DataType="pages:SwipeViewPage"
+             Title="SwipeView Page">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="SwipeView Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <Label Text="Swipe horizontally or vertically to reveal items."
+                   HorizontalOptions="Center"
+                   FontSize="14"
+                   Opacity="0.6"/>
+
+            <!-- Basic Horizontal Swipes -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="Horizontal Directions"
+                           FontAttributes="Bold"
+                           Margin="10"/>
+
+                    <!-- Swipe Right (LeftItems) -->
+                    <SwipeView>
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Favorite"
+                                           BackgroundColor="#4CAF50"
+                                           Invoked="OnFavoriteInvoked"/>
+                                <SwipeItem Text="Delete"
+                                           BackgroundColor="#F44336"
+                                           Invoked="OnDeleteInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Swipe Right (Reveal LeftItems)"/>
+                        </Grid>
+                    </SwipeView>
+
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"/>
+
+                    <!-- Swipe Left (RightItems) -->
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Archive"
+                                           BackgroundColor="#2196F3"
+                                           Invoked="OnArchiveInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Swipe Left (Reveal RightItems)"/>
+                        </Grid>
+                    </SwipeView>
+
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"/>
+
+                    <!-- Both Directions -->
+                    <SwipeView>
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Reply" BackgroundColor="#FF9800"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Delete" BackgroundColor="#F44336"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Swipe Both Directions"/>
+                        </Grid>
+                    </SwipeView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Vertical Swipes -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="Vertical Directions"
+                           FontAttributes="Bold"
+                           Margin="10"/>
+
+                    <!-- Swipe Down (TopItems) -->
+                    <SwipeView>
+                        <SwipeView.TopItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Refresh" BackgroundColor="#00BCD4"/>
+                                <SwipeItem Text="Pin" BackgroundColor="#4CAF50"/>
+                                <SwipeItem Text="Archive" BackgroundColor="#2196F3"/>
+                            </SwipeItems>
+                        </SwipeView.TopItems>
+                        <Grid Padding="20" HeightRequest="80" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Swipe Down (Reveal TopItems)"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </SwipeView>
+
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"/>
+
+                    <!-- Swipe Up (BottomItems) -->
+                    <SwipeView>
+                        <SwipeView.BottomItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Details" BackgroundColor="#9C27B0"/>
+                                <SwipeItem Text="Share" BackgroundColor="#FF9800"/>
+                                <SwipeItem Text="Save" BackgroundColor="#673AB7"/>
+                            </SwipeItems>
+                        </SwipeView.BottomItems>
+                        <Grid Padding="20" HeightRequest="80" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Swipe Up (Reveal BottomItems)"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </SwipeView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Swipe Modes -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="Swipe Modes"
+                           FontAttributes="Bold"
+                           Margin="10"/>
+
+                    <!-- Reveal Mode (Default) -->
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems Mode="Reveal">
+                                <SwipeItem Text="Delete"
+                                           BackgroundColor="#F44336"
+                                           Invoked="OnRevealDeleteInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Mode: Reveal (Default)"/>
+                        </Grid>
+                    </SwipeView>
+
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"/>
+
+                    <!-- Execute Mode -->
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems Mode="Execute">
+                                <SwipeItem Text="Delete"
+                                           BackgroundColor="#F44336"
+                                           Invoked="OnExecuteSwipeInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Mode: Execute (Swipe far to trigger)"/>
+                        </Grid>
+                    </SwipeView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Custom Content -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="Custom Swipe Content"
+                           FontAttributes="Bold"
+                           Margin="10"/>
+
+                    <SwipeView>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItemView>
+                                    <VerticalStackLayout BackgroundColor="#673AB7"
+                                                         Padding="10"
+                                                         WidthRequest="80">
+                                        <Label Text="Custom"
+                                               TextColor="White"
+                                               HorizontalOptions="Center"
+                                               FontAttributes="Bold"/>
+                                        <Label Text="View"
+                                               TextColor="White"
+                                               HorizontalOptions="Center"
+                                               FontSize="10"/>
+                                        <Button Text="Action"
+                                                FontSize="10"
+                                                HeightRequest="30"
+                                                BackgroundColor="White"
+                                                TextColor="#673AB7"
+                                                Padding="0"
+                                                Clicked="OnCustomActionClicked"/>
+                                    </VerticalStackLayout>
+                                </SwipeItemView>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid Padding="20" HeightRequest="100" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Swipe for Custom View Content"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </SwipeView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Programmatic Control -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10" Padding="10">
+                    <Label Text="Programmatic Control"
+                           FontAttributes="Bold"/>
+
+                    <SwipeView x:Name="ProgrammaticSwipeView"
+                               SwipeStarted="OnSwipeStarted"
+                               SwipeEnded="OnSwipeEnded">
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Action A" BackgroundColor="#FF9800"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Action B" BackgroundColor="#9C27B0"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <SwipeView.TopItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Refresh" BackgroundColor="#00BCD4"/>
+                            </SwipeItems>
+                        </SwipeView.TopItems>
+                        <SwipeView.BottomItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Info" BackgroundColor="#4CAF50"/>
+                            </SwipeItems>
+                        </SwipeView.BottomItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2C2C2C}">
+                            <Label Text="Control Me with Buttons Below"
+                                   HorizontalOptions="Center"/>
+                        </Grid>
+                    </SwipeView>
+
+                    <Grid ColumnDefinitions="Auto,Auto,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="6" HorizontalOptions="Center">
+                        <Button Grid.Row="1" Grid.Column="0"
+                                HeightRequest="40"
+                                WidthRequest="140"
+                                BackgroundColor="#2196F3"
+                                TextColor="White"
+                                Text="Open Left"
+                                Clicked="OnOpenLeftClicked"/>
+                        <VerticalStackLayout Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Spacing="6" HorizontalOptions="Center">
+                            <Button HeightRequest="40"
+                                    WidthRequest="140"
+                                    BackgroundColor="#2196F3"
+                                    TextColor="White"
+                                    Text="Open Top"
+                                    Clicked="OnOpenTopClicked"/>
+                            <Button HeightRequest="40"
+                                    WidthRequest="140"
+                                    BackgroundColor="{AppThemeBinding Light=#757575, Dark=#9E9E9E}"
+                                    TextColor="White"
+                                    Text="Close"
+                                    Clicked="OnCloseClicked"/>
+                            <Button HeightRequest="40"
+                                    WidthRequest="140"
+                                    BackgroundColor="#2196F3"
+                                    TextColor="White"
+                                    Text="Open Bottom"
+                                    Clicked="OnOpenBottomClicked"/>
+                        </VerticalStackLayout>
+                        <Button Grid.Row="1" Grid.Column="2"
+                                HeightRequest="40"
+                                WidthRequest="140"
+                                BackgroundColor="#2196F3"
+                                TextColor="White"
+                                Text="Open Right"
+                                Clicked="OnOpenRightClicked"/>
+                    </Grid>
+
+                    <Label x:Name="SwipeStatusLabel"
+                           Text="Status: Idle"
+                           HorizontalOptions="Fill"
+                           FontAttributes="Italic"
+                           Opacity="0.6"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Mixed Modes & Behaviors -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="Mixed Modes &amp; Behaviors"
+                           FontAttributes="Bold"
+                           Margin="10"/>
+
+                    <!-- Reveal left, Execute right -->
+                    <SwipeView>
+                        <SwipeView.LeftItems>
+                            <SwipeItems Mode="Reveal">
+                                <SwipeItem Text="Reveal" BackgroundColor="#03A9F4" Invoked="OnRevealInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <SwipeView.RightItems>
+                            <SwipeItems Mode="Execute">
+                                <SwipeItem Text="Execute" BackgroundColor="#E91E63" Invoked="OnExecuteMixedInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Left: Reveal | Right: Execute"/>
+                        </Grid>
+                    </SwipeView>
+
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"/>
+
+                    <!-- SwipeBehaviorOnInvoked -->
+                    <SwipeView>
+                        <SwipeView.LeftItems>
+                            <SwipeItems SwipeBehaviorOnInvoked="RemainOpen">
+                                <SwipeItem Text="Stay Open" BackgroundColor="#8BC34A" Invoked="OnRemainOpenInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <SwipeView.RightItems>
+                            <SwipeItems SwipeBehaviorOnInvoked="Close">
+                                <SwipeItem Text="Auto Close" BackgroundColor="#FF9800" Invoked="OnAutoCloseInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Behavior On Invoked: RemainOpen vs Close"/>
+                        </Grid>
+                    </SwipeView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- All Directions -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="All Directions"
+                           FontAttributes="Bold"
+                           Margin="10"/>
+
+                    <SwipeView>
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Left" BackgroundColor="#2196F3" Invoked="OnAllDirectionsInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Right" BackgroundColor="#9C27B0" Invoked="OnAllDirectionsInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <SwipeView.TopItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Top" BackgroundColor="#4CAF50" Invoked="OnAllDirectionsInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.TopItems>
+                        <SwipeView.BottomItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Bottom" BackgroundColor="#FF5722" Invoked="OnAllDirectionsInvoked"/>
+                            </SwipeItems>
+                        </SwipeView.BottomItems>
+                        <Grid Padding="20" HeightRequest="120" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Swipe in any direction"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Center"/>
+                        </Grid>
+                    </SwipeView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- SwipeChanging Events -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10" Padding="10">
+                    <Label Text="SwipeChanging Events"
+                           FontAttributes="Bold"/>
+
+                    <SwipeView SwipeStarted="OnSwipeStarted"
+                               SwipeChanging="OnSwipeChanging"
+                               SwipeEnded="OnSwipeEnded">
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Action" BackgroundColor="#FF9800"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <SwipeView.RightItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Action" BackgroundColor="#9C27B0"/>
+                            </SwipeItems>
+                        </SwipeView.RightItems>
+                        <SwipeView.TopItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Top" BackgroundColor="#03A9F4"/>
+                            </SwipeItems>
+                        </SwipeView.TopItems>
+                        <SwipeView.BottomItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Bottom" BackgroundColor="#4CAF50"/>
+                            </SwipeItems>
+                        </SwipeView.BottomItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2C2C2C}">
+                            <Label Text="Swipe to see offset tracking"
+                                   HorizontalOptions="Center"/>
+                        </Grid>
+                    </SwipeView>
+
+                    <Label x:Name="SwipeChangingLabel"
+                           Text="Changing: N/A"
+                           HorizontalOptions="Fill"
+                           FontAttributes="Italic"
+                           FontSize="12"
+                           Opacity="0.6"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Open/Close Requested Events -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10" Padding="10">
+                    <Label Text="OpenRequested &amp; CloseRequested Events"
+                           FontAttributes="Bold"/>
+
+                    <SwipeView x:Name="EventSwipeView"
+                               OpenRequested="OnOpenRequested"
+                               CloseRequested="OnCloseRequested">
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Info" BackgroundColor="#2196F3"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Swipe or use buttons below"
+                                   HorizontalOptions="Center"/>
+                        </Grid>
+                    </SwipeView>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Button Text="Open"
+                                Clicked="OnEventOpenLeftClicked"
+                                BackgroundColor="#4CAF50"
+                                TextColor="White"
+                                FontSize="12"
+                                Padding="10,5"/>
+                        <Button Text="Close"
+                                Clicked="OnEventCloseClicked"
+                                BackgroundColor="#F44336"
+                                TextColor="White"
+                                FontSize="12"
+                                Padding="10,5"/>
+                    </HorizontalStackLayout>
+
+                    <Label x:Name="EventStatusLabel"
+                           Text="Event: None"
+                           HorizontalOptions="Fill"
+                           FontAttributes="Italic"
+                           FontSize="12"
+                           Opacity="0.6"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Threshold Customization -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="0">
+                    <Label Text="Custom Threshold"
+                           FontAttributes="Bold"
+                           Margin="10"/>
+
+                    <SwipeView Threshold="50">
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItem Text="Short" BackgroundColor="#FFC107"/>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Threshold: 50 (Short Swipe)"/>
+                        </Grid>
+                    </SwipeView>
+
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"/>
+
+                    <SwipeView Threshold="300">
+                        <SwipeView.LeftItems>
+                            <SwipeItems>
+                                <SwipeItemView>
+                                    <Grid BackgroundColor="#FFC107" Padding="10" WidthRequest="300" HeightRequest="80">
+                                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Label Text="Long"
+                                                   HorizontalOptions="Center"/>
+                                            <Label Text="Swipe further (Threshold 300)"
+                                                   FontSize="10"
+                                                   HorizontalOptions="Center"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </SwipeItemView>
+                            </SwipeItems>
+                        </SwipeView.LeftItems>
+                        <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}">
+                            <Label Text="Threshold: 300 (Long Swipe)"/>
+                        </Grid>
+                    </SwipeView>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
