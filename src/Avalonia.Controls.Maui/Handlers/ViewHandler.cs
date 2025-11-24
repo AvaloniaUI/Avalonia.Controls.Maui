@@ -177,11 +177,14 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
 
         try
         {
+            // Measure the control before arranging it
+            // This is required by Avalonia's layout system
+            PlatformView.Measure(new global::Avalonia.Size(safeFrame.Width, safeFrame.Height));
             PlatformView.Arrange(safeFrame);
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Exception during PlatformArrange: {ex}");
+            Debug.WriteLine($"Exception during PlatformArrange: {ex} - PlatormView: {PlatformView}, Frame: {safeFrame}");
         }
     }
 

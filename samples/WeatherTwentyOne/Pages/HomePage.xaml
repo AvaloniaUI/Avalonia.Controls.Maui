@@ -62,7 +62,7 @@
                 <BoxView HeightRequest="1" />
 
                 <v:Next24HrWidget />
-                <!-- <v:Next7DWidget /> -->
+                <v:Next7DWidget />
 
             </VerticalStackLayout>
         </ScrollView>
