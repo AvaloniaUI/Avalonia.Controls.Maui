@@ -30,6 +30,9 @@ public static class MauiTestAppBuilderExtensions
             handlers.AddHandler<IContentView, Avalonia.Controls.Maui.Handlers.ContentViewHandler>();
             handlers.AddHandler<ILayout, Avalonia.Controls.Maui.Handlers.LayoutHandler>();
             handlers.AddHandler<IScrollView, Avalonia.Controls.Maui.Handlers.ScrollViewHandler>();
+            handlers.AddHandler<ISwipeView, Avalonia.Controls.Maui.Handlers.SwipeViewHandler>();
+            handlers.AddHandler<ISwipeItemMenuItem, Avalonia.Controls.Maui.Handlers.SwipeItemMenuItemHandler>();
+            handlers.AddHandler<ISwipeItemView, Avalonia.Controls.Maui.Handlers.SwipeItemViewHandler>();
             handlers.AddHandler<IWindow, Avalonia.Controls.Maui.Handlers.WindowHandler>();
         });
 
