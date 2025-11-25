@@ -23,6 +23,7 @@ public static class MauiTestAppBuilderExtensions
         builder.ConfigureMauiHandlers(handlers =>
         {
             // Register Avalonia handlers
+            handlers.AddHandler<IApplication, Avalonia.Controls.Maui.Handlers.ApplicationHandler>();
             handlers.AddHandler<ILabel, Avalonia.Controls.Maui.Handlers.LabelHandler>();
             handlers.AddHandler<IButton, Avalonia.Controls.Maui.Handlers.ButtonHandler>();
             handlers.AddHandler<IBorderView, Avalonia.Controls.Maui.Handlers.BorderHandler>();
