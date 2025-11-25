@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ControlGallery.Pages"
+             xmlns:bindable="clr-namespace:Microsoft.Maui.Controls;assembly=Microsoft.Maui.Controls"
              x:Class="ControlGallery.Pages.SwipeViewPage"
              x:DataType="pages:SwipeViewPage"
              Title="SwipeView Page">
@@ -531,6 +532,60 @@
                             <Label Text="Threshold: 300 (Long Swipe)"/>
                         </Grid>
                     </SwipeView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Collection Swipe with Confirmation -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    Padding="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10" Padding="10">
+                    <Label Text="Collection Swipe (Left/Right)"
+                           FontAttributes="Bold"/>
+
+                    <VerticalStackLayout bindable:BindableLayout.ItemsSource="{Binding SwipeItemsCollection}"
+                                         Spacing="8">
+                        <bindable:BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="pages:SwipeViewPage+SwipeSampleItem">
+                                <SwipeView HeightRequest="72"
+                                           BindingContext="{Binding}">
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Keep"
+                                                       BackgroundColor="#2196F3"
+                                                       Invoked="OnKeepItemInvoked"/>
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems SwipeBehaviorOnInvoked="Close">
+                                            <SwipeItem Text="Remove"
+                                                       BackgroundColor="#F44336"
+                                                       Invoked="OnRemoveItemInvoked"/>
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                                            StrokeThickness="1"
+                                            BackgroundColor="{AppThemeBinding Light=#FFFFFF, Dark=#1E1E1E}"
+                                            StrokeShape="RoundRectangle 8"
+                                            Padding="14">
+                                        <Grid RowDefinitions="Auto,Auto">
+                                            <Label Text="{Binding Title}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="16"
+                                                   TextColor="{AppThemeBinding Light=#111111, Dark=#FFFFFF}"/>
+                                            <Label Grid.Row="1"
+                                                   Text="{Binding Subtitle}"
+                                                   Opacity="0.7"
+                                                   FontSize="13"
+                                                   TextColor="{AppThemeBinding Light=#111111, Dark=#FFFFFF}"/>
+                                        </Grid>
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </bindable:BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
 

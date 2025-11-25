@@ -1,9 +1,22 @@
+using System.Collections.ObjectModel;
+
 namespace ControlGallery.Pages;
 
 public partial class SwipeViewPage : ContentPage
 {
+    public ObservableCollection<SwipeSampleItem> SwipeItemsCollection { get; }
     public SwipeViewPage()
     {
+        SwipeItemsCollection =
+        [
+            new SwipeSampleItem("Flight to Avalonia", "AE-1042"),
+            new SwipeSampleItem("Conference Tickets", "CT-3408"),
+            new SwipeSampleItem("Hotel Reservation", "HR-2271"),
+            new SwipeSampleItem("Car Rental", "CR-9981"),
+            new SwipeSampleItem("Team Dinner", "TD-5566")
+        ];
+
+        BindingContext = this;
         InitializeComponent();
     }
 
@@ -121,4 +134,36 @@ public partial class SwipeViewPage : ContentPage
     {
         EventSwipeView.Close();
     }
+
+    private async void OnKeepItemInvoked(object sender, EventArgs e)
+    {
+        if (GetSwipeSampleItem(sender) is { } item)
+        {
+            await DisplayAlert("Save", $"{item.Title} pinned.", "OK");
+        }
+    }
+
+    private async void OnRemoveItemInvoked(object sender, EventArgs e)
+    {
+        if (GetSwipeSampleItem(sender) is { } item)
+        {
+            var confirm = await DisplayAlert("Remove item", $"Remove \"{item.Title}\"?", "Remove", "Cancel");
+            if (confirm)
+            {
+                SwipeItemsCollection.Remove(item);
+            }
+        }
+    }
+
+    private SwipeSampleItem? GetSwipeSampleItem(object sender)
+    {
+        return sender switch
+        {
+            SwipeItem swipeItem => swipeItem.BindingContext as SwipeSampleItem,
+            _ => null
+        };
+    }
+
+    public record SwipeSampleItem(string Title, string Subtitle);
+
 }
