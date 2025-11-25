@@ -26,16 +26,33 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
     public IApplication Application { get; protected set; } = null!;
 
 
+    /// <summary>
+    /// The application-scoped MauiContext that contains the Avalonia Application.
+    /// </summary>
+    protected IMauiContext? ApplicationContext { get; private set; }
+
     public override void OnFrameworkInitializationCompleted()
     {
+        IPlatformApplication.Current = this;
+
         var mauiApp = CreateMauiApp();
 
-        Services = mauiApp.Services;
+        var rootContext = new MauiContext(mauiApp.Services);
+
+        // Create application scope and register the Avalonia Application
+        // We need to register with the correct type (Application) since MakeApplicationScope
+        // registers as Object for non-platform builds
+        ApplicationContext = MakeAvaloniaApplicationScope(rootContext, this);
+
+        Services = ApplicationContext.Services;
 
         var args = EventArgs.Empty;
         Services.InvokeLifecycleEvents<AvaloniaLifecycle.OnLaunching>(del => del(this, args));
 
         Application = Services.GetRequiredService<IApplication>();
+
+        // Connect the MAUI Application to its handler
+        this.SetApplicationHandler(Application, ApplicationContext);
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -89,5 +106,20 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
         Services.InvokeLifecycleEvents<AvaloniaLifecycle.OnWindowCreated>(del => del(avaloniaWindow));
 
         return avaloniaWindow;
+    }
+
+    /// <summary>
+    /// Creates an application-scoped MauiContext and registers the Avalonia Application
+    /// with the correct type so it can be resolved by the ApplicationHandler.
+    /// </summary>
+    private static MauiContext MakeAvaloniaApplicationScope(MauiContext mauiContext, Application avaloniaApplication)
+    {
+        var scopedContext = new MauiContext(mauiContext.Services);
+
+        // Register the Avalonia Application with the correct type
+        // This allows ApplicationHandler.CreatePlatformElement() to resolve it via GetService<Application>()
+        scopedContext.AddSpecific(avaloniaApplication);
+
+        return scopedContext;
     }
 }
