@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using Avalonia.Automation;
 using Avalonia.Automation.Peers;
@@ -11,7 +12,7 @@ namespace Avalonia.Controls.Maui;
 /// Supports both determinate and indeterminate modes.
 /// </summary>
 [PseudoClasses(":active", ":indeterminate", ":determinate")]
-public class ProgressRing : RangeBase
+public class ProgressRing : ProgressBar
 {
     static ProgressRing()
     {
@@ -19,9 +20,8 @@ public class ProgressRing : RangeBase
         MaximumProperty.OverrideDefaultValue<ProgressRing>(100.0);
         IsHitTestVisibleProperty.OverrideDefaultValue<ProgressRing>(false);
         FocusableProperty.OverrideDefaultValue<ProgressRing>(false);
-        
-        AutomationProperties.ControlTypeOverrideProperty.OverrideDefaultValue<ProgressRing>(
-            AutomationControlType.ProgressBar);
+        IsIndeterminateProperty.OverrideDefaultValue<ProgressRing>(true);
+        AutomationProperties.ControlTypeOverrideProperty.OverrideDefaultValue<ProgressRing>(AutomationControlType.ProgressBar);
     }
 
     /// <summary>
@@ -31,13 +31,7 @@ public class ProgressRing : RangeBase
         AvaloniaProperty.Register<ProgressRing, bool>(nameof(IsActive), defaultValue: true);
 
     /// <summary>
-    /// Defines the <see cref="IsIndeterminate"/> property.
-    /// </summary>
-    public static readonly StyledProperty<bool> IsIndeterminateProperty =
-        AvaloniaProperty.Register<ProgressRing, bool>(nameof(IsIndeterminate), defaultValue: true);
-
-    /// <summary>
-    /// Gets or sets a value that indicates whether the ProgressRing is showing progress.
+    /// Gets or sets a value that indicates whether the <see cref="ProgressRing"/> is showing progress.
     /// </summary>
     public bool IsActive
     {
@@ -45,16 +39,7 @@ public class ProgressRing : RangeBase
         set => SetValue(IsActiveProperty, value);
     }
 
-    /// <summary>
-    /// Gets or sets a value that indicates whether the progress ring reports generic progress 
-    /// with a repeating pattern or reports progress based on the Value property.
-    /// </summary>
-    public bool IsIndeterminate
-    {
-        get => GetValue(IsIndeterminateProperty);
-        set => SetValue(IsIndeterminateProperty, value);
-    }
-
+    /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -62,20 +47,13 @@ public class ProgressRing : RangeBase
         UpdateAccessibility();
     }
 
+    /// <inheritdoc/>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
-
-        if (change.Property == IsActiveProperty ||
-            change.Property == IsIndeterminateProperty)
+        if (change.Property == IsActiveProperty || change.Property == IsIndeterminateProperty)
         {
             UpdatePseudoClasses();
-            UpdateAccessibility();
-        }
-        else if (change.Property == ValueProperty ||
-                 change.Property == MinimumProperty ||
-                 change.Property == MaximumProperty)
-        {
             UpdateAccessibility();
         }
     }
@@ -87,62 +65,42 @@ public class ProgressRing : RangeBase
         PseudoClasses.Set(":determinate", IsActive && !IsIndeterminate);
     }
 
+    /// <inheritdoc/>
     protected override AutomationPeer OnCreateAutomationPeer()
     {
         return new ProgressRingAutomationPeer(this);
     }
-    
+
     /// <summary>
-    /// Gets the accessibility text for screen readers.
-    /// Override to provide localized strings.
+    /// Gets the accessibility text (e.g. "75%") used by the AutomationPeer.
     /// </summary>
-    /// <returns>
-    /// A descriptive string for the current state, or null/empty
-    /// to fall back to AutomationProperties.Name.
-    /// </returns>
+    /// <returns>A string representing the current progress percentage, or null if indeterminate/inactive.</returns>
     public virtual string? GetAccessibilityText()
     {
-        // If the app has explicitly set a Name, prefer that.
         var explicitName = AutomationProperties.GetName(this);
-        
         if (!string.IsNullOrEmpty(explicitName))
             return explicitName;
 
-        if (!IsActive)
+        if (!IsActive || IsIndeterminate)
             return null;
 
-        if (IsIndeterminate)
-            return null;
-
-        // Calculate percentage: (Value - Minimum) / (Maximum - Minimum) * 100
-        double percentage;
-        if (Maximum <= Minimum)
+        double percentage = 0;
+        if (Maximum > Minimum)
         {
-            percentage = 0;
-        }
-        else
-        {
-            var value = Math.Clamp(Value, Minimum, Maximum);
-            percentage = ((value - Minimum) / (Maximum - Minimum)) * 100.0;
+            var val = Math.Clamp(Value, Minimum, Maximum);
+            percentage = (val - Minimum) / (Maximum - Minimum) * 100.0;
         }
 
-        // Represent as a localized percentage number.
-        // E.g. "75%" in the current UI culture.
-        var culture = CultureInfo.CurrentUICulture;
-        return percentage.ToString("P0", culture);
+        return percentage.ToString("P0", CultureInfo.CurrentUICulture);
     }
 
     private void UpdateAccessibility()
     {
         var text = GetAccessibilityText();
-
         if (!string.IsNullOrEmpty(text))
         {
             if (string.IsNullOrEmpty(AutomationProperties.GetName(this)))
                 AutomationProperties.SetName(this, text);
-
-            if (string.IsNullOrEmpty(AutomationProperties.GetHelpText(this)))
-                AutomationProperties.SetHelpText(this, text);
         }
     }
 }

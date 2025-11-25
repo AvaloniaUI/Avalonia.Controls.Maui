@@ -24,6 +24,7 @@ public partial class MainPage : FlyoutPage
         Page page = pageType.Name switch
         {
             nameof(FontsPage) => new FontsPage(),
+            nameof(ActivityIndicatorPage) => new ActivityIndicatorPage(),
             nameof(ButtonPage) => new ButtonPage(),
             nameof(CheckBoxPage) => new CheckBoxPage(),
             nameof(ProgressBarPage) => new ProgressBarPage(),
