@@ -26,6 +26,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
             [nameof(IView.Shadow)] = MapShadow,
             [nameof(IView.Visibility)] = MapVisibility,
             [nameof(IView.Background)] = MapBackground,
+            ["BackgroundColor"] = MapBackgroundColor,
             [nameof(IView.FlowDirection)] = MapFlowDirection,
             [nameof(IView.Width)] = MapWidth,
             [nameof(IView.Height)] = MapHeight,
@@ -312,6 +313,18 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         {
             platformView.UpdateBackground(view);
         }
+    }
+
+    /// <summary>
+    /// Maps the BackgroundColor property to trigger a Background update.
+    /// This mirrors MAUI's VisualElement.MapBackgroundColor behavior where BackgroundColor
+    /// changes are forwarded to the Background property mapper.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
+    public static void MapBackgroundColor(IViewHandler handler, IView view)
+    {
+        handler.UpdateValue(nameof(IView.Background));
     }
 
     /// <summary>

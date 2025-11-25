@@ -1,7 +1,9 @@
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 
@@ -13,6 +15,7 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
 
     public static IPropertyMapper<IApplication, ApplicationHandler> Mapper = new PropertyMapper<IApplication, ApplicationHandler>(ElementMapper)
     {
+        [nameof(IApplication.UserAppTheme)] = MapUserAppTheme,
     };
 
     public static CommandMapper<IApplication, ApplicationHandler> CommandMapper = new(ElementCommandMapper)
@@ -111,6 +114,34 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
             if (window.Handler?.PlatformView is global::Avalonia.Controls.Window avaloniaWindow)
             {
                 avaloniaWindow.Activate();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Maps the MAUI UserAppTheme property to Avalonia's RequestedThemeVariant.
+    /// This enables setting the Avalonia theme when the MAUI application theme is changed.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="application">The associated <see cref="IApplication"/> instance.</param>
+    public static void MapUserAppTheme(ApplicationHandler handler, IApplication application)
+    {
+        if (handler.PlatformView is Application avaloniaApp)
+        {
+            var userTheme = application.UserAppTheme;
+
+            ThemeVariant? requestedTheme = userTheme switch
+            {
+                AppTheme.Dark => ThemeVariant.Dark,
+                AppTheme.Light => ThemeVariant.Light,
+                AppTheme.Unspecified => null, // Use system theme
+                _ => null
+            };
+
+            // Only update if different to avoid circular updates
+            if (avaloniaApp.RequestedThemeVariant != requestedTheme)
+            {
+                avaloniaApp.RequestedThemeVariant = requestedTheme;
             }
         }
     }
