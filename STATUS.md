@@ -911,19 +911,19 @@ A container control that wraps around an item of content, and provides context m
 
 | Property | Status |
 |----------|--------|
-| BottomItems | ⏳ TODO |
-| LeftItems | ⏳ TODO |
-| RightItems | ⏳ TODO |
-| TopItems | ⏳ TODO |
-| Threshold | ⏳ TODO |
+| BottomItems | ✅ Implemented |
+| LeftItems | ✅ Implemented |
+| RightItems | ✅ Implemented |
+| TopItems | ✅ Implemented |
+| Threshold | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| SwipeStarted | ⏳ TODO |
-| SwipeChanging | ⏳ TODO |
-| SwipeEnded | ⏳ TODO |
+| SwipeStarted | ✅ Implemented |
+| SwipeChanging | ✅ Implemented |
+| SwipeEnded | ✅ Implemented |
 
 ---
 
