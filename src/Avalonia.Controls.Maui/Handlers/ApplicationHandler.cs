@@ -76,6 +76,9 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
         {
             var activationState = new ActivationState(mauiContext, request.State ?? new PersistedState());
             var window = application.CreateWindow(activationState);
+
+            // For WASM, this will return as MauiAvaloniaContent from SingleViewWindowHandler, so it will not show.
+            // We don't support multiple windows in WASM in Avalonia currently.
             var avaloniaWindow = window.ToPlatform(mauiContext) as global::Avalonia.Controls.Window;
             avaloniaWindow?.Show();
         }
