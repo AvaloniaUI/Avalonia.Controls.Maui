@@ -1,11 +1,12 @@
 using Avalonia.Automation.Peers;
+using Avalonia.Controls.Automation.Peers;
 
 namespace Avalonia.Controls.Maui
 {
     /// <summary>
     /// Automation peer for ProgressRing to support screen readers and assistive technologies.
     /// </summary>
-    public class ProgressRingAutomationPeer : RangeBaseAutomationPeer
+    public class ProgressRingAutomationPeer : ProgressBarAutomationPeer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgressRingAutomationPeer"/> class.
