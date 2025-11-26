@@ -122,13 +122,14 @@ public partial class LabelHandlerTests : WindowHandlerTestBase<MauiLabelHandler,
             return new
             {
                 ViewValue = label.LineHeight,
-                PlatformViewValue = GetNativeLineHeight(handler)
+                PlatformViewValue = GetNativeLineHeight(handler),
+                FontSize = GetNativeFontSize(handler)
             };
         });
 
         Assert.Equal(xplatLineHeight, values.ViewValue);
         // LineHeight in Avalonia is absolute, should be fontSize * lineHeight
-        var expectedPlatformValue = GetNativeFontSize(await CreateHandlerAsync(label)) * xplatLineHeight;
+        var expectedPlatformValue = values.FontSize * xplatLineHeight;
         Assert.Equal(expectedPlatformValue, values.PlatformViewValue, 0.1);
     }
 
