@@ -1,19 +1,19 @@
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
-using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
+using MauiLabel = Microsoft.Maui.Controls.Label;
 using MauiLabelHandler = Avalonia.Controls.Maui.Handlers.LabelHandler;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
-public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, LabelStub>
+public partial class LabelHandlerTests : WindowHandlerTestBase<MauiLabelHandler, MauiLabel>
 {
     [AvaloniaFact(DisplayName = "Text Initializes Correctly")]
     public async Task TextInitializesCorrectly()
     {
-        var label = new LabelStub
+        var label = new MauiLabel
         {
             Text = "Test"
         };
@@ -24,7 +24,7 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
     [AvaloniaFact(DisplayName = "Text Color Initializes Correctly")]
     public async Task TextColorInitializesCorrectly()
     {
-        var label = new LabelStub
+        var label = new MauiLabel
         {
             Text = "Test",
             TextColor = Colors.Red
@@ -46,7 +46,7 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
     [AvaloniaFact(DisplayName = "Null Text Color Doesn't Crash")]
     public async Task NullTextColorDoesntCrash()
     {
-        var label = new LabelStub
+        var label = new MauiLabel
         {
             Text = "Test",
             TextColor = null!
@@ -58,7 +58,7 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
     [AvaloniaFact(DisplayName = "Horizontal TextAlignment Initializes Correctly")]
     public async Task HorizontalTextAlignmentInitializesCorrectly()
     {
-        var label = new LabelStub
+        var label = new MauiLabel
         {
             Text = "Test",
             HorizontalTextAlignment = TextAlignment.Center
@@ -77,7 +77,7 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
     [InlineData(TextAlignment.End)]
     public async Task HorizontalTextAlignmentUpdatesCorrectly(TextAlignment alignment)
     {
-        var label = new LabelStub
+        var label = new MauiLabel
         {
             Text = "Test"
         };
@@ -93,7 +93,7 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
     [AvaloniaFact(DisplayName = "Padding Initializes Correctly")]
     public async Task PaddingInitializesCorrectly()
     {
-        var label = new LabelStub
+        var label = new MauiLabel
         {
             Text = "Test",
             Padding = new Microsoft.Maui.Thickness(5, 10, 15, 20)
@@ -111,7 +111,7 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
     {
         var xplatLineHeight = 1.5d;
 
-        var label = new LabelStub
+        var label = new MauiLabel
         {
             Text = "test",
             LineHeight = xplatLineHeight
@@ -137,18 +137,18 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
     [InlineData(20, 10)]
     public async Task FontDoesNotAffectHorizontalTextAlignment(double initialSize, double newSize)
     {
-        var label = new LabelStub
+        var label = new MauiLabel
         {
             Text = "This is TEXT!",
             HorizontalTextAlignment = TextAlignment.Center,
-            Font = Microsoft.Maui.Font.SystemFontOfSize(initialSize),
+            FontSize = initialSize
         };
 
         await ValidateUnrelatedPropertyUnaffected(
             label,
             GetNativeHorizontalTextAlignment,
             nameof(ILabel.Font),
-            () => label.Font = Microsoft.Maui.Font.SystemFontOfSize(newSize));
+            () => label.FontSize = newSize);
     }
 
     [AvaloniaTheory(DisplayName = "Updating Text Does Not Affect HorizontalTextAlignment")]
@@ -156,7 +156,7 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
     [InlineData("Long text here", "Short")]
     public async Task TextDoesNotAffectHorizontalTextAlignment(string initialText, string newText)
     {
-        var label = new LabelStub
+        var label = new MauiLabel
         {
             Text = initialText,
             HorizontalTextAlignment = TextAlignment.Center,
@@ -173,7 +173,7 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
     public async Task BackgroundInitializesCorrectly()
     {
         var color = Colors.Blue;
-        var label = new LabelStub
+        var label = new MauiLabel
         {
             Text = "Test",
             Background = new SolidPaint(color)
