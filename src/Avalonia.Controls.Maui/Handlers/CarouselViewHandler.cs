@@ -16,6 +16,8 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
             [nameof(Microsoft.Maui.Controls.CarouselView.Position)] = MapPosition,
             [nameof(Microsoft.Maui.Controls.CarouselView.Loop)] = MapLoop,
             [nameof(Microsoft.Maui.Controls.CarouselView.IsSwipeEnabled)] = MapIsSwipeEnabled,
+            [nameof(Microsoft.Maui.Controls.ItemsView.EmptyView)] = MapEmptyView,
+            [nameof(Microsoft.Maui.Controls.ItemsView.EmptyViewTemplate)] = MapEmptyViewTemplate,
         };
 
     public static CommandMapper<Microsoft.Maui.Controls.CarouselView, CarouselViewHandler> CommandMapper =
@@ -95,6 +97,16 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
     public static void MapIsSwipeEnabled(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
         handler.PlatformView?.UpdateIsSwipeEnabled(carouselView);
+    }
+
+    public static void MapEmptyView(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
+    {
+        handler.PlatformView?.UpdateEmptyView(carouselView);
+    }
+
+    public static void MapEmptyViewTemplate(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
+    {
+        handler.PlatformView?.UpdateEmptyViewTemplate(carouselView, handler.MauiContext);
     }
 
     public override bool NeedsContainer => false;

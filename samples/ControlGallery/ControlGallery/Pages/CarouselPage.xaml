@@ -6,6 +6,23 @@
              x:Class="ControlGallery.Pages.CarouselPage"
              x:DataType="pages:CarouselPage"
              Title="Carousel">
+    <ContentPage.Resources>
+        <DataTemplate x:Key="EmptyItemsTemplate">
+            <VerticalStackLayout Padding="20"
+                                 Spacing="8"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center">
+                <Label Text="Nothing to see here!"
+                       FontAttributes="Bold"
+                       FontSize="18"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="Add items to populate the carousel."
+                       FontSize="12"
+                       TextColor="Gray"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </DataTemplate>
+    </ContentPage.Resources>
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="20">
@@ -174,6 +191,61 @@
                                 Clicked="OnVerticalNextClicked"
                                 IsEnabled="{Binding HasVerticalNext}"/>
                     </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Empty Content -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Empty Content"
+                           FontAttributes="Bold"
+                           FontSize="16" />
+                    <Label Text="Show custom empty content or template when no items are present"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <HorizontalStackLayout Spacing="12"
+                                            VerticalOptions="Center">
+                        <Button Text="Add items"
+                                Clicked="OnAddEmptyItemsClicked" />
+                        <Button Text="Clear items"
+                                Clicked="OnClearEmptyItemsClicked" />
+                        <HorizontalStackLayout Spacing="4"
+                                               VerticalOptions="Center">
+                            <Switch IsToggled="{Binding UseEmptyTemplate, Mode=TwoWay}" />
+                            <Label Text="Use template"
+                                   VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
+                    </HorizontalStackLayout>
+                    <CarouselView ItemsSource="{Binding EmptyItems}"
+                                  EmptyView="{Binding EmptyContent}"
+                                  EmptyViewTemplate="{Binding EmptyTemplate}"
+                                  HeightRequest="250">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:CarouselItem">
+                                <Border Stroke="DarkGray"
+                                        StrokeShape="RoundRectangle 12"
+                                        Margin="20"
+                                        Padding="20"
+                                        HeightRequest="200"
+                                        HorizontalOptions="Fill"
+                                        VerticalOptions="CenterAndExpand"
+                                        Background="{Binding Color}">
+                                    <Grid>
+                                        <Label Text="{Binding Text}"
+                                               FontAttributes="Bold"
+                                               FontSize="24"
+                                               TextColor="White"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                    </CarouselView>
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>

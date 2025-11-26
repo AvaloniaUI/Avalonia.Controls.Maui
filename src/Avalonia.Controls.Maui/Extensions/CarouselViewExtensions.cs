@@ -105,6 +105,42 @@ public static class CarouselViewExtensions
     }
 
     /// <summary>
+    /// Applies the EmptyView content to the platform carousel.
+    /// </summary>
+    public static void UpdateEmptyView(this PlatformView platformView, CarouselView carouselView)
+    {
+        platformView.EmptyContent = carouselView.EmptyView;
+    }
+
+    /// <summary>
+    /// Applies the EmptyViewTemplate to the platform carousel.
+    /// </summary>
+    public static void UpdateEmptyViewTemplate(this PlatformView platformView, CarouselView carouselView, IMauiContext? mauiContext)
+    {
+        if (carouselView.EmptyViewTemplate is DataTemplate template)
+        {
+            platformView.EmptyContentTemplate = new FuncDataTemplate<object>((item, _) =>
+            {
+                if (mauiContext == null)
+                    return new TextBlock { Text = item?.ToString() ?? string.Empty };
+
+                var content = template.CreateContent();
+                if (content is not View templateView)
+                    return new TextBlock { Text = item?.ToString() ?? string.Empty };
+
+                templateView.BindingContext = item;
+                var platformControl = templateView.ToPlatform(mauiContext);
+                return platformControl as Control ??
+                       new TextBlock { Text = item?.ToString() ?? string.Empty };
+            });
+        }
+        else
+        {
+            platformView.EmptyContentTemplate = null;
+        }
+    }
+
+    /// <summary>
     /// Updates the orientation (layout) of the platform carousel based on the ItemsLayout.
     /// Sets the orientation on the underlying VirtualizingStackPanel, not on the Carousel itself.
     /// </summary>

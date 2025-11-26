@@ -1,10 +1,10 @@
-using System;
 using System.Collections;
 using Avalonia.Animation;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Layout;
+using PointerEventArgs = Avalonia.Input.PointerEventArgs;
 
 namespace Avalonia.Controls.Maui;
 
@@ -25,6 +25,7 @@ public class Carousel : SelectingItemsControl
     private Canvas? _gestureCanvas;
     private ContentControl? _currentItemContainer;
     private ContentControl? _previewItemContainer;
+    private Presenters.ContentPresenter? _emptyPresenter;
     private Point? _pointerPressPosition;
     private bool _isDragging;
     private int _previewDirection;
@@ -55,6 +56,18 @@ public class Carousel : SelectingItemsControl
     public static readonly StyledProperty<bool> IsLoopingEnabledProperty =
         AvaloniaProperty.Register<Carousel, bool>(nameof(IsLoopingEnabled), defaultValue: false);
     
+    /// <summary>
+    /// Defines the <see cref="EmptyContent"/> property.
+    /// </summary>
+    public static readonly StyledProperty<object?> EmptyContentProperty =
+        AvaloniaProperty.Register<Carousel, object?>(nameof(EmptyContent));
+
+    /// <summary>
+    /// Defines the <see cref="EmptyContentTemplate"/> property.
+    /// </summary>
+    public static readonly StyledProperty<IDataTemplate?> EmptyContentTemplateProperty =
+        AvaloniaProperty.Register<Carousel, IDataTemplate?>(nameof(EmptyContentTemplate));
+
     /// <summary>
     /// Defines the <see cref="IsDragging"/> property.
     /// </summary>
@@ -88,6 +101,24 @@ public class Carousel : SelectingItemsControl
     {
         get => GetValue(IsLoopingEnabledProperty);
         set => SetValue(IsLoopingEnabledProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the content shown when there are no items.
+    /// </summary>
+    public object? EmptyContent
+    {
+        get => GetValue(EmptyContentProperty);
+        set => SetValue(EmptyContentProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the template used to display the empty content.
+    /// </summary>
+    public IDataTemplate? EmptyContentTemplate
+    {
+        get => GetValue(EmptyContentTemplateProperty);
+        set => SetValue(EmptyContentTemplateProperty, value);
     }
 
     /// <summary>
@@ -178,6 +209,7 @@ public class Carousel : SelectingItemsControl
 
         _scroller = e.NameScope.Find<IScrollable>("PART_ScrollViewer");
         _gestureCanvas = e.NameScope.Find<Canvas>("PART_GestureCanvas");
+        _emptyPresenter = e.NameScope.Find<Presenters.ContentPresenter>("PART_EmptyPresenter");
 
         if (_gestureCanvas != null)
         {
@@ -186,6 +218,8 @@ public class Carousel : SelectingItemsControl
             _gestureCanvas.PointerReleased += OnPointerReleased;
             _gestureCanvas.PointerCaptureLost += OnPointerCaptureLost;
         }
+
+        UpdateEmptyState();
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -198,6 +232,11 @@ public class Carousel : SelectingItemsControl
             // Keep the logical offset on the X axis for both orientations so the panel
             // (which reads offset.X) realizes the correct item.
             _scroller.Offset = new Vector(value, 0);
+        }
+
+        if (change.Property == ItemCountProperty)
+        {
+            UpdateEmptyState();
         }
     }
 
@@ -451,5 +490,20 @@ public class Carousel : SelectingItemsControl
         _pointerPressPosition = null;
         IsDragging = false;
         _previewIndex = -1;
+    }
+
+    private void UpdateEmptyState()
+    {
+        var hasItems = ItemCount > 0;
+
+        if (_emptyPresenter != null)
+        {
+            _emptyPresenter.IsVisible = !hasItems;
+        }
+
+        if (_gestureCanvas != null)
+        {
+            _gestureCanvas.IsVisible = hasItems;
+        }
     }
 }

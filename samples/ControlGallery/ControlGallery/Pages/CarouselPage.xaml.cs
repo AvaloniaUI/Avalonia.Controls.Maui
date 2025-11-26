@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Reflection;
 using Microsoft.Maui.Controls;
@@ -15,7 +15,8 @@ public class CarouselItem
 
 public partial class CarouselPage : ContentPage
 {
-    public IList<CarouselItem> Items { get; } = new List<CarouselItem>();
+    public ObservableCollection<CarouselItem> Items { get; } = new();
+    public ObservableCollection<CarouselItem> EmptyItems { get; } = new();
 
     private int _horizontalPosition;
     private int _verticalPosition;
@@ -25,8 +26,12 @@ public partial class CarouselPage : ContentPage
     private bool _horizontalSwipeEnabled = true;
     private bool _verticalLoopEnabled = true;
     private bool _verticalSwipeEnabled = true;
+    private bool _useEmptyTemplate;
     private INotifyPropertyChanged? _horizontalPlatform;
     private INotifyPropertyChanged? _verticalPlatform;
+
+    public object? EmptyContent { get; private set; }
+    public DataTemplate? EmptyTemplate { get; private set; }
 
     public int HorizontalPosition
     {
@@ -77,6 +82,19 @@ public partial class CarouselPage : ContentPage
                 return;
             _verticalIsDragging = value;
             OnPropertyChanged();
+        }
+    }
+
+    public bool UseEmptyTemplate
+    {
+        get => _useEmptyTemplate;
+        set
+        {
+            if (_useEmptyTemplate == value)
+                return;
+            _useEmptyTemplate = value;
+            OnPropertyChanged();
+            ApplyEmptyViewSettings();
         }
     }
 
@@ -144,15 +162,23 @@ public partial class CarouselPage : ContentPage
     public CarouselPage()
     {
         InitializeComponent();
+        EmptyContent = "No items available.";
+        EmptyTemplate = Resources.TryGetValue("EmptyItemsTemplate", out var templateObj)
+            ? templateObj as DataTemplate
+            : null;
         PopulateItems();
+        Items.CollectionChanged += OnItemsChanged;
         BindingContext = this;
 
         HorizontalCarousel.HandlerChanged += OnHorizontalHandlerChanged;
         VerticalCarousel.HandlerChanged += OnVerticalHandlerChanged;
+        ApplyEmptyViewSettings();
     }
 
     void PopulateItems()
     {
+        Items.Clear();
+
         var random = new Random();
         const int totalItems = 10;
 
@@ -164,11 +190,6 @@ public partial class CarouselPage : ContentPage
                 Color = Color.FromRgb(random.Next(256), random.Next(256), random.Next(256))
             });
         }
-
-        OnPropertyChanged(nameof(HasHorizontalPrevious));
-        OnPropertyChanged(nameof(HasHorizontalNext));
-        OnPropertyChanged(nameof(HasVerticalPrevious));
-        OnPropertyChanged(nameof(HasVerticalNext));
     }
 
     void OnHorizontalPreviousClicked(object sender, EventArgs e)
@@ -229,6 +250,30 @@ public partial class CarouselPage : ContentPage
         {
             VerticalPosition += 1;
         }
+    }
+
+    void OnAddItemsClicked(object sender, EventArgs e)
+    {
+        PopulateItems();
+        RefreshNavigationState();
+    }
+
+    void OnClearItemsClicked(object sender, EventArgs e)
+    {
+        Items.Clear();
+        HorizontalPosition = 0;
+        VerticalPosition = 0;
+        RefreshNavigationState();
+    }
+
+    void OnAddEmptyItemsClicked(object sender, EventArgs e)
+    {
+        PopulateCollection(EmptyItems, 5, "Empty Item");
+    }
+
+    void OnClearEmptyItemsClicked(object sender, EventArgs e)
+    {
+        EmptyItems.Clear();
     }
 
     void OnHorizontalHandlerChanged(object? sender, EventArgs e)
@@ -300,5 +345,53 @@ public partial class CarouselPage : ContentPage
             return (bool)(prop.GetValue(platform) ?? false);
         }
         return false;
+    }
+
+    void OnItemsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        HorizontalPosition = Math.Min(HorizontalPosition, Math.Max(Items.Count - 1, 0));
+        VerticalPosition = Math.Min(VerticalPosition, Math.Max(Items.Count - 1, 0));
+        RefreshNavigationState();
+    }
+
+    void RefreshNavigationState()
+    {
+        OnPropertyChanged(nameof(HasHorizontalPrevious));
+        OnPropertyChanged(nameof(HasHorizontalNext));
+        OnPropertyChanged(nameof(HasVerticalPrevious));
+        OnPropertyChanged(nameof(HasVerticalNext));
+    }
+
+    void ApplyEmptyViewSettings()
+    {
+        if (UseEmptyTemplate)
+        {
+            EmptyTemplate ??= Resources.TryGetValue("EmptyItemsTemplate", out var templateObj)
+                ? templateObj as DataTemplate
+                : null;
+            EmptyContent = null;
+        }
+        else
+        {
+            EmptyTemplate = null;
+            EmptyContent = "No items available.";
+        }
+
+        OnPropertyChanged(nameof(EmptyContent));
+        OnPropertyChanged(nameof(EmptyTemplate));
+    }
+
+    void PopulateCollection(ObservableCollection<CarouselItem> target, int count, string prefix)
+    {
+        target.Clear();
+        var random = new Random();
+        for (int i = 1; i <= count; i++)
+        {
+            target.Add(new CarouselItem
+            {
+                Text = $"{prefix} {i}",
+                Color = Color.FromRgb(random.Next(256), random.Next(256), random.Next(256))
+            });
+        }
     }
 }
