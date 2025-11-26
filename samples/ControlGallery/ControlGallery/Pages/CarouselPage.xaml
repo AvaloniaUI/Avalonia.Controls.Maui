@@ -7,6 +7,7 @@
              x:DataType="pages:CarouselPage"
              Title="Carousel">
     <ContentPage.Resources>
+        
         <DataTemplate x:Key="EmptyItemsTemplate">
             <VerticalStackLayout Padding="20"
                                  Spacing="8"
@@ -22,6 +23,7 @@
                        HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
         </DataTemplate>
+        
     </ContentPage.Resources>
     <ScrollView>
         <VerticalStackLayout Padding="20"
@@ -191,6 +193,97 @@
                                 Clicked="OnVerticalNextClicked"
                                 IsEnabled="{Binding HasVerticalNext}"/>
                     </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Position  -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Position"
+                           FontAttributes="Bold"
+                           FontSize="16" />
+                    <Label Text="Set Position to verify synchronization"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <HorizontalStackLayout Spacing="8"
+                                            VerticalOptions="Center">
+                        <Label Text="Position:"
+                               VerticalTextAlignment="Center" />
+                        <Entry WidthRequest="80"
+                               Keyboard="Numeric"
+                               Text="{Binding PositionSampleText, Mode=TwoWay}" />
+                        <Button Text="Apply"
+                                Clicked="OnApplyPositionSampleClicked" />
+                    </HorizontalStackLayout>
+                    <CarouselView ItemsSource="{Binding Items}"
+                                  Position="{Binding PositionSamplePosition, Mode=TwoWay}"
+                                  HeightRequest="180">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:CarouselItem">
+                                <Border Stroke="DarkGray"
+                                        StrokeShape="RoundRectangle 12"
+                                        Margin="12"
+                                        Padding="12"
+                                        Background="{Binding Color}">
+                                    <Label Text="{Binding Text}"
+                                           FontAttributes="Bold"
+                                           FontSize="20"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                    </CarouselView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Current Item -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="CurrentItem"
+                           FontAttributes="Bold"
+                           FontSize="16" />
+                    <Label Text="Set CurrentItem to verify synchronization"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <HorizontalStackLayout Spacing="8"
+                                            VerticalOptions="Center">
+                        <Label Text="Current Item:"
+                               VerticalTextAlignment="Center" />
+                        <Entry WidthRequest="160"
+                               Text="{Binding CurrentItemSampleText, Mode=TwoWay}" />
+                        <Button Text="Apply"
+                                Clicked="OnApplyCurrentItemSampleClicked" />
+                    </HorizontalStackLayout>
+                    <CarouselView ItemsSource="{Binding Items}"
+                                  CurrentItem="{Binding CurrentItemSample, Mode=TwoWay}"
+                                  HeightRequest="180">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:CarouselItem">
+                                <Border Stroke="DarkGray"
+                                        StrokeShape="RoundRectangle 12"
+                                        Margin="12"
+                                        Padding="12"
+                                        Background="{Binding Color}">
+                                    <Label Text="{Binding Text}"
+                                           FontAttributes="Bold"
+                                           FontSize="20"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                    </CarouselView>
                 </VerticalStackLayout>
             </Border>
 
