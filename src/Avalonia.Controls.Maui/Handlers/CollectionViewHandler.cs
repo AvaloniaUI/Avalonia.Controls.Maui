@@ -87,17 +87,13 @@ public class CollectionViewHandler : ViewHandler<Microsoft.Maui.Controls.Collect
 
         var selectedItem = PlatformView.SelectedItem;
 
-        // Update the MAUI CollectionView's SelectedItem
-        if (selectableItemsView.SelectedItem != selectedItem)
+       if (VirtualView.SelectionMode is Microsoft.Maui.Controls.SelectionMode.Single)
         {
-            selectableItemsView.SelectedItem = selectedItem;
-        }
-
-        // Trigger SelectionChangedCommand if it exists
-        var collectionView = VirtualView as Microsoft.Maui.Controls.CollectionView;
-        if (collectionView?.SelectionChangedCommand?.CanExecute(collectionView.SelectionChangedCommandParameter) == true)
-        {
-            collectionView.SelectionChangedCommand.Execute(collectionView.SelectionChangedCommandParameter);
+             // Update MAUI's SelectedItem if different
+            if (!Equals(selectableItemsView.SelectedItem, selectedItem))
+            {
+                selectableItemsView.SelectedItem = selectedItem;
+            }
         }
     }
 
@@ -314,7 +310,11 @@ public class CollectionViewHandler : ViewHandler<Microsoft.Maui.Controls.Collect
 
         if (itemsView is Microsoft.Maui.Controls.SelectableItemsView selectableItemsView)
         {
-            handler.PlatformView.SelectedItem = selectableItemsView.SelectedItem;
+            // Only update if different to prevent feedback loops
+            if (!Equals(handler.PlatformView.SelectedItem, selectableItemsView.SelectedItem))
+            {
+                handler.PlatformView.SelectedItem = selectableItemsView.SelectedItem;
+            }
         }
     }
 

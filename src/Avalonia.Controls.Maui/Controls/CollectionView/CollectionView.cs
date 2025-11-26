@@ -356,13 +356,40 @@ public class CollectionView : TemplatedControl
                 SelectionMode != global::Avalonia.Controls.SelectionMode.Multiple)
                 return;
 
-            // Update selected item
             var actualData = dataContext is GroupItem groupItem ? groupItem.Data : dataContext;
 
-            if (SelectedItem != actualData)
+            if (SelectionMode == global::Avalonia.Controls.SelectionMode.Multiple)
             {
-                SelectedItem = actualData;
+                var selectedItems = SelectedItems;
+                if (selectedItems == null)
+                {
+                    selectedItems = new System.Collections.ObjectModel.ObservableCollection<object>();
+                    SelectedItems = selectedItems;
+                }
+
+                if (actualData != null)
+                {
+                    if (selectedItems.Contains(actualData))
+                    {
+                        selectedItems.Remove(actualData);
+                        if (SelectedItem == actualData)
+                        {
+                            SelectedItem = selectedItems.Count > 0 ? selectedItems[selectedItems.Count - 1] : null;
+                        }
+                    }
+                    else
+                    {
+                        selectedItems.Add(actualData);
+                        SelectedItem = actualData;
+                    }
+                }
+                // Fire event for SelectedItems changes (SelectedItem change already fires via property handler)
                 SelectionChanged?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                // Single selection - just set SelectedItem, event fires via OnSelectedItemChanged
+                SelectedItem = actualData;
             }
 
             e.Handled = true;
@@ -373,8 +400,10 @@ public class CollectionView : TemplatedControl
 
     private void OnSelectedItemChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        // Update visual state of items if needed
-        // For now, we'll just raise the event
+        // Only fire if value actually changed (prevents feedback loops)
+        if (Equals(e.OldValue, e.NewValue))
+            return;
+
         SelectionChanged?.Invoke(this, EventArgs.Empty);
     }
 

@@ -433,6 +433,7 @@
                     </CollectionView>
                     <Label x:Name="MultiSelectionLabel"
                            Text="No items selected"
+                           WidthRequest="300"
                            FontAttributes="Italic"
                            HorizontalOptions="Center"/>
                 </VerticalStackLayout>
