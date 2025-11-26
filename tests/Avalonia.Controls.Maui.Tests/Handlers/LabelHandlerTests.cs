@@ -185,6 +185,91 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
         ColorComparisonHelpers.AssertColorsAreEqual(color, platformColor);
     }
 
+    [AvaloniaFact(DisplayName = "Text Update Invalidates Measure")]
+    public async Task TextUpdateInvalidatesMeasure()
+    {
+        var label = new LabelStub
+        {
+            Text = "Short"
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        var initialWidth = await InvokeOnMainThreadAsync(() =>
+        {
+            var textBlock = (TextBlock)handler.PlatformView;
+            textBlock.Measure(new global::Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity));
+            return textBlock.DesiredSize.Width;
+        });
+
+        // Update to longer text
+        var newWidth = await InvokeOnMainThreadAsync(() =>
+        {
+            label.Text = "This is a much longer text that should be wider";
+            handler.UpdateValue(nameof(ILabel.Text));
+
+            var textBlock = (TextBlock)handler.PlatformView;
+            textBlock.Measure(new global::Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity));
+            return textBlock.DesiredSize.Width;
+        });
+
+        Assert.True(newWidth > initialWidth, $"Expected new width ({newWidth}) to be greater than initial width ({initialWidth})");
+    }
+
+    [AvaloniaFact(DisplayName = "Text Update To Shorter Text Invalidates Measure")]
+    public async Task TextUpdateToShorterTextInvalidatesMeasure()
+    {
+        var label = new LabelStub
+        {
+            Text = "This is a very long text that takes up space"
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        var initialWidth = await InvokeOnMainThreadAsync(() =>
+        {
+            var textBlock = (TextBlock)handler.PlatformView;
+            textBlock.Measure(new global::Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity));
+            return textBlock.DesiredSize.Width;
+        });
+
+        // Update to shorter text
+        var newWidth = await InvokeOnMainThreadAsync(() =>
+        {
+            label.Text = "Short";
+            handler.UpdateValue(nameof(ILabel.Text));
+
+            var textBlock = (TextBlock)handler.PlatformView;
+            textBlock.Measure(new global::Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity));
+            return textBlock.DesiredSize.Width;
+        });
+
+        Assert.True(newWidth < initialWidth, $"Expected new width ({newWidth}) to be less than initial width ({initialWidth})");
+    }
+
+    [AvaloniaFact(DisplayName = "Text Update Reflects In Native Text")]
+    public async Task TextUpdateReflectsInNativeText()
+    {
+        var label = new LabelStub
+        {
+            Text = "Initial"
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        var initialText = await InvokeOnMainThreadAsync(() => GetNativeText(handler));
+        Assert.Equal("Initial", initialText);
+
+        var updatedText = await InvokeOnMainThreadAsync(() =>
+        {
+            label.Text = "Updated";
+            handler.UpdateValue(nameof(ILabel.Text));
+            return GetNativeText(handler);
+        });
+
+        Assert.Equal("Updated", updatedText);
+    }
+
     // Platform-specific property getters
     string? GetNativeText(MauiLabelHandler handler) =>
         AvaloniaPropertyHelpers.GetNativeText(handler);

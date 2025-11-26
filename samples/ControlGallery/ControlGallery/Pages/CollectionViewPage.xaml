@@ -163,7 +163,7 @@
                     </CollectionView>
                     <Label x:Name="SelectionLabel"
                            Text="No item selected"
-                           FontAttributes="Italic"
+                           FontAttributes="Bold"
                            HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
@@ -325,11 +325,11 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Scrollbar Visibility"
                            FontAttributes="Bold"/>
-                    <Label Text="CollectionView with visible vertical scrollbar"
+                    <Label Text="CollectionView with hidden vertical scrollbar"
                            FontSize="12"
                            FontAttributes="Italic"/>
                     <CollectionView ItemsSource="{Binding LargeList}"
-                                    VerticalScrollBarVisibility="Always"
+                                    VerticalScrollBarVisibility="Never "
                                     HeightRequest="200">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="sys:String">
@@ -433,8 +433,7 @@
                     </CollectionView>
                     <Label x:Name="MultiSelectionLabel"
                            Text="No items selected"
-                           WidthRequest="300"
-                           FontAttributes="Italic"
+                           FontAttributes="Bold"
                            HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
@@ -474,7 +473,7 @@
                     </CollectionView>
                     <Label x:Name="InfiniteScrollCountLabel"
                            Text="Items loaded: 0"
-                           FontAttributes="Italic"
+                           FontAttributes="Bold"
                            HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
