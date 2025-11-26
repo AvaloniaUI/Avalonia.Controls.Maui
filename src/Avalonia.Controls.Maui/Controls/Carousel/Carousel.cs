@@ -1,10 +1,10 @@
+using System;
 using System.Collections;
 using Avalonia.Animation;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Layout;
-using Avalonia.Threading;
 
 namespace Avalonia.Controls.Maui;
 
@@ -28,8 +28,8 @@ public class Carousel : SelectingItemsControl
     private Point? _pointerPressPosition;
     private bool _isDragging;
     private int _previewDirection;
+    private int _previewIndex = -1;
     private DateTime _pointerPressTime;
-    private DispatcherTimer? _snapBackTimer;
 
     static Carousel()
     {
@@ -293,8 +293,19 @@ public class Carousel : SelectingItemsControl
 
         bool shouldTransition = Math.Abs(currentOffset) > SwipeThreshold || velocity > VelocityThreshold;
 
-        if (shouldTransition && _previewItemContainer != null)
+        if (shouldTransition && _previewItemContainer != null && _gestureCanvas != null && _previewIndex >= 0)
         {
+            var extent = IsHorizontal ? _gestureCanvas.Bounds.Width : _gestureCanvas.Bounds.Height;
+            var remaining = Math.Max(0, extent - Math.Abs(currentOffset));
+            var fraction = extent > 0 ? remaining / extent : 1.0;
+
+            var originalTransition = PageTransition;
+            if (originalTransition is PageSlide slide)
+            {
+                var scaledDuration = TimeSpan.FromMilliseconds(Math.Max(60.0, slide.Duration.TotalMilliseconds * fraction));
+                PageTransition = new PageSlide(scaledDuration, slide.Orientation);
+            }
+
             if (_previewDirection > 0)
             {
                 Next();
@@ -303,11 +314,13 @@ public class Carousel : SelectingItemsControl
             {
                 Previous();
             }
+
+            PageTransition = originalTransition;
             CleanupGesture();
         }
         else
         {
-            Animate();
+            CleanupGesture();
         }
 
         _pointerPressPosition = null;
@@ -335,6 +348,7 @@ public class Carousel : SelectingItemsControl
         _gestureCanvas.Children.Add(_currentItemContainer);
 
         var previewItem = itemsList[previewIndex];
+        _previewIndex = previewIndex;
         _previewItemContainer = CreateItemContainer(previewItem, width, height);
 
         if (IsHorizontal)
@@ -412,75 +426,13 @@ public class Carousel : SelectingItemsControl
         }
     }
 
-    private void Animate()
-    {
-        if (_currentItemContainer == null || _gestureCanvas == null)
-        {
-            CleanupGesture();
-            return;
-        }
-
-        var currentStart = IsHorizontal
-            ? Canvas.GetLeft(_currentItemContainer)
-            : Canvas.GetTop(_currentItemContainer);
-
-        var previewStart = _previewItemContainer != null
-            ? (IsHorizontal ? Canvas.GetLeft(_previewItemContainer) : Canvas.GetTop(_previewItemContainer))
-            : 0;
-
-        _snapBackTimer?.Stop();
-        _snapBackTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
-        var startTime = DateTime.Now;
-        var duration = 200.0;
-
-        _snapBackTimer.Tick += (s, e) =>
-        {
-            var elapsed = (DateTime.Now - startTime).TotalMilliseconds;
-            var progress = Math.Min(elapsed / duration, 1.0);
-            var eased = 1 - Math.Pow(1 - progress, 3);
-
-            if (_currentItemContainer != null)
-            {
-                var currentPos = currentStart + (0 - currentStart) * eased;
-                if (IsHorizontal)
-                    Canvas.SetLeft(_currentItemContainer, currentPos);
-                else
-                    Canvas.SetTop(_currentItemContainer, currentPos);
-            }
-
-            if (_previewItemContainer != null && _gestureCanvas != null)
-            {
-                var targetPos = IsHorizontal
-                    ? (_previewDirection > 0 ? _gestureCanvas.Bounds.Width : -_gestureCanvas.Bounds.Width)
-                    : (_previewDirection > 0 ? _gestureCanvas.Bounds.Height : -_gestureCanvas.Bounds.Height);
-                var previewPos = previewStart + (targetPos - previewStart) * eased;
-
-                if (IsHorizontal)
-                    Canvas.SetLeft(_previewItemContainer, previewPos);
-                else
-                    Canvas.SetTop(_previewItemContainer, previewPos);
-            }
-
-            if (progress >= 1.0)
-            {
-                _snapBackTimer?.Stop();
-                _snapBackTimer = null;
-                CleanupGesture();
-            }
-        };
-
-        _snapBackTimer.Start();
-    }
-
     private void CleanupGesture()
     {
-        _snapBackTimer?.Stop();
-        _snapBackTimer = null;
-
         _gestureCanvas?.Children.Clear();
         _currentItemContainer = null;
         _previewItemContainer = null;
         _pointerPressPosition = null;
         _isDragging = false;
+        _previewIndex = -1;
     }
 }
