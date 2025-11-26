@@ -343,6 +343,141 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Header and Footer -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Header and Footer"
+                           FontAttributes="Bold"/>
+                    <Label Text="CollectionView with custom header and footer"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding HeaderFooterItems}"
+                                    HeightRequest="250">
+                        <CollectionView.Header>
+                            <VerticalStackLayout BackgroundColor="LightBlue" Padding="10">
+                                <Label Text="📋 Shopping List"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"/>
+                                <Label Text="Items to buy this week"
+                                       FontSize="12"
+                                       TextColor="DarkBlue"
+                                       HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </CollectionView.Header>
+                        <CollectionView.Footer>
+                            <VerticalStackLayout BackgroundColor="LightGreen" Padding="10">
+                                <Label Text="{Binding HeaderFooterItems.Count, StringFormat='Total items: {0}'}"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"/>
+                                <Label Text="Happy shopping! 🛒"
+                                       FontSize="12"
+                                       TextColor="DarkGreen"
+                                       HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </CollectionView.Footer>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Multiple Selection -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Multiple Selection"
+                           FontAttributes="Bold"/>
+                    <Label Text="Select multiple items from the list"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding MultiSelectItems}"
+                                    SelectionMode="Multiple"
+                                    SelectionChanged="OnMultiSelectionChanged"
+                                    HeightRequest="200">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="Transparent"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="LightGreen"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label x:Name="MultiSelectionLabel"
+                           Text="No items selected"
+                           FontAttributes="Italic"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Infinite Scrolling -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Infinite Scrolling"
+                           FontAttributes="Bold"/>
+                    <Label Text="Scroll to load more items (RemainingItemsThreshold)"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Button Text="Reset List"
+                                Clicked="OnResetInfiniteList"/>
+                        <Label x:Name="LoadingLabel"
+                               Text=""
+                               VerticalOptions="Center"
+                               TextColor="Blue"/>
+                    </HorizontalStackLayout>
+                    <CollectionView ItemsSource="{Binding InfiniteScrollItems}"
+                                    RemainingItemsThreshold="5"
+                                    RemainingItemsThresholdReached="OnLoadMoreItems"
+                                    HeightRequest="200">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label x:Name="InfiniteScrollCountLabel"
+                           Text="Items loaded: 0"
+                           FontAttributes="Italic"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

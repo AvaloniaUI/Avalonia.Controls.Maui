@@ -136,21 +136,26 @@ Displays a scrollable list of selectable data items, using different layout spec
 
 | Property | Status |
 |----------|--------|
-| EmptyView | ⏳ TODO |
-| EmptyViewTemplate | ⏳ TODO |
-| Footer | ⏳ TODO |
-| FooterTemplate | ⏳ TODO |
-| Header | ⏳ TODO |
-| HeaderTemplate | ⏳ TODO |
-| ItemsLayout | ⏳ TODO |
-| ItemsSource | ⏳ TODO |
-| ItemTemplate | ⏳ TODO |
-| ItemsUpdatingScrollMode | ⏳ TODO |
-| RemainingItemsThreshold | ⏳ TODO |
-| RemainingItemsThresholdReachedCommand | ⏳ TODO |
-| SelectedItem | ⏳ TODO |
-| SelectedItems | ⏳ TODO |
-| SelectionMode | ⏳ TODO |
+| EmptyView | ✅ Implemented |
+| EmptyViewTemplate | ✅ Implemented |
+| Footer | ✅ Implemented |
+| FooterTemplate | ✅ Implemented |
+| Header | ✅ Implemented |
+| HeaderTemplate | ✅ Implemented |
+| ItemsLayout | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| ItemsUpdatingScrollMode | ✅ Implemented |
+| RemainingItemsThreshold | ✅ Implemented |
+| RemainingItemsThresholdReachedCommand | ✅ Implemented |
+| SelectedItem | ✅ Implemented |
+| SelectedItems | ✅ Implemented |
+| SelectionMode | ✅ Implemented |
+| IsGrouped | ✅ Implemented |
+| GroupHeaderTemplate | ✅ Implemented |
+| GroupFooterTemplate | ✅ Implemented |
+| HorizontalScrollBarVisibility | ✅ Implemented |
+| VerticalScrollBarVisibility | ✅ Implemented |
 
 ---
 

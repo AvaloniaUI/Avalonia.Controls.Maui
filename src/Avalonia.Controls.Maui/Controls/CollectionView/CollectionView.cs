@@ -6,6 +6,7 @@ using Avalonia.Data;
 using Avalonia.Layout;
 using Microsoft.Maui.Controls;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace Avalonia.Controls.Maui;
@@ -15,7 +16,10 @@ public class CollectionView : TemplatedControl
     private ItemsControl? _itemsControl;
     private ScrollViewer? _scrollViewer;
     private Control? _emptyView;
+    private Control? _headerView;
+    private Control? _footerView;
     private Panel? _rootPanel;
+    private StackPanel? _mainContainer;
 
     public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty =
         AvaloniaProperty.Register<CollectionView, IEnumerable?>(nameof(ItemsSource));
@@ -63,7 +67,31 @@ public class CollectionView : TemplatedControl
     public static readonly StyledProperty<IDataTemplate?> GroupFooterTemplateProperty =
         AvaloniaProperty.Register<CollectionView, IDataTemplate?>(nameof(GroupFooterTemplate));
 
+    public static readonly StyledProperty<object?> HeaderProperty =
+        AvaloniaProperty.Register<CollectionView, object?>(nameof(Header));
+
+    public static readonly StyledProperty<IDataTemplate?> HeaderTemplateProperty =
+        AvaloniaProperty.Register<CollectionView, IDataTemplate?>(nameof(HeaderTemplate));
+
+    public static readonly StyledProperty<object?> FooterProperty =
+        AvaloniaProperty.Register<CollectionView, object?>(nameof(Footer));
+
+    public static readonly StyledProperty<IDataTemplate?> FooterTemplateProperty =
+        AvaloniaProperty.Register<CollectionView, IDataTemplate?>(nameof(FooterTemplate));
+
+    public static readonly StyledProperty<IList<object>?> SelectedItemsProperty =
+        AvaloniaProperty.Register<CollectionView, IList<object>?>(nameof(SelectedItems));
+
+    public static readonly StyledProperty<ItemsUpdatingScrollMode> ItemsUpdatingScrollModeProperty =
+        AvaloniaProperty.Register<CollectionView, ItemsUpdatingScrollMode>(
+            nameof(ItemsUpdatingScrollMode),
+            ItemsUpdatingScrollMode.KeepItemsInView);
+
+    public static readonly StyledProperty<int> RemainingItemsThresholdProperty =
+        AvaloniaProperty.Register<CollectionView, int>(nameof(RemainingItemsThreshold), -1);
+
     public event EventHandler? SelectionChanged;
+    public event EventHandler? RemainingItemsThresholdReached;
 
     static CollectionView()
     {
@@ -78,6 +106,11 @@ public class CollectionView : TemplatedControl
         GroupHeaderTemplateProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnGroupingChanged());
         GroupFooterTemplateProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnGroupingChanged());
         SelectedItemProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnSelectedItemChanged(e));
+        HeaderProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.UpdateHeaderFooter());
+        HeaderTemplateProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.UpdateHeaderFooter());
+        FooterProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.UpdateHeaderFooter());
+        FooterTemplateProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.UpdateHeaderFooter());
+        RemainingItemsThresholdProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.UpdateRemainingItemsThreshold());
     }
 
     public CollectionView()
@@ -96,7 +129,12 @@ public class CollectionView : TemplatedControl
         };
         _itemsControl = new ItemsControl();
 
-        _scrollViewer.Content = _itemsControl;
+        // Create a main container that holds header, items, and footer
+        _mainContainer = new StackPanel { Orientation = Orientation.Vertical };
+        _mainContainer.Children.Add(_itemsControl);
+
+        _scrollViewer.Content = _mainContainer;
+        _scrollViewer.ScrollChanged += OnScrollViewerScrollChanged;
         _rootPanel.Children.Add(_scrollViewer);
 
         // For TemplatedControl, add to both visual and logical children
@@ -174,6 +212,48 @@ public class CollectionView : TemplatedControl
     {
         get => GetValue(GroupFooterTemplateProperty);
         set => SetValue(GroupFooterTemplateProperty, value);
+    }
+
+    public object? Header
+    {
+        get => GetValue(HeaderProperty);
+        set => SetValue(HeaderProperty, value);
+    }
+
+    public IDataTemplate? HeaderTemplate
+    {
+        get => GetValue(HeaderTemplateProperty);
+        set => SetValue(HeaderTemplateProperty, value);
+    }
+
+    public object? Footer
+    {
+        get => GetValue(FooterProperty);
+        set => SetValue(FooterProperty, value);
+    }
+
+    public IDataTemplate? FooterTemplate
+    {
+        get => GetValue(FooterTemplateProperty);
+        set => SetValue(FooterTemplateProperty, value);
+    }
+
+    public IList<object>? SelectedItems
+    {
+        get => GetValue(SelectedItemsProperty);
+        set => SetValue(SelectedItemsProperty, value);
+    }
+
+    public ItemsUpdatingScrollMode ItemsUpdatingScrollMode
+    {
+        get => GetValue(ItemsUpdatingScrollModeProperty);
+        set => SetValue(ItemsUpdatingScrollModeProperty, value);
+    }
+
+    public int RemainingItemsThreshold
+    {
+        get => GetValue(RemainingItemsThresholdProperty);
+        set => SetValue(RemainingItemsThresholdProperty, value);
     }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -475,4 +555,102 @@ public class CollectionView : TemplatedControl
     public ItemsControl? GetItemsControl() => _itemsControl;
 
     public ScrollViewer? GetScrollViewer() => _scrollViewer;
+
+    private void UpdateHeaderFooter()
+    {
+        if (_mainContainer == null)
+            return;
+
+        // Remove existing header if any
+        if (_headerView != null && _mainContainer.Children.Contains(_headerView))
+        {
+            _mainContainer.Children.Remove(_headerView);
+            _headerView = null;
+        }
+
+        // Remove existing footer if any
+        if (_footerView != null && _mainContainer.Children.Contains(_footerView))
+        {
+            _mainContainer.Children.Remove(_footerView);
+            _footerView = null;
+        }
+
+        // Create header view
+        if (Header != null || HeaderTemplate != null)
+        {
+            if (HeaderTemplate != null)
+            {
+                _headerView = HeaderTemplate.Build(Header);
+            }
+            else if (Header is Control headerControl)
+            {
+                _headerView = headerControl;
+            }
+            else if (Header is string headerText)
+            {
+                _headerView = new TextBlock { Text = headerText };
+            }
+
+            if (_headerView != null)
+            {
+                // Insert at the beginning
+                _mainContainer.Children.Insert(0, _headerView);
+            }
+        }
+
+        // Create footer view
+        if (Footer != null || FooterTemplate != null)
+        {
+            if (FooterTemplate != null)
+            {
+                _footerView = FooterTemplate.Build(Footer);
+            }
+            else if (Footer is Control footerControl)
+            {
+                _footerView = footerControl;
+            }
+            else if (Footer is string footerText)
+            {
+                _footerView = new TextBlock { Text = footerText };
+            }
+
+            if (_footerView != null)
+            {
+                // Add at the end
+                _mainContainer.Children.Add(_footerView);
+            }
+        }
+    }
+
+    private void UpdateRemainingItemsThreshold()
+    {
+        // RemainingItemsThreshold is used with scroll events to trigger loading more items
+        // The actual check happens in OnScrollViewerScrollChanged
+    }
+
+    private void OnScrollViewerScrollChanged(object? sender, ScrollChangedEventArgs e)
+    {
+        if (_scrollViewer == null || RemainingItemsThreshold < 0)
+            return;
+
+        // Calculate how close we are to the bottom
+        var verticalOffset = _scrollViewer.Offset.Y;
+        var viewportHeight = _scrollViewer.Viewport.Height;
+        var extentHeight = _scrollViewer.Extent.Height;
+
+        if (extentHeight <= 0)
+            return;
+
+        // Calculate remaining items (approximate based on position)
+        var remainingDistance = extentHeight - (verticalOffset + viewportHeight);
+
+        // If we're close enough to the bottom (within threshold * average item height estimate)
+        // For simplicity, we use a percentage-based approach
+        var thresholdDistance = viewportHeight * (RemainingItemsThreshold + 1) / 10.0;
+
+        if (remainingDistance <= thresholdDistance)
+        {
+            RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
+        }
+    }
 }

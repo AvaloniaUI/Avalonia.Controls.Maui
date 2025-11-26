@@ -78,6 +78,24 @@ public partial class CollectionViewPage : ContentPage
         .Select(i => $"Item number {i}")
         .ToList();
 
+    // Header/Footer items
+    public List<string> HeaderFooterItems { get; } = new()
+    {
+        "🍎 Apples", "🍌 Bananas", "🥛 Milk", "🍞 Bread",
+        "🧀 Cheese", "🥚 Eggs", "🥕 Carrots", "🍅 Tomatoes"
+    };
+
+    // Multiple selection items
+    public List<string> MultiSelectItems { get; } = new()
+    {
+        "Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"
+    };
+
+    // Infinite scroll items - observable for dynamic loading
+    public ObservableCollection<string> InfiniteScrollItems { get; } = new();
+    private bool _isLoadingMore = false;
+    private int _infiniteScrollBatch = 0;
+
     public CollectionViewPage()
     {
         InitializeComponent();
@@ -87,6 +105,21 @@ public partial class CollectionViewPage : ContentPage
         EmptyViewItems.Add("Initial Item 1");
         EmptyViewItems.Add("Initial Item 2");
         EmptyViewItems.Add("Initial Item 3");
+
+        // Initialize infinite scroll items
+        LoadInitialInfiniteScrollItems();
+    }
+
+    private void LoadInitialInfiniteScrollItems()
+    {
+        _infiniteScrollBatch = 0;
+        InfiniteScrollItems.Clear();
+        for (int i = 1; i <= 20; i++)
+        {
+            InfiniteScrollItems.Add($"Item {i}");
+        }
+        _infiniteScrollBatch = 1;
+        UpdateInfiniteScrollCount();
     }
 
     private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -101,6 +134,20 @@ public partial class CollectionViewPage : ContentPage
         }
     }
 
+    private void OnMultiSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        var selectedCount = e.CurrentSelection.Count;
+        if (selectedCount > 0)
+        {
+            var selectedItems = string.Join(", ", e.CurrentSelection.Cast<string>());
+            MultiSelectionLabel.Text = $"Selected ({selectedCount}): {selectedItems}";
+        }
+        else
+        {
+            MultiSelectionLabel.Text = "No items selected";
+        }
+    }
+
     private void OnClearItems(object? sender, EventArgs e)
     {
         EmptyViewItems.Clear();
@@ -112,6 +159,40 @@ public partial class CollectionViewPage : ContentPage
         EmptyViewItems.Add($"New Item {count + 1}");
         EmptyViewItems.Add($"New Item {count + 2}");
         EmptyViewItems.Add($"New Item {count + 3}");
+    }
+
+    private void OnResetInfiniteList(object? sender, EventArgs e)
+    {
+        LoadInitialInfiniteScrollItems();
+        LoadingLabel.Text = "";
+    }
+
+    private async void OnLoadMoreItems(object? sender, EventArgs e)
+    {
+        if (_isLoadingMore || _infiniteScrollBatch >= 5) // Limit to 5 batches (100 items total)
+            return;
+
+        _isLoadingMore = true;
+        LoadingLabel.Text = "Loading...";
+
+        // Simulate network delay
+        await Task.Delay(500);
+
+        _infiniteScrollBatch++;
+        var startIndex = InfiniteScrollItems.Count + 1;
+        for (int i = 0; i < 20; i++)
+        {
+            InfiniteScrollItems.Add($"Item {startIndex + i}");
+        }
+
+        UpdateInfiniteScrollCount();
+        LoadingLabel.Text = _infiniteScrollBatch >= 5 ? "All items loaded" : "";
+        _isLoadingMore = false;
+    }
+
+    private void UpdateInfiniteScrollCount()
+    {
+        InfiniteScrollCountLabel.Text = $"Items loaded: {InfiniteScrollItems.Count}";
     }
 }
 
