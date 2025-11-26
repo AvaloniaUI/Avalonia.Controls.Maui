@@ -14,18 +14,16 @@
                                   BringIntoViewOnFocusChange="False"
                                   HorizontalScrollBarVisibility="Hidden"
                                   VerticalScrollBarVisibility="Hidden">
-                        <Grid>
-                            <ItemsPresenter Name="PART_ItemsPresenter"
-                                            ItemsPanel="{TemplateBinding ItemsPanel}"
-                                            Margin="{TemplateBinding Padding}"/>
-                            <ContentPresenter Name="PART_EmptyPresenter"
-                                              Content="{TemplateBinding EmptyContent}"
-                                              ContentTemplate="{TemplateBinding EmptyContentTemplate}"
-                                              HorizontalAlignment="Center"
-                                              VerticalAlignment="Center"
-                                              IsVisible="False"/>
-                        </Grid>
+                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}"
+                                        Margin="{TemplateBinding Padding}"/>
                     </ScrollViewer>
+                    <ContentPresenter Name="PART_EmptyPresenter"
+                                      Content="{TemplateBinding EmptyContent}"
+                                      ContentTemplate="{TemplateBinding EmptyContentTemplate}"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Center"
+                                      IsVisible="False"/>
                     <Canvas Name="PART_GestureCanvas"
                             ClipToBounds="True"
                             IsHitTestVisible="True"
