@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.CarouselPage"
+             x:DataType="pages:CarouselPage"
+             Title="Carousel">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+            <Label Text="CarouselView Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- Horizontal Carousel -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Horizontal Carousel"
+                           FontAttributes="Bold"
+                           FontSize="16" />
+                   <Label Text="Default orientation, swipe left/right to navigate"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <HorizontalStackLayout Spacing="16"
+                                            VerticalOptions="Center">
+                        <HorizontalStackLayout Spacing="4"
+                                               VerticalOptions="Center">
+                            <CheckBox IsChecked="{Binding HorizontalLoopEnabled, Mode=TwoWay}" />
+                            <Label Text="Loop"
+                                   VerticalTextAlignment="Center"
+                                   Margin="4,0,12,0" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="4"
+                                               VerticalOptions="Center">
+                            <CheckBox IsChecked="{Binding HorizontalSwipeEnabled, Mode=TwoWay}" />
+                            <Label Text="Swipe gesture"
+                                   VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
+                    </HorizontalStackLayout>
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="12"
+                          VerticalOptions="Center">
+                        <Button Grid.Column="0"
+                                Text="Previous"
+                                VerticalOptions="Center"
+                                Clicked="OnHorizontalPreviousClicked"
+                                IsEnabled="{Binding HasHorizontalPrevious}"/>
+                        <CarouselView Grid.Column="1"
+                                      ItemsSource="{Binding Items}"
+                                      Loop="{Binding HorizontalLoopEnabled, Mode=TwoWay}"
+                                      IsSwipeEnabled="{Binding HorizontalSwipeEnabled, Mode=TwoWay}"
+                                      Position="{Binding HorizontalPosition, Mode=TwoWay}">
+                            <CarouselView.ItemTemplate>
+                                <DataTemplate x:DataType="pages:CarouselItem">
+                                    <Border Stroke="DarkGray"
+                                            StrokeShape="RoundRectangle 12"
+                                            Margin="20"
+                                            Padding="20"
+                                            HeightRequest="300"
+                                            HorizontalOptions="Fill"
+                                            VerticalOptions="CenterAndExpand"
+                                            Background="{Binding Color}">
+                                        <Grid>
+                                            <Label Text="{Binding Text}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="32"
+                                                   TextColor="White"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CarouselView.ItemTemplate>
+                        </CarouselView>
+                        <Button Grid.Column="2"
+                                Text="Next"
+                                VerticalOptions="Center"
+                                Clicked="OnHorizontalNextClicked"
+                                IsEnabled="{Binding HasHorizontalNext}"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Vertical Carousel -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Vertical Carousel"
+                           FontAttributes="Bold"
+                           FontSize="16" />
+                    <Label Text="Vertical orientation, swipe up/down to navigate"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <HorizontalStackLayout Spacing="16"
+                                            VerticalOptions="Center">
+                        <HorizontalStackLayout Spacing="4"
+                                               VerticalOptions="Center">
+                            <CheckBox IsChecked="{Binding VerticalLoopEnabled, Mode=TwoWay}" />
+                            <Label Text="Loop"
+                                   VerticalTextAlignment="Center"
+                                   Margin="4,0,12,0" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="4"
+                                               VerticalOptions="Center">
+                            <CheckBox IsChecked="{Binding VerticalSwipeEnabled, Mode=TwoWay}" />
+                            <Label Text="Swipe gesture"
+                                   VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
+                    </HorizontalStackLayout>
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="12"
+                          VerticalOptions="Center">
+                        <Button Grid.Column="0"
+                                Text="Previous"
+                                VerticalOptions="Center"
+                                Clicked="OnVerticalPreviousClicked"
+                                IsEnabled="{Binding HasVerticalPrevious}"/>
+                        <CarouselView Grid.Column="1"
+                                      ItemsSource="{Binding Items}"
+                                      ItemsLayout="VerticalList"
+                                      Loop="{Binding VerticalLoopEnabled, Mode=TwoWay}"
+                                      IsSwipeEnabled="{Binding VerticalSwipeEnabled, Mode=TwoWay}"
+                                      Position="{Binding VerticalPosition, Mode=TwoWay}">
+                            <CarouselView.ItemTemplate>
+                                <DataTemplate x:DataType="pages:CarouselItem">
+                                    <Border Stroke="DarkGray"
+                                            StrokeShape="RoundRectangle 12"
+                                            Margin="20"
+                                            Padding="20"
+                                            HeightRequest="300"
+                                            HorizontalOptions="Fill"
+                                            VerticalOptions="CenterAndExpand"
+                                            Background="{Binding Color}">
+                                        <Grid>
+                                            <Label Text="{Binding Text}"
+                                                   FontAttributes="Bold"
+                                                   FontSize="32"
+                                                   TextColor="White"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </CarouselView.ItemTemplate>
+                        </CarouselView>
+                        <Button Grid.Column="2"
+                                Text="Next"
+                                VerticalOptions="Center"
+                                Clicked="OnVerticalNextClicked"
+                                IsEnabled="{Binding HasVerticalNext}"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

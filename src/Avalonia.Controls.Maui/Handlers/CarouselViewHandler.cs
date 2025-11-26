@@ -1,20 +1,9 @@
-using System;
-using System.Collections;
-using System.Linq;
-using Avalonia.Controls;
-using Avalonia.Controls.Templates;
-using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Platform;
-using PlatformView = Avalonia.Controls.Maui.Platform.MauiCarouselView;
+using PlatformView = Avalonia.Controls.Maui.Carousel;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-/// <summary>
-/// Handler for MAUI CarouselView to Avalonia Carousel mapping
-/// </summary>
 public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.CarouselView, PlatformView>
 {
     public static IPropertyMapper<Microsoft.Maui.Controls.CarouselView, CarouselViewHandler> Mapper =
@@ -22,9 +11,11 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
         {
             [nameof(Microsoft.Maui.Controls.ItemsView.ItemsSource)] = MapItemsSource,
             [nameof(Microsoft.Maui.Controls.ItemsView.ItemTemplate)] = MapItemTemplate,
+            [nameof(Microsoft.Maui.Controls.CarouselView.ItemsLayout)] = MapItemsLayout,
             [nameof(Microsoft.Maui.Controls.CarouselView.CurrentItem)] = MapCurrentItem,
             [nameof(Microsoft.Maui.Controls.CarouselView.Position)] = MapPosition,
             [nameof(Microsoft.Maui.Controls.CarouselView.Loop)] = MapLoop,
+            [nameof(Microsoft.Maui.Controls.CarouselView.IsSwipeEnabled)] = MapIsSwipeEnabled,
         };
 
     public static CommandMapper<Microsoft.Maui.Controls.CarouselView, CarouselViewHandler> CommandMapper =
@@ -67,93 +58,43 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
     {
         if (e.Property == PlatformView.SelectedIndexProperty && VirtualView != null && PlatformView != null)
         {
-            var newIndex = PlatformView.SelectedIndex;
-            if (VirtualView.ItemsSource != null && newIndex >= 0)
-            {
-                var items = VirtualView.ItemsSource.Cast<object>().ToList();
-                if (newIndex < items.Count)
-                {
-                    VirtualView.Position = newIndex;
-                    VirtualView.SetValueFromRenderer(Microsoft.Maui.Controls.CarouselView.CurrentItemProperty, items[newIndex]);
-                }
-            }
+            PlatformView.SyncSelectedIndex(VirtualView);
         }
     }
 
     public static void MapItemsSource(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
-        if (handler.PlatformView == null || handler.VirtualView == null)
-            return;
-
-        handler.PlatformView.ItemsSource = carouselView.ItemsSource;
+        handler.PlatformView?.UpdateItemsSource(carouselView);
     }
 
     public static void MapItemTemplate(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
-        if (handler.PlatformView == null || handler.VirtualView == null)
-            return;
+        handler.PlatformView?.UpdateItemTemplate(carouselView, handler.MauiContext);
+    }
 
-        if (carouselView.ItemTemplate != null)
-        {
-            // Create an Avalonia DataTemplate from the MAUI DataTemplate
-            var avaloniaTemplate = new FuncDataTemplate<object>((item, _) =>
-            {
-                if (handler.MauiContext == null)
-                    return new TextBlock { Text = item?.ToString() ?? string.Empty };
-
-                // Create MAUI view from template
-                var mauiView = carouselView.ItemTemplate.CreateContent() as Microsoft.Maui.Controls.View;
-                if (mauiView == null)
-                    return new TextBlock { Text = item?.ToString() ?? string.Empty };
-
-                mauiView.BindingContext = item;
-
-                // Convert to Avalonia control
-                var platformControl = mauiView.ToPlatform(handler.MauiContext);
-                return (platformControl as global::Avalonia.Controls.Control) ?? new TextBlock { Text = item?.ToString() ?? string.Empty };
-            });
-
-            handler.PlatformView.ItemTemplate = avaloniaTemplate;
-        }
-        else
-        {
-            // Default template
-            handler.PlatformView.ItemTemplate = new FuncDataTemplate<object>((item, _) =>
-                new TextBlock { Text = item?.ToString() ?? string.Empty });
-        }
+    public static void MapItemsLayout(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
+    {
+        handler.PlatformView?.UpdateItemsLayout(carouselView);
     }
 
     public static void MapCurrentItem(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
-        if (handler.PlatformView == null || carouselView.ItemsSource == null)
-            return;
-
-        var currentItem = carouselView.CurrentItem;
-        if (currentItem != null)
-        {
-            var items = carouselView.ItemsSource.Cast<object>().ToList();
-            var index = items.IndexOf(currentItem);
-            if (index >= 0)
-            {
-                handler.PlatformView.SelectedIndex = index;
-            }
-        }
+        handler.PlatformView?.UpdateCurrentItem(carouselView);
     }
 
     public static void MapPosition(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
-        if (handler.PlatformView == null)
-            return;
-
-        handler.PlatformView.SelectedIndex = carouselView.Position;
+        handler.PlatformView?.UpdatePosition(carouselView);
     }
 
     public static void MapLoop(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
-        if (handler.PlatformView == null)
-            return;
+        handler.PlatformView?.UpdateLoop(carouselView);
+    }
 
-        handler.PlatformView.Loop = carouselView.Loop;
+    public static void MapIsSwipeEnabled(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
+    {
+        handler.PlatformView?.UpdateIsSwipeEnabled(carouselView);
     }
 
     public override bool NeedsContainer => false;

@@ -1,0 +1,30 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Avalonia.Controls.Maui">
+
+    <ControlTheme x:Key="{x:Type controls:Carousel}" TargetType="controls:Carousel">
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid>
+                    <ScrollViewer Name="PART_ScrollViewer"
+                                  Background="{TemplateBinding Background}"
+                                  BorderBrush="{TemplateBinding BorderBrush}"
+                                  BorderThickness="{TemplateBinding BorderThickness}"
+                                  BringIntoViewOnFocusChange="False"
+                                  HorizontalScrollBarVisibility="Hidden"
+                                  VerticalScrollBarVisibility="Hidden">
+                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}"
+                                        Margin="{TemplateBinding Padding}"/>
+                    </ScrollViewer>
+                    <Canvas Name="PART_GestureCanvas"
+                            ClipToBounds="True"
+                            IsHitTestVisible="True"
+                            Background="Transparent"/>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+    
+</ResourceDictionary>

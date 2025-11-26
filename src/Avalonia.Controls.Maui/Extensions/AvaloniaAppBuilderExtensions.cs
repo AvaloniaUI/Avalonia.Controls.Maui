@@ -27,6 +27,7 @@ public static class AvaloniaAppBuilderExtensions
             {
                 var themeUris = new[]
                 {
+                    "avares://Avalonia.Controls.Maui/Controls/Carousel/Carousel.axaml",
                     "avares://Avalonia.Controls.Maui/Controls/ProgressRing/ProgressRing.axaml",
                 };
 
