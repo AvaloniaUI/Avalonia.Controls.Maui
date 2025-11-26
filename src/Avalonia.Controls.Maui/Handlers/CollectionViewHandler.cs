@@ -11,9 +11,9 @@ using System.Collections;
 namespace Avalonia.Controls.Maui.Handlers;
 
 /// <summary>
-/// Handler for MAUI CollectionView to Avalonia MauiCollectionView mapping
+/// Handler for MAUI CollectionView to Avalonia CollectionView mapping
 /// </summary>
-public class CollectionViewHandler : ViewHandler<Microsoft.Maui.Controls.CollectionView, MauiCollectionView>
+internal class CollectionViewHandler : ViewHandler<Microsoft.Maui.Controls.CollectionView, CollectionView>
 {
     public static IPropertyMapper<Microsoft.Maui.Controls.ItemsView, CollectionViewHandler> Mapper =
         new PropertyMapper<Microsoft.Maui.Controls.ItemsView, CollectionViewHandler>(ViewHandler.ViewMapper)
@@ -51,18 +51,18 @@ public class CollectionViewHandler : ViewHandler<Microsoft.Maui.Controls.Collect
     {
     }
 
-    protected override MauiCollectionView CreatePlatformView()
+    protected override CollectionView CreatePlatformView()
     {
-        return new MauiCollectionView();
+        return new CollectionView();
     }
 
-    protected override void ConnectHandler(MauiCollectionView platformView)
+    protected override void ConnectHandler(CollectionView platformView)
     {
         base.ConnectHandler(platformView);
         platformView.SelectionChanged += OnSelectionChanged;
     }
 
-    protected override void DisconnectHandler(MauiCollectionView platformView)
+    protected override void DisconnectHandler(CollectionView platformView)
     {
         platformView.SelectionChanged -= OnSelectionChanged;
         base.DisconnectHandler(platformView);

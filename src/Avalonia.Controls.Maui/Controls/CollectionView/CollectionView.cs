@@ -8,9 +8,9 @@ using Microsoft.Maui.Controls;
 using System.Collections;
 using System.Collections.Specialized;
 
-namespace Avalonia.Controls.Maui.Platform;
+namespace Avalonia.Controls.Maui;
 
-public class MauiCollectionView : TemplatedControl
+internal class CollectionView : TemplatedControl
 {
     private ItemsControl? _itemsControl;
     private ScrollViewer? _scrollViewer;
@@ -18,69 +18,69 @@ public class MauiCollectionView : TemplatedControl
     private Panel? _rootPanel;
 
     public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty =
-        AvaloniaProperty.Register<MauiCollectionView, IEnumerable?>(nameof(ItemsSource));
+        AvaloniaProperty.Register<CollectionView, IEnumerable?>(nameof(ItemsSource));
 
     public static readonly StyledProperty<IDataTemplate?> ItemTemplateProperty =
-        AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(ItemTemplate));
+        AvaloniaProperty.Register<CollectionView, IDataTemplate?>(nameof(ItemTemplate));
 
     public static readonly StyledProperty<object?> EmptyViewProperty =
-        AvaloniaProperty.Register<MauiCollectionView, object?>(nameof(EmptyView));
+        AvaloniaProperty.Register<CollectionView, object?>(nameof(EmptyView));
 
     public static readonly StyledProperty<IDataTemplate?> EmptyViewTemplateProperty =
-        AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(EmptyViewTemplate));
+        AvaloniaProperty.Register<CollectionView, IDataTemplate?>(nameof(EmptyViewTemplate));
 
     public static readonly StyledProperty<ScrollBarVisibility> HorizontalScrollBarVisibilityProperty =
-        AvaloniaProperty.Register<MauiCollectionView, ScrollBarVisibility>(
+        AvaloniaProperty.Register<CollectionView, ScrollBarVisibility>(
             nameof(HorizontalScrollBarVisibility),
             ScrollBarVisibility.Auto);
 
     public static readonly StyledProperty<ScrollBarVisibility> VerticalScrollBarVisibilityProperty =
-        AvaloniaProperty.Register<MauiCollectionView, ScrollBarVisibility>(
+        AvaloniaProperty.Register<CollectionView, ScrollBarVisibility>(
             nameof(VerticalScrollBarVisibility),
             ScrollBarVisibility.Auto);
 
     public static readonly StyledProperty<object?> SelectedItemProperty =
-        AvaloniaProperty.Register<MauiCollectionView, object?>(
+        AvaloniaProperty.Register<CollectionView, object?>(
             nameof(SelectedItem),
             defaultBindingMode: global::Avalonia.Data.BindingMode.TwoWay);
 
     public static readonly StyledProperty<global::Avalonia.Controls.SelectionMode> SelectionModeProperty =
-        AvaloniaProperty.Register<MauiCollectionView, global::Avalonia.Controls.SelectionMode>(
+        AvaloniaProperty.Register<CollectionView, global::Avalonia.Controls.SelectionMode>(
             nameof(SelectionMode),
             global::Avalonia.Controls.SelectionMode.Single);
 
     public static readonly StyledProperty<IItemsLayout?> ItemsLayoutProperty =
-        AvaloniaProperty.Register<MauiCollectionView, IItemsLayout?>(
+        AvaloniaProperty.Register<CollectionView, IItemsLayout?>(
             nameof(ItemsLayout),
             Microsoft.Maui.Controls.LinearItemsLayout.Vertical);
 
     public static readonly StyledProperty<bool> IsGroupedProperty =
-        AvaloniaProperty.Register<MauiCollectionView, bool>(nameof(IsGrouped), false);
+        AvaloniaProperty.Register<CollectionView, bool>(nameof(IsGrouped), false);
 
     public static readonly StyledProperty<IDataTemplate?> GroupHeaderTemplateProperty =
-        AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(GroupHeaderTemplate));
+        AvaloniaProperty.Register<CollectionView, IDataTemplate?>(nameof(GroupHeaderTemplate));
 
     public static readonly StyledProperty<IDataTemplate?> GroupFooterTemplateProperty =
-        AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(GroupFooterTemplate));
+        AvaloniaProperty.Register<CollectionView, IDataTemplate?>(nameof(GroupFooterTemplate));
 
     public event EventHandler? SelectionChanged;
 
-    static MauiCollectionView()
+    static CollectionView()
     {
-        ItemsSourceProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnItemsSourceChanged(e));
-        EmptyViewProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.UpdateEmptyView());
-        EmptyViewTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.UpdateEmptyView());
-        ItemTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnItemTemplateChanged(e));
-        HorizontalScrollBarVisibilityProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnScrollBarVisibilityChanged());
-        VerticalScrollBarVisibilityProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnScrollBarVisibilityChanged());
-        ItemsLayoutProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnItemsLayoutChanged(e));
-        IsGroupedProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnGroupingChanged());
-        GroupHeaderTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnGroupingChanged());
-        GroupFooterTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnGroupingChanged());
-        SelectedItemProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnSelectedItemChanged(e));
+        ItemsSourceProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnItemsSourceChanged(e));
+        EmptyViewProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.UpdateEmptyView());
+        EmptyViewTemplateProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.UpdateEmptyView());
+        ItemTemplateProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnItemTemplateChanged(e));
+        HorizontalScrollBarVisibilityProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnScrollBarVisibilityChanged());
+        VerticalScrollBarVisibilityProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnScrollBarVisibilityChanged());
+        ItemsLayoutProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnItemsLayoutChanged(e));
+        IsGroupedProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnGroupingChanged());
+        GroupHeaderTemplateProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnGroupingChanged());
+        GroupFooterTemplateProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnGroupingChanged());
+        SelectedItemProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnSelectedItemChanged(e));
     }
 
-    public MauiCollectionView()
+    public CollectionView()
     {
         // Create default template inline if not set from AXAML
         InitializeDefaultTemplate();
@@ -315,27 +315,33 @@ public class MauiCollectionView : TemplatedControl
         // Update the ItemsControl's ItemsPanel based on the layout
         if (e.NewValue is Microsoft.Maui.Controls.GridItemsLayout gridLayout)
         {
-            // For grid layouts, we need to use UniformGrid
+            // For grid layouts, use our custom GridLayoutPanel that handles spacing properly
             // MAUI's Vertical grid = flows down in columns (like reading top-to-bottom, left-to-right)
             // MAUI's Horizontal grid = flows right in rows (like reading left-to-right, top-to-bottom)
 
             if (gridLayout.Orientation == Microsoft.Maui.Controls.ItemsLayoutOrientation.Vertical)
             {
                 // Vertical orientation: Span = number of columns
-                var uniformGrid = new FuncTemplate<Panel?>(() => new UniformGrid
+                var gridPanel = new FuncTemplate<Panel?>(() => new GridLayoutPanel
                 {
-                    Columns = gridLayout.Span
+                    Columns = gridLayout.Span,
+                    Orientation = global::Avalonia.Layout.Orientation.Vertical,
+                    HorizontalSpacing = gridLayout.HorizontalItemSpacing,
+                    VerticalSpacing = gridLayout.VerticalItemSpacing
                 });
-                _itemsControl.ItemsPanel = uniformGrid;
+                _itemsControl.ItemsPanel = gridPanel;
             }
             else
             {
                 // Horizontal orientation: Span = number of rows
-                var uniformGrid = new FuncTemplate<Panel?>(() => new UniformGrid
+                var gridPanel = new FuncTemplate<Panel?>(() => new GridLayoutPanel
                 {
-                    Rows = gridLayout.Span
+                    Rows = gridLayout.Span,
+                    Orientation = global::Avalonia.Layout.Orientation.Horizontal,
+                    HorizontalSpacing = gridLayout.HorizontalItemSpacing,
+                    VerticalSpacing = gridLayout.VerticalItemSpacing
                 });
-                _itemsControl.ItemsPanel = uniformGrid;
+                _itemsControl.ItemsPanel = gridPanel;
             }
         }
         else if (e.NewValue is Microsoft.Maui.Controls.LinearItemsLayout linearLayout)
@@ -469,14 +475,4 @@ public class MauiCollectionView : TemplatedControl
     public ItemsControl? GetItemsControl() => _itemsControl;
 
     public ScrollViewer? GetScrollViewer() => _scrollViewer;
-}
-
-/// <summary>
-/// Helper class to wrap items in a grouped collection view
-/// </summary>
-internal class GroupItem
-{
-    public object? Data { get; set; }
-    public bool IsHeader { get; set; }
-    public bool IsFooter { get; set; }
 }
