@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 		     xmlns:shimmer="http://schemas.syncfusion.com/maui/toolkit"
 			 x:Class="ControlGallery.Pages.FontsPage"
-             Title="Font Test">
+             Title="Fonts">
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">

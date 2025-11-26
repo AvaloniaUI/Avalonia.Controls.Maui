@@ -27,10 +27,14 @@
 								  CommandParameter="{x:Type pages:FontsPage}"/>
 					</TableSection>
 					<TableSection Title="Views">
+						<TextCell Text="ActivityIndicator"
+						          Detail="ActivityIndicator control"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:ActivityIndicatorPage}"/>
 						<TextCell Text="Button"
-								  Detail="Button control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ButtonPage}"/>
+						          Detail="Button control"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:ButtonPage}"/>
 						<TextCell Text="CheckBox"
 								  Detail="CheckBox control for selections"
 								  Command="{Binding NavigateCommand}"

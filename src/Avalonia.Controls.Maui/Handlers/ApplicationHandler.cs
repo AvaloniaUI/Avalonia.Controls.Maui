@@ -3,12 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Platform;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
 public partial class ApplicationHandler : ElementHandler<IApplication, Application>
 {
-    internal const string TerminateCommandKey = "Terminate";
+    public const string TerminateCommandKey = "Terminate";
 
     public static IPropertyMapper<IApplication, ApplicationHandler> Mapper = new PropertyMapper<IApplication, ApplicationHandler>(ElementMapper)
     {
@@ -71,8 +72,16 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
     /// <param name="args">The associated command arguments.</param>
     public static void MapOpenWindow(ApplicationHandler handler, IApplication application, object? args)
     {
-        // Window opening is handled by the WindowHandler
-        // This is called after the window is created
+        if (args is OpenWindowRequest request && handler.MauiContext is IMauiContext mauiContext)
+        {
+            var activationState = new ActivationState(mauiContext, request.State ?? new PersistedState());
+            var window = application.CreateWindow(activationState);
+
+            // For WASM, this will return as MauiAvaloniaContent from SingleViewWindowHandler, so it will not show.
+            // We don't support multiple windows in WASM in Avalonia currently.
+            var avaloniaWindow = window.ToPlatform(mauiContext) as global::Avalonia.Controls.Window;
+            avaloniaWindow?.Show();
+        }
     }
 
     /// <summary>

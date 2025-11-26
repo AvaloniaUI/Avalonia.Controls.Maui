@@ -80,7 +80,25 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>,
         if (platformScrollView == null)
             return;
 
-        // TODO: Avalonia ScrollViewer does not have an Orientation property
+        switch (scrollView.Orientation)
+        {
+            case ScrollOrientation.Horizontal:
+                platformScrollView.HorizontalScrollBarVisibility = scrollView.HorizontalScrollBarVisibility.ToAvaloniaScrollBarVisibility();
+                platformScrollView.VerticalScrollBarVisibility = Primitives.ScrollBarVisibility.Disabled;
+                break;
+            case ScrollOrientation.Vertical:
+                platformScrollView.HorizontalScrollBarVisibility = Primitives.ScrollBarVisibility.Disabled;
+                platformScrollView.VerticalScrollBarVisibility = scrollView.VerticalScrollBarVisibility.ToAvaloniaScrollBarVisibility();
+                break;
+            case ScrollOrientation.Both:
+                platformScrollView.HorizontalScrollBarVisibility = scrollView.HorizontalScrollBarVisibility.ToAvaloniaScrollBarVisibility();
+                platformScrollView.VerticalScrollBarVisibility = scrollView.VerticalScrollBarVisibility.ToAvaloniaScrollBarVisibility();
+                break;
+            case ScrollOrientation.Neither:
+                platformScrollView.HorizontalScrollBarVisibility = Primitives.ScrollBarVisibility.Disabled;
+                platformScrollView.VerticalScrollBarVisibility = Primitives.ScrollBarVisibility.Disabled;
+                break;
+        }
     }
 
     public static void MapRequestScrollTo(IScrollViewHandler handler, IScrollView scrollView, object? args)

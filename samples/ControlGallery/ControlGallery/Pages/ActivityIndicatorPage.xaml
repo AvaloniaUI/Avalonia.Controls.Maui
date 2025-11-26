@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.ActivityIndicatorPage"
+             x:DataType="pages:ActivityIndicatorPage"
+             Title="ActivityIndicator">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="ActivityIndicator Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic control and running toggle -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic ActivityIndicator"
+                           FontAttributes="Bold"/>
+                    <ActivityIndicator IsRunning="{Binding IsRunning}"
+                                       Color="{Binding IndicatorColor}"
+                                       WidthRequest="32"
+                                       HeightRequest="32"/>
+                    <Label Text="{Binding StatusText}"
+                           HorizontalOptions="Center"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Start"
+                                Command="{Binding StartCommand}"/>
+                        <Button Text="Stop"
+                                Command="{Binding StopCommand}"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Color customization -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Color Variations"
+                           FontAttributes="Bold"/>
+                    <ActivityIndicator IsRunning="True"
+                                       Color="{Binding IndicatorColor}"
+                                       WidthRequest="36"
+                                       HeightRequest="36"/>
+                    <Label Text="{Binding IndicatorColor, StringFormat='Selected: {0}'}"
+                           HorizontalOptions="Center"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Red"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Red"
+                                BackgroundColor="Red"
+                                TextColor="White"/>
+                        <Button Text="Green"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Green"
+                                BackgroundColor="Green"
+                                TextColor="White"/>
+                        <Button Text="Blue"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Blue"
+                                BackgroundColor="Blue"
+                                TextColor="White"/>
+                        <Button Text="Orange"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Orange"
+                                BackgroundColor="Orange"
+                                TextColor="Black"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Preset samples -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Preset Colors"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="20"
+                                           HorizontalOptions="Center">
+                        <ActivityIndicator IsRunning="True"
+                                           Color="MediumPurple"
+                                           WidthRequest="28"
+                                           HeightRequest="28"/>
+                        <ActivityIndicator IsRunning="True"
+                                           Color="DeepSkyBlue"
+                                           WidthRequest="28"
+                                           HeightRequest="28"/>
+                        <ActivityIndicator IsRunning="True"
+                                           Color="LimeGreen"
+                                           WidthRequest="28"
+                                           HeightRequest="28"/>
+                        <ActivityIndicator IsRunning="True"
+                                           Color="Gold"
+                                           WidthRequest="28"
+                                           HeightRequest="28"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Size variations -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Sizes"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="20"
+                                           HorizontalOptions="Center">
+                        <VerticalStackLayout Spacing="4"
+                                             HorizontalOptions="Center">
+                            <ActivityIndicator IsRunning="True"
+                                               WidthRequest="20"
+                                               HeightRequest="20"/>
+                            <Label Text="Small"
+                                   FontSize="12"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="4"
+                                             HorizontalOptions="Center">
+                            <ActivityIndicator IsRunning="True"
+                                               WidthRequest="32"
+                                               HeightRequest="32"/>
+                            <Label Text="Default"
+                                   FontSize="12"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="4"
+                                             HorizontalOptions="Center">
+                            <ActivityIndicator IsRunning="True"
+                                               WidthRequest="48"
+                                               HeightRequest="48"/>
+                            <Label Text="Large"
+                                   FontSize="12"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

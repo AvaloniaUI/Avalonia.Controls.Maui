@@ -76,7 +76,7 @@ public static class MauiAppBuilderExtensions
         return builder
             .ConfigureMauiHandlers(handlers =>
             {
-                handlers.AddHandler<Microsoft.Maui.IApplication, Avalonia.Controls.Maui.Handlers.ApplicationHandler>();
+                handlers.AddHandler<Microsoft.Maui.Controls.Application, Avalonia.Controls.Maui.Handlers.ApplicationHandler>();
 
                 // Use different window handlers based on the application lifetime
                 if (useSingleViewLifetime)

@@ -1,432 +1,402 @@
-using System;
-using System.Diagnostics;
-using Avalonia;
-using Avalonia.Controls;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Media;
-using Avalonia.Threading;
+using Avalonia.Styling;
 
 namespace Avalonia.Controls.Maui;
 
 /// <summary>
-/// Visual component for rendering the <see cref="ProgressRing"/> animation.
-/// This is a template part that can be replaced for custom visualizations.
+/// A visual control that renders the <see cref="ProgressRing"/> control.
+/// Handles the rendering of both determinate (percentage-based) and indeterminate (spinning) states.
 /// </summary>
 public class ProgressRingVisual : Control
 {
-    private Stopwatch? _animationStopwatch;
-    private DispatcherTimer? _animationTimer;
-    private double _currentRotation;
-    private double _currentArcSize;
+    private CancellationTokenSource? _animationCts;
+    private Avalonia.Animation.Animation? _progressAnimation;
     
+    // Geometry caching for performance
     private Geometry? _cachedGeometry;
-    private double _cachedValue = double.NaN;
-    private double _cachedRadius = double.NaN;
-    private bool _cachedIsRtl;
+    private double _cachedStartAngle;
+    private double _cachedSweepAngle;
+    private double _cachedRadius;
 
     static ProgressRingVisual()
     {
         AffectsRender<ProgressRingVisual>(
-            RingForegroundProperty,
-            RingBackgroundProperty,
+            ForegroundProperty,
+            BackgroundProperty,
             IsIndeterminateProperty,
+            IsActiveProperty,
             ValueProperty,
             MinimumProperty,
             MaximumProperty,
             StrokeThicknessProperty,
-            AnimationDurationProperty,
-            StartAngleProperty,
-            FlowDirectionProperty);
+            AnimationProgressProperty);
     }
-
+    
     /// <summary>
-    /// Defines the <see cref="RingForeground"/> property.
+    /// Defines the <see cref="Foreground"/> property.
     /// </summary>
-    public static readonly StyledProperty<IBrush?> RingForegroundProperty =
-        AvaloniaProperty.Register<ProgressRingVisual, IBrush?>(nameof(RingForeground));
-
+    public static readonly StyledProperty<IBrush?> ForegroundProperty = 
+        AvaloniaProperty.Register<ProgressRingVisual, IBrush?>(nameof(Foreground));
+    
     /// <summary>
-    /// Defines the <see cref="RingBackground"/> property.
+    /// Defines the <see cref="Background"/> property.
     /// </summary>
-    public static readonly StyledProperty<IBrush?> RingBackgroundProperty =
-        AvaloniaProperty.Register<ProgressRingVisual, IBrush?>(nameof(RingBackground));
-
+    public static readonly StyledProperty<IBrush?> BackgroundProperty = 
+        AvaloniaProperty.Register<ProgressRingVisual, IBrush?>(nameof(Background));
+    
     /// <summary>
     /// Defines the <see cref="IsIndeterminate"/> property.
     /// </summary>
-    public static readonly StyledProperty<bool> IsIndeterminateProperty =
+    public static readonly StyledProperty<bool> IsIndeterminateProperty = 
         AvaloniaProperty.Register<ProgressRingVisual, bool>(nameof(IsIndeterminate), defaultValue: true);
-
+    
+    /// <summary>
+    /// Defines the <see cref="IsActive"/> property.
+    /// </summary>
+    public static readonly StyledProperty<bool> IsActiveProperty = 
+        AvaloniaProperty.Register<ProgressRingVisual, bool>(nameof(IsActive), defaultValue: true);
+    
     /// <summary>
     /// Defines the <see cref="Value"/> property.
     /// </summary>
-    public static readonly StyledProperty<double> ValueProperty =
+    public static readonly StyledProperty<double> ValueProperty = 
         AvaloniaProperty.Register<ProgressRingVisual, double>(nameof(Value), defaultValue: 0.0);
-
+    
     /// <summary>
     /// Defines the <see cref="Minimum"/> property.
     /// </summary>
-    public static readonly StyledProperty<double> MinimumProperty =
+    public static readonly StyledProperty<double> MinimumProperty = 
         AvaloniaProperty.Register<ProgressRingVisual, double>(nameof(Minimum), defaultValue: 0.0);
-
+    
     /// <summary>
     /// Defines the <see cref="Maximum"/> property.
     /// </summary>
-    public static readonly StyledProperty<double> MaximumProperty =
+    public static readonly StyledProperty<double> MaximumProperty = 
         AvaloniaProperty.Register<ProgressRingVisual, double>(nameof(Maximum), defaultValue: 100.0);
-
+    
     /// <summary>
     /// Defines the <see cref="StrokeThickness"/> property.
     /// </summary>
-    public static readonly StyledProperty<double> StrokeThicknessProperty =
-        AvaloniaProperty.Register<ProgressRingVisual, double>(
-            nameof(StrokeThickness), 
-            defaultValue: 4.0,
-            validate: v => v > 0);
+    public static readonly StyledProperty<double> StrokeThicknessProperty = 
+        AvaloniaProperty.Register<ProgressRingVisual, double>(nameof(StrokeThickness), defaultValue: 4.0);
 
     /// <summary>
-    /// Defines the <see cref="AnimationDuration"/> property.
+    /// Defines the <see cref="AnimationProgress"/> property.
     /// </summary>
-    public static readonly StyledProperty<TimeSpan> AnimationDurationProperty =
-        AvaloniaProperty.Register<ProgressRingVisual, TimeSpan>(
-            nameof(AnimationDuration),
-            defaultValue: TimeSpan.FromSeconds(2),
-            validate: v => v > TimeSpan.Zero);
+    public static readonly StyledProperty<double> AnimationProgressProperty = 
+        AvaloniaProperty.Register<ProgressRingVisual, double>(nameof(AnimationProgress), defaultValue: 0.0);
 
     /// <summary>
-    /// Defines the <see cref="StartAngle"/> property.
+    /// Gets or sets the foreground brush used to draw the progress indicator.
     /// </summary>
-    public static readonly StyledProperty<double> StartAngleProperty =
-        AvaloniaProperty.Register<ProgressRingVisual, double>(nameof(StartAngle), defaultValue: -90.0);
-
+    public IBrush? Foreground 
+    { 
+        get => GetValue(ForegroundProperty); 
+        set => SetValue(ForegroundProperty, value); 
+    }
+    
     /// <summary>
-    /// Gets or sets the foreground brush for the progress arc.
+    /// Gets or sets the background brush used to draw the track.
     /// </summary>
-    public IBrush? RingForeground
-    {
-        get => GetValue(RingForegroundProperty);
-        set => SetValue(RingForegroundProperty, value);
+    public IBrush? Background 
+    { 
+        get => GetValue(BackgroundProperty); 
+        set => SetValue(BackgroundProperty, value); 
+    }
+    
+    /// <summary>
+    /// Gets or sets a value that indicates whether the progress ring reports generic progress with a repeating pattern (true) or reports progress based on the Value property (false).
+    /// </summary>
+    public bool IsIndeterminate 
+    { 
+        get => GetValue(IsIndeterminateProperty); 
+        set => SetValue(IsIndeterminateProperty, value); 
+    }
+    
+    /// <summary>
+    /// Gets or sets a value that indicates whether the ProgressRing is showing progress.
+    /// </summary>
+    public bool IsActive 
+    { 
+        get => GetValue(IsActiveProperty); 
+        set => SetValue(IsActiveProperty, value); 
+    }
+    
+    /// <summary>
+    /// Gets or sets the current value of the progress ring for determinate mode.
+    /// </summary>
+    public double Value 
+    { 
+        get => GetValue(ValueProperty); 
+        set => SetValue(ValueProperty, value); 
+    }
+    
+    /// <summary>
+    /// Gets or sets the minimum value of the range.
+    /// </summary>
+    public double Minimum 
+    { 
+        get => GetValue(MinimumProperty); 
+        set => SetValue(MinimumProperty, value); 
+    }
+    
+    /// <summary>
+    /// Gets or sets the maximum value of the range.
+    /// </summary>
+    public double Maximum 
+    { 
+        get => GetValue(MaximumProperty); 
+        set => SetValue(MaximumProperty, value); 
+    }
+    
+    /// <summary>
+    /// Gets or sets the thickness of the ring stroke.
+    /// </summary>
+    public double StrokeThickness 
+    { 
+        get => GetValue(StrokeThicknessProperty); 
+        set => SetValue(StrokeThicknessProperty, value); 
     }
 
     /// <summary>
-    /// Gets or sets the background brush for the track arc.
+    /// Gets or sets the normalized progress of the indeterminate animation (0.0 to 1.0).
     /// </summary>
-    public IBrush? RingBackground
-    {
-        get => GetValue(RingBackgroundProperty);
-        set => SetValue(RingBackgroundProperty, value);
+    public double AnimationProgress 
+    { 
+        get => GetValue(AnimationProgressProperty); 
+        set => SetValue(AnimationProgressProperty, value); 
     }
 
-    /// <summary>
-    /// Gets or sets whether the visual shows indeterminate progress.
-    /// </summary>
-    public bool IsIndeterminate
-    {
-        get => GetValue(IsIndeterminateProperty);
-        set => SetValue(IsIndeterminateProperty, value);
-    }
-
-    /// <summary>
-    /// Gets or sets the current value for determinate mode.
-    /// </summary>
-    public double Value
-    {
-        get => GetValue(ValueProperty);
-        set => SetValue(ValueProperty, value);
-    }
-
-    /// <summary>
-    /// Gets or sets the minimum value.
-    /// </summary>
-    public double Minimum
-    {
-        get => GetValue(MinimumProperty);
-        set => SetValue(MinimumProperty, value);
-    }
-
-    /// <summary>
-    /// Gets or sets the maximum value.
-    /// </summary>
-    public double Maximum
-    {
-        get => GetValue(MaximumProperty);
-        set => SetValue(MaximumProperty, value);
-    }
-
-    /// <summary>
-    /// Gets or sets the stroke thickness in pixels.
-    /// </summary>
-    public double StrokeThickness
-    {
-        get => GetValue(StrokeThicknessProperty);
-        set => SetValue(StrokeThicknessProperty, value);
-    }
-
-    /// <summary>
-    /// Gets or sets the animation duration for indeterminate mode.
-    /// </summary>
-    public TimeSpan AnimationDuration
-    {
-        get => GetValue(AnimationDurationProperty);
-        set => SetValue(AnimationDurationProperty, value);
-    }
-
-    /// <summary>
-    /// Gets or sets the starting angle in degrees.
-    /// Default is -90 (top of circle, 12 o'clock position).
-    /// </summary>
-    public double StartAngle
-    {
-        get => GetValue(StartAngleProperty);
-        set => SetValue(StartAngleProperty, value);
-    }
-
-    private bool IsRightToLeft => FlowDirection == FlowDirection.RightToLeft;
-
-    public ProgressRingVisual()
-    {
-        ClipToBounds = false;
-    }
-
-    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
-    {
-        base.OnPropertyChanged(change);
-
-        if (change.Property == IsIndeterminateProperty)
-        {
-            _cachedGeometry = null;
-            UpdateAnimation();
-        }
-        else if (change.Property == ValueProperty ||
-                 change.Property == MinimumProperty ||
-                 change.Property == MaximumProperty ||
-                 change.Property == FlowDirectionProperty)
-        {
-            _cachedGeometry = null;
-        }
-    }
-
+    /// <inheritdoc/>
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
         UpdateAnimation();
     }
 
+    /// <inheritdoc/>
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
         StopAnimation();
     }
 
+    /// <inheritdoc/>
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+        
+        if (change.Property == IsIndeterminateProperty || change.Property == IsActiveProperty)
+        {
+            UpdateAnimation();
+        }
+    }
+
     private void UpdateAnimation()
     {
-        if (IsIndeterminate && VisualRoot != null)
+        if (IsActive && IsIndeterminate && VisualRoot != null)
+        {
             StartAnimation();
+        }
         else
+        {
             StopAnimation();
+        }
     }
 
     private void StartAnimation()
     {
-        if (_animationTimer != null)
-            return;
-
-        _animationStopwatch = Stopwatch.StartNew();
-        _animationTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
-        _animationTimer.Tick += OnAnimationTick;
-        _animationTimer.Start();
+        if (_animationCts != null) return;
+        
+        _animationCts = new CancellationTokenSource();
+        EnsureAnimation();
+        _progressAnimation?.RunAsync(this, _animationCts.Token);
     }
 
     private void StopAnimation()
     {
-        _animationTimer?.Stop();
-        if (_animationTimer != null)
-        {
-            _animationTimer.Tick -= OnAnimationTick;
-            _animationTimer = null;
-        }
-        _animationStopwatch?.Stop();
-        _animationStopwatch = null;
+        _animationCts?.Cancel();
+        _animationCts?.Dispose();
+        _animationCts = null;
+        AnimationProgress = 0;
     }
 
-    private void OnAnimationTick(object? sender, EventArgs e)
+    private void EnsureAnimation()
     {
-        if (_animationStopwatch == null)
-            return;
+        if (_progressAnimation != null) return;
 
-        var elapsed = _animationStopwatch.Elapsed;
-        var progress = (elapsed.TotalSeconds % AnimationDuration.TotalSeconds) / AnimationDuration.TotalSeconds;
+        // Simple linear animation from 0 to 1.
+        _progressAnimation = new Avalonia.Animation.Animation
+        {
+            Duration = TimeSpan.FromSeconds(2.0),
+            IterationCount = IterationCount.Infinite,
+            Easing = new LinearEasing(),
+            Children =
+            {
+                new KeyFrame
+                {
+                    Cue = new Cue(0.0),
+                    Setters = { new Setter(AnimationProgressProperty, 0.0) }
+                },
+                new KeyFrame
+                {
+                    Cue = new Cue(1.0),
+                    Setters = { new Setter(AnimationProgressProperty, 1.0) }
+                }
+            }
+        };
+    }
 
+    /// <summary>
+    /// Computes the arc size (sweep angle) based on animation progress.
+    /// </summary>
+    /// <param name="progress">The current normalized animation progress.</param>
+    /// <returns>The sweep angle in degrees.</returns>
+    private static double ComputeArcSize(double progress)
+    {
         if (progress < 0.25)
         {
-            var t = progress / 0.25;
-            _currentArcSize = 180 * (1 - Math.Pow(1 - t, 3));
+            // Expanding: 0 -> 180 over first quarter
+            return 180.0 * (progress / 0.25);
         }
-        else if (progress >= 0.75)
+        else if (progress < 0.75)
         {
-            var t = (progress - 0.75) / 0.25;
-            _currentArcSize = 180 * (1 - Math.Pow(t, 3));
+            // Hold at max size
+            return 180.0;
         }
         else
         {
-            _currentArcSize = 180;
+            // Contracting: 180 -> 0 over last quarter
+            return 180.0 * ((1.0 - progress) / 0.25);
         }
-
-        var baseRotation = 1080 * progress;
-        _currentRotation = IsRightToLeft ? -baseRotation : baseRotation;
-
-        InvalidateVisual();
     }
 
+    /// <summary>
+    /// Computes the arc position (center rotation) based on animation progress.
+    /// </summary>
+    /// <param name="progress">The current normalized animation progress.</param>
+    /// <returns>The rotation angle in degrees.</returns>
+    private static double ComputeArcPosition(double progress)
+    {
+        return 1080.0 * progress;
+    }
+
+    /// <inheritdoc/>
     public override void Render(DrawingContext context)
     {
-        base.Render(context);
-
         var bounds = Bounds;
-        if (bounds.Width <= 0 || bounds.Height <= 0)
-            return;
+        if (bounds.Width <= 0 || bounds.Height <= 0) return;
 
-        var size = Math.Min(bounds.Width, bounds.Height);
         var center = new Point(bounds.Width / 2, bounds.Height / 2);
-        var radius = (size - StrokeThickness) / 2;
+        var radius = (Math.Min(bounds.Width, bounds.Height) - StrokeThickness) / 2;
+        if (radius <= 0) return;
 
-        if (radius <= 0 || RingForeground == null)
-            return;
-
-        var pen = new Pen(RingForeground, StrokeThickness, lineCap: PenLineCap.Round);
-
-        if (RingBackground != null && !IsIndeterminate)
+        // Draw background track (only for determinate mode)
+        if (Background != null && !IsIndeterminate)
         {
-            var bgPen = new Pen(RingBackground, StrokeThickness, lineCap: PenLineCap.Round);
-            var bgGeometry = CreateArcGeometry(center, radius, 0, 360);
+            var bgPen = new Pen(Background, StrokeThickness, lineCap: PenLineCap.Round);
+            var bgGeometry = new EllipseGeometry(new Rect(
+                center.X - radius, 
+                center.Y - radius, 
+                radius * 2, 
+                radius * 2));
             context.DrawGeometry(null, bgPen, bgGeometry);
         }
 
+        if (!IsActive || Foreground == null) return;
+
+        var pen = new Pen(Foreground, StrokeThickness, lineCap: PenLineCap.Round);
+
         if (IsIndeterminate)
         {
-            RenderIndeterminate(context, center, radius, pen);
+            var progress = AnimationProgress;
+            var arcSize = ComputeArcSize(progress);
+            var arcPosition = ComputeArcPosition(progress);
+            
+            // The arc is centered at the position, so we offset by half the size
+            var startAngle = -90.0 + arcPosition - (arcSize / 2.0);
+            var sweepAngle = arcSize;
+
+            DrawArc(context, pen, center, radius, startAngle, sweepAngle);
         }
         else
         {
-            RenderDeterminate(context, center, radius, pen);
+            var val = Math.Clamp(Value, Minimum, Maximum);
+            var range = Maximum - Minimum;
+            var percent = range <= 0 ? 0 : (val - Minimum) / range;
+            DrawArc(context, pen, center, radius, -90, percent * 360);
         }
     }
 
-    /// <summary>
-    /// Renders the animated indeterminate arc.
-    /// Virtual to allow custom animation strategies.
-    /// </summary>
-    protected virtual void RenderIndeterminate(DrawingContext context, Point center, double radius, Pen pen)
+    private void DrawArc(DrawingContext context, Pen pen, Point center, double radius, 
+        double startAngle, double sweepAngle)
     {
-        var angleRadians = _currentRotation * Math.PI / 180;
-        var transform = Matrix.CreateTranslation(-center.X, -center.Y) *
-                       Matrix.CreateRotation(angleRadians) *
-                       Matrix.CreateTranslation(center.X, center.Y);
-
-        using (context.PushTransform(transform))
+        // Skip rendering very small arcs
+        if (sweepAngle < 0.5)
         {
-            var halfArc = _currentArcSize / 2;
-            var geometry = CreateArcGeometry(center, radius, -halfArc, halfArc);
-            context.DrawGeometry(null, pen, geometry);
+            _cachedGeometry = null;
+            return;
         }
-    }
 
-    /// <summary>
-    /// Renders the static determinate arc with geometry caching.
-    /// Virtual to allow custom rendering strategies.
-    /// </summary>
-    protected virtual void RenderDeterminate(DrawingContext context, Point center, double radius, Pen pen)
-    {
-        var progress = Math.Clamp((Value - Minimum) / (Maximum - Minimum), 0, 1);
-        var angle = progress * 360;
-
-        if (IsRightToLeft)
-            angle = -angle;
-
+        // Normalize angles for caching comparison
+        var normalizedStart = startAngle % 360;
+        
+        // Check if we can reuse cached geometry
         if (_cachedGeometry != null &&
-            Math.Abs(_cachedValue - Value) < 0.001 &&
-            Math.Abs(_cachedRadius - radius) < 0.001 &&
-            _cachedIsRtl == IsRightToLeft)
+            Math.Abs(_cachedStartAngle - normalizedStart) < 0.1 &&
+            Math.Abs(_cachedSweepAngle - sweepAngle) < 0.1 &&
+            Math.Abs(_cachedRadius - radius) < 0.01)
         {
             context.DrawGeometry(null, pen, _cachedGeometry);
+            return;
+        }
+
+        Geometry geometry;
+        
+        if (sweepAngle >= 359.9)
+        {
+            // Full circle
+            geometry = new EllipseGeometry(new Rect(
+                center.X - radius, 
+                center.Y - radius, 
+                radius * 2, 
+                radius * 2));
         }
         else
         {
-            var geometry = CreateArcGeometry(center, radius, 0, angle);
-            _cachedGeometry = geometry;
-            _cachedValue = Value;
-            _cachedRadius = radius;
-            _cachedIsRtl = IsRightToLeft;
-            context.DrawGeometry(null, pen, geometry);
-        }
-    }
+            // Arc
+            var startRad = startAngle * (Math.PI / 180.0);
+            var endRad = (startAngle + sweepAngle) * (Math.PI / 180.0);
 
-    /// <summary>
-    /// Creates arc geometry for rendering.
-    /// Virtual to allow custom shapes (e.g., square, hexagon).
-    /// </summary>
-    protected virtual Geometry CreateArcGeometry(Point center, double radius, double startAngle, double endAngle)
-    {
-        var sweepAngle = endAngle - startAngle;
+            var startPoint = new Point(
+                center.X + radius * Math.Cos(startRad), 
+                center.Y + radius * Math.Sin(startRad));
+            var endPoint = new Point(
+                center.X + radius * Math.Cos(endRad), 
+                center.Y + radius * Math.Sin(endRad));
 
-        if (Math.Abs(sweepAngle) < 0.01)
-            return new StreamGeometry();
-
-        if (Math.Abs(sweepAngle) >= 359.9)
-            return CreateFullCircleGeometry(center, radius);
-
-        var isNegativeSweep = sweepAngle < 0;
-        var absSweep = Math.Abs(sweepAngle);
-
-        var adjustedStart = (startAngle + StartAngle) * Math.PI / 180;
-        var adjustedEnd = (endAngle + StartAngle) * Math.PI / 180;
-
-        var startPoint = new Point(
-            center.X + radius * Math.Cos(adjustedStart),
-            center.Y + radius * Math.Sin(adjustedStart));
-
-        var endPoint = new Point(
-            center.X + radius * Math.Cos(adjustedEnd),
-            center.Y + radius * Math.Sin(adjustedEnd));
-
-        var geometry = new StreamGeometry();
-        using (var ctx = geometry.Open())
-        {
-            ctx.BeginFigure(startPoint, false);
-            ctx.ArcTo(
-                endPoint,
-                new Size(radius, radius),
-                0,
-                absSweep > 180,
-                isNegativeSweep ? SweepDirection.CounterClockwise : SweepDirection.Clockwise);
+            var streamGeometry = new StreamGeometry();
+            using (var ctx = streamGeometry.Open())
+            {
+                ctx.BeginFigure(startPoint, false);
+                ctx.ArcTo(
+                    endPoint, 
+                    new Size(radius, radius), 
+                    0, 
+                    sweepAngle > 180, 
+                    SweepDirection.Clockwise);
+            }
+            geometry = streamGeometry;
         }
 
-        return geometry;
-    }
-
-    /// <summary>
-    /// Creates a full circle geometry using two semicircles.
-    /// Virtual to allow alternative full-circle strategies.
-    /// </summary>
-    protected virtual Geometry CreateFullCircleGeometry(Point center, double radius)
-    {
-        var adjustedStart = StartAngle * Math.PI / 180;
-
-        var startPoint = new Point(
-            center.X + radius * Math.Cos(adjustedStart),
-            center.Y + radius * Math.Sin(adjustedStart));
-
-        var midPoint = new Point(
-            center.X + radius * Math.Cos(adjustedStart + Math.PI),
-            center.Y + radius * Math.Sin(adjustedStart + Math.PI));
-
-        var geometry = new StreamGeometry();
-        using (var ctx = geometry.Open())
-        {
-            ctx.BeginFigure(startPoint, false);
-            ctx.ArcTo(midPoint, new Size(radius, radius), 0, false, SweepDirection.Clockwise);
-            ctx.ArcTo(startPoint, new Size(radius, radius), 0, false, SweepDirection.Clockwise);
-        }
-
-        return geometry;
+        context.DrawGeometry(null, pen, geometry);
+        
+        // Cache for next frame
+        _cachedGeometry = geometry;
+        _cachedStartAngle = normalizedStart;
+        _cachedSweepAngle = sweepAngle;
+        _cachedRadius = radius;
     }
 }
