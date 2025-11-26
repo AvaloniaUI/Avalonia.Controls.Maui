@@ -31,10 +31,11 @@ public partial class CarouselPage : ContentPage
     private int _positionSamplePosition;
     private INotifyPropertyChanged? _horizontalPlatform;
     private INotifyPropertyChanged? _verticalPlatform;
+    private ScrollBarVisibility _sampleHorizontalScrollBarVisibility = ScrollBarVisibility.Default;
+    private ScrollBarVisibility _sampleVerticalScrollBarVisibility = ScrollBarVisibility.Default;
 
     public object? EmptyContent { get; private set; }
     public DataTemplate? EmptyTemplate { get; private set; }
-
     public int HorizontalPosition
     {
         get => _horizontalPosition;
@@ -213,6 +214,30 @@ public partial class CarouselPage : ContentPage
                 return;
             _currentItemSample = value;
             CurrentItemSampleText = value?.Text ?? string.Empty;
+            OnPropertyChanged();
+        }
+    }
+
+    public ScrollBarVisibility SampleHorizontalScrollBarVisibility
+    {
+        get => _sampleHorizontalScrollBarVisibility;
+        set
+        {
+            if (_sampleHorizontalScrollBarVisibility == value)
+                return;
+            _sampleHorizontalScrollBarVisibility = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public ScrollBarVisibility SampleVerticalScrollBarVisibility
+    {
+        get => _sampleVerticalScrollBarVisibility;
+        set
+        {
+            if (_sampleVerticalScrollBarVisibility == value)
+                return;
+            _sampleVerticalScrollBarVisibility = value;
             OnPropertyChanged();
         }
     }
@@ -475,6 +500,26 @@ public partial class CarouselPage : ContentPage
             PositionSamplePosition = idx >= 0 ? idx : PositionSamplePosition;
             PositionSampleText = PositionSamplePosition.ToString();
         }
+    }
+
+    void OnShowHorizontalScrollBarsClicked(object sender, EventArgs e)
+    {
+        SampleHorizontalScrollBarVisibility = ScrollBarVisibility.Always;
+    }
+
+    void OnHideHorizontalScrollBarsClicked(object sender, EventArgs e)
+    {
+        SampleHorizontalScrollBarVisibility = ScrollBarVisibility.Never;
+    }
+
+    void OnShowVerticalScrollBarsClicked(object sender, EventArgs e)
+    {
+        SampleVerticalScrollBarVisibility = ScrollBarVisibility.Always;
+    }
+
+    void OnHideVerticalScrollBarsClicked(object sender, EventArgs e)
+    {
+        SampleVerticalScrollBarVisibility = ScrollBarVisibility.Never;
     }
 
     void PopulateCollection(ObservableCollection<CarouselItem> target, int count, string prefix)

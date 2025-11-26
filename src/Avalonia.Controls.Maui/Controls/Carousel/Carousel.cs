@@ -1,5 +1,6 @@
 using System.Collections;
 using Avalonia.Animation;
+using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
@@ -69,6 +70,22 @@ public class Carousel : SelectingItemsControl
         AvaloniaProperty.Register<Carousel, IDataTemplate?>(nameof(EmptyContentTemplate));
 
     /// <summary>
+    /// Defines the <see cref="HorizontalScrollBarVisibility"/> property.
+    /// </summary>
+    public static readonly StyledProperty<global::Avalonia.Controls.Primitives.ScrollBarVisibility> HorizontalScrollBarVisibilityProperty =
+        AvaloniaProperty.Register<Carousel, global::Avalonia.Controls.Primitives.ScrollBarVisibility>(
+            nameof(HorizontalScrollBarVisibility),
+            global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled);
+
+    /// <summary>
+    /// Defines the <see cref="VerticalScrollBarVisibility"/> property.
+    /// </summary>
+    public static readonly StyledProperty<global::Avalonia.Controls.Primitives.ScrollBarVisibility> VerticalScrollBarVisibilityProperty =
+        AvaloniaProperty.Register<Carousel, global::Avalonia.Controls.Primitives.ScrollBarVisibility>(
+            nameof(VerticalScrollBarVisibility),
+            global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled);
+
+    /// <summary>
     /// Defines the <see cref="IsDragging"/> property.
     /// </summary>
     public static readonly DirectProperty<Carousel, bool> IsDraggingProperty =
@@ -119,6 +136,24 @@ public class Carousel : SelectingItemsControl
     {
         get => GetValue(EmptyContentTemplateProperty);
         set => SetValue(EmptyContentTemplateProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the horizontal scroll bar visibility.
+    /// </summary>
+    public global::Avalonia.Controls.Primitives.ScrollBarVisibility HorizontalScrollBarVisibility
+    {
+        get => GetValue(HorizontalScrollBarVisibilityProperty);
+        set => SetValue(HorizontalScrollBarVisibilityProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the vertical scroll bar visibility.
+    /// </summary>
+    public global::Avalonia.Controls.Primitives.ScrollBarVisibility VerticalScrollBarVisibility
+    {
+        get => GetValue(VerticalScrollBarVisibilityProperty);
+        set => SetValue(VerticalScrollBarVisibilityProperty, value);
     }
 
     /// <summary>
@@ -220,6 +255,7 @@ public class Carousel : SelectingItemsControl
         }
 
         UpdateEmptyState();
+        UpdateScrollBarVisibility();
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -237,6 +273,11 @@ public class Carousel : SelectingItemsControl
         if (change.Property == ItemCountProperty)
         {
             UpdateEmptyState();
+        }
+
+        if (change.Property == HorizontalScrollBarVisibilityProperty || change.Property == VerticalScrollBarVisibilityProperty)
+        {
+            UpdateScrollBarVisibility();
         }
     }
 
@@ -500,10 +541,14 @@ public class Carousel : SelectingItemsControl
         {
             _emptyPresenter.IsVisible = !hasItems;
         }
+    }
 
-        if (_gestureCanvas != null)
+    private void UpdateScrollBarVisibility()
+    {
+        if (_scroller is ScrollViewer sv)
         {
-            _gestureCanvas.IsVisible = hasItems;
+            sv.HorizontalScrollBarVisibility = HorizontalScrollBarVisibility;
+            sv.VerticalScrollBarVisibility = VerticalScrollBarVisibility;
         }
     }
 }

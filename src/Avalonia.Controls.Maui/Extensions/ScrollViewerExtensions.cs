@@ -1,11 +1,16 @@
-using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui;
 
 public static class ScrollViewerExtensions
 {
-    public static global::Avalonia.Controls.Primitives.ScrollBarVisibility ToAvaloniaScrollBarVisibility(this Microsoft.Maui.ScrollBarVisibility visibility)
+    /// <summary>
+    /// Converts a .NET MAUI <see cref="Microsoft.Maui.ScrollBarVisibility"/> value to the corresponding
+    /// Avalonia <see cref="global::Avalonia.Controls.Primitives.ScrollBarVisibility"/> value.
+    /// </summary>
+    /// <param name="visibility">MAUI scroll bar visibility.</param>
+    /// <returns>Avalonia scroll bar visibility.</returns>
+    public static global::Avalonia.Controls.Primitives.ScrollBarVisibility ToAvaloniaScrollBarVisibility(this ScrollBarVisibility visibility)
     {
         return visibility switch
         {

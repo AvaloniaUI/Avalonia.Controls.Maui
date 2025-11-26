@@ -105,6 +105,28 @@ public static class CarouselViewExtensions
     }
 
     /// <summary>
+    /// Updates the horizontal scroll bar visibility on the platform carousel.
+    /// </summary>
+    public static void UpdateHorizontalScrollBarVisibility(this PlatformView platformView, CarouselView carouselView)
+    {
+        var visibility = carouselView.HorizontalScrollBarVisibility;
+        platformView.HorizontalScrollBarVisibility = visibility == ScrollBarVisibility.Default
+            ? Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled
+            : visibility.ToAvaloniaScrollBarVisibility();
+    }
+
+    /// <summary>
+    /// Updates the vertical scroll bar visibility on the platform carousel.
+    /// </summary>
+    public static void UpdateVerticalScrollBarVisibility(this PlatformView platformView, CarouselView carouselView)
+    {
+        var visibility = carouselView.VerticalScrollBarVisibility;
+        platformView.VerticalScrollBarVisibility = visibility == ScrollBarVisibility.Default
+            ? Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled
+            : visibility.ToAvaloniaScrollBarVisibility();
+    }
+
+    /// <summary>
     /// Applies the EmptyView content to the platform carousel.
     /// </summary>
     public static void UpdateEmptyView(this PlatformView platformView, CarouselView carouselView)

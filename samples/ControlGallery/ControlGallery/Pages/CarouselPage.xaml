@@ -341,6 +341,62 @@
                     </CarouselView>
                 </VerticalStackLayout>
             </Border>
+
+            <!-- ScrollBar Visibility -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ScrollBar Visibility"
+                           FontAttributes="Bold"
+                           FontSize="16" />
+                    <Label Text="Toggle horizontal/vertical scroll bars"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <VerticalStackLayout Spacing="12">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="Horizontal actions"
+                                   VerticalTextAlignment="Center" />
+                            <Button Text="Show"
+                                    Clicked="OnShowHorizontalScrollBarsClicked" />
+                            <Button Text="Hide"
+                                    Clicked="OnHideHorizontalScrollBarsClicked" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="Vertical actions"
+                                   VerticalTextAlignment="Center" />
+                            <Button Text="Show"
+                                    Clicked="OnShowVerticalScrollBarsClicked" />
+                            <Button Text="Hide"
+                                    Clicked="OnHideVerticalScrollBarsClicked" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                    <CarouselView x:Name="ScrollBarCarousel"
+                                  ItemsSource="{Binding Items}"
+                                  HorizontalScrollBarVisibility="{Binding SampleHorizontalScrollBarVisibility}"
+                                  VerticalScrollBarVisibility="{Binding SampleVerticalScrollBarVisibility}"
+                                  HeightRequest="180">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:CarouselItem">
+                                <Border Stroke="DarkGray"
+                                        StrokeShape="RoundRectangle 12"
+                                        Margin="12"
+                                        Padding="12"
+                                        Background="{Binding Color}">
+                                    <Label Text="{Binding Text}"
+                                           FontAttributes="Bold"
+                                           FontSize="20"
+                                           TextColor="White"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center" />
+                                </Border>
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                    </CarouselView>
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
