@@ -13,7 +13,11 @@ namespace Avalonia.Controls.Maui.Tests;
 public class TestAppBuilder
 {
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
-        .UseHeadless(new AvaloniaHeadlessPlatformOptions());
+        .UseSkia()
+        .UseHeadless(new AvaloniaHeadlessPlatformOptions
+        {
+            UseHeadlessDrawing = false // Use real Skia drawing for proper text measurement
+        });
 }
 
 public static class MauiTestAppBuilderExtensions

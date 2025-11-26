@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
+using Avalonia.VisualTree;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using MauiLabelHandler = Avalonia.Controls.Maui.Handlers.LabelHandler;
@@ -185,74 +186,78 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
         ColorComparisonHelpers.AssertColorsAreEqual(color, platformColor);
     }
 
-    [AvaloniaFact(DisplayName = "Text Update Invalidates Measure")]
-    public async Task TextUpdateInvalidatesMeasure()
+    [AvaloniaFact(DisplayName = "Text Update Changes Label Desired Width")]
+    public async Task TextUpdateChangesLabelDesiredWidth()
     {
         var label = new LabelStub
         {
-            Text = "Short"
+            Text = "Hi"
         };
 
         var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
 
-        var isMeasureValid = await InvokeOnMainThreadAsync(() =>
+        var result = await InvokeOnMainThreadAsync(() =>
         {
             var textBlock = (TextBlock)handler.PlatformView;
-            // Force initial measure
+
+            // Attach to a window for proper text measurement
+            var window = new Window { Content = textBlock };
+            window.Show();
+
+            // Measure initial text
             textBlock.Measure(new global::Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity));
-            return textBlock.IsMeasureValid;
-        });
+            var initial = textBlock.DesiredSize.Width;
 
-        Assert.True(isMeasureValid, "Initial measure should be valid");
-
-        // Update text and verify measure was invalidated
-        var (measureValidAfterUpdate, textUpdated) = await InvokeOnMainThreadAsync(() =>
-        {
-            label.Text = "This is a much longer text that should be wider";
+            // Update to longer text
+            label.Text = "This is a much longer text that should definitely be wider than Hi";
             handler.UpdateValue(nameof(ILabel.Text));
 
-            var textBlock = (TextBlock)handler.PlatformView;
-            // Don't re-measure - check if it was invalidated
-            return (textBlock.IsMeasureValid, textBlock.Text);
+            // Re-measure after text change (MapText calls InvalidateMeasure)
+            textBlock.Measure(new global::Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity));
+            var updated = textBlock.DesiredSize.Width;
+
+            window.Close();
+            return (Initial: initial, Updated: updated);
         });
 
-        Assert.Equal("This is a much longer text that should be wider", textUpdated);
-        // After text update, measure should be invalidated (not valid) until re-measured
-        Assert.False(measureValidAfterUpdate, "Measure should be invalidated after text update");
+        Assert.True(result.Updated > result.Initial, $"Expected new width ({result.Updated}) to be greater than initial width ({result.Initial})");
     }
 
-    [AvaloniaFact(DisplayName = "Text Update Also Invalidates Arrange")]
-    public async Task TextUpdateAlsoInvalidatesArrange()
+    [AvaloniaFact(DisplayName = "Text Update To Shorter Text Changes Label Desired Width")]
+    public async Task TextUpdateToShorterTextChangesLabelDesiredWidth()
     {
         var label = new LabelStub
         {
-            Text = "Initial text"
+            Text = "This is a very long text that takes up a lot of horizontal space"
         };
 
         var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
 
-        var isArrangeValid = await InvokeOnMainThreadAsync(() =>
+        var result = await InvokeOnMainThreadAsync(() =>
         {
             var textBlock = (TextBlock)handler.PlatformView;
-            // Force initial measure and arrange
+
+            // Attach to a window for proper text measurement
+            var window = new Window { Content = textBlock };
+            window.Show();
+
+            // Measure initial text
             textBlock.Measure(new global::Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity));
-            textBlock.Arrange(new global::Avalonia.Rect(0, 0, 200, 50));
-            return textBlock.IsArrangeValid;
-        });
+            var initial = textBlock.DesiredSize.Width;
 
-        Assert.True(isArrangeValid, "Initial arrange should be valid");
-
-        // Update text and verify arrange was invalidated
-        var arrangeValidAfterUpdate = await InvokeOnMainThreadAsync(() =>
-        {
-            label.Text = "Different text content";
+            // Update to shorter text
+            label.Text = "Hi";
             handler.UpdateValue(nameof(ILabel.Text));
 
-            var textBlock = (TextBlock)handler.PlatformView;
-            return textBlock.IsArrangeValid;
+            // Re-measure after text change (MapText calls InvalidateMeasure)
+            textBlock.Measure(new global::Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity));
+            var updated = textBlock.DesiredSize.Width;
+
+            window.Close();
+            return (Initial: initial, Updated: updated);
         });
 
-        Assert.False(arrangeValidAfterUpdate, "Arrange should be invalidated after text update");
+        Assert.True(result.Updated < result.Initial, $"Expected new width ({result.Updated}) to be less than initial width ({result.Initial})");
     }
 
     [AvaloniaFact(DisplayName = "Text Update Reflects In Native Text")]
