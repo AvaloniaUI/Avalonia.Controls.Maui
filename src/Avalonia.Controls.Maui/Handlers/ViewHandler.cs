@@ -168,6 +168,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     {
         if (PlatformView is null)
             return;
+        PlatformView.Measure(new global::Avalonia.Size(frame.Width, frame.Height));
         PlatformView.Arrange(new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height));
     }
 
