@@ -44,6 +44,12 @@
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:ProgressBarPage}"/>
 					</TableSection>
+					<TableSection Title="Settings">
+						<TextCell Text="Theme"
+								  Detail="Theme toggle and AppThemeBinding"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:ThemePage}"/>
+					</TableSection>
 				</TableRoot>
 			</TableView>
 		</ContentPage>

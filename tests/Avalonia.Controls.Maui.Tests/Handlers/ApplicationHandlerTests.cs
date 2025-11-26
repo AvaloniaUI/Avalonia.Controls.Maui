@@ -1,8 +1,10 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
+using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Hosting;
 using NSubstitute;
@@ -225,5 +227,139 @@ public class ApplicationHandlerTests : HandlerTestBase
         {
             MauiApplicationHandler.MapOpenWindow(handler, application, windowStub);
         });
+    }
+
+    [AvaloniaFact(DisplayName = "MapUserAppTheme Sets Avalonia Dark Theme")]
+    public async Task MapUserAppThemeSetsAvaloniaDarkTheme()
+    {
+        var application = new ApplicationStub
+        {
+            UserAppTheme = AppTheme.Dark
+        };
+
+        EnsureHandlerCreated(builder =>
+        {
+            builder.Services.AddSingleton<Application>(App.Current!);
+            builder.ConfigureMauiHandlers(handlers =>
+            {
+                handlers.AddHandler<IApplication, MauiApplicationHandler>();
+            });
+        });
+
+        var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            MauiApplicationHandler.MapUserAppTheme(handler, application);
+        });
+
+        var avaloniaApp = handler.PlatformView as Application;
+        Assert.NotNull(avaloniaApp);
+        Assert.Equal(ThemeVariant.Dark, avaloniaApp.RequestedThemeVariant);
+    }
+
+    [AvaloniaFact(DisplayName = "MapUserAppTheme Sets Avalonia Light Theme")]
+    public async Task MapUserAppThemeSetsAvaloniaLightTheme()
+    {
+        var application = new ApplicationStub
+        {
+            UserAppTheme = AppTheme.Light
+        };
+
+        EnsureHandlerCreated(builder =>
+        {
+            builder.Services.AddSingleton<Application>(App.Current!);
+            builder.ConfigureMauiHandlers(handlers =>
+            {
+                handlers.AddHandler<IApplication, MauiApplicationHandler>();
+            });
+        });
+
+        var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            MauiApplicationHandler.MapUserAppTheme(handler, application);
+        });
+
+        var avaloniaApp = handler.PlatformView as Application;
+        Assert.NotNull(avaloniaApp);
+        Assert.Equal(ThemeVariant.Light, avaloniaApp.RequestedThemeVariant);
+    }
+
+    [AvaloniaFact(DisplayName = "MapUserAppTheme Sets Null For Unspecified Theme")]
+    public async Task MapUserAppThemeSetsNullForUnspecifiedTheme()
+    {
+        var application = new ApplicationStub
+        {
+            UserAppTheme = AppTheme.Unspecified
+        };
+
+        EnsureHandlerCreated(builder =>
+        {
+            builder.Services.AddSingleton<Application>(App.Current!);
+            builder.ConfigureMauiHandlers(handlers =>
+            {
+                handlers.AddHandler<IApplication, MauiApplicationHandler>();
+            });
+        });
+
+        var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            MauiApplicationHandler.MapUserAppTheme(handler, application);
+        });
+
+        var avaloniaApp = handler.PlatformView as Application;
+        Assert.NotNull(avaloniaApp);
+        Assert.Null(avaloniaApp.RequestedThemeVariant);
+    }
+
+    [AvaloniaFact(DisplayName = "MapUserAppTheme Updates Theme When Changed")]
+    public async Task MapUserAppThemeUpdatesThemeWhenChanged()
+    {
+        var application = new ApplicationStub
+        {
+            UserAppTheme = AppTheme.Light
+        };
+
+        EnsureHandlerCreated(builder =>
+        {
+            builder.Services.AddSingleton<Application>(App.Current!);
+            builder.ConfigureMauiHandlers(handlers =>
+            {
+                handlers.AddHandler<IApplication, MauiApplicationHandler>();
+            });
+        });
+
+        var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
+
+        // First set to Light
+        await InvokeOnMainThreadAsync(() =>
+        {
+            MauiApplicationHandler.MapUserAppTheme(handler, application);
+        });
+
+        var avaloniaApp = handler.PlatformView as Application;
+        Assert.NotNull(avaloniaApp);
+        Assert.Equal(ThemeVariant.Light, avaloniaApp.RequestedThemeVariant);
+
+        // Now change to Dark
+        application.UserAppTheme = AppTheme.Dark;
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            MauiApplicationHandler.MapUserAppTheme(handler, application);
+        });
+
+        Assert.Equal(ThemeVariant.Dark, avaloniaApp.RequestedThemeVariant);
+    }
+
+    [AvaloniaFact(DisplayName = "Mapper Contains UserAppTheme Key")]
+    public void MapperContainsUserAppThemeKey()
+    {
+        // Verify that UserAppTheme is registered in the mapper
+        Assert.Contains(nameof(IApplication.UserAppTheme), MauiApplicationHandler.Mapper.GetKeys());
     }
 }
