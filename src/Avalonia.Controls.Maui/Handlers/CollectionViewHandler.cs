@@ -87,26 +87,19 @@ public class CollectionViewHandler : ViewHandler<Microsoft.Maui.Controls.Collect
 
         var selectedItem = PlatformView.SelectedItem;
 
-       if (VirtualView.SelectionMode is Microsoft.Maui.Controls.SelectionMode.Single)
+        if (selectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Single)
         {
-             // Update MAUI's SelectedItem if different
-            if (!Equals(selectableItemsView.SelectedItem, selectedItem))
-            {
-                selectableItemsView.SelectedItem = selectedItem;
-            }
+                if (!Equals(selectableItemsView.SelectedItem, selectedItem))
+                {
+                    selectableItemsView.SelectedItem = selectedItem;
+                }
         }
     }
 
     private void OnRemainingItemsThresholdReached(object? sender, EventArgs e)
     {
-        if (VirtualView == null)
-            return;
-
-        // Trigger RemainingItemsThresholdReachedCommand if it exists
-        if (VirtualView.RemainingItemsThresholdReachedCommand?.CanExecute(VirtualView.RemainingItemsThresholdReachedCommandParameter) == true)
-        {
-            VirtualView.RemainingItemsThresholdReachedCommand.Execute(VirtualView.RemainingItemsThresholdReachedCommandParameter);
-        }
+        // Use MAUI's built-in method which fires both the event and command
+        VirtualView?.SendRemainingItemsThresholdReached();
     }
 
     public override bool NeedsContainer => false;
