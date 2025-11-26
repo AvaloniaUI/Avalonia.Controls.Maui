@@ -42,6 +42,13 @@
                             <Label Text="Swipe gesture"
                                    VerticalTextAlignment="Center" />
                         </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="4"
+                                               VerticalOptions="Center">
+                            <Switch IsEnabled="False"
+                                    IsToggled="{Binding HorizontalIsDragging}" />
+                            <Label Text="Dragging"
+                                   VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="Auto,*,Auto"
                           ColumnSpacing="12"
@@ -51,7 +58,8 @@
                                 VerticalOptions="Center"
                                 Clicked="OnHorizontalPreviousClicked"
                                 IsEnabled="{Binding HasHorizontalPrevious}"/>
-                        <CarouselView Grid.Column="1"
+                        <CarouselView x:Name="HorizontalCarousel"
+                                      Grid.Column="1"
                                       ItemsSource="{Binding Items}"
                                       Loop="{Binding HorizontalLoopEnabled, Mode=TwoWay}"
                                       IsSwipeEnabled="{Binding HorizontalSwipeEnabled, Mode=TwoWay}"
@@ -115,6 +123,13 @@
                             <Label Text="Swipe gesture"
                                    VerticalTextAlignment="Center" />
                         </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="4"
+                                               VerticalOptions="Center">
+                            <Switch IsEnabled="False"
+                                    IsToggled="{Binding VerticalIsDragging}" />
+                            <Label Text="Dragging"
+                                   VerticalTextAlignment="Center" />
+                        </HorizontalStackLayout>
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="Auto,*,Auto"
                           ColumnSpacing="12"
@@ -124,7 +139,8 @@
                                 VerticalOptions="Center"
                                 Clicked="OnVerticalPreviousClicked"
                                 IsEnabled="{Binding HasVerticalPrevious}"/>
-                        <CarouselView Grid.Column="1"
+                        <CarouselView x:Name="VerticalCarousel"
+                                      Grid.Column="1"
                                       ItemsSource="{Binding Items}"
                                       ItemsLayout="VerticalList"
                                       Loop="{Binding VerticalLoopEnabled, Mode=TwoWay}"

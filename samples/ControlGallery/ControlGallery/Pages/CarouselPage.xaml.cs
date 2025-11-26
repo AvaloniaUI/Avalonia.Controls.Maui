@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Reflection;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 
@@ -17,10 +19,14 @@ public partial class CarouselPage : ContentPage
 
     private int _horizontalPosition;
     private int _verticalPosition;
+    private bool _horizontalIsDragging;
+    private bool _verticalIsDragging;
     private bool _horizontalLoopEnabled = true;
     private bool _horizontalSwipeEnabled = true;
     private bool _verticalLoopEnabled = true;
     private bool _verticalSwipeEnabled = true;
+    private INotifyPropertyChanged? _horizontalPlatform;
+    private INotifyPropertyChanged? _verticalPlatform;
 
     public int HorizontalPosition
     {
@@ -47,6 +53,30 @@ public partial class CarouselPage : ContentPage
             OnPropertyChanged();
             OnPropertyChanged(nameof(HasVerticalPrevious));
             OnPropertyChanged(nameof(HasVerticalNext));
+        }
+    }
+
+    public bool HorizontalIsDragging
+    {
+        get => _horizontalIsDragging;
+        set
+        {
+            if (_horizontalIsDragging == value)
+                return;
+            _horizontalIsDragging = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool VerticalIsDragging
+    {
+        get => _verticalIsDragging;
+        set
+        {
+            if (_verticalIsDragging == value)
+                return;
+            _verticalIsDragging = value;
+            OnPropertyChanged();
         }
     }
 
@@ -116,6 +146,9 @@ public partial class CarouselPage : ContentPage
         InitializeComponent();
         PopulateItems();
         BindingContext = this;
+
+        HorizontalCarousel.HandlerChanged += OnHorizontalHandlerChanged;
+        VerticalCarousel.HandlerChanged += OnVerticalHandlerChanged;
     }
 
     void PopulateItems()
@@ -196,5 +229,76 @@ public partial class CarouselPage : ContentPage
         {
             VerticalPosition += 1;
         }
+    }
+
+    void OnHorizontalHandlerChanged(object? sender, EventArgs e)
+    {
+        AttachDraggingListener(HorizontalCarousel, isHorizontal: true);
+    }
+
+    void OnVerticalHandlerChanged(object? sender, EventArgs e)
+    {
+        AttachDraggingListener(VerticalCarousel, isHorizontal: false);
+    }
+
+    void AttachDraggingListener(CarouselView view, bool isHorizontal)
+    {
+        var platform = view.Handler?.PlatformView as INotifyPropertyChanged;
+
+        if (isHorizontal && _horizontalPlatform != null)
+        {
+            _horizontalPlatform.PropertyChanged -= OnPlatformDraggingChanged;
+        }
+        if (!isHorizontal && _verticalPlatform != null)
+        {
+            _verticalPlatform.PropertyChanged -= OnPlatformDraggingChanged;
+        }
+
+        if (platform == null)
+            return;
+
+        if (isHorizontal)
+            _horizontalPlatform = platform;
+        else
+            _verticalPlatform = platform;
+
+        platform.PropertyChanged -= OnPlatformDraggingChanged;
+        platform.PropertyChanged += OnPlatformDraggingChanged;
+
+        UpdateDragging(platform, isHorizontal);
+    }
+
+    void OnPlatformDraggingChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == "IsDragging" && sender is INotifyPropertyChanged platform)
+        {
+            if (platform == _horizontalPlatform)
+            {
+                HorizontalIsDragging = ReadIsDragging(platform);
+            }
+
+            if (platform == _verticalPlatform)
+            {
+                VerticalIsDragging = ReadIsDragging(platform);
+            }
+        }
+    }
+
+    void UpdateDragging(INotifyPropertyChanged platform, bool isHorizontal)
+    {
+        if (isHorizontal)
+            HorizontalIsDragging = ReadIsDragging(platform);
+        else
+            VerticalIsDragging = ReadIsDragging(platform);
+    }
+
+    bool ReadIsDragging(INotifyPropertyChanged platform)
+    {
+        var prop = platform.GetType().GetRuntimeProperty("IsDragging");
+        if (prop != null && prop.PropertyType == typeof(bool))
+        {
+            return (bool)(prop.GetValue(platform) ?? false);
+        }
+        return false;
     }
 }

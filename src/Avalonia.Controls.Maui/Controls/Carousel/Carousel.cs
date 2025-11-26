@@ -56,6 +56,14 @@ public class Carousel : SelectingItemsControl
         AvaloniaProperty.Register<Carousel, bool>(nameof(IsLoopingEnabled), defaultValue: false);
     
     /// <summary>
+    /// Defines the <see cref="IsDragging"/> property.
+    /// </summary>
+    public static readonly DirectProperty<Carousel, bool> IsDraggingProperty =
+        AvaloniaProperty.RegisterDirect<Carousel, bool>(
+            nameof(IsDragging),
+            o => o.IsDragging);
+
+    /// <summary>
     /// Gets or sets the transition to use when moving between pages.
     /// </summary>
     public IPageTransition? PageTransition
@@ -80,6 +88,15 @@ public class Carousel : SelectingItemsControl
     {
         get => GetValue(IsLoopingEnabledProperty);
         set => SetValue(IsLoopingEnabledProperty, value);
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether a gesture drag is in progress.
+    /// </summary>
+    public bool IsDragging
+    {
+        get => _isDragging;
+        private set => SetAndRaise(IsDraggingProperty, ref _isDragging, value);
     }
 
     /// <summary>
@@ -193,7 +210,7 @@ public class Carousel : SelectingItemsControl
         {
             _pointerPressPosition = e.GetPosition(_gestureCanvas);
             _pointerPressTime = DateTime.Now;
-            _isDragging = false;
+            IsDragging = false;
         }
     }
 
@@ -209,10 +226,10 @@ public class Carousel : SelectingItemsControl
         var primaryDelta = IsHorizontal ? deltaX : deltaY;
         var secondaryDelta = IsHorizontal ? deltaY : deltaX;
         
-        if (!_isDragging && Math.Abs(primaryDelta) > DragStartThreshold &&
+        if (!IsDragging && Math.Abs(primaryDelta) > DragStartThreshold &&
             Math.Abs(primaryDelta) > Math.Abs(secondaryDelta))
         {
-            _isDragging = true;
+            IsDragging = true;
             e.Pointer.Capture(_gestureCanvas);
 
             int previewIndex = GetPreviewIndex(primaryDelta);
@@ -223,7 +240,7 @@ public class Carousel : SelectingItemsControl
             }
         }
 
-        if (_isDragging)
+        if (IsDragging)
         {
             UpdateGesturePositions(primaryDelta);
             e.Handled = true;
@@ -278,7 +295,7 @@ public class Carousel : SelectingItemsControl
 
     private void CompleteGesture(Point? releasePosition)
     {
-        if (!IsGestureEnabled || _pointerPressPosition == null || !_isDragging || _gestureCanvas == null)
+        if (!IsGestureEnabled || _pointerPressPosition == null || !IsDragging || _gestureCanvas == null)
         {
             CleanupGesture();
             return;
@@ -324,7 +341,7 @@ public class Carousel : SelectingItemsControl
         }
 
         _pointerPressPosition = null;
-        _isDragging = false;
+        IsDragging = false;
     }
 
     private void CreateGestureContainers(int previewIndex)
@@ -432,7 +449,7 @@ public class Carousel : SelectingItemsControl
         _currentItemContainer = null;
         _previewItemContainer = null;
         _pointerPressPosition = null;
-        _isDragging = false;
+        IsDragging = false;
         _previewIndex = -1;
     }
 }
