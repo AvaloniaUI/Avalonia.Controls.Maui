@@ -307,6 +307,45 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Dynamic Text -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Text"
+                           FontAttributes="Bold"/>
+                    <Label Text="Click the button to change its text:"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <Button x:Name="DynamicTextButton"
+                            Text="Click me!"
+                            BackgroundColor="Teal"
+                            TextColor="White"
+                            Padding="15,10"
+                            CornerRadius="8"
+                            Clicked="OnDynamicTextButtonClicked"/>
+
+                    <Button x:Name="CounterButton"
+                            Text="Clicked 0 times"
+                            BackgroundColor="Indigo"
+                            TextColor="White"
+                            Padding="15,10"
+                            CornerRadius="8"
+                            Clicked="OnCounterButtonClicked"/>
+
+                    <Button x:Name="ToggleButton"
+                            Text="Toggle: OFF"
+                            BackgroundColor="Gray"
+                            TextColor="White"
+                            Padding="15,10"
+                            CornerRadius="8"
+                            Clicked="OnToggleButtonClicked"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Styled Buttons -->
             <Border Stroke="Gray"
                     Padding="10">

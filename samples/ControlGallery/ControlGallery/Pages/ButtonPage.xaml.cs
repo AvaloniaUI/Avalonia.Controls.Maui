@@ -5,6 +5,9 @@ namespace ControlGallery.Pages;
 public partial class ButtonPage : ContentPage
 {
     private int _clickCount = 0;
+    private int _dynamicButtonClickCount = 0;
+    private int _counterButtonClickCount = 0;
+    private bool _toggleState = false;
     
     // Commands for data binding
     public ICommand MyCommand { get; }
@@ -98,5 +101,39 @@ public partial class ButtonPage : ContentPage
         button.BackgroundColor = Colors.Purple;
         button.Scale = 1.0;
         button.Rotation = 0;
+    }
+
+    // Dynamic text button handlers
+    private readonly string[] _dynamicTexts =
+    {
+        "Click me!",
+        "Clicked once!",
+        "Clicked again!",
+        "Keep going!",
+        "You're persistent!",
+        "Almost there...",
+        "One more time!",
+        "Great job!"
+    };
+
+    private void OnDynamicTextButtonClicked(object sender, EventArgs e)
+    {
+        _dynamicButtonClickCount++;
+        var index = Math.Min(_dynamicButtonClickCount, _dynamicTexts.Length - 1);
+        DynamicTextButton.Text = _dynamicTexts[index];
+    }
+
+    private void OnCounterButtonClicked(object sender, EventArgs e)
+    {
+        _counterButtonClickCount++;
+        var timesText = _counterButtonClickCount == 1 ? "time" : "times";
+        CounterButton.Text = $"Clicked {_counterButtonClickCount} {timesText}";
+    }
+
+    private void OnToggleButtonClicked(object sender, EventArgs e)
+    {
+        _toggleState = !_toggleState;
+        ToggleButton.Text = _toggleState ? "Toggle: ON" : "Toggle: OFF";
+        ToggleButton.BackgroundColor = _toggleState ? Colors.Green : Colors.Gray;
     }
 }
