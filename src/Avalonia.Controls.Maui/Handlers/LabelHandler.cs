@@ -70,8 +70,26 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>, ILabelHandle
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateBackground(label);
     }
 
-    public static void MapText(ILabelHandler handler, ILabel label) =>
-        ((AvaloniaTextBlock)handler.PlatformView)?.UpdateText(label);
+     public static void MapText(ILabelHandler handler, ILabel label)
+    {
+        var textBlock = (AvaloniaTextBlock)handler.PlatformView;
+        textBlock?.UpdateText(label);
+
+        if (textBlock != null)
+        {
+            textBlock.InvalidateMeasure(label);
+            textBlock.InvalidateArrange();
+
+            // Invalidate measure/arrange on parent controls to ensure layout updates
+            var parent = textBlock.Parent;
+            while (parent is global::Avalonia.Controls.Control parentControl)
+            {
+                parentControl.InvalidateMeasure(label);
+                parentControl.InvalidateArrange();
+                parent = parentControl.Parent;
+            }
+        }
+    }
 
     public static void MapTextColor(ILabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateTextColor(label);
