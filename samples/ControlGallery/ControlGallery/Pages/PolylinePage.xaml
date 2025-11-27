@@ -42,6 +42,25 @@
                               StrokeDashArray="10,5" />
                 </VerticalStackLayout>
             </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Animated Dash Offset"
+                           FontAttributes="Bold" />
+                    <Polyline x:Name="AnimatedPolyline"
+                              Points="10,50 80,10 150,50 220,10"
+                              Stroke="#6366F1"
+                              StrokeThickness="6"
+                              StrokeDashArray="6,4" />
+                    <Label Text="Dash offset is animated on a loop."
+                           FontSize="12"
+                           TextColor="Gray" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
