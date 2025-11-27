@@ -620,15 +620,15 @@ Displays a series of connected straight lines.
 
 | Property | Status |
 |----------|--------|
-| Points | ⏳ TODO |
+| Points | ✅ Implemented |
 | FillRule | ⏳ TODO |
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
 
 ---
 
@@ -684,15 +684,15 @@ Displays a rectangle or square.
 
 | Property | Status |
 |----------|--------|
-| RadiusX | ⏳ TODO |
-| RadiusY | ⏳ TODO |
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
+| RadiusX | ✅ Implemented |
+| RadiusY | ✅ Implemented |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
 | StrokeMiterLimit | ⏳ TODO |
 
 ---
@@ -720,15 +720,15 @@ Displays a rectangle or square with rounded corners.
 
 | Property | Status |
 |----------|--------|
-| CornerRadius | ⏳ TODO |
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
-| StrokeMiterLimit | ⏳ TODO |
+| CornerRadius | ✅ Implemented |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
+| StrokeMiterLimit | ✅ Implemented |
 
 ---
 
