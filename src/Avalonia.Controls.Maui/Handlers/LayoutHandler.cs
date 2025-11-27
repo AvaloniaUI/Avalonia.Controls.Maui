@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
+public partial class LayoutHandler : ViewHandler<ILayout, LayoutPanel>, ILayoutHandler
 {
     public static IPropertyMapper<ILayout, ILayoutHandler> Mapper = new PropertyMapper<ILayout, ILayoutHandler>(ViewMapper)
     {
@@ -41,7 +41,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
 
     System.Object ILayoutHandler.PlatformView => PlatformView;
 
-    protected override Panel CreatePlatformView()
+    protected override LayoutPanel CreatePlatformView()
     {
         return new LayoutPanel()
         {
@@ -178,8 +178,8 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
         _ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
         _ = MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
 
-        ((LayoutPanel)PlatformView).CrossPlatformMeasure = VirtualView.CrossPlatformMeasure;
-        ((LayoutPanel)PlatformView).CrossPlatformArrange = VirtualView.CrossPlatformArrange;
+        PlatformView.CrossPlatformMeasure = VirtualView.CrossPlatformMeasure;
+        PlatformView.CrossPlatformArrange = VirtualView.CrossPlatformArrange;
 
         PlatformView.Children.Clear();
         foreach (var child in VirtualView)

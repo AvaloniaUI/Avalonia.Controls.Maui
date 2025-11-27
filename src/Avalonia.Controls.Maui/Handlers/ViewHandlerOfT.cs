@@ -45,6 +45,8 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
 
     protected virtual void ConnectHandler(TPlatformView platformView)
     {
+        platformView.LayoutUpdated += OnPlatformLayoutUpdated;
+
         // Initialize gesture manager for IControlsView
         if (VirtualView is Microsoft.Maui.Controls.IControlsView controlsView && _gestureManager == null)
         {
@@ -54,6 +56,8 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
 
     protected virtual void DisconnectHandler(TPlatformView platformView)
     {
+        platformView.LayoutUpdated -= OnPlatformLayoutUpdated;
+
         _gestureManager?.Dispose();
         _gestureManager = null;
     }
@@ -87,5 +91,13 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         }
 
         ContainerView = null;
+    }
+
+    void OnPlatformLayoutUpdated(object? sender, EventArgs e)
+    {
+        if (VirtualView == null)
+            return;
+
+        VirtualView.InvalidateMeasure();
     }
 }

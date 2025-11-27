@@ -436,7 +436,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     /// <param name="args">The arguments passed associated to this event.</param>
     public static void MapInvalidateMeasure(IViewHandler handler, IView view, object? args)
     {
-        (handler.PlatformView as PlatformView)?.InvalidateMeasure(view);
+        // (handler.PlatformView as PlatformView)?.InvalidateMeasure(view);
     }
 
     /// <summary>
