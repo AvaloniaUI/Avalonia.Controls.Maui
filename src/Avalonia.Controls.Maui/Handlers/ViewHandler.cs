@@ -820,10 +820,6 @@ public static class ControlExtensions
             {
                 layoutPanel.InvalidateMeasure();
             }
-            else if (parent is PlatformView platformParent)
-            {
-                platformParent.InvalidateMeasure();
-            }
 
             if (!propagate)
             {
