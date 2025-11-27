@@ -41,6 +41,59 @@
                           Data="M20,120 A60,60 0 0 1 200,120" />
                 </VerticalStackLayout>
             </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Transform (Rotate + Translate)"
+                           FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="16">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Original"
+                                   FontSize="12"
+                                   TextColor="Gray" />
+                            <Path Stroke="#22C55E"
+                                  Fill="#BBF7D0"
+                                  StrokeThickness="4"
+                                  Data="M50,0 L150,0 L150,100 L50,100 Z">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <RotateTransform Angle="0" />
+                                        <ScaleTransform ScaleX="1"
+                                                        ScaleY="1" />
+                                        <TranslateTransform X="0"
+                                                            Y="0" />
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1"
+                                              Spacing="4">
+                            <Label Text="Transformed (XAML Transform)"
+                                   FontSize="12"
+                                   TextColor="Gray" />
+                            <Path Stroke="#9333EA"
+                                  Fill="#EDE9FE"
+                                  StrokeThickness="4"
+                                  Data="M50,0 L150,0 L150,100 L50,100 Z">
+                                <Path.RenderTransform>
+                                    <TransformGroup>
+                                        <RotateTransform Angle="30" />
+                                        <ScaleTransform ScaleX="0.85"
+                                                        ScaleY="0.85" />
+                                        <TranslateTransform X="20"
+                                                            Y="-10" />
+                                    </TransformGroup>
+                                </Path.RenderTransform>
+                            </Path>
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

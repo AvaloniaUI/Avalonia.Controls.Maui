@@ -287,36 +287,57 @@ public static class ShapeViewExtensions
     /// <param name="path">The virtual path view.</param>
     public static void UpdateRenderTransform(this AvaloniaPath platformView, PathShape path)
     {
+        if (platformView is null)
+            return;
+
         if (path?.RenderTransform == null)
         {
             platformView.RenderTransform = null;
             return;
         }
 
-        var matrix = path.RenderTransform.Value;
+        platformView.RenderTransform = ConvertTransform(path.RenderTransform);
+    }
 
-        if (path.RenderTransform is RotateTransform rotate)
+    private static global::Avalonia.Media.Transform? ConvertTransform(Transform transform)
+    {
+        switch (transform)
         {
-            platformView.RenderTransform = new global::Avalonia.Media.RotateTransform
-            {
-                Angle = rotate.Angle
-            };
-
-            platformView.RenderTransformOrigin = new global::Avalonia.RelativePoint(
-                rotate.CenterX,
-                rotate.CenterY,
-                global::Avalonia.RelativeUnit.Absolute);
-        }
-        else
-        {
-            platformView.RenderTransform = new global::Avalonia.Media.MatrixTransform(
-                new global::Avalonia.Matrix(
-                    matrix.M11,
-                    matrix.M12,
-                    matrix.M21,
-                    matrix.M22,
-                    matrix.OffsetX,
-                    matrix.OffsetY));
+            case RotateTransform rotate:
+                return new global::Avalonia.Media.RotateTransform
+                {
+                    Angle = rotate.Angle
+                };
+            case ScaleTransform scale:
+                return new global::Avalonia.Media.ScaleTransform
+                {
+                    ScaleX = scale.ScaleX,
+                    ScaleY = scale.ScaleY
+                };
+            case TranslateTransform translate:
+                return new global::Avalonia.Media.TranslateTransform
+                {
+                    X = translate.X,
+                    Y = translate.Y
+                };
+            case TransformGroup group:
+                var transforms = new global::Avalonia.Media.TransformGroup();
+                foreach (var child in group.Children)
+                {
+                    var converted = ConvertTransform(child);
+                    if (converted != null)
+                    {
+                        transforms.Children.Add(converted);
+                    }
+                }
+                return transforms;
+            default:
+                var m = transform.Value;
+                return new global::Avalonia.Media.MatrixTransform(
+                    new global::Avalonia.Matrix(
+                        m.M11, m.M12,
+                        m.M21, m.M22,
+                        m.OffsetX, m.OffsetY));
         }
     }
 
