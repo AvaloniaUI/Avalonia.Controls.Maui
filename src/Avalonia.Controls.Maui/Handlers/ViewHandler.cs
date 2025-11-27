@@ -799,6 +799,42 @@ public static class ControlExtensions
     public static void InvalidateMeasure(this PlatformView control, IView view)
     {
         control.InvalidateMeasure();
+        control.InvalidateAncestorsMeasures();
+    }
+
+    /// <summary>
+    /// Invalidates the measure of all ancestor layouts through the visual tree.
+    /// This ensures that when a child's desired size changes, parent layouts are notified to re-measure.
+    /// Similar to iOS's InvalidateAncestorsMeasures implementation.
+    /// </summary>
+    internal static void InvalidateAncestorsMeasures(this PlatformView child)
+    {
+        var parent = child.Parent;
+        while (parent != null)
+        {
+            var propagate = true;
+
+            if (parent is Platform.MauiView mauiView)
+            {
+                propagate = mauiView.InvalidateMeasure(isPropagating: true);
+            }
+            else if (parent is Platform.LayoutPanel layoutPanel)
+            {
+                layoutPanel.InvalidateMeasure();
+            }
+            else if (parent is PlatformView platformParent)
+            {
+                platformParent.InvalidateMeasure();
+            }
+
+            if (!propagate)
+            {
+                // Stop propagation at views with fixed constraints
+                return;
+            }
+
+            parent = (parent as PlatformView)?.Parent;
+        }
     }
 
     public static void UpdateVisibility(this PlatformView control, IView view)

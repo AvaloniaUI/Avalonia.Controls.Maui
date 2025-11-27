@@ -44,7 +44,7 @@ public partial class LabelTests : WindowHandlerTestBase<MauiLabelHandler, MauiLa
         Assert.True(result.Updated > result.Initial, $"Expected new width ({result.Updated}) to be greater than initial width ({result.Initial})");
     }
 
-        [AvaloniaFact(DisplayName = "UpdatingLabel In VerticalStackLayout Measures Correctly")]
+    [AvaloniaFact(DisplayName = "UpdatingLabel In VerticalStackLayout Measures Correctly")]
     public async Task UpdatingLabelInVerticalStackLayoutMeasuresCorrectly()
     {
         var label = new MauiLabel
