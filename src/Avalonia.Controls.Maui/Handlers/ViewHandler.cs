@@ -804,8 +804,6 @@ public static class ControlExtensions
 
     /// <summary>
     /// Invalidates the measure of all ancestor layouts through the visual tree.
-    /// This ensures that when a child's desired size changes, parent layouts are notified to re-measure.
-    /// Similar to iOS's InvalidateAncestorsMeasures implementation.
     /// </summary>
     internal static void InvalidateAncestorsMeasures(this PlatformView child)
     {
