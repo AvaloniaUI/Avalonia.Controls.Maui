@@ -3,6 +3,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
+using Avalonia.Controls.Maui.Extensions;
 using PlatformView = global::Avalonia.Controls.Shapes.Line;
 
 namespace Avalonia.Controls.Maui.Handlers.Shapes;
@@ -34,7 +35,7 @@ public partial class LineHandler : ShapeViewHandler<Line, PlatformView>
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.StartPoint = new global::Avalonia.Point(line.X1, platformView.StartPoint.Y);
+            platformView.UpdateX1(line);
         }
     }
 
@@ -42,7 +43,7 @@ public partial class LineHandler : ShapeViewHandler<Line, PlatformView>
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.StartPoint = new global::Avalonia.Point(platformView.StartPoint.X, line.Y1);
+            platformView.UpdateY1(line);
         }
     }
 
@@ -50,7 +51,7 @@ public partial class LineHandler : ShapeViewHandler<Line, PlatformView>
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.EndPoint = new global::Avalonia.Point(line.X2, platformView.EndPoint.Y);
+            platformView.UpdateX2(line);
         }
     }
 
@@ -58,7 +59,7 @@ public partial class LineHandler : ShapeViewHandler<Line, PlatformView>
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.EndPoint = new global::Avalonia.Point(platformView.EndPoint.X, line.Y2);
+            platformView.UpdateY2(line);
         }
     }
 }

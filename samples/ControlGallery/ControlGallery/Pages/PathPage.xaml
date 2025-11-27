@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.PathPage"
+             Title="Path">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="16">
+            <Label Text="Path Samples"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Heart Path"
+                           FontAttributes="Bold" />
+                    <Path Stroke="#EC4899"
+                          Fill="#FBCFE8"
+                          StrokeThickness="4"
+                          Data="M10,30 C20,5 50,5 60,30 C70,5 100,5 110,30 C110,55 60,85 60,85 C60,85 10,55 10,30 Z" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Arc Path"
+                           FontAttributes="Bold" />
+                    <Path Stroke="#6366F1"
+                          Fill="Transparent"
+                          StrokeThickness="6"
+                          Data="M20,120 A60,60 0 0 1 200,120" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -2,6 +2,7 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
+using Avalonia.Controls.Maui.Extensions;
 using PlatformView = global::Avalonia.Controls.Shapes.Polyline;
 using Polyline = Microsoft.Maui.Controls.Shapes.Polyline;
 
@@ -36,13 +37,9 @@ public partial class PolylineHandler : ShapeViewHandler<Polyline, PlatformView>
 
     public static void MapPoints(IShapeViewHandler handler, Polyline polyline)
     {
-        if (handler.PlatformView is PlatformView platformView && polyline.Points != null)
+        if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.Points.Clear();
-            foreach (var point in polyline.Points)
-            {
-                platformView.Points.Add(new global::Avalonia.Point(point.X, point.Y));
-            }
+            platformView.UpdatePoints(polyline);
         }
     }
 

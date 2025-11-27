@@ -3,6 +3,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
+using Avalonia.Controls.Maui.Extensions;
 using PlatformView = global::Avalonia.Controls.Shapes.Rectangle;
 
 namespace Avalonia.Controls.Maui.Handlers.Shapes;
@@ -32,7 +33,7 @@ public partial class RectangleHandler : ShapeViewHandler<Rectangle, PlatformView
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.RadiusX = rectangle.RadiusX;
+            platformView.UpdateRadiusX(rectangle);
         }
     }
 
@@ -40,7 +41,7 @@ public partial class RectangleHandler : ShapeViewHandler<Rectangle, PlatformView
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.RadiusY = rectangle.RadiusY;
+            platformView.UpdateRadiusY(rectangle);
         }
     }
 }

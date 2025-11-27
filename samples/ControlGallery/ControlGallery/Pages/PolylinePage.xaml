@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.PolylinePage"
+             Title="Polyline">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="16">
+            <Label Text="Polyline Samples"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Open Zig-Zag"
+                           FontAttributes="Bold" />
+                    <Polyline Points="10,80 60,20 120,100 180,20 230,80"
+                              Stroke="#F59E0B"
+                              StrokeThickness="6"
+                              Fill="Transparent"
+                              StrokeLineJoin="Round" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Polyline Outline"
+                           FontAttributes="Bold" />
+                    <Polyline Points="10,20 70,60 110,20 170,70 230,30"
+                              Stroke="#10B981"
+                              StrokeThickness="4"
+                              StrokeDashArray="10,5" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
