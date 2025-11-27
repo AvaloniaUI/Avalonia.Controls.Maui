@@ -238,13 +238,13 @@ Displays an ellipse or circle.
 
 | Property | Status |
 |----------|--------|
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
 | StrokeMiterLimit | ⏳ TODO |
 
 ---
@@ -420,16 +420,16 @@ Displays a line from a start point to an end point.
 
 | Property | Status |
 |----------|--------|
-| X1 | ⏳ TODO |
-| Y1 | ⏳ TODO |
-| X2 | ⏳ TODO |
-| Y2 | ⏳ TODO |
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
+| X1 | ✅ Implemented |
+| Y1 | ✅ Implemented |
+| X2 | ✅ Implemented |
+| Y2 | ✅ Implemented |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
 
 ---
 
@@ -547,15 +547,15 @@ Displays curves and complex shapes.
 
 | Property | Status |
 |----------|--------|
-| Data | ⏳ TODO |
-| Fill | ⏳ TODO |
-| RenderTransform | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
+| Data | ✅ Implemented |
+| Fill | ✅ Implemented |
+| RenderTransform | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
 | StrokeMitterLimit | ⏳ TODO |
 
 ---
@@ -599,15 +599,15 @@ Displays a polygon.
 
 | Property | Status |
 |----------|--------|
-| Points | ⏳ TODO |
+| Points | ✅ Implemented |
 | FillRule | ⏳ TODO |
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
 | StrokeMiterLimit | ⏳ TODO |
 
 ---
