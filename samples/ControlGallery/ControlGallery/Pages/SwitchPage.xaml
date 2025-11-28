@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.SwitchPage"
+             x:DataType="pages:SwitchPage"
+             Title="Switch">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="Switch Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- Basic Switches -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Switches"
+                           FontAttributes="Bold" />
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Default (Off)"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch x:Name="BasicSwitch"
+                                Toggled="OnBasicToggled" />
+                        <Label x:Name="BasicStateLabel"
+                               Text="Off"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Default (On)"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch IsToggled="True"
+                                Toggled="OnBasicToggled" />
+                        <Label x:Name="BasicOnStateLabel"
+                               Text="On"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Label x:Name="ToggleCountLabel"
+                           Text="Toggled 0 times"
+                           FontAttributes="Italic"
+                           HorizontalOptions="Fill" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- OnColor Examples -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="OnColor (Track Color when On)"
+                           FontAttributes="Bold" />
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Green track"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch OnColor="#34C759"
+                                IsToggled="True" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Orange track"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch OnColor="#FF9500"
+                                IsToggled="True" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Purple track"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch OnColor="#AF52DE"
+                                IsToggled="True" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Red track"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch OnColor="#FF3B30"
+                                IsToggled="True" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- ThumbColor Examples -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ThumbColor (Knob Color)"
+                           FontAttributes="Bold" />
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Yellow thumb (On)"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch ThumbColor="#FFD60A"
+                                IsToggled="True" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Cyan thumb (Off)"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch ThumbColor="#32D4E8"
+                                IsToggled="False" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Pink thumb (On)"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch ThumbColor="#FF2D92"
+                                IsToggled="True" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Combined OnColor and ThumbColor -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Combined OnColor + ThumbColor"
+                           FontAttributes="Bold" />
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Warm tones"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch OnColor="#FFB347"
+                                ThumbColor="#FF8C00"
+                                IsToggled="True" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Cool palette"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch OnColor="#3DB4F2"
+                                ThumbColor="#0A84FF"
+                                IsToggled="True" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="High contrast"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch x:Name="ThumbAccentSwitch"
+                                OnColor="#1C1C1E"
+                                ThumbColor="#FFD60A" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Nature"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch OnColor="#2E8B57"
+                                ThumbColor="#98FB98"
+                                IsToggled="True" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- On + Off Colors via VisualStateManager -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="On + Off Colors (via VisualStateManager)"
+                           FontAttributes="Bold" />
+                    
+                    <Label Text="Use VSM to set different colors for On and Off states"
+                           FontSize="12"
+                           TextColor="Gray"
+                           FontAttributes="Italic" />
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Green/Red track"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch IsToggled="True">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="GreenRedStates">
+                                        <VisualState x:Name="On">
+                                            <VisualState.Setters>
+                                                <Setter Property="OnColor" Value="#34C759" />
+                                                <Setter Property="ThumbColor" Value="White" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Off">
+                                            <VisualState.Setters>
+                                                <Setter Property="ThumbColor" Value="#FF3B30" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Switch>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Blue/Orange"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch IsToggled="False">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="BlueOrangeStates">
+                                        <VisualState x:Name="On">
+                                            <VisualState.Setters>
+                                                <Setter Property="OnColor" Value="#007AFF" />
+                                                <Setter Property="ThumbColor" Value="White" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Off">
+                                            <VisualState.Setters>
+                                                <Setter Property="ThumbColor" Value="#FF9500" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Switch>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Purple/Pink"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch IsToggled="True">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="PurplePinkStates">
+                                        <VisualState x:Name="On">
+                                            <VisualState.Setters>
+                                                <Setter Property="OnColor" Value="#AF52DE" />
+                                                <Setter Property="ThumbColor" Value="#E1BEE7" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Off">
+                                            <VisualState.Setters>
+                                                <Setter Property="ThumbColor" Value="#FF2D92" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Switch>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ThumbColor On vs Off States -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ThumbColor: On vs Off States"
+                           FontAttributes="Bold" />
+                    
+                    <Label Text="Different thumb colors for each state"
+                           FontSize="12"
+                           TextColor="Gray"
+                           FontAttributes="Italic" />
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Success/Error"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch x:Name="SuccessErrorSwitch"
+                                IsToggled="True"
+                                Toggled="OnSuccessErrorToggled">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="SuccessErrorStates">
+                                        <VisualState x:Name="On">
+                                            <VisualState.Setters>
+                                                <Setter Property="OnColor" Value="#34C759" />
+                                                <Setter Property="ThumbColor" Value="MediumSpringGreen" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Off">
+                                            <VisualState.Setters>
+                                                <Setter Property="ThumbColor" Value="Red" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
+                        </Switch>
+                        <Label x:Name="SuccessErrorLabel"
+                               Text="✓ Success"
+                               TextColor="#34C759"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Events -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Toggled Event"
+                           FontAttributes="Bold" />
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Event switch"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch x:Name="EventSwitch"
+                                OnColor="#5856D6"
+                                Toggled="OnEventSwitchToggled" />
+                        <Label x:Name="EventStateLabel"
+                               Text="Off"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Label x:Name="EventLogLabel"
+                           Text="Last event: None"
+                           FontAttributes="Italic"
+                           TextColor="Gray" />
+
+                    <Label x:Name="EventTimestampLabel"
+                           Text=""
+                           FontSize="12"
+                           TextColor="Gray" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Disabled States -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Disabled States"
+                           FontAttributes="Bold" />
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Disabled (Off)"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch IsEnabled="False"
+                                IsToggled="False" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10"
+                                           VerticalOptions="Center">
+                        <Label Text="Disabled (On)"
+                               VerticalOptions="Center"
+                               WidthRequest="120" />
+                        <Switch IsEnabled="False"
+                                IsToggled="True"
+                                OnColor="#B0B0B0"
+                                ThumbColor="#E0E0E0" />
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
