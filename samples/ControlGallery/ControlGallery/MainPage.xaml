@@ -47,7 +47,11 @@
 								  Detail="Progress indicator control"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:ProgressBarPage}"/>
-           				 <TextCell Text="SwipeView"
+						<TextCell Text="Switch"
+						          Detail="Toggle control with colors"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:SwitchPage}"/>
+						<TextCell Text="SwipeView"
 						          Detail="SwipeView control"
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type pages:SwipeViewPage}"/>

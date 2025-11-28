@@ -36,6 +36,7 @@ public partial class MainPage : FlyoutPage
             nameof(PolylinePage) => new PolylinePage(),
             nameof(PathPage) => new PathPage(),
             nameof(RoundRectanglePage) => new RoundRectanglePage(),
+            nameof(SwitchPage) => new SwitchPage(),
             nameof(ThemePage) => new ThemePage(),
             nameof(CollectionViewPage) => new CollectionViewPage(),
             "MainPage" when pageType.Namespace == "WordPuzzle" => new WordPuzzle.MainPage(),

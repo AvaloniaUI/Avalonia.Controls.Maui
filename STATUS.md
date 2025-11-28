@@ -935,15 +935,15 @@ Enables you to select a boolean value using a type of button that can either be 
 
 | Property | Status |
 |----------|--------|
-| IsToggled | ⏳ TODO |
-| OnColor | ⏳ TODO |
-| ThumbColor | ⏳ TODO |
+| IsToggled | ✅ Implemented |
+| OnColor | ✅ Implemented |
+| ThumbColor | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Toggled | ⏳ TODO |
+| Toggled | ✅ Implemented |
 
 ---
 
