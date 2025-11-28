@@ -1,3 +1,4 @@
+using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
@@ -5,9 +6,9 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
+using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 using MauiRect = Microsoft.Maui.Graphics.Rect;
 using MauiWindow = Microsoft.Maui.Controls.Window;
-using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 
 namespace Avalonia.Controls.Maui.Tests;
 
@@ -80,6 +81,8 @@ public abstract class WindowHandlerTestBase : IAsyncDisposable
         {
             handler = (THandler)view.Handler;
         }
+
+        ((MauiAvaloniaWindow?)windowHandler?.PlatformView)?.Show();
 
         return handler;
     }
@@ -228,6 +231,7 @@ public abstract class WindowHandlerTestBase : IAsyncDisposable
 
     public virtual ValueTask DisposeAsync()
     {
+        ((MauiAvaloniaWindow?)_testWindow?.Handler.PlatformView)?.Close();
         _testWindow?.Handler?.DisconnectHandler();
         return ValueTask.CompletedTask;
     }

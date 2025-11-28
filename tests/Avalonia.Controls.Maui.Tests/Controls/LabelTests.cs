@@ -49,7 +49,9 @@ public partial class LabelTests : WindowHandlerTestBase<MauiLabelHandler, MauiLa
     {
         var label = new MauiLabel
         {
-            Text = "Hello World"
+            Text = "Hello World",
+            HorizontalOptions = LayoutOptions.Start,
+            VerticalOptions = LayoutOptions.Start,
         };
 
         var stackLayout = new VerticalStackLayout
@@ -64,9 +66,6 @@ public partial class LabelTests : WindowHandlerTestBase<MauiLabelHandler, MauiLa
             var stackPanel = (LayoutPanel)layoutHandler.PlatformView;
             var textBlock = (TextBlock)label.Handler!.PlatformView!;
 
-            // Measure the layout
-            stackPanel.Measure(new global::Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity));
-
             return new
             {
                 LabelWidth = textBlock.DesiredSize.Width,
@@ -78,21 +77,13 @@ public partial class LabelTests : WindowHandlerTestBase<MauiLabelHandler, MauiLa
 
         // Update the label text to something longer
         var newText = "Hello World! This is an updated text that is significantly longer.";
-        await InvokeOnMainThreadAsync(() =>
-        {
-            label.Text = newText;
-            label.FontSize = 24;
-            label.Handler!.UpdateValue(nameof(ILabel.Text));
-            label.Handler!.UpdateValue(nameof(ILabel.Font));
-        }); 
+        label.Text = newText;
+        label.FontSize = 24;
 
         var updatedResult = await InvokeOnMainThreadAsync(() =>
         {
             var stackPanel = (LayoutPanel)layoutHandler.PlatformView;
             var textBlock = (TextBlock)label.Handler!.PlatformView!;
-
-            // Re-measure the layout
-            stackPanel.Measure(new global::Avalonia.Size(double.PositiveInfinity, double.PositiveInfinity));
 
             return new
             {

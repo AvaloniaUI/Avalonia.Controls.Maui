@@ -14,6 +14,6 @@ public partial class MauiAppStub : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new AppShell());
+        return new Window(new MainPage()) { Width = 800, Height = 600 };
     }
 }

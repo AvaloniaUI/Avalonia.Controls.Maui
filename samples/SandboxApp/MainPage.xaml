@@ -3,5 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 		     xmlns:shimmer="http://schemas.syncfusion.com/maui/toolkit"
 			 x:Class="SandboxApp.MainPage">
-
+    <VerticalStackLayout BackgroundColor="Green">
+        <Label Text="Welcome to .NET MAUI!"
+               x:Name="CounterLabel"
+                 HorizontalOptions="Start"
+                VerticalOptions="Start"
+               TextColor="Blue"/>
+        <Button x:Name="CounterBtn"
+                HorizontalOptions="Start"
+                VerticalOptions="Start"
+            Text="Click me"
+                Clicked="CounterBtn_Clicked" />
+    </VerticalStackLayout>
 </ContentPage>
