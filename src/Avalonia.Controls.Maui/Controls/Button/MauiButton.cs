@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 
-namespace Avalonia.Controls.Maui.Platform;
+namespace Avalonia.Controls.Maui;
 
 /// <summary>
 /// Custom Avalonia Button with Image and Text support for MAUI's Button
@@ -70,8 +70,7 @@ public class MauiButton : Button
         {
             VerticalAlignment = VerticalAlignment.Center,
             MaxHeight = 20,
-            MaxWidth = 20,
-            Margin = new Thickness(0, 0, 5, 0)
+            MaxWidth = 20
         };
 
         Content = _contentPanel;
@@ -92,6 +91,8 @@ public class MauiButton : Button
         if (hasImage)
         {
             _image.Source = ImageSource;
+            // Add spacing only when both image and text are present
+            _image.Margin = hasText ? new Thickness(0, 0, 5, 0) : new Thickness(0);
             _contentPanel.Children.Add(_image);
         }
 
@@ -99,12 +100,6 @@ public class MauiButton : Button
         {
             _textBlock.Text = Text;
             _contentPanel.Children.Add(_textBlock);
-        }
-
-        // If only text, remove the image margin
-        if (hasText && !hasImage && _image != null)
-        {
-            _image.Margin = new Thickness(0);
         }
     }
 
