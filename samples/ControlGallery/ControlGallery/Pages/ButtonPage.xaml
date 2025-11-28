@@ -14,6 +14,81 @@
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
 
+         <!-- Image Buttons -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Image Buttons"
+                           FontAttributes="Bold"/>
+                    <Label Text="Buttons with images from local files using FileImageSource"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <!-- Button with Image Only -->
+                    <Button ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="LightBlue"
+                            Padding="10"
+                            CornerRadius="8"
+                            HorizontalOptions="Center"
+                            WidthRequest="60"
+                            HeightRequest="60"
+                            Clicked="OnButtonClicked"/>
+
+                    <!-- Button with Image and Text -->
+                    <Button Text="Click Me"
+                            ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="White"
+                            Clicked="OnButtonClicked"
+                            TextColor="Black"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            Padding="15,10"
+                            CornerRadius="6"/>
+
+                    <!-- Button with Image and Styled Text -->
+                    <Button Text="Action Button"
+                            ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="DarkBlue"
+                            Clicked="OnButtonClicked"
+                            TextColor="White"
+                            Padding="20,12"
+                            CornerRadius="10"
+                            FontSize="16"
+                            FontAttributes="Bold"/>
+
+                    <!-- Colored Background Image Button -->
+                    <Button Text="Success"
+                            ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="Green"
+                            Clicked="OnButtonClicked"
+                            TextColor="White"
+                            Padding="15,10"
+                            CornerRadius="6"/>
+
+                    <!-- Large Image Button -->
+                    <Button Text="Large Image Button"
+                            ImageSource="dotnet_bot_og.png"
+                            BackgroundColor="Purple"
+                            TextColor="White"
+                            Clicked="OnButtonClicked"
+                            Padding="25,15"
+                            CornerRadius="12"
+                            FontSize="18"
+                            HorizontalOptions="Fill"/>
+
+                    <!-- Disabled Image Button -->
+                    <Button Text="Disabled with Image"
+                            ImageSource="dotnet_bot_og.png"
+                            IsEnabled="False"
+                            Clicked="OnButtonClicked"
+                            Padding="15,10"
+                            CornerRadius="6"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Basic Buttons -->
             <Border Stroke="Gray"
                     Padding="10">
@@ -31,7 +106,7 @@
                     <Label x:Name="ClickCountLabel"
                            Text="Click count: 0"
                            HorizontalOptions="Center"
-                           FontAttributes="Italic"/>
+                           FontAttributes="Bold"/>
                 </VerticalStackLayout>
             </Border>
 

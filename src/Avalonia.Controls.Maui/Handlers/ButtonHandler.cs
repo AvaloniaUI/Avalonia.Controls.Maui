@@ -4,7 +4,7 @@ using Avalonia.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using PlatformView = Avalonia.Controls.Maui.Platform.MauiButton;
+using PlatformView = Avalonia.Controls.Maui.MauiButton;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -134,13 +134,13 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdatePadding(handler.VirtualView);
     }
     
-    [NotImplemented("Implement proper image source loading when image infrastructure is ready")]
     public static void MapImageSource(IButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
 
-        platformView.UpdateImageSource(handler.VirtualView);
+        var imageSourceServiceProvider = handler.GetRequiredService<IImageSourceServiceProvider>();
+        platformView.UpdateImageSourceAsync(handler.VirtualView, imageSourceServiceProvider).FireAndForget(handler);
     }
 
     protected override void ConnectHandler(PlatformView platformView)

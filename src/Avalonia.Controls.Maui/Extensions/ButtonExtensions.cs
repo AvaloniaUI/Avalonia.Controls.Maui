@@ -1,7 +1,8 @@
 using Avalonia.Controls.Maui.Handlers;
+using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Primitives;
 using Microsoft.Maui;
-using PlatformView = Avalonia.Controls.Maui.Platform.MauiButton;
+using PlatformView = Avalonia.Controls.Maui.MauiButton;
 
 namespace Avalonia.Controls.Maui.Platform;
 
@@ -158,16 +159,47 @@ public static class ButtonExtensions
     }
 
     /// <summary>
-    /// Updates the image source for the button. This feature is currently in development
-    /// and requires the image loading infrastructure to be completed.
+    /// Updates the image source for the button asynchronously.
     /// </summary>
     /// <param name="platformView">The platform button control.</param>
     /// <param name="button">The cross-platform button.</param>
-    [NotImplemented("Image loading infrastructure not yet available.", DependsOn = "ImageSourceLoader")]
-    public static void UpdateImageSource(this PlatformView platformView, IButton button)
+    /// <param name="imageSourceServiceProvider">The image source service provider.</param>
+    public static async Task UpdateImageSourceAsync(this PlatformView platformView, IButton button, IImageSourceServiceProvider imageSourceServiceProvider)
     {
-        // This will require integration with the image loading pipeline and proper
-        // async handling for remote images.
-        // When implemented, will need to cast to IImageSourcePart or IImage
+        if (button is not IImageSourcePart imageSourcePart)
+            return;
+
+        var imageSource = imageSourcePart.Source;
+        if (imageSource == null)
+        {
+            platformView.ImageSource = null;
+            return;
+        }
+
+        try
+        {
+            var serviceSource = imageSourceServiceProvider.GetImageSourceService(imageSource.GetType());
+
+            if (serviceSource is IAvaloniaImageSourceService service)
+            {
+                var result = await service.GetImageAsync(imageSource, 1.0f);
+                if (result?.Value is global::Avalonia.Media.Imaging.Bitmap bitmap)
+                {
+                    platformView.ImageSource = bitmap;
+                }
+                else
+                {
+                    platformView.ImageSource = null;
+                }
+            }
+            else
+            {
+                platformView.ImageSource = null;
+            }
+        }
+        catch
+        {
+            platformView.ImageSource = null;
+        }
     }
 }
