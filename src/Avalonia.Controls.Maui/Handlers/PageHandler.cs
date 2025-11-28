@@ -32,8 +32,16 @@ public partial class PageHandler : ContentViewHandler, IPageHandler
     public static void MapBackground(IPageHandler handler, IContentView page)
     {
         var platformView = (AvaloniaPanel)handler.PlatformView;
-        if (platformView == null || page?.Background == null)
+        if (platformView == null)
             return;
-        platformView.Background = page.Background.ToPlatform();
+
+        if (page?.Background != null)
+        {
+            platformView.Background = page.Background.ToPlatform();
+        }
+        else
+        {
+            platformView.ClearValue(AvaloniaPanel.BackgroundProperty);
+        }
     }
 }

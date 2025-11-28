@@ -78,5 +78,5 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>, ICheckBoxHa
         ((PlatformView)handler.PlatformView)?.UpdateForeground(checkBox);
 
     public static void MapColor(ICheckBoxHandler handler, ICheckBox checkBox) =>
-        ((PlatformView)handler.PlatformView)?.UpdateColor(checkBox);
+        handler.UpdateValue(nameof(ICheckBox.Foreground));
 }

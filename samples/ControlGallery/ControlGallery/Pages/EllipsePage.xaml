@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.EllipsePage"
+             Title="Ellipse">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="16">
+            <Label Text="Ellipse Samples"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Solid Fill"
+                           FontAttributes="Bold" />
+                    <Ellipse WidthRequest="180"
+                             HeightRequest="120"
+                             Fill="#0FA3B1"
+                             Stroke="#0B6172"
+                             StrokeThickness="3" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Gradient Fill"
+                           FontAttributes="Bold" />
+                    <Ellipse WidthRequest="200"
+                             HeightRequest="120"
+                             StrokeThickness="0">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush Center="0.5,0.5">
+                                <GradientStop Color="#FFE36D"
+                                              Offset="0" />
+                                <GradientStop Color="#FF7959"
+                                              Offset="1" />
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Outlined"
+                           FontAttributes="Bold" />
+                    <Ellipse WidthRequest="200"
+                             HeightRequest="70"
+                             Fill="Transparent"
+                             Stroke="#8B5CF6"
+                             StrokeThickness="5" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

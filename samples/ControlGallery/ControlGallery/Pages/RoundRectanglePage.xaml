@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.RoundRectanglePage"
+             Title="RoundRectangle">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="16">
+            <Label Text="RoundRectangle Samples"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Even Corners"
+                           FontAttributes="Bold" />
+                    <RoundRectangle WidthRequest="200"
+                                    HeightRequest="120"
+                                    Fill="#22C55E"
+                                    Stroke="#166534"
+                                    StrokeThickness="4"
+                                    CornerRadius="20" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Per-Corner Radii"
+                           FontAttributes="Bold" />
+                    <RoundRectangle WidthRequest="220"
+                                    HeightRequest="120"
+                                    Fill="#F97316"
+                                    Stroke="#9A3412"
+                                    StrokeThickness="4"
+                                    CornerRadius="40,10,30,4" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

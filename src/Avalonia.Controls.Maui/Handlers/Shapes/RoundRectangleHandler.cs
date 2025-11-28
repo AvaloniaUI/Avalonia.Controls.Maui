@@ -3,6 +3,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
+using Avalonia.Controls.Maui.Extensions;
 using PlatformView = Avalonia.Controls.Maui.Platform.MauiRoundRectangle;
 
 namespace Avalonia.Controls.Maui.Handlers.Shapes;
@@ -31,12 +32,7 @@ public partial class RoundRectangleHandler : ShapeViewHandler<RoundRectangle, Pl
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            var radius = roundRectangle.CornerRadius;
-            platformView.CornerRadius = new global::Avalonia.CornerRadius(
-                radius.TopLeft,
-                radius.TopRight,
-                radius.BottomRight,
-                radius.BottomLeft);
+            platformView.UpdateCornerRadius(roundRectangle);
         }
     }
 }

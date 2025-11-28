@@ -1,14 +1,14 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Maui.LifecycleEvents;
+using Avalonia.Styling;
 using Microsoft.Maui.LifecycleEvents;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Platform;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Maui.ApplicationModel;
 
 namespace Avalonia.Controls.Maui.Platform;
 
@@ -50,6 +50,9 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
         Services.InvokeLifecycleEvents<AvaloniaLifecycle.OnLaunching>(del => del(this, args));
 
         Application = Services.GetRequiredService<IApplication>();
+
+        // Subscribe to Avalonia theme changes to notify MAUI's AppThemeBinding system
+        ActualThemeVariantChanged += OnActualThemeVariantChanged;
 
         // Connect the MAUI Application to its handler
         this.SetApplicationHandler(Application, ApplicationContext);
@@ -121,5 +124,14 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
         scopedContext.AddSpecific(avaloniaApplication);
 
         return scopedContext;
+    }
+
+    /// <summary>
+    /// Handles Avalonia's theme variant changes and notifies MAUI's theme system.
+    /// This enables AppThemeBinding to update when the theme changes.
+    /// </summary>
+    private void OnActualThemeVariantChanged(object? sender, EventArgs e)
+    {
+        Application?.ThemeChanged();
     }
 }

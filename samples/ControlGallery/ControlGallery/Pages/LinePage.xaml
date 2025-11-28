@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.LinePage"
+             Title="Line">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="16">
+            <Label Text="Line Samples"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Simple Lines"
+                           FontAttributes="Bold" />
+                    <Grid HeightRequest="120"
+                          ColumnDefinitions="*,*,*"
+                          ColumnSpacing="16">
+                        <Line X1="0"
+                              Y1="60"
+                              X2="120"
+                              Y2="60"
+                              Stroke="#2563EB"
+                              StrokeThickness="4" />
+                        <Line Grid.Column="1"
+                              X1="0"
+                              Y1="10"
+                              X2="120"
+                              Y2="110"
+                              Stroke="#10B981"
+                              StrokeThickness="4"
+                              StrokeDashArray="8,4" />
+                        <Line Grid.Column="2"
+                              X1="60"
+                              Y1="0"
+                              X2="60"
+                              Y2="120"
+                              Stroke="#EF4444"
+                              StrokeThickness="6"
+                              StrokeLineCap="Round" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Line Caps"
+                           FontAttributes="Bold" />
+                    <VerticalStackLayout Spacing="8">
+                        <Line X1="10" Y1="0" X2="210" Y2="0"
+                              Stroke="#2563EB"
+                              StrokeThickness="12"
+                              StrokeLineCap="Flat" />
+                        <Line X1="10" Y1="0" X2="210" Y2="0"
+                              Stroke="#10B981"
+                              StrokeThickness="12"
+                              StrokeLineCap="Round" />
+                        <Line X1="10" Y1="0" X2="210" Y2="0"
+                              Stroke="#F59E0B"
+                              StrokeThickness="12"
+                              StrokeLineCap="Square" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

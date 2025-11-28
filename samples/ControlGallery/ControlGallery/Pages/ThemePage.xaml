@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.ThemePage"
+             x:DataType="pages:ThemePage"
+             Title="Theme"
+             BackgroundColor="{AppThemeBinding Light={StaticResource LightPageBackgroundColor}, Dark={StaticResource DarkPageBackgroundColor}}">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Page Colors -->
+            <Color x:Key="LightPageBackgroundColor">#F5F5F5</Color>
+            <Color x:Key="DarkPageBackgroundColor">#1a1a1a</Color>
+
+            <!-- Secondary Background Colors -->
+            <Color x:Key="LightSecondaryBackgroundColor">#FFFFFF</Color>
+            <Color x:Key="DarkSecondaryBackgroundColor">#2d2d2d</Color>
+
+            <!-- Primary Text Colors -->
+            <Color x:Key="LightPrimaryTextColor">#1a1a1a</Color>
+            <Color x:Key="DarkPrimaryTextColor">#FFFFFF</Color>
+
+            <!-- Secondary Text Colors -->
+            <Color x:Key="LightSecondaryTextColor">#666666</Color>
+            <Color x:Key="DarkSecondaryTextColor">#AAAAAA</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Theme Toggle Section -->
+            <Border StrokeShape="RoundRectangle 10"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Theme Toggle"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource LightPrimaryTextColor}, Dark={StaticResource DarkPrimaryTextColor}}" />
+                    <Label Text="Toggle between Light and Dark themes to see AppThemeBinding in action."
+                           TextColor="{AppThemeBinding Light={StaticResource LightSecondaryTextColor}, Dark={StaticResource DarkSecondaryTextColor}}" />
+                    <Button Text="Toggle Theme"
+                            Clicked="OnToggleThemeClicked"
+                            HorizontalOptions="Start" />
+                    <Label Text="{Binding CurrentTheme, StringFormat='Current Theme: {0}'}"
+                           TextColor="{AppThemeBinding Light={StaticResource LightSecondaryTextColor}, Dark={StaticResource DarkSecondaryTextColor}}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- AppThemeBinding Examples Section -->
+            <Border StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource LightSecondaryBackgroundColor}, Dark={StaticResource DarkSecondaryBackgroundColor}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="AppThemeBinding Examples"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource LightPrimaryTextColor}, Dark={StaticResource DarkPrimaryTextColor}}" />
+
+                    <!-- Text Color Example -->
+                    <Label Text="This label uses AppThemeBinding for TextColor"
+                           TextColor="{AppThemeBinding Light=DarkSlateGray, Dark=LightGray}" />
+
+                    <!-- Background Color Example -->
+                    <Border StrokeShape="RoundRectangle 5"
+                            BackgroundColor="{AppThemeBinding Light=LightBlue, Dark=DarkBlue}"
+                            Padding="10">
+                        <Label Text="This border uses AppThemeBinding for BackgroundColor"
+                               TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                    </Border>
+
+                    <!-- Multiple Properties Example -->
+                    <Border Stroke="{AppThemeBinding Light=DarkGray, Dark=LightGray}"
+                            StrokeShape="RoundRectangle 5"
+                            BackgroundColor="{AppThemeBinding Light=WhiteSmoke, Dark=#2d2d2d}"
+                            Padding="10">
+                        <Label Text="Border with themed Stroke and BackgroundColor"
+                               TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Color Palette Section -->
+            <Border StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource LightSecondaryBackgroundColor}, Dark={StaticResource DarkSecondaryBackgroundColor}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Theme-Aware Color Palette"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource LightPrimaryTextColor}, Dark={StaticResource DarkPrimaryTextColor}}" />
+
+                    <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                        <BoxView Color="{AppThemeBinding Light=Coral, Dark=DarkRed}" HeightRequest="50" Grid.Row="0" Grid.Column="0" />
+                        <BoxView Color="{AppThemeBinding Light=LightGreen, Dark=DarkGreen}" HeightRequest="50" Grid.Row="0" Grid.Column="1" />
+                        <BoxView Color="{AppThemeBinding Light=LightSkyBlue, Dark=DarkBlue}" HeightRequest="50" Grid.Row="0" Grid.Column="2" />
+                        <Label Text="Red" HorizontalOptions="Center" Grid.Row="1" Grid.Column="0" TextColor="{AppThemeBinding Light={StaticResource LightSecondaryTextColor}, Dark={StaticResource DarkSecondaryTextColor}}" />
+                        <Label Text="Green" HorizontalOptions="Center" Grid.Row="1" Grid.Column="1" TextColor="{AppThemeBinding Light={StaticResource LightSecondaryTextColor}, Dark={StaticResource DarkSecondaryTextColor}}" />
+                        <Label Text="Blue" HorizontalOptions="Center" Grid.Row="1" Grid.Column="2" TextColor="{AppThemeBinding Light={StaticResource LightSecondaryTextColor}, Dark={StaticResource DarkSecondaryTextColor}}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
