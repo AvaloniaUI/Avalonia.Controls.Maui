@@ -1,15 +1,13 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Platform;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Avalonia.Controls.Maui.Services;
-using PlatformView = Avalonia.Controls.MenuItem;
+using PlatformView = Avalonia.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>
+/// Handler for .NET MAUI SwipeItemMenuItem to Avalonia platform-native menu item mapping.
+/// Maps ISwipeItemMenuItem cross-platform interface to platform-specific menu item implementations.
+/// </summary>
 public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuItem, PlatformView>, ISwipeItemMenuItemHandler
 {
     public static IPropertyMapper<ISwipeItemMenuItem, ISwipeItemMenuItemHandler> Mapper =
@@ -45,40 +43,68 @@ public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuIte
 
     protected override PlatformView CreatePlatformElement()
     {
-        return new PlatformView();
+        var button = new PlatformView
+        {
+            HorizontalAlignment = Layout.HorizontalAlignment.Stretch,
+            VerticalAlignment = Layout.VerticalAlignment.Stretch,
+            HorizontalContentAlignment = Layout.HorizontalAlignment.Center,
+            VerticalContentAlignment = Layout.VerticalAlignment.Center,
+            Padding = new Thickness(16, 8)
+        };
+
+        return button;
     }
 
+    protected override void ConnectHandler(PlatformView platformView)
+    {
+        base.ConnectHandler(platformView);
+        platformView.Click += OnButtonClick;
+    }
+
+    protected override void DisconnectHandler(PlatformView platformView)
+    {
+        platformView.Click -= OnButtonClick;
+        base.DisconnectHandler(platformView);
+    }
+    
+    ISwipeItemMenuItem ISwipeItemMenuItemHandler.VirtualView => VirtualView;
+
+    object ISwipeItemMenuItemHandler.PlatformView => PlatformView;
+    
     public static void MapVisibility(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
-            platformView.IsVisible = view.Visibility == Microsoft.Maui.Visibility.Visible;
+            platformView.UpdateVisibility(view);
     }
 
     public static void MapBackground(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
-        // TODO: Map background to Avalonia control
-        // Avalonia MenuItem background mapping
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateBackground(view);
     }
 
     public static void MapText(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
-            platformView.Header = view.Text;
+            platformView.UpdateText(view);
     }
 
     public static void MapTextColor(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
-        // TODO: Map text color to Avalonia MenuItem foreground
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateTextColor(view);
     }
 
     public static void MapCharacterSpacing(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
-        // TODO: Map character spacing to Avalonia text rendering
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateCharacterSpacing(view);
     }
 
     public static void MapFont(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
-        // TODO: Map font to Avalonia MenuItem font properties
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateFont(view, handler);
     }
 
     public static void MapSource(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view) =>
@@ -89,51 +115,47 @@ public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuIte
         if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        if (view.Source == null)
+        await platformView.UpdateSourceAsync(view, handler);
+    }
+    
+    private void OnButtonClick(object? sender, Interactivity.RoutedEventArgs e)
+    {
+        VirtualView?.OnInvoked();
+        TryCloseParentSwipeView();
+    }
+
+    private void TryCloseParentSwipeView()
+    {
+        // Use Tag is set when building swipe items for auto-close behavior.
+        if (PlatformView?.Tag is ValueTuple<SwipeBehaviorOnInvoked, Swipe> tag)
         {
-            platformView.Icon = null;
+            var (behavior, swipe) = tag;
+            if (behavior == SwipeBehaviorOnInvoked.Close)
+            {
+                swipe.SetSwipeState(SwipeState.Hidden, animated: true);
+            }
             return;
         }
 
-        try
-        {
-            var imageSourceServiceProvider = handler.GetRequiredService<IImageSourceServiceProvider>();
-            var serviceSource = imageSourceServiceProvider?.GetImageSourceService(view.Source.GetType());
+        // Walk up the element tree to find owning swipe items and swipe view.
+        if (VirtualView is not IElement element)
+            return;
 
-            if (serviceSource is IAvaloniaImageSourceService service)
-            {
-                var result = await service.GetImageAsync(view.Source, 1.0f);
-                if (result?.Value is global::Avalonia.Media.Imaging.Bitmap bitmap)
-                {
-                    // Create an Image control to display as the icon
-                    var iconImage = new global::Avalonia.Controls.Image
-                    {
-                        Source = bitmap,
-                        Width = 16,
-                        Height = 16
-                    };
-                    platformView.Icon = iconImage;
-                }
-                else
-                {
-                    platformView.Icon = null;
-                }
-            }
-            else
-            {
-                platformView.Icon = null;
-            }
-        }
-        catch (Exception ex)
+        ISwipeItems? swipeItems = null;
+        ISwipeView? swipeView = null;
+
+        for (var current = element; current != null && (swipeItems == null || swipeView == null); current = current.Parent)
         {
-            handler.GetRequiredService<ILoggerFactory>()
-                ?.CreateLogger<SwipeItemMenuItemHandler>()
-                ?.LogError(ex, "Error loading menu icon source");
-            platformView.Icon = null;
+            if (swipeItems == null && current is ISwipeItems si)
+                swipeItems = si;
+
+            if (swipeView == null && current is ISwipeView sv)
+                swipeView = sv;
+        }
+
+        if (swipeItems?.SwipeBehaviorOnInvoked == SwipeBehaviorOnInvoked.Close && swipeView != null)
+        {
+            swipeView.RequestClose(new SwipeViewCloseRequest(true));
         }
     }
-
-    ISwipeItemMenuItem ISwipeItemMenuItemHandler.VirtualView => VirtualView;
-
-    object ISwipeItemMenuItemHandler.PlatformView => PlatformView;
 }

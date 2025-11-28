@@ -28,6 +28,7 @@ public partial class MainPage : FlyoutPage
             nameof(ButtonPage) => new ButtonPage(),
             nameof(CheckBoxPage) => new CheckBoxPage(),
             nameof(ProgressBarPage) => new ProgressBarPage(),
+            nameof(SwipeViewPage) => new SwipeViewPage(),
             nameof(RectanglePage) => new RectanglePage(),
             nameof(EllipsePage) => new EllipsePage(),
             nameof(LinePage) => new LinePage(),

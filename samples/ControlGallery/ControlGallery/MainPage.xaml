@@ -43,6 +43,10 @@
 								  Detail="Progress indicator control"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:ProgressBarPage}"/>
+            <TextCell Text="SwipeView"
+						          Detail="SwipeView control"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:SwipeViewPage}"/>
 					</TableSection>
 					<TableSection Title="Shapes">
 						<TextCell Text="Rectangle"

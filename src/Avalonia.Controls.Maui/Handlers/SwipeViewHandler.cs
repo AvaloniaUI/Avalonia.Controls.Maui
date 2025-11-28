@@ -1,28 +1,24 @@
-using System;
-using System.Linq;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Platform;
-using Avalonia.Controls;
-using PlatformView = Avalonia.Controls.Maui.Controls.MauiSwipeView;
+using PlatformView = Avalonia.Controls.Maui.Swipe;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
 /// <summary>
-/// Handler for MAUI SwipeView to Avalonia MauiSwipeView mapping
+/// Handler for .NET MAUI SwipeView to Avalonia.Labs Swipe mapping
 /// </summary>
 public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, ISwipeViewHandler
 {
     public static IPropertyMapper<ISwipeView, ISwipeViewHandler> Mapper =
         new PropertyMapper<ISwipeView, ISwipeViewHandler>(ViewHandler.ViewMapper)
         {
+            [nameof(ISwipeView.Background)] = MapBackground,
             [nameof(ISwipeView.Content)] = MapContent,
             [nameof(ISwipeView.LeftItems)] = MapLeftItems,
             [nameof(ISwipeView.RightItems)] = MapRightItems,
             [nameof(ISwipeView.TopItems)] = MapTopItems,
             [nameof(ISwipeView.BottomItems)] = MapBottomItems,
             [nameof(ISwipeView.Threshold)] = MapThreshold,
-            [nameof(ISwipeView.SwipeTransitionMode)] = MapSwipeTransitionMode,
         };
 
     public static CommandMapper<ISwipeView, ISwipeViewHandler> CommandMapper =
@@ -57,6 +53,7 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
         platformView.SwipeStarted += OnSwipeStarted;
         platformView.SwipeChanging += OnSwipeChanging;
         platformView.SwipeEnded += OnSwipeEnded;
+        platformView.ExecuteRequested += OnExecuteRequested;
     }
 
     protected override void DisconnectHandler(PlatformView platformView)
@@ -64,191 +61,124 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
         platformView.SwipeStarted -= OnSwipeStarted;
         platformView.SwipeChanging -= OnSwipeChanging;
         platformView.SwipeEnded -= OnSwipeEnded;
+        platformView.ExecuteRequested -= OnExecuteRequested;
         base.DisconnectHandler(platformView);
     }
-
-    private void OnSwipeStarted(object? sender, Controls.SwipeEventArgs e)
+    
+    public static void MapBackground(ISwipeViewHandler handler, ISwipeView swipeView)
     {
-        if (VirtualView == null)
-            return;
-
-        // Default to Right direction for now - would need to track actual direction
-        VirtualView.SwipeStarted(new SwipeViewSwipeStarted(SwipeDirection.Right));
-    }
-
-    private void OnSwipeChanging(object? sender, Controls.SwipeEventArgs e)
-    {
-        if (VirtualView == null)
-            return;
-
-        // Default to Right direction and 0 offset for now
-        VirtualView.SwipeChanging(new SwipeViewSwipeChanging(SwipeDirection.Right, 0));
-    }
-
-    private void OnSwipeEnded(object? sender, Controls.SwipeEventArgs e)
-    {
-        if (VirtualView == null)
-            return;
-
-        VirtualView.SwipeEnded(new SwipeViewSwipeEnded(SwipeDirection.Right, PlatformView.IsOpen));
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateBackground(swipeView);
     }
 
     public static void MapContent(ISwipeViewHandler handler, ISwipeView swipeView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        if (handler.MauiContext == null)
-            return;
-
-        if (swipeView.PresentedContent != null)
-        {
-            var content = swipeView.PresentedContent.ToPlatform(handler.MauiContext);
-            platformView.Content = content;
-        }
-        else
-        {
-            platformView.Content = null;
-        }
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateContent(swipeView, handler.MauiContext);
     }
 
     public static void MapLeftItems(ISwipeViewHandler handler, ISwipeView swipeView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        if (handler.MauiContext == null)
-            return;
-
-        UpdateSwipeItems(handler, swipeView.LeftItems, "PART_LeftItems");
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateLeftItems(swipeView, handler.MauiContext);
     }
 
     public static void MapRightItems(ISwipeViewHandler handler, ISwipeView swipeView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        if (handler.MauiContext == null)
-            return;
-
-        UpdateSwipeItems(handler, swipeView.RightItems, "PART_RightItems");
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateRightItems(swipeView, handler.MauiContext);
     }
 
     public static void MapTopItems(ISwipeViewHandler handler, ISwipeView swipeView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        if (handler.MauiContext == null)
-            return;
-
-        UpdateSwipeItems(handler, swipeView.TopItems, "PART_TopItems");
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateTopItems(swipeView, handler.MauiContext);
     }
 
     public static void MapBottomItems(ISwipeViewHandler handler, ISwipeView swipeView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        if (handler.MauiContext == null)
-            return;
-
-        UpdateSwipeItems(handler, swipeView.BottomItems, "PART_BottomItems");
-    }
-
-    private static void UpdateSwipeItems(ISwipeViewHandler handler, ISwipeItems? swipeItems, string panelName)
-    {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        // Find the panel by name
-        var panel = platformView.FindControl<Panel>(panelName);
-        if (panel == null)
-            return;
-
-        panel.Children.Clear();
-
-        if (swipeItems == null || swipeItems.Count == 0)
-            return;
-
-        foreach (var item in swipeItems)
-        {
-            Control? itemControl = null;
-
-            if (item is ISwipeItemView swipeItemView && handler.MauiContext != null)
-            {
-                // SwipeItemView with custom content
-                if (swipeItemView.PresentedContent != null)
-                {
-                    itemControl = swipeItemView.PresentedContent.ToPlatform(handler.MauiContext) as Control;
-                }
-            }
-            else if (item is ISwipeItemMenuItem menuItem && handler.MauiContext != null)
-            {
-                // SwipeItemMenuItem - the handler will create the platform control
-                // We need to ensure it has a handler first
-                if (menuItem.Handler?.PlatformView is Control platformControl)
-                {
-                    itemControl = platformControl;
-                }
-            }
-
-            if (itemControl != null)
-            {
-                // Wire up the invoked event
-                if (itemControl is Button button)
-                {
-                    button.Click += (s, e) => item.OnInvoked();
-                }
-
-                panel.Children.Add(itemControl);
-            }
-        }
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateBottomItems(swipeView, handler.MauiContext);
     }
 
     public static void MapThreshold(ISwipeViewHandler handler, ISwipeView swipeView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.Threshold = swipeView.Threshold;
-    }
-
-    public static void MapSwipeTransitionMode(ISwipeViewHandler handler, ISwipeView swipeView)
-    {
-        // Avalonia implementation doesn't have different transition modes
-        // This would need custom animation implementation
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateThreshold(swipeView);
     }
 
     public static void MapRequestOpen(ISwipeViewHandler handler, ISwipeView swipeView, object? args)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        if (args is not SwipeViewOpenRequest request)
-            return;
-
-        var direction = request.OpenSwipeItem switch
+        if (handler.PlatformView is PlatformView platformView && args is SwipeViewOpenRequest request)
         {
-            OpenSwipeItem.LeftItems => Controls.SwipeDirection.Right,
-            OpenSwipeItem.RightItems => Controls.SwipeDirection.Left,
-            OpenSwipeItem.TopItems => Controls.SwipeDirection.Down,
-            OpenSwipeItem.BottomItems => Controls.SwipeDirection.Up,
-            _ => Controls.SwipeDirection.Right
-        };
+            var target = request.OpenSwipeItem switch
+            {
+                Microsoft.Maui.OpenSwipeItem.LeftItems => SwipeState.LeftVisible,
+                Microsoft.Maui.OpenSwipeItem.RightItems => SwipeState.RightVisible,
+                Microsoft.Maui.OpenSwipeItem.TopItems => SwipeState.TopVisible,
+                Microsoft.Maui.OpenSwipeItem.BottomItems => SwipeState.BottomVisible,
+                _ => SwipeState.Hidden
+            };
 
-        platformView.RequestOpen(direction);
+            platformView.SetSwipeState(target, request.Animated);
+        }
     }
 
     public static void MapRequestClose(ISwipeViewHandler handler, ISwipeView swipeView, object? args)
     {
-        if (handler.PlatformView is not PlatformView platformView)
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.SetSwipeState(SwipeState.Hidden, animated: true);
+    }
+    
+    private void OnSwipeStarted(object? sender, SwipeStartedEventArgs e)
+    {
+        if (VirtualView == null) return;
+
+        var direction = e.SwipeDirection.ToMauiSwipeDirection();
+        VirtualView.SwipeStarted(new SwipeViewSwipeStarted(direction));
+    }
+
+    private void OnSwipeChanging(object? sender, SwipeChangingEventArgs e)
+    {
+        if (VirtualView == null) return;
+
+        var direction = e.SwipeDirection.ToMauiSwipeDirection();
+        VirtualView.SwipeChanging(new SwipeViewSwipeChanging(direction, e.Offset));
+    }
+
+    private void OnSwipeEnded(object? sender, SwipeEndedEventArgs e)
+    {
+        if (VirtualView == null) return;
+
+        var direction = e.SwipeDirection.ToMauiSwipeDirection();
+        VirtualView.SwipeEnded(new SwipeViewSwipeEnded(direction, e.IsOpen));
+    }
+
+    private void OnExecuteRequested(object? sender, SwipeDirection direction)
+    {
+        if (VirtualView == null)
             return;
 
-        platformView.RequestClose();
+        var items = GetItemsForDirection(direction.ToMauiSwipeDirection());
+
+        if (items is { Count: > 0 } && items[0] is ISwipeItem swipeItem)
+        {
+            swipeItem.OnInvoked();
+        }
+    }
+
+    private ISwipeItems? GetItemsForDirection(Microsoft.Maui.SwipeDirection direction)
+    {
+        return direction switch
+        {
+            Microsoft.Maui.SwipeDirection.Left => VirtualView?.RightItems,
+            Microsoft.Maui.SwipeDirection.Right => VirtualView?.LeftItems,
+            Microsoft.Maui.SwipeDirection.Up => VirtualView?.BottomItems,
+            Microsoft.Maui.SwipeDirection.Down => VirtualView?.TopItems,
+            _ => null
+        };
     }
 
     ISwipeView ISwipeViewHandler.VirtualView => VirtualView;
-
     object ISwipeViewHandler.PlatformView => PlatformView;
 }
