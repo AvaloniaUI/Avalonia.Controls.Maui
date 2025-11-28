@@ -20,19 +20,7 @@ public static class MauiTestAppBuilderExtensions
 {
     public static MauiAppBuilder ConfigureTestBuilder(this MauiAppBuilder builder)
     {
-        builder.ConfigureMauiHandlers(handlers =>
-        {
-            // Register Avalonia handlers
-            handlers.AddHandler<IApplication, Avalonia.Controls.Maui.Handlers.ApplicationHandler>();
-            handlers.AddHandler<ILabel, Avalonia.Controls.Maui.Handlers.LabelHandler>();
-            handlers.AddHandler<IButton, Avalonia.Controls.Maui.Handlers.ButtonHandler>();
-            handlers.AddHandler<IBorderView, Avalonia.Controls.Maui.Handlers.BorderHandler>();
-            handlers.AddHandler<IPicker, Avalonia.Controls.Maui.Handlers.PickerHandler>();
-            handlers.AddHandler<IContentView, Avalonia.Controls.Maui.Handlers.ContentViewHandler>();
-            handlers.AddHandler<ILayout, Avalonia.Controls.Maui.Handlers.LayoutHandler>();
-            handlers.AddHandler<IScrollView, Avalonia.Controls.Maui.Handlers.ScrollViewHandler>();
-            handlers.AddHandler<IWindow, Avalonia.Controls.Maui.Handlers.WindowHandler>();
-        });
+        builder.UseAvaloniaApp();
 
         builder.Services.AddSingleton<IFontManager>(sp =>
             new FontManager(new FontRegistrar(), sp));

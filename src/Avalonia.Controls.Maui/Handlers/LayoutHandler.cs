@@ -188,9 +188,34 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
         }
     }
 
+    protected override void ConnectHandler(Panel platformView)
+    {
+        base.ConnectHandler(platformView);
+
+        if (VirtualView is Microsoft.Maui.Controls.VisualElement element)
+        {
+            element.MeasureInvalidated += OnMeasureInvalidated;
+        }
+    }
+
+    protected override void DisconnectHandler(Panel platformView)
+    {
+        base.DisconnectHandler(platformView);
+
+        if (VirtualView is Microsoft.Maui.Controls.VisualElement element)
+        {
+            element.MeasureInvalidated -= OnMeasureInvalidated;
+        }
+    }
+
     internal static FlowDirection GetLayoutFlowDirection(FlowDirection flowDirection)
     {
         return flowDirection;
+    }
+
+    private void OnMeasureInvalidated(object? sender, EventArgs e)
+    {
+        PlatformView?.InvalidateMeasure();
     }
 }
 
