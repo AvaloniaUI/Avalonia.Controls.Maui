@@ -11,7 +11,7 @@ public class ButtonStub : StubBase, IButton, IText, ITextStyle, IPadding, IButto
     private string _text = string.Empty;
     private MauiGraphics.Color _textColor = MauiGraphics.Colors.Black;
     private double _characterSpacing;
-    private Font _font = Font.Default;
+    private Microsoft.Maui.Font _font = Microsoft.Maui.Font.Default;
     private Microsoft.Maui.Thickness _padding = Microsoft.Maui.Thickness.Zero;
     private MauiGraphics.Color _strokeColor = MauiGraphics.Colors.Transparent;
     private double _strokeThickness;
@@ -42,7 +42,7 @@ public class ButtonStub : StubBase, IButton, IText, ITextStyle, IPadding, IButto
         set => SetProperty(ref _characterSpacing, value);
     }
 
-    public Font Font
+    public Microsoft.Maui.Font Font
     {
         get => _font;
         set => SetProperty(ref _font, value);

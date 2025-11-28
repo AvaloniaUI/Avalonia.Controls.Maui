@@ -29,7 +29,7 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
     /// <summary>
     /// The application-scoped MauiContext that contains the Avalonia Application.
     /// </summary>
-    protected IMauiContext? ApplicationContext { get; private set; }
+    public IMauiContext? ApplicationContext { get; protected set; }
 
     public override void OnFrameworkInitializationCompleted()
     {

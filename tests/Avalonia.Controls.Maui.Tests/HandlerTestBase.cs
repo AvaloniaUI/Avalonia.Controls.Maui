@@ -1,68 +1,33 @@
-using Avalonia.Headless;
-using Avalonia.Controls.Maui.Services;
+using Avalonia.Controls.Maui.Platform;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Hosting;
-using Microsoft.Maui.Primitives;
-using System;
-using System.Threading.Tasks;
 using MauiRect = Microsoft.Maui.Graphics.Rect;
-using MauiSize = Microsoft.Maui.Graphics.Size;
 
 namespace Avalonia.Controls.Maui.Tests;
 
-public abstract class HandlerTestBase : IAsyncDisposable
+/// <summary>
+/// Base class for handler tests that uses the MauiAvaloniaApplication for services and handlers.
+/// </summary>
+public abstract class HandlerTestBase
 {
-    private MauiApp? _mauiApp;
-    private IServiceProvider? _servicesProvider;
-    private IMauiContext? _mauiContext;
-    private bool _isCreated;
+    /// <summary>
+    /// Gets the current test application.
+    /// </summary>
+    protected static App TestApp => (App)MauiAvaloniaApplication.Current;
 
-    protected void EnsureHandlerCreated(Action<MauiAppBuilder>? additionalCreationActions = null)
-    {
-        if (_isCreated)
-        {
-            return;
-        }
+    /// <summary>
+    /// Gets the MAUI context from the application.
+    /// </summary>
+    protected IMauiContext MauiContext => TestApp.ApplicationContext
+        ?? throw new InvalidOperationException("ApplicationContext is not initialized. Ensure the app has been started.");
 
-        _isCreated = true;
-
-        var appBuilder = MauiApp.CreateBuilder();
-
-        appBuilder = ConfigureBuilder(appBuilder);
-        additionalCreationActions?.Invoke(appBuilder);
-
-        _mauiApp = appBuilder.Build();
-        _servicesProvider = _mauiApp.Services;
-
-        _mauiContext = new ContextStub(_servicesProvider);
-    }
-
-    protected virtual MauiAppBuilder ConfigureBuilder(MauiAppBuilder mauiAppBuilder)
-    {
-        return mauiAppBuilder.ConfigureTestBuilder();
-    }
-
-    protected IMauiContext MauiContext
-    {
-        get
-        {
-            EnsureHandlerCreated();
-            return _mauiContext!;
-        }
-    }
-
-    protected IServiceProvider ApplicationServices
-    {
-        get
-        {
-            EnsureHandlerCreated();
-            return _servicesProvider!;
-        }
-    }
+    /// <summary>
+    /// Gets the application services.
+    /// </summary>
+    protected IServiceProvider ApplicationServices => TestApp.Services;
 
     protected THandler CreateHandler<THandler>(IElement view, IMauiContext? mauiContext = null)
         where THandler : IElementHandler, new()
@@ -93,7 +58,7 @@ public abstract class HandlerTestBase : IAsyncDisposable
             var w = size.Width;
             var h = size.Height;
 
-            view.Arrange(new Microsoft.Maui.Graphics.Rect(0, 0, w, h));
+            view.Arrange(new MauiRect(0, 0, w, h));
         }
     }
 
@@ -214,35 +179,11 @@ public abstract class HandlerTestBase : IAsyncDisposable
 
     protected async Task<T> InvokeOnMainThreadAsync<T>(Func<T> func)
     {
-        return await Dispatcher.UIThread.InvokeAsync(func);
+        return await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(func);
     }
 
     protected async Task InvokeOnMainThreadAsync(Action action)
     {
-        await Dispatcher.UIThread.InvokeAsync(action);
-    }
-
-    public virtual ValueTask DisposeAsync()
-    {
-        _mauiApp?.Dispose();
-        return ValueTask.CompletedTask;
-    }
-
-    // Simple context stub for testing
-    private class ContextStub : IMauiContext
-    {
-        public ContextStub(IServiceProvider services)
-        {
-            Services = services;
-        }
-
-        public IServiceProvider Services { get; }
-
-#pragma warning disable CS8766
-        public IMauiHandlersFactory? Handlers => Services.GetService<IMauiHandlersFactory>();
-#pragma warning restore CS8766
-
-        public Microsoft.Maui.Animations.IAnimationManager? AnimationManager =>
-            Services.GetService<Microsoft.Maui.Animations.IAnimationManager>();
+        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(action);
     }
 }

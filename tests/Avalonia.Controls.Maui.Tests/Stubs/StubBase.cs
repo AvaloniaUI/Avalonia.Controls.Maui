@@ -80,9 +80,9 @@ public class StubBase : ElementStub, IView, IVisualTreeElement, IPropertyMapperV
 
     public FlowDirection FlowDirection { get; set; } = FlowDirection.LeftToRight;
 
-    public LayoutAlignment HorizontalLayoutAlignment { get; set; }
+    public Microsoft.Maui.Primitives.LayoutAlignment HorizontalLayoutAlignment { get; set; }
 
-    public LayoutAlignment VerticalLayoutAlignment { get; set; }
+    public Microsoft.Maui.Primitives.LayoutAlignment VerticalLayoutAlignment { get; set; }
 
     public Semantics? Semantics { get; set; } = new Semantics();
 

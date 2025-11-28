@@ -31,7 +31,7 @@ public static class AvaloniaPropertyHelpers
             _ => null
         };
 
-        if (foreground is SolidColorBrush brush)
+        if (foreground is Avalonia.Media.SolidColorBrush brush)
         {
             return new MauiColor(
                 brush.Color.R / 255f,
@@ -118,7 +118,7 @@ public static class AvaloniaPropertyHelpers
             _ => throw new NotImplementedException()
         };
 
-        if (background is SolidColorBrush brush)
+        if (background is Avalonia.Media.SolidColorBrush brush)
         {
             return new MauiColor(
                 brush.Color.R / 255f,

@@ -1,17 +1,11 @@
-using Avalonia.Headless;
-using Avalonia.Controls.Maui.Services;
+using Avalonia.Controls.Maui.Platform;
 using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Hosting;
-using Microsoft.Maui.Primitives;
-using System;
-using System.Threading.Tasks;
 using MauiRect = Microsoft.Maui.Graphics.Rect;
-using MauiSize = Microsoft.Maui.Graphics.Size;
 using MauiWindow = Microsoft.Maui.Controls.Window;
 using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 
@@ -20,58 +14,28 @@ namespace Avalonia.Controls.Maui.Tests;
 /// <summary>
 /// Test base class that places controls inside a MAUI Window with a ContentPage.
 /// This ensures controls are properly realized in the visual tree and can be measured.
+/// Uses the MauiAvaloniaApplication for services and handlers.
 /// </summary>
 public abstract class WindowHandlerTestBase : IAsyncDisposable
 {
-    private MauiApp? _mauiApp;
-    private IServiceProvider? _servicesProvider;
-    private IMauiContext? _mauiContext;
-    private bool _isCreated;
     private MauiWindow? _testWindow;
     private MauiContentPage? _testPage;
 
-    protected void EnsureHandlerCreated(Action<MauiAppBuilder>? additionalCreationActions = null)
-    {
-        if (_isCreated)
-        {
-            return;
-        }
+    /// <summary>
+    /// Gets the current test application.
+    /// </summary>
+    protected static App TestApp => (App)MauiAvaloniaApplication.Current;
 
-        _isCreated = true;
+    /// <summary>
+    /// Gets the MAUI context from the application.
+    /// </summary>
+    protected IMauiContext MauiContext => TestApp.ApplicationContext
+        ?? throw new InvalidOperationException("ApplicationContext is not initialized. Ensure the app has been started.");
 
-        var appBuilder = MauiApp.CreateBuilder();
-
-        appBuilder = ConfigureBuilder(appBuilder);
-        additionalCreationActions?.Invoke(appBuilder);
-
-        _mauiApp = appBuilder.Build();
-        _servicesProvider = _mauiApp.Services;
-
-        _mauiContext = new WindowContextStub(_servicesProvider);
-    }
-
-    protected virtual MauiAppBuilder ConfigureBuilder(MauiAppBuilder mauiAppBuilder)
-    {
-        return mauiAppBuilder.ConfigureTestBuilder();
-    }
-
-    protected IMauiContext MauiContext
-    {
-        get
-        {
-            EnsureHandlerCreated();
-            return _mauiContext!;
-        }
-    }
-
-    protected IServiceProvider ApplicationServices
-    {
-        get
-        {
-            EnsureHandlerCreated();
-            return _servicesProvider!;
-        }
-    }
+    /// <summary>
+    /// Gets the application services.
+    /// </summary>
+    protected IServiceProvider ApplicationServices => TestApp.Services;
 
     /// <summary>
     /// Creates a handler for the given view, placing it inside a Window and ContentPage.
@@ -254,42 +218,24 @@ public abstract class WindowHandlerTestBase : IAsyncDisposable
 
     protected async Task<T> InvokeOnMainThreadAsync<T>(Func<T> func)
     {
-        return await Dispatcher.UIThread.InvokeAsync(func);
+        return await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(func);
     }
 
     protected async Task InvokeOnMainThreadAsync(Action action)
     {
-        await Dispatcher.UIThread.InvokeAsync(action);
+        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(action);
     }
 
     public virtual ValueTask DisposeAsync()
     {
         _testWindow?.Handler?.DisconnectHandler();
-        _mauiApp?.Dispose();
         return ValueTask.CompletedTask;
-    }
-
-    // Context stub for testing with window support
-    private class WindowContextStub : IMauiContext
-    {
-        public WindowContextStub(IServiceProvider services)
-        {
-            Services = services;
-        }
-
-        public IServiceProvider Services { get; }
-
-#pragma warning disable CS8766
-        public IMauiHandlersFactory? Handlers => Services.GetService<IMauiHandlersFactory>();
-#pragma warning restore CS8766
-
-        public Microsoft.Maui.Animations.IAnimationManager? AnimationManager =>
-            Services.GetService<Microsoft.Maui.Animations.IAnimationManager>();
     }
 }
 
 /// <summary>
 /// Generic test base class that places controls inside a MAUI Window.
+/// Uses the MauiAvaloniaApplication for services and handlers.
 /// </summary>
 public abstract partial class WindowHandlerTestBase<THandler, TView> : WindowHandlerTestBase
     where THandler : IElementHandler

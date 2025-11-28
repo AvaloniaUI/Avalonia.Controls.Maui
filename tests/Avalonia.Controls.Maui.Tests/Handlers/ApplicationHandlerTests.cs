@@ -1,4 +1,5 @@
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
 using Avalonia.Styling;
@@ -80,15 +81,6 @@ public class ApplicationHandlerTests : HandlerTestBase
     {
         var application = new ApplicationStub();
 
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
-
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
         Assert.NotNull(handler.PlatformView);
@@ -100,15 +92,6 @@ public class ApplicationHandlerTests : HandlerTestBase
     {
         var application = new ApplicationStub();
 
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
-
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
         Assert.Same(application, handler.VirtualView);
@@ -118,15 +101,6 @@ public class ApplicationHandlerTests : HandlerTestBase
     public async Task MapCloseWindowDoesNothingWhenArgsIsNotIWindow()
     {
         var application = new ApplicationStub();
-
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
 
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
@@ -142,15 +116,6 @@ public class ApplicationHandlerTests : HandlerTestBase
     {
         var application = new ApplicationStub();
 
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
-
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
         // Should not throw when args is null
@@ -165,15 +130,6 @@ public class ApplicationHandlerTests : HandlerTestBase
     {
         var application = new ApplicationStub();
 
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
-
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
         // Should not throw when args is not IWindow
@@ -187,15 +143,6 @@ public class ApplicationHandlerTests : HandlerTestBase
     public async Task MapActivateWindowDoesNothingWhenArgsIsNull()
     {
         var application = new ApplicationStub();
-
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
 
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
@@ -212,15 +159,6 @@ public class ApplicationHandlerTests : HandlerTestBase
         var application = new ApplicationStub();
         var windowStub = new WindowStub();
 
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
-
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
         await InvokeOnMainThreadAsync(() =>
@@ -236,15 +174,6 @@ public class ApplicationHandlerTests : HandlerTestBase
         {
             UserAppTheme = AppTheme.Dark
         };
-
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
 
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
@@ -266,15 +195,6 @@ public class ApplicationHandlerTests : HandlerTestBase
             UserAppTheme = AppTheme.Light
         };
 
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
-
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
         await InvokeOnMainThreadAsync(() =>
@@ -295,15 +215,6 @@ public class ApplicationHandlerTests : HandlerTestBase
             UserAppTheme = AppTheme.Unspecified
         };
 
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
-
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
         await InvokeOnMainThreadAsync(() =>
@@ -323,15 +234,6 @@ public class ApplicationHandlerTests : HandlerTestBase
         {
             UserAppTheme = AppTheme.Light
         };
-
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
 
         var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
 
