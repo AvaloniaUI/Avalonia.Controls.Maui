@@ -9,6 +9,7 @@ public class BoxViewHandler : ViewHandler<BoxView, Border>
     public static IPropertyMapper<BoxView, BoxViewHandler> Mapper = new PropertyMapper<BoxView, BoxViewHandler>(ViewHandler.ViewMapper)
     {
         [nameof(BoxView.Color)] = MapColor,
+        [nameof(IView.Background)] = MapColor,
         [nameof(BoxView.CornerRadius)] = MapCornerRadius,
     };
     
