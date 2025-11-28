@@ -1,8 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:controls="using:Avalonia.Controls.Maui.Platform">
+        xmlns:controls="using:Avalonia.Controls.Maui">
 
-    <Style Selector="controls|MauiCollectionView">
+    <Style Selector="controls|CollectionView">
         <Setter Property="Template">
             <ControlTemplate>
                 <Panel Name="PART_RootPanel">

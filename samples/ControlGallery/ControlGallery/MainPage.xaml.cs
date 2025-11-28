@@ -37,6 +37,7 @@ public partial class MainPage : FlyoutPage
             nameof(PathPage) => new PathPage(),
             nameof(RoundRectanglePage) => new RoundRectanglePage(),
             nameof(ThemePage) => new ThemePage(),
+            nameof(CollectionViewPage) => new CollectionViewPage(),
             "MainPage" when pageType.Namespace == "WordPuzzle" => new WordPuzzle.MainPage(),
             _ => throw new ArgumentException($"Unknown page type: {pageType.FullName}", nameof(pageType))
         };
