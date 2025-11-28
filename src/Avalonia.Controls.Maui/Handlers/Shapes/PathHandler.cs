@@ -63,44 +63,17 @@ public partial class PathHandler : ShapeViewHandler<Path, PlatformView>
 
     public static void MapData(IShapeViewHandler handler, Path path)
     {
-        if (handler.PlatformView is PlatformView platformView && path?.Data != null)
+        if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.Data = path.Data.ToAvaloniaGeometry();
+            platformView.UpdateData(path);
         }
     }
 
     public static void MapRenderTransform(IShapeViewHandler handler, Path path)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        if (path?.RenderTransform != null)
+        if (handler.PlatformView is PlatformView platformView)
         {
-            var matrix = path.RenderTransform.Value;
-
-            // Convert MAUI Transform to Avalonia Transform
-            if (path.RenderTransform is Microsoft.Maui.Controls.Shapes.RotateTransform rotate)
-            {
-                platformView.RenderTransform = new global::Avalonia.Media.RotateTransform
-                {
-                    Angle = rotate.Angle
-                };
-                platformView.RenderTransformOrigin = new global::Avalonia.RelativePoint(
-                    rotate.CenterX, rotate.CenterY, global::Avalonia.RelativeUnit.Absolute);
-            }
-            else
-            {
-                // Fallback to matrix transform
-                platformView.RenderTransform = new global::Avalonia.Media.MatrixTransform(
-                    new global::Avalonia.Matrix(
-                        matrix.M11, matrix.M12,
-                        matrix.M21, matrix.M22,
-                        matrix.OffsetX, matrix.OffsetY));
-            }
-        }
-        else
-        {
-            platformView.RenderTransform = null;
+            platformView.UpdateRenderTransform(path);
         }
     }
 }

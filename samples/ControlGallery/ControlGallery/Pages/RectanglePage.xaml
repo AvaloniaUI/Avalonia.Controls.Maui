@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.RectanglePage"
+             Title="Rectangle">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="16">
+            <Label Text="Rectangle Samples"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Filled Rectangle"
+                           FontAttributes="Bold" />
+                    <Rectangle WidthRequest="180"
+                               HeightRequest="120"
+                               Fill="#4C7AD3"
+                               Stroke="#1C3C76"
+                               StrokeThickness="3"
+                               RadiusX="16"
+                               RadiusY="16" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Outlined Rectangle"
+                           FontAttributes="Bold" />
+                    <Rectangle WidthRequest="200"
+                               HeightRequest="90"
+                               Fill="Transparent"
+                               Stroke="#7C3AED"
+                               StrokeThickness="6"
+                               RadiusX="12"
+                               RadiusY="12" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Gradient Fill"
+                           FontAttributes="Bold" />
+                    <Rectangle WidthRequest="220"
+                               HeightRequest="120"
+                               RadiusX="24"
+                               RadiusY="24"
+                               StrokeThickness="0">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush StartPoint="0,0"
+                                                 EndPoint="1,1">
+                                <GradientStop Color="#FF9E3A"
+                                              Offset="0" />
+                                <GradientStop Color="#FF5463"
+                                              Offset="1" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

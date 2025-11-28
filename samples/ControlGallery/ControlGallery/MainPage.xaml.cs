@@ -28,6 +28,13 @@ public partial class MainPage : FlyoutPage
             nameof(ButtonPage) => new ButtonPage(),
             nameof(CheckBoxPage) => new CheckBoxPage(),
             nameof(ProgressBarPage) => new ProgressBarPage(),
+            nameof(RectanglePage) => new RectanglePage(),
+            nameof(EllipsePage) => new EllipsePage(),
+            nameof(LinePage) => new LinePage(),
+            nameof(PolygonPage) => new PolygonPage(),
+            nameof(PolylinePage) => new PolylinePage(),
+            nameof(PathPage) => new PathPage(),
+            nameof(RoundRectanglePage) => new RoundRectanglePage(),
             nameof(ThemePage) => new ThemePage(),
             "MainPage" when pageType.Namespace == "WordPuzzle" => new WordPuzzle.MainPage(),
             _ => throw new ArgumentException($"Unknown page type: {pageType.FullName}", nameof(pageType))
