@@ -866,19 +866,19 @@ Enables you to select a double value from a continuous range.
 
 | Property | Status |
 |----------|--------|
-| Maximum | ⏳ TODO |
-| Minimum | ⏳ TODO |
-| MaximumTrackColor | ⏳ TODO |
-| MinimumTrackColor | ⏳ TODO |
-| ThumbColor | ⏳ TODO |
+| Maximum | ✅ Implemented |
+| Minimum | ✅ Implemented |
+| MaximumTrackColor | ✅ Implemented |
+| MinimumTrackColor | ✅ Implemented |
+| ThumbColor | ✅ Implemented |
 | ThumbImageSource | ⏳ TODO |
-| Value | ⏳ TODO |
+| Value | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| ValueChanged | ⏳ TODO |
+| ValueChanged | ✅ Implemented |
 
 ---
 
