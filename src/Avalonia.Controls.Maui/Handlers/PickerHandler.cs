@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
@@ -8,120 +9,102 @@ namespace Avalonia.Controls.Maui.Handlers;
 
 public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHandler
 {
+    bool _isUpdatingSelection;
+
     public static IPropertyMapper<IPicker, IPickerHandler> Mapper = new PropertyMapper<IPicker, PickerHandler>(ViewMapper)
     {
         [nameof(IPicker.CharacterSpacing)] = MapCharacterSpacing,
         [nameof(IPicker.Font)] = MapFont,
+        [nameof(IPicker.Items)] = MapItems,
         [nameof(IPicker.SelectedIndex)] = MapSelectedIndex,
         [nameof(IPicker.TextColor)] = MapTextColor,
         [nameof(IPicker.Title)] = MapTitle,
         [nameof(IPicker.TitleColor)] = MapTitleColor,
         [nameof(ITextAlignment.HorizontalTextAlignment)] = MapHorizontalTextAlignment,
         [nameof(ITextAlignment.VerticalTextAlignment)] = MapVerticalTextAlignment,
-        [nameof(IPicker.Items)] = MapItems,
     };
 
     public static void MapItems(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
-        handler.PlatformView.ItemsSource = new ItemDelegateList<string>(handler.VirtualView);
+
+        handler._isUpdatingSelection = true;
+        try
+        {
+            handler.PlatformView.UpdateItems(handler.VirtualView);
+            handler.PlatformView.UpdateSelectedIndex(handler.VirtualView);
+        }
+        finally
+        {
+            handler._isUpdatingSelection = false;
+        }
     }
 
     public static void MapVerticalTextAlignment(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
-        switch (picker.VerticalTextAlignment)
-        {
-            case TextAlignment.Start:
-                handler.PlatformView.VerticalContentAlignment = global::Avalonia.Layout.VerticalAlignment.Top;
-                break;
-            case TextAlignment.Center:
-                handler.PlatformView.VerticalContentAlignment = global::Avalonia.Layout.VerticalAlignment.Center;
-                break;
-            case TextAlignment.End:
-                handler.PlatformView.VerticalContentAlignment = global::Avalonia.Layout.VerticalAlignment.Bottom;
-                break;
-        }
+        handler.PlatformView.UpdateVerticalTextAlignment(handler.VirtualView);
     }
 
     public static void MapHorizontalTextAlignment(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
-        switch (picker.HorizontalTextAlignment)
-        {
-            case TextAlignment.Start:
-                handler.PlatformView.HorizontalContentAlignment = global::Avalonia.Layout.HorizontalAlignment.Left;
-                break;
-            case TextAlignment.Center:
-                handler.PlatformView.HorizontalContentAlignment = global::Avalonia.Layout.HorizontalAlignment.Center;
-                break;
-            case TextAlignment.End:
-                handler.PlatformView.HorizontalContentAlignment = global::Avalonia.Layout.HorizontalAlignment.Right;
-                break;
-        }
+        handler.PlatformView.UpdateHorizontalTextAlignment(handler.VirtualView);
     }
 
     public static void MapTitleColor(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
-        if (picker.TitleColor != null)
-            handler.PlatformView.PlaceholderForeground = picker.TitleColor.ToPlatform();
+        handler.PlatformView.UpdateTitleColor(handler.VirtualView);
     }
 
     public static void MapTitle(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
-        handler.PlatformView.PlaceholderText = picker.Title;
+        handler.PlatformView.UpdateTitle(handler.VirtualView);
     }
 
     public static void MapTextColor(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
-        if (picker.TextColor != null)
-            handler.PlatformView.Foreground = picker.TextColor.ToPlatform();
+        handler.PlatformView.UpdateTextColor(handler.VirtualView);
     }
 
     public static void MapSelectedIndex(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
-        if (picker.SelectedIndex < 0 || picker.SelectedIndex >= picker.GetCount())
-            handler.PlatformView.SelectedIndex = -1;
-        else
-            handler.PlatformView.SelectedIndex = picker.SelectedIndex;
+        handler._isUpdatingSelection = true;
+        try
+        {
+            handler.PlatformView.UpdateSelectedIndex(handler.VirtualView);
+        }
+        finally
+        {
+            handler._isUpdatingSelection = false;
+        }
     }
 
     public static void MapFont(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
-        // HACK: This should be in an extension method.
         var fontManager = handler.GetRequiredService<IFontManager>();
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-        if (fontManager == null)
-            throw new ArgumentNullException(nameof(fontManager));
-        var font = picker.Font;
-        var platformButton = (ComboBox)(handler.PlatformView);
-        if (font.IsDefault)
-            return;
-        if (font.Size > 0)
-            platformButton.FontSize = font.Size;
-        if (font.Family != null)
-            platformButton.FontFamily = font.Family;
+        handler.PlatformView.UpdateFont(handler.VirtualView, fontManager);
+        handler.PlatformView.UpdateCharacterSpacing(handler.VirtualView);
     }
 
     public static void MapCharacterSpacing(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
-        // TODO: Implement CharacterSpacing
+        handler.PlatformView.UpdateCharacterSpacing(handler.VirtualView);
     }
 
     public static CommandMapper<IPicker, IPickerHandler> CommandMapper = new(ViewCommandMapper)
@@ -149,5 +132,41 @@ public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHand
     protected override ComboBox CreatePlatformView()
     {
         return new ComboBox();
+    }
+
+    protected override void ConnectHandler(ComboBox platformView)
+    {
+        base.ConnectHandler(platformView);
+        platformView.SelectionChanged += OnSelectionChanged;
+        if (VirtualView != null)
+        {
+            _isUpdatingSelection = true;
+            try
+            {
+                platformView.SelectedIndex = VirtualView.SelectedIndex;
+            }
+            finally
+            {
+                _isUpdatingSelection = false;
+            }
+        }
+    }
+
+    protected override void DisconnectHandler(ComboBox platformView)
+    {
+        platformView.SelectionChanged -= OnSelectionChanged;
+
+        base.DisconnectHandler(platformView);
+    }
+
+    void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (VirtualView is null || PlatformView is null)
+            return;
+
+        if (_isUpdatingSelection)
+            return;
+
+        VirtualView.SelectedIndex = PlatformView.SelectedIndex;
     }
 }

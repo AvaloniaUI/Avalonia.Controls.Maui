@@ -26,6 +26,7 @@ public partial class MainPage : FlyoutPage
             nameof(FontsPage) => new FontsPage(),
             nameof(ActivityIndicatorPage) => new ActivityIndicatorPage(),
             nameof(ButtonPage) => new ButtonPage(),
+            nameof(PickerPage) => new PickerPage(),
             nameof(CheckBoxPage) => new CheckBoxPage(),
             nameof(ProgressBarPage) => new ProgressBarPage(),
             nameof(SwipeViewPage) => new SwipeViewPage(),

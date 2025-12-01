@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.PickerPage"
+             Title="Picker">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="24">
+
+            <Label Text="Picker Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- Basic Picker -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Basic Picker"
+                           FontAttributes="Bold" />
+                    <Picker x:Name="BasicPicker"
+                            Title="Select a fruit"
+                            SelectedIndexChanged="OnBasicPickerChanged">
+                        <Picker.Items>
+                            <x:String>Apple</x:String>
+                            <x:String>Banana</x:String>
+                            <x:String>Cherry</x:String>
+                            <x:String>Dragonfruit</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <Label x:Name="SelectedFruitLabel"
+                           Text="Selected item: none"
+                           FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Preselected SelectedItem -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Preselected SelectedItem"
+                           FontAttributes="Bold" />
+                    <Picker x:Name="ItemPicker"
+                            Title="Choose a drink"
+                            SelectedIndexChanged="OnItemPickerChanged">
+                        <Picker.Items>
+                            <x:String>Espresso</x:String>
+                            <x:String>Latte</x:String>
+                            <x:String>Cappuccino</x:String>
+                            <x:String>Mocha</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <Label x:Name="SelectedItemLabel"
+                           Text="Selected item: Latte"
+                           FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Title and Text Colors -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Title and Text Colors"
+                           FontAttributes="Bold" />
+                    <Picker Title="Favorite season"
+                            TitleColor="#4b5563"
+                            TextColor="#2563eb"
+                            SelectedIndex="1">
+                        <Picker.Items>
+                            <x:String>Spring</x:String>
+                            <x:String>Summer</x:String>
+                            <x:String>Autumn</x:String>
+                            <x:String>Winter</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Fonts and Character Spacing -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Fonts and Character Spacing"
+                           FontAttributes="Bold" />
+                    <Picker Title="Bold headline style"
+                            FontAttributes="Bold"
+                            FontSize="22"
+                            CharacterSpacing="4"
+                            TextColor="#7c3aed">
+                        <Picker.Items>
+                            <x:String>New York</x:String>
+                            <x:String>Paris</x:String>
+                            <x:String>Tokyo</x:String>
+                            <x:String>Barcelona</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Alignment -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Text Alignment"
+                           FontAttributes="Bold" />
+                    <Picker x:Name="AlignmentPicker"
+                            Title="Centered text"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center"
+                            SelectedIndexChanged="OnAlignmentPickerChanged">
+                        <Picker.Items>
+                            <x:String>Left</x:String>
+                            <x:String>Center</x:String>
+                            <x:String>Right</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <Label x:Name="AlignmentStatusLabel"
+                           Text="HorizontalTextAlignment: Center"
+                           FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

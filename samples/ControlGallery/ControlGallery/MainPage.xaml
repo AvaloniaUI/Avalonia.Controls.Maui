@@ -35,6 +35,10 @@
 						          Detail="Button control"
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type pages:ButtonPage}"/>
+						<TextCell Text="Picker"
+						          Detail="Picker control"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:PickerPage}"/>
 						<TextCell Text="CheckBox"
 								  Detail="CheckBox control for selections"
 								  Command="{Binding NavigateCommand}"

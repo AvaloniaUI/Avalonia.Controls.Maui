@@ -1,7 +1,7 @@
-using Avalonia.Controls;
-using Avalonia.Headless.XUnit;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
+using Avalonia.Controls.Templates;
+using Avalonia.Headless.XUnit;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using MauiPickerHandler = Avalonia.Controls.Maui.Handlers.PickerHandler;
@@ -183,6 +183,88 @@ public partial class PickerHandlerTests : HandlerTestBase<MauiPickerHandler, Pic
         var platformItemsSource = await InvokeOnMainThreadAsync(() => handler.PlatformView?.ItemsSource);
 
         Assert.NotNull(platformItemsSource);
+    }
+
+    [AvaloniaFact(DisplayName = "Character Spacing Applies Template")]
+    public async Task CharacterSpacingAppliesTemplate()
+    {
+        var picker = new PickerStub
+        {
+            CharacterSpacing = 4,
+            Items = new List<string> { "Item 1", "Item 2" }
+        };
+
+        var handler = await CreateHandlerAsync(picker);
+
+        var template = await InvokeOnMainThreadAsync(() => handler.PlatformView?.ItemTemplate);
+        var selectionTemplate = await InvokeOnMainThreadAsync(() => handler.PlatformView?.SelectionBoxItemTemplate);
+
+        Assert.IsType<FuncDataTemplate<string>>(template);
+        Assert.IsType<FuncDataTemplate<string>>(selectionTemplate);
+
+        var textBlock = await InvokeOnMainThreadAsync(() =>
+        {
+            var dataTemplate = (FuncDataTemplate<string>)template!;
+            return dataTemplate.Build("Item 1");
+        });
+
+        var letterSpacing = await InvokeOnMainThreadAsync(() => (textBlock as TextBlock)?.LetterSpacing);
+
+        Assert.NotNull(letterSpacing);
+        Assert.True(letterSpacing > 0);
+    }
+
+    [AvaloniaFact(DisplayName = "Native Selection Updates Virtual View")]
+    public async Task NativeSelectionUpdatesVirtualView()
+    {
+        var picker = new PickerStub
+        {
+            Items = new List<string> { "Item 1", "Item 2", "Item 3" },
+            SelectedIndex = 0
+        };
+
+        var handler = await CreateHandlerAsync(picker);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            handler.PlatformView!.SelectedIndex = 2;
+        });
+
+        Assert.Equal(2, picker.SelectedIndex);
+    }
+
+    [AvaloniaFact(DisplayName = "Selected Index Applied After Items")]
+    public async Task SelectedIndexAppliedAfterItems()
+    {
+        var picker = new PickerStub
+        {
+            Items = new List<string> { "Red", "Green", "Blue" },
+            SelectedIndex = 1
+        };
+
+        var handler = await CreateHandlerAsync(picker);
+
+        var selectedIndex = await InvokeOnMainThreadAsync(() => handler.PlatformView?.SelectedIndex ?? -1);
+
+        Assert.Equal(1, selectedIndex);
+    }
+
+    [AvaloniaFact(DisplayName = "Initial Selected Index Not Cleared By Native Events")]
+    public async Task InitialSelectedIndexNotCleared()
+    {
+        var picker = new PickerStub
+        {
+            Items = new List<string> { "Red", "Green", "Blue" },
+            SelectedIndex = 2
+        };
+
+        var handler = await CreateHandlerAsync(picker);
+
+        var virtualSelectedIndex = picker.SelectedIndex;
+        var nativeSelectedIndex = await InvokeOnMainThreadAsync(() => handler.PlatformView?.SelectedIndex ?? -1);
+
+        Assert.Equal(2, virtualSelectedIndex);
+        Assert.Equal(2, nativeSelectedIndex);
     }
 
     // Platform-specific property getters
