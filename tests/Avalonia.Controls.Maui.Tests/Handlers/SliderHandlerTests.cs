@@ -1,13 +1,9 @@
-using System.Linq;
-using Avalonia.Controls;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
-using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.VisualTree;
-using Microsoft.Maui.Graphics;
 using MauiColor = Microsoft.Maui.Graphics.Color;
 using MauiColors = Microsoft.Maui.Graphics.Colors;
 using MauiSliderHandler = Avalonia.Controls.Maui.Handlers.SliderHandler;
@@ -106,6 +102,32 @@ public class SliderHandlerTests : HandlerTestBase<MauiSliderHandler, SliderStub>
             handler => GetPlatformSlider(handler).Value,
             expectedSetValue: 10d,
             expectedUnsetValue: 3d);
+    }
+
+    [AvaloniaFact(DisplayName = "Platform value change updates virtual view")]
+    public async Task PlatformValueChangeUpdatesVirtualView()
+    {
+        var slider = new SliderStub { Minimum = 0, Maximum = 100, Value = 0 };
+        var handler = await CreateHandlerAsync(slider);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platform = GetPlatformSlider(handler);
+            platform.Value = 42;
+        });
+
+        Assert.Equal(42, slider.Value);
+    }
+
+    [AvaloniaFact(DisplayName = "Platform clamps value to maximum")]
+    public async Task PlatformClampsValueToMaximum()
+    {
+        var slider = new SliderStub { Minimum = 0, Maximum = 10, Value = 20 };
+        var handler = await CreateHandlerAsync(slider);
+
+        var platform = GetPlatformSlider(handler);
+        Assert.Equal(10, platform.Value);
+        Assert.Equal(10, slider.Value);
     }
 
     private MauiColor? GetMinimumTrackColor(MauiSliderHandler handler)
