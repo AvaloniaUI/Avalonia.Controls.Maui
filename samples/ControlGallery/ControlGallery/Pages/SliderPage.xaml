@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.SliderPage"
+             x:DataType="pages:SliderPage"
+             Title="Slider">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="Slider Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic Slider -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Slider"
+                           FontAttributes="Bold"/>
+                    <Slider Value="{Binding SliderValue}"
+                            Minimum="0"
+                            Maximum="100"/>
+                    <Label Text="{Binding SliderValue, StringFormat='Value: {0:F2}'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Slider with Custom Range -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Custom Range (0 - 10)"
+                           FontAttributes="Bold"/>
+                    <Slider Value="{Binding CustomRangeValue}"
+                            Minimum="0"
+                            Maximum="10"/>
+                    <Label Text="{Binding CustomRangeValue, StringFormat='Value: {0:F2}'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Slider with MinimumTrackColor -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Minimum Track Color (Green)"
+                           FontAttributes="Bold"/>
+                    <Slider Value="{Binding MinimumTrackSliderValue}"
+                            Minimum="0"
+                            Maximum="100"
+                            MinimumTrackColor="Green"/>
+                    <Label Text="{Binding MinimumTrackSliderValue, StringFormat='Value: {0:F2}'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Slider with MaximumTrackColor -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Maximum Track Color (LightGray)"
+                           FontAttributes="Bold"/>
+                    <Slider Value="{Binding MaximumTrackSliderValue}"
+                            Minimum="0"
+                            Maximum="100"
+                            MaximumTrackColor="LightGray"/>
+                    <Label Text="{Binding MaximumTrackSliderValue, StringFormat='Value: {0:F2}'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Slider with Both Track Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Both Track Colors"
+                           FontAttributes="Bold"/>
+                    <Slider Value="{Binding BothTrackColorsValue}"
+                            Minimum="0"
+                            Maximum="100"
+                            MinimumTrackColor="Blue"
+                            MaximumTrackColor="LightBlue"/>
+                    <Label Text="{Binding BothTrackColorsValue, StringFormat='Value: {0:F2}'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Slider with ThumbColor -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Thumb Color (Red)"
+                           FontAttributes="Bold"/>
+                    <Slider Value="{Binding ThumbColorValue}"
+                            Minimum="0"
+                            Maximum="100"
+                            ThumbColor="Red"/>
+                    <Label Text="{Binding ThumbColorValue, StringFormat='Value: {0:F2}'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Slider with All Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="All Colors Combined"
+                           FontAttributes="Bold"/>
+                    <Slider Value="{Binding AllColorsValue}"
+                            Minimum="0"
+                            Maximum="100"
+                            MinimumTrackColor="Green"
+                            MaximumTrackColor="LightGray"
+                            ThumbColor="Orange"/>
+                    <Label Text="{Binding AllColorsValue, StringFormat='Value: {0:F2}'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Color Variations -->
+            <Border Stroke="Gray"
+                    Padding="10">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="10"/>
+        </Border.StrokeShape>
+        <VerticalStackLayout Spacing="10">
+            <Label Text="Color Variations"
+                   FontAttributes="Bold"/>
+            <Slider Minimum="0"
+                    Maximum="100"
+                    Value="50"
+                    MinimumTrackColor="Red"
+                    ValueChanged="OnColorVariationValueChanged"/>
+            <Slider Minimum="0"
+                    Maximum="100"
+                    Value="50"
+                    MinimumTrackColor="Orange"
+                    ValueChanged="OnColorVariationValueChanged"/>
+            <Slider Minimum="0"
+                    Maximum="100"
+                    Value="50"
+                    MinimumTrackColor="Purple"
+                    ValueChanged="OnColorVariationValueChanged"/>
+            <Slider Minimum="0"
+                    Maximum="100"
+                    Value="50"
+                    MinimumTrackColor="DeepPink"
+                    ValueChanged="OnColorVariationValueChanged"/>
+            <Label Text="{Binding LastEventText}"
+                   FontSize="12"
+                   TextColor="Gray" />
+        </VerticalStackLayout>
+    </Border>
+
+            <!-- Interactive Controls -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive Controls"
+                           FontAttributes="Bold"/>
+                    <Slider Value="{Binding InteractiveValue}"
+                            Minimum="0"
+                            Maximum="100"
+                            MinimumTrackColor="{Binding SelectedMinimumTrackColor}"
+                            MaximumTrackColor="{Binding SelectedMaximumTrackColor}"/>
+                    <Label Text="{Binding InteractiveValue, StringFormat='Value: {0:F2}'}"
+                           HorizontalOptions="Center"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Red"
+                                Command="{Binding SetMinimumTrackColorCommand}"
+                                CommandParameter="Red"
+                                BackgroundColor="Red"
+                                TextColor="White"/>
+                        <Button Text="Green"
+                                Command="{Binding SetMinimumTrackColorCommand}"
+                                CommandParameter="Green"
+                                BackgroundColor="Green"
+                                TextColor="White"/>
+                        <Button Text="Blue"
+                                Command="{Binding SetMinimumTrackColorCommand}"
+                                CommandParameter="Blue"
+                                BackgroundColor="Blue"
+                                TextColor="White"/>
+                    </HorizontalStackLayout>
+                    <Button Text="Reset Value"
+                            Command="{Binding ResetValueCommand}"
+                            HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
