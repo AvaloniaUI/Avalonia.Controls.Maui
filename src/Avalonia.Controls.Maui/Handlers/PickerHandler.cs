@@ -53,6 +53,7 @@ public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHand
         handler.PlatformView.UpdateHorizontalTextAlignment(handler.VirtualView);
     }
 
+    [NotImplemented("Pending implementation in Avalonia Core. More information: https://github.com/AvaloniaUI/Avalonia/issues/20198")] 
     public static void MapTitleColor(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
@@ -60,6 +61,7 @@ public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHand
         handler.PlatformView.UpdateTitleColor(handler.VirtualView);
     }
 
+    [NotImplemented("Pending implementation in Avalonia Core. More information: https://github.com/AvaloniaUI/Avalonia/issues/20198")] 
     public static void MapTitle(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)

@@ -61,6 +61,7 @@ public static class PickerExtensions
     /// </summary>
     /// <param name="platformView">The Avalonia platform view.</param>
     /// <param name="picker">The .NET MAUI view providing the title.</param>
+    [NotImplemented("Pending implementation in Avalonia Core. More information: https://github.com/AvaloniaUI/Avalonia/issues/20198")] 
     public static void UpdateTitle(this ComboBox platformView, IPicker picker)
     {
         platformView.PlaceholderText = picker.Title ?? string.Empty;
@@ -71,6 +72,7 @@ public static class PickerExtensions
     /// </summary>
     /// <param name="platformView">The Avalonia platform view.</param>
     /// <param name="picker">The .NET MAUI view providing the color.</param>
+    [NotImplemented("Pending implementation in Avalonia Core. More information: https://github.com/AvaloniaUI/Avalonia/issues/20198")] 
     public static void UpdateTitleColor(this ComboBox platformView, IPicker picker)
     {
         if (picker.TitleColor != null)
