@@ -1,8 +1,7 @@
 #nullable disable
 using Microsoft.Maui;
-using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
 using Avalonia.Controls.Maui.Extensions;
+using Avalonia.Controls.Maui.Platform;
 using PlatformView = global::Avalonia.Controls.Shapes.Shape;
 
 namespace Avalonia.Controls.Maui.Handlers.Shapes;
@@ -45,32 +44,25 @@ public abstract partial class ShapeViewHandler : ViewHandler<IShapeView, Platfor
 
     public static void MapBackground(IShapeViewHandler handler, IShapeView shapeView)
     {
-        // TODO: Handle background separately from fill if needed
         if (handler.PlatformView is PlatformView platformView)
         {
-            // In Avalonia, shapes don't have a separate background concept
-            // The Fill property handles the interior painting
+            platformView.UpdateBackground(shapeView);
         }
     }
 
     public static void MapShape(IShapeViewHandler handler, IShapeView shapeView)
     {
-        // Shape-specific handling done in derived handlers
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateShape(shapeView);
+        }
     }
 
     public static void MapAspect(IShapeViewHandler handler, IShapeView shapeView)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.Stretch = shapeView.Aspect switch
-            {
-                PathAspect.None => global::Avalonia.Media.Stretch.None,
-                PathAspect.Center => global::Avalonia.Media.Stretch.None,
-                PathAspect.Stretch => global::Avalonia.Media.Stretch.Fill,
-                PathAspect.AspectFit => global::Avalonia.Media.Stretch.Uniform,
-                PathAspect.AspectFill => global::Avalonia.Media.Stretch.UniformToFill,
-                _ => global::Avalonia.Media.Stretch.None
-            };
+            platformView.UpdateAspect(shapeView);
         }
     }
 
@@ -78,7 +70,7 @@ public abstract partial class ShapeViewHandler : ViewHandler<IShapeView, Platfor
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.Fill = shapeView.Fill?.ToAvaloniaBrush();
+            platformView.UpdateFill(shapeView);
         }
     }
 
@@ -86,7 +78,7 @@ public abstract partial class ShapeViewHandler : ViewHandler<IShapeView, Platfor
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.Stroke = shapeView.Stroke?.ToAvaloniaBrush();
+            platformView.UpdateStroke(shapeView);
         }
     }
 
@@ -94,20 +86,15 @@ public abstract partial class ShapeViewHandler : ViewHandler<IShapeView, Platfor
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.StrokeThickness = shapeView.StrokeThickness;
+            platformView.UpdateStrokeThickness(shapeView);
         }
     }
 
     public static void MapStrokeDashPattern(IShapeViewHandler handler, IShapeView shapeView)
     {
-        if (handler.PlatformView is PlatformView platformView && shapeView.StrokeDashPattern != null)
+        if (handler.PlatformView is PlatformView platformView)
         {
-            var dashArray = new global::Avalonia.Collections.AvaloniaList<double>();
-            foreach (var value in shapeView.StrokeDashPattern)
-            {
-                dashArray.Add(value);
-            }
-            platformView.StrokeDashArray = dashArray;
+            platformView.UpdateStrokeDashPattern(shapeView);
         }
     }
 
@@ -115,7 +102,7 @@ public abstract partial class ShapeViewHandler : ViewHandler<IShapeView, Platfor
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.StrokeDashOffset = shapeView.StrokeDashOffset;
+            platformView.UpdateStrokeDashOffset(shapeView);
         }
     }
 
@@ -123,13 +110,7 @@ public abstract partial class ShapeViewHandler : ViewHandler<IShapeView, Platfor
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.StrokeLineCap = shapeView.StrokeLineCap switch
-            {
-                LineCap.Butt => global::Avalonia.Media.PenLineCap.Flat,
-                LineCap.Round => global::Avalonia.Media.PenLineCap.Round,
-                LineCap.Square => global::Avalonia.Media.PenLineCap.Square,
-                _ => global::Avalonia.Media.PenLineCap.Flat
-            };
+            platformView.UpdateStrokeLineCap(shapeView);
         }
     }
 
@@ -137,20 +118,17 @@ public abstract partial class ShapeViewHandler : ViewHandler<IShapeView, Platfor
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.StrokeJoin = shapeView.StrokeLineJoin switch
-            {
-                LineJoin.Miter => global::Avalonia.Media.PenLineJoin.Miter,
-                LineJoin.Round => global::Avalonia.Media.PenLineJoin.Round,
-                LineJoin.Bevel => global::Avalonia.Media.PenLineJoin.Bevel,
-                _ => global::Avalonia.Media.PenLineJoin.Miter
-            };
+            platformView.UpdateStrokeLineJoin(shapeView);
         }
     }
 
+    [NotImplemented("Avalonia Shape doesn't expose StrokeMiterLimit property.")]
     public static void MapStrokeMiterLimit(IShapeViewHandler handler, IShapeView shapeView)
     {
-        // Avalonia Shape doesn't expose StrokeMiterLimit property
-        // It uses the default miter limit from the PenLineJoin.Miter setting
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateStrokeMiterLimit(shapeView);
+        }
     }
 }
 

@@ -383,7 +383,66 @@ public partial class BoxViewHandlerTests : HandlerTestBase<MauiBoxViewHandler, B
         Assert.NotNull(handler.PlatformView);
         Assert.IsType<Border>(handler.PlatformView);
     }
-    
+
+    [AvaloniaFact(DisplayName = "BackgroundColor Change Triggers Background Update")]
+    public async Task BackgroundColorChangeTriggerBackgroundUpdate()
+    {
+        // This tests that MapBackgroundColor properly forwards to MapBackground
+        var boxView = new BoxViewStub
+        {
+            BackgroundColor = Colors.Green
+        };
+
+        var handler = await CreateHandlerAsync(boxView);
+
+        // Verify that setting BackgroundColor results in proper Background update
+        var border = handler.PlatformView as Border;
+        Assert.NotNull(border);
+
+        // BackgroundColor should have been mapped to Background
+        if (border.Background is Media.SolidColorBrush brush)
+        {
+            var nativeColor = Color.FromRgba(brush.Color.R, brush.Color.G, brush.Color.B, brush.Color.A);
+            ColorComparisonHelpers.AssertColorsAreEqual(Colors.Green, nativeColor);
+        }
+    }
+
+    [AvaloniaFact(DisplayName = "BackgroundColor Update Via Handler Works")]
+    public async Task BackgroundColorUpdateViaHandlerWorks()
+    {
+        // This tests the MapBackgroundColor behavior when UpdateValue is called
+        var boxView = new BoxViewStub
+        {
+            BackgroundColor = Colors.Blue
+        };
+
+        var handler = await CreateHandlerAsync(boxView);
+
+        // Change BackgroundColor and call UpdateValue with "BackgroundColor"
+        await InvokeOnMainThreadAsync(() =>
+        {
+            boxView.BackgroundColor = Colors.Red;
+            handler.UpdateValue("BackgroundColor");
+        });
+
+        var border = handler.PlatformView as Border;
+        Assert.NotNull(border);
+
+        // Verify that BackgroundColor change was forwarded to Background
+        if (border.Background is Media.SolidColorBrush brush)
+        {
+            var nativeColor = Color.FromRgba(brush.Color.R, brush.Color.G, brush.Color.B, brush.Color.A);
+            ColorComparisonHelpers.AssertColorsAreEqual(Colors.Red, nativeColor);
+        }
+    }
+
+    [AvaloniaFact(DisplayName = "ViewMapper Contains BackgroundColor Key")]
+    public void ViewMapperContainsBackgroundColorKey()
+    {
+        // Verify that BackgroundColor is registered in the ViewMapper
+        Assert.Contains("BackgroundColor", Avalonia.Controls.Maui.Handlers.ViewHandler.ViewMapper.GetKeys());
+    }
+
     Color? GetPlatformColor(MauiBoxViewHandler handler)
     {
         var border = handler.PlatformView as Border;

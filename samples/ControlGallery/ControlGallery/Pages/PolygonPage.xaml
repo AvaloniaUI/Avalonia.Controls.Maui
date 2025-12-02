@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.PolygonPage"
+             Title="Polygon">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="16">
+            <Label Text="Polygon Samples"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Triangle"
+                           FontAttributes="Bold" />
+                    <Polygon Points="20,100 120,10 220,100"
+                             Fill="#60A5FA"
+                             Stroke="#1E3A8A"
+                             StrokeThickness="3" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Pentagon"
+                           FontAttributes="Bold" />
+                    <Polygon Points="110,10 200,70 170,170 50,170 20,70"
+                             Fill="#34D399"
+                             Stroke="#065F46"
+                             StrokeThickness="4" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Line Joins"
+                           FontAttributes="Bold" />
+                    <VerticalStackLayout Spacing="12">
+                        <Polygon Points="20,60 120,10 220,60"
+                                 Stroke="#8B5CF6"
+                                 StrokeThickness="10"
+                                 StrokeLineJoin="Miter"
+                                 Fill="Transparent" />
+                        <Polygon Points="20,60 120,10 220,60"
+                                 Stroke="#EF4444"
+                                 StrokeThickness="10"
+                                 StrokeLineJoin="Round"
+                                 Fill="Transparent" />
+                        <Polygon Points="20,60 120,10 220,60"
+                                 Stroke="#22C55E"
+                                 StrokeThickness="10"
+                                 StrokeLineJoin="Bevel"
+                                 Fill="Transparent" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

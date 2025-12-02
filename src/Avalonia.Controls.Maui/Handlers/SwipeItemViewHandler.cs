@@ -7,7 +7,7 @@ using PlatformView = Avalonia.Controls.ContentControl;
 namespace Avalonia.Controls.Maui.Handlers;
 
 /// <summary>
-/// Handler for MAUI SwipeItemView to Avalonia ContentControl mapping
+/// Handler for .NET MAUI SwipeItemView to Avalonia ContentControl mapping
 /// </summary>
 public partial class SwipeItemViewHandler : ContentViewHandler, ISwipeItemViewHandler
 {
@@ -37,5 +37,5 @@ public partial class SwipeItemViewHandler : ContentViewHandler, ISwipeItemViewHa
 
     ISwipeItemView ISwipeItemViewHandler.VirtualView => (ISwipeItemView)VirtualView;
 
-    object ISwipeItemViewHandler.PlatformView => PlatformView!;
+    object ISwipeItemViewHandler.PlatformView => PlatformView;
 }

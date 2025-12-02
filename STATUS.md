@@ -238,13 +238,13 @@ Displays an ellipse or circle.
 
 | Property | Status |
 |----------|--------|
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
 | StrokeMiterLimit | ⏳ TODO |
 
 ---
@@ -420,16 +420,16 @@ Displays a line from a start point to an end point.
 
 | Property | Status |
 |----------|--------|
-| X1 | ⏳ TODO |
-| Y1 | ⏳ TODO |
-| X2 | ⏳ TODO |
-| Y2 | ⏳ TODO |
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
+| X1 | ✅ Implemented |
+| Y1 | ✅ Implemented |
+| X2 | ✅ Implemented |
+| Y2 | ✅ Implemented |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
 
 ---
 
@@ -547,15 +547,15 @@ Displays curves and complex shapes.
 
 | Property | Status |
 |----------|--------|
-| Data | ⏳ TODO |
-| Fill | ⏳ TODO |
-| RenderTransform | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
+| Data | ✅ Implemented |
+| Fill | ✅ Implemented |
+| RenderTransform | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
 | StrokeMitterLimit | ⏳ TODO |
 
 ---
@@ -599,15 +599,15 @@ Displays a polygon.
 
 | Property | Status |
 |----------|--------|
-| Points | ⏳ TODO |
+| Points | ✅ Implemented |
 | FillRule | ⏳ TODO |
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
 | StrokeMiterLimit | ⏳ TODO |
 
 ---
@@ -620,15 +620,15 @@ Displays a series of connected straight lines.
 
 | Property | Status |
 |----------|--------|
-| Points | ⏳ TODO |
+| Points | ✅ Implemented |
 | FillRule | ⏳ TODO |
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
 
 ---
 
@@ -684,15 +684,15 @@ Displays a rectangle or square.
 
 | Property | Status |
 |----------|--------|
-| RadiusX | ⏳ TODO |
-| RadiusY | ⏳ TODO |
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
+| RadiusX | ✅ Implemented |
+| RadiusY | ✅ Implemented |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
 | StrokeMiterLimit | ⏳ TODO |
 
 ---
@@ -720,15 +720,15 @@ Displays a rectangle or square with rounded corners.
 
 | Property | Status |
 |----------|--------|
-| CornerRadius | ⏳ TODO |
-| Fill | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
-| StrokeMiterLimit | ⏳ TODO |
+| CornerRadius | ✅ Implemented |
+| Fill | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
+| StrokeMiterLimit | ✅ Implemented |
 
 ---
 
@@ -866,19 +866,19 @@ Enables you to select a double value from a continuous range.
 
 | Property | Status |
 |----------|--------|
-| Maximum | ⏳ TODO |
-| Minimum | ⏳ TODO |
-| MaximumTrackColor | ⏳ TODO |
-| MinimumTrackColor | ⏳ TODO |
-| ThumbColor | ⏳ TODO |
+| Maximum | ✅ Implemented |
+| Minimum | ✅ Implemented |
+| MaximumTrackColor | ✅ Implemented |
+| MinimumTrackColor | ✅ Implemented |
+| ThumbColor | ✅ Implemented |
 | ThumbImageSource | ⏳ TODO |
-| Value | ⏳ TODO |
+| Value | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| ValueChanged | ⏳ TODO |
+| ValueChanged | ✅ Implemented |
 
 ---
 
@@ -911,19 +911,19 @@ A container control that wraps around an item of content, and provides context m
 
 | Property | Status |
 |----------|--------|
-| BottomItems | ⏳ TODO |
-| LeftItems | ⏳ TODO |
-| RightItems | ⏳ TODO |
-| TopItems | ⏳ TODO |
-| Threshold | ⏳ TODO |
+| BottomItems | ✅ Implemented |
+| LeftItems | ✅ Implemented |
+| RightItems | ✅ Implemented |
+| TopItems | ✅ Implemented |
+| Threshold | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| SwipeStarted | ⏳ TODO |
-| SwipeChanging | ⏳ TODO |
-| SwipeEnded | ⏳ TODO |
+| SwipeStarted | ✅ Implemented |
+| SwipeChanging | ✅ Implemented |
+| SwipeEnded | ✅ Implemented |
 
 ---
 
@@ -935,15 +935,15 @@ Enables you to select a boolean value using a type of button that can either be 
 
 | Property | Status |
 |----------|--------|
-| IsToggled | ⏳ TODO |
-| OnColor | ⏳ TODO |
-| ThumbColor | ⏳ TODO |
+| IsToggled | ✅ Implemented |
+| OnColor | ✅ Implemented |
+| ThumbColor | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Toggled | ⏳ TODO |
+| Toggled | ✅ Implemented |
 
 ---
 
