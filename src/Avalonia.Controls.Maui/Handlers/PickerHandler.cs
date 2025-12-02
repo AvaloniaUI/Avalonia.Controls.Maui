@@ -135,7 +135,11 @@ public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHand
     protected override void ConnectHandler(ComboBox platformView)
     {
         base.ConnectHandler(platformView);
+
+        platformView.DropDownOpened += OnDropDownOpened;
+        platformView.DropDownClosed += OnDropDownClosed;
         platformView.SelectionChanged += OnSelectionChanged;
+        
         if (VirtualView != null)
         {
             _isUpdatingSelection = true;
@@ -152,12 +156,30 @@ public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHand
 
     protected override void DisconnectHandler(ComboBox platformView)
     {
+        platformView.DropDownOpened -= OnDropDownOpened;
+        platformView.DropDownClosed -= OnDropDownClosed;
         platformView.SelectionChanged -= OnSelectionChanged;
 
         base.DisconnectHandler(platformView);
     }
 
-    void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private void OnDropDownOpened(object? sender, EventArgs e)
+    {
+        if (VirtualView is null || PlatformView is null)
+            return;
+        
+        // TODO: Implement Picker.Opened event (API shown for .NET 10; current target is .NET 9) https://learn.microsoft.com/en-us/dotnet/api/microsoft.maui.controls.picker.opened?view=net-maui-10.0
+    }
+    
+    private void OnDropDownClosed(object? sender, EventArgs e)
+    {
+        if (VirtualView is null || PlatformView is null)
+            return;
+        
+        // TODO: Implement Picker.Closed event (API shown for .NET 10; current target is .NET 9) https://learn.microsoft.com/en-us/dotnet/api/microsoft.maui.controls.picker.closed?view=net-maui-10.0
+    }
+    
+    private void OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (VirtualView is null || PlatformView is null)
             return;
