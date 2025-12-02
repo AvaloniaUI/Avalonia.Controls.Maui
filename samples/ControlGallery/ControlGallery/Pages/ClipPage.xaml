@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ClipPage"
+             Title="Clip">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="24">
+
+            <Label Text="Clip Samples"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Ellipse Clip"
+                           FontAttributes="Bold" />
+                    <Grid HeightRequest="160"
+                          WidthRequest="320">
+                        <Grid.Background>
+                            <LinearGradientBrush StartPoint="0,0"
+                                                 EndPoint="1,1">
+                                <GradientStop Color="#2563EB"
+                                              Offset="0.0" />
+                                <GradientStop Color="#22C55E"
+                                              Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <Grid.Clip>
+                            <EllipseGeometry Center="160,80"
+                                             RadiusX="140"
+                                             RadiusY="70" />
+                        </Grid.Clip>
+                        <Label Text="Content clipped into an ellipse"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontAttributes="Bold"
+                               TextColor="White" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Rounded Rectangle Clip"
+                           FontAttributes="Bold" />
+                    <Grid HeightRequest="140"
+                          WidthRequest="320"
+                          Padding="12">
+                        <Grid.Background>
+                            <LinearGradientBrush StartPoint="0,0"
+                                                 EndPoint="0,1">
+                                <GradientStop Color="#F97316"
+                                              Offset="0.0" />
+                                <GradientStop Color="#FACC15"
+                                              Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <Grid.Clip>
+                            <RoundRectangleGeometry CornerRadius="32" />
+                        </Grid.Clip>
+                        <VerticalStackLayout HorizontalOptions="Center"
+                                             VerticalOptions="Center"
+                                             Spacing="4">
+                            <Label Text="Rounded corners via clip"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
+                            <Label Text="The clip follows the control's bounds"
+                                   FontAttributes="Italic"
+                                   TextColor="#FFF7ED" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Custom Path Clip"
+                           FontAttributes="Bold" />
+                    <Grid HeightRequest="150"
+                          WidthRequest="320">
+                        <Grid.Background>
+                            <LinearGradientBrush StartPoint="0,0"
+                                                 EndPoint="1,0">
+                                <GradientStop Color="#9333EA"
+                                              Offset="0.0" />
+                                <GradientStop Color="#22D3EE"
+                                              Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Grid.Background>
+                        <Grid.Clip>
+                            <PathGeometry>
+                                <PathFigure StartPoint="0,0"
+                                            IsClosed="True">
+                                    <LineSegment Point="320,0" />
+                                    <LineSegment Point="280,150" />
+                                    <LineSegment Point="0,120" />
+                                </PathFigure>
+                            </PathGeometry>
+                        </Grid.Clip>
+                        <VerticalStackLayout Padding="16"
+                                             Spacing="8">
+                            <Label Text="Diagonal mask"
+                                   FontAttributes="Bold"
+                                   TextColor="White" />
+                            <Label Text="Clip applied via PathGeometry"
+                                   TextColor="#E0E7FF" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

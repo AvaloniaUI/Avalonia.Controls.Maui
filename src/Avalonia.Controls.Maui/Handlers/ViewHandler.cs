@@ -5,8 +5,10 @@ using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Diagnostics;
 using System.Text;
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Primitives;
 using PlatformView = Avalonia.Controls.Control;
 
@@ -389,11 +391,12 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
 
         if (!handler.IsMappingProperties())
         {
-            // ContainerView is already being mapped
+            // Ensure container state is up to date before applying the clip
             handler.UpdateValue(nameof(IViewHandler.ContainerView));
         }
 
-        ((PlatformView?)handler.ContainerView)?.UpdateClip(view);
+        var target = (PlatformView?)handler.ContainerView ?? (PlatformView?)handler.PlatformView;
+        target?.UpdateClip(view);
     }
 
     /// <summary>
@@ -855,36 +858,141 @@ public static class ControlExtensions
 
     public static void UpdateClip(this PlatformView control, IView view)
     {
+        DisposeClipSubscription(control);
+
         if (view.Clip is null)
         {
             control.InvalidateClip();
             return;
         }
-        if (view.Clip is RoundRectangleGeometry roundRect)
+
+        var (width, height) = GetClipSize(control, view);
+        if (width <= 0 || height <= 0)
         {
-            var rect = new global::Avalonia.Rect(0, 0, control.Bounds.Width, control.Bounds.Height);
-            var radius = Math.Max(roundRect.CornerRadius.TopLeft, Math.Max(roundRect.CornerRadius.TopRight, Math.Max(roundRect.CornerRadius.BottomLeft, roundRect.CornerRadius.BottomRight)));
-            control.Clip = new global::Avalonia.Media.RectangleGeometry(rect, radius, radius);
+            // Retry when bounds become available
+            var subscription = new PropertyChangedSubscription(control, e =>
+            {
+                if (e.Property != global::Avalonia.Visual.BoundsProperty)
+                    return;
+
+                var (currentWidth, currentHeight) = GetClipSize(control, view);
+                if (currentWidth > 0 && currentHeight > 0)
+                {
+                    DisposeClipSubscription(control);
+                    control.UpdateClip(view);
+                }
+            });
+
+            SetClipSubscription(control, subscription);
+            return;
         }
-        else if (view.Clip is RectangleGeometry rect)
+
+        switch (view.Clip)
         {
-            control.Clip = new global::Avalonia.Media.RectangleGeometry(new global::Avalonia.Rect(0, 0, control.Bounds.Width, control.Bounds.Height));
+            case RoundRectangleGeometry roundRect:
+                var radius = Math.Max(
+                    roundRect.CornerRadius.TopLeft,
+                    Math.Max(
+                        roundRect.CornerRadius.TopRight,
+                        Math.Max(roundRect.CornerRadius.BottomLeft, roundRect.CornerRadius.BottomRight)));
+                control.Clip = new global::Avalonia.Media.RectangleGeometry(new global::Avalonia.Rect(0, 0, width, height), radius, radius);
+                break;
+
+            case RectangleGeometry:
+                control.Clip = new global::Avalonia.Media.RectangleGeometry(new global::Avalonia.Rect(0, 0, width, height));
+                break;
+
+            case EllipseGeometry:
+                control.Clip = new global::Avalonia.Media.EllipseGeometry(new global::Avalonia.Rect(0, 0, width, height));
+                break;
+
+            case Geometry geometry:
+                var avaloniaGeometry = geometry.ToAvaloniaGeometry();
+                if (avaloniaGeometry is not null)
+                {
+                    control.Clip = avaloniaGeometry;
+                    break;
+                }
+
+                control.InvalidateClip();
+                break;
+
+            default:
+                control.InvalidateClip();
+                break;
         }
-        else if (view.Clip is EllipseGeometry ellipse)
+    }
+
+    static (double width, double height) GetClipSize(PlatformView control, IView view)
+    {
+        double width = control.Bounds.Width;
+        double height = control.Bounds.Height;
+
+        if ((double.IsNaN(width) || width <= 0) && !double.IsNaN(view.Width) && view.Width > 0)
+            width = view.Width;
+        if ((double.IsNaN(height) || height <= 0) && !double.IsNaN(view.Height) && view.Height > 0)
+            height = view.Height;
+
+        if ((double.IsNaN(width) || width <= 0) && view.Frame.Width > 0)
+            width = view.Frame.Width;
+        if ((double.IsNaN(height) || height <= 0) && view.Frame.Height > 0)
+            height = view.Frame.Height;
+
+        if ((double.IsNaN(width) || width <= 0) && control.DesiredSize.Width > 0)
+            width = control.DesiredSize.Width;
+        if ((double.IsNaN(height) || height <= 0) && control.DesiredSize.Height > 0)
+            height = control.DesiredSize.Height;
+
+        return (width, height);
+    }
+
+    static readonly ConditionalWeakTable<PlatformView, IDisposable> ClipSubscriptions = new();
+
+    static void SetClipSubscription(PlatformView control, IDisposable subscription)
+    {
+        DisposeClipSubscription(control);
+        ClipSubscriptions.Add(control, subscription);
+    }
+
+    static void DisposeClipSubscription(PlatformView control)
+    {
+        if (ClipSubscriptions.TryGetValue(control, out var disposable))
         {
-            var width = control.Bounds.Width;
-            var height = control.Bounds.Height;
-            control.Clip = new global::Avalonia.Media.EllipseGeometry(new global::Avalonia.Rect(0, 0, width, height));
+            disposable.Dispose();
+            ClipSubscriptions.Remove(control);
         }
-        else
+    }
+
+    sealed class PropertyChangedSubscription : IDisposable
+    {
+        readonly PlatformView _control;
+        readonly Action<global::Avalonia.AvaloniaPropertyChangedEventArgs> _onChanged;
+
+        public PropertyChangedSubscription(PlatformView control, Action<global::Avalonia.AvaloniaPropertyChangedEventArgs> onChanged)
         {
-            control.InvalidateClip();
+            _control = control;
+            _onChanged = onChanged;
+            _control.PropertyChanged += OnPropertyChanged;
         }
+
+        void OnPropertyChanged(object? sender, global::Avalonia.AvaloniaPropertyChangedEventArgs e) =>
+            _onChanged(e);
+
+        public void Dispose() =>
+            _control.PropertyChanged -= OnPropertyChanged;
     }
 
     public static void UpdateShadow(this PlatformView control, IView view)
     {
-        // TODO: Implement shadow logic
+        var shadow = view.Shadow.ToAvalonia();
+
+        if (shadow is null)
+        {
+            control.Effect = null;
+            return;
+        }
+
+        control.Effect = shadow;
     }
 
     public static void UpdateBackground(this PlatformView control, IView view)
