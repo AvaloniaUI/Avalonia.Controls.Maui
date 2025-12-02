@@ -10,6 +10,8 @@ public partial class PickerPage : ContentPage
     Label? SelectedItemLabelControl => FindByName("SelectedItemLabel") as Label;
     Picker? AlignmentPickerControl => FindByName("AlignmentPicker") as Picker;
     Label? AlignmentStatusLabelControl => FindByName("AlignmentStatusLabel") as Label;
+    Picker? VerticalAlignmentPickerControl => FindByName("VerticalAlignmentPicker") as Picker;
+    Label? VerticalAlignmentStatusLabelControl => FindByName("VerticalAlignmentStatusLabel") as Label;
 
     public PickerPage()
     {
@@ -30,6 +32,7 @@ public partial class PickerPage : ContentPage
         UpdateSelectedLabel(ItemPickerControl, SelectedItemLabelControl);
         UpdateSelectedLabel(BasicPickerControl, SelectedFruitLabelControl);
         UpdateAlignmentLabel();
+        UpdateVerticalAlignmentLabel();
     }
 
     void UpdateSelectedLabel(Picker? picker, Label? label)
@@ -79,5 +82,29 @@ public partial class PickerPage : ContentPage
             return;
 
         AlignmentStatusLabelControl.Text = $"HorizontalTextAlignment: {AlignmentPickerControl.HorizontalTextAlignment}";
+    }
+
+    void OnVerticalAlignmentPickerChanged(object? sender, EventArgs e)
+    {
+        if (VerticalAlignmentPickerControl is null)
+            return;
+
+        VerticalAlignmentPickerControl.VerticalTextAlignment = VerticalAlignmentPickerControl.SelectedIndex switch
+        {
+            0 => TextAlignment.Start,
+            1 => TextAlignment.Center,
+            2 => TextAlignment.End,
+            _ => VerticalAlignmentPickerControl.VerticalTextAlignment
+        };
+
+        UpdateVerticalAlignmentLabel();
+    }
+
+    void UpdateVerticalAlignmentLabel()
+    {
+        if (VerticalAlignmentPickerControl is null || VerticalAlignmentStatusLabelControl is null)
+            return;
+
+        VerticalAlignmentStatusLabelControl.Text = $"VerticalTextAlignment: {VerticalAlignmentPickerControl.VerticalTextAlignment}";
     }
 }

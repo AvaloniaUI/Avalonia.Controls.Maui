@@ -134,6 +134,34 @@
                            FontAttributes="Italic" />
                 </VerticalStackLayout>
             </Border>
+
+            <!-- Vertical Text Alignment -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Vertical Text Alignment"
+                           FontAttributes="Bold" />
+                    <Picker x:Name="VerticalAlignmentPicker"
+                            Title="Vertically aligned text"
+                            HeightRequest="80"
+                            HorizontalTextAlignment="Center"
+                            VerticalTextAlignment="Center"
+                            SelectedIndex="1"
+                            SelectedIndexChanged="OnVerticalAlignmentPickerChanged">
+                        <Picker.Items>
+                            <x:String>Start</x:String>
+                            <x:String>Center</x:String>
+                            <x:String>End</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <Label x:Name="VerticalAlignmentStatusLabel"
+                           Text="VerticalTextAlignment: Center"
+                           FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
