@@ -1,3 +1,4 @@
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;

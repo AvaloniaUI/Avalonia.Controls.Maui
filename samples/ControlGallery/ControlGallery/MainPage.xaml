@@ -61,6 +61,10 @@
 						          Detail="Soft elevation and offsets"
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type pages:ShadowPage}"/>
+						<TextCell Text="Transformations"
+						          Detail="Play with scale, rotation, translation, anchors"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:TransformationsPage}"/>
 					</TableSection>
 					<TableSection Title="Shapes">
 						<TextCell Text="Rectangle"

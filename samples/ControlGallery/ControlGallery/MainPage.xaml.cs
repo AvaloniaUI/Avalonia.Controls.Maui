@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using ControlGallery.Pages;
@@ -21,7 +21,7 @@ public partial class MainPage : FlyoutPage
 
     private void NavigateToPage(Type pageType)
     {
-        Page page = pageType.Name switch
+Page page = pageType.Name switch
         {
             nameof(FontsPage) => new FontsPage(),
             nameof(ActivityIndicatorPage) => new ActivityIndicatorPage(),
@@ -31,6 +31,7 @@ public partial class MainPage : FlyoutPage
             nameof(SwipeViewPage) => new SwipeViewPage(),
             nameof(RectanglePage) => new RectanglePage(),
             nameof(EllipsePage) => new EllipsePage(),
+            nameof(TransformationsPage) => new TransformationsPage(),
             nameof(LinePage) => new LinePage(),
             nameof(PolygonPage) => new PolygonPage(),
             nameof(PolylinePage) => new PolylinePage(),
