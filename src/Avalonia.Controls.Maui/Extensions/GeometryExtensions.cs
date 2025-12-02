@@ -269,7 +269,7 @@ public static class GeometryExtensions
     /// <summary>
     /// Converts a PathGeometry to SVG path data string format.
     /// </summary>
-    /// <param name="pathGeometry">The MAUI PathGeometry to convert.</param>
+    /// <param name="pathGeometry">The .NET MAUI PathGeometry to convert.</param>
     /// <returns>
     /// An SVG-compatible path data string using standard commands:
     /// M (MoveTo), L (LineTo), C (CubicBezier), Q (QuadraticBezier), A (Arc), Z (ClosePath)
@@ -292,7 +292,7 @@ public static class GeometryExtensions
             // Process each segment within the figure
             foreach (var segment in figure.Segments)
             {
-                // === Basic Segments ===
+                // Basic Segments
 
                 if (segment is LineSegment lineSegment)
                 {
@@ -325,7 +325,7 @@ public static class GeometryExtensions
                     sb.Append($"{arcSegment.Point.X},{arcSegment.Point.Y} ");
                 }
 
-                // === Poly Segments (multiple points in one segment) ===
+                // Poly Segments
 
                 else if (segment is PolyLineSegment polyLineSegment)
                 {

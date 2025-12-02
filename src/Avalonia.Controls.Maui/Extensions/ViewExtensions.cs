@@ -646,10 +646,10 @@ public static class ViewExtensions
     /// <param name="control">The platform view to update.</param>
     /// <param name="view">The .NET MAUI view containing border properties.</param>
     /// <remarks>Implementation pending - border logic needs to be added.</remarks>
-    [NotImplemented("Pending to implement border logic.")]
+    [NotImplemented("Type or member is obsolete.")]
     public static void UpdateBorder(this PlatformView control, IView view)
     {
-        // TODO: Implement border logic
+        // Type or member is obsolete.
     }
 
     /// <summary>
