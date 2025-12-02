@@ -54,14 +54,14 @@ internal static class ShadowExtensions
     ///   <item>RGBA values are converted from 0.0-1.0 range to 0-255 byte range</item>
     /// </list>
     /// </remarks>
-    public static IEffect? ToAvalonia(this IShadow? shadow)
+    public static IEffect? ToPlatform(this IShadow? shadow)
     {
         if (shadow is null)
             return null;
 
         // Convert the paint color with applied opacity
         // This combines the shadow's opacity with the paint's inherent alpha
-        var color = shadow.Paint.ToAvaloniaColor(shadow.Opacity);
+        var color = shadow.Paint.ToPlatform(shadow.Opacity);
         var offset = shadow.Offset;
 
         // Create Avalonia's drop shadow effect with mapped properties
@@ -75,7 +75,7 @@ internal static class ShadowExtensions
     }
 
     /// <summary>
-    /// Converts a MAUI Paint to an Avalonia Color with applied opacity.
+    /// Converts a .NET MAUI Paint to an Avalonia Color with applied opacity.
     /// </summary>
     /// <param name="paint">The MAUI paint to convert (typically SolidPaint).</param>
     /// <param name="opacity">The opacity to apply (0.0-1.0 range).</param>
@@ -97,12 +97,12 @@ internal static class ShadowExtensions
     /// and will render as black. This matches typical platform behavior where
     /// shadows are solid colors only.
     /// </remarks>
-    static Media.Color ToAvaloniaColor(this Paint? paint, float opacity)
+    static Media.Color ToPlatform(this Paint? paint, float opacity)
     {
         // Extract base color from paint (only SolidPaint supported)
         // Gradient/pattern paints default to black
         var baseColor = paint is SolidPaint solid && solid.Color is not null
-            ? solid.Color.ToAvaloniaColor()
+            ? solid.Color.ToPlatform()
             : Media.Colors.Black;
 
         // Clamp opacity to valid range and blend with base alpha
@@ -132,7 +132,7 @@ internal static class ShadowExtensions
     ///   <item>Avalonia: Alpha, Red, Green, Blue (ARGB)</item>
     /// </list>
     /// </remarks>
-    static Media.Color ToAvaloniaColor(this Microsoft.Maui.Graphics.Color color) =>
+    static Media.Color ToPlatform(this Microsoft.Maui.Graphics.Color color) =>
         Media.Color.FromArgb(
             (byte)(color.Alpha * 255),  // Convert alpha: 0.0-1.0 → 0-255
             (byte)(color.Red * 255),    // Convert red: 0.0-1.0 → 0-255

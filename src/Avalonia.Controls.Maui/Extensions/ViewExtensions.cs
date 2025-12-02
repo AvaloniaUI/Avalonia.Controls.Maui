@@ -578,7 +578,7 @@ public static class ViewExtensions
     {
         // Convert MAUI shadow to Avalonia DropShadowEffect
         // This handles color conversion, offset mapping, and blur radius
-        var shadow = view.Shadow.ToAvalonia();
+        var shadow = view.Shadow.ToPlatform();
 
         if (shadow is null)
         {
