@@ -217,7 +217,8 @@ public static class ViewExtensions
     /// <remarks>Implementation pending - unfocus logic needs to be added.</remarks>
     public static void Unfocus(this PlatformView control, IView view)
     {
-        // TODO: Implement unfocus logic if needed
+        var topLevel = TopLevel.GetTopLevel(control);
+        topLevel?.FocusManager?.ClearFocus();
     }
 
     /// <summary>
