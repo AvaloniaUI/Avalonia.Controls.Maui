@@ -1051,11 +1051,11 @@ All controls inherit these common properties from the View and VisualElement bas
 | IsLoaded | bool | ⏳ TODO |
 | IsVisible | bool | ✅ Implemented |
 | Margin | Thickness | ⏳ TODO |
-| MaximumHeightRequest | double | ⏳ TODO |
-| MaximumWidthRequest | double | ⏳ TODO |
-| MinimumHeightRequest | double | ⏳ TODO |
-| MinimumWidthRequest | double | ⏳ TODO |
-| Opacity | double | ⏳ TODO |
+| MaximumHeightRequest | double | ✅ Implemented |
+| MaximumWidthRequest | double | ✅ Implemented |
+| MinimumHeightRequest | double | ✅ Implemented |
+| MinimumWidthRequest | double | ✅ Implemented |
+| Opacity | double | ✅ Implemented |
 | Parent | Element | ⏳ TODO |
 | Resources | ResourceDictionary | ⏳ TODO |
 | Rotation | double | ✅ Implemented |
@@ -1069,13 +1069,13 @@ All controls inherit these common properties from the View and VisualElement bas
 | TranslationX | double | ✅ Implemented |
 | TranslationY | double | ✅ Implemented |
 | Triggers | IList<TriggerBase> | ⏳ TODO |
-| VerticalOptions | LayoutOptions | ⏳ TODO |
+| VerticalOptions | LayoutOptions | ✅ Implemented |
 | Width | double | ✅ Implemented |
 | WidthRequest | double | ✅ Implemented |
 | Window | Window | ⏳ TODO |
 | X | double | ⏳ TODO |
 | Y | double | ⏳ TODO |
-| ZIndex | int | ⏳ TODO |
+| ZIndex | int | ✅ Implemented |
 
 ---
 
