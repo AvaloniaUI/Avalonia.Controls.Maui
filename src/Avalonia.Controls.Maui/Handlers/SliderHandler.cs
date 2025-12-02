@@ -1,27 +1,25 @@
-using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Maui.Extensions;
+using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
-using AvaloniaSlider = global::Avalonia.Controls.Slider;
+using PlatformView = Avalonia.Controls.Slider;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-/// <summary>
-/// Handler for MAUI ISlider to Avalonia Slider mapping
-/// </summary>
-public class SliderHandler : ViewHandler<Microsoft.Maui.ISlider, AvaloniaSlider>, ISliderHandler
+public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
 {
-    public static IPropertyMapper<Microsoft.Maui.ISlider, ISliderHandler> Mapper = new PropertyMapper<Microsoft.Maui.ISlider, ISliderHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<ISlider, ISliderHandler> Mapper = new PropertyMapper<ISlider, ISliderHandler>(ViewHandler.ViewMapper)
     {
-        [nameof(Microsoft.Maui.ISlider.Maximum)] = MapMaximum,
-        [nameof(Microsoft.Maui.ISlider.MaximumTrackColor)] = MapMaximumTrackColor,
-        [nameof(Microsoft.Maui.ISlider.Minimum)] = MapMinimum,
-        [nameof(Microsoft.Maui.ISlider.MinimumTrackColor)] = MapMinimumTrackColor,
-        [nameof(Microsoft.Maui.ISlider.ThumbColor)] = MapThumbColor,
-        [nameof(Microsoft.Maui.ISlider.ThumbImageSource)] = MapThumbImageSource,
-        [nameof(Microsoft.Maui.ISlider.Value)] = MapValue,
+        [nameof(ISlider.Maximum)] = MapMaximum,
+        [nameof(ISlider.MaximumTrackColor)] = MapMaximumTrackColor,
+        [nameof(ISlider.Minimum)] = MapMinimum,
+        [nameof(ISlider.MinimumTrackColor)] = MapMinimumTrackColor,
+        [nameof(ISlider.ThumbColor)] = MapThumbColor,
+        [nameof(ISlider.ThumbImageSource)] = MapThumbImageSource,
+        [nameof(ISlider.Value)] = MapValue,
     };
 
-    public static CommandMapper<Microsoft.Maui.ISlider, ISliderHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<ISlider, ISliderHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
@@ -43,101 +41,87 @@ public class SliderHandler : ViewHandler<Microsoft.Maui.ISlider, AvaloniaSlider>
 
     System.Object ISliderHandler.PlatformView => PlatformView;
 
-    protected override AvaloniaSlider CreatePlatformView()
+    protected override PlatformView CreatePlatformView()
     {
-        return new AvaloniaSlider();
+        return new PlatformView();
     }
 
     public override bool NeedsContainer => false;
 
-    protected override void ConnectHandler(AvaloniaSlider platformView)
+    protected override void ConnectHandler(PlatformView platformView)
     {
         platformView.PropertyChanged += OnSliderPropertyChanged;
         base.ConnectHandler(platformView);
     }
 
-    protected override void DisconnectHandler(AvaloniaSlider platformView)
+    protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.PropertyChanged -= OnSliderPropertyChanged;
         base.DisconnectHandler(platformView);
     }
 
-    private void OnSliderPropertyChanged(object? sender, global::Avalonia.AvaloniaPropertyChangedEventArgs e)
+    public static void MapMinimum(ISliderHandler handler, ISlider slider)
     {
-        if (e.Property == AvaloniaSlider.ValueProperty && VirtualView != null)
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateMinimum(slider);
+        }
+    }
+
+    public static void MapMaximum(ISliderHandler handler, ISlider slider)
+    {
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateMaximum(slider);
+        }
+    }
+
+    public static void MapValue(ISliderHandler handler, ISlider slider)
+    {
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateValue(slider);
+        }
+    }
+
+    public static void MapMinimumTrackColor(ISliderHandler handler, ISlider slider)
+    {
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateMinimumTrackColor(slider);
+        }
+    }
+
+    public static void MapMaximumTrackColor(ISliderHandler handler, ISlider slider)
+    {
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateMaximumTrackColor(slider);
+        }
+    }
+
+    public static void MapThumbColor(ISliderHandler handler, ISlider slider)
+    {
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateThumbColor(slider);
+        }
+    }
+
+    [NotImplemented("Implement proper image source loading when image infrastructure is ready")]
+    public static void MapThumbImageSource(ISliderHandler handler, ISlider slider)
+    {
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateThumbImageSource(slider);
+        }
+    }  
+    
+    private void OnSliderPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property == PlatformView.ValueProperty && VirtualView != null)
         {
             VirtualView.Value = (double)(e.NewValue ?? 0);
         }
-    }
-
-    public static void MapMinimum(ISliderHandler handler, Microsoft.Maui.ISlider slider)
-    {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        ((AvaloniaSlider)handler.PlatformView).Minimum = slider.Minimum;
-    }
-
-    public static void MapMaximum(ISliderHandler handler, Microsoft.Maui.ISlider slider)
-    {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        ((AvaloniaSlider)handler.PlatformView).Maximum = slider.Maximum;
-    }
-
-    public static void MapValue(ISliderHandler handler, Microsoft.Maui.ISlider slider)
-    {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        ((AvaloniaSlider)handler.PlatformView).Value = slider.Value;
-    }
-
-    public static void MapMinimumTrackColor(ISliderHandler handler, Microsoft.Maui.ISlider slider)
-    {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        // Note: Avalonia Slider doesn't have separate MinimumTrackColor property out of the box
-        // This would require custom styling/templating to implement
-        // For now, we can set the Foreground which affects the filled portion
-        if (slider.MinimumTrackColor != null)
-        {
-            ((AvaloniaSlider)handler.PlatformView).Foreground = slider.MinimumTrackColor.ToPlatform();
-        }
-    }
-
-    public static void MapMaximumTrackColor(ISliderHandler handler, Microsoft.Maui.ISlider slider)
-    {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        // Note: Avalonia Slider doesn't have separate MaximumTrackColor property out of the box
-        // This would require custom styling/templating to implement
-        // For now, we can set the Background which affects the unfilled portion
-        if (slider.MaximumTrackColor != null)
-        {
-            ((AvaloniaSlider)handler.PlatformView).Background = slider.MaximumTrackColor.ToPlatform();
-        }
-    }
-
-    public static void MapThumbColor(ISliderHandler handler, Microsoft.Maui.ISlider slider)
-    {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        // Note: Avalonia Slider thumb color customization requires template modification
-        // This is a limitation that would need custom styling to fully support
-        // TODO: Implement custom styling for thumb color
-    }
-
-    public static void MapThumbImageSource(ISliderHandler handler, Microsoft.Maui.ISlider slider)
-    {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        // Note: Custom thumb image would require template modification in Avalonia
-        // TODO: Implement custom thumb image support
     }
 }

@@ -37,6 +37,7 @@ Page page = pageType.Name switch
             nameof(PolylinePage) => new PolylinePage(),
             nameof(PathPage) => new PathPage(),
             nameof(RoundRectanglePage) => new RoundRectanglePage(),
+            nameof(SliderPage) => new SliderPage(),
             nameof(SwitchPage) => new SwitchPage(),
             nameof(ClipPage) => new ClipPage(),
             nameof(ShadowPage) => new ShadowPage(),
