@@ -6,10 +6,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_sandbox",
-            "program": "${workspaceFolder}/samples/SandboxApp/bin/Debug/net9.0/SandboxApp.dll",
+            "program": "${workspaceFolder}/samples/SandboxApp/bin/Debug/net10.0/SandboxApp.dll",
             "args": [ 
             ],
-            "cwd": "${workspaceFolder}/samples/SandboxApp/bin/Debug/net9.0",
+            "cwd": "${workspaceFolder}/samples/SandboxApp/bin/Debug/net10.0",
             "console": "internalConsole",
             "stopAtEntry": false
         },
@@ -18,10 +18,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_controlgallery_desktop",
-            "program": "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/bin/Debug/net9.0/ControlGallery.Desktop.dll",
+            "program": "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/bin/Debug/net10.0/ControlGallery.Desktop.dll",
             "args": [ 
             ],
-            "cwd": "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/bin/Debug/net9.0",
+            "cwd": "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/bin/Debug/net10.0",
             "console": "internalConsole",
             "stopAtEntry": false
         },

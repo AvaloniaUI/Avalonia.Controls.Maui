@@ -75,7 +75,14 @@ public class DatePickerHandler : ViewHandler<IDatePicker, AvaloniaDatePicker>, I
             return;
 
         var platformView = (AvaloniaDatePicker)handler.PlatformView;
-        platformView.SelectedDate = new DateTimeOffset(datePicker.Date);
+        if (datePicker.Date is null)
+        {
+            platformView.SelectedDate = null;
+        }
+        else
+        {
+            platformView.SelectedDate = new DateTimeOffset(datePicker.Date.Value);
+        }
     }
 
     public static void MapMinimumDate(IDatePickerHandler handler, IDatePicker datePicker)
