@@ -3,7 +3,9 @@
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			xmlns:pages="clr-namespace:ControlGallery.Pages"
 			xmlns:rpnCalculator="clr-namespace:RpnCalculator"
+			xmlns:solitaireEncryption="clr-namespace:SolitaireEncryption"
 			xmlns:tipCalc="clr-namespace:TipCalc"
+			xmlns:weather="clr-namespace:Weather"
 			xmlns:wordPuzzle="clr-namespace:WordPuzzle"
 			xmlns:local="clr-namespace:ControlGallery"
 			x:DataType="local:MainPage"
@@ -18,13 +20,21 @@
 				<TableRoot>
 					<TableSection Title="Apps">
 						<TextCell Text="RpnCalculator"
-						          Detail="A Reverse Polish Notation calculator"
+						          Detail="A Reverse Polish Notation calc"
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type rpnCalculator:MainPage}"/>
+						<TextCell Text="SolitaireEncryption"
+						          Detail="Solitaire encryption algorithm"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type solitaireEncryption:SolitairePage}"/>
 						<TextCell Text="Tip Calc"
 						          Detail="TipCalc application"
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type tipCalc:TipCalcPage}"/>
+						<TextCell Text="Weather"
+						          Detail="Retrieves weather data"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type weather:MainPage}"/>
 						<TextCell Text="Word Puzzle"
 						          Detail="A word puzzle game"
 						          Command="{Binding NavigateCommand}"
