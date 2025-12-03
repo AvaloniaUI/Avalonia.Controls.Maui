@@ -56,6 +56,20 @@
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type pages:SwipeViewPage}"/>
 					</TableSection>
+					<TableSection Title="Effects">
+						<TextCell Text="Clip"
+						          Detail="Shape-based clipping samples"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:ClipPage}"/>
+						<TextCell Text="Shadow"
+						          Detail="Soft elevation and offsets"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:ShadowPage}"/>
+						<TextCell Text="Transformations"
+						          Detail="Play with scale, rotation, translation, anchors"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:TransformationsPage}"/>
+					</TableSection>
 					<TableSection Title="Shapes">
 						<TextCell Text="Rectangle"
 						          Detail="Filled and rounded rectangles"
