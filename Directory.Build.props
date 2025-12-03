@@ -3,7 +3,7 @@
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <Version Condition="'$(Version)' == ''">12.0.0</Version>
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0060140-alpha</AvaloniaVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0060555-alpha</AvaloniaVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net10.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
         <BuildDirectory>$(MSBuildThisFileDirectory)/build/</BuildDirectory>
