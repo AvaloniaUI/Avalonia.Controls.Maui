@@ -42,6 +42,8 @@ Page page = pageType.Name switch
             nameof(ClipPage) => new ClipPage(),
             nameof(ShadowPage) => new ShadowPage(),
             nameof(ThemePage) => new ThemePage(),
+            "MainPage" when pageType.Namespace == "RpnCalculator" => new RpnCalculator.MainPage(),
+            "TipCalcPage" when pageType.Namespace == "TipCalc" => new TipCalc.TipCalcPage(),
             "MainPage" when pageType.Namespace == "WordPuzzle" => new WordPuzzle.MainPage(),
             _ => throw new ArgumentException($"Unknown page type: {pageType.FullName}", nameof(pageType))
         };

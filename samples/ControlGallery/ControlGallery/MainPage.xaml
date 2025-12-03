@@ -2,7 +2,9 @@
 <FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			xmlns:pages="clr-namespace:ControlGallery.Pages"
-			xmlns:word="clr-namespace:WordPuzzle"
+			xmlns:rpnCalculator="clr-namespace:RpnCalculator"
+			xmlns:tipCalc="clr-namespace:TipCalc"
+			xmlns:wordPuzzle="clr-namespace:WordPuzzle"
 			xmlns:local="clr-namespace:ControlGallery"
 			x:DataType="local:MainPage"
 			FlyoutLayoutBehavior="Split"
@@ -15,10 +17,18 @@
 			<TableView Intent="Menu">
 				<TableRoot>
 					<TableSection Title="Apps">
+						<TextCell Text="RpnCalculator"
+						          Detail="A Reverse Polish Notation calculator"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type rpnCalculator:MainPage}"/>
+						<TextCell Text="Tip Calc"
+						          Detail="TipCalc application"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type tipCalc:TipCalcPage}"/>
 						<TextCell Text="Word Puzzle"
-								  Detail="A word puzzle game"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type word:MainPage}"/>
+						          Detail="A word puzzle game"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type wordPuzzle:MainPage}"/>
 					</TableSection>
 					<TableSection Title="Services">
 						<TextCell Text="Fonts"
