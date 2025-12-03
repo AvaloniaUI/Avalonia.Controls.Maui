@@ -154,7 +154,7 @@ public static class ButtonExtensions
         if (button is not IPadding padding)
             return;
 
-        platformView.Padding = padding.Padding.ToThickness();
+        platformView.Padding = padding.Padding.ToPlatform();
     }
 
     /// <summary>

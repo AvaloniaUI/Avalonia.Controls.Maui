@@ -91,7 +91,7 @@ public class ImageButtonHandler : ViewHandler<IImageButton, MauiImageButton>, II
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
-        ((PlatformView)(handler.PlatformView)).Padding = imageButton.Padding.ToThickness();
+        ((PlatformView)(handler.PlatformView)).Padding = imageButton.Padding.ToPlatform();
     }
 
     protected override void ConnectHandler(PlatformView platformView)
