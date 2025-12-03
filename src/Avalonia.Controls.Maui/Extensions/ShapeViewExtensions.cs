@@ -272,7 +272,7 @@ public static class ShapeViewExtensions
     {
         if (path?.Data != null)
         {
-            platformView.Data = path.Data.ToAvaloniaGeometry();
+            platformView.Data = path.Data.ToPlatform();
         }
         else
         {

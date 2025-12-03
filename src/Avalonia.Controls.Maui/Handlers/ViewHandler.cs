@@ -1,13 +1,8 @@
 using Microsoft.Maui;
-using Microsoft.Maui.Controls.Shapes;
-using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Maui.Extensions;
 using PlatformView = Avalonia.Controls.Control;
 
 namespace Avalonia.Controls.Maui.Handlers;
@@ -389,11 +384,12 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
 
         if (!handler.IsMappingProperties())
         {
-            // ContainerView is already being mapped
+            // Ensure container state is up to date before applying the clip
             handler.UpdateValue(nameof(IViewHandler.ContainerView));
         }
 
-        ((PlatformView?)handler.ContainerView)?.UpdateClip(view);
+        var target = (PlatformView?)handler.ContainerView ?? (PlatformView?)handler.PlatformView;
+        target?.UpdateClip(view);
     }
 
     /// <summary>
@@ -535,51 +531,101 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         ((PlatformView?)handler.PlatformView)?.Unfocus(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.TranslationX"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapTranslationX(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateTransformation(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.TranslationY"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapTranslationY(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateTransformation(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.Scale"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapScale(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateTransformation(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.ScaleX"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapScaleX(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateTransformation(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.ScaleY"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapScaleY(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateTransformation(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.Rotation"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapRotation(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateTransformation(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.RotationX"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapRotationX(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateTransformation(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.RotationY"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapRotationY(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateTransformation(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.AnchorX"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapAnchorX(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateTransformation(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.AnchorY"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapAnchorY(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateTransformation(view);
@@ -644,11 +690,21 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         }
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.HorizontalLayoutAlignment"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapHorizontalLayoutAlignment(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateHorizontalLayoutAlignment(view);
     }
 
+    /// <summary>
+    /// Maps the abstract <see cref="IView.VerticalLayoutAlignment"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapVerticalLayoutAlignment(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateVerticalLayoutAlignment(view);
@@ -667,276 +723,5 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     {
         var debugText = DebuggerDisplayHelpers.GetDebugText(nameof(VirtualView), VirtualView, nameof(PlatformView), PlatformView);
         return $"{GetType().FullName}: {debugText}";
-    }
-}
-
-public static class ControlExtensions
-{
-    public static void UpdateTransformation(this PlatformView control, IView view)
-    {
-        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-        {
-            if (control.RenderTransform is not global::Avalonia.Media.TransformGroup group)
-            {
-                group = new global::Avalonia.Media.TransformGroup();
-                group.Children.Add(new global::Avalonia.Media.ScaleTransform());
-                group.Children.Add(new global::Avalonia.Media.RotateTransform());
-                group.Children.Add(new global::Avalonia.Media.TranslateTransform());
-                control.RenderTransform = group;
-                control.RenderTransformOrigin = new global::Avalonia.RelativePoint(0.5, 0.5, global::Avalonia.RelativeUnit.Relative);
-            }
-            if (group.Children[0] is global::Avalonia.Media.ScaleTransform scale)
-            {
-                scale.ScaleX = view.ScaleX * view.Scale;
-                scale.ScaleY = view.ScaleY * view.Scale;
-            }
-            if (group.Children[1] is global::Avalonia.Media.RotateTransform rotate)
-            {
-                rotate.Angle = view.Rotation;
-            }
-            if (group.Children[2] is global::Avalonia.Media.TranslateTransform translate)
-            {
-                translate.X = view.TranslationX;
-                translate.Y = view.TranslationY;
-            }
-        });
-    }
-
-    public static void UpdateWidth(this PlatformView control, IView view)
-    {
-        if (!double.IsNaN(view.Width))
-            control.Width = view.Width;
-        else
-            control.ClearValue(PlatformView.WidthProperty);
-    }
-
-    public static void UpdateHeight(this PlatformView control, IView view)
-    {
-        if (!double.IsNaN(view.Height))
-            control.Height = view.Height;
-        else
-            control.ClearValue(PlatformView.HeightProperty);
-    }
-
-    public static void UpdateMinimumHeight(this PlatformView control, IView view)
-    {
-        if (!double.IsNaN(view.MinimumHeight))
-            control.MinHeight = view.MinimumHeight;
-        else
-            control.ClearValue(PlatformView.MinHeightProperty);
-    }
-
-    public static void UpdateMaximumHeight(this PlatformView control, IView view)
-    {
-        if (!double.IsPositiveInfinity(view.MaximumHeight))
-            control.MaxHeight = view.MaximumHeight;
-        else
-            control.ClearValue(PlatformView.MaxHeightProperty);
-    }
-
-    public static void UpdateMinimumWidth(this PlatformView control, IView view)
-    {
-        if (!double.IsNaN(view.MinimumWidth))
-            control.MinWidth = view.MinimumWidth;
-        else
-            control.ClearValue(PlatformView.MinWidthProperty);
-    }
-
-    public static void UpdateMaximumWidth(this PlatformView control, IView view)
-    {
-        if (!double.IsPositiveInfinity(view.MaximumWidth))
-            control.MaxWidth = view.MaximumWidth;
-        else
-            control.ClearValue(PlatformView.MaxWidthProperty);
-    }
-
-    public static void UpdateIsEnabled(this PlatformView control, IView view)
-    {
-        control.IsEnabled = view.IsEnabled;
-    }
-
-    public static void UpdateOpacity(this PlatformView control, IView view)
-    {
-        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-        {
-            control.Opacity = view.Opacity;
-        });
-    }
-
-    public static void UpdateOpacity(this PlatformView control, double opacity)
-    {
-        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-        {
-            control.Opacity = opacity;
-        });
-    }
-
-    public static void UpdateAutomationId(this PlatformView control, IView view)
-    {
-        if (!string.IsNullOrEmpty(view.AutomationId))
-            global::Avalonia.Automation.AutomationProperties.SetAutomationId(control, view.AutomationId);
-        else
-            control.ClearValue(global::Avalonia.Automation.AutomationProperties.AutomationIdProperty);
-    }
-
-    public static void UpdateInputTransparent(this PlatformView control, IViewHandler handler, IView view)
-    {
-        // In Avalonia, there is no direct equivalent to InputTransparent.
-        // However, we can achieve similar behavior by setting IsHitTestVisible.
-        control.IsHitTestVisible = !view.InputTransparent;
-    }
-
-    public static void Focus(this PlatformView control, FocusRequest request)
-    {
-        control.Focus();
-    }
-
-    public static void Unfocus(this PlatformView control, IView view)
-    {
-        // TODO: Implement unfocus logic if needed
-    }
-
-    public static void InvalidateMeasure(this PlatformView control, IView view)
-    {
-        control.InvalidateMeasure();
-    }
-
-    public static void UpdateVisibility(this PlatformView control, IView view)
-    {
-        switch (view.Visibility)
-        {
-            case Visibility.Visible:
-                control.IsVisible = true;
-                break;
-            case Visibility.Hidden:
-            case Visibility.Collapsed:
-                control.IsVisible = false;
-                break;
-        }
-    }
-
-    public static void UpdateToolTip(this PlatformView control, string? toolTip)
-    {
-        if (!string.IsNullOrEmpty(toolTip))
-            global::Avalonia.Controls.ToolTip.SetTip(control, toolTip);
-        else
-            control.ClearValue(global::Avalonia.Controls.ToolTip.TipProperty);
-    }
-
-    public static void UpdateHorizontalLayoutAlignment(this PlatformView control, IView view)
-    {
-        control.HorizontalAlignment = view.HorizontalLayoutAlignment.ToAvaloniaHorizontalAlignment();
-    }
-
-    public static void UpdateVerticalLayoutAlignment(this PlatformView control, IView view)
-    {
-        control.VerticalAlignment = view.VerticalLayoutAlignment.ToAvaloniaVerticalAlignment();
-    }
-
-    public static void UpdateSemantics(this PlatformView control, IView view)
-    {
-        if (view.Semantics?.Description is not null)
-            global::Avalonia.Automation.AutomationProperties.SetHelpText(control, view.Semantics.Description);
-        else
-            control.ClearValue(global::Avalonia.Automation.AutomationProperties.HelpTextProperty);
-        if (view.Semantics?.Hint is not null)
-            global::Avalonia.Automation.AutomationProperties.SetItemStatus(control, view.Semantics.Hint);
-        else
-            control.ClearValue(global::Avalonia.Automation.AutomationProperties.ItemStatusProperty);
-        if (view.Semantics?.HeadingLevel is not null)
-        {
-        }
-    }
-
-    public static void InvalidateClip(this PlatformView control)
-    {
-        control.Clip = null;
-    }
-
-    public static void UpdateClip(this PlatformView control, IView view)
-    {
-        if (view.Clip is null)
-        {
-            control.InvalidateClip();
-            return;
-        }
-        if (view.Clip is RoundRectangleGeometry roundRect)
-        {
-            var rect = new global::Avalonia.Rect(0, 0, control.Bounds.Width, control.Bounds.Height);
-            var radius = Math.Max(roundRect.CornerRadius.TopLeft, Math.Max(roundRect.CornerRadius.TopRight, Math.Max(roundRect.CornerRadius.BottomLeft, roundRect.CornerRadius.BottomRight)));
-            control.Clip = new global::Avalonia.Media.RectangleGeometry(rect, radius, radius);
-        }
-        else if (view.Clip is RectangleGeometry rect)
-        {
-            control.Clip = new global::Avalonia.Media.RectangleGeometry(new global::Avalonia.Rect(0, 0, control.Bounds.Width, control.Bounds.Height));
-        }
-        else if (view.Clip is EllipseGeometry ellipse)
-        {
-            var width = control.Bounds.Width;
-            var height = control.Bounds.Height;
-            control.Clip = new global::Avalonia.Media.EllipseGeometry(new global::Avalonia.Rect(0, 0, width, height));
-        }
-        else
-        {
-            control.InvalidateClip();
-        }
-    }
-
-    public static void UpdateShadow(this PlatformView control, IView view)
-    {
-        // TODO: Implement shadow logic
-    }
-
-    public static void UpdateBackground(this PlatformView control, IView view)
-    {
-        if (control is Panel panel)
-        {
-            // Background is handled by specific control types (Panel, TextBlock, etc.)
-            // For Panel-based controls (like ContentView), set the background
-            if (view.Background != null)
-            {
-                panel.Background = view.Background.ToPlatform();
-            }
-            else
-            {
-                panel.ClearValue(Panel.BackgroundProperty);
-            }
-        }
-        else if (control is TemplatedControl templatedControl)
-        {
-            if (view.Background != null)
-            {
-                templatedControl.Background = view.Background.ToPlatform();
-            }
-            else
-            {
-                templatedControl.ClearValue(TemplatedControl.BackgroundProperty);
-            }
-        }
-    }
-
-    public static Task UpdateBackgroundImageSourceAsync(this PlatformView control, IImageSource? imageSource, IImageSourceServiceProvider provider)
-    {
-        // TODO: Implement image background logic
-        return Task.CompletedTask;
-    }
-
-    public static void UpdateBorder(this PlatformView control, IView view)
-    {
-        // TODO: Implement border logic
-    }
-
-    public static void UpdateFlowDirection(this PlatformView control, IView view)
-    {
-        switch (view.FlowDirection)
-        {
-            case FlowDirection.MatchParent:
-            case FlowDirection.LeftToRight:
-                control.FlowDirection = global::Avalonia.Media.FlowDirection.LeftToRight;
-                break;
-            case FlowDirection.RightToLeft:
-                control.FlowDirection = global::Avalonia.Media.FlowDirection.RightToLeft;
-                break;
-        }
     }
 }
