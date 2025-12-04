@@ -570,7 +570,6 @@ Displays a short list of items, from which an item can be selected.
 |----------|--------|
 | CharacterSpacing | ✅ Implemented  |
 | FontAttributes | ✅ Implemented  |
-| FontAutoScalingEnabled | ⏳ TODO |
 | FontFamily | ✅ Implemented  |
 | FontSize | ✅ Implemented  |
 | HorizontalTextAlignment | ✅ Implemented  |
@@ -579,8 +578,8 @@ Displays a short list of items, from which an item can be selected.
 | SelectedIndex | ⏳ TODO |
 | SelectedItem | ✅ Implemented  |
 | TextColor | ✅ Implemented  |
-| Title | ⏳ TODO |
-| TitleColor | ⏳ TODO |
+| Title | ✅ Implemented |
+| TitleColor | ✅ Implemented |
 | VerticalTextAlignment | ✅ Implemented  |
 
 ### Events
