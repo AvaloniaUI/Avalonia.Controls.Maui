@@ -21,12 +21,13 @@ public partial class MainPage : FlyoutPage
 
     private void NavigateToPage(Type pageType)
     {
-Page page = pageType.Name switch
+        Page page = pageType.Name switch
         {
             nameof(FontsPage) => new FontsPage(),
             nameof(ActivityIndicatorPage) => new ActivityIndicatorPage(),
             nameof(ButtonPage) => new ButtonPage(),
             nameof(CheckBoxPage) => new CheckBoxPage(),
+            nameof(ImagePage) => new ImagePage(),
             nameof(ProgressBarPage) => new ProgressBarPage(),
             nameof(SwipeViewPage) => new SwipeViewPage(),
             nameof(RectanglePage) => new RectanglePage(),

@@ -150,6 +150,67 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         await CreateHandlerAsync(button);
     }
 
+    [AvaloniaFact(DisplayName = "Background Is Properly Set Via Avalonia Extension Method")]
+    public async Task BackgroundIsProperlySetViaAvaloniaExtensionMethod()
+    {
+        // This test specifically validates that the Avalonia.Controls.Maui.Extensions.ViewExtensions.UpdateBackground
+        // extension method is being used instead of Microsoft.Maui.Platform extension methods.
+        // The bug occurred when ButtonHandler.cs was missing the using directive for
+        // Avalonia.Controls.Maui.Extensions, causing it to fall back to the MAUI extension method
+        // which doesn't properly set the background on Avalonia controls.
+        var button = new ButtonStub
+        {
+            Text = "Button",
+            Background = new SolidPaint(Colors.Green)
+        };
+
+        var handler = await CreateHandlerAsync(button);
+
+        // Verify the background brush is properly set on the Avalonia control
+        Assert.NotNull(handler.PlatformView);
+        Assert.NotNull(handler.PlatformView.Background);
+
+        // Verify it's a SolidColorBrush with the correct color
+        var brush = Assert.IsType<Media.SolidColorBrush>(handler.PlatformView.Background);
+        Assert.Equal(0, brush.Color.R);
+        Assert.Equal(128, brush.Color.G);  // Green channel should be 128
+        Assert.Equal(0, brush.Color.B);
+    }
+
+    [AvaloniaFact(DisplayName = "Background Update Uses Correct Extension Method")]
+    public async Task BackgroundUpdateUsesCorrectExtensionMethod()
+    {
+        // This test validates that updating the background after handler creation
+        // also uses the correct Avalonia extension method
+        var button = new ButtonStub
+        {
+            Text = "Button",
+            Background = new SolidPaint(Colors.Red)
+        };
+
+        var handler = await CreateHandlerAsync(button);
+
+        // Verify initial background
+        Assert.NotNull(handler.PlatformView?.Background);
+        var initialBrush = Assert.IsType<Media.SolidColorBrush>(handler.PlatformView.Background);
+        Assert.Equal(255, initialBrush.Color.R);  // Red
+
+        // Update to a new color
+        await InvokeOnMainThreadAsync(() =>
+        {
+            button.Background = new SolidPaint(Colors.Purple);
+            handler.UpdateValue(nameof(IButton.Background));
+        });
+
+        // Verify the background was properly updated through Avalonia extension
+        Assert.NotNull(handler.PlatformView?.Background);
+        var updatedBrush = Assert.IsType<Media.SolidColorBrush>(handler.PlatformView.Background);
+        // Purple is RGB(128, 0, 128)
+        Assert.Equal(128, updatedBrush.Color.R);
+        Assert.Equal(0, updatedBrush.Color.G);
+        Assert.Equal(128, updatedBrush.Color.B);
+    }
+
     [AvaloniaFact(DisplayName = "Padding Initializes Correctly")]
     public async Task PaddingInitializesCorrectly()
     {
