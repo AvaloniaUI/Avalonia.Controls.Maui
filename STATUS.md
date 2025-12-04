@@ -329,11 +329,11 @@ Displays an image that can be loaded from a local file, a URI, an embedded resou
 
 | Property | Status |
 |----------|--------|
-| Source | ⏳ TODO |
-| Aspect | ⏳ TODO |
+| Source | ✅ Implemented |
+| Aspect | ✅ Implemented |
 | IsOpaque | ⏳ TODO |
-| IsAnimationPlaying | ⏳ TODO |
-| IsLoading | ⏳ TODO |
+| IsAnimationPlaying | ✅ Implemented |
+| IsLoading | ✅ Implemented |
 
 ---
 
