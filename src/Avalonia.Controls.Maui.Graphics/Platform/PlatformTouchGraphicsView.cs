@@ -1,8 +1,6 @@
-using Avalonia.Controls;
 using Avalonia.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
-using System.Linq;
 
 namespace Avalonia.Controls.Maui.Platform;
 
@@ -27,12 +25,12 @@ public class PlatformTouchGraphicsView : UserControl
         _graphicsView = graphicsView;
     }
 
-    public void Invalidate() => _platformGraphicsView.InvalidateVisual();
+    public void InvalidateDrawable() => _platformGraphicsView.InvalidateVisual();
 
     private PointF[] GetViewPoints(PointerEventArgs e)
     {
         var point = e.GetPosition(this);
-        return new[] { new PointF((float)point.X, (float)point.Y) };
+        return [new PointF((float)point.X, (float)point.Y)];
     }
 
     protected override void OnPointerEntered(PointerEventArgs e)
