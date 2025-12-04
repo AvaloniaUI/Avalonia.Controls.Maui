@@ -4,7 +4,7 @@ using Microsoft.Maui.Platform;
 namespace Avalonia.Controls.Maui;
 
 /// <summary>
-/// Extension helpers to keep <see cref="ScrollViewer"/> mapping logic in one place.
+/// Extension methods for mapping <see cref="IScrollView"/> properties.
 /// </summary>
 public static class ScrollViewExtensions
 {
