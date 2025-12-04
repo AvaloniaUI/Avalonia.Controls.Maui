@@ -164,8 +164,10 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     {
         if (PlatformView is null)
             return;
-        PlatformView.Measure(new global::Avalonia.Size(frame.Width, frame.Height));
-        PlatformView.Arrange(new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height));
+        Avalonia.Threading.Dispatcher.UIThread.Invoke(new Action(() => { 
+            PlatformView.Measure(new global::Avalonia.Size(frame.Width, frame.Height));
+            PlatformView.Arrange(new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height));
+        }));
     }
 
     private protected abstract PlatformView OnCreatePlatformView();
