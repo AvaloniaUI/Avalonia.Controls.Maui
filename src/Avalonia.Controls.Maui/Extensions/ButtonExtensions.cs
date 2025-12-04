@@ -19,6 +19,23 @@ namespace Avalonia.Controls.Maui.Platform;
 public static class ButtonExtensions
 {
     /// <summary>
+    /// Updates the background color of the button.
+    /// </summary>
+    /// <param name="platformView">The platform button control.</param>
+    /// <param name="button">The cross-platform button.</param>
+    public static void UpdateButtonBackground(this PlatformView platformView, IButton button)
+    {
+        if (button.Background != null)
+        {
+            platformView.Background = button.Background.ToPlatform();
+        }
+        else
+        {
+            platformView.ClearValue(TemplatedControl.BackgroundProperty);
+        }
+    }
+    
+    /// <summary>
     /// Updates the border stroke color of the button.
     /// </summary>
     /// <param name="platformView">The platform button control.</param>
