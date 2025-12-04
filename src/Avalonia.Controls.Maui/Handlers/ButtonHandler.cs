@@ -1,4 +1,5 @@
 using Avalonia.Interactivity;
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Input;
 using Microsoft.Maui;
@@ -66,7 +67,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
 
-        platformView.UpdateBackground(handler.VirtualView);
+        platformView.UpdateButtonBackground(handler.VirtualView);
     }
 
     public static void MapStrokeColor(IButtonHandler handler, IButton button)

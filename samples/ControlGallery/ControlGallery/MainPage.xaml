@@ -2,7 +2,11 @@
 <FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			xmlns:pages="clr-namespace:ControlGallery.Pages"
-			xmlns:word="clr-namespace:WordPuzzle"
+			xmlns:rpnCalculator="clr-namespace:RpnCalculator"
+			xmlns:solitaireEncryption="clr-namespace:SolitaireEncryption"
+			xmlns:tipCalc="clr-namespace:TipCalc"
+			xmlns:weather="clr-namespace:Weather"
+			xmlns:wordPuzzle="clr-namespace:WordPuzzle"
 			xmlns:local="clr-namespace:ControlGallery"
 			x:DataType="local:MainPage"
 			FlyoutLayoutBehavior="Split"
@@ -15,10 +19,26 @@
 			<TableView Intent="Menu">
 				<TableRoot>
 					<TableSection Title="Apps">
+						<TextCell Text="RpnCalculator"
+						          Detail="A Reverse Polish Notation calc"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type rpnCalculator:MainPage}"/>
+						<TextCell Text="SolitaireEncryption"
+						          Detail="Solitaire encryption algorithm"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type solitaireEncryption:SolitairePage}"/>
+						<TextCell Text="Tip Calc"
+						          Detail="TipCalc application"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type tipCalc:TipCalcPage}"/>
+						<TextCell Text="Weather"
+						          Detail="Retrieves weather data"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type weather:MainPage}"/>
 						<TextCell Text="Word Puzzle"
-								  Detail="A word puzzle game"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type word:MainPage}"/>
+						          Detail="A word puzzle game"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type wordPuzzle:MainPage}"/>
 					</TableSection>
 					<TableSection Title="Services">
 						<TextCell Text="Fonts"
@@ -43,6 +63,14 @@
 								  Detail="CheckBox control for selections"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:CheckBoxPage}"/>
+            <TextCell Text="GraphicsView"
+								  Detail="Custom drawing and graphics"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:GraphicsViewPage}"/>
+						<TextCell Text="Image"
+						      Detail="Image display with various sources"
+						      Command="{Binding NavigateCommand}"
+						      CommandParameter="{x:Type pages:ImagePage}"/>
 						<TextCell Text="ProgressBar"
 								  Detail="Progress indicator control"
 								  Command="{Binding NavigateCommand}"
@@ -59,6 +87,20 @@
 						          Detail="SwipeView control"
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type pages:SwipeViewPage}"/>
+					</TableSection>
+					<TableSection Title="Effects">
+						<TextCell Text="Clip"
+						          Detail="Shape-based clipping samples"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:ClipPage}"/>
+						<TextCell Text="Shadow"
+						          Detail="Soft elevation and offsets"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:ShadowPage}"/>
+						<TextCell Text="Transformations"
+						          Detail="Play with scale, rotation, translation, anchors"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:TransformationsPage}"/>
 					</TableSection>
 					<TableSection Title="Shapes">
 						<TextCell Text="Rectangle"

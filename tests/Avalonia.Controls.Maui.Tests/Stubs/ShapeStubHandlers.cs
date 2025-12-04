@@ -230,7 +230,7 @@ public class PathStubHandler : ShapeStubHandler<PathStub, AvaloniaPath>
     {
         if (handler.PlatformView is AvaloniaPath platformView)
         {
-            platformView.Data = path.Data?.ToAvaloniaGeometry();
+            platformView.Data = path.Data?.ToPlatform();
         }
     }
 

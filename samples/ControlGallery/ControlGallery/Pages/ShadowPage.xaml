@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ShadowPage"
+             Title="Shadow">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="24">
+
+            <Label Text="Shadow Samples"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- Soft Card Shadow -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Soft Card Shadow"
+                           FontAttributes="Bold" />
+                    <Border HeightRequest="140"
+                            BackgroundColor="#F3F4F6"
+                            Padding="12"
+                            Margin="24">
+                        <Border.Shadow>
+                            <Shadow Brush="#2563EB"
+                                    Offset="0,12"
+                                    Opacity="0.45"
+                                    Radius="18" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="6"
+                                             VerticalOptions="Center">
+                            <Label Text="Cool blue glow"
+                                   FontAttributes="Bold" />
+                            <Label Text="Shadow softened with radius and opacity" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Directional Shadow -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Directional Shadow"
+                           FontAttributes="Bold" />
+                    <Border HeightRequest="140"
+                            BackgroundColor="#FEF3C7"
+                            Padding="12"
+                            Margin="24">
+                        <Border.Shadow>
+                            <Shadow Brush="#EA580C"
+                                    Offset="18,6"
+                                    Opacity="0.55"
+                                    Radius="24" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="6"
+                                             VerticalOptions="Center">
+                            <Label Text="Strong offset"
+                                   FontAttributes="Bold" />
+                            <Label Text="Warm color and horizontal offset for depth" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Raised Card -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Raised Card"
+                           FontAttributes="Bold" />
+                    <Border HeightRequest="140"
+                            BackgroundColor="#ECFEFF"
+                            Padding="12"
+                            Margin="24">
+                        <Border.Shadow>
+                            <Shadow Brush="#0EA5E9"
+                                    Offset="0,20"
+                                    Opacity="0.35"
+                                    Radius="28" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="6"
+                                             VerticalOptions="Center">
+                            <Label Text="High elevation"
+                                   FontAttributes="Bold" />
+                            <Label Text="Wide radius and lower opacity" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
