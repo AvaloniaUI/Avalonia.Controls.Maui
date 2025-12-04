@@ -3,21 +3,22 @@ using System.Collections.ObjectModel;
 using Avalonia.Controls.Templates;
 using Avalonia.Data;
 using Microsoft.Maui;
+using Microsoft.Maui.Graphics;
 
 namespace Avalonia.Controls.Maui.Platform;
 
 /// <summary>
 /// Provides extension methods to map <see cref="IPicker"/> properties onto the Avalonia
-/// <see cref="ComboBox"/> platform control.
+/// <see cref="MauiComboBox"/> platform control.
 /// </summary>
 public static class PickerExtensions
 {
     /// <summary>
     /// Applies the items source backing the picker.
     /// </summary>
-    /// <param name="platformView">The Avalonia ComboBox control.</param>
+    /// <param name="platformView">The Avalonia MauiComboBox control.</param>
     /// <param name="picker">The .NET MAUI view supplying the items.</param>
-    public static void UpdateItems(this ComboBox platformView, IPicker picker)
+    public static void UpdateItems(this MauiComboBox platformView, IPicker picker)
     {
         platformView.ItemsSource = picker.Items != null
             ? new ObservableCollection<string>(picker.Items)
@@ -27,9 +28,9 @@ public static class PickerExtensions
     /// <summary>
     /// Applies vertical text alignment to the selection content.
     /// </summary>
-    /// <param name="platformView">The Avalonia ComboBox control.</param>
+    /// <param name="platformView">The Avalonia MauiComboBox control.</param>
     /// <param name="picker">The .NET MAUI view providing alignment values.</param>
-    public static void UpdateVerticalTextAlignment(this ComboBox platformView, IPicker picker)
+    public static void UpdateVerticalTextAlignment(this MauiComboBox platformView, IPicker picker)
     {
         platformView.VerticalContentAlignment = picker.VerticalTextAlignment switch
         {
@@ -43,9 +44,9 @@ public static class PickerExtensions
     /// <summary>
     /// Applies horizontal text alignment to the selection content.
     /// </summary>
-    /// <param name="platformView">The Avalonia ComboBox control.</param>
+    /// <param name="platformView">The Avalonia MauiComboBox control.</param>
     /// <param name="picker">The .NET MAUI view providing alignment values.</param>
-    public static void UpdateHorizontalTextAlignment(this ComboBox platformView, IPicker picker)
+    public static void UpdateHorizontalTextAlignment(this MauiComboBox platformView, IPicker picker)
     {
         platformView.HorizontalContentAlignment = picker.HorizontalTextAlignment switch
         {
@@ -57,40 +58,68 @@ public static class PickerExtensions
     }
 
     /// <summary>
-    /// Updates the picker title placeholder text.
+    /// Updates the picker title using the Header property.
     /// </summary>
     /// <param name="platformView">The Avalonia platform view.</param>
     /// <param name="picker">The .NET MAUI view providing the title.</param>
-    [NotImplemented("Pending implementation in Avalonia Core. More information: https://github.com/AvaloniaUI/Avalonia/issues/20198")] 
-    public static void UpdateTitle(this ComboBox platformView, IPicker picker)
+    public static void UpdateTitle(this MauiComboBox platformView, IPicker picker)
     {
-        platformView.PlaceholderText = picker.Title ?? string.Empty;
-    }
+        var title = picker.Title ?? string.Empty;
 
-    /// <summary>
-    /// Updates the picker title placeholder color.
-    /// </summary>
-    /// <param name="platformView">The Avalonia platform view.</param>
-    /// <param name="picker">The .NET MAUI view providing the color.</param>
-    [NotImplemented("Pending implementation in Avalonia Core. More information: https://github.com/AvaloniaUI/Avalonia/issues/20198")] 
-    public static void UpdateTitleColor(this ComboBox platformView, IPicker picker)
-    {
+        if (string.IsNullOrEmpty(title))
+        {
+            platformView.Header = null;
+            platformView.HeaderTemplate = null;
+            return;
+        }
+
+        // If we have a TitleColor set, we need to use a template
         if (picker.TitleColor != null)
         {
-            platformView.PlaceholderForeground = picker.TitleColor.ToPlatform();
+            platformView.Header = title;
+            platformView.HeaderTemplate = CreateHeaderTemplate(picker.TitleColor);
         }
         else
         {
-            platformView.ClearValue(ComboBox.PlaceholderForegroundProperty);
+            // Just set the header as a string, let the default template handle it
+            platformView.Header = title;
+            platformView.HeaderTemplate = null;
         }
+    }
+
+    /// <summary>
+    /// Updates the picker title color using the HeaderTemplate.
+    /// </summary>
+    /// <param name="platformView">The Avalonia platform view.</param>
+    /// <param name="picker">The .NET MAUI view providing the color.</param>
+    public static void UpdateTitleColor(this MauiComboBox platformView, IPicker picker)
+    {
+        // Update the title which will handle both title and color
+        UpdateTitle(platformView, picker);
+    }
+
+    private static IDataTemplate? CreateHeaderTemplate(Color titleColor)
+    {
+        return new FuncDataTemplate<object?>((data, _) =>
+        {
+            var textBlock = new TextBlock
+            {
+                [!TextBlock.TextProperty] = new Binding
+                {
+                    Source = data
+                },
+                Foreground = titleColor.ToPlatform()
+            };
+            return textBlock;
+        });
     }
 
     /// <summary>
     /// Updates the selected text color.
     /// </summary>
-    /// <param name="platformView">The Avalonia ComboBox control.</param>
+    /// <param name="platformView">The Avalonia MauiComboBox control.</param>
     /// <param name="picker">The .NET MAUI view providing the color.</param>
-    public static void UpdateTextColor(this ComboBox platformView, IPicker picker)
+    public static void UpdateTextColor(this MauiComboBox platformView, IPicker picker)
     {
         if (picker.TextColor != null)
         {
@@ -105,9 +134,9 @@ public static class PickerExtensions
     /// <summary>
     /// Updates the selected index ensuring bounds are respected.
     /// </summary>
-    /// <param name="platformView">The Avalonia ComboBox control.</param>
+    /// <param name="platformView">The Avalonia MauiComboBox control.</param>
     /// <param name="picker">The .NET MAUI view providing the index.</param>
-    public static void UpdateSelectedIndex(this ComboBox platformView, IPicker picker)
+    public static void UpdateSelectedIndex(this MauiComboBox platformView, IPicker picker)
     {
         var targetIndex = picker.SelectedIndex;
 
@@ -130,10 +159,10 @@ public static class PickerExtensions
     /// <summary>
     /// Updates the font styling for the picker content.
     /// </summary>
-    /// <param name="platformView">The Avalonia ComboBox control.</param>
+    /// <param name="platformView">The Avalonia MauiComboBox control.</param>
     /// <param name="picker">The .NET MAUI view providing the font.</param>
     /// <param name="fontManager">The font manager service.</param>
-    public static void UpdateFont(this ComboBox platformView, IPicker picker, IFontManager fontManager)
+    public static void UpdateFont(this MauiComboBox platformView, IPicker picker, IFontManager fontManager)
     {
         platformView.UpdateFont((ITextStyle)picker, fontManager);
     }
@@ -141,9 +170,9 @@ public static class PickerExtensions
     /// <summary>
     /// Applies character spacing to the displayed items.
     /// </summary>
-    /// <param name="platformView">The Avalonia ComboBox control.</param>
+    /// <param name="platformView">The Avalonia MauiComboBox control.</param>
     /// <param name="picker">The .NET MAUI view providing the character spacing value.</param>
-    public static void UpdateCharacterSpacing(this ComboBox platformView, IPicker picker)
+    public static void UpdateCharacterSpacing(this MauiComboBox platformView, IPicker picker)
     {
         var characterSpacing = picker.CharacterSpacing;
 

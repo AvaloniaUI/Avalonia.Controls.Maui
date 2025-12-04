@@ -5,7 +5,7 @@ using PlatformView = System.Object;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHandler
+public partial class PickerHandler : ViewHandler<IPicker, MauiComboBox>, IPickerHandler
 {
     bool _isUpdatingSelection;
 
@@ -53,7 +53,6 @@ public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHand
         handler.PlatformView.UpdateHorizontalTextAlignment(handler.VirtualView);
     }
 
-    [NotImplemented("Pending implementation in Avalonia Core. More information: https://github.com/AvaloniaUI/Avalonia/issues/20198")] 
     public static void MapTitleColor(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
@@ -61,7 +60,6 @@ public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHand
         handler.PlatformView.UpdateTitleColor(handler.VirtualView);
     }
 
-    [NotImplemented("Pending implementation in Avalonia Core. More information: https://github.com/AvaloniaUI/Avalonia/issues/20198")] 
     public static void MapTitle(PickerHandler handler, IPicker picker)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
@@ -129,12 +127,12 @@ public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHand
 
     PlatformView IPickerHandler.PlatformView => PlatformView;
 
-    protected override ComboBox CreatePlatformView()
+    protected override MauiComboBox CreatePlatformView()
     {
-        return new ComboBox();
+        return new MauiComboBox();
     }
 
-    protected override void ConnectHandler(ComboBox platformView)
+    protected override void ConnectHandler(MauiComboBox platformView)
     {
         base.ConnectHandler(platformView);
 
@@ -156,7 +154,7 @@ public partial class PickerHandler : ViewHandler<IPicker, ComboBox>, IPickerHand
         }
     }
 
-    protected override void DisconnectHandler(ComboBox platformView)
+    protected override void DisconnectHandler(MauiComboBox platformView)
     {
         platformView.DropDownOpened -= OnDropDownOpened;
         platformView.DropDownClosed -= OnDropDownClosed;

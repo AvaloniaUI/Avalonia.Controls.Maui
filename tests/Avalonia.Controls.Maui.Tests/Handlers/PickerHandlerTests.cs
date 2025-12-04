@@ -270,21 +270,27 @@ public partial class PickerHandlerTests : HandlerTestBase<MauiPickerHandler, Pic
     // Platform-specific property getters
     string? GetNativeTitle(MauiPickerHandler handler)
     {
-        return handler.PlatformView is ComboBox comboBox ? comboBox.PlaceholderText : null;
+        return handler.PlatformView is MauiComboBox comboBox ? comboBox.Header?.ToString() : null;
     }
 
     Color? GetNativeTitleColor(MauiPickerHandler handler)
     {
-        if (handler.PlatformView is not ComboBox comboBox)
+        if (handler.PlatformView is not MauiComboBox comboBox)
             return null;
 
-        if (comboBox.PlaceholderForeground is Avalonia.Media.SolidColorBrush brush)
+        // If HeaderTemplate is set, try to extract the color from it
+        if (comboBox.HeaderTemplate is FuncDataTemplate<object?> template)
         {
-            return new Color(
-                brush.Color.R / 255f,
-                brush.Color.G / 255f,
-                brush.Color.B / 255f,
-                brush.Color.A / 255f);
+            // Build the template with the header data to inspect the created control
+            var control = template.Build(comboBox.Header);
+            if (control is TextBlock textBlock && textBlock.Foreground is Avalonia.Media.SolidColorBrush brush)
+            {
+                return new Color(
+                    brush.Color.R / 255f,
+                    brush.Color.G / 255f,
+                    brush.Color.B / 255f,
+                    brush.Color.A / 255f);
+            }
         }
 
         return null;
@@ -292,7 +298,7 @@ public partial class PickerHandlerTests : HandlerTestBase<MauiPickerHandler, Pic
 
     Color? GetNativeTextColor(MauiPickerHandler handler)
     {
-        if (handler.PlatformView is not ComboBox comboBox)
+        if (handler.PlatformView is not MauiComboBox comboBox)
             return null;
 
         if (comboBox.Foreground is Avalonia.Media.SolidColorBrush brush)
@@ -309,24 +315,24 @@ public partial class PickerHandlerTests : HandlerTestBase<MauiPickerHandler, Pic
 
     int GetNativeSelectedIndex(MauiPickerHandler handler)
     {
-        return handler.PlatformView is ComboBox comboBox ? comboBox.SelectedIndex : -1;
+        return handler.PlatformView is MauiComboBox comboBox ? comboBox.SelectedIndex : -1;
     }
 
     double GetNativeFontSize(MauiPickerHandler handler)
     {
-        return handler.PlatformView is ComboBox comboBox ? comboBox.FontSize : 0;
+        return handler.PlatformView is MauiComboBox comboBox ? comboBox.FontSize : 0;
     }
 
     Avalonia.Layout.HorizontalAlignment GetNativeHorizontalAlignment(MauiPickerHandler handler)
     {
-        return handler.PlatformView is ComboBox comboBox
+        return handler.PlatformView is MauiComboBox comboBox
             ? comboBox.HorizontalContentAlignment
             : Avalonia.Layout.HorizontalAlignment.Left;
     }
 
     Avalonia.Layout.VerticalAlignment GetNativeVerticalAlignment(MauiPickerHandler handler)
     {
-        return handler.PlatformView is ComboBox comboBox
+        return handler.PlatformView is MauiComboBox comboBox
             ? comboBox.VerticalContentAlignment
             : Avalonia.Layout.VerticalAlignment.Center;
     }

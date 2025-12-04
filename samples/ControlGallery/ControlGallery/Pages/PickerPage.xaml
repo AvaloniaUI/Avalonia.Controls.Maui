@@ -12,6 +12,12 @@
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
 
+            <Label Text="The Title property displays a header above the Picker control, and TitleColor allows customizing its color."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
+
             <!-- Basic Picker -->
             <Border Stroke="Gray"
                     Padding="12">
@@ -71,6 +77,10 @@
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Title and Text Colors"
                            FontAttributes="Bold" />
+                    <Label Text="Title displays as a header above the Picker. TitleColor sets the header color, and TextColor sets the selected item color."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
                     <Picker Title="Favorite season"
                             TitleColor="#4b5563"
                             TextColor="#2563eb"
@@ -80,6 +90,59 @@
                             <x:String>Summer</x:String>
                             <x:String>Autumn</x:String>
                             <x:String>Winter</x:String>
+                        </Picker.Items>
+                    </Picker>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Multiple Title Color Examples -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Custom Title Colors"
+                           FontAttributes="Bold" />
+                    <Label Text="Examples showing different TitleColor values"
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <Picker Title="Red Title"
+                            TitleColor="Red"
+                            SelectedIndex="0">
+                        <Picker.Items>
+                            <x:String>Option 1</x:String>
+                            <x:String>Option 2</x:String>
+                        </Picker.Items>
+                    </Picker>
+
+                    <Picker Title="Green Title"
+                            TitleColor="Green"
+                            SelectedIndex="0">
+                        <Picker.Items>
+                            <x:String>Option A</x:String>
+                            <x:String>Option B</x:String>
+                        </Picker.Items>
+                    </Picker>
+
+                    <Picker Title="Blue Title"
+                            TitleColor="Blue"
+                            SelectedIndex="0">
+                        <Picker.Items>
+                            <x:String>Item X</x:String>
+                            <x:String>Item Y</x:String>
+                        </Picker.Items>
+                    </Picker>
+
+                    <Picker Title="Purple Title with Colored Text"
+                            TitleColor="#9333ea"
+                            TextColor="#c026d3"
+                            SelectedIndex="0">
+                        <Picker.Items>
+                            <x:String>Choice 1</x:String>
+                            <x:String>Choice 2</x:String>
                         </Picker.Items>
                     </Picker>
                 </VerticalStackLayout>
