@@ -1,3 +1,4 @@
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
@@ -56,34 +57,22 @@ public partial class GraphicsViewHandler : ViewHandler<IGraphicsView, PlatformTo
 
     public static void MapBackground(IGraphicsViewHandler handler, IGraphicsView graphicsView)
     {
-        ((GraphicsViewHandler)handler).UpdateBackground();
+        (handler.PlatformView as PlatformTouchGraphicsView)?.UpdateBackground(graphicsView);
     }
 
     public static void MapDrawable(IGraphicsViewHandler handler, IGraphicsView graphicsView)
     {
-        ((GraphicsViewHandler)handler).UpdateDrawable();
+        (handler.PlatformView as PlatformTouchGraphicsView)?.UpdateDrawable(graphicsView);
     }
 
     public static void MapFlowDirection(IGraphicsViewHandler handler, IGraphicsView graphicsView)
     {
-        // Flow direction handling if needed
+        (handler.PlatformView as PlatformTouchGraphicsView)?.UpdateFlowDirection(graphicsView);
+        (handler.PlatformView as PlatformTouchGraphicsView)?.Invalidate();
     }
 
     public static void MapInvalidate(IGraphicsViewHandler handler, IGraphicsView graphicsView, object? arg)
     {
-        ((GraphicsViewHandler)handler).PlatformView.Invalidate();
-    }
-
-    private void UpdateBackground()
-    {
-        if (VirtualView?.Background != null)
-        {
-            PlatformView.Background = VirtualView.Background.ToPlatform();
-        }
-    }
-
-    private void UpdateDrawable()
-    {
-        PlatformView.UpdateDrawable(VirtualView);
+        (handler.PlatformView as PlatformTouchGraphicsView)?.Invalidate();
     }
 }

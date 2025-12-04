@@ -42,6 +42,7 @@ public partial class MainPage : FlyoutPage
             nameof(SwitchPage) => new SwitchPage(),
             nameof(ClipPage) => new ClipPage(),
             nameof(ShadowPage) => new ShadowPage(),
+            nameof(GraphicsViewPage) => new GraphicsViewPage(),
             nameof(ThemePage) => new ThemePage(),
             "MainPage" when pageType.Namespace == "RpnCalculator" => new RpnCalculator.MainPage(),
             "SolitairePage" when pageType.Namespace == "SolitaireEncryption" => new SolitaireEncryption.SolitairePage(),
