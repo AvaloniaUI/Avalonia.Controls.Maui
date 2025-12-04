@@ -1,4 +1,5 @@
 using Avalonia.Interactivity;
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Input;
 using Microsoft.Maui;
