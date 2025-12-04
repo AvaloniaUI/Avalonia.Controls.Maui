@@ -41,6 +41,8 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
     {
         base.ConnectHandler(platformView);
 
+        var avWindow = (Window)platformView;
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             s_alertManager.Subscribe(window);
@@ -51,6 +53,8 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
 
     protected override void DisconnectHandler(object platformView)
     {
+        var avWindow = (Window)platformView;
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             s_alertManager.Unsubscribe(window);
@@ -96,13 +100,19 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
     static void mapWidth(IWindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
-        avWindow.Width = window.Width;
+        if (!double.IsNaN(window.Width))
+            avWindow.Width = window.Width;
+        else
+            avWindow.Width = avWindow.ClientSize.Width;
     }
 
     static void mapHeight(IWindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
-        avWindow.Height = window.Height;
+        if (!double.IsNaN(window.Height))
+            avWindow.Height = window.Height;
+        else
+            avWindow.Height = avWindow.ClientSize.Height;
     }
 
     static Window GetWindow(IWindowHandler handler, IWindow window)

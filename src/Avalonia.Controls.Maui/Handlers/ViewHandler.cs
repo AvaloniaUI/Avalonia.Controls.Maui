@@ -178,26 +178,21 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     /// <inheritdoc/>
     public virtual void PlatformArrange(Microsoft.Maui.Graphics.Rect frame)
     {
-        var platformView = PlatformView;
-        if (platformView is null)
-            return;
-
         if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
-        {
-            // Already on UI thread, execute directly
-            platformView.Measure(new global::Avalonia.Size(frame.Width, frame.Height));
-            platformView.Arrange(new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height));
-        }
+            Arrange(frame);
         else
-        {
-            // Not on UI thread, post to UI thread
-            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-            {
-                platformView.Measure(new global::Avalonia.Size(frame.Width, frame.Height));
-                platformView.Arrange(new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height));
-            });
-        }
+            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => Arrange(frame));
     }
+
+    private protected void Arrange(Microsoft.Maui.Graphics.Rect frame)
+    {
+        if (PlatformView is null)
+            return;
+            
+        PlatformView.Measure(new global::Avalonia.Size(frame.Width, frame.Height));
+        PlatformView.Arrange(new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height));
+    }
+
 
     private protected abstract PlatformView OnCreatePlatformView();
 
