@@ -740,19 +740,19 @@ Provides scrolling of its content, which is typically a layout.
 
 | Property | Status |
 |----------|--------|
-| Content | ⏳ TODO |
-| ContentSize | ⏳ TODO |
-| HorizontalScrollBarVisibility | ⏳ TODO |
-| Orientation | ⏳ TODO |
-| ScrollX | ⏳ TODO |
-| ScrollY | ⏳ TODO |
-| VerticalScrollBarVisibility | ⏳ TODO |
+| Content | ✅ Implemented |
+| ContentSize | ✅ Implemented |
+| HorizontalScrollBarVisibility | ✅ Implemented |
+| Orientation | ✅ Implemented |
+| ScrollX | ✅ Implemented |
+| ScrollY | ✅ Implemented |
+| VerticalScrollBarVisibility | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Scrolled | ⏳ TODO |
+| Scrolled | ✅ Implemented |
 
 ---
 
