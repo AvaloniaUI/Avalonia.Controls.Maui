@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ImagePage"
+             Title="Image">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="24">
+
+            <Label Text="Image Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- File Image Source -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="File Image Source"
+                           FontAttributes="Bold" />
+                    <Label Text="Loads an image from the app's resources"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <Image x:Name="FileImage"
+                           Source="dotnet_bot.png"
+                           Aspect="AspectFit"
+                           HeightRequest="200"
+                           BackgroundColor="#F0F0F0" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- URI Image Source -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="URI Image Source"
+                           FontAttributes="Bold" />
+                    <Label Text="Loads an image from a URL"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <Image x:Name="UriImage"
+                           Source="https://framerusercontent.com/images/9tXJ0X4yPgCHwR0ZXbMZekNnR18.png"
+                           Aspect="AspectFit"
+                           HeightRequest="200"
+                           BackgroundColor="#F0F0F0" />
+                    <Label x:Name="UriStatusLabel"
+                           Text="Status: Loading..."
+                           FontSize="12"
+                           FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Aspect Modes -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Aspect Modes"
+                           FontAttributes="Bold" />
+                    <Label Text="AspectFit - Maintains aspect ratio, fits within bounds"
+                           FontSize="12" />
+                    <Image Source="dotnet_bot.png"
+                           Aspect="AspectFit"
+                           HeightRequest="150"
+                           BackgroundColor="#E8F5E9" />
+
+                    <Label Text="AspectFill - Maintains aspect ratio, fills bounds"
+                           FontSize="12"
+                           Margin="0,16,0,0" />
+                    <Image Source="dotnet_bot.png"
+                           Aspect="AspectFill"
+                           HeightRequest="150"
+                           BackgroundColor="#FFF3E0" />
+
+                    <Label Text="Fill - Stretches to fill bounds"
+                           FontSize="12"
+                           Margin="0,16,0,0" />
+                    <Image Source="dotnet_bot.png"
+                           Aspect="Fill"
+                           HeightRequest="150"
+                           BackgroundColor="#E3F2FD" />
+
+                    <Label Text="Center - Centers without scaling"
+                           FontSize="12"
+                           Margin="0,16,0,0" />
+                    <Image Source="dotnet_bot.png"
+                           Aspect="Center"
+                           HeightRequest="150"
+                           BackgroundColor="#F3E5F5" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Interactive Aspect Switcher -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Interactive Aspect Switcher"
+                           FontAttributes="Bold" />
+                    <Picker x:Name="AspectPicker"
+                            Title="Select Aspect"
+                            SelectedIndexChanged="OnAspectChanged">
+                        <Picker.Items>
+                            <x:String>AspectFit</x:String>
+                            <x:String>AspectFill</x:String>
+                            <x:String>Fill</x:String>
+                            <x:String>Center</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <Image x:Name="InteractiveImage"
+                           Source="dotnet_bot.png"
+                           Aspect="AspectFit"
+                           HeightRequest="200"
+                           BackgroundColor="#FCE4EC" />
+                    <Label x:Name="AspectStatusLabel"
+                           Text="Current Aspect: AspectFit"
+                           FontAttributes="Italic"
+                           FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Opacity Control -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Opacity Control"
+                           FontAttributes="Bold" />
+                    <Label x:Name="OpacityLabel"
+                           Text="Opacity: 1.0"
+                           FontSize="12" />
+                    <Slider x:Name="OpacitySlider"
+                            Minimum="0"
+                            Maximum="1"
+                            Value="1"
+                            ValueChanged="OnOpacityChanged" />
+                    <Image x:Name="OpacityImage"
+                           Source="dotnet_bot.png"
+                           Aspect="AspectFit"
+                           HeightRequest="150"
+                           BackgroundColor="#E0F2F1" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Dynamic Source Loading -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Dynamic Source Loading"
+                           FontAttributes="Bold" />
+                    <Button Text="Load Random Image"
+                            Clicked="OnLoadRandomImage"
+                            HorizontalOptions="Center" />
+                    <Image x:Name="DynamicImage"
+                           Aspect="AspectFit"
+                           HeightRequest="200"
+                           BackgroundColor="#FFF9C4" />
+                    <Label x:Name="DynamicStatusLabel"
+                           FontSize="12"
+                           FontAttributes="Italic"
+                           HorizontalOptions="Center">
+                        <Label.Triggers>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding Source={x:Reference DynamicImage}, Path=IsLoading}"
+                                         Value="True">
+                                <Setter Property="Text" Value="Loading..." />
+                                <Setter Property="TextColor" Value="Orange" />
+                            </DataTrigger>
+                            <DataTrigger TargetType="Label"
+                                         Binding="{Binding Source={x:Reference DynamicImage}, Path=IsLoading}"
+                                         Value="False">
+                                <Setter Property="Text" Value="Image loaded successfully" />
+                                <Setter Property="TextColor" Value="Green" />
+                            </DataTrigger>
+                        </Label.Triggers>
+                    </Label>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- GIF Image -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Animated GIF"
+                           FontAttributes="Bold" />
+                    <Label Text="Supports play / pause via IsAnimationPlaying"
+                           FontSize="12" />
+                    <Image x:Name="GifImage"
+                           Source="loader.gif"
+                           Aspect="AspectFit"
+                           HeightRequest="200"
+                           IsAnimationPlaying="True"
+                           BackgroundColor="#E1F5FE" />
+                    <HorizontalStackLayout Spacing="12">
+                        <Button Text="Toggle Animation"
+                                Clicked="OnToggleGifAnimation" />
+                        <Label x:Name="GifStatusLabel"
+                               Text="Status: Playing"
+                               VerticalOptions="Center"
+                               FontSize="12" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Multiple Images Grid -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Image Gallery"
+                           FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="*,*"
+                          RowDefinitions="150,150"
+                          ColumnSpacing="8"
+                          RowSpacing="8">
+                        <Image Source="https://picsum.photos/200/200?random=1"
+                               Aspect="AspectFill"
+                               BackgroundColor="#FFEBEE"
+                               Grid.Row="0"
+                               Grid.Column="0" />
+                        <Image Source="https://picsum.photos/200/200?random=2"
+                               Aspect="AspectFill"
+                               BackgroundColor="#E8EAF6"
+                               Grid.Row="0"
+                               Grid.Column="1" />
+                        <Image Source="https://picsum.photos/200/200?random=3"
+                               Aspect="AspectFill"
+                               BackgroundColor="#E0F7FA"
+                               Grid.Row="1"
+                               Grid.Column="0" />
+                        <Image Source="https://picsum.photos/200/200?random=4"
+                               Aspect="AspectFill"
+                               BackgroundColor="#F1F8E9"
+                               Grid.Row="1"
+                               Grid.Column="1" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
