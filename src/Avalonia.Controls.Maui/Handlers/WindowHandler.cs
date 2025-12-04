@@ -41,6 +41,10 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
     {
         base.ConnectHandler(platformView);
 
+        var avWindow = (Window)platformView;
+
+        avWindow.Activated += OnWindowActivatedForBounds;
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             s_alertManager.Subscribe(window);
@@ -51,6 +55,9 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
 
     protected override void DisconnectHandler(object platformView)
     {
+        var avWindow = (Window)platformView;
+        avWindow.Activated -= OnWindowActivatedForBounds;
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             s_alertManager.Unsubscribe(window);
@@ -69,6 +76,33 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
     private void OnModalPopped(object? sender, Microsoft.Maui.Controls.ModalPoppedEventArgs e)
     {
         DismissModalPage();
+    }
+
+
+    /// <summary>
+    /// Sets explicit bounds on first window activation to prevent layout cycles.
+    /// Without explicit Width/Height, the layout system can enter a feedback loop
+    /// where content size depends on constraints and constraints depend on content size.
+    /// Setting explicit bounds from ClientSize gives the windowing system's stable bounds.
+    /// </summary>
+    private void OnWindowActivatedForBounds(object? sender, EventArgs e)
+    {
+        if (sender is Window avWindow)
+        {
+            // Only set bounds if they haven't been explicitly set yet
+            if (double.IsNaN(avWindow.Width) || double.IsNaN(avWindow.Height))
+            {
+                var clientSize = avWindow.ClientSize;
+                if (clientSize.Width > 0 && clientSize.Height > 0)
+                {
+                    avWindow.Width = clientSize.Width;
+                    avWindow.Height = clientSize.Height;
+                }
+            }
+
+            // Unsubscribe after first activation since we only need to set bounds once
+            avWindow.Activated -= OnWindowActivatedForBounds;
+        }
     }
 
     static void mapTitle(IWindowHandler handler, IWindow window) =>
