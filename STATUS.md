@@ -317,7 +317,7 @@ A graphics canvas on which 2D graphics can be drawn using types from the Microso
 
 | Property | Status |
 |----------|--------|
-| Drawable | ⏳ TODO |
+| Drawable | ✅ Implemented |
 
 ---
 

@@ -43,7 +43,12 @@ public partial class MainPage : FlyoutPage
             nameof(SwitchPage) => new SwitchPage(),
             nameof(ClipPage) => new ClipPage(),
             nameof(ShadowPage) => new ShadowPage(),
+            nameof(GraphicsViewPage) => new GraphicsViewPage(),
             nameof(ThemePage) => new ThemePage(),
+            "MainPage" when pageType.Namespace == "RpnCalculator" => new RpnCalculator.MainPage(),
+            "SolitairePage" when pageType.Namespace == "SolitaireEncryption" => new SolitaireEncryption.SolitairePage(),
+            "TipCalcPage" when pageType.Namespace == "TipCalc" => new TipCalc.TipCalcPage(),
+            "MainPage" when pageType.Namespace == "Weather" => new Weather.MainPage(),
             "MainPage" when pageType.Namespace == "WordPuzzle" => new WordPuzzle.MainPage(),
             _ => throw new ArgumentException($"Unknown page type: {pageType.FullName}", nameof(pageType))
         };

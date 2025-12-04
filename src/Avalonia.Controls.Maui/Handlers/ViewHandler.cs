@@ -152,21 +152,47 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     /// <inheritdoc/>
     public Microsoft.Maui.Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
     {
-        if (PlatformView is null || VirtualView is null)
+        var platformView = PlatformView;
+        if (platformView is null || VirtualView is null)
             return Microsoft.Maui.Graphics.Size.Zero;
-        PlatformView.Measure(new global::Avalonia.Size(widthConstraint, heightConstraint));
-        var avaloniaSize = PlatformView.DesiredSize;
-        return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
+
+        if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+        {
+            // Already on UI thread, execute directly
+            platformView.Measure(new global::Avalonia.Size(widthConstraint, heightConstraint));
+            var avaloniaSize = platformView.DesiredSize;
+            return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
+        }
+        else
+        {
+            // Not on UI thread, invoke synchronously on UI thread
+            return Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                platformView.Measure(new global::Avalonia.Size(widthConstraint, heightConstraint));
+                var avaloniaSize = platformView.DesiredSize;
+                return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
+            }).GetAwaiter().GetResult();
+        }
     }
 
     /// <inheritdoc/>
     public virtual void PlatformArrange(Microsoft.Maui.Graphics.Rect frame)
     {
+        if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+            Arrange(frame);
+        else
+            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => Arrange(frame));
+    }
+
+    private protected void Arrange(Microsoft.Maui.Graphics.Rect frame)
+    {
         if (PlatformView is null)
             return;
+            
         PlatformView.Measure(new global::Avalonia.Size(frame.Width, frame.Height));
         PlatformView.Arrange(new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height));
     }
+
 
     private protected abstract PlatformView OnCreatePlatformView();
 
