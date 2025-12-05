@@ -1,5 +1,6 @@
 using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using PlatformView = Avalonia.Controls.Border;
@@ -64,25 +65,31 @@ public partial class FrameHandler : ViewHandler<IContentView, PlatformView>, ICo
 
     public static void MapBorderColor(IContentViewHandler handler, IContentView view)
     {
-        if (handler is FrameHandler frameHandler && frameHandler.PlatformView is PlatformView platformView)
+        if (handler is FrameHandler frameHandler &&
+            frameHandler.PlatformView is PlatformView platformView &&
+            view is Frame frame)
         {
-            platformView.UpdateBorderColor(view);
+            platformView.UpdateBorderColor(frame);
         }
     }
     
     public static void MapCornerRadius(IContentViewHandler handler, IContentView view)
     {
-        if (handler is FrameHandler frameHandler && frameHandler.PlatformView is PlatformView platformView)
+        if (handler is FrameHandler frameHandler &&
+            frameHandler.PlatformView is PlatformView platformView &&
+            view is Frame frame)
         {
-            platformView.UpdateCornerRadius(view);
+            platformView.UpdateCornerRadius(frame);
         }
     }
     
     public static void MapHasShadow(IContentViewHandler handler, IContentView view)
     {
-        if (handler is FrameHandler frameHandler && frameHandler.PlatformView is PlatformView platformView)
+        if (handler is FrameHandler frameHandler &&
+            frameHandler.PlatformView is PlatformView platformView &&
+            view is Frame frame)
         {
-            platformView.UpdateHasShadow(view);
+            platformView.UpdateHasShadow(frame);
         }
     }
 
@@ -96,17 +103,21 @@ public partial class FrameHandler : ViewHandler<IContentView, PlatformView>, ICo
     
     public static void MapBackground(IContentViewHandler handler, IContentView view)
     {
-        if (handler is FrameHandler frameHandler && frameHandler.PlatformView is PlatformView platformView)
+        if (handler is FrameHandler frameHandler &&
+            frameHandler.PlatformView is PlatformView platformView &&
+            view is Frame frame)
         {
-            platformView.UpdateBackground(view);
+            platformView.UpdateBackground(frame);
         }
     }
     
     public static void MapPadding(IContentViewHandler handler, IContentView view)
     {
-        if (handler is FrameHandler frameHandler && frameHandler.PlatformView is PlatformView platformView)
+        if (handler is FrameHandler frameHandler &&
+            frameHandler.PlatformView is PlatformView platformView &&
+            view is Frame frame)
         {
-            platformView.UpdatePadding(view);
+            platformView.UpdatePadding(frame);
         }
     }
     

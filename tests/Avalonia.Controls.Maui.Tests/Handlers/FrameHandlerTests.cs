@@ -1,6 +1,7 @@
 using Avalonia.Headless.XUnit;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using MauiFrameHandler = Avalonia.Controls.Maui.Handlers.FrameHandler;
 
@@ -219,6 +220,32 @@ public partial class FrameHandlerTests : HandlerTestBase<MauiFrameHandler, Frame
         Assert.True(platformView.BoxShadow.Count > 0);
     }
 
+    [AvaloniaFact(DisplayName = "BackgroundColor Updates Background")]
+    public async Task BackgroundColorUpdatesBackground()
+    {
+        var frame = new FrameStub
+        {
+            BorderColor = Colors.Gray,
+            CornerRadius = 5,
+            HasShadow = false,
+            BackgroundColor = Colors.Red
+        };
+
+        var handler = await CreateHandlerAsync(frame);
+        var platformView = handler.PlatformView as Border;
+
+        Assert.NotNull(platformView);
+
+        var initialBackground = GetNativeBackgroundColor(handler);
+        ColorComparisonHelpers.AssertColorsAreEqual(Colors.Red, initialBackground);
+
+        frame.BackgroundColor = Colors.Blue;
+        handler.UpdateValue(nameof(Frame.BackgroundColor));
+
+        var updatedBackground = GetNativeBackgroundColor(handler);
+        ColorComparisonHelpers.AssertColorsAreEqual(Colors.Blue, updatedBackground);
+    }
+
     [AvaloniaFact(DisplayName = "Content Property Works Without Content")]
     public async Task ContentPropertyWorksWithoutContent()
     {
@@ -338,6 +365,20 @@ public partial class FrameHandlerTests : HandlerTestBase<MauiFrameHandler, Frame
         Assert.NotNull(platformView);
 
         if (platformView.BorderBrush is global::Avalonia.Media.SolidColorBrush brush)
+        {
+            var color = brush.Color;
+            return Color.FromRgba(color.R, color.G, color.B, color.A);
+        }
+
+        return null;
+    }
+
+    Color? GetNativeBackgroundColor(MauiFrameHandler handler)
+    {
+        var platformView = handler.PlatformView as Border;
+        Assert.NotNull(platformView);
+
+        if (platformView.Background is global::Avalonia.Media.ISolidColorBrush brush)
         {
             var color = brush.Color;
             return Color.FromRgba(color.R, color.G, color.B, color.A);

@@ -1,31 +1,31 @@
-using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using MauiGraphics = Microsoft.Maui.Graphics;
 
 namespace Avalonia.Controls.Maui.Tests.Stubs;
 
-public class FrameStub : StubBase, IContentView, IPadding
+public class FrameStub : Frame
 {
-    public MauiGraphics.Color? BorderColor { get; set; }
-
-    public float CornerRadius { get; set; } = -1f;
-
-    public bool HasShadow { get; set; } = true;
-
-    object? IContentView.Content => Content;
-
-    public IView? Content { get; set; }
-
-    public IView? PresentedContent => Content;
-
-    public Microsoft.Maui.Thickness Padding { get; set; }
-
-    public MauiGraphics.Size CrossPlatformMeasure(double widthConstraint, double heightConstraint)
+    public FrameStub()
     {
-        return Measure(widthConstraint, heightConstraint);
+        WidthRequest = 50;
+        HeightRequest = 50;
     }
 
-    public MauiGraphics.Size CrossPlatformArrange(MauiGraphics.Rect bounds)
+    protected override MauiGraphics.Size MeasureOverride(double widthConstraint, double heightConstraint)
     {
-        return Arrange(bounds);
+        var width = double.IsNaN(widthConstraint) || double.IsInfinity(widthConstraint)
+            ? WidthRequest
+            : widthConstraint;
+
+        var height = double.IsNaN(heightConstraint) || double.IsInfinity(heightConstraint)
+            ? HeightRequest
+            : heightConstraint;
+
+        return new MauiGraphics.Size(width, height);
+    }
+
+    protected override MauiGraphics.Size ArrangeOverride(MauiGraphics.Rect bounds)
+    {
+        return new MauiGraphics.Size(bounds.Width, bounds.Height);
     }
 }
