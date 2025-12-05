@@ -26,6 +26,18 @@
             "stopAtEntry": false
         },
         {
+            "name": "MauiPlanets Desktop",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_mauiplanets_desktop",
+            "program": "${workspaceFolder}/samples/MauiPlanets/MauiPlanets.Desktop/bin/Debug/net10.0/MauiPlanets.Desktop.dll",
+            "args": [ 
+            ],
+            "cwd": "${workspaceFolder}/samples/MauiPlanets/MauiPlanets.Desktop/bin/Debug/net10.0",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"

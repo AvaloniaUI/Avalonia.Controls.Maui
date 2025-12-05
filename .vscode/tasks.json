@@ -13,7 +13,7 @@
             ],
             "problemMatcher": "$msCompile"
         },
-         {
+        {
             "label": "build_controlgallery_desktop",
             "command": "dotnet",
             "type": "process",
@@ -25,5 +25,17 @@
             ],
             "problemMatcher": "$msCompile"
         },
+        {
+            "label": "build_mauiplanets_desktop",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/samples/MauiPlanets/MauiPlanets.Desktop/MauiPlanets.Desktop.csproj",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        }
     ]
 }
