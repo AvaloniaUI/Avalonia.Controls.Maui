@@ -1,7 +1,8 @@
 using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Controls.Primitives;
 using Microsoft.Maui;
-using PlatformView = Avalonia.Controls.Maui.Platform.MauiButton;
+using PlatformView = Avalonia.Controls.Maui.MauiButton;
+using MButton = Microsoft.Maui.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Platform;
 
@@ -175,16 +176,22 @@ public static class ButtonExtensions
     }
 
     /// <summary>
-    /// Updates the image source for the button. This feature is currently in development
-    /// and requires the image loading infrastructure to be completed.
+    /// Updates the image source for the button once a platform image has been resolved.
+    /// </summary>
+    /// <param name="platformView">The platform button control.</param>
+    /// <param name="image">The resolved Avalonia image.</param>
+    public static void UpdateImageSource(this PlatformView platformView, Avalonia.Media.IImage? image)
+    {
+        platformView.ImageSource = image;
+    }
+
+    /// <summary>
+    /// Updates the content layout (image position and spacing) of the button.
     /// </summary>
     /// <param name="platformView">The platform button control.</param>
     /// <param name="button">The cross-platform button.</param>
-    [NotImplemented("Image loading infrastructure not yet available.", DependsOn = "ImageSourceLoader")]
-    public static void UpdateImageSource(this PlatformView platformView, IButton button)
+    public static void UpdateContentLayout(this PlatformView platformView, MButton button)
     {
-        // This will require integration with the image loading pipeline and proper
-        // async handling for remote images.
-        // When implemented, will need to cast to IImageSourcePart or IImage
+        platformView.UpdateContentLayout(button.ContentLayout);
     }
 }

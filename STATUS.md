@@ -64,12 +64,12 @@ Displays text and responds to a tap or click that directs the app to carry out a
 | CharacterSpacing | ✅ Implemented |
 | Command | ✅ Implemented |
 | CommandParameter | ✅ Implemented |
-| ContentLayout | ⏳ TODO |
+| ContentLayout | ✅ Implemented |
 | CornerRadius | ✅ Implemented |
 | FontAttributes | ⏳ TODO |
 | FontFamily | ⏳ TODO |
 | FontSize | ✅ Implemented |
-| ImageSource | ⏳ TODO |
+| ImageSource | ✅ Implemented |
 | IsPressed | ⏳ TODO |
 | LineBreakMode | ⏳ TODO |
 | Padding | ✅ Implemented |
