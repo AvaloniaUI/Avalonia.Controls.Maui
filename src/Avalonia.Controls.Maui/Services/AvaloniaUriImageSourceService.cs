@@ -21,6 +21,14 @@ public class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImage
     private static readonly string CacheDirectory =
         Path.Combine(Path.GetTempPath(), "AvaloniaMauiImageCache");
 
+    /// <summary>
+    /// Default constructor kept for compatibility with reflection-based activators.
+    /// </summary>
+    public AvaloniaUriImageSourceService()
+        : this(logger: null, httpClient: null)
+    {
+    }
+
     public AvaloniaUriImageSourceService(ILogger<AvaloniaUriImageSourceService>? logger = null, HttpClient? httpClient = null)
     {
         _logger = logger;
