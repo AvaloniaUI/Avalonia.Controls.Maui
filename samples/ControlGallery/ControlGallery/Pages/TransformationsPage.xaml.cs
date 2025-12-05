@@ -73,15 +73,15 @@ public partial class TransformationsPage : ContentPage
     private async void AnimateButton_Clicked(object? sender, EventArgs e)
     {
         // Simple rotation animation
-        await TargetImage.RotateTo(360, 2000);
+        await TargetImage.RotateToAsync(360, 2000);
         TargetImage.Rotation = 0;
 
         // Scale animation
-        await TargetImage.ScaleTo(2.0, 1000);
-        await TargetImage.ScaleTo(1.0, 1000);
+        await TargetImage.ScaleToAsync(2.0, 1000);
+        await TargetImage.ScaleToAsync(1.0, 1000);
 
         // Translation animation
-        await TargetImage.TranslateTo(100, 100, 1000);
-        await TargetImage.TranslateTo(0, 0, 1000);
+        await TargetImage.TranslateToAsync(100, 100, 1000);
+        await TargetImage.TranslateToAsync(0, 0, 1000);
     }
 }
