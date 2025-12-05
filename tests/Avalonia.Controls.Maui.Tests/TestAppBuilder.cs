@@ -28,6 +28,15 @@ public static class MauiTestAppBuilderExtensions
         // Register image source service
         builder.Services.AddSingleton<IImageSourceService<IFileImageSource>, AvaloniaFileImageSourceService>();
 
+        // Register handlers for test stubs
+        builder.ConfigureMauiHandlers(handlers =>
+        {
+            handlers.AddHandler<Tests.Stubs.ButtonStub, Avalonia.Controls.Maui.Handlers.ButtonHandler>();
+            handlers.AddHandler<Tests.Stubs.LabelStub, Avalonia.Controls.Maui.Handlers.LabelHandler>();
+            handlers.AddHandler<ISwipeItemMenuItem, Avalonia.Controls.Maui.Handlers.SwipeItemMenuItemHandler>();
+            handlers.AddHandler<ISwipeItemView, Avalonia.Controls.Maui.Handlers.SwipeItemViewHandler>();
+        });
+
         return builder;
     }
 }
