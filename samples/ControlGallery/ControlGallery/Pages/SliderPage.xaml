@@ -134,9 +134,7 @@
                     <Slider Minimum="0"
                             Maximum="100"
                             Value="50"
-                            ThumbImageSource="dotnet_bot.png"
-                            MinimumTrackColor="CornflowerBlue"
-                            MaximumTrackColor="LightGray"/>
+                            ThumbImageSource="slider_thumb.png"/>
                     <Label Text="Uses ThumbImageSource to replace the thumb."
                            FontSize="12"
                            TextColor="Gray"/>

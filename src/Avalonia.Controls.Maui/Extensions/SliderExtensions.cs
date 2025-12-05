@@ -318,24 +318,9 @@ public static class SliderExtensions
                 return;
 
             var size = image.Size;
+            // Use the original image size without clamping or resizing
             var width = size.Width > 0 && !double.IsNaN(size.Width) ? size.Width : ThumbSizeFallback;
             var height = size.Height > 0 && !double.IsNaN(size.Height) ? size.Height : ThumbSizeFallback;
-
-            // Clamp the thumb size to 40–64 px to ensure consistent visuals across images:
-            // 40 px guarantees a minimum touch-friendly target and prevents tiny images from collapsing,
-            // while 64 px keeps large images from overwhelming the slider.
-            const double maxSize = 64.0;
-            const double minSize = 48.0;
-
-            var scale = Math.Min(maxSize / width, maxSize / height);
-            if (scale < 1)
-            {
-                width *= scale;
-                height *= scale;
-            }
-
-            width = Math.Max(width, minSize);
-            height = Math.Max(height, minSize);
 
             var radius = Math.Min(width, height) / 2;
 
@@ -344,7 +329,6 @@ public static class SliderExtensions
                 {
                     Width = width,
                     Height = height,
-                    CornerRadius = new CornerRadius(radius),
                     Background = brush
                 });
         }
