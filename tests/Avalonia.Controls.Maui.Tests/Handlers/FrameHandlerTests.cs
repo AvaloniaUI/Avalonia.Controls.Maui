@@ -84,8 +84,8 @@ public partial class FrameHandlerTests : HandlerTestBase<MauiFrameHandler, Frame
         Assert.NotNull(platformView);
         Assert.NotNull(platformView.BorderBrush);
 
-        // Set to null
-        frame.BorderColor = null;
+        // Clear the property so it reverts to default
+        frame.ClearValue(Frame.BorderColorProperty);
         handler.UpdateValue(nameof(FrameStub.BorderColor));
 
         // Border should be cleared

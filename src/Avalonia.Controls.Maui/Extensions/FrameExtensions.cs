@@ -25,9 +25,13 @@ public static class FrameExtensions
         if (platformView == null || frame == null)
             return;
 
-        var borderColor = frame.BorderColor;
-        if (borderColor is Color color)
+        Color? borderColor = frame.BorderColor;
+        var hasBorderColor = frame.IsSet(Frame.BorderColorProperty) &&
+                             borderColor is { IsDefault: false };
+
+        if (hasBorderColor)
         {
+            var color = borderColor!.Value;
             var avaloniaColor = Media.Color.FromArgb(
                 (byte)(color.Alpha * 255),
                 (byte)(color.Red * 255),
