@@ -1,11 +1,13 @@
 using Avalonia.Headless.XUnit;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
+using Avalonia.Media.Imaging;
+using Avalonia.Layout;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using MauiButtonHandler = Avalonia.Controls.Maui.Handlers.ButtonHandler;
-using MauiButton = Avalonia.Controls.Maui.Platform.MauiButton;
 using MauiThickness = Microsoft.Maui.Thickness;
+using MButton = Microsoft.Maui.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -203,7 +205,7 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         });
 
         // Verify the background was properly updated through Avalonia extension
-        Assert.NotNull(handler.PlatformView?.Background);
+        Assert.NotNull(handler.PlatformView.Background);
         var updatedBrush = Assert.IsType<Media.SolidColorBrush>(handler.PlatformView.Background);
         // Purple is RGB(128, 0, 128)
         Assert.Equal(128, updatedBrush.Color.R);
@@ -625,6 +627,51 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         // Note: The actual behavior depends on whether the handler checks IsEnabled
         // This test documents current behavior
         Assert.True(button.ClickedCount >= 0);
+    }
+
+    [AvaloniaFact(DisplayName = "ContentLayout Top stacks image above text with spacing")]
+    public async Task ContentLayoutTopStacksImageAboveText()
+    {
+        var button = new ButtonStub { Text = "With Icon" };
+        var handler = await CreateHandlerAsync(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            handler.PlatformView!.ImageSource = new RenderTargetBitmap(new PixelSize(1, 1), new Avalonia.Vector(96, 96));
+            button.ContentLayout = new MButton.ButtonContentLayout(MButton.ButtonContentLayout.ImagePosition.Top, 8);
+            handler.UpdateValue(nameof(MButton.ContentLayout));
+        });
+
+        var stack = Assert.IsType<StackPanel>(handler.PlatformView!.Content);
+        Assert.Equal(Orientation.Vertical, stack.Orientation);
+        var image = handler.PlatformView.GetImage();
+        var text = handler.PlatformView.GetTextBlock();
+        Assert.Equal(image, stack.Children[0]);
+        Assert.Equal(text, stack.Children[1]);
+        Assert.Equal(8, text!.Margin.Top);
+    }
+
+    [AvaloniaFact(DisplayName = "ContentLayout Right places image after text with spacing")]
+    public async Task ContentLayoutRightPlacesImageAfterText()
+    {
+        var button = new ButtonStub { Text = "With Icon" };
+        var handler = await CreateHandlerAsync(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            handler.PlatformView!.ImageSource = new RenderTargetBitmap(new PixelSize(1, 1), new Avalonia.Vector(96, 96));
+            button.ContentLayout = new MButton.ButtonContentLayout(MButton.ButtonContentLayout.ImagePosition.Right, 12);
+            handler.UpdateValue(nameof(MButton.ContentLayout));
+        });
+
+        var stack = Assert.IsType<StackPanel>(handler.PlatformView!.Content);
+        Assert.Equal(Orientation.Horizontal, stack.Orientation);
+        var image = handler.PlatformView.GetImage();
+        var text = handler.PlatformView.GetTextBlock();
+        Assert.Equal(text, stack.Children[0]);
+        Assert.Equal(image, stack.Children[1]);
+        Assert.Equal(12, image!.Margin.Left);
+        Assert.Equal(0, text!.Margin.Left);
     }
     
     string? GetPlatformText(MauiButtonHandler handler) =>
