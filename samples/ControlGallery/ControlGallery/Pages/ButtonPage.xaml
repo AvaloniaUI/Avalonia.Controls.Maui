@@ -476,7 +476,471 @@
                             TextColor="Black"/>
                 </VerticalStackLayout>
             </Border>
-            
+
+            <!-- ImageButton Section -->
+            <Label Text="ImageButton Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   Margin="0,30,0,0"/>
+
+            <!-- Basic ImageButtons -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic ImageButtons"
+                           FontAttributes="Bold"/>
+                    <ImageButton Source="dotnet_bot.png"
+                                 WidthRequest="100"
+                                 HeightRequest="100"
+                                 Clicked="OnImageButtonClicked"
+                                 HorizontalOptions="Center"/>
+                    <ImageButton Source="dotnet_bot.png"
+                                 WidthRequest="80"
+                                 HeightRequest="80"
+                                 IsEnabled="False"
+                                 HorizontalOptions="Center"/>
+                    <Label Text="Disabled ImageButton above"
+                           FontSize="12"
+                           FontAttributes="Italic"
+                           HorizontalOptions="Center"/>
+                    <Label x:Name="ImageButtonClickCountLabel"
+                           Text="ImageButton click count: 0"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ImageButton Aspect Modes -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Aspect Modes"
+                           FontAttributes="Bold"/>
+                    <Label Text="Each ImageButton is 120x80 to show aspect differences:"
+                           FontSize="12"/>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="120"
+                                         HeightRequest="80"
+                                         Aspect="AspectFit"
+                                         BackgroundColor="LightGray"/>
+                            <Label Text="AspectFit"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="120"
+                                         HeightRequest="80"
+                                         Aspect="AspectFill"
+                                         BackgroundColor="LightGray"/>
+                            <Label Text="AspectFill"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="120"
+                                         HeightRequest="80"
+                                         Aspect="Fill"
+                                         BackgroundColor="LightGray"/>
+                            <Label Text="Fill"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="120"
+                                         HeightRequest="80"
+                                         Aspect="Center"
+                                         BackgroundColor="LightGray"/>
+                            <Label Text="Center"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ImageButton Borders and CornerRadius -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Borders and Corner Radius"
+                           FontAttributes="Bold"/>
+
+                    <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="80"
+                                         HeightRequest="80"
+                                         BorderColor="Red"
+                                         BorderWidth="3"
+                                         CornerRadius="0"/>
+                            <Label Text="Square"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="80"
+                                         HeightRequest="80"
+                                         BorderColor="Blue"
+                                         BorderWidth="3"
+                                         CornerRadius="10"/>
+                            <Label Text="Rounded"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="80"
+                                         HeightRequest="80"
+                                         BorderColor="Green"
+                                         BorderWidth="3"
+                                         CornerRadius="40"/>
+                            <Label Text="Circle"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <Label Text="Border Width Variations:"
+                           FontSize="12"
+                           Margin="0,10,0,0"/>
+                    <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <ImageButton Source="dotnet_bot.png"
+                                     WidthRequest="60"
+                                     HeightRequest="60"
+                                     BorderColor="Purple"
+                                     BorderWidth="1"/>
+                        <ImageButton Source="dotnet_bot.png"
+                                     WidthRequest="60"
+                                     HeightRequest="60"
+                                     BorderColor="Purple"
+                                     BorderWidth="3"/>
+                        <ImageButton Source="dotnet_bot.png"
+                                     WidthRequest="60"
+                                     HeightRequest="60"
+                                     BorderColor="Purple"
+                                     BorderWidth="5"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ImageButton Padding -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Padding"
+                           FontAttributes="Bold"/>
+                    <Label Text="Each button has the same image but different padding:"
+                           FontSize="12"/>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="80"
+                                         HeightRequest="80"
+                                         Padding="0"
+                                         BackgroundColor="LightBlue"
+                                         BorderColor="DarkBlue"
+                                         BorderWidth="1"/>
+                            <Label Text="Padding=0"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="80"
+                                         HeightRequest="80"
+                                         Padding="10"
+                                         BackgroundColor="LightBlue"
+                                         BorderColor="DarkBlue"
+                                         BorderWidth="1"/>
+                            <Label Text="Padding=10"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="80"
+                                         HeightRequest="80"
+                                         Padding="20"
+                                         BackgroundColor="LightBlue"
+                                         BorderColor="DarkBlue"
+                                         BorderWidth="1"/>
+                            <Label Text="Padding=20"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ImageButton Background Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Background Colors"
+                           FontAttributes="Bold"/>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <ImageButton Source="dotnet_bot.png"
+                                     WidthRequest="70"
+                                     HeightRequest="70"
+                                     BackgroundColor="LightCoral"
+                                     Padding="5"
+                                     CornerRadius="8"/>
+                        <ImageButton Source="dotnet_bot.png"
+                                     WidthRequest="70"
+                                     HeightRequest="70"
+                                     BackgroundColor="LightGreen"
+                                     Padding="5"
+                                     CornerRadius="8"/>
+                        <ImageButton Source="dotnet_bot.png"
+                                     WidthRequest="70"
+                                     HeightRequest="70"
+                                     BackgroundColor="LightBlue"
+                                     Padding="5"
+                                     CornerRadius="8"/>
+                        <ImageButton Source="dotnet_bot.png"
+                                     WidthRequest="70"
+                                     HeightRequest="70"
+                                     BackgroundColor="Gold"
+                                     Padding="5"
+                                     CornerRadius="8"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ImageButton Command and CommandParameter -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Command and CommandParameter"
+                           FontAttributes="Bold"/>
+
+                    <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="70"
+                                         HeightRequest="70"
+                                         Command="{Binding ImageButtonCommand}"
+                                         BackgroundColor="LightGray"
+                                         CornerRadius="10"/>
+                            <Label Text="Simple Command"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="70"
+                                         HeightRequest="70"
+                                         Command="{Binding ImageButtonParameterizedCommand}"
+                                         CommandParameter="Image1"
+                                         BackgroundColor="LightGreen"
+                                         CornerRadius="10"/>
+                            <Label Text="Param: Image1"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="70"
+                                         HeightRequest="70"
+                                         Command="{Binding ImageButtonParameterizedCommand}"
+                                         CommandParameter="Image2"
+                                         BackgroundColor="LightBlue"
+                                         CornerRadius="10"/>
+                            <Label Text="Param: Image2"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <Label x:Name="ImageButtonCommandResultLabel"
+                           Text="No ImageButton command executed yet"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ImageButton Pressed and Released Events -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Pressed and Released Events"
+                           FontAttributes="Bold"/>
+                    <Label Text="Press and hold to see visual feedback:"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <ImageButton Source="dotnet_bot.png"
+                                     WidthRequest="80"
+                                     HeightRequest="80"
+                                     BackgroundColor="LightBlue"
+                                     CornerRadius="10"
+                                     BorderColor="DarkBlue"
+                                     BorderWidth="2"
+                                     Pressed="OnImageButton1Pressed"
+                                     Released="OnImageButton1Released"/>
+
+                        <ImageButton Source="dotnet_bot.png"
+                                     WidthRequest="80"
+                                     HeightRequest="80"
+                                     BackgroundColor="LightGreen"
+                                     CornerRadius="40"
+                                     BorderColor="DarkGreen"
+                                     BorderWidth="2"
+                                     Pressed="OnImageButton2Pressed"
+                                     Released="OnImageButton2Released"/>
+
+                        <ImageButton Source="dotnet_bot.png"
+                                     WidthRequest="80"
+                                     HeightRequest="80"
+                                     BackgroundColor="LightCoral"
+                                     CornerRadius="10"
+                                     BorderColor="DarkRed"
+                                     BorderWidth="2"
+                                     Pressed="OnImageButton3Pressed"
+                                     Released="OnImageButton3Released"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Styled ImageButtons -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Styled ImageButton Examples"
+                           FontAttributes="Bold"/>
+
+                    <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <!-- Social Media Style -->
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="50"
+                                         HeightRequest="50"
+                                         BackgroundColor="#1DA1F2"
+                                         CornerRadius="25"
+                                         Padding="10"/>
+                            <Label Text="Social"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <!-- Floating Action Button Style -->
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="60"
+                                         HeightRequest="60"
+                                         BackgroundColor="#FF5722"
+                                         CornerRadius="30"
+                                         Padding="12"/>
+                            <Label Text="FAB"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <!-- Card Action Style -->
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="100"
+                                         HeightRequest="60"
+                                         BackgroundColor="White"
+                                         BorderColor="Gray"
+                                         BorderWidth="1"
+                                         CornerRadius="8"
+                                         Padding="10"/>
+                            <Label Text="Card Action"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="15" HorizontalOptions="Center" Margin="0,10,0,0">
+                        <!-- Icon Button Style -->
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="40"
+                                         HeightRequest="40"
+                                         BackgroundColor="Transparent"
+                                         Padding="5"/>
+                            <Label Text="Icon"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <!-- Badge Style -->
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="70"
+                                         HeightRequest="70"
+                                         BackgroundColor="White"
+                                         BorderColor="#6200EE"
+                                         BorderWidth="3"
+                                         CornerRadius="35"
+                                         Padding="8"/>
+                            <Label Text="Badge"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <!-- Thumbnail Style -->
+                        <VerticalStackLayout>
+                            <ImageButton Source="dotnet_bot.png"
+                                         WidthRequest="80"
+                                         HeightRequest="80"
+                                         Aspect="AspectFill"
+                                         CornerRadius="8"/>
+                            <Label Text="Thumbnail"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

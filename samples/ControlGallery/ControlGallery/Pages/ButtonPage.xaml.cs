@@ -5,39 +5,58 @@ namespace ControlGallery.Pages;
 public partial class ButtonPage : ContentPage
 {
     private int _clickCount = 0;
-    
-    // Commands for data binding
+    private int _imageButtonClickCount = 0;
+
+    // Commands for Button data binding
     public ICommand MyCommand { get; }
     public ICommand ParameterizedCommand { get; }
     public ICommand DisabledCommand { get; }
-    
+
+    // Commands for ImageButton data binding
+    public ICommand ImageButtonCommand { get; }
+    public ICommand ImageButtonParameterizedCommand { get; }
+
     public ButtonPage()
     {
         InitializeComponent();
-        
+
         // Initialize simple command
-        MyCommand = new Command(() => 
+        MyCommand = new Command(() =>
         {
             DisplayAlert("Command", "Simple command executed!", "OK");
             UpdateCommandResult("Simple command executed");
         });
-        
+
         // Initialize command with parameter
-        ParameterizedCommand = new Command<string>(async (parameter) => 
+        ParameterizedCommand = new Command<string>(async (parameter) =>
         {
             await DisplayAlert("Parameterized Command", $"Executed with parameter: {parameter}", "OK");
             UpdateCommandResult($"Parameterized command: {parameter}");
         });
-        
+
         // Initialize disabled command (canExecute returns false)
         DisabledCommand = new Command(
-            execute: () => 
+            execute: () =>
             {
                 DisplayAlert("Disabled Command", "This should not execute!", "OK");
             },
             canExecute: () => false
         );
-        
+
+        // Initialize ImageButton simple command
+        ImageButtonCommand = new Command(() =>
+        {
+            DisplayAlert("ImageButton Command", "ImageButton command executed!", "OK");
+            UpdateImageButtonCommandResult("ImageButton command executed");
+        });
+
+        // Initialize ImageButton command with parameter
+        ImageButtonParameterizedCommand = new Command<string>(async (parameter) =>
+        {
+            await DisplayAlert("ImageButton Command", $"Executed with parameter: {parameter}", "OK");
+            UpdateImageButtonCommandResult($"ImageButton command: {parameter}");
+        });
+
         // Set the BindingContext to this page for command binding
         BindingContext = this;
     }
@@ -98,5 +117,62 @@ public partial class ButtonPage : ContentPage
         button.BackgroundColor = Colors.Purple;
         button.Scale = 1.0;
         button.Rotation = 0;
+    }
+
+    // ImageButton event handlers
+    private void OnImageButtonClicked(object sender, EventArgs e)
+    {
+        _imageButtonClickCount++;
+        ImageButtonClickCountLabel.Text = $"ImageButton click count: {_imageButtonClickCount}";
+    }
+
+    private void UpdateImageButtonCommandResult(string message)
+    {
+        ImageButtonCommandResultLabel.Text = message;
+    }
+
+    // ImageButton Pressed and Released event handlers
+    private void OnImageButton1Pressed(object sender, EventArgs e)
+    {
+        var imageButton = (ImageButton)sender;
+        imageButton.BackgroundColor = Colors.DarkBlue;
+        imageButton.Scale = 0.95;
+    }
+
+    private void OnImageButton1Released(object sender, EventArgs e)
+    {
+        var imageButton = (ImageButton)sender;
+        imageButton.BackgroundColor = Colors.LightBlue;
+        imageButton.Scale = 1.0;
+    }
+
+    private void OnImageButton2Pressed(object sender, EventArgs e)
+    {
+        var imageButton = (ImageButton)sender;
+        imageButton.BackgroundColor = Colors.DarkGreen;
+        imageButton.BorderWidth = 4;
+    }
+
+    private void OnImageButton2Released(object sender, EventArgs e)
+    {
+        var imageButton = (ImageButton)sender;
+        imageButton.BackgroundColor = Colors.LightGreen;
+        imageButton.BorderWidth = 2;
+    }
+
+    private void OnImageButton3Pressed(object sender, EventArgs e)
+    {
+        var imageButton = (ImageButton)sender;
+        imageButton.BackgroundColor = Colors.DarkRed;
+        imageButton.Scale = 0.9;
+        imageButton.Rotation = 5;
+    }
+
+    private void OnImageButton3Released(object sender, EventArgs e)
+    {
+        var imageButton = (ImageButton)sender;
+        imageButton.BackgroundColor = Colors.LightCoral;
+        imageButton.Scale = 1.0;
+        imageButton.Rotation = 0;
     }
 }
