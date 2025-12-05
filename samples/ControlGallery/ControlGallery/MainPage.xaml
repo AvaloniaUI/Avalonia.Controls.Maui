@@ -75,6 +75,10 @@
 								  Detail="Progress indicator control"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:ProgressBarPage}"/>
+						<TextCell Text="ScrollView"
+						          Detail="Scroll scenarios and behaviors"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:ScrollViewPage}"/>
 						<TextCell Text="Slider"
 								  Detail="Slider control"
 								  Command="{Binding NavigateCommand}"
