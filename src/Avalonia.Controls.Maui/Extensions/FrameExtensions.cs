@@ -25,18 +25,14 @@ public static class FrameExtensions
         if (platformView == null || frame == null)
             return;
 
-        Color? borderColor = frame.BorderColor;
-        var hasBorderColor = frame.IsSet(Frame.BorderColorProperty) &&
-                             borderColor is { IsDefault: false };
-
-        if (hasBorderColor)
+        if (frame.IsSet(Frame.BorderColorProperty) &&
+            frame.BorderColor is Color borderColor)
         {
-            var color = borderColor!.Value;
             var avaloniaColor = Media.Color.FromArgb(
-                (byte)(color.Alpha * 255),
-                (byte)(color.Red * 255),
-                (byte)(color.Green * 255),
-                (byte)(color.Blue * 255));
+                (byte)(borderColor.Alpha * 255),
+                (byte)(borderColor.Red * 255),
+                (byte)(borderColor.Green * 255),
+                (byte)(borderColor.Blue * 255));
 
             platformView.BorderBrush = new Media.SolidColorBrush(avaloniaColor);
 
@@ -110,9 +106,14 @@ public static class FrameExtensions
         if (platformView == null || frame == null)
             return;
 
-        var backgroundBrush =
-            frame.Background?.ToPlatform() ??
-            (frame.BackgroundColor.ToPlatform() as Media.IBrush);
+        var backgroundBrush = frame.Background?.ToPlatform();
+
+        var backgroundColor = frame.BackgroundColor;
+
+        if (backgroundBrush == null && backgroundColor != null)
+        {
+            backgroundBrush = backgroundColor.ToPlatform();
+        }
 
         if (backgroundBrush != null)
             platformView.Background = backgroundBrush;
