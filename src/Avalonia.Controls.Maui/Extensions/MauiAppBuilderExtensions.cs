@@ -123,6 +123,7 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.SwitchCell, Avalonia.Controls.Maui.Handlers.Cells.SwitchCellHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.EntryCell, Avalonia.Controls.Maui.Handlers.Cells.EntryCellHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.TabbedPage, Avalonia.Controls.Maui.Handlers.TabbedViewHandler>();
+                handlers.AddHandler<Microsoft.Maui.Controls.Frame, Avalonia.Controls.Maui.Handlers.FrameHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.FlyoutPage, Avalonia.Controls.Maui.Handlers.FlyoutViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Shell, Avalonia.Controls.Maui.Handlers.Shell.ShellHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.ShellItem, Avalonia.Controls.Maui.Handlers.Shell.ShellItemHandler>();
@@ -146,7 +147,6 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.SwipeView, Avalonia.Controls.Maui.Handlers.SwipeViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.SwipeItemView, Avalonia.Controls.Maui.Handlers.SwipeItemViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.RefreshView, Avalonia.Controls.Maui.Handlers.RefreshViewHandler>();
-
             })
             .ConfigureImageSources();
     }

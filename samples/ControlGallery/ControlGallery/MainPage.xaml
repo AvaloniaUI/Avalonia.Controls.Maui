@@ -59,6 +59,10 @@
 								  Detail="CheckBox control for selections"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:CheckBoxPage}"/>
+						<TextCell Text="Frame"
+						          Detail="Border with shadow (obsolete)"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:FramePage}"/>
             <TextCell Text="GraphicsView"
 								  Detail="Custom drawing and graphics"
 								  Command="{Binding NavigateCommand}"

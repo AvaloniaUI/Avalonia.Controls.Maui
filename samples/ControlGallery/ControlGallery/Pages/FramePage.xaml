@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.FramePage"
+             x:DataType="pages:FramePage"
+             Title="Frame">
+    <ContentPage.Resources>
+        <Style TargetType="Frame">
+            <Setter Property="BackgroundColor"
+                    Value="{AppThemeBinding Light=White, Dark=#1E1E1E}" />
+        </Style>
+    </ContentPage.Resources>
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+            <Label Text="Frame Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+            <Border Stroke="{AppThemeBinding Light=Orange, Dark=#FFB74D}"
+                    Padding="10"
+                    BackgroundColor="{AppThemeBinding Light=LightYellow, Dark=#2A2A1C}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="5" />
+                </Border.StrokeShape>
+                <Label Text="Note: Frame is obsolete in .NET MAUI 9+. Use Border control instead for new applications."
+                       FontSize="12"
+                       TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+            </Border>
+
+            <!-- Basic Frame -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Basic Frame with Border"
+                           FontAttributes="Bold" />
+                    <Frame BorderColor="Navy"
+                           CornerRadius="10"
+                           Padding="15"
+                           HasShadow="True">
+                        <Label Text="This is a Frame with a navy border, rounded corners, and shadow."
+                               FontSize="14" />
+                    </Frame>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Different Border Colors -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Different Border Colors"
+                           FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="*,*"
+                          RowDefinitions="Auto,Auto"
+                          ColumnSpacing="10"
+                          RowSpacing="10">
+                        <Frame BorderColor="Red"
+                               CornerRadius="5"
+                               Padding="10"
+                               HasShadow="False"
+                               Grid.Column="0">
+                            <Label Text="Red"
+                                   HorizontalOptions="Center"
+                                   FontSize="14" />
+                        </Frame>
+                        <Frame BorderColor="Green"
+                               CornerRadius="5"
+                               Padding="10"
+                               HasShadow="False"
+                               Grid.Column="1">
+                            <Label Text="Green"
+                                   HorizontalOptions="Center"
+                                   FontSize="14" />
+                        </Frame>
+                        <Frame BorderColor="Blue"
+                               CornerRadius="5"
+                               Padding="10"
+                               HasShadow="False"
+                               Grid.Row="1"
+                               Grid.Column="0">
+                            <Label Text="Blue"
+                                   HorizontalOptions="Center"
+                                   FontSize="14" />
+                        </Frame>
+                        <Frame BorderColor="Purple"
+                               CornerRadius="5"
+                               Padding="10"
+                               HasShadow="False"
+                               Grid.Row="1"
+                               Grid.Column="1">
+                            <Label Text="Purple"
+                                   HorizontalOptions="Center"
+                                   FontSize="14" />
+                        </Frame>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Corner Radius Variations -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Corner Radius Variations"
+                           FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="*,*,*"
+                          ColumnSpacing="10">
+                        <Frame BorderColor="CornflowerBlue"
+                               CornerRadius="0"
+                               Padding="10"
+                               HasShadow="False"
+                               Grid.Column="0">
+                            <Label Text="0"
+                                   HorizontalOptions="Center"
+                                   FontSize="12" />
+                        </Frame>
+                        <Frame BorderColor="CornflowerBlue"
+                               CornerRadius="10"
+                               Padding="10"
+                               HasShadow="False"
+                               Grid.Column="1">
+                            <Label Text="10"
+                                   HorizontalOptions="Center"
+                                   FontSize="12" />
+                        </Frame>
+                        <Frame BorderColor="CornflowerBlue"
+                               CornerRadius="25"
+                               Padding="10"
+                               HasShadow="False"
+                               Grid.Column="2">
+                            <Label Text="25"
+                                   HorizontalOptions="Center"
+                                   FontSize="12" />
+                        </Frame>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Shadow Comparison -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Shadow Comparison"
+                           FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="15">
+                        <Frame BorderColor="DarkSlateGray"
+                               CornerRadius="10"
+                               Padding="15"
+                               HasShadow="False"
+                               Grid.Column="0">
+                            <VerticalStackLayout Spacing="5">
+                                <Label Text="No Shadow"
+                                       FontAttributes="Bold"
+                                       FontSize="14" />
+                                <Label Text="HasShadow=False"
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light=Gray, Dark=#BDBDBD}" />
+                            </VerticalStackLayout>
+                        </Frame>
+                        <Frame BorderColor="DarkSlateGray"
+                               CornerRadius="10"
+                               Padding="15"
+                               HasShadow="True"
+                               Grid.Column="1">
+                            <VerticalStackLayout Spacing="5">
+                                <Label Text="With Shadow"
+                                       FontAttributes="Bold"
+                                       FontSize="14" />
+                                <Label Text="HasShadow=True"
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light=Gray, Dark=#BDBDBD}" />
+                            </VerticalStackLayout>
+                        </Frame>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Card Style Examples -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Card Style Examples"
+                           FontAttributes="Bold" />
+                    <Frame BorderColor="LightGray"
+                           CornerRadius="15"
+                           Padding="15"
+                           HasShadow="True"
+                           BackgroundColor="{AppThemeBinding Light=White, Dark=#1E1E1E}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="User Profile Card"
+                                   FontAttributes="Bold"
+                                   FontSize="16" />
+                            <BoxView Color="LightBlue"
+                                     HeightRequest="80"
+                                     CornerRadius="10" />
+                            <Label Text="John Doe"
+                                   FontSize="14"
+                                   FontAttributes="Bold" />
+                            <Label Text="Software Developer"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light=Gray, Dark=#BDBDBD}" />
+                            <HorizontalStackLayout Spacing="10"
+                                                   Margin="0,5,0,0">
+                                <Label Text="📧"
+                                       FontSize="14" />
+                                <Label Text="john.doe@example.com"
+                                       FontSize="12"
+                                       VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <Frame BorderColor="MediumPurple"
+                           CornerRadius="12"
+                           Padding="15"
+                           HasShadow="True"
+                           BackgroundColor="{AppThemeBinding Light=#F5F5FF, Dark=#2B2436}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Product Card"
+                                   FontAttributes="Bold"
+                                   FontSize="16" />
+                            <BoxView Color="MediumPurple"
+                                     HeightRequest="100"
+                                     CornerRadius="8" />
+                            <Label Text="Awesome Widget"
+                                   FontSize="14"
+                                   FontAttributes="Bold" />
+                            <Label Text="The best widget you'll ever find!"
+                                   FontSize="12"
+                                   TextColor="{AppThemeBinding Light=Gray, Dark=#C0C0C0}" />
+                            <HorizontalStackLayout Spacing="10"
+                                                   Margin="0,5,0,0">
+                                <Label Text="$49.99"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="MediumPurple"
+                                       HorizontalOptions="Start"
+                                       VerticalOptions="Center" />
+                                <Button Text="Buy Now"
+                                        BackgroundColor="MediumPurple"
+                                        TextColor="White"
+                                        CornerRadius="20"
+                                        Padding="15,8"
+                                        HorizontalOptions="End"
+                                        VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Nested Content -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Complex Nested Content"
+                           FontAttributes="Bold" />
+                    <Frame BorderColor="Teal"
+                           CornerRadius="10"
+                           Padding="0"
+                           HasShadow="True">
+                        <VerticalStackLayout Spacing="0">
+                            <BoxView Color="Teal"
+                                     HeightRequest="60">
+                                <BoxView.GestureRecognizers>
+                                    <TapGestureRecognizer />
+                                </BoxView.GestureRecognizers>
+                            </BoxView>
+                            <Label Text="Dashboard Widget"
+                                   Padding="15,10,15,5"
+                                   FontAttributes="Bold"
+                                   FontSize="16" />
+                            <Grid ColumnDefinitions="*,*,*"
+                                  Padding="15,5,15,15"
+                                  ColumnSpacing="10">
+                                <VerticalStackLayout Grid.Column="0"
+                                                     Spacing="5">
+                                    <Label Text="125"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           TextColor="Teal"
+                                           HorizontalOptions="Center" />
+                                    <Label Text="Views"
+                                           FontSize="10"
+                                           TextColor="{AppThemeBinding Light=Gray, Dark=#BDBDBD}"
+                                           HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1"
+                                                     Spacing="5">
+                                    <Label Text="48"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           TextColor="Teal"
+                                           HorizontalOptions="Center" />
+                                    <Label Text="Likes"
+                                           FontSize="10"
+                                           TextColor="{AppThemeBinding Light=Gray, Dark=#BDBDBD}"
+                                           HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2"
+                                                     Spacing="5">
+                                    <Label Text="12"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           TextColor="Teal"
+                                           HorizontalOptions="Center" />
+                                    <Label Text="Comments"
+                                           FontSize="10"
+                                           TextColor="{AppThemeBinding Light=Gray, Dark=#BDBDBD}"
+                                           HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Interactive Example -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Interactive Frame Properties"
+                           FontAttributes="Bold" />
+                    <Frame BorderColor="{Binding FrameBorderColor}"
+                           CornerRadius="{Binding FrameCornerRadius}"
+                           Padding="15"
+                           HasShadow="{Binding FrameHasShadow}"
+                           BackgroundColor="{Binding FrameBackgroundColor}">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Customizable Frame"
+                                   FontAttributes="Bold"
+                                   FontSize="14" />
+                            <Label Text="{Binding FrameBorderColor, StringFormat='BorderColor: {0}'}"
+                                   FontSize="12" />
+                            <Label Text="{Binding FrameBackgroundColor, StringFormat='BackgroundColor: {0}'}"
+                                   FontSize="12" />
+                            <Label Text="{Binding FrameCornerRadius, StringFormat='CornerRadius: {0:F0}'}"
+                                   FontSize="12" />
+                            <Label Text="{Binding FrameHasShadow, StringFormat='HasShadow: {0}'}"
+                                   FontSize="12" />
+                        </VerticalStackLayout>
+                    </Frame>
+
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Border Color:"
+                               FontSize="12"
+                               FontAttributes="Bold" />
+                        <HorizontalStackLayout Spacing="10"
+                                               HorizontalOptions="Center">
+                            <Button Text="Red"
+                                    Command="{Binding SetBorderColorCommand}"
+                                    CommandParameter="Red"
+                                    BackgroundColor="Red"
+                                    TextColor="White"
+                                    FontSize="12"
+                                    Padding="15,8" />
+                            <Button Text="Blue"
+                                    Command="{Binding SetBorderColorCommand}"
+                                    CommandParameter="Blue"
+                                    BackgroundColor="Blue"
+                                    TextColor="White"
+                                    FontSize="12"
+                                    Padding="15,8" />
+                            <Button Text="Green"
+                                    Command="{Binding SetBorderColorCommand}"
+                                    CommandParameter="Green"
+                                    BackgroundColor="Green"
+                                    TextColor="White"
+                                    FontSize="12"
+                                    Padding="15,8" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="Background Color:"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               Margin="0,10,0,0" />
+                        <HorizontalStackLayout Spacing="10"
+                                               HorizontalOptions="Center">
+                            <Button Text="White"
+                                    Command="{Binding SetBackgroundColorCommand}"
+                                    CommandParameter="White"
+                                    BackgroundColor="White"
+                                    TextColor="Black"
+                                    BorderColor="Gray"
+                                    BorderWidth="1"
+                                    FontSize="12"
+                                    Padding="15,8" />
+                            <Button Text="Light Blue"
+                                    Command="{Binding SetBackgroundColorCommand}"
+                                    CommandParameter="LightBlue"
+                                    BackgroundColor="LightBlue"
+                                    TextColor="Black"
+                                    FontSize="12"
+                                    Padding="15,8" />
+                            <Button Text="Light Pink"
+                                    Command="{Binding SetBackgroundColorCommand}"
+                                    CommandParameter="LightPink"
+                                    BackgroundColor="LightPink"
+                                    TextColor="Black"
+                                    FontSize="12"
+                                    Padding="15,8" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="10"
+                                               HorizontalOptions="Center"
+                                               Margin="0,5,0,0">
+                            <Button Text="Light Green"
+                                    Command="{Binding SetBackgroundColorCommand}"
+                                    CommandParameter="LightGreen"
+                                    BackgroundColor="LightGreen"
+                                    TextColor="Black"
+                                    FontSize="12"
+                                    Padding="15,8" />
+                            <Button Text="Light Yellow"
+                                    Command="{Binding SetBackgroundColorCommand}"
+                                    CommandParameter="LightYellow"
+                                    BackgroundColor="LightYellow"
+                                    TextColor="Black"
+                                    FontSize="12"
+                                    Padding="15,8" />
+                            <Button Text="Light Gray"
+                                    Command="{Binding SetBackgroundColorCommand}"
+                                    CommandParameter="LightGray"
+                                    BackgroundColor="LightGray"
+                                    TextColor="Black"
+                                    FontSize="12"
+                                    Padding="15,8" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="Corner Radius:"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               Margin="0,10,0,0" />
+                        <Slider Value="{Binding FrameCornerRadius}"
+                                Minimum="0"
+                                Maximum="50" />
+
+                        <Label Text="Shadow:"
+                               FontSize="12"
+                               FontAttributes="Bold"
+                               Margin="0,10,0,0" />
+                        <Switch IsToggled="{Binding FrameHasShadow}"
+                                HorizontalOptions="Start" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
