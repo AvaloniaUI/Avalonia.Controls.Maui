@@ -80,7 +80,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
 
     public static void MapOpacity(IImageHandler handler, IView view)
     {
-        Avalonia.Threading.Dispatcher.UIThread.Invoke(() => (handler.PlatformView as AGrid)?.UpdateImageOpacity(view.Opacity));
+        (handler.PlatformView as AGrid)?.UpdateImageOpacity(view.Opacity);
     }
 
     public static void MapAspect(IImageHandler handler, IImage image)
