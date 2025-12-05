@@ -1,3 +1,4 @@
+using System.Windows.Input;
 using Microsoft.Maui;
 using MauiGraphics = Microsoft.Maui.Graphics;
 
@@ -16,6 +17,8 @@ public class ImageButtonStub : StubBase, IImageButton, IImage, IButtonStroke, II
     private double _strokeThickness;
     private int _cornerRadius;
     private MauiGraphics.Paint? _background;
+    private ICommand? _command;
+    private object? _commandParameter;
 
     // Event counters for testing
     public int ClickedCount { get; private set; }
@@ -23,6 +26,8 @@ public class ImageButtonStub : StubBase, IImageButton, IImage, IButtonStroke, II
     public int ReleasedCount { get; private set; }
     public int IsLoadingUpdatedCount { get; private set; }
     public bool IsLoading { get; private set; }
+    public int CommandExecutedCount { get; private set; }
+    public object? LastCommandParameter { get; private set; }
 
     public IImageSource? Source
     {
@@ -72,9 +77,29 @@ public class ImageButtonStub : StubBase, IImageButton, IImage, IButtonStroke, II
         set => SetProperty(ref _background, value);
     }
 
+    public ICommand? Command
+    {
+        get => _command;
+        set => SetProperty(ref _command, value);
+    }
+
+    public object? CommandParameter
+    {
+        get => _commandParameter;
+        set => SetProperty(ref _commandParameter, value);
+    }
+
     public void Clicked()
     {
         ClickedCount++;
+
+        // Execute command like MAUI's ButtonElement.ElementClicked does
+        if (Command?.CanExecute(CommandParameter) == true)
+        {
+            Command.Execute(CommandParameter);
+            CommandExecutedCount++;
+            LastCommandParameter = CommandParameter;
+        }
     }
 
     public void Pressed()

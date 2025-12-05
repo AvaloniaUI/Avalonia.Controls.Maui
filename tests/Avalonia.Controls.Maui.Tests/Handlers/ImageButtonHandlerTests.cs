@@ -8,6 +8,7 @@ using MauiImageButtonHandler = Avalonia.Controls.Maui.Handlers.ImageButtonHandle
 using MauiThickness = Microsoft.Maui.Thickness;
 using Stretch = Avalonia.Media.Stretch;
 using IImage = Microsoft.Maui.IImage;
+using TestCommand = Avalonia.Controls.Maui.Tests.TestUtilities.TestCommand;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -423,6 +424,107 @@ public partial class ImageButtonHandlerTests : HandlerTestBase<MauiImageButtonHa
         });
 
         Assert.Null(handler.PlatformView?.ImageSource);
+    }
+
+    [AvaloniaFact(DisplayName = "Command Executes On Click")]
+    public async Task CommandExecutesOnClick()
+    {
+        var commandExecuted = false;
+        var command = new TestCommand(() => commandExecuted = true);
+        var imageButton = new ImageButtonStub { Command = command };
+        var handler = await CreateHandlerAsync(imageButton);
+
+        handler.PlatformView!.RaiseEvent(new Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+
+        Assert.True(commandExecuted);
+        Assert.Equal(1, imageButton.CommandExecutedCount);
+    }
+
+    [AvaloniaFact(DisplayName = "Command Receives CommandParameter")]
+    public async Task CommandReceivesCommandParameter()
+    {
+        object? receivedParameter = null;
+        var command = new TestCommand<string>(param => receivedParameter = param);
+        var imageButton = new ImageButtonStub
+        {
+            Command = command,
+            CommandParameter = "TestParameter"
+        };
+        var handler = await CreateHandlerAsync(imageButton);
+
+        handler.PlatformView!.RaiseEvent(new Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+
+        Assert.Equal("TestParameter", receivedParameter);
+        Assert.Equal("TestParameter", imageButton.LastCommandParameter);
+    }
+
+    [AvaloniaFact(DisplayName = "Command Does Not Execute When CanExecute Returns False")]
+    public async Task CommandDoesNotExecuteWhenCanExecuteReturnsFalse()
+    {
+        var commandExecuted = false;
+        var command = new TestCommand(() => commandExecuted = true, () => false);
+        var imageButton = new ImageButtonStub { Command = command };
+        var handler = await CreateHandlerAsync(imageButton);
+
+        handler.PlatformView!.RaiseEvent(new Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+
+        Assert.False(commandExecuted);
+        Assert.Equal(0, imageButton.CommandExecutedCount);
+    }
+
+    [AvaloniaFact(DisplayName = "Null Command Does Not Crash")]
+    public async Task NullCommandDoesNotCrash()
+    {
+        var imageButton = new ImageButtonStub { Command = null };
+        var handler = await CreateHandlerAsync(imageButton);
+
+        handler.PlatformView!.RaiseEvent(new Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+
+        Assert.Equal(1, imageButton.ClickedCount);
+        Assert.Equal(0, imageButton.CommandExecutedCount);
+    }
+
+    [AvaloniaFact(DisplayName = "Command Can Be Changed")]
+    public async Task CommandCanBeChanged()
+    {
+        var firstCommandExecuted = false;
+        var secondCommandExecuted = false;
+        var firstCommand = new TestCommand(() => firstCommandExecuted = true);
+        var secondCommand = new TestCommand(() => secondCommandExecuted = true);
+
+        var imageButton = new ImageButtonStub { Command = firstCommand };
+        var handler = await CreateHandlerAsync(imageButton);
+
+        // First click should execute first command
+        handler.PlatformView!.RaiseEvent(new Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+        Assert.True(firstCommandExecuted);
+        Assert.False(secondCommandExecuted);
+
+        // Change command
+        firstCommandExecuted = false;
+        imageButton.Command = secondCommand;
+
+        // Second click should execute second command
+        handler.PlatformView.RaiseEvent(new Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+        Assert.False(firstCommandExecuted);
+        Assert.True(secondCommandExecuted);
+    }
+
+    [AvaloniaFact(DisplayName = "Multiple Clicks Execute Command Multiple Times")]
+    public async Task MultipleClicksExecuteCommandMultipleTimes()
+    {
+        var executionCount = 0;
+        var command = new TestCommand(() => executionCount++);
+        var imageButton = new ImageButtonStub { Command = command };
+        var handler = await CreateHandlerAsync(imageButton);
+
+        for (int i = 0; i < 5; i++)
+        {
+            handler.PlatformView!.RaiseEvent(new Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+        }
+
+        Assert.Equal(5, executionCount);
+        Assert.Equal(5, imageButton.CommandExecutedCount);
     }
 
     Color? GetPlatformBackgroundColor(MauiImageButtonHandler handler) =>

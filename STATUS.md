@@ -349,8 +349,8 @@ Displays an image and responds to a tap or click that directs an app to carry ou
 | Aspect | ✅ Implemented |
 | BorderColor | ✅ Implemented |
 | BorderWidth | ✅ Implemented |
-| Command | ⏳ TODO |
-| CommandParameter | ⏳ TODO |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
 | CornerRadius | ✅ Implemented |
 | Padding | ✅ Implemented |
 
