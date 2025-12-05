@@ -218,8 +218,6 @@
                                    TextColor="{AppThemeBinding Light=Gray, Dark=#BDBDBD}" />
                             <HorizontalStackLayout Spacing="10"
                                                    Margin="0,5,0,0">
-                                <Label Text="📧"
-                                       FontSize="14" />
                                 <Label Text="john.doe@example.com"
                                        FontSize="12"
                                        VerticalOptions="Center" />
@@ -281,7 +279,8 @@
                            HasShadow="True">
                         <VerticalStackLayout Spacing="0">
                             <BoxView Color="Teal"
-                                     HeightRequest="60">
+                                     HeightRequest="60"
+                                     CornerRadius="10,10,0,0">
                                 <BoxView.GestureRecognizers>
                                     <TapGestureRecognizer />
                                 </BoxView.GestureRecognizers>
