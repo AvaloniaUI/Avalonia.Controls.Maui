@@ -154,16 +154,23 @@ public partial class MainPage : ContentPage
         // The Square to be animated.
         GameSquare animaSquare = squares[row, col];
 
+        // Calculate translation delta
+        double targetX = squareSize * emptyCol;
+        double targetY = squareSize * emptyRow;
+        double currentX = squareSize * col;
+        double currentY = squareSize * row;
+        double deltaX = targetX - currentX;
+        double deltaY = targetY - currentY;
+
+        // Animate using translation
+        await animaSquare.TranslateToAsync(deltaX, deltaY, length);
+
+        // Reset translation and update layout bounds
+        animaSquare.TranslationX = 0;
+        animaSquare.TranslationY = 0;
+
         // The destination rectangle.
-        Rect rect = new Rect(squareSize * emptyCol,
-                                      squareSize * emptyRow,
-                                      squareSize,
-                                      squareSize);
-
-        // This is the actual animation call.
-        await animaSquare.LayoutTo(rect, length);
-
-        // Set layout bounds to same Rectangle.
+        Rect rect = new Rect(targetX, targetY, squareSize, squareSize);
         AbsoluteLayout.SetLayoutBounds(animaSquare, rect);
 
         // Set several variables and properties for new layout.

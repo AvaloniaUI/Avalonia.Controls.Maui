@@ -3,6 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ControlGallery.Pages.TransformationsPage"
              Title="Transformations">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="LightBorderBackground">White</Color>
+            <Color x:Key="DarkBorderBackground">#2a2a2a</Color>
+
+            <Color x:Key="LightStroke">LightGray</Color>
+            <Color x:Key="DarkStroke">#505050</Color>
+
+            <Color x:Key="LightButtonGray">LightGray</Color>
+            <Color x:Key="DarkButtonGray">#404040</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="20">
         
@@ -21,11 +33,11 @@
                Margin="0,0,0,30" />
 
         <!-- Transform Target -->
-        <Border Grid.Row="2" 
-                StrokeShape="RoundRectangle" 
-                StrokeThickness="2" 
-                Stroke="LightGray"
-                BackgroundColor="White"
+        <Border Grid.Row="2"
+                StrokeShape="RoundRectangle"
+                StrokeThickness="2"
+                Stroke="{AppThemeBinding Light={StaticResource LightStroke}, Dark={StaticResource DarkStroke}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource LightBorderBackground}, Dark={StaticResource DarkBorderBackground}}"
                 Padding="20"
                 Margin="0,0,0,30">
             <VerticalStackLayout Spacing="10"
@@ -216,7 +228,7 @@
 
                 <!-- Action Buttons -->
                 <Button Text="Reset All"
-                        BackgroundColor="LightGray"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource LightButtonGray}, Dark={StaticResource DarkButtonGray}}"
                         TextColor="White"
                         Clicked="ResetButton_Clicked" />
 

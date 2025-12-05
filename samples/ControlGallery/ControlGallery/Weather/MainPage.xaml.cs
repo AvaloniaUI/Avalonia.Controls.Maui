@@ -26,7 +26,7 @@ public partial class MainPage : ContentPage
         {
             if (string.IsNullOrWhiteSpace(Constants.OpenWeatherMapAPIKey) || Constants.OpenWeatherMapAPIKey == "YOUR_API_KEY")
             {
-                await DisplayAlert("API Key Missing", "Please set your OpenWeatherMap API key in Constants.OpenWeatherMapAPIKey.", "OK");
+                await DisplayAlertAsync("API Key Missing", "Please set your OpenWeatherMap API key in Constants.OpenWeatherMapAPIKey.", "OK");
                 return;
             }
         }

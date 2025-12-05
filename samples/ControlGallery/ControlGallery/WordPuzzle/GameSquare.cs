@@ -56,9 +56,9 @@ namespace WordPuzzle
         public async Task AnimateWinAsync(bool isReverse)
         {
             uint length = 150;
-            await Task.WhenAll(this.ScaleTo(3, length), this.RotateTo(180, length));
+            await Task.WhenAll(this.ScaleToAsync(3, length), this.RotateToAsync(180, length));
             label.Text = isReverse ? normText : winText;
-            await Task.WhenAll(this.ScaleTo(1, length), this.RotateTo(360, length));
+            await Task.WhenAll(this.ScaleToAsync(1, length), this.RotateToAsync(360, length));
             this.Rotation = 0;
         }
 
