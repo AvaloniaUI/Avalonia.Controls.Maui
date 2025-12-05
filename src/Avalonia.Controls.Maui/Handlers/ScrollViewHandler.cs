@@ -131,14 +131,14 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>,
             extent.Height > 0 ? extent.Height : platformView.Bounds.Height);
 
         var targetSize = new GraphicsSize(avaloniaSize.Width, avaloniaSize.Height);
-        var contentSizeProperty = scrollView.GetType().GetProperty(
-            "ContentSize",
-            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-        var setter = contentSizeProperty?.GetSetMethod(true);
-        if (setter != null)
+        if (scrollView is Microsoft.Maui.Controls.ScrollView mauiScrollView)
         {
-            setter.Invoke(scrollView, [targetSize]);
+            var contentSizeProperty = typeof(Microsoft.Maui.Controls.ScrollView).GetProperty(
+                "ContentSize",
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var setter = contentSizeProperty?.GetSetMethod(true);
+            setter?.Invoke(mauiScrollView, [targetSize]);
         }
     }
 
@@ -159,18 +159,21 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>,
         // These properties are internal on MAUI's ScrollView implementation and not exposed through IScrollView,
         // but they're read by consumers of the ScrollView (e.g., for data binding or event handling).
         // This ensures the internal scroll position state stays synchronized with the platform control.
-        var scrollViewType = scrollView.GetType();
-
-        var scrollXProp = scrollViewType.GetProperty("ScrollX", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        if (scrollXProp?.CanWrite == true)
+        if (scrollView is not Microsoft.Maui.Controls.ScrollView mauiScrollView)
         {
-            scrollXProp.SetValue(scrollView, scrollX);
+            return;
         }
 
-        var scrollYProp = scrollViewType.GetProperty("ScrollY", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        var scrollXProp = typeof(Microsoft.Maui.Controls.ScrollView).GetProperty("ScrollX", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        if (scrollXProp?.CanWrite == true)
+        {
+            scrollXProp.SetValue(mauiScrollView, scrollX);
+        }
+
+        var scrollYProp = typeof(Microsoft.Maui.Controls.ScrollView).GetProperty("ScrollY", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
         if (scrollYProp?.CanWrite == true)
         {
-            scrollYProp.SetValue(scrollView, scrollY);
+            scrollYProp.SetValue(mauiScrollView, scrollY);
         }
     }
 }
