@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.BoxViewPage"
+             x:DataType="pages:BoxViewPage"
+             Title="BoxView">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="BoxView Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Colors"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="10"
+                                          HorizontalOptions="Center">
+                        <BoxView Color="Red"
+                                WidthRequest="80"
+                                HeightRequest="80"/>
+                        <BoxView Color="Green"
+                                WidthRequest="80"
+                                HeightRequest="80"/>
+                        <BoxView Color="Blue"
+                                WidthRequest="80"
+                                HeightRequest="80"/>
+                        <BoxView Color="Yellow"
+                                WidthRequest="80"
+                                HeightRequest="80"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Named Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Named Colors"
+                           FontAttributes="Bold"/>
+                    <Grid ColumnDefinitions="*,*,*,*"
+                          RowDefinitions="Auto,Auto"
+                          ColumnSpacing="10"
+                          RowSpacing="10">
+                        <BoxView Color="MediumPurple"
+                                WidthRequest="70"
+                                HeightRequest="70"
+                                Grid.Column="0"/>
+                        <BoxView Color="DeepSkyBlue"
+                                WidthRequest="70"
+                                HeightRequest="70"
+                                Grid.Column="1"/>
+                        <BoxView Color="LimeGreen"
+                                WidthRequest="70"
+                                HeightRequest="70"
+                                Grid.Column="2"/>
+                        <BoxView Color="Coral"
+                                WidthRequest="70"
+                                HeightRequest="70"
+                                Grid.Column="3"/>
+                        <BoxView Color="Gold"
+                                WidthRequest="70"
+                                HeightRequest="70"
+                                Grid.Row="1"
+                                Grid.Column="0"/>
+                        <BoxView Color="Crimson"
+                                WidthRequest="70"
+                                HeightRequest="70"
+                                Grid.Row="1"
+                                Grid.Column="1"/>
+                        <BoxView Color="Teal"
+                                WidthRequest="70"
+                                HeightRequest="70"
+                                Grid.Row="1"
+                                Grid.Column="2"/>
+                        <BoxView Color="Orchid"
+                                WidthRequest="70"
+                                HeightRequest="70"
+                                Grid.Row="1"
+                                Grid.Column="3"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Dynamic Color -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Color (Data Binding)"
+                           FontAttributes="Bold"/>
+                    <BoxView Color="{Binding SelectedColor}"
+                            WidthRequest="150"
+                            HeightRequest="150"
+                            HorizontalOptions="Center"/>
+                    <Label Text="{Binding SelectedColor, StringFormat='Current: {0}'}"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                    <Grid ColumnDefinitions="*,*,*,*"
+                          ColumnSpacing="10">
+                        <Button Text="Red"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Red"
+                                BackgroundColor="Red"
+                                TextColor="White"
+                                Grid.Column="0"/>
+                        <Button Text="Green"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Green"
+                                BackgroundColor="Green"
+                                TextColor="White"
+                                Grid.Column="1"/>
+                        <Button Text="Blue"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Blue"
+                                BackgroundColor="Blue"
+                                TextColor="White"
+                                Grid.Column="2"/>
+                        <Button Text="Purple"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Purple"
+                                BackgroundColor="Purple"
+                                TextColor="White"
+                                Grid.Column="3"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Sizes and Shapes -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Different Sizes"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="15"
+                                          HorizontalOptions="Center"
+                                          VerticalOptions="Center">
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="CornflowerBlue"
+                                    WidthRequest="30"
+                                    HeightRequest="30"/>
+                            <Label Text="30x30"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="CornflowerBlue"
+                                    WidthRequest="50"
+                                    HeightRequest="50"/>
+                            <Label Text="50x50"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="CornflowerBlue"
+                                    WidthRequest="80"
+                                    HeightRequest="80"/>
+                            <Label Text="80x80"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="CornflowerBlue"
+                                    WidthRequest="120"
+                                    HeightRequest="120"/>
+                            <Label Text="120x120"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Rectangles -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Rectangles (Non-Square)"
+                           FontAttributes="Bold"/>
+                    <VerticalStackLayout Spacing="10"
+                                        HorizontalOptions="Fill">
+                        <BoxView Color="Tomato"
+                                HeightRequest="20"
+                                HorizontalOptions="Fill"/>
+                        <BoxView Color="MediumSeaGreen"
+                                HeightRequest="40"
+                                HorizontalOptions="Fill"/>
+                        <BoxView Color="RoyalBlue"
+                                HeightRequest="60"
+                                HorizontalOptions="Fill"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Corner Radius -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Corner Radius"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="15"
+                                          HorizontalOptions="Center">
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="DarkOrange"
+                                    WidthRequest="80"
+                                    HeightRequest="80"
+                                    CornerRadius="0"/>
+                            <Label Text="0"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="DarkOrange"
+                                    WidthRequest="80"
+                                    HeightRequest="80"
+                                    CornerRadius="10"/>
+                            <Label Text="10"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="DarkOrange"
+                                    WidthRequest="80"
+                                    HeightRequest="80"
+                                    CornerRadius="20"/>
+                            <Label Text="20"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="DarkOrange"
+                                    WidthRequest="80"
+                                    HeightRequest="80"
+                                    CornerRadius="40"/>
+                            <Label Text="40 (Circle)"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Opacity -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Opacity Levels"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="15"
+                                          HorizontalOptions="Center">
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="Navy"
+                                    WidthRequest="70"
+                                    HeightRequest="70"
+                                    Opacity="1.0"/>
+                            <Label Text="100%"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="Navy"
+                                    WidthRequest="70"
+                                    HeightRequest="70"
+                                    Opacity="0.75"/>
+                            <Label Text="75%"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="Navy"
+                                    WidthRequest="70"
+                                    HeightRequest="70"
+                                    Opacity="0.5"/>
+                            <Label Text="50%"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="5">
+                            <BoxView Color="Navy"
+                                    WidthRequest="70"
+                                    HeightRequest="70"
+                                    Opacity="0.25"/>
+                            <Label Text="25%"
+                                   FontSize="10"
+                                   HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Practical Uses -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Practical Uses"
+                           FontAttributes="Bold"/>
+
+                    <!-- Separator -->
+                    <Label Text="Separator Line"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <BoxView Color="LightGray"
+                            HeightRequest="1"
+                            HorizontalOptions="Fill"/>
+
+                    <!-- Spacer -->
+                    <Label Text="Spacer (20px)"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <BoxView Color="Transparent"
+                            HeightRequest="20"
+                            HorizontalOptions="Fill"/>
+
+                    <!-- Color indicator -->
+                    <Label Text="Status Indicators"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Color="Green"
+                                WidthRequest="15"
+                                HeightRequest="15"
+                                CornerRadius="8"
+                                VerticalOptions="Center"/>
+                        <Label Text="Online"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Color="Orange"
+                                WidthRequest="15"
+                                HeightRequest="15"
+                                CornerRadius="8"
+                                VerticalOptions="Center"/>
+                        <Label Text="Away"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="10">
+                        <BoxView Color="Red"
+                                WidthRequest="15"
+                                HeightRequest="15"
+                                CornerRadius="8"
+                                VerticalOptions="Center"/>
+                        <Label Text="Offline"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Color swatch -->
+                    <Label Text="Color Palette"
+                           FontSize="12"
+                           FontAttributes="Italic"
+                           Margin="0,10,0,0"/>
+                    <HorizontalStackLayout Spacing="5"
+                                          HorizontalOptions="Center">
+                        <BoxView Color="#FF6B6B"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                CornerRadius="5"/>
+                        <BoxView Color="#4ECDC4"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                CornerRadius="5"/>
+                        <BoxView Color="#45B7D1"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                CornerRadius="5"/>
+                        <BoxView Color="#FFA07A"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                CornerRadius="5"/>
+                        <BoxView Color="#98D8C8"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                CornerRadius="5"/>
+                        <BoxView Color="#F7DC6F"
+                                WidthRequest="40"
+                                HeightRequest="40"
+                                CornerRadius="5"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

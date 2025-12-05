@@ -1,8 +1,5 @@
-using System;
 using System.Windows.Input;
-using Microsoft.Maui.Controls;
 using ControlGallery.Pages;
-using WordPuzzle;
 
 namespace ControlGallery;
 
@@ -25,6 +22,7 @@ public partial class MainPage : FlyoutPage
         {
             nameof(FontsPage) => new FontsPage(),
             nameof(ActivityIndicatorPage) => new ActivityIndicatorPage(),
+            nameof(BoxViewPage) => new BoxViewPage(),
             nameof(ButtonPage) => new ButtonPage(),
             nameof(CheckBoxPage) => new CheckBoxPage(),
             nameof(ImagePage) => new ImagePage(),
