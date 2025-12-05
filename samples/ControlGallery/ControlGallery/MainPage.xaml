@@ -51,6 +51,10 @@
 						          Detail="ActivityIndicator control"
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type pages:ActivityIndicatorPage}"/>
+						<TextCell Text="BoxView"
+						          Detail="Simple colored rectangles"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:BoxViewPage}"/>
 						<TextCell Text="Button"
 						          Detail="Button control"
 						          Command="{Binding NavigateCommand}"
@@ -59,7 +63,7 @@
 								  Detail="CheckBox control for selections"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:CheckBoxPage}"/>
-            <TextCell Text="GraphicsView"
+						<TextCell Text="GraphicsView"
 								  Detail="Custom drawing and graphics"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:GraphicsViewPage}"/>
