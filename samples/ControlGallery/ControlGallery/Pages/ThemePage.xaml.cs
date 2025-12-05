@@ -36,8 +36,13 @@ public partial class ThemePage : ContentPage, INotifyPropertyChanged
         if (app == null)
             return;
 
+        // Get the current effective theme (considering both UserAppTheme and RequestedTheme)
+        var currentTheme = app.UserAppTheme != AppTheme.Unspecified
+            ? app.UserAppTheme
+            : app.RequestedTheme;
+
         // Toggle between Light and Dark themes using MAUI's UserAppTheme
-        app.UserAppTheme = app.UserAppTheme == AppTheme.Light
+        app.UserAppTheme = currentTheme == AppTheme.Light
             ? AppTheme.Dark
             : AppTheme.Light;
 

@@ -7,6 +7,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 
 public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>, IScrollViewHandler
 {
+    object IScrollViewHandler.PlatformView => PlatformView;
     private EventHandler<ScrollChangedEventArgs>? _scrollChangedHandler;
 
     public static IPropertyMapper<IScrollView, IScrollViewHandler> Mapper = new PropertyMapper<IScrollView, IScrollViewHandler>(ViewMapper)

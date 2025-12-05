@@ -16,24 +16,24 @@ public partial class ButtonPage : ContentPage
         InitializeComponent();
         
         // Initialize simple command
-        MyCommand = new Command(() => 
+        MyCommand = new Command(async () =>
         {
-            DisplayAlert("Command", "Simple command executed!", "OK");
+            await DisplayAlertAsync("Command", "Simple command executed!", "OK");
             UpdateCommandResult("Simple command executed");
         });
-        
+
         // Initialize command with parameter
-        ParameterizedCommand = new Command<string>(async (parameter) => 
+        ParameterizedCommand = new Command<string>(async (parameter) =>
         {
-            await DisplayAlert("Parameterized Command", $"Executed with parameter: {parameter}", "OK");
+            await DisplayAlertAsync("Parameterized Command", $"Executed with parameter: {parameter}", "OK");
             UpdateCommandResult($"Parameterized command: {parameter}");
         });
-        
+
         // Initialize disabled command (canExecute returns false)
         DisabledCommand = new Command(
-            execute: () => 
+            execute: async () =>
             {
-                DisplayAlert("Disabled Command", "This should not execute!", "OK");
+                await DisplayAlertAsync("Disabled Command", "This should not execute!", "OK");
             },
             canExecute: () => false
         );

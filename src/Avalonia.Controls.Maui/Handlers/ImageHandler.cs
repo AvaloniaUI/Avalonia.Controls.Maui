@@ -20,7 +20,6 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
 {
     private readonly AImage _staticImage;
     private GifImage? _gifImage;
-    private bool _isGif;
     private CancellationTokenSource? _loadCts;
 
     private static readonly ConcurrentDictionary<string, Uri?> AssetCache = new();
@@ -220,7 +219,6 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
 
             _staticImage.IsVisible = false;
             _gifImage.IsVisible = true;
-            _isGif = true;
         }
         catch (Exception ex)
         {
@@ -252,11 +250,10 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
 
     private async Task LoadStaticAsync(IImageSource source, CancellationToken token)
     {
-        _isGif = false;
-        if (_gifImage != null) 
+        if (_gifImage != null)
         {
             _gifImage.IsVisible = false;
-            try { _gifImage.Source = null; } catch { }
+            try { _gifImage.Source = null!; } catch { }
         }
 
         var provider = this.GetRequiredService<IImageSourceServiceProvider>();
@@ -292,10 +289,9 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
         _staticImage.IsVisible = false;
         if (_gifImage != null)
         {
-            _gifImage.Source = null;
+            _gifImage.Source = null!;
             _gifImage.IsVisible = false;
         }
-        _isGif = false;
     }
 
     private async Task<Uri?> ResolveGifUriAsync(IImageSource source)
@@ -332,7 +328,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
         return null;
     }
 
-    private bool TryFindEmbeddedGif(string fileName, out Uri result)
+    private bool TryFindEmbeddedGif(string fileName, out Uri? result)
     {
         result = null;
         var targetName = Path.GetFileName(fileName);
