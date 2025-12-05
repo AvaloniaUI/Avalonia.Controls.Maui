@@ -121,6 +121,27 @@
                            HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
+            
+            <!-- Slider with Thumb Image -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Thumb Image"
+                           FontAttributes="Bold"/>
+                    <Slider Minimum="0"
+                            Maximum="100"
+                            Value="50"
+                            ThumbImageSource="dotnet_bot.png"
+                            MinimumTrackColor="CornflowerBlue"
+                            MaximumTrackColor="LightGray"/>
+                    <Label Text="Uses ThumbImageSource to replace the thumb."
+                           FontSize="12"
+                           TextColor="Gray"/>
+                </VerticalStackLayout>
+            </Border>
 
             <!-- Slider with All Colors -->
             <Border Stroke="Gray"
