@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Avalonia.Platform;
 using Microsoft.Maui;
@@ -150,16 +151,25 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
                 return;
             }
 
-            var updateIsLoading = VirtualView?
-                .GetType()
-                .GetMethod("UpdateIsLoading", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            updateIsLoading?.Invoke(VirtualView, new object[] { isLoading });
+            if (VirtualView != null)
+            {
+                UpdateIsLoadingViaReflection(VirtualView, isLoading);
+            }
         }
         catch
         {
             // Ignore reflection errors
         }
+    }
+
+    [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Custom IImage implementations may expose UpdateIsLoading via reflection.")]
+    private static void UpdateIsLoadingViaReflection(object virtualView, bool isLoading)
+    {
+        var updateIsLoading = virtualView
+            .GetType()
+            .GetMethod("UpdateIsLoading", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+        updateIsLoading?.Invoke(virtualView, new object[] { isLoading });
     }
 
     private async Task LoadGifAsync(IImageSource source, bool shouldPlay, CancellationToken token)

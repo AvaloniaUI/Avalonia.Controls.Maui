@@ -38,6 +38,7 @@ public partial class MainPage : FlyoutPage
             nameof(PolylinePage) => new PolylinePage(),
             nameof(PathPage) => new PathPage(),
             nameof(RoundRectanglePage) => new RoundRectanglePage(),
+            nameof(ScrollViewPage) => new ScrollViewPage(),
             nameof(SliderPage) => new SliderPage(),
             nameof(SwitchPage) => new SwitchPage(),
             nameof(ClipPage) => new ClipPage(),
