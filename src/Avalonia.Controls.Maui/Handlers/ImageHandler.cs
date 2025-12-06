@@ -7,6 +7,7 @@ using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Extensions.Logging;
 using Avalonia.Labs.Gif;
 using Avalonia.Animation;
@@ -30,6 +31,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
         [nameof(IImage.IsAnimationPlaying)] = MapIsAnimationPlaying,
         [nameof(IImage.Source)] = MapSource,
         [nameof(IView.Opacity)] = MapOpacity,
+        [nameof(IView.Clip)] = MapClip,
         // IsLoading is read-only and updated automatically by the handler
     };
 
@@ -85,6 +87,28 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
     public static void MapAspect(IImageHandler handler, IImage image)
     {
         (handler.PlatformView as AGrid)?.UpdateAspect(image.Aspect);
+    }
+
+    public static void MapClip(IImageHandler handler, IView view)
+    {
+        if (handler is ImageHandler imageHandler)
+        {
+            imageHandler.UpdateImageClip(view);
+        }
+    }
+
+    private void UpdateImageClip(IView view)
+    {
+        // Apply clip to the inner image controls instead of the container Grid
+        // This ensures the clip geometry coordinates align with the actual image content
+        var avaloniaGeometry = (view.Clip as Microsoft.Maui.Controls.Shapes.Geometry)?.ToPlatform();
+
+        _staticImage.Clip = avaloniaGeometry;
+
+        if (_gifImage != null)
+        {
+            _gifImage.Clip = avaloniaGeometry;
+        }
     }
 
     internal async Task LoadSourceAsync(IImage image, CancellationToken token)
@@ -238,13 +262,15 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
             {
                 IsVisible = false,
                 Stretch = _staticImage.Stretch,
-                Opacity = _staticImage.Opacity
+                Opacity = _staticImage.Opacity,
+                Clip = _staticImage.Clip
             };
         }
         else
         {
             _gifImage.Stretch = _staticImage.Stretch;
             _gifImage.Opacity = _staticImage.Opacity;
+            _gifImage.Clip = _staticImage.Clip;
         }
     }
 
