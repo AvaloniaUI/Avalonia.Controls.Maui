@@ -79,13 +79,13 @@ public class NavigationView : DockPanel
         _backButton = new Button
         {
             Content = "←",
-            FontSize = 20,
-            Width = 40,
+            FontSize = 16,
+            MinWidth = 40,
             Height = 40,
             IsVisible = false,
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
-            Padding = new Thickness(0),
+            Padding = new Thickness(8, 0),
             HorizontalContentAlignment = HorizontalAlignment.Center,
             VerticalContentAlignment = VerticalAlignment.Center
         };

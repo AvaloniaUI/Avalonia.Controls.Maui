@@ -368,9 +368,14 @@ public class StackNavigationManager
             iconColor = NavigationPage.GetIconColor(currentPage);
 
             // Get the BackButtonTitle from the previous page (the one we'd go back to)
-            if (NavigationStack.Count > 1 && NavigationStack[NavigationStack.Count - 2] is Page previousPage)
+            // Use the MAUI navigation stack directly to ensure we get the correct Page objects
+            var mauiNavStack = navigationPage.Navigation?.NavigationStack;
+            if (mauiNavStack != null && mauiNavStack.Count > 1)
             {
+                var previousPage = mauiNavStack[mauiNavStack.Count - 2];
                 backButtonTitle = NavigationPage.GetBackButtonTitle(previousPage);
+                _logger?.LogDebug("Previous page: {PageType}, BackButtonTitle: {Title}",
+                    previousPage?.GetType().Name, backButtonTitle);
             }
         }
 

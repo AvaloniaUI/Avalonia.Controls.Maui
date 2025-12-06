@@ -32,7 +32,8 @@ public partial class NavigationDemoPage : ContentPage
 
     private async void OnPushPageWithBackTitle(object sender, EventArgs e)
     {
-        var page = new NavigationChildPage("Custom Back", "The previous page has a custom back button title set.");
+        var page = new NavigationChildPage("Custom Back", "This page has a custom BackButtonTitle. Push another page to see 'Custom Back' in the back button.");
+        NavigationPage.SetBackButtonTitle(page, "Custom Back");
         await Navigation.PushAsync(page);
     }
 
