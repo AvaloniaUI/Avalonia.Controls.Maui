@@ -119,17 +119,17 @@ public class MauiAvaloniaWindow : Window, IDisposable
             _titleBarView.MauiContext = mauiContext;
             DockPanel.SetDock(_titleBarView, Dock.Top);
 
-            // Insert at the beginning so it's at the top
-            _rootPanel.Children.Insert(0, _titleBarView);
-
-            // Set initial active state
-            _titleBarView.SetActiveState(IsActive);
-
             // Enable extended client area for custom title bar with drag support
             // PreferSystemChrome keeps minimize/maximize/close buttons
             ExtendClientAreaToDecorationsHint = true;
             ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
             ExtendClientAreaTitleBarHeightHint = 32; // Match TitleBarView height
+
+            // Insert at the beginning so it's at the top
+            _rootPanel.Children.Insert(0, _titleBarView);
+
+            // Set initial active state
+            _titleBarView.SetActiveState(IsActive);
         }
         else if (handler?.PlatformView is Control control)
         {

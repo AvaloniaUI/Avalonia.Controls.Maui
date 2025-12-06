@@ -5,7 +5,6 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using Microsoft.Maui;
-using Microsoft.Maui.Platform;
 using System.Collections.Generic;
 
 namespace Avalonia.Controls.Maui.Platform;
@@ -13,6 +12,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// <summary>
 /// Avalonia platform control for rendering MAUI TitleBar.
 /// Supports window dragging on non-passthrough areas.
+/// Automatically adjusts for platform-specific window control positions.
 /// </summary>
 public class TitleBarView : MauiView
 {
@@ -28,6 +28,8 @@ public class TitleBarView : MauiView
     private IMauiContext? _mauiContext;
     private ITitleBar? _titleBar;
     private readonly HashSet<Control> _passthroughControls = new();
+    private Window? _attachedWindow;
+    private Thickness _windowControlsMargin;
 
     /// <summary>
     /// Gets or sets the MAUI context for converting views.
@@ -89,8 +91,8 @@ public class TitleBarView : MauiView
         {
             IsVisible = false,
             VerticalAlignment = VerticalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(0, 0, 150, 0) // Space for window buttons
+            VerticalContentAlignment = VerticalAlignment.Center
+            // Note: Margin is dynamically set by UpdateMarginForWindowControls based on platform
         };
         DockPanel.SetDock(_trailingContentContainer, Dock.Right);
         _rootPanel.Children.Add(_trailingContentContainer);
@@ -139,6 +141,115 @@ public class TitleBarView : MauiView
 
         // Enable pointer events for drag handling
         PointerPressed += OnPointerPressed;
+    }
+
+    /// <inheritdoc />
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+
+        if (VisualRoot is Window window)
+        {
+            _attachedWindow = window;
+            _attachedWindow.PropertyChanged += OnWindowPropertyChanged;
+
+            // Calculate and apply initial margin
+            UpdateWindowControlsMargin(window);
+            ApplyMarginToChildren();
+        }
+    }
+
+    /// <inheritdoc />
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+
+        if (_attachedWindow != null)
+        {
+            _attachedWindow.PropertyChanged -= OnWindowPropertyChanged;
+            _attachedWindow = null;
+        }
+    }
+
+    /// <summary>
+    /// Called when children are added or removed. Applies margin to new children.
+    /// </summary>
+    protected override void ChildrenChanged(object? sender, global::System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        base.ChildrenChanged(sender, e);
+
+        // Apply current margin to any new children
+        ApplyMarginToChildren();
+    }
+
+    private void OnWindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (_attachedWindow == null)
+            return;
+
+        // Update margins when decoration state or offscreen margins change
+        if (e.Property == Window.IsExtendedIntoWindowDecorationsProperty ||
+            e.Property == Window.OffScreenMarginProperty)
+        {
+            UpdateWindowControlsMargin(_attachedWindow);
+            ApplyMarginToChildren();
+        }
+    }
+
+    /// <summary>
+    /// Calculates the margin needed for platform-specific window controls.
+    /// Uses Avalonia's OffScreenMargin when available, with fallback defaults for system chrome.
+    /// </summary>
+    private void UpdateWindowControlsMargin(Window window)
+    {
+        // Only add margin when the window is extended into decorations
+        if (!window.IsExtendedIntoWindowDecorations)
+        {
+            _windowControlsMargin = new Thickness(0);
+            return;
+        }
+
+        var offScreenMargin = window.OffScreenMargin;
+
+        // If Avalonia provides OffScreenMargin values, use them
+        if (offScreenMargin.Left > 0 || offScreenMargin.Right > 0)
+        {
+            _windowControlsMargin = new Thickness(
+                offScreenMargin.Left > 0 ? offScreenMargin.Left + 8 : 0,
+                0,
+                offScreenMargin.Right > 0 ? offScreenMargin.Right + 8 : 0,
+                0);
+            return;
+        }
+
+        // Fallback: When using PreferSystemChrome, system buttons are rendered by the OS
+        // but Avalonia doesn't report their position in OffScreenMargin.
+        // Use platform-specific defaults matching MAUI's approach.
+        if (OperatingSystem.IsMacOS())
+        {
+            // macOS: traffic light buttons are on the left (80px as used by MAUI)
+            _windowControlsMargin = new Thickness(80, 0, 0, 0);
+        }
+        else
+        {
+            // Windows/Linux: window buttons are typically on the right (150px as used by MAUI)
+            // Note: Some Linux window managers put buttons on the left, but right is most common
+            _windowControlsMargin = new Thickness(0, 0, 150, 0);
+        }
+    }
+
+    /// <summary>
+    /// Applies the current window controls margin to all children.
+    /// </summary>
+    private void ApplyMarginToChildren()
+    {
+        foreach (var child in Children)
+        {
+            if (child is Control control)
+            {
+                control.Margin = _windowControlsMargin;
+            }
+        }
     }
 
     /// <summary>
