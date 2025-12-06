@@ -506,36 +506,36 @@ A Page that manages the navigation and user-experience of a stack of other pages
 
 | Property | Status |
 |----------|--------|
-| BarBackground | ⏳ TODO |
-| BarBackgroundColor | ⏳ TODO |
-| BarTextColor | ⏳ TODO |
-| CurrentPage | ⏳ TODO |
+| BarBackground | ✅ Done |
+| BarBackgroundColor | ✅ Done |
+| BarTextColor | ✅ Done |
+| CurrentPage | ✅ Done |
 | RootPage | ⏳ TODO |
-| HasBackButton | ⏳ TODO |
-| HasNavigationBar | ⏳ TODO |
-| BackButtonTitle | ⏳ TODO |
-| TitleView | ⏳ TODO |
-| IconColor | ⏳ TODO |
-| TitleIconImageSource | ⏳ TODO |
+| HasBackButton | ✅ Done |
+| HasNavigationBar | ✅ Done |
+| BackButtonTitle | ✅ Done |
+| TitleView | ✅ Done |
+| IconColor | ✅ Done |
+| TitleIconImageSource | ✅ Done |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Popped | ⏳ TODO |
-| PoppedToRoot | ⏳ TODO |
-| Pushed | ⏳ TODO |
+| Popped | ✅ Done (handled by MAUI NavigationPage) |
+| PoppedToRoot | ✅ Done (handled by MAUI NavigationPage) |
+| Pushed | ✅ Done (handled by MAUI NavigationPage) |
 
 ### Methods
 
 | Method | Status |
 |--------|--------|
-| PopAsync | ⏳ TODO |
-| PopAsync(bool) | ⏳ TODO |
-| PopToRootAsync | ⏳ TODO |
-| PopToRootAsync(bool) | ⏳ TODO |
-| PushAsync | ⏳ TODO |
-| PushAsync(bool) | ⏳ TODO |
+| PopAsync | ✅ Done |
+| PopAsync(bool) | ✅ Done |
+| PopToRootAsync | ✅ Done (via MAUI NavigationPage) |
+| PopToRootAsync(bool) | ✅ Done (via MAUI NavigationPage) |
+| PushAsync | ✅ Done |
+| PushAsync(bool) | ✅ Done |
 
 ---
 

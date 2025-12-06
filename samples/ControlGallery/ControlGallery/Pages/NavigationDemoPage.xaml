@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.NavigationDemoPage"
+             x:DataType="pages:NavigationDemoPage"
+             Title="Navigation Demo"
+             NavigationPage.HasNavigationBar="True">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="NavigationPage Demo"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <Label Text="This demo shows NavigationPage features including navigation bar customization, back button title, title icon, and page navigation."
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"/>
+
+            <!-- Basic Navigation -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Navigation"
+                           FontAttributes="Bold"/>
+                    <Label Text="Push pages onto the navigation stack and use the back button to return."
+                           FontSize="12"/>
+                    <Button Text="Push Simple Page"
+                            Clicked="OnPushSimplePage"/>
+                    <Button Text="Push Page with Custom Back Title"
+                            Clicked="OnPushPageWithBackTitle"/>
+                    <Button Text="Push Page without Navigation Bar"
+                            Clicked="OnPushPageWithoutNavBar"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Navigation Bar Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Navigation Bar Colors"
+                           FontAttributes="Bold"/>
+                    <Label Text="Change BarBackgroundColor and BarTextColor."
+                           FontSize="12"/>
+                    <Button Text="Blue Bar"
+                            Clicked="OnSetBlueBar"/>
+                    <Button Text="Dark Theme Bar"
+                            Clicked="OnSetDarkBar"/>
+                    <Button Text="Green Bar"
+                            Clicked="OnSetGreenBar"/>
+                    <Button Text="Reset to Default"
+                            Clicked="OnResetBar"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Gradient Background -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="BarBackground (Brush)"
+                           FontAttributes="Bold"/>
+                    <Label Text="Use gradient brushes for the navigation bar background."
+                           FontSize="12"/>
+                    <Button Text="Gradient Background"
+                            Clicked="OnSetGradientBar"/>
+                    <Button Text="Radial Gradient"
+                            Clicked="OnSetRadialGradientBar"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Title View and Icon -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Title View and Icon"
+                           FontAttributes="Bold"/>
+                    <Label Text="Push pages with custom TitleView or TitleIconImageSource."
+                           FontSize="12"/>
+                    <Button Text="Push Page with Title Icon"
+                            Clicked="OnPushPageWithTitleIcon"/>
+                    <Button Text="Push Page with Custom TitleView"
+                            Clicked="OnPushPageWithTitleView"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Icon Color -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Icon Color"
+                           FontAttributes="Bold"/>
+                    <Label Text="Customize the back button icon color per page."
+                           FontSize="12"/>
+                    <Button Text="Push Page with Red Icon"
+                            Clicked="OnPushPageWithRedIcon"/>
+                    <Button Text="Push Page with Blue Icon"
+                            Clicked="OnPushPageWithBlueIcon"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- HasBackButton -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="HasBackButton"
+                           FontAttributes="Bold"/>
+                    <Label Text="Hide the back button on a page."
+                           FontSize="12"/>
+                    <Button Text="Push Page without Back Button"
+                            Clicked="OnPushPageWithoutBackButton"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Navigation Stack Info -->
+            <Border Stroke="Gray"
+                    Padding="10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Navigation Stack Info"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="StackInfoLabel"
+                           Text="Stack depth: 1"
+                           FontSize="12"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
