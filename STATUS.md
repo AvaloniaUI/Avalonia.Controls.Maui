@@ -962,6 +962,32 @@ Displays a table of scrollable items that can be grouped into sections.
 
 ---
 
+## TitleBar
+
+A View control that provides title bar functionality for a window. The standard title bar height is 32px but can be set to a larger value. The title bar can be hidden by setting the IsVisible property, which will cause the window content to be displayed in the title bar region.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Icon | ✅ Done (via TemplatedView) |
+| Title | ✅ Done |
+| Subtitle | ✅ Done |
+| ForegroundColor | ✅ Done (via TemplatedView) |
+| LeadingContent | ✅ Done (via TemplatedView) |
+| Content | ✅ Done (via TemplatedView) |
+| TrailingContent | ✅ Done (via TemplatedView) |
+| PassthroughElements | ⏳ TODO (drag regions not supported) |
+
+### Notes
+
+- TitleBar is a TemplatedView that renders its own content
+- Integrated with Window.TitleBar property
+- Supports active/inactive visual states for window focus changes
+- Custom title bar content is rendered through the TemplatedView pattern
+
+---
+
 ## TimePicker
 
 Enables you to select a time with the platform time picker.

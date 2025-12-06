@@ -151,6 +151,7 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.SwipeView, Avalonia.Controls.Maui.Handlers.SwipeViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.SwipeItemView, Avalonia.Controls.Maui.Handlers.SwipeItemViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.RefreshView, Avalonia.Controls.Maui.Handlers.RefreshViewHandler>();
+                handlers.AddHandler<Microsoft.Maui.Controls.TitleBar, Avalonia.Controls.Maui.Handlers.TitleBarHandler>();
 
             })
             .ConfigureImageSources();
