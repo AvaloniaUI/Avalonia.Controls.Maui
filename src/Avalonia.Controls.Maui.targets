@@ -24,6 +24,11 @@
       ProcessMauiSplashScreens;
     </ProcessMauiFontsDependsOnTargets>
 
+    <ResizetizeAfterTargets>
+      $(ResizetizeAfterTargets);
+      ResizetizeCollectItems;
+    </ResizetizeAfterTargets>
+
     <ResizetizeBeforeTargets>
       $(ResizetizeBeforeTargets);
       GenerateAvaloniaResources;
@@ -37,8 +42,7 @@
 
   <Target Name="ConvertMauiImagesToAvaloniaResources"
           BeforeTargets="AddAvaloniaResources"
-          AfterTargets="ResizetizeImages"
-          DependsOnTargets="_ReadResizetizeImagesOutputs">
+          DependsOnTargets="ResizetizeImages;_ReadResizetizeImagesOutputs">
     <ItemGroup>
       <_ResizetizerCollectedImages Include="$(_MauiIntermediateImages)**\*" Condition="Exists('$(_MauiIntermediateImages)')" />
     </ItemGroup>

@@ -30,10 +30,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_mauiplanets_desktop",
-            "program": "${workspaceFolder}/samples/MauiPlanets/MauiPlanets.Desktop/bin/Debug/net10.0/MauiPlanets.Desktop.dll",
+            "program": "${workspaceFolder}/showcase/MauiPlanets/MauiPlanets.Desktop/bin/Debug/net10.0/MauiPlanets.Desktop.dll",
             "args": [ 
             ],
-            "cwd": "${workspaceFolder}/samples/MauiPlanets/MauiPlanets.Desktop/bin/Debug/net10.0",
+            "cwd": "${workspaceFolder}/showcase/MauiPlanets/MauiPlanets.Desktop/bin/Debug/net10.0",
             "console": "internalConsole",
             "stopAtEntry": false
         },

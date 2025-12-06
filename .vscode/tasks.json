@@ -31,7 +31,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/samples/MauiPlanets/MauiPlanets.Desktop/MauiPlanets.Desktop.csproj",
+                "${workspaceFolder}/showcase/MauiPlanets/MauiPlanets.Desktop/MauiPlanets.Desktop.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
