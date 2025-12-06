@@ -17,14 +17,12 @@ public partial class ImageButtonPage : ContentPage
         // Initialize ImageButton simple command
         ImageButtonCommand = new Command(async () =>
         {
-            await DisplayAlertAsync("ImageButton Command", "ImageButton command executed!", "OK");
             UpdateImageButtonCommandResult("ImageButton command executed");
         });
 
         // Initialize ImageButton command with parameter
         ImageButtonParameterizedCommand = new Command<string>(async (parameter) =>
         {
-            await DisplayAlertAsync("ImageButton Command", $"Executed with parameter: {parameter}", "OK");
             UpdateImageButtonCommandResult($"ImageButton command: {parameter}");
         });
 
