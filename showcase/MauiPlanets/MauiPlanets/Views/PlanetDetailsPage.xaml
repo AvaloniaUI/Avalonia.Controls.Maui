@@ -9,7 +9,6 @@
 
     <Grid
         Margin="24,52,24,0"
-        IgnoreSafeArea="{OnPlatform Android=False, iOS=True}"
         ColumnDefinitions="*,*"
         RowDefinitions="Auto,*">
 
@@ -104,7 +103,7 @@
                     </CollectionView.ItemsLayout>
 
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="x:String">
                             <Image
                                 Source="{Binding .}"
                                 Aspect="AspectFill"

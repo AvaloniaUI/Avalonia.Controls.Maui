@@ -5,8 +5,11 @@ public partial class MauiAppStub : Application
 	public MauiAppStub()
 	{
 		InitializeComponent();
+    }
 
-        MainPage = new NavigationPage(new StartPage());
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        return new Window(new NavigationPage(new StartPage()));
     }
 }
 

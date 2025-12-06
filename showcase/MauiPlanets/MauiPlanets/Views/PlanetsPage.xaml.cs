@@ -19,15 +19,18 @@ public partial class PlanetsPage : ContentPage
 
     async void Planets_SelectionChanged(System.Object sender, Microsoft.Maui.Controls.SelectionChangedEventArgs e)
     {
-        await Navigation.PushAsync(new PlanetDetailsPage(e.CurrentSelection.First() as Planet));
+        if (e.CurrentSelection.FirstOrDefault() is Planet planet)
+        {
+            await Navigation.PushAsync(new PlanetDetailsPage(planet));
+        }
     }
 
     async void ProfilePic_Clicked(System.Object sender, System.EventArgs e)
     {
         // Reveal our menu and move the main content out of the view
-        _ = MainContentGrid.TranslateTo(-this.Width * 0.5, this.Height * 0.1, AnimationDuration, Easing.CubicIn);
-        await MainContentGrid.ScaleTo(0.8, AnimationDuration);
-        _ = MainContentGrid.FadeTo(0.8, AnimationDuration);
+        _ = MainContentGrid.TranslateToAsync(-this.Width * 0.5, this.Height * 0.1, AnimationDuration, Easing.CubicIn);
+        await MainContentGrid.ScaleToAsync(0.8, AnimationDuration);
+        _ = MainContentGrid.FadeToAsync(0.8, AnimationDuration);
     }
 
     async void GridArea_Tapped(System.Object sender, System.EventArgs e)
@@ -38,8 +41,8 @@ public partial class PlanetsPage : ContentPage
     private async Task CloseMenu()
     {
         //Close the menu and bring back back the main content
-        _ = MainContentGrid.FadeTo(1, AnimationDuration);
-        _ = MainContentGrid.ScaleTo(1, AnimationDuration);
-        await MainContentGrid.TranslateTo(0, 0, AnimationDuration, Easing.CubicIn);
+        _ = MainContentGrid.FadeToAsync(1, AnimationDuration);
+        _ = MainContentGrid.ScaleToAsync(1, AnimationDuration);
+        await MainContentGrid.TranslateToAsync(0, 0, AnimationDuration, Easing.CubicIn);
     }
 }

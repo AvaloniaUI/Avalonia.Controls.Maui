@@ -7,13 +7,11 @@
     x:Class="MauiPlanets.Views.PlanetsPage"
     Title="Maui Planets">
 
-    <Grid
-        IgnoreSafeArea="{OnPlatform Android=False, iOS=True}">
+    <Grid>
 
         <!-- Menu Grid -->
         <Grid
-            x:Name="MenuContainer"
-            IgnoreSafeArea="{OnPlatform Android=False, iOS=True}">
+            x:Name="MenuContainer">
 
             <Grid.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -73,7 +71,6 @@
         <Grid
             x:Name="MainContentGrid"
             Padding="24,52,24,0"
-            IgnoreSafeArea="{OnPlatform Android=False, iOS=True}"
             BackgroundColor="{StaticResource PageBackgroundColor}"
             ColumnDefinitions="*,Auto"
             RowDefinitions="Auto,*">

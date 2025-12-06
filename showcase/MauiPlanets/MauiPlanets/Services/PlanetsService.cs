@@ -131,7 +131,7 @@ internal static class PlanetsService
 	public static List<Planet> GetAllPlanets()
 		=> planets;
 
-    public static Planet GetPlanet(string planetName)
+    public static Planet? GetPlanet(string planetName)
 		=> planets.Where(_planet => _planet.Name == planetName).FirstOrDefault();
 
     public static List<Planet> GetFeaturedPlanets()

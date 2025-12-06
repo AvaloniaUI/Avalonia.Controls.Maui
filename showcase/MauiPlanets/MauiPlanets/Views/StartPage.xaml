@@ -5,8 +5,7 @@
     x:Class="MauiPlanets.Views.StartPage"
     Title="Maui Planets">
 
-    <Grid
-        IgnoreSafeArea="{OnPlatform Android=False, iOS=True}">
+    <Grid>
 
         <!-- Planet Images -->
         <Image

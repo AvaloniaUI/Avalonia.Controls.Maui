@@ -33,6 +33,11 @@ public partial class StartPage : ContentPage
     }
 
     async void ExploreNow_Clicked(System.Object sender, System.EventArgs e)
-		=> Application.Current.MainPage = new NavigationPage(new PlanetsPage());
+    {
+        if (Application.Current?.Windows.FirstOrDefault() is Window window)
+        {
+            window.Page = new NavigationPage(new PlanetsPage());
+        }
+    }
 
 }
