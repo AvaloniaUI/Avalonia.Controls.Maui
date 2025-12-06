@@ -1,14 +1,18 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.VisualTree;
 using Microsoft.Maui;
 using Microsoft.Maui.Platform;
+using System.Collections.Generic;
 
 namespace Avalonia.Controls.Maui.Platform;
 
 /// <summary>
 /// Avalonia platform control for rendering MAUI TitleBar.
+/// Supports window dragging on non-passthrough areas.
 /// </summary>
 public class TitleBarView : MauiView
 {
@@ -23,6 +27,7 @@ public class TitleBarView : MauiView
 
     private IMauiContext? _mauiContext;
     private ITitleBar? _titleBar;
+    private readonly HashSet<Control> _passthroughControls = new();
 
     /// <summary>
     /// Gets or sets the MAUI context for converting views.
@@ -131,6 +136,77 @@ public class TitleBarView : MauiView
         _rootPanel.Children.Add(_contentContainer);
 
         Children.Add(_rootPanel);
+
+        // Enable pointer events for drag handling
+        PointerPressed += OnPointerPressed;
+    }
+
+    /// <summary>
+    /// Handles pointer pressed events to enable window dragging.
+    /// </summary>
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        // Only handle left button press for dragging
+        if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            return;
+
+        // Check if the pointer is over a passthrough element
+        var hitControl = this.InputHitTest(e.GetPosition(this)) as Control;
+        if (hitControl != null && IsPassthroughElement(hitControl))
+        {
+            // Let the passthrough element handle the input
+            return;
+        }
+
+        // Start window drag
+        var window = this.FindAncestorOfType<Window>();
+        if (window != null)
+        {
+            window.BeginMoveDrag(e);
+            e.Handled = true;
+        }
+    }
+
+    /// <summary>
+    /// Checks if a control is a passthrough element (should not trigger window drag).
+    /// </summary>
+    private bool IsPassthroughElement(Control control)
+    {
+        // Check if this control or any of its ancestors is in the passthrough set
+        var current = control;
+        while (current != null && current != this)
+        {
+            if (_passthroughControls.Contains(current))
+                return true;
+
+            current = current.Parent as Control;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Adds a control to the passthrough elements (won't trigger window drag).
+    /// </summary>
+    public void AddPassthroughElement(Control control)
+    {
+        _passthroughControls.Add(control);
+    }
+
+    /// <summary>
+    /// Removes a control from the passthrough elements.
+    /// </summary>
+    public void RemovePassthroughElement(Control control)
+    {
+        _passthroughControls.Remove(control);
+    }
+
+    /// <summary>
+    /// Clears all passthrough elements.
+    /// </summary>
+    public void ClearPassthroughElements()
+    {
+        _passthroughControls.Clear();
     }
 
     private void UpdateTitleBar()

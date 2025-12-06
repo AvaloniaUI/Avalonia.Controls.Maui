@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Layout;
+using Avalonia.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Platform;
 using System;
@@ -98,6 +99,11 @@ public class MauiAvaloniaWindow : Window, IDisposable
         {
             _rootPanel.Children.Remove(_titleBarView);
             _titleBarView = null;
+
+            // Reset window decorations when removing title bar
+            ExtendClientAreaToDecorationsHint = false;
+            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.Default;
+            ExtendClientAreaTitleBarHeightHint = -1;
         }
 
         if (titleBar == null || mauiContext == null)
@@ -118,6 +124,12 @@ public class MauiAvaloniaWindow : Window, IDisposable
 
             // Set initial active state
             _titleBarView.SetActiveState(IsActive);
+
+            // Enable extended client area for custom title bar with drag support
+            // PreferSystemChrome keeps minimize/maximize/close buttons
+            ExtendClientAreaToDecorationsHint = true;
+            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
+            ExtendClientAreaTitleBarHeightHint = 32; // Match TitleBarView height
         }
         else if (handler?.PlatformView is Control control)
         {

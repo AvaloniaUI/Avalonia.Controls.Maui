@@ -977,7 +977,7 @@ A View control that provides title bar functionality for a window. The standard 
 | LeadingContent | ✅ Done (via TemplatedView) |
 | Content | ✅ Done (via TemplatedView) |
 | TrailingContent | ✅ Done (via TemplatedView) |
-| PassthroughElements | ⏳ TODO (drag regions not supported) |
+| PassthroughElements | ✅ Done |
 
 ### Notes
 
@@ -985,6 +985,9 @@ A View control that provides title bar functionality for a window. The standard 
 - Integrated with Window.TitleBar property
 - Supports active/inactive visual states for window focus changes
 - Custom title bar content is rendered through the TemplatedView pattern
+- Window dragging is supported by clicking on non-interactive areas of the TitleBar
+- PassthroughElements (including LeadingContent, Content, TrailingContent) receive input directly instead of triggering window drag
+- Uses Avalonia's ExtendClientAreaToDecorationsHint for custom title bar support with system window buttons
 
 ---
 

@@ -18,6 +18,7 @@ public partial class TitleBarHandler : ViewHandler<ITitleBar, TitleBarView>
             [nameof(ITitleBar.Title)] = MapTitle,
             [nameof(ITitleBar.Subtitle)] = MapSubtitle,
             [nameof(IContentView.Content)] = MapContent,
+            [nameof(ITitleBar.PassthroughElements)] = MapPassthroughElements,
         };
 
     public static CommandMapper<ITitleBar, TitleBarHandler> CommandMapper =
@@ -80,6 +81,11 @@ public partial class TitleBarHandler : ViewHandler<ITitleBar, TitleBarView>
         handler.UpdateContent();
     }
 
+    public static void MapPassthroughElements(TitleBarHandler handler, ITitleBar titleBar)
+    {
+        handler.UpdatePassthroughElements();
+    }
+
     void UpdateContent()
     {
         _ = PlatformView ?? throw new InvalidOperationException($"{nameof(PlatformView)} should have been set by base class.");
@@ -95,6 +101,53 @@ public partial class TitleBarHandler : ViewHandler<ITitleBar, TitleBarView>
             if (platformContent is Control control)
             {
                 PlatformView.Children.Add(control);
+            }
+        }
+
+        // Update passthrough elements after content is set
+        UpdatePassthroughElements();
+    }
+
+    void UpdatePassthroughElements()
+    {
+        _ = PlatformView ?? throw new InvalidOperationException($"{nameof(PlatformView)} should have been set by base class.");
+        _ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
+        _ = MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
+
+        // Clear existing passthrough elements
+        PlatformView.ClearPassthroughElements();
+
+        // Convert each passthrough element to a platform control and register it
+        foreach (var element in VirtualView.PassthroughElements)
+        {
+            // Handle IContentView containers (LeadingContent, Content, TrailingContent are typically ContentViews)
+            IView? viewToConvert = element;
+            if (element is IContentView container && container.PresentedContent is not null)
+            {
+                viewToConvert = container.PresentedContent;
+            }
+
+            // Get the platform view for this element
+            var handler = viewToConvert?.Handler;
+            if (handler?.PlatformView is Control platformControl)
+            {
+                PlatformView.AddPassthroughElement(platformControl);
+            }
+            else if (viewToConvert != null)
+            {
+                // Try to get or create the platform view
+                try
+                {
+                    var platformView = viewToConvert.ToPlatform(MauiContext);
+                    if (platformView is Control control)
+                    {
+                        PlatformView.AddPassthroughElement(control);
+                    }
+                }
+                catch
+                {
+                    // Element may not be attached to visual tree yet
+                }
             }
         }
     }
