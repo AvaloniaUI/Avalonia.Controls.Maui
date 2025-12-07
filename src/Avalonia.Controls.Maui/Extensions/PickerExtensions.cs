@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using Avalonia.Controls.Templates;
-using Avalonia.Data;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 
@@ -104,10 +103,7 @@ public static class PickerExtensions
         {
             var textBlock = new TextBlock
             {
-                [!TextBlock.TextProperty] = new Binding
-                {
-                    Source = data
-                },
+                Text = data?.ToString() ?? string.Empty,
                 Foreground = titleColor.ToPlatform()
             };
             return textBlock;
@@ -185,30 +181,18 @@ public static class PickerExtensions
         
         var letterSpacing = characterSpacing;
 
-        var dataTemplate = new FuncDataTemplate<string>((_, _) => new TextBlock
+        var dataTemplate = new FuncDataTemplate<string>((item, _) => 
         {
-            [!TextBlock.TextProperty] = new Binding(),
-            [!TextBlock.FontSizeProperty] = new Binding
+            var textBlock = new TextBlock
             {
-                Source = platformView,
-                Path = nameof(ComboBox.FontSize)
-            },
-            [!TextBlock.FontFamilyProperty] = new Binding
-            {
-                Source = platformView,
-                Path = nameof(ComboBox.FontFamily)
-            },
-            [!TextBlock.FontStyleProperty] = new Binding
-            {
-                Source = platformView,
-                Path = nameof(ComboBox.FontStyle)
-            },
-            [!TextBlock.FontWeightProperty] = new Binding
-            {
-                Source = platformView,
-                Path = nameof(ComboBox.FontWeight)
-            },
-            LetterSpacing = letterSpacing
+                Text = item ?? string.Empty,
+                FontSize = platformView.FontSize,
+                FontFamily = platformView.FontFamily,
+                FontStyle = platformView.FontStyle,
+                FontWeight = platformView.FontWeight,
+                LetterSpacing = letterSpacing
+            };
+            return textBlock;
         });
 
         platformView.ItemTemplate = dataTemplate;
