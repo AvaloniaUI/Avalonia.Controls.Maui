@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Specialized;
+using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Controls.Maui.Services;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
@@ -33,6 +36,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [nameof(MauiShell.FlyoutFooter)] = MapFlyoutFooter,
             [nameof(MauiShell.FlyoutFooterTemplate)] = MapFlyoutFooter,
             [nameof(MauiShell.Items)] = MapItems,
+            [nameof(MauiShell.ItemTemplate)] = MapItemTemplate,
         };
 
     public static CommandMapper<MauiShell, ShellHandler> CommandMapper =
@@ -50,6 +54,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     TextBlock? _titleTextBlock;
     ContentControl? _mainContentControl;
     ShellItemHandler? _currentItemHandler;
+    Dictionary<ShellItem, Avalonia.Controls.Button> _flyoutItemButtons = new();
 
     public ShellHandler() : base(Mapper, CommandMapper)
     {
@@ -73,8 +78,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         // Create flyout pane structure
         var flyoutPaneContainer = new DockPanel
         {
-            LastChildFill = true,
-            MinWidth = 300
+            LastChildFill = true
         };
 
         flyoutPaneContainer.Background = null; // Inherit from theme
@@ -206,6 +210,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             UpdateCurrentItem();
             UpdateFlyoutHeader();
             UpdateFlyoutFooter();
+            UpdateItemCheckedStates(); // Initialize checked states
 
             // Apply flyout background if set
             if (VirtualView.FlyoutBackground != null)
@@ -247,6 +252,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (handler.MauiContext != null)
         {
             handler.UpdateCurrentItem();
+            handler.UpdateItemCheckedStates();
         }
     }
 
@@ -341,6 +347,14 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     }
 
     public static void MapItems(ShellHandler handler, MauiShell shell)
+    {
+        if (handler.MauiContext != null)
+        {
+            handler.UpdateFlyoutItems();
+        }
+    }
+
+    public static void MapItemTemplate(ShellHandler handler, MauiShell shell)
     {
         if (handler.MauiContext != null)
         {
@@ -463,6 +477,28 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (_flyoutHeaderControl == null || VirtualView == null || MauiContext == null)
             return;
 
+        // Check if there's a template first
+        if (VirtualView.FlyoutHeaderTemplate != null)
+        {
+            var templateContent = VirtualView.FlyoutHeaderTemplate.CreateContent();
+            if (templateContent is Microsoft.Maui.Controls.View templateView)
+            {
+                // Set binding context if FlyoutHeader is set (acts as data context for template)
+                if (VirtualView.FlyoutHeader != null)
+                {
+                    templateView.BindingContext = VirtualView.FlyoutHeader;
+                }
+
+                var handler = templateView.ToHandler(MauiContext);
+                if (handler?.PlatformView is AvaloniaControl control)
+                {
+                    _flyoutHeaderControl.Content = control;
+                }
+            }
+            return;
+        }
+
+        // Fallback to direct content
         object? header = VirtualView.FlyoutHeader;
 
         if (header is Microsoft.Maui.Controls.View headerView)
@@ -488,6 +524,28 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (_flyoutFooterControl == null || VirtualView == null || MauiContext == null)
             return;
 
+        // Check if there's a template first
+        if (VirtualView.FlyoutFooterTemplate != null)
+        {
+            var templateContent = VirtualView.FlyoutFooterTemplate.CreateContent();
+            if (templateContent is Microsoft.Maui.Controls.View templateView)
+            {
+                // Set binding context if FlyoutFooter is set (acts as data context for template)
+                if (VirtualView.FlyoutFooter != null)
+                {
+                    templateView.BindingContext = VirtualView.FlyoutFooter;
+                }
+
+                var handler = templateView.ToHandler(MauiContext);
+                if (handler?.PlatformView is AvaloniaControl control)
+                {
+                    _flyoutFooterControl.Content = control;
+                }
+            }
+            return;
+        }
+
+        // Fallback to direct content
         object? footer = VirtualView.FlyoutFooter;
 
         if (footer is Microsoft.Maui.Controls.View footerView)
@@ -513,53 +571,137 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (_flyoutPanel == null || VirtualView == null)
             return;
 
+        // Unsubscribe from old items
+        foreach (var kvp in _flyoutItemButtons)
+        {
+            kvp.Key.PropertyChanged -= OnFlyoutItemPropertyChanged;
+        }
+
         _flyoutPanel.Children.Clear();
+        _flyoutItemButtons.Clear();
 
         foreach (var item in VirtualView.Items)
         {
-            if (!item.IsVisible)
+            // Check both IsVisible and FlyoutItemIsVisible
+            if (!item.IsVisible || !item.FlyoutItemIsVisible)
                 continue;
 
-            // Create flyout item button
-            var button = new Avalonia.Controls.Button
-            {
-                Content = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    Spacing = 8,
-                    Children =
-                    {
-                        CreateIcon(item.Icon),
-                        new TextBlock
-                        {
-                            Text = item.Title ?? string.Empty,
-                            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-                        }
-                    }
-                },
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Left,
-                Padding = new Thickness(16, 12)
-            };
-
+            // Create flyout item button with dynamic content
+            var button = CreateFlyoutItemButton(item);
             button.Click += (s, e) => OnFlyoutItemSelected(item);
 
             _flyoutPanel.Children.Add(button);
+            _flyoutItemButtons[item] = button;
+
+            // Subscribe to property changes for this item
+            item.PropertyChanged += OnFlyoutItemPropertyChanged;
+
+            // Load initial icon based on IsChecked state
+            UpdateFlyoutItemIcon(button, item);
         }
     }
 
-    private AvaloniaControl CreateIcon(ImageSource? imageSource)
+    private Avalonia.Controls.Button CreateFlyoutItemButton(ShellItem item)
     {
-        if (imageSource == null)
-            return new Avalonia.Controls.Border { Width = 24, Height = 24 };
-
-        // TODO: Implement proper icon rendering
-        return new Avalonia.Controls.Border
+        var button = new Avalonia.Controls.Button
         {
-            Width = 24,
-            Height = 24,
-            Background = Avalonia.Media.Brushes.Gray
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+            Padding = new Thickness(16, 12),
+            Background = Brushes.Transparent,
+            BorderBrush = Brushes.Transparent
         };
+
+        // Check if there's a custom ItemTemplate defined
+        if (VirtualView?.ItemTemplate != null && MauiContext != null)
+        {
+            // Create content from the DataTemplate
+            var templateContent = VirtualView.ItemTemplate.CreateContent();
+            if (templateContent is Microsoft.Maui.Controls.View mauiView)
+            {
+                // Set the binding context to the ShellItem
+                mauiView.BindingContext = item;
+
+                // Convert the MAUI view to an Avalonia control
+                var handler = mauiView.ToHandler(MauiContext);
+                if (handler?.PlatformView is AvaloniaControl avaloniaControl)
+                {
+                    button.Content = avaloniaControl;
+                }
+            }
+        }
+        else
+        {
+            // Use default layout
+            var contentPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
+                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+            };
+
+            bool hasText = !string.IsNullOrEmpty(item.Title);
+
+            // Add image placeholder that will be populated asynchronously
+            var icon = item.FlyoutIcon ?? item.Icon;
+            if (icon != null)
+            {
+                var image = new Image
+                {
+                    Width = 24,
+                    Height = 24,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    // Add margin only when both image and text are present
+                    Margin = hasText ? new Thickness(0, 0, 8, 0) : new Thickness(0)
+                };
+                contentPanel.Children.Add(image);
+            }
+
+            // Add text if present
+            if (hasText)
+            {
+                var textBlock = new TextBlock
+                {
+                    Text = item.Title ?? string.Empty,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                };
+                contentPanel.Children.Add(textBlock);
+            }
+
+            button.Content = contentPanel;
+        }
+
+        return button;
+    }
+
+    private async Task LoadFlyoutItemIconAsync(Avalonia.Controls.Button button, ImageSource imageSource)
+    {
+        if (MauiContext == null || button.Content is not StackPanel contentPanel)
+            return;
+
+        // Find the image control in the content panel
+        var image = contentPanel.Children.OfType<Image>().FirstOrDefault();
+        if (image == null)
+            return;
+
+        try
+        {
+            var imageSourceServiceProvider = this.GetRequiredService<IImageSourceServiceProvider>();
+            var serviceSource = imageSourceServiceProvider.GetImageSourceService(imageSource.GetType());
+
+            if (serviceSource is IAvaloniaImageSourceService avaloniaService)
+            {
+                var result = await avaloniaService.GetImageAsync(imageSource, 1.0f);
+                if (result?.Value is global::Avalonia.Media.Imaging.Bitmap bitmap)
+                {
+                    image.Source = bitmap;
+                }
+            }
+        }
+        catch
+        {
+            // If image loading fails, the placeholder remains empty
+        }
     }
 
     private void OnFlyoutItemSelected(ShellItem item)
@@ -619,5 +761,69 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
 
         _backButton.IsVisible = canGoBack;
+    }
+
+    /// <summary>
+    /// Updates the IsChecked state of all shell items based on the current selection.
+    /// This method uses reflection to access the internal IsCheckedPropertyKey from BaseShellItem.
+    /// </summary>
+    private void UpdateItemCheckedStates()
+    {
+        if (VirtualView == null)
+            return;
+
+        // Get the IsCheckedPropertyKey using reflection
+        var baseShellItemType = typeof(BaseShellItem);
+        var isCheckedPropertyKeyField = baseShellItemType.GetField("IsCheckedPropertyKey",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+
+        if (isCheckedPropertyKeyField == null)
+            return;
+
+        var isCheckedPropertyKey = isCheckedPropertyKeyField.GetValue(null) as BindablePropertyKey;
+        if (isCheckedPropertyKey == null)
+            return;
+
+        // Update all items
+        foreach (var item in VirtualView.Items)
+        {
+            bool isChecked = item == VirtualView.CurrentItem;
+            item.SetValue(isCheckedPropertyKey, isChecked);
+        }
+    }
+
+    /// <summary>
+    /// Handles property changes on flyout items, particularly the IsChecked and FlyoutIcon properties.
+    /// </summary>
+    private void OnFlyoutItemPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (sender is not ShellItem item)
+            return;
+
+        if (e.PropertyName == nameof(BaseShellItem.FlyoutIcon))
+        {
+            if (_flyoutItemButtons.TryGetValue(item, out var button))
+            {
+                UpdateFlyoutItemIcon(button, item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Updates the flyout item button's icon based on the item's IsChecked state.
+    /// </summary>
+    private void UpdateFlyoutItemIcon(Avalonia.Controls.Button button, ShellItem item)
+    {
+        // If using ItemTemplate, the binding context will automatically update the content
+        // through MAUI's binding system, so we only need to handle the default case
+        if (VirtualView?.ItemTemplate == null)
+        {
+            var icon = item.FlyoutIcon ?? item.Icon;
+            if (icon != null && MauiContext != null)
+            {
+                LoadFlyoutItemIconAsync(button, icon).ConfigureAwait(false);
+            }
+        }
+        // For templates, the MAUI binding system handles updates automatically
     }
 }
