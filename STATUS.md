@@ -64,12 +64,12 @@ Displays text and responds to a tap or click that directs the app to carry out a
 | CharacterSpacing | ✅ Implemented |
 | Command | ✅ Implemented |
 | CommandParameter | ✅ Implemented |
-| ContentLayout | ⏳ TODO |
+| ContentLayout | ✅ Implemented |
 | CornerRadius | ✅ Implemented |
 | FontAttributes | ⏳ TODO |
 | FontFamily | ⏳ TODO |
 | FontSize | ✅ Implemented |
-| ImageSource | ⏳ TODO |
+| ImageSource | ✅ Implemented |
 | IsPressed | ⏳ TODO |
 | LineBreakMode | ⏳ TODO |
 | Padding | ✅ Implemented |
@@ -317,7 +317,7 @@ A graphics canvas on which 2D graphics can be drawn using types from the Microso
 
 | Property | Status |
 |----------|--------|
-| Drawable | ⏳ TODO |
+| Drawable | ✅ Implemented |
 
 ---
 
@@ -329,11 +329,11 @@ Displays an image that can be loaded from a local file, a URI, an embedded resou
 
 | Property | Status |
 |----------|--------|
-| Source | ⏳ TODO |
-| Aspect | ⏳ TODO |
+| Source | ✅ Implemented |
+| Aspect | ✅ Implemented |
 | IsOpaque | ⏳ TODO |
-| IsAnimationPlaying | ⏳ TODO |
-| IsLoading | ⏳ TODO |
+| IsAnimationPlaying | ✅ Implemented |
+| IsLoading | ✅ Implemented |
 
 ---
 
@@ -345,22 +345,22 @@ Displays an image and responds to a tap or click that directs an app to carry ou
 
 | Property | Status |
 |----------|--------|
-| Source | ⏳ TODO |
-| Aspect | ⏳ TODO |
-| BorderColor | ⏳ TODO |
-| BorderWidth | ⏳ TODO |
-| Command | ⏳ TODO |
-| CommandParameter | ⏳ TODO |
-| CornerRadius | ⏳ TODO |
-| Padding | ⏳ TODO |
+| Source | ✅ Implemented |
+| Aspect | ✅ Implemented |
+| BorderColor | ✅ Implemented |
+| BorderWidth | ✅ Implemented |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
+| CornerRadius | ✅ Implemented |
+| Padding | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Clicked | ⏳ TODO |
-| Pressed | ⏳ TODO |
-| Released | ⏳ TODO |
+| Clicked | ✅ Implemented |
+| Pressed | ✅ Implemented |
+| Released | ✅ Implemented |
 
 ---
 
@@ -740,19 +740,19 @@ Provides scrolling of its content, which is typically a layout.
 
 | Property | Status |
 |----------|--------|
-| Content | ⏳ TODO |
-| ContentSize | ⏳ TODO |
-| HorizontalScrollBarVisibility | ⏳ TODO |
-| Orientation | ⏳ TODO |
-| ScrollX | ⏳ TODO |
-| ScrollY | ⏳ TODO |
-| VerticalScrollBarVisibility | ⏳ TODO |
+| Content | ✅ Implemented |
+| ContentSize | ✅ Implemented |
+| HorizontalScrollBarVisibility | ✅ Implemented |
+| Orientation | ✅ Implemented |
+| ScrollX | ✅ Implemented |
+| ScrollY | ✅ Implemented |
+| VerticalScrollBarVisibility | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Scrolled | ⏳ TODO |
+| Scrolled | ✅ Implemented |
 
 ---
 
@@ -866,19 +866,19 @@ Enables you to select a double value from a continuous range.
 
 | Property | Status |
 |----------|--------|
-| Maximum | ⏳ TODO |
-| Minimum | ⏳ TODO |
-| MaximumTrackColor | ⏳ TODO |
-| MinimumTrackColor | ⏳ TODO |
-| ThumbColor | ⏳ TODO |
+| Maximum | ✅ Implemented |
+| Minimum | ✅ Implemented |
+| MaximumTrackColor | ✅ Implemented |
+| MinimumTrackColor | ✅ Implemented |
+| ThumbColor | ✅ Implemented |
 | ThumbImageSource | ⏳ TODO |
-| Value | ⏳ TODO |
+| Value | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| ValueChanged | ⏳ TODO |
+| ValueChanged | ✅ Implemented |
 
 ---
 
@@ -935,15 +935,15 @@ Enables you to select a boolean value using a type of button that can either be 
 
 | Property | Status |
 |----------|--------|
-| IsToggled | ⏳ TODO |
-| OnColor | ⏳ TODO |
-| ThumbColor | ⏳ TODO |
+| IsToggled | ✅ Implemented |
+| OnColor | ✅ Implemented |
+| ThumbColor | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Toggled | ⏳ TODO |
+| Toggled | ✅ Implemented |
 
 ---
 
@@ -1027,57 +1027,55 @@ All controls inherit these common properties from the View and VisualElement bas
 
 | Property | Type | Status |
 |----------|------|--------|
-| AnchorX | double | ⏳ TODO |
-| AnchorY | double | ⏳ TODO |
-| AutomationId | string | ⏳ TODO |
-| Background | Brush | ⏳ TODO |
-| BackgroundColor | Color | ⏳ TODO |
+| AnchorX | double | ✅ Implemented |
+| AnchorY | double | ✅ Implemented |
+| AutomationId | string | ✅ Implemented |
+| Background | Brush | ✅ Implemented |
+| BackgroundColor | Color | ✅ Implemented |
 | Behaviors | IList<Behavior> | ⏳ TODO |
 | BindingContext | object | ⏳ TODO |
 | Bounds | Rect | ⏳ TODO |
-| Clip | Geometry | ⏳ TODO |
+| Clip | Geometry | ✅ Implemented |
 | DesiredSize | Size | ⏳ TODO |
 | Effects | IList<Effect> | ⏳ TODO |
-| FlowDirection | FlowDirection | ⏳ TODO |
+| FlowDirection | FlowDirection | ✅ Implemented |
 | Frame | Rect | ⏳ TODO |
 | GestureRecognizers | IList<IGestureRecognizer> | ⏳ TODO |
 | Handler | IViewHandler | ⏳ TODO |
-| Height | double | ⏳ TODO |
-| HeightRequest | double | ⏳ TODO |
-| HorizontalOptions | LayoutOptions | ⏳ TODO |
-| Id | Guid | ⏳ TODO |
+| Height | double | ✅ Implemented |
+| HeightRequest | double | ✅ Implemented |
+| HorizontalOptions | LayoutOptions | ✅ Implemented |
 | InputTransparent | bool | ⏳ TODO |
-| IsEnabled | bool | ⏳ TODO |
+| IsEnabled | bool | ✅ Implemented |
 | IsFocused | bool | ⏳ TODO |
 | IsLoaded | bool | ⏳ TODO |
-| IsVisible | bool | ⏳ TODO |
+| IsVisible | bool | ✅ Implemented |
 | Margin | Thickness | ⏳ TODO |
-| MaximumHeightRequest | double | ⏳ TODO |
-| MaximumWidthRequest | double | ⏳ TODO |
-| MinimumHeightRequest | double | ⏳ TODO |
-| MinimumWidthRequest | double | ⏳ TODO |
-| Opacity | double | ⏳ TODO |
+| MaximumHeightRequest | double | ✅ Implemented |
+| MaximumWidthRequest | double | ✅ Implemented |
+| MinimumHeightRequest | double | ✅ Implemented |
+| MinimumWidthRequest | double | ✅ Implemented |
+| Opacity | double | ✅ Implemented |
 | Parent | Element | ⏳ TODO |
 | Resources | ResourceDictionary | ⏳ TODO |
-| Rotation | double | ⏳ TODO |
-| RotationX | double | ⏳ TODO |
-| RotationY | double | ⏳ TODO |
-| Scale | double | ⏳ TODO |
-| ScaleX | double | ⏳ TODO |
-| ScaleY | double | ⏳ TODO |
-| Shadow | Shadow | ⏳ TODO |
-| StyleId | string | ⏳ TODO |
-| TranslationX | double | ⏳ TODO |
-| TranslationY | double | ⏳ TODO |
+| Rotation | double | ✅ Implemented |
+| RotationX | double | ✅ Implemented |
+| RotationY | double | ✅ Implemented |
+| Scale | double | ✅ Implemented |
+| ScaleX | double | ✅ Implemented |
+| ScaleY | double | ✅ Implemented |
+| Shadow | Shadow | ✅ Implemented |
+| StyleId | string | ✅ Implemented |
+| TranslationX | double | ✅ Implemented |
+| TranslationY | double | ✅ Implemented |
 | Triggers | IList<TriggerBase> | ⏳ TODO |
-| VerticalOptions | LayoutOptions | ⏳ TODO |
-| Visual | IVisual | ⏳ TODO |
-| Width | double | ⏳ TODO |
-| WidthRequest | double | ⏳ TODO |
+| VerticalOptions | LayoutOptions | ✅ Implemented |
+| Width | double | ✅ Implemented |
+| WidthRequest | double | ✅ Implemented |
 | Window | Window | ⏳ TODO |
 | X | double | ⏳ TODO |
 | Y | double | ⏳ TODO |
-| ZIndex | int | ⏳ TODO |
+| ZIndex | int | ✅ Implemented |
 
 ---
 

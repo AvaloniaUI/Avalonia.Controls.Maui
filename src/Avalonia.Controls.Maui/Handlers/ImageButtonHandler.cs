@@ -1,33 +1,41 @@
 using Avalonia.Interactivity;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui.Services;
+using Avalonia.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using PlatformView = Avalonia.Controls.Maui.Platform.MauiImageButton;
+using System.Threading;
+using System.Threading.Tasks;
+using PlatformView = Avalonia.Controls.Maui.MauiImageButton;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class ImageButtonHandler : ViewHandler<IImageButton, MauiImageButton>, IImageButtonHandler
+public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImageButtonHandler
 {
-    public static IPropertyMapper<IImage, IImageHandler> ImageMapper = new PropertyMapper<IImage, IImageHandler>(ImageHandler.Mapper);
+    private CancellationTokenSource? _imageSourceCts;
+    private ImageSourcePartLoader? _imageSourcePartLoader;
 
-    public static IPropertyMapper<IImageButton, IImageButtonHandler> Mapper = new PropertyMapper<IImageButton, IImageButtonHandler>(ImageMapper, ViewHandler.ViewMapper)
+    public static IPropertyMapper<IImageButton, IImageButtonHandler> Mapper = new PropertyMapper<IImageButton, IImageButtonHandler>(ViewHandler.ViewMapper)
     {
+        // IImage properties
+        [nameof(IImage.Source)] = MapImageSource,
+        [nameof(IImage.Aspect)] = MapAspect,
+
+        // IButton properties
+        [nameof(IImageButton.Background)] = MapBackground,
+        [nameof(IImageButton.Padding)] = MapPadding,
+
+        // IButtonStroke properties
         [nameof(IButtonStroke.StrokeThickness)] = MapStrokeThickness,
         [nameof(IButtonStroke.StrokeColor)] = MapStrokeColor,
         [nameof(IButtonStroke.CornerRadius)] = MapCornerRadius,
-        [nameof(IImageButton.Padding)] = MapPadding,
-        [nameof(IImageButton.Background)] = MapBackground,
     };
 
     public static CommandMapper<IImageButton, IImageButtonHandler> CommandMapper = new(ViewCommandMapper);
 
-    private ImageSourcePartLoader? _imageSourcePartLoader;
-
-    public virtual ImageSourcePartLoader SourceLoader =>
-        _imageSourcePartLoader ??= new ImageSourcePartLoader(new ImageButtonImageSourcePartSetter(this));
-
-    public ImageButtonHandler() : base(Mapper, CommandMapper)
+    public ImageButtonHandler()
+        : base(Mapper, CommandMapper)
     {
     }
 
@@ -40,6 +48,9 @@ public class ImageButtonHandler : ViewHandler<IImageButton, MauiImageButton>, II
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
+
+    public virtual ImageSourcePartLoader SourceLoader =>
+        _imageSourcePartLoader ??= new ImageSourcePartLoader(new ImageButtonImageSourcePartSetter(this));
 
     IImageButton IImageButtonHandler.VirtualView => VirtualView;
 
@@ -59,51 +70,102 @@ public class ImageButtonHandler : ViewHandler<IImageButton, MauiImageButton>, II
 
     public static void MapBackground(IImageButtonHandler handler, IImageButton imageButton)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
-        ((PlatformView)(handler.PlatformView)).Background = imageButton.Background?.ToPlatform();
+
+        platformView.UpdateImageButtonBackground(handler.VirtualView);
     }
 
-    public static void MapStrokeColor(IImageButtonHandler handler, IButtonStroke buttonStroke)
+    public static void MapStrokeColor(IImageButtonHandler handler, IImageButton imageButton)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
-        if (buttonStroke.StrokeColor == null)
-            return;
-        ((PlatformView)(handler.PlatformView)).BorderBrush = buttonStroke.StrokeColor.ToPlatform();
+
+        platformView.UpdateStrokeColor(handler.VirtualView);
     }
 
-    public static void MapStrokeThickness(IImageButtonHandler handler, IButtonStroke buttonStroke)
+    public static void MapStrokeThickness(IImageButtonHandler handler, IImageButton imageButton)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
-        ((PlatformView)(handler.PlatformView)).BorderThickness = new global::Avalonia.Thickness(buttonStroke.StrokeThickness);
+
+        platformView.UpdateStrokeThickness(handler.VirtualView);
     }
 
-    public static void MapCornerRadius(IImageButtonHandler handler, IButtonStroke buttonStroke)
+    public static void MapCornerRadius(IImageButtonHandler handler, IImageButton imageButton)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
-        ((PlatformView)(handler.PlatformView)).CornerRadius = new global::Avalonia.CornerRadius(buttonStroke.CornerRadius);
+
+        platformView.UpdateCornerRadius(handler.VirtualView);
     }
 
     public static void MapPadding(IImageButtonHandler handler, IImageButton imageButton)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
-        ((PlatformView)(handler.PlatformView)).Padding = imageButton.Padding.ToThickness();
+
+        platformView.UpdatePadding(handler.VirtualView);
+    }
+
+    public static void MapAspect(IImageButtonHandler handler, IImageButton imageButton)
+    {
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
+            return;
+
+        platformView.UpdateAspect(handler.VirtualView);
+    }
+
+    public static void MapImageSource(IImageButtonHandler handler, IImageButton imageButton)
+    {
+        if (handler is not ImageButtonHandler imageButtonHandler || handler.VirtualView is null)
+            return;
+
+        imageButtonHandler._imageSourceCts?.Cancel();
+        imageButtonHandler._imageSourceCts = null;
+
+        var imageSource = imageButton.Source;
+
+        if (imageSource == null)
+        {
+            if (handler.PlatformView is PlatformView pv)
+            {
+                pv.UpdateImageSource(null);
+            }
+            return;
+        }
+
+        var cts = new CancellationTokenSource();
+        imageButtonHandler._imageSourceCts = cts;
+        _ = imageButtonHandler.LoadImageSourceAsync(imageSource, cts.Token);
     }
 
     protected override void ConnectHandler(PlatformView platformView)
     {
-        platformView.Click += OnClick;
         base.ConnectHandler(platformView);
+
+        platformView.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
+        platformView.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
+        platformView.Click += OnClick;
     }
 
     protected override void DisconnectHandler(PlatformView platformView)
     {
+        platformView.RemoveHandler(InputElement.PointerPressedEvent, OnPointerPressed);
+        platformView.RemoveHandler(InputElement.PointerReleasedEvent, OnPointerReleased);
         platformView.Click -= OnClick;
+        _imageSourceCts?.Cancel();
+        _imageSourceCts = null;
+
         base.DisconnectHandler(platformView);
+    }
+
+    void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (VirtualView is IImageButton imageButton)
+        {
+            imageButton.Pressed();
+        }
     }
 
     void OnClick(object? sender, RoutedEventArgs e)
@@ -111,7 +173,44 @@ public class ImageButtonHandler : ViewHandler<IImageButton, MauiImageButton>, II
         if (VirtualView is IImageButton imageButton)
         {
             imageButton.Clicked();
+        }
+    }
+
+    void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (VirtualView is IImageButton imageButton)
+        {
             imageButton.Released();
+        }
+    }
+
+    private async Task LoadImageSourceAsync(IImageSource imageSource, CancellationToken token)
+    {
+        try
+        {
+            var provider = this.GetRequiredService<IImageSourceServiceProvider>();
+            if (provider.GetImageSourceService(imageSource.GetType()) is IAvaloniaImageSourceService service)
+            {
+                var result = await service.GetImageAsync(imageSource, 1.0f, token);
+                if (token.IsCancellationRequested)
+                    return;
+
+                if (PlatformView is PlatformView platformView)
+                {
+                    platformView.UpdateImageSource(result?.Value as Avalonia.Media.IImage);
+                }
+            }
+            else if (PlatformView is PlatformView platformView)
+            {
+                platformView.UpdateImageSource(null);
+            }
+        }
+        catch
+        {
+            if (PlatformView is PlatformView platformView)
+            {
+                platformView.UpdateImageSource(null);
+            }
         }
     }
 
@@ -124,13 +223,9 @@ public class ImageButtonHandler : ViewHandler<IImageButton, MauiImageButton>, II
 
         public override void SetImageSource(object? platformImage)
         {
-            if (Handler?.PlatformView is MauiImageButton imageButton)
+            if (Handler?.PlatformView is PlatformView imageButton)
             {
-                var image = imageButton.GetImage();
-                if (image != null && platformImage is global::Avalonia.Media.Imaging.Bitmap bitmap)
-                {
-                    image.Source = bitmap;
-                }
+                imageButton.UpdateImageSource(platformImage as Avalonia.Media.IImage);
             }
         }
     }

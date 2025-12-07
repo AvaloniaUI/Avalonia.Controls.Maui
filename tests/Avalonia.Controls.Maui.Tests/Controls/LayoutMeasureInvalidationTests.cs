@@ -1,7 +1,10 @@
 using Avalonia.Controls;
+using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Layout;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Microsoft.Maui.Controls;
 
@@ -13,6 +16,19 @@ namespace Avalonia.Controls.Maui.Tests.Controls;
 /// </summary>
 public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
 {
+    /// <summary>
+    /// Forces a complete layout pass by calling UpdateLayout on the control.
+    /// This ensures all measure/arrange operations complete synchronously.
+    /// </summary>
+    private async Task ForceLayoutPassAsync(Layoutable control)
+    {
+        await InvokeOnMainThreadAsync(() =>
+        {
+            // UpdateLayout() executes the layout pass synchronously
+            control.UpdateLayout();
+        });
+    }
+
     [AvaloniaFact(DisplayName = "BoxView Width Change Invalidates Parent Layout Measure")]
     public async Task BoxViewWidthChangeInvalidatesParentLayoutMeasure()
     {
@@ -29,10 +45,13 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
         };
 
         var layoutHandler = await CreateHandlerAsync<Avalonia.Controls.Maui.Handlers.LayoutHandler>(stackLayout);
+        var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
+
+        // Ensure initial layout is complete
+        await ForceLayoutPassAsync(layoutPanel);
 
         var initialResult = await InvokeOnMainThreadAsync(() =>
         {
-            var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
             return new
             {
                 LayoutWidth = layoutPanel.DesiredSize.Width,
@@ -41,11 +60,13 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
         });
 
         // Change the BoxView width
-        boxView.WidthRequest = 200;
+        await InvokeOnMainThreadAsync(() => boxView.WidthRequest = 200);
+
+        // Ensure layout pass completes after property change
+        await ForceLayoutPassAsync(layoutPanel);
 
         var updatedResult = await InvokeOnMainThreadAsync(() =>
         {
-            var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
             return new
             {
                 LayoutWidth = layoutPanel.DesiredSize.Width,
@@ -73,10 +94,13 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
         };
 
         var layoutHandler = await CreateHandlerAsync<Avalonia.Controls.Maui.Handlers.LayoutHandler>(stackLayout);
+        var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
+
+        // Ensure initial layout is complete
+        await ForceLayoutPassAsync(layoutPanel);
 
         var initialResult = await InvokeOnMainThreadAsync(() =>
         {
-            var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
             return new
             {
                 LayoutWidth = layoutPanel.DesiredSize.Width,
@@ -85,11 +109,13 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
         });
 
         // Change the BoxView height
-        boxView.HeightRequest = 200;
+        await InvokeOnMainThreadAsync(() => boxView.HeightRequest = 200);
+
+        // Ensure layout pass completes after property change
+        await ForceLayoutPassAsync(layoutPanel);
 
         var updatedResult = await InvokeOnMainThreadAsync(() =>
         {
-            var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
             return new
             {
                 LayoutWidth = layoutPanel.DesiredSize.Width,
@@ -124,10 +150,13 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
         };
 
         var layoutHandler = await CreateHandlerAsync<Avalonia.Controls.Maui.Handlers.LayoutHandler>(stackLayout);
+        var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
+
+        // Ensure initial layout is complete
+        await ForceLayoutPassAsync(layoutPanel);
 
         var initialResult = await InvokeOnMainThreadAsync(() =>
         {
-            var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
             return new
             {
                 LayoutWidth = layoutPanel.DesiredSize.Width,
@@ -136,12 +165,17 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
         });
 
         // Change both BoxView sizes
-        boxView1.WidthRequest = 150;
-        boxView2.HeightRequest = 150;
+        await InvokeOnMainThreadAsync(() =>
+        {
+            boxView1.WidthRequest = 150;
+            boxView2.HeightRequest = 150;
+        });
+
+        // Ensure layout pass completes after property changes
+        await ForceLayoutPassAsync(layoutPanel);
 
         var updatedResult = await InvokeOnMainThreadAsync(() =>
         {
-            var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
             return new
             {
                 LayoutWidth = layoutPanel.DesiredSize.Width,
@@ -179,10 +213,13 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
         };
 
         var layoutHandler = await CreateHandlerAsync<Avalonia.Controls.Maui.Handlers.LayoutHandler>(outerLayout);
+        var outerPanel = (LayoutPanel)layoutHandler.PlatformView;
+
+        // Ensure initial layout is complete
+        await ForceLayoutPassAsync(outerPanel);
 
         var initialResult = await InvokeOnMainThreadAsync(() =>
         {
-            var outerPanel = (LayoutPanel)layoutHandler.PlatformView;
             var innerPanel = (LayoutPanel)innerLayout.Handler!.PlatformView!;
             return new
             {
@@ -194,12 +231,17 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
         });
 
         // Change the BoxView size
-        boxView.WidthRequest = 200;
-        boxView.HeightRequest = 200;
+        await InvokeOnMainThreadAsync(() =>
+        {
+            boxView.WidthRequest = 200;
+            boxView.HeightRequest = 200;
+        });
+
+        // Ensure layout pass completes after property changes
+        await ForceLayoutPassAsync(outerPanel);
 
         var updatedResult = await InvokeOnMainThreadAsync(() =>
         {
-            var outerPanel = (LayoutPanel)layoutHandler.PlatformView;
             var innerPanel = (LayoutPanel)innerLayout.Handler!.PlatformView!;
             return new
             {
@@ -238,19 +280,24 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
         };
 
         var layoutHandler = await CreateHandlerAsync<Avalonia.Controls.Maui.Handlers.LayoutHandler>(stackLayout);
+        var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
+
+        // Ensure initial layout is complete
+        await ForceLayoutPassAsync(layoutPanel);
 
         var initialResult = await InvokeOnMainThreadAsync(() =>
         {
-            var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
             return layoutPanel.DesiredSize.Width;
         });
 
         // Change entry width
-        entry.WidthRequest = 300;
+        await InvokeOnMainThreadAsync(() => entry.WidthRequest = 300);
+
+        // Ensure layout pass completes after property change
+        await ForceLayoutPassAsync(layoutPanel);
 
         var updatedWidth = await InvokeOnMainThreadAsync(() =>
         {
-            var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
             return layoutPanel.DesiredSize.Width;
         });
 
@@ -281,10 +328,13 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
         };
 
         var layoutHandler = await CreateHandlerAsync<Avalonia.Controls.Maui.Handlers.LayoutHandler>(horizontalLayout);
+        var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
+
+        // Ensure initial layout is complete
+        await ForceLayoutPassAsync(layoutPanel);
 
         var initialResult = await InvokeOnMainThreadAsync(() =>
         {
-            var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
             return new
             {
                 LayoutWidth = layoutPanel.DesiredSize.Width,
@@ -297,12 +347,17 @@ public class LayoutMeasureInvalidationTests : WindowHandlerTestBase
             $"Initial layout width ({initialResult.LayoutWidth}) should be at least 100 (50 + 50)");
 
         // Change both BoxView widths
-        boxView1.WidthRequest = 150;
-        boxView2.WidthRequest = 150;
+        await InvokeOnMainThreadAsync(() =>
+        {
+            boxView1.WidthRequest = 150;
+            boxView2.WidthRequest = 150;
+        });
+
+        // Ensure layout pass completes after property changes
+        await ForceLayoutPassAsync(layoutPanel);
 
         var updatedResult = await InvokeOnMainThreadAsync(() =>
         {
-            var layoutPanel = (LayoutPanel)layoutHandler.PlatformView;
             return new
             {
                 LayoutWidth = layoutPanel.DesiredSize.Width,

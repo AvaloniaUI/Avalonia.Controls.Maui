@@ -2,6 +2,8 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Media.Imaging;
@@ -14,24 +16,27 @@ public class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImage
 {
     private readonly ILogger<AvaloniaUriImageSourceService>? _logger;
     private readonly HttpClient _httpClient;
-    private readonly ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>> _cache;
-    private readonly SemaphoreSlim _cacheLock;
+    private readonly ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>> _inFlightCache;
 
-    public AvaloniaUriImageSourceService(ILogger<AvaloniaUriImageSourceService>? logger = null)
+    private static readonly string CacheDirectory =
+        Path.Combine(Path.GetTempPath(), "AvaloniaMauiImageCache");
+
+    /// <summary>
+    /// Default constructor kept for compatibility with reflection-based activators.
+    /// </summary>
+    public AvaloniaUriImageSourceService()
+        : this(logger: null, httpClient: null)
     {
-        _logger = logger;
-        _httpClient = new HttpClient();
-        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Avalonia.Controls.Maui/1.0");
-        _cache = new ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>>();
-        _cacheLock = new SemaphoreSlim(1, 1);
     }
 
-    public AvaloniaUriImageSourceService()
+    public AvaloniaUriImageSourceService(ILogger<AvaloniaUriImageSourceService>? logger = null, HttpClient? httpClient = null)
     {
-        _httpClient = new HttpClient();
+        _logger = logger;
+        _httpClient = httpClient ?? new HttpClient();
         _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Avalonia.Controls.Maui/1.0");
-        _cache = new ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>>();
-        _cacheLock = new SemaphoreSlim(1, 1);
+        _inFlightCache = new ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>>();
+
+        EnsureCacheDirectory();
     }
 
     public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
@@ -60,21 +65,30 @@ public class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImage
             var uri = imageSource.Uri;
             var cacheKey = uri.ToString();
 
-            // Check if caching is enabled and if we have a cached result
-            if (imageSource.CachingEnabled && _cache.TryGetValue(cacheKey, out var cachedTask))
+            // Try disk cache first when enabled
+            if (imageSource.CachingEnabled &&
+                TryLoadFromCache(uri, imageSource.CacheValidity, out var cachedResult))
             {
-                _logger?.LogDebug("Returning cached image for URI: {Uri}", uri);
-                return await cachedTask;
+                return cachedResult;
             }
 
-            // Create a task for loading the image
-            var loadTask = LoadImageInternalAsync(uri, cancellationToken);
+            // Prevent duplicate downloads for the same URI while still respecting cache validity
+            var loadTask = LoadImageInternalAsync(uri, imageSource, cancellationToken);
 
-            // Add to cache if caching is enabled (or get existing if another thread added it)
             if (imageSource.CachingEnabled)
             {
-                var resultTask = _cache.GetOrAdd(cacheKey, loadTask);
-                return await resultTask;
+                var resultTask = _inFlightCache.GetOrAdd(cacheKey, loadTask);
+                try
+                {
+                    var result = await resultTask;
+                    _inFlightCache.TryRemove(cacheKey, out _);
+                    return result;
+                }
+                catch
+                {
+                    _inFlightCache.TryRemove(cacheKey, out _);
+                    throw;
+                }
             }
 
             return await loadTask;
@@ -86,14 +100,14 @@ public class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImage
         }
     }
 
-    private async Task<IImageSourceServiceResult<Bitmap>?> LoadImageInternalAsync(Uri uri, CancellationToken cancellationToken)
+    private async Task<IImageSourceServiceResult<Bitmap>?> LoadImageInternalAsync(Uri uri, IUriImageSource imageSource, CancellationToken cancellationToken)
     {
         // Handle different URI schemes
         if (uri.IsAbsoluteUri)
         {
             if (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps)
             {
-                return await LoadFromHttpAsync(uri, cancellationToken);
+                return await LoadFromHttpAsync(uri, imageSource, cancellationToken);
             }
             else if (uri.Scheme == Uri.UriSchemeFile)
             {
@@ -105,16 +119,20 @@ public class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImage
         return null;
     }
 
-    private async Task<IImageSourceServiceResult<Bitmap>?> LoadFromHttpAsync(Uri uri, CancellationToken cancellationToken)
+    private async Task<IImageSourceServiceResult<Bitmap>?> LoadFromHttpAsync(Uri uri, IUriImageSource imageSource, CancellationToken cancellationToken)
     {
         try
         {
             _logger?.LogDebug($"Loading image from HTTP: {uri}");
 
-            var stream = await _httpClient.GetStreamAsync(uri, cancellationToken).ConfigureAwait(false);
-            await using var memoryStream = new MemoryStream();
-            await stream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
-            memoryStream.Position = 0;
+            var bytes = await _httpClient.GetByteArrayAsync(uri, cancellationToken).ConfigureAwait(false);
+
+            if (imageSource.CachingEnabled)
+            {
+                TryWriteCache(uri, bytes);
+            }
+
+            await using var memoryStream = new MemoryStream(bytes);
             var bitmap = new Bitmap(memoryStream);
 
             _logger?.LogDebug($"Successfully loaded image from HTTP: {uri}");
@@ -157,7 +175,18 @@ public class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImage
     public void ClearCache()
     {
         _logger?.LogDebug("Clearing image cache");
-        _cache.Clear();
+        _inFlightCache.Clear();
+        try
+        {
+            if (Directory.Exists(CacheDirectory))
+            {
+                Directory.Delete(CacheDirectory, true);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Failed to clear cache directory");
+        }
     }
 
     /// <summary>
@@ -166,11 +195,94 @@ public class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImage
     public bool RemoveFromCache(Uri uri)
     {
         var cacheKey = uri.ToString();
-        var removed = _cache.TryRemove(cacheKey, out _);
+        var removed = _inFlightCache.TryRemove(cacheKey, out _);
         if (removed)
         {
             _logger?.LogDebug($"Removed image from cache: {uri}");
         }
+
+        var cachePath = GetCachePath(uri);
+        if (File.Exists(cachePath))
+        {
+            try
+            {
+                File.Delete(cachePath);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogWarning(ex, "Failed to delete cached file for {Uri}", uri);
+            }
+        }
+
         return removed;
+    }
+
+    internal string GetCachePath(Uri uri)
+    {
+        var hash = SHA256.HashData(Encoding.UTF8.GetBytes(uri.ToString()));
+        var safeName = BitConverter.ToString(hash).Replace("-", "");
+        var ext = Path.GetExtension(uri.LocalPath);
+        if (string.IsNullOrWhiteSpace(ext))
+            ext = ".img";
+
+        return Path.Combine(CacheDirectory, $"{safeName}{ext}");
+    }
+
+    private bool TryLoadFromCache(Uri uri, TimeSpan cacheValidity, out IImageSourceServiceResult<Bitmap>? result)
+    {
+        result = null;
+        var cachePath = GetCachePath(uri);
+
+        try
+        {
+            if (!File.Exists(cachePath))
+                return false;
+
+            var info = new FileInfo(cachePath);
+            if (DateTime.UtcNow - info.LastWriteTimeUtc > cacheValidity)
+            {
+                File.Delete(cachePath);
+                return false;
+            }
+
+            using var stream = File.OpenRead(cachePath);
+            result = new ImageSourceServiceResult(new Bitmap(stream));
+            _logger?.LogDebug("Loaded image from disk cache: {Uri}", uri);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Failed to read cache for {Uri}", uri);
+            return false;
+        }
+    }
+
+    private void TryWriteCache(Uri uri, byte[] bytes)
+    {
+        try
+        {
+            var cachePath = GetCachePath(uri);
+            EnsureCacheDirectory();
+            File.WriteAllBytes(cachePath, bytes);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogWarning(ex, "Failed to write cache for {Uri}", uri);
+        }
+    }
+
+    private static void EnsureCacheDirectory()
+    {
+        try
+        {
+            if (!Directory.Exists(CacheDirectory))
+            {
+                Directory.CreateDirectory(CacheDirectory);
+            }
+        }
+        catch
+        {
+            // Ignore, cache will simply not persist
+        }
     }
 }

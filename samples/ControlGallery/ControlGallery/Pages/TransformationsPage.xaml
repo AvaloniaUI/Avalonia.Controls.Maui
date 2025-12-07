@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.TransformationsPage"
+             Title="Transformations">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="LightBorderBackground">White</Color>
+            <Color x:Key="DarkBorderBackground">#2a2a2a</Color>
+
+            <Color x:Key="LightStroke">LightGray</Color>
+            <Color x:Key="DarkStroke">#505050</Color>
+
+            <Color x:Key="LightButtonGray">LightGray</Color>
+            <Color x:Key="DarkButtonGray">#404040</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="20">
+        
+        <!-- Header Section -->
+        <Label Grid.Row="0" 
+               Text="Transformations Samples" 
+               FontSize="24" 
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               Margin="0,0,0,20" />
+
+        <Label Grid.Row="1" 
+               Text="Experiment with scale, rotation, translation, and anchor transformations using the controls below" 
+               HorizontalOptions="Center"
+               HorizontalTextAlignment="Center"
+               Margin="0,0,0,30" />
+
+        <!-- Transform Target -->
+        <Border Grid.Row="2"
+                StrokeShape="RoundRectangle"
+                StrokeThickness="2"
+                Stroke="{AppThemeBinding Light={StaticResource LightStroke}, Dark={StaticResource DarkStroke}}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource LightBorderBackground}, Dark={StaticResource DarkBorderBackground}}"
+                Padding="20"
+                Margin="0,0,0,30">
+            <VerticalStackLayout Spacing="10"
+                                 HorizontalOptions="Center">
+                <Label Text="Transform Target" 
+                       FontSize="18" 
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center" />
+                
+                <Grid x:Name="TargetImage"
+                      WidthRequest="120"
+                      HeightRequest="120"
+                      HorizontalOptions="Center">
+                    <Grid.Background>
+                        <LinearGradientBrush StartPoint="0,0"
+                                             EndPoint="1,1">
+                            <GradientStop Color="#6366F1"
+                                          Offset="0" />
+                            <GradientStop Color="#22D3EE"
+                                          Offset="1" />
+                        </LinearGradientBrush>
+                    </Grid.Background>
+                    <Label Text="TARGET"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           FontAttributes="Bold"
+                           TextColor="White" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Transformation Controls -->
+        <ScrollView Grid.Row="3">
+            <VerticalStackLayout Padding="10" Spacing="14">
+
+                <!-- Scale Controls -->
+                <Label Text="Scale Transformations"
+                       FontSize="16"
+                       FontAttributes="Bold" />
+
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                    <Label Text="Uniform Scale"
+                           VerticalOptions="Center" />
+                    <Slider x:Name="ScaleSlider"
+                            Grid.Column="1"
+                            Minimum="0.1"
+                            Maximum="3"
+                            Value="1" />
+                </Grid>
+                <Label Text="{Binding Source={x:Reference ScaleSlider}, Path=Value, StringFormat='Scale: {0:F2}'}"
+                       HorizontalOptions="Center"
+                       FontSize="12" />
+
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                    <Label Text="Scale X"
+                           VerticalOptions="Center" />
+                    <Slider x:Name="ScaleXSlider"
+                            Grid.Column="1"
+                            Minimum="-2"
+                            Maximum="2"
+                            Value="0" />
+                </Grid>
+                <Label Text="{Binding Source={x:Reference ScaleXSlider}, Path=Value, StringFormat='Scale X: {0:F2}'}"
+                       HorizontalOptions="Center"
+                       FontSize="12" />
+
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                    <Label Text="Scale Y"
+                           VerticalOptions="Center" />
+                    <Slider x:Name="ScaleYSlider"
+                            Grid.Column="1"
+                            Minimum="-2"
+                            Maximum="2"
+                            Value="0" />
+                </Grid>
+                <Label Text="{Binding Source={x:Reference ScaleYSlider}, Path=Value, StringFormat='Scale Y: {0:F2}'}"
+                       HorizontalOptions="Center"
+                       FontSize="12" />
+
+                <!-- Rotation Controls -->
+                <Label Text="Rotation Transformations"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       Margin="0,6,0,0" />
+
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                    <Label Text="Rotation (degrees)"
+                           VerticalOptions="Center" />
+                    <Slider x:Name="RotationSlider"
+                            Grid.Column="1"
+                            Minimum="0"
+                            Maximum="360"
+                            Value="0" />
+                </Grid>
+                <Label Text="{Binding Source={x:Reference RotationSlider}, Path=Value, StringFormat='Rotation: {0:F0}°'}"
+                       HorizontalOptions="Center"
+                       FontSize="12" />
+
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                    <Label Text="Rotation X"
+                           VerticalOptions="Center" />
+                    <Slider x:Name="RotationXSlider"
+                            Grid.Column="1"
+                            Minimum="0"
+                            Maximum="360"
+                            Value="0" />
+                </Grid>
+                <Label Text="{Binding Source={x:Reference RotationXSlider}, Path=Value, StringFormat='Rotation X: {0:F0}°'}"
+                       HorizontalOptions="Center"
+                       FontSize="12" />
+
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                    <Label Text="Rotation Y"
+                           VerticalOptions="Center" />
+                    <Slider x:Name="RotationYSlider"
+                            Grid.Column="1"
+                            Minimum="0"
+                            Maximum="360"
+                            Value="0" />
+                </Grid>
+                <Label Text="{Binding Source={x:Reference RotationYSlider}, Path=Value, StringFormat='Rotation Y: {0:F0}°'}"
+                       HorizontalOptions="Center"
+                       FontSize="12" />
+
+                <!-- Translation Controls -->
+                <Label Text="Translation Transformations"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       Margin="0,10,0,0" />
+
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                    <Label Text="Translation X"
+                           VerticalOptions="Center" />
+                    <Slider x:Name="TranslationXSlider"
+                            Grid.Column="1"
+                            Minimum="-200"
+                            Maximum="200"
+                            Value="0" />
+                </Grid>
+                <Label Text="{Binding Source={x:Reference TranslationXSlider}, Path=Value, StringFormat='Translation X: {0:F0}'}"
+                       HorizontalOptions="Center"
+                       FontSize="12" />
+
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                    <Label Text="Translation Y"
+                           VerticalOptions="Center" />
+                    <Slider x:Name="TranslationYSlider"
+                            Grid.Column="1"
+                            Minimum="-200"
+                            Maximum="200"
+                            Value="0" />
+                </Grid>
+                <Label Text="{Binding Source={x:Reference TranslationYSlider}, Path=Value, StringFormat='Translation Y: {0:F0}'}"
+                       HorizontalOptions="Center"
+                       FontSize="12" />
+
+                <!-- Anchor Point Controls -->
+                <Label Text="Anchor Point Transformations"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       Margin="0,10,0,0" />
+
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                    <Label Text="Anchor X"
+                           VerticalOptions="Center" />
+                    <Slider x:Name="AnchorXSlider"
+                            Grid.Column="1"
+                            Minimum="0"
+                            Maximum="1"
+                            Value="0.5" />
+                </Grid>
+                <Label Text="{Binding Source={x:Reference AnchorXSlider}, Path=Value, StringFormat='Anchor X: {0:F2}'}"
+                       HorizontalOptions="Center"
+                       FontSize="12" />
+
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
+                    <Label Text="Anchor Y"
+                           VerticalOptions="Center" />
+                    <Slider x:Name="AnchorYSlider"
+                            Grid.Column="1"
+                            Minimum="0"
+                            Maximum="1"
+                            Value="0.5" />
+                </Grid>
+                <Label Text="{Binding Source={x:Reference AnchorYSlider}, Path=Value, StringFormat='Anchor Y: {0:F2}'}"
+                       HorizontalOptions="Center"
+                       FontSize="12" />
+
+                <!-- Action Buttons -->
+                <Button Text="Reset All"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource LightButtonGray}, Dark={StaticResource DarkButtonGray}}"
+                        TextColor="White"
+                        Clicked="ResetButton_Clicked" />
+
+                <Button Text="Random Transform"
+                        BackgroundColor="Blue"
+                        TextColor="White"
+                        Clicked="RandomButton_Clicked" />
+
+                <Button Text="Animate"
+                        BackgroundColor="Green"
+                        TextColor="White"
+                        Clicked="AnimateButton_Clicked" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

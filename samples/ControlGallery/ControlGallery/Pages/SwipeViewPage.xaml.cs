@@ -22,22 +22,22 @@ public partial class SwipeViewPage : ContentPage
 
     private async void OnFavoriteInvoked(object sender, EventArgs e)
     {
-        await DisplayAlert("SwipeView", "Favorite invoked!", "OK");
+        await DisplayAlertAsync("SwipeView", "Favorite invoked!", "OK");
     }
 
     private async void OnDeleteInvoked(object sender, EventArgs e)
     {
-        await DisplayAlert("SwipeView", "Delete invoked!", "OK");
+        await DisplayAlertAsync("SwipeView", "Delete invoked!", "OK");
     }
 
     private async void OnRevealDeleteInvoked(object sender, EventArgs e)
     {
-        await DisplayAlert("SwipeView", "Reveal delete invoked!", "OK");
+        await DisplayAlertAsync("SwipeView", "Reveal delete invoked!", "OK");
     }
 
     private async void OnArchiveInvoked(object sender, EventArgs e)
     {
-        await DisplayAlert("SwipeView", "Archive invoked!", "OK");
+        await DisplayAlertAsync("SwipeView", "Archive invoked!", "OK");
     }
 
     private void OnOpenLeftClicked(object sender, EventArgs e)
@@ -77,7 +77,7 @@ public partial class SwipeViewPage : ContentPage
 
     private async void OnExecuteSwipeInvoked(object sender, EventArgs e)
     {
-        await DisplayAlert("Execute Mode", "Execute mode triggered! SwipeView auto-closed after execution.", "OK");
+        await DisplayAlertAsync("Execute Mode", "Execute mode triggered! SwipeView auto-closed after execution.", "OK");
     }
 
     private void OnOpenRequested(object sender, OpenRequestedEventArgs e)
@@ -97,32 +97,32 @@ public partial class SwipeViewPage : ContentPage
 
     private async void OnCustomActionClicked(object sender, EventArgs e)
     {
-        await DisplayAlert("Custom Action", "Custom button clicked.", "OK");
+        await DisplayAlertAsync("Custom Action", "Custom button clicked.", "OK");
     }
 
     private async void OnRevealInvoked(object sender, EventArgs e)
     {
-        await DisplayAlert("SwipeView", "Reveal item invoked (remain open).", "OK");
+        await DisplayAlertAsync("SwipeView", "Reveal item invoked (remain open).", "OK");
     }
 
     private async void OnExecuteMixedInvoked(object sender, EventArgs e)
     {
-        await DisplayAlert("SwipeView", "Execute item invoked (auto-close).", "OK");
+        await DisplayAlertAsync("SwipeView", "Execute item invoked (auto-close).", "OK");
     }
 
     private async void OnRemainOpenInvoked(object sender, EventArgs e)
     {
-        await DisplayAlert("SwipeView", "RemainOpen invoked (stays open).", "OK");
+        await DisplayAlertAsync("SwipeView", "RemainOpen invoked (stays open).", "OK");
     }
 
     private async void OnAutoCloseInvoked(object sender, EventArgs e)
     {
-        await DisplayAlert("SwipeView", "AutoClose invoked (closes after).", "OK");
+        await DisplayAlertAsync("SwipeView", "AutoClose invoked (closes after).", "OK");
     }
 
     private async void OnAllDirectionsInvoked(object sender, EventArgs e)
     {
-        await DisplayAlert("SwipeView", "All directions item invoked.", "OK");
+        await DisplayAlertAsync("SwipeView", "All directions item invoked.", "OK");
     }
 
     private void OnEventOpenLeftClicked(object sender, EventArgs e)
@@ -139,7 +139,7 @@ public partial class SwipeViewPage : ContentPage
     {
         if (GetSwipeSampleItem(sender) is { } item)
         {
-            await DisplayAlert("Save", $"{item.Title} pinned.", "OK");
+            await DisplayAlertAsync("Save", $"{item.Title} pinned.", "OK");
         }
     }
 
@@ -147,7 +147,7 @@ public partial class SwipeViewPage : ContentPage
     {
         if (GetSwipeSampleItem(sender) is { } item)
         {
-            var confirm = await DisplayAlert("Remove item", $"Remove \"{item.Title}\"?", "Remove", "Cancel");
+            var confirm = await DisplayAlertAsync("Remove item", $"Remove \"{item.Title}\"?", "Remove", "Cancel");
             if (confirm)
             {
                 SwipeItemsCollection.Remove(item);

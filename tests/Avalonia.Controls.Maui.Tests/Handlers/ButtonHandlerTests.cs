@@ -1,11 +1,13 @@
 using Avalonia.Headless.XUnit;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
+using Avalonia.Media.Imaging;
+using Avalonia.Layout;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using MauiButtonHandler = Avalonia.Controls.Maui.Handlers.ButtonHandler;
-using MauiButton = Avalonia.Controls.Maui.Platform.MauiButton;
 using MauiThickness = Microsoft.Maui.Thickness;
+using MButton = Microsoft.Maui.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -150,6 +152,67 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         await CreateHandlerAsync(button);
     }
 
+    [AvaloniaFact(DisplayName = "Background Is Properly Set Via Avalonia Extension Method")]
+    public async Task BackgroundIsProperlySetViaAvaloniaExtensionMethod()
+    {
+        // This test specifically validates that the Avalonia.Controls.Maui.Extensions.ViewExtensions.UpdateBackground
+        // extension method is being used instead of Microsoft.Maui.Platform extension methods.
+        // The bug occurred when ButtonHandler.cs was missing the using directive for
+        // Avalonia.Controls.Maui.Extensions, causing it to fall back to the MAUI extension method
+        // which doesn't properly set the background on Avalonia controls.
+        var button = new ButtonStub
+        {
+            Text = "Button",
+            Background = new SolidPaint(Colors.Green)
+        };
+
+        var handler = await CreateHandlerAsync(button);
+
+        // Verify the background brush is properly set on the Avalonia control
+        Assert.NotNull(handler.PlatformView);
+        Assert.NotNull(handler.PlatformView.Background);
+
+        // Verify it's a SolidColorBrush with the correct color
+        var brush = Assert.IsType<Media.SolidColorBrush>(handler.PlatformView.Background);
+        Assert.Equal(0, brush.Color.R);
+        Assert.Equal(128, brush.Color.G);  // Green channel should be 128
+        Assert.Equal(0, brush.Color.B);
+    }
+
+    [AvaloniaFact(DisplayName = "Background Update Uses Correct Extension Method")]
+    public async Task BackgroundUpdateUsesCorrectExtensionMethod()
+    {
+        // This test validates that updating the background after handler creation
+        // also uses the correct Avalonia extension method
+        var button = new ButtonStub
+        {
+            Text = "Button",
+            Background = new SolidPaint(Colors.Red)
+        };
+
+        var handler = await CreateHandlerAsync(button);
+
+        // Verify initial background
+        Assert.NotNull(handler.PlatformView?.Background);
+        var initialBrush = Assert.IsType<Media.SolidColorBrush>(handler.PlatformView.Background);
+        Assert.Equal(255, initialBrush.Color.R);  // Red
+
+        // Update to a new color
+        await InvokeOnMainThreadAsync(() =>
+        {
+            button.Background = new SolidPaint(Colors.Purple);
+            handler.UpdateValue(nameof(IButton.Background));
+        });
+
+        // Verify the background was properly updated through Avalonia extension
+        Assert.NotNull(handler.PlatformView.Background);
+        var updatedBrush = Assert.IsType<Media.SolidColorBrush>(handler.PlatformView.Background);
+        // Purple is RGB(128, 0, 128)
+        Assert.Equal(128, updatedBrush.Color.R);
+        Assert.Equal(0, updatedBrush.Color.G);
+        Assert.Equal(128, updatedBrush.Color.B);
+    }
+
     [AvaloniaFact(DisplayName = "Padding Initializes Correctly")]
     public async Task PaddingInitializesCorrectly()
     {
@@ -212,6 +275,62 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         Assert.Equal(0, padding.Top);
         Assert.Equal(0, padding.Right);
         Assert.Equal(0, padding.Bottom);
+    }
+
+    [AvaloniaFact(DisplayName = "NaN Padding Converts To Zero")]
+    public async Task NaNPaddingConvertsToZero()
+    {
+        var button = new ButtonStub
+        {
+            Text = "Button",
+            Padding = new MauiThickness(double.NaN, double.NaN, double.NaN, double.NaN)
+        };
+        var padding = await GetValueAsync(button, GetPlatformPadding);
+
+        Assert.Equal(0, padding.Left);
+        Assert.Equal(0, padding.Top);
+        Assert.Equal(0, padding.Right);
+        Assert.Equal(0, padding.Bottom);
+    }
+
+    [AvaloniaFact(DisplayName = "Mixed NaN And Valid Padding Values Work")]
+    public async Task MixedNaNAndValidPaddingValuesWork()
+    {
+        var button = new ButtonStub
+        {
+            Text = "Button",
+            Padding = new MauiThickness(10, double.NaN, 20, double.NaN)
+        };
+        var padding = await GetValueAsync(button, GetPlatformPadding);
+
+        Assert.Equal(10, padding.Left);
+        Assert.Equal(0, padding.Top);  // NaN should convert to 0
+        Assert.Equal(20, padding.Right);
+        Assert.Equal(0, padding.Bottom);  // NaN should convert to 0
+    }
+
+    [AvaloniaTheory(DisplayName = "NaN Padding Update Converts To Zero")]
+    [InlineData(double.NaN, 0, 0, 0)]
+    [InlineData(0, double.NaN, 0, 0)]
+    [InlineData(0, 0, double.NaN, 0)]
+    [InlineData(0, 0, 0, double.NaN)]
+    [InlineData(double.NaN, double.NaN, double.NaN, double.NaN)]
+    public async Task NaNPaddingUpdateConvertsToZero(double left, double top, double right, double bottom)
+    {
+        var button = new ButtonStub { Text = "Button", Padding = new MauiThickness(5) };
+        var newPadding = new MauiThickness(left, top, right, bottom);
+
+        var platformPadding = await GetValueAsync(button, handler =>
+        {
+            button.Padding = newPadding;
+            handler.UpdateValue(nameof(IButton.Padding));
+            return GetPlatformPadding(handler);
+        });
+
+        Assert.Equal(double.IsNaN(left) ? 0 : left, platformPadding.Left);
+        Assert.Equal(double.IsNaN(top) ? 0 : top, platformPadding.Top);
+        Assert.Equal(double.IsNaN(right) ? 0 : right, platformPadding.Right);
+        Assert.Equal(double.IsNaN(bottom) ? 0 : bottom, platformPadding.Bottom);
     }
 
     [AvaloniaFact(DisplayName = "StrokeColor Initializes Correctly")]
@@ -508,6 +627,51 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         // Note: The actual behavior depends on whether the handler checks IsEnabled
         // This test documents current behavior
         Assert.True(button.ClickedCount >= 0);
+    }
+
+    [AvaloniaFact(DisplayName = "ContentLayout Top stacks image above text with spacing", Skip = "Depends on Reflection")]
+    public async Task ContentLayoutTopStacksImageAboveText()
+    {
+        var button = new ButtonStub { Text = "With Icon" };
+        var handler = await CreateHandlerAsync(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            handler.PlatformView!.ImageSource = new RenderTargetBitmap(new PixelSize(1, 1), new Avalonia.Vector(96, 96));
+            button.ContentLayout = new MButton.ButtonContentLayout(MButton.ButtonContentLayout.ImagePosition.Top, 8);
+            handler.UpdateValue(nameof(MButton.ContentLayout));
+        });
+
+        var stack = Assert.IsType<StackPanel>(handler.PlatformView!.Content);
+        Assert.Equal(Orientation.Vertical, stack.Orientation);
+        var image = handler.PlatformView.GetImage();
+        var text = handler.PlatformView.GetTextBlock();
+        Assert.Equal(image, stack.Children[0]);
+        Assert.Equal(text, stack.Children[1]);
+        Assert.Equal(8, text!.Margin.Top);
+    }
+
+    [AvaloniaFact(DisplayName = "ContentLayout Right places image after text with spacing", Skip = "Depends on Reflection")]
+    public async Task ContentLayoutRightPlacesImageAfterText()
+    {
+        var button = new ButtonStub { Text = "With Icon" };
+        var handler = await CreateHandlerAsync(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            handler.PlatformView!.ImageSource = new RenderTargetBitmap(new PixelSize(1, 1), new Avalonia.Vector(96, 96));
+            button.ContentLayout = new MButton.ButtonContentLayout(MButton.ButtonContentLayout.ImagePosition.Right, 12);
+            handler.UpdateValue(nameof(MButton.ContentLayout));
+        });
+
+        var stack = Assert.IsType<StackPanel>(handler.PlatformView!.Content);
+        Assert.Equal(Orientation.Horizontal, stack.Orientation);
+        var image = handler.PlatformView.GetImage();
+        var text = handler.PlatformView.GetTextBlock();
+        Assert.Equal(text, stack.Children[0]);
+        Assert.Equal(image, stack.Children[1]);
+        Assert.Equal(12, image!.Margin.Left);
+        Assert.Equal(0, text!.Margin.Left);
     }
     
     string? GetPlatformText(MauiButtonHandler handler) =>
