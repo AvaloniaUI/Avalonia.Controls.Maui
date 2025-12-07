@@ -345,22 +345,22 @@ Displays an image and responds to a tap or click that directs an app to carry ou
 
 | Property | Status |
 |----------|--------|
-| Source | ⏳ TODO |
-| Aspect | ⏳ TODO |
-| BorderColor | ⏳ TODO |
-| BorderWidth | ⏳ TODO |
-| Command | ⏳ TODO |
-| CommandParameter | ⏳ TODO |
-| CornerRadius | ⏳ TODO |
-| Padding | ⏳ TODO |
+| Source | ✅ Implemented |
+| Aspect | ✅ Implemented |
+| BorderColor | ✅ Implemented |
+| BorderWidth | ✅ Implemented |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
+| CornerRadius | ✅ Implemented |
+| Padding | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Clicked | ⏳ TODO |
-| Pressed | ⏳ TODO |
-| Released | ⏳ TODO |
+| Clicked | ✅ Implemented |
+| Pressed | ✅ Implemented |
+| Released | ✅ Implemented |
 
 ---
 

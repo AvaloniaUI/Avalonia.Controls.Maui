@@ -5,16 +5,16 @@ namespace ControlGallery.Pages;
 public partial class ButtonPage : ContentPage
 {
     private int _clickCount = 0;
-    
-    // Commands for data binding
+
+    // Commands for Button data binding
     public ICommand MyCommand { get; }
     public ICommand ParameterizedCommand { get; }
     public ICommand DisabledCommand { get; }
-    
+
     public ButtonPage()
     {
         InitializeComponent();
-        
+
         // Initialize simple command
         MyCommand = new Command(async () =>
         {
@@ -37,7 +37,7 @@ public partial class ButtonPage : ContentPage
             },
             canExecute: () => false
         );
-        
+
         // Set the BindingContext to this page for command binding
         BindingContext = this;
     }

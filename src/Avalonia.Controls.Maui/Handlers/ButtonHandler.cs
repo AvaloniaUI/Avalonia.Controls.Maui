@@ -180,7 +180,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         var layout = button switch
         {
             MButton mauiButton => mauiButton.ContentLayout,
-            _ => GetContentLayoutViaReflection(button)
+            _ => null
         };
 
         if (layout is MButton.ButtonContentLayout value)
@@ -277,16 +277,5 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
                 button.ImageSource = platformImage as Avalonia.Media.IImage;
             }
         }
-    }
-
-    private static MButton.ButtonContentLayout? GetContentLayoutViaReflection(IButton button)
-    {
-        var layoutProp = button.GetType().GetProperty("ContentLayout");
-        if (layoutProp?.GetValue(button) is MButton.ButtonContentLayout layout)
-        {
-            return layout;
-        }
-
-        return null;
     }
 }

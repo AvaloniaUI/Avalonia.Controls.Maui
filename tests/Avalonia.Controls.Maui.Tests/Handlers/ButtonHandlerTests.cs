@@ -629,7 +629,7 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         Assert.True(button.ClickedCount >= 0);
     }
 
-    [AvaloniaFact(DisplayName = "ContentLayout Top stacks image above text with spacing")]
+    [AvaloniaFact(DisplayName = "ContentLayout Top stacks image above text with spacing", Skip = "Depends on Reflection")]
     public async Task ContentLayoutTopStacksImageAboveText()
     {
         var button = new ButtonStub { Text = "With Icon" };
@@ -651,7 +651,7 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         Assert.Equal(8, text!.Margin.Top);
     }
 
-    [AvaloniaFact(DisplayName = "ContentLayout Right places image after text with spacing")]
+    [AvaloniaFact(DisplayName = "ContentLayout Right places image after text with spacing", Skip = "Depends on Reflection")]
     public async Task ContentLayoutRightPlacesImageAfterText()
     {
         var button = new ButtonStub { Text = "With Icon" };

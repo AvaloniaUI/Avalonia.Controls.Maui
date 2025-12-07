@@ -24,9 +24,20 @@ public class ScrollViewStub : StubBase, IScrollView, ICrossPlatformLayout
 
     public Microsoft.Maui.Graphics.Size ContentSize { get; set; }
 
-    public double ScrollX { get; set; }
+    private double _scrollX;
+    private double _scrollY;
 
-    public double ScrollY { get; set; }
+    public double ScrollX
+    {
+        get => _scrollX;
+        set => SetProperty(ref _scrollX, value);
+    }
+
+    public double ScrollY
+    {
+        get => _scrollY;
+        set => SetProperty(ref _scrollY, value);
+    }
 
     public ScrollToRequest? LastScrollToRequest { get; private set; }
 
