@@ -17,6 +17,7 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
     {
         [nameof(IWindow.Title)] = mapTitle,
         [nameof(IWindow.Content)] = mapContent,
+        [nameof(Microsoft.Maui.Controls.Window.TitleBar)] = mapTitleBar,
         [nameof(IWindow.X)] = mapX,
         [nameof(IWindow.Y)] = mapY,
         [nameof(IWindow.Width)] = mapWidth,
@@ -42,6 +43,12 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
         base.ConnectHandler(platformView);
 
         var avWindow = (Window)platformView;
+
+        // Set MauiContext on MauiAvaloniaWindow for TitleBar support
+        if (avWindow is MauiAvaloniaWindow mauiWindow)
+        {
+            mauiWindow.SetMauiContext(MauiContext);
+        }
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
@@ -83,6 +90,14 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
         var avWindow = GetMauiWindow(handler);
         var content = window.Content?.ToPlatform(handler.MauiContext!);
         avWindow.SetMainContent(content);
+    }
+
+    static void mapTitleBar(IWindowHandler handler, IWindow window)
+    {
+        var avWindow = GetMauiWindow(handler);
+        // TitleBar is defined on Microsoft.Maui.Controls.Window, not IWindow
+        var controlsWindow = window as Microsoft.Maui.Controls.Window;
+        avWindow.SetTitleBar(controlsWindow?.TitleBar, handler.MauiContext);
     }
 
     static void mapX(IWindowHandler handler, IWindow window)

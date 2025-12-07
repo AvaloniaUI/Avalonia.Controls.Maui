@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using Avalonia.Controls;
+using Avalonia.Controls.Maui.Extensions;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -199,6 +200,7 @@ public class StackNavigationManager
         View? titleView = null;
         string? title = null;
         bool hasNavigationBar = true;
+        ImageSource? titleIconImageSource = null;
 
         if (_stackNavigation is NavigationPage navigationPage)
         {
@@ -208,6 +210,7 @@ public class StackNavigationManager
                 titleView = NavigationPage.GetTitleView(currentPage);
                 title = currentPage.Title;
                 hasNavigationBar = NavigationPage.GetHasNavigationBar(currentPage);
+                titleIconImageSource = NavigationPage.GetTitleIconImageSource(currentPage);
             }
 
             // Fall back to NavigationPage itself if no page-specific TitleView
@@ -231,6 +234,7 @@ public class StackNavigationManager
             _navigationView.TitleViewContainer.Content = platformTitleView;
             _navigationView.TitleViewContainer.IsVisible = true;
             _navigationView.TitleTextBlock.IsVisible = false;
+            _navigationView.TitleIconImage.IsVisible = false;
             _logger?.LogDebug("Updated TitleView: {TitleViewType}", titleView.GetType().Name);
         }
         else
@@ -239,6 +243,10 @@ public class StackNavigationManager
             _navigationView.TitleViewContainer.IsVisible = false;
             _navigationView.TitleTextBlock.Text = title ?? string.Empty;
             _navigationView.TitleTextBlock.IsVisible = !string.IsNullOrEmpty(title);
+
+            // Update title icon
+            UpdateTitleIcon(titleIconImageSource);
+
             _logger?.LogDebug("Updated Title: {Title}", title);
         }
 
@@ -248,11 +256,15 @@ public class StackNavigationManager
 
     private void UpdateNavigationBarColors(NavigationPage navigationPage)
     {
-        // Update bar background color
-        if (navigationPage.BarBackgroundColor != null)
+        // Update bar background - prefer BarBackground (Brush) over BarBackgroundColor
+        if (navigationPage.BarBackground != null && !navigationPage.BarBackground.IsEmpty)
+        {
+            _navigationView!.NavigationBarBackground = navigationPage.BarBackground.ToPlatform();
+        }
+        else if (navigationPage.BarBackgroundColor != null)
         {
             var color = navigationPage.BarBackgroundColor;
-            _navigationView?.NavigationBarBackground = new Avalonia.Media.SolidColorBrush(
+            _navigationView!.NavigationBarBackground = new Avalonia.Media.SolidColorBrush(
                 Avalonia.Media.Color.FromArgb(
                     (byte)(color.Alpha * 255),
                     (byte)(color.Red * 255),
@@ -264,7 +276,7 @@ public class StackNavigationManager
         else
         {
             // Default color
-            _navigationView?.NavigationBarBackground = new Avalonia.Media.SolidColorBrush(
+            _navigationView!.NavigationBarBackground = new Avalonia.Media.SolidColorBrush(
                 Avalonia.Media.Color.Parse("#F0F0F0")
             );
         }
@@ -279,15 +291,61 @@ public class StackNavigationManager
                 (byte)(textColor.Green * 255),
                 (byte)(textColor.Blue * 255)
             );
-            _navigationView?.TitleTextBlock.Foreground = new Avalonia.Media.SolidColorBrush(avaloniaColor);
-            _navigationView?.BackButton.Foreground = new Avalonia.Media.SolidColorBrush(avaloniaColor);
+            _navigationView.TitleTextBlock.Foreground = new Avalonia.Media.SolidColorBrush(avaloniaColor);
+            _navigationView.BackButton.Foreground = new Avalonia.Media.SolidColorBrush(avaloniaColor);
         }
         else
         {
             // Default text color (black)
             var defaultBrush = Avalonia.Media.Brushes.Black;
-            _navigationView?.TitleTextBlock.Foreground = defaultBrush;
-            _navigationView?.BackButton.Foreground = defaultBrush;
+            _navigationView.TitleTextBlock.Foreground = defaultBrush;
+            _navigationView.BackButton.Foreground = defaultBrush;
+        }
+    }
+
+    private async void UpdateTitleIcon(ImageSource? titleIconImageSource)
+    {
+        if (_navigationView == null)
+            return;
+
+        if (titleIconImageSource == null)
+        {
+            _navigationView.TitleIconImage.Source = null;
+            _navigationView.TitleIconImage.IsVisible = false;
+            return;
+        }
+
+        try
+        {
+            var imageSourceServiceProvider = MauiContext.Services.GetService<IImageSourceServiceProvider>();
+            var service = imageSourceServiceProvider?.GetImageSourceService(titleIconImageSource.GetType());
+
+            if (service is Avalonia.Controls.Maui.Services.IAvaloniaImageSourceService avaloniaService)
+            {
+                var result = await avaloniaService.GetImageAsync(titleIconImageSource, 1.0f);
+                if (result?.Value is Avalonia.Media.Imaging.Bitmap bitmap)
+                {
+                    _navigationView.TitleIconImage.Source = bitmap;
+                    _navigationView.TitleIconImage.IsVisible = true;
+                    _logger?.LogDebug("Updated TitleIconImageSource");
+                }
+                else
+                {
+                    _navigationView.TitleIconImage.Source = null;
+                    _navigationView.TitleIconImage.IsVisible = false;
+                }
+            }
+            else
+            {
+                _navigationView.TitleIconImage.Source = null;
+                _navigationView.TitleIconImage.IsVisible = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error loading TitleIconImageSource");
+            _navigationView.TitleIconImage.Source = null;
+            _navigationView.TitleIconImage.IsVisible = false;
         }
     }
 
@@ -298,15 +356,56 @@ public class StackNavigationManager
 
         // Show back button if navigation stack has more than 1 page
         bool showBackButton = NavigationStack.Count > 1;
+        string? backButtonTitle = null;
+        Microsoft.Maui.Graphics.Color? iconColor = null;
 
         if (_stackNavigation is NavigationPage navigationPage && navigationPage.CurrentPage is Page currentPage)
         {
             // Check if page explicitly sets HasBackButton
             showBackButton = showBackButton && NavigationPage.GetHasBackButton(currentPage);
+
+            // Get the IconColor from the current page
+            iconColor = NavigationPage.GetIconColor(currentPage);
+
+            // Get the BackButtonTitle from the previous page (the one we'd go back to)
+            // Use the MAUI navigation stack directly to ensure we get the correct Page objects
+            var mauiNavStack = navigationPage.Navigation?.NavigationStack;
+            if (mauiNavStack != null && mauiNavStack.Count > 1)
+            {
+                var previousPage = mauiNavStack[mauiNavStack.Count - 2];
+                backButtonTitle = NavigationPage.GetBackButtonTitle(previousPage);
+                _logger?.LogDebug("Previous page: {PageType}, BackButtonTitle: {Title}",
+                    previousPage?.GetType().Name, backButtonTitle);
+            }
         }
 
         _navigationView.BackButton.IsVisible = showBackButton;
-        _logger?.LogDebug("Back button visible: {IsVisible}", showBackButton);
+
+        // Update back button content - show title if available, otherwise show arrow
+        if (!string.IsNullOrEmpty(backButtonTitle))
+        {
+            _navigationView.BackButton.Content = $"← {backButtonTitle}";
+        }
+        else
+        {
+            _navigationView.BackButton.Content = "←";
+        }
+
+        // Update back button icon color if specified
+        if (iconColor != null)
+        {
+            _navigationView.BackButton.Foreground = new Avalonia.Media.SolidColorBrush(
+                Avalonia.Media.Color.FromArgb(
+                    (byte)(iconColor.Alpha * 255),
+                    (byte)(iconColor.Red * 255),
+                    (byte)(iconColor.Green * 255),
+                    (byte)(iconColor.Blue * 255)
+                )
+            );
+        }
+        // Note: If iconColor is null, the color will be set by UpdateNavigationBarColors based on BarTextColor
+
+        _logger?.LogDebug("Back button visible: {IsVisible}, title: {Title}, iconColor: {IconColor}", showBackButton, backButtonTitle, iconColor);
     }
 
     private void FireNavigationFinished()

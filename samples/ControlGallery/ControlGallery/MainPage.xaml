@@ -46,6 +46,16 @@
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:FontsPage}"/>
 					</TableSection>
+					<TableSection Title="Pages">
+						<TextCell Text="NavigationPage"
+						          Detail="Navigation stack with animated transitions"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:NavigationDemoPage}"/>
+						<TextCell Text="TitleBar"
+						          Detail="Custom window title bar"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:TitleBarPage}"/>
+					</TableSection>
 					<TableSection Title="Views">
 						<TextCell Text="ActivityIndicator"
 						          Detail="ActivityIndicator control"

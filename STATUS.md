@@ -519,36 +519,36 @@ A Page that manages the navigation and user-experience of a stack of other pages
 
 | Property | Status |
 |----------|--------|
-| BarBackground | ⏳ TODO |
-| BarBackgroundColor | ⏳ TODO |
-| BarTextColor | ⏳ TODO |
-| CurrentPage | ⏳ TODO |
+| BarBackground | ✅ Done |
+| BarBackgroundColor | ✅ Done |
+| BarTextColor | ✅ Done |
+| CurrentPage | ✅ Done |
 | RootPage | ⏳ TODO |
-| HasBackButton | ⏳ TODO |
-| HasNavigationBar | ⏳ TODO |
-| BackButtonTitle | ⏳ TODO |
-| TitleView | ⏳ TODO |
-| IconColor | ⏳ TODO |
-| TitleIconImageSource | ⏳ TODO |
+| HasBackButton | ✅ Done |
+| HasNavigationBar | ✅ Done |
+| BackButtonTitle | ✅ Done |
+| TitleView | ✅ Done |
+| IconColor | ✅ Done |
+| TitleIconImageSource | ✅ Done |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Popped | ⏳ TODO |
-| PoppedToRoot | ⏳ TODO |
-| Pushed | ⏳ TODO |
+| Popped | ✅ Done (handled by MAUI NavigationPage) |
+| PoppedToRoot | ✅ Done (handled by MAUI NavigationPage) |
+| Pushed | ✅ Done (handled by MAUI NavigationPage) |
 
 ### Methods
 
 | Method | Status |
 |--------|--------|
-| PopAsync | ⏳ TODO |
-| PopAsync(bool) | ⏳ TODO |
-| PopToRootAsync | ⏳ TODO |
-| PopToRootAsync(bool) | ⏳ TODO |
-| PushAsync | ⏳ TODO |
-| PushAsync(bool) | ⏳ TODO |
+| PopAsync | ✅ Done |
+| PopAsync(bool) | ✅ Done |
+| PopToRootAsync | ✅ Done (via MAUI NavigationPage) |
+| PopToRootAsync(bool) | ✅ Done (via MAUI NavigationPage) |
+| PushAsync | ✅ Done |
+| PushAsync(bool) | ✅ Done |
 
 ---
 
@@ -981,6 +981,35 @@ Displays a table of scrollable items that can be grouped into sections.
 | Root | ⏳ TODO |
 | HasUnevenRows | ⏳ TODO |
 | RowHeight | ⏳ TODO |
+
+---
+
+## TitleBar
+
+A View control that provides title bar functionality for a window. The standard title bar height is 32px but can be set to a larger value. The title bar can be hidden by setting the IsVisible property, which will cause the window content to be displayed in the title bar region.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Icon | ✅ Done (via TemplatedView) |
+| Title | ✅ Done |
+| Subtitle | ✅ Done |
+| ForegroundColor | ✅ Done (via TemplatedView) |
+| LeadingContent | ✅ Done (via TemplatedView) |
+| Content | ✅ Done (via TemplatedView) |
+| TrailingContent | ✅ Done (via TemplatedView) |
+| PassthroughElements | ✅ Done |
+
+### Notes
+
+- TitleBar is a TemplatedView that renders its own content
+- Integrated with Window.TitleBar property
+- Supports active/inactive visual states for window focus changes
+- Custom title bar content is rendered through the TemplatedView pattern
+- Window dragging is supported by clicking on non-interactive areas of the TitleBar
+- PassthroughElements (including LeadingContent, Content, TrailingContent) receive input directly instead of triggering window drag
+- Uses Avalonia's ExtendClientAreaToDecorationsHint for custom title bar support with system window buttons
 
 ---
 

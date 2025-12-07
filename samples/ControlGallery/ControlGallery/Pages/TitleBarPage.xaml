@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.TitleBarPage"
+             Title="TitleBar Demo">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <Label Text="TitleBar Control"
+                   FontSize="24"
+                   FontAttributes="Bold" />
+
+            <Label Text="TitleBar provides a customizable title bar for windows. On desktop platforms, it can replace the default system title bar with custom content."
+                   TextColor="Gray" />
+
+            <BoxView Color="LightGray" HeightRequest="1" />
+
+            <!-- Basic TitleBar Section -->
+            <Label Text="Basic TitleBar"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+
+            <Label Text="Set a simple title and subtitle for the window's title bar."
+                   TextColor="Gray" />
+
+            <Button Text="Set Simple TitleBar"
+                    Clicked="OnSetSimpleTitleBar" />
+
+            <BoxView Color="LightGray" HeightRequest="1" />
+
+            <!-- TitleBar with Icon Section -->
+            <Label Text="TitleBar with Icon"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+
+            <Label Text="Add an icon to the title bar."
+                   TextColor="Gray" />
+
+            <Button Text="Set TitleBar with Icon"
+                    Clicked="OnSetTitleBarWithIcon" />
+
+            <BoxView Color="LightGray" HeightRequest="1" />
+
+            <!-- TitleBar with Custom Content Section -->
+            <Label Text="TitleBar with Custom Content"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+
+            <Label Text="Add custom content like a search box to the title bar."
+                   TextColor="Gray" />
+
+            <Button Text="Set TitleBar with Search Box"
+                    Clicked="OnSetTitleBarWithContent" />
+
+            <BoxView Color="LightGray" HeightRequest="1" />
+
+            <!-- TitleBar with Leading/Trailing Content Section -->
+            <Label Text="TitleBar with Leading/Trailing Content"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+
+            <Label Text="Add buttons or other controls to the leading and trailing areas."
+                   TextColor="Gray" />
+
+            <Button Text="Set TitleBar with Buttons"
+                    Clicked="OnSetTitleBarWithButtons" />
+
+            <BoxView Color="LightGray" HeightRequest="1" />
+
+            <!-- TitleBar Visibility Section -->
+            <Label Text="TitleBar Visibility"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+
+            <Label Text="Toggle the visibility of the title bar."
+                   TextColor="Gray" />
+
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Hide TitleBar"
+                        Clicked="OnHideTitleBar" />
+                <Button Text="Show TitleBar"
+                        Clicked="OnShowTitleBar" />
+            </HorizontalStackLayout>
+
+            <BoxView Color="LightGray" HeightRequest="1" />
+
+            <!-- Remove TitleBar Section -->
+            <Label Text="Remove TitleBar"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+
+            <Label Text="Remove the custom title bar and revert to system default."
+                   TextColor="Gray" />
+
+            <Button Text="Remove Custom TitleBar"
+                    Clicked="OnRemoveTitleBar"
+                    BackgroundColor="DarkRed"
+                    TextColor="White" />
+
+            <BoxView Color="LightGray" HeightRequest="1" />
+
+            <!-- Current TitleBar Info -->
+            <Label Text="Current TitleBar Info"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+
+            <Label x:Name="TitleBarInfoLabel"
+                   Text="No custom TitleBar set"
+                   TextColor="Gray" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

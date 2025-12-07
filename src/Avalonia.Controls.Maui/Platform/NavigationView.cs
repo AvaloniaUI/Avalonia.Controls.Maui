@@ -13,6 +13,8 @@ public class NavigationView : DockPanel
     private readonly TextBlock _titleTextBlock;
     private readonly Button _backButton;
     private readonly DockPanel _navigationBar;
+    private readonly Image _titleIconImage;
+    private readonly StackPanel _titleStack;
 
     /// <summary>
     /// Gets or sets the current page being displayed in the navigation view.
@@ -38,6 +40,11 @@ public class NavigationView : DockPanel
     /// Gets the back button.
     /// </summary>
     public Button BackButton => _backButton;
+
+    /// <summary>
+    /// Gets the title icon image control.
+    /// </summary>
+    public Image TitleIconImage => _titleIconImage;
 
     /// <summary>
     /// Gets or sets the navigation bar visibility.
@@ -72,13 +79,13 @@ public class NavigationView : DockPanel
         _backButton = new Button
         {
             Content = "←",
-            FontSize = 20,
-            Width = 40,
+            FontSize = 16,
+            MinWidth = 40,
             Height = 40,
             IsVisible = false,
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
-            Padding = new Thickness(0),
+            Padding = new Thickness(8, 0),
             HorizontalContentAlignment = HorizontalAlignment.Center,
             VerticalContentAlignment = VerticalAlignment.Center
         };
@@ -94,6 +101,14 @@ public class NavigationView : DockPanel
             IsVisible = false
         };
 
+        _titleIconImage = new Image
+        {
+            Width = 24,
+            Height = 24,
+            IsVisible = false,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+
         _titleTextBlock = new TextBlock
         {
             FontSize = 16,
@@ -103,8 +118,19 @@ public class NavigationView : DockPanel
             TextAlignment = Avalonia.Media.TextAlignment.Center
         };
 
+        // Stack for title icon and text
+        _titleStack = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Spacing = 8
+        };
+        _titleStack.Children.Add(_titleIconImage);
+        _titleStack.Children.Add(_titleTextBlock);
+
         var centerStack = new Panel();
-        centerStack.Children.Add(_titleTextBlock);
+        centerStack.Children.Add(_titleStack);
         centerStack.Children.Add(_titleViewContainer);
 
         _navigationBar.Children.Add(centerStack);
