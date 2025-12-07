@@ -80,7 +80,10 @@
 								  Detail="CheckBox control for selections"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:CheckBoxPage}"/>
-						<TextCell Text="GraphicsView"
+						<TextCell Text="Picker"
+						          Detail="Picker control"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:PickerPage}"/>						<TextCell Text="GraphicsView"
 								  Detail="Custom drawing and graphics"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:GraphicsViewPage}"/>

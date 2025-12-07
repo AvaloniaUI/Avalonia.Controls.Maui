@@ -581,20 +581,19 @@ Displays a short list of items, from which an item can be selected.
 
 | Property | Status |
 |----------|--------|
-| CharacterSpacing | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| HorizontalTextAlignment | ⏳ TODO |
-| ItemsSource | ⏳ TODO |
-| ItemDisplayBinding | ⏳ TODO |
+| CharacterSpacing | ✅ Implemented  |
+| FontAttributes | ✅ Implemented  |
+| FontFamily | ✅ Implemented  |
+| FontSize | ✅ Implemented  |
+| HorizontalTextAlignment | ✅ Implemented  |
+| ItemsSource | ✅ Implemented  |
+| ItemDisplayBinding | ✅ Implemented  |
 | SelectedIndex | ⏳ TODO |
-| SelectedItem | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| Title | ⏳ TODO |
-| TitleColor | ⏳ TODO |
-| VerticalTextAlignment | ⏳ TODO |
+| SelectedItem | ✅ Implemented  |
+| TextColor | ✅ Implemented  |
+| Title | ✅ Implemented |
+| TitleColor | ✅ Implemented |
+| VerticalTextAlignment | ✅ Implemented  |
 
 ### Events
 
