@@ -3,7 +3,7 @@ using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using AvaloniaRadioButton = global::Avalonia.Controls.RadioButton;
+using AvaloniaRadioButton = global::Avalonia.Controls.Maui.MauiRadioButton;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
