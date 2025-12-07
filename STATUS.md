@@ -136,21 +136,34 @@ Displays a scrollable list of selectable data items, using different layout spec
 
 | Property | Status |
 |----------|--------|
-| EmptyView | ⏳ TODO |
-| EmptyViewTemplate | ⏳ TODO |
-| Footer | ⏳ TODO |
-| FooterTemplate | ⏳ TODO |
-| Header | ⏳ TODO |
-| HeaderTemplate | ⏳ TODO |
-| ItemsLayout | ⏳ TODO |
-| ItemsSource | ⏳ TODO |
-| ItemTemplate | ⏳ TODO |
-| ItemsUpdatingScrollMode | ⏳ TODO |
-| RemainingItemsThreshold | ⏳ TODO |
+| EmptyView | ✅ Implemented |
+| EmptyViewTemplate | ✅ Implemented |
+| Footer | ✅ Implemented |
+| FooterTemplate | ✅ Implemented |
+| Header | ✅ Implemented |
+| HeaderTemplate | ✅ Implemented |
+| ItemsLayout | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| ItemsUpdatingScrollMode | ✅ Implemented |
+| RemainingItemsThreshold | ✅ Implemented |
 | RemainingItemsThresholdReachedCommand | ⏳ TODO |
-| SelectedItem | ⏳ TODO |
-| SelectedItems | ⏳ TODO |
-| SelectionMode | ⏳ TODO |
+| SelectedItem | ✅ Implemented |
+| SelectedItems | ✅ Implemented |
+| SelectionMode | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| RemainingItemsThresholdReached | ✅ Implemented |
+| SelectionChanged | ✅ Implemented |
+
+### Notes
+
+- Supports LinearItemsLayout (Vertical/Horizontal) and GridItemsLayout
+- Grouping supported via IsGrouped, GroupHeaderTemplate, GroupFooterTemplate
+- Custom CollectionViewStackPanel ensures items fill cross-axis in horizontal layouts
 
 ---
 
@@ -392,23 +405,23 @@ Displays single-line and multi-line text.
 
 | Property | Status |
 |----------|--------|
-| CharacterSpacing | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
+| CharacterSpacing | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
 | FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| FormattedText | ⏳ TODO |
-| HorizontalTextAlignment | ⏳ TODO |
-| LineBreakMode | ⏳ TODO |
-| LineHeight | ⏳ TODO |
-| MaxLines | ⏳ TODO |
-| Padding | ⏳ TODO |
-| Text | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| TextDecorations | ⏳ TODO |
-| TextTransform | ⏳ TODO |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| FormattedText | ✅ Implemented |
+| HorizontalTextAlignment | ✅ Implemented |
+| LineBreakMode | ✅ Implemented |
+| LineHeight | ✅ Implemented |
+| MaxLines | ✅ Implemented |
+| Padding | ✅ Implemented |
+| Text | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| TextDecorations | ✅ Implemented |
+| TextTransform | ✅ Implemented |
 | TextType | ⏳ TODO |
-| VerticalTextAlignment | ⏳ TODO |
+| VerticalTextAlignment | ✅ Implemented |
 
 ---
 
