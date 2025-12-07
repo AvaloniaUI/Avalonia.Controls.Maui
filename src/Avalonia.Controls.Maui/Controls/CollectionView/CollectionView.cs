@@ -455,8 +455,9 @@ public class CollectionView : TemplatedControl
         }
         else if (e.NewValue is Microsoft.Maui.Controls.LinearItemsLayout linearLayout)
         {
-            // Use StackPanel for linear layouts
-            var stackPanel = new FuncTemplate<Panel?>(() => new StackPanel
+            // Use CollectionViewStackPanel for linear layouts - it constrains children
+            // to the cross-axis dimension, matching MAUI's CollectionView behavior
+            var stackPanel = new FuncTemplate<Panel?>(() => new CollectionViewStackPanel
             {
                 Orientation = linearLayout.Orientation == Microsoft.Maui.Controls.ItemsLayoutOrientation.Vertical
                     ? Orientation.Vertical
