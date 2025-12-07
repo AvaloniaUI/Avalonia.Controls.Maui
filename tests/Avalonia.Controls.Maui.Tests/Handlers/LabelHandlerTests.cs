@@ -206,4 +206,250 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
 
     Color? GetNativeBackgroundColor(MauiLabelHandler handler) =>
         AvaloniaPropertyHelpers.GetNativeBackgroundColor(handler);
+
+
+    int GetNativeInlineCount(MauiLabelHandler handler) =>
+        AvaloniaPropertyHelpers.GetNativeInlineCount(handler);
+
+    string? GetNativeRunText(MauiLabelHandler handler, int index) =>
+        AvaloniaPropertyHelpers.GetNativeRunText(handler, index);
+
+    Color? GetNativeRunForeground(MauiLabelHandler handler, int index) =>
+        AvaloniaPropertyHelpers.GetNativeRunForeground(handler, index);
+
+    // ============================================================
+    // TextTransform Tests
+    // ============================================================
+
+    [AvaloniaTheory(DisplayName = "TextTransform Uppercase Initializes Correctly")]
+    [InlineData("hello world", "HELLO WORLD")]
+    [InlineData("Test", "TEST")]
+    [InlineData("MixedCase", "MIXEDCASE")]
+    public async Task TextTransformUppercaseInitializesCorrectly(string input, string expected)
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = input,
+            TextTransform = Microsoft.Maui.TextTransform.Uppercase,
+            WidthRequest = 200,
+            HeightRequest = 50
+        };
+
+        var nativeText = await GetValueAsync<string?, MauiLabelHandler>(label, GetNativeText);
+
+        Assert.Equal(expected, nativeText);
+    }
+
+    [AvaloniaTheory(DisplayName = "TextTransform Lowercase Initializes Correctly")]
+    [InlineData("HELLO WORLD", "hello world")]
+    [InlineData("Test", "test")]
+    [InlineData("MixedCase", "mixedcase")]
+    public async Task TextTransformLowercaseInitializesCorrectly(string input, string expected)
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = input,
+            TextTransform = Microsoft.Maui.TextTransform.Lowercase,
+            WidthRequest = 200,
+            HeightRequest = 50
+        };
+
+        var nativeText = await GetValueAsync<string?, MauiLabelHandler>(label, GetNativeText);
+
+        Assert.Equal(expected, nativeText);
+    }
+
+    [AvaloniaFact(DisplayName = "TextTransform None Preserves Original Text")]
+    public async Task TextTransformNonePreservesOriginalText()
+    {
+        var originalText = "MixedCase Text";
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = originalText,
+            TextTransform = Microsoft.Maui.TextTransform.None,
+            WidthRequest = 200,
+            HeightRequest = 50
+        };
+
+        var nativeText = await GetValueAsync<string?, MauiLabelHandler>(label, GetNativeText);
+
+        Assert.Equal(originalText, nativeText);
+    }
+
+    [AvaloniaFact(DisplayName = "TextTransform Updates When Changed")]
+    public async Task TextTransformUpdatesWhenChanged()
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = "Hello",
+            TextTransform = Microsoft.Maui.TextTransform.None,
+            WidthRequest = 200,
+            HeightRequest = 50
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        // Initial value should be unchanged
+        var initialText = await InvokeOnMainThreadAsync(() => GetNativeText(handler));
+        Assert.Equal("Hello", initialText);
+
+        // Update to uppercase
+        var uppercaseText = await InvokeOnMainThreadAsync(() =>
+        {
+            label.TextTransform = Microsoft.Maui.TextTransform.Uppercase;
+            handler.UpdateValue(nameof(Microsoft.Maui.Controls.Label.TextTransform));
+            return GetNativeText(handler);
+        });
+        Assert.Equal("HELLO", uppercaseText);
+
+        // Update to lowercase
+        var lowercaseText = await InvokeOnMainThreadAsync(() =>
+        {
+            label.TextTransform = Microsoft.Maui.TextTransform.Lowercase;
+            handler.UpdateValue(nameof(Microsoft.Maui.Controls.Label.TextTransform));
+            return GetNativeText(handler);
+        });
+        Assert.Equal("hello", lowercaseText);
+    }
+
+    // ============================================================
+    // FormattedText Tests
+    // ============================================================
+
+    [AvaloniaFact(DisplayName = "FormattedText Creates Correct Number Of Inlines")]
+    public async Task FormattedTextCreatesCorrectNumberOfInlines()
+    {
+        var formattedString = new Microsoft.Maui.Controls.FormattedString();
+        formattedString.Spans.Add(new Microsoft.Maui.Controls.Span { Text = "Hello " });
+        formattedString.Spans.Add(new Microsoft.Maui.Controls.Span { Text = "World" });
+        formattedString.Spans.Add(new Microsoft.Maui.Controls.Span { Text = "!" });
+
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            FormattedText = formattedString,
+            WidthRequest = 200,
+            HeightRequest = 50
+        };
+
+        var inlineCount = await GetValueAsync<int, MauiLabelHandler>(label, GetNativeInlineCount);
+
+        Assert.Equal(3, inlineCount);
+    }
+
+    [AvaloniaFact(DisplayName = "FormattedText Span Text Initializes Correctly")]
+    public async Task FormattedTextSpanTextInitializesCorrectly()
+    {
+        var formattedString = new Microsoft.Maui.Controls.FormattedString();
+        formattedString.Spans.Add(new Microsoft.Maui.Controls.Span { Text = "First" });
+        formattedString.Spans.Add(new Microsoft.Maui.Controls.Span { Text = "Second" });
+
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            FormattedText = formattedString,
+            WidthRequest = 200,
+            HeightRequest = 50
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        var firstText = await InvokeOnMainThreadAsync(() => GetNativeRunText(handler, 0));
+        var secondText = await InvokeOnMainThreadAsync(() => GetNativeRunText(handler, 1));
+
+        Assert.Equal("First", firstText);
+        Assert.Equal("Second", secondText);
+    }
+
+    [AvaloniaFact(DisplayName = "FormattedText Span TextColor Applies Correctly")]
+    public async Task FormattedTextSpanTextColorAppliesCorrectly()
+    {
+        var formattedString = new Microsoft.Maui.Controls.FormattedString();
+        formattedString.Spans.Add(new Microsoft.Maui.Controls.Span { Text = "Red", TextColor = Colors.Red });
+        formattedString.Spans.Add(new Microsoft.Maui.Controls.Span { Text = "Blue", TextColor = Colors.Blue });
+
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            FormattedText = formattedString,
+            WidthRequest = 200,
+            HeightRequest = 50
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        var firstColor = await InvokeOnMainThreadAsync(() => GetNativeRunForeground(handler, 0));
+        var secondColor = await InvokeOnMainThreadAsync(() => GetNativeRunForeground(handler, 1));
+
+        Assert.NotNull(firstColor);
+        Assert.NotNull(secondColor);
+        ColorComparisonHelpers.AssertColorsAreEqual(Colors.Red, firstColor);
+        ColorComparisonHelpers.AssertColorsAreEqual(Colors.Blue, secondColor);
+    }
+
+    [AvaloniaFact(DisplayName = "FormattedText Span TextTransform Applies Correctly")]
+    public async Task FormattedTextSpanTextTransformAppliesCorrectly()
+    {
+        var formattedString = new Microsoft.Maui.Controls.FormattedString();
+        formattedString.Spans.Add(new Microsoft.Maui.Controls.Span
+        {
+            Text = "hello",
+            TextTransform = Microsoft.Maui.TextTransform.Uppercase
+        });
+        formattedString.Spans.Add(new Microsoft.Maui.Controls.Span
+        {
+            Text = "WORLD",
+            TextTransform = Microsoft.Maui.TextTransform.Lowercase
+        });
+
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            FormattedText = formattedString,
+            WidthRequest = 200,
+            HeightRequest = 50
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        var firstText = await InvokeOnMainThreadAsync(() => GetNativeRunText(handler, 0));
+        var secondText = await InvokeOnMainThreadAsync(() => GetNativeRunText(handler, 1));
+
+        Assert.Equal("HELLO", firstText);
+        Assert.Equal("world", secondText);
+    }
+
+    [AvaloniaFact(DisplayName = "FormattedText Empty Clears Text")]
+    public async Task FormattedTextEmptyClearsText()
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = "Plain text",
+            FormattedText = new Microsoft.Maui.Controls.FormattedString(), // Empty
+            WidthRequest = 200,
+            HeightRequest = 50
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        // When FormattedText is set (even if empty), it takes precedence and clears the text
+        // This matches MAUI's behavior where FormattedText overrides Text
+        var nativeText = await InvokeOnMainThreadAsync(() => GetNativeText(handler));
+        var inlineCount = await InvokeOnMainThreadAsync(() => GetNativeInlineCount(handler));
+
+        Assert.Equal("", nativeText);
+        Assert.Equal(0, inlineCount);
+    }
+
+    [AvaloniaFact(DisplayName = "FormattedText Null Falls Back To PlainText")]
+    public async Task FormattedTextNullFallsBackToPlainText()
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = "Plain text",
+            FormattedText = null!,
+            WidthRequest = 200,
+            HeightRequest = 50
+        };
+
+        var nativeText = await GetValueAsync<string?, MauiLabelHandler>(label, GetNativeText);
+
+        Assert.Equal("Plain text", nativeText);
+    }
 }
