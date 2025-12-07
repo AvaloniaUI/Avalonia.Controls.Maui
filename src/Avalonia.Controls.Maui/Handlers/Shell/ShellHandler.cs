@@ -28,15 +28,38 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [nameof(MauiShell.FlyoutBehavior)] = MapFlyoutBehavior,
             [nameof(MauiShell.FlyoutIsPresented)] = MapFlyoutIsPresented,
             [nameof(MauiShell.FlyoutWidth)] = MapFlyoutWidth,
+            [nameof(MauiShell.FlyoutHeight)] = MapFlyoutHeight,
             [nameof(MauiShell.FlyoutBackground)] = MapFlyoutBackground,
             [nameof(MauiShell.FlyoutBackgroundColor)] = MapFlyoutBackgroundColor,
+            [nameof(MauiShell.FlyoutBackgroundImage)] = MapFlyoutBackgroundImage,
+            [nameof(MauiShell.FlyoutBackgroundImageAspect)] = MapFlyoutBackgroundImage,
+            [nameof(MauiShell.FlyoutBackdrop)] = MapFlyoutBackdrop,
             [nameof(MauiShell.FlyoutContent)] = MapFlyoutContent,
+            [nameof(MauiShell.FlyoutContentTemplate)] = MapFlyoutContentTemplate,
             [nameof(MauiShell.FlyoutHeader)] = MapFlyoutHeader,
             [nameof(MauiShell.FlyoutHeaderTemplate)] = MapFlyoutHeader,
+            [nameof(MauiShell.FlyoutHeaderBehavior)] = MapFlyoutHeaderBehavior,
             [nameof(MauiShell.FlyoutFooter)] = MapFlyoutFooter,
             [nameof(MauiShell.FlyoutFooterTemplate)] = MapFlyoutFooter,
+            [nameof(MauiShell.FlyoutVerticalScrollMode)] = MapFlyoutVerticalScrollMode,
             [nameof(MauiShell.Items)] = MapItems,
             [nameof(MauiShell.ItemTemplate)] = MapItemTemplate,
+            [nameof(MauiShell.MenuItemTemplate)] = MapMenuItemTemplate,
+            // These are attached properties - use string literals for property names
+            ["BackgroundColor"] = MapBackgroundColor,
+            ["ForegroundColor"] = MapForegroundColor,
+            ["TitleColor"] = MapTitleColor,
+            ["DisabledColor"] = MapDisabledColor,
+            ["UnselectedColor"] = MapUnselectedColor,
+            ["NavBarIsVisible"] = MapNavBarIsVisible,
+            ["NavBarHasShadow"] = MapNavBarHasShadow,
+            ["TitleView"] = MapTitleView,
+            ["TabBarIsVisible"] = MapTabBarIsVisible,
+            ["TabBarBackgroundColor"] = MapTabBarBackgroundColor,
+            ["TabBarForegroundColor"] = MapTabBarForegroundColor,
+            ["TabBarTitleColor"] = MapTabBarTitleColor,
+            ["TabBarDisabledColor"] = MapTabBarDisabledColor,
+            ["TabBarUnselectedColor"] = MapTabBarUnselectedColor,
         };
 
     public static CommandMapper<MauiShell, ShellHandler> CommandMapper =
@@ -49,11 +72,15 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     ContentControl? _flyoutFooterControl;
     DockPanel? _mainContainer;
     DockPanel? _topBar;
+    Border? _topBarShadow;
     Avalonia.Controls.Button? _hamburgerButton;
     Avalonia.Controls.Button? _backButton;
     TextBlock? _titleTextBlock;
+    ContentControl? _titleViewControl;
     ContentControl? _mainContentControl;
     ShellItemHandler? _currentItemHandler;
+    Image? _flyoutBackgroundImage;
+    ScrollViewer? _flyoutScrollViewer;
     Dictionary<ShellItem, Avalonia.Controls.Button> _flyoutItemButtons = new();
 
     public ShellHandler() : base(Mapper, CommandMapper)
@@ -75,11 +102,23 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             IsFlyoutOpen = false
         };
 
-        // Create flyout pane structure
+        // Create flyout pane structure with background image support
+        var flyoutPaneGrid = new AvaloniaGrid();
+
+        // Background image (behind all content)
+        _flyoutBackgroundImage = new Image
+        {
+            Stretch = Avalonia.Media.Stretch.UniformToFill,
+            IsVisible = false
+        };
+        flyoutPaneGrid.Children.Add(_flyoutBackgroundImage);
+
+        // Flyout content container
         var flyoutPaneContainer = new DockPanel
         {
             LastChildFill = true
         };
+        flyoutPaneGrid.Children.Add(flyoutPaneContainer);
 
         flyoutPaneContainer.Background = null; // Inherit from theme
 
@@ -102,18 +141,18 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         {
             Spacing = 4
         };
-        var flyoutScrollViewer = new ScrollViewer
+        _flyoutScrollViewer = new ScrollViewer
         {
             Content = _flyoutPanel,
             HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
             VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
         };
-        flyoutPaneContainer.Children.Add(flyoutScrollViewer);
+        flyoutPaneContainer.Children.Add(_flyoutScrollViewer);
 
         // Set up flyout content control
         _flyoutContentControl = new ContentControl
         {
-            Content = flyoutPaneContainer
+            Content = flyoutPaneGrid
         };
 
         _flyoutContainer.SetFlyoutContent(_flyoutContentControl);
@@ -132,6 +171,15 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         };
 
         _topBar.Background = null; // Inherit from theme
+
+        // Shadow border under the nav bar (initially hidden)
+        _topBarShadow = new Border
+        {
+            Height = 1,
+            Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(50, 0, 0, 0)),
+            IsVisible = false,
+            [DockPanel.DockProperty] = Dock.Top
+        };
 
         // Back button on the left (hidden by default)
         _backButton = new Avalonia.Controls.Button
@@ -164,6 +212,15 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         _hamburgerButton.Click += OnHamburgerButtonClick;
         _topBar.Children.Add(_hamburgerButton);
 
+        // TitleView control (for custom title content)
+        _titleViewControl = new ContentControl
+        {
+            IsVisible = false,
+            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
+        };
+        _topBar.Children.Add(_titleViewControl);
+
         // Title text in the center
         _titleTextBlock = new TextBlock
         {
@@ -176,6 +233,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         _topBar.Children.Add(_titleTextBlock);
 
         _mainContainer.Children.Add(_topBar);
+        _mainContainer.Children.Add(_topBarShadow);
 
         // Main content area
         _mainContentControl = new ContentControl
@@ -359,6 +417,142 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (handler.MauiContext != null)
         {
             handler.UpdateFlyoutItems();
+        }
+    }
+
+
+    public static void MapFlyoutHeight(ShellHandler handler, MauiShell shell)
+    {
+        if (handler._flyoutContainer != null && shell.FlyoutHeight > 0)
+        {
+            handler._flyoutContainer.FlyoutHeight = shell.FlyoutHeight;
+        }
+    }
+
+    public static void MapFlyoutBackgroundImage(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateFlyoutBackgroundImage();
+    }
+
+    public static void MapFlyoutBackdrop(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateFlyoutBackdrop();
+    }
+
+    public static void MapFlyoutContentTemplate(ShellHandler handler, MauiShell shell)
+    {
+        if (handler.MauiContext != null)
+        {
+            handler.UpdateFlyoutContent();
+        }
+    }
+
+    public static void MapFlyoutHeaderBehavior(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateFlyoutHeaderBehavior();
+    }
+
+    public static void MapFlyoutVerticalScrollMode(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateFlyoutVerticalScrollMode();
+    }
+
+    public static void MapMenuItemTemplate(ShellHandler handler, MauiShell shell)
+    {
+        if (handler.MauiContext != null)
+        {
+            handler.UpdateFlyoutItems();
+        }
+    }
+
+    public static void MapBackgroundColor(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateBackgroundColor();
+    }
+
+    public static void MapForegroundColor(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateForegroundColor();
+    }
+
+    public static void MapTitleColor(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateTitleColor();
+    }
+
+    public static void MapDisabledColor(ShellHandler handler, MauiShell shell)
+    {
+        // DisabledColor is used for styling disabled flyout items
+        handler.UpdateFlyoutItems();
+    }
+
+    public static void MapUnselectedColor(ShellHandler handler, MauiShell shell)
+    {
+        // UnselectedColor is used for styling unselected flyout items
+        handler.UpdateFlyoutItems();
+    }
+
+    public static void MapNavBarIsVisible(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateNavBarVisibility();
+    }
+
+    public static void MapNavBarHasShadow(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateNavBarShadow();
+    }
+
+    public static void MapTitleView(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateTitleView();
+    }
+
+    public static void MapTabBarIsVisible(ShellHandler handler, MauiShell shell)
+    {
+        // TabBar visibility is handled by ShellItemHandler
+        if (handler._currentItemHandler != null)
+        {
+            handler._currentItemHandler.UpdateTabBarVisibility();
+        }
+    }
+
+    public static void MapTabBarBackgroundColor(ShellHandler handler, MauiShell shell)
+    {
+        if (handler._currentItemHandler != null)
+        {
+            handler._currentItemHandler.UpdateTabBarBackgroundColor();
+        }
+    }
+
+    public static void MapTabBarForegroundColor(ShellHandler handler, MauiShell shell)
+    {
+        if (handler._currentItemHandler != null)
+        {
+            handler._currentItemHandler.UpdateTabBarForegroundColor();
+        }
+    }
+
+    public static void MapTabBarTitleColor(ShellHandler handler, MauiShell shell)
+    {
+        if (handler._currentItemHandler != null)
+        {
+            handler._currentItemHandler.UpdateTabBarTitleColor();
+        }
+    }
+
+    public static void MapTabBarDisabledColor(ShellHandler handler, MauiShell shell)
+    {
+        if (handler._currentItemHandler != null)
+        {
+            handler._currentItemHandler.UpdateTabBarDisabledColor();
+        }
+    }
+
+    public static void MapTabBarUnselectedColor(ShellHandler handler, MauiShell shell)
+    {
+        if (handler._currentItemHandler != null)
+        {
+            handler._currentItemHandler.UpdateTabBarUnselectedColor();
         }
     }
 
@@ -825,5 +1019,190 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             }
         }
         // For templates, the MAUI binding system handles updates automatically
+    }
+
+    private async void UpdateFlyoutBackgroundImage()
+    {
+        if (_flyoutBackgroundImage == null || VirtualView == null || MauiContext == null)
+            return;
+
+        var imageSource = VirtualView.FlyoutBackgroundImage;
+        if (imageSource == null)
+        {
+            _flyoutBackgroundImage.Source = null;
+            _flyoutBackgroundImage.IsVisible = false;
+            return;
+        }
+
+        try
+        {
+            var imageSourceServiceProvider = this.GetRequiredService<IImageSourceServiceProvider>();
+            var serviceSource = imageSourceServiceProvider.GetImageSourceService(imageSource.GetType());
+
+            if (serviceSource is IAvaloniaImageSourceService avaloniaService)
+            {
+                var result = await avaloniaService.GetImageAsync(imageSource, 1.0f);
+                if (result?.Value is global::Avalonia.Media.Imaging.Bitmap bitmap)
+                {
+                    _flyoutBackgroundImage.Source = bitmap;
+                    _flyoutBackgroundImage.IsVisible = true;
+
+                    // Apply aspect
+                    _flyoutBackgroundImage.Stretch = VirtualView.FlyoutBackgroundImageAspect switch
+                    {
+                        Microsoft.Maui.Aspect.AspectFill => Avalonia.Media.Stretch.UniformToFill,
+                        Microsoft.Maui.Aspect.AspectFit => Avalonia.Media.Stretch.Uniform,
+                        Microsoft.Maui.Aspect.Fill => Avalonia.Media.Stretch.Fill,
+                        Microsoft.Maui.Aspect.Center => Avalonia.Media.Stretch.None,
+                        _ => Avalonia.Media.Stretch.UniformToFill
+                    };
+                }
+            }
+        }
+        catch
+        {
+            _flyoutBackgroundImage.IsVisible = false;
+        }
+    }
+
+    private void UpdateFlyoutBackdrop()
+    {
+        if (_flyoutContainer == null || VirtualView == null)
+            return;
+
+        var backdrop = VirtualView.FlyoutBackdrop;
+        if (backdrop != null)
+        {
+            _flyoutContainer.FlyoutBackdrop = backdrop.ToPlatform();
+        }
+    }
+
+    private void UpdateFlyoutHeaderBehavior()
+    {
+        if (_flyoutHeaderControl == null || _flyoutScrollViewer == null || VirtualView == null)
+            return;
+
+        // FlyoutHeaderBehavior controls how the header scrolls with the flyout content
+        switch (VirtualView.FlyoutHeaderBehavior)
+        {
+            case FlyoutHeaderBehavior.Default:
+            case FlyoutHeaderBehavior.Fixed:
+                // Header stays fixed at top, only items scroll
+                _flyoutHeaderControl.SetValue(DockPanel.DockProperty, Dock.Top);
+                break;
+            case FlyoutHeaderBehavior.Scroll:
+            case FlyoutHeaderBehavior.CollapseOnScroll:
+                // In a more complete implementation, header would be inside the scroll viewer
+                // For now, treat similar to Fixed
+                _flyoutHeaderControl.SetValue(DockPanel.DockProperty, Dock.Top);
+                break;
+        }
+    }
+
+    private void UpdateFlyoutVerticalScrollMode()
+    {
+        if (_flyoutScrollViewer == null || VirtualView == null)
+            return;
+
+        _flyoutScrollViewer.VerticalScrollBarVisibility = VirtualView.FlyoutVerticalScrollMode switch
+        {
+            Microsoft.Maui.Controls.ScrollMode.Auto => Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
+            Microsoft.Maui.Controls.ScrollMode.Enabled => Avalonia.Controls.Primitives.ScrollBarVisibility.Visible,
+            Microsoft.Maui.Controls.ScrollMode.Disabled => Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+            _ => Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
+        };
+    }
+
+    private void UpdateBackgroundColor()
+    {
+        if (_mainContainer == null || VirtualView == null)
+            return;
+
+        var color = VirtualView.BackgroundColor;
+        if (color != null)
+        {
+            _mainContainer.Background = color.ToPlatform();
+        }
+        else
+        {
+            _mainContainer.ClearValue(DockPanel.BackgroundProperty);
+        }
+    }
+
+    private void UpdateForegroundColor()
+    {
+        // ForegroundColor affects text in the shell chrome (hamburger button, etc.)
+        // For now, we'll leave the default theme colors
+    }
+
+    private void UpdateTitleColor()
+    {
+        if (_titleTextBlock == null || VirtualView == null)
+            return;
+
+        // TitleColor is an attached property
+        var color = MauiShell.GetTitleColor(VirtualView);
+        if (color != null)
+        {
+            _titleTextBlock.Foreground = color.ToPlatform();
+        }
+        else
+        {
+            _titleTextBlock.ClearValue(TextBlock.ForegroundProperty);
+        }
+    }
+
+    private void UpdateNavBarVisibility()
+    {
+        if (_topBar == null || _topBarShadow == null || VirtualView == null)
+            return;
+
+        // Check current page's NavBarIsVisible attached property
+        var isVisible = MauiShell.GetNavBarIsVisible(VirtualView.CurrentPage ?? VirtualView);
+
+        _topBar.IsVisible = isVisible;
+        // Shadow visibility follows nav bar visibility (and NavBarHasShadow property)
+        if (!isVisible)
+        {
+            _topBarShadow.IsVisible = false;
+        }
+    }
+
+    private void UpdateNavBarShadow()
+    {
+        if (_topBarShadow == null || VirtualView == null)
+            return;
+
+        // Check current page's NavBarHasShadow attached property
+        var hasShadow = MauiShell.GetNavBarHasShadow(VirtualView.CurrentPage ?? VirtualView);
+        var navBarVisible = _topBar?.IsVisible ?? true;
+
+        _topBarShadow.IsVisible = hasShadow && navBarVisible;
+    }
+
+    private void UpdateTitleView()
+    {
+        if (_titleViewControl == null || _titleTextBlock == null || VirtualView == null || MauiContext == null)
+            return;
+
+        // Get TitleView from current page or shell
+        var titleView = MauiShell.GetTitleView(VirtualView.CurrentPage ?? VirtualView);
+
+        if (titleView != null)
+        {
+            var handler = ((IElement)titleView).ToHandler(MauiContext);
+            if (handler?.PlatformView is AvaloniaControl control)
+            {
+                _titleViewControl.Content = control;
+                _titleViewControl.IsVisible = true;
+                _titleTextBlock.IsVisible = false;
+            }
+        }
+        else
+        {
+            _titleViewControl.Content = null;
+            _titleViewControl.IsVisible = false;
+            _titleTextBlock.IsVisible = true;
+        }
     }
 }

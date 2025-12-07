@@ -28,6 +28,12 @@ public class FlyoutContainer : Panel
     public static readonly StyledProperty<FlyoutBehavior> FlyoutBehaviorProperty =
         AvaloniaProperty.Register<FlyoutContainer, FlyoutBehavior>(nameof(FlyoutBehavior), FlyoutBehavior.Default);
 
+    public static readonly StyledProperty<double> FlyoutHeightProperty =
+        AvaloniaProperty.Register<FlyoutContainer, double>(nameof(FlyoutHeight), -1);
+
+    public static readonly StyledProperty<IBrush?> FlyoutBackdropProperty =
+        AvaloniaProperty.Register<FlyoutContainer, IBrush?>(nameof(FlyoutBackdrop));
+
     public static readonly StyledProperty<bool> IsGestureEnabledProperty =
         AvaloniaProperty.Register<FlyoutContainer, bool>(nameof(IsGestureEnabled), true);
 
@@ -47,6 +53,18 @@ public class FlyoutContainer : Panel
     {
         get => GetValue(FlyoutBehaviorProperty);
         set => SetValue(FlyoutBehaviorProperty, value);
+    }
+
+    public double FlyoutHeight
+    {
+        get => GetValue(FlyoutHeightProperty);
+        set => SetValue(FlyoutHeightProperty, value);
+    }
+
+    public IBrush? FlyoutBackdrop
+    {
+        get => GetValue(FlyoutBackdropProperty);
+        set => SetValue(FlyoutBackdropProperty, value);
     }
 
     public bool IsGestureEnabled
@@ -77,6 +95,15 @@ public class FlyoutContainer : Panel
         // Setup property change handlers
         IsFlyoutOpenProperty.Changed.AddClassHandler<FlyoutContainer>((x, e) => x.OnIsFlyoutOpenChanged(e));
         FlyoutBehaviorProperty.Changed.AddClassHandler<FlyoutContainer>((x, e) => x.OnFlyoutBehaviorChanged(e));
+        FlyoutBackdropProperty.Changed.AddClassHandler<FlyoutContainer>((x, e) => x.OnFlyoutBackdropChanged(e));
+    }
+
+    private void OnFlyoutBackdropChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        if (_scrim != null && e.NewValue is IBrush backdrop)
+        {
+            _scrim.Background = backdrop;
+        }
     }
 
     public void SetFlyoutContent(Control? content)
@@ -159,6 +186,7 @@ public class FlyoutContainer : Panel
     protected override Size MeasureOverride(Size availableSize)
     {
         var flyoutWidth = FlyoutWidth;
+        var flyoutHeight = FlyoutHeight > 0 ? FlyoutHeight : availableSize.Height;
         var isSplitMode = IsSplitMode();
 
         // Update landscape/portrait state based on available size
@@ -173,10 +201,10 @@ public class FlyoutContainer : Panel
             // Scrim not used in split mode
             _scrim?.Measure(new Size(0, 0));
 
-            // Flyout gets its defined width
+            // Flyout gets its defined width and height
             if (_flyoutContent != null)
             {
-                var flyoutSize = new Size(flyoutWidth, availableSize.Height);
+                var flyoutSize = new Size(flyoutWidth, flyoutHeight);
                 _flyoutContent.Measure(flyoutSize);
             }
         }
@@ -191,7 +219,7 @@ public class FlyoutContainer : Panel
             // Measure flyout content
             if (_flyoutContent != null)
             {
-                var flyoutSize = new Size(flyoutWidth, availableSize.Height);
+                var flyoutSize = new Size(flyoutWidth, flyoutHeight);
                 _flyoutContent.Measure(flyoutSize);
             }
         }
@@ -202,6 +230,7 @@ public class FlyoutContainer : Panel
     protected override Size ArrangeOverride(Size finalSize)
     {
         var flyoutWidth = FlyoutWidth;
+        var flyoutHeight = FlyoutHeight > 0 ? FlyoutHeight : finalSize.Height;
         var isSplitMode = IsSplitMode();
 
         if (isSplitMode)
@@ -212,7 +241,7 @@ public class FlyoutContainer : Panel
             // Arrange flyout on the left
             if (_flyoutContent != null)
             {
-                var flyoutRect = new Rect(0, 0, flyoutWidth, finalSize.Height);
+                var flyoutRect = new Rect(0, 0, flyoutWidth, flyoutHeight);
                 _flyoutContent.Arrange(flyoutRect);
             }
 
@@ -248,7 +277,7 @@ public class FlyoutContainer : Panel
             // Arrange flyout content (positioned at 0, but transform will move it)
             if (_flyoutContent != null)
             {
-                var flyoutRect = new Rect(0, 0, flyoutWidth, finalSize.Height);
+                var flyoutRect = new Rect(0, 0, flyoutWidth, flyoutHeight);
                 _flyoutContent.Arrange(flyoutRect);
             }
         }

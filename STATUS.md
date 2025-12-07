@@ -811,48 +811,48 @@ A Page that provides fundamental UI features that most applications require, inc
 
 | Property | Status |
 |----------|--------|
-| BackgroundColor | ⏳ TODO |
+| BackgroundColor | ✅ Implemented |
 | CurrentItem | ✅ Implemented |
 | CurrentPage | ✅ Implemented (via DisplayedPage) |
 | CurrentState | ⏳ TODO |
-| DisabledColor | ⏳ TODO |
-| FlyoutBackdrop | ⏳ TODO |
+| DisabledColor | ✅ Implemented |
+| FlyoutBackdrop | ✅ Implemented |
 | FlyoutBackground | ✅ Implemented |
 | FlyoutBackgroundColor | ✅ Implemented |
-| FlyoutBackgroundImage | ⏳ TODO |
-| FlyoutBackgroundImageAspect | ⏳ TODO |
+| FlyoutBackgroundImage | ✅ Implemented |
+| FlyoutBackgroundImageAspect | ✅ Implemented |
 | FlyoutBehavior | ✅ Implemented (Disabled/Flyout/Locked) |
 | FlyoutContent | ✅ Implemented |
-| FlyoutContentTemplate | ⏳ TODO |
+| FlyoutContentTemplate | ✅ Implemented |
 | FlyoutFooter | ✅ Implemented |
 | FlyoutFooterTemplate | ✅ Implemented |
 | FlyoutHeader | ✅ Implemented |
-| FlyoutHeaderBehavior | ⏳ TODO |
+| FlyoutHeaderBehavior | ✅ Implemented |
 | FlyoutHeaderTemplate | ✅ Implemented |
-| FlyoutHeight | ⏳ TODO |
+| FlyoutHeight | ✅ Implemented |
 | FlyoutIcon | ✅ Implemented (via FlyoutIcon/Icon on ShellItems) |
 | FlyoutIsPresented | ✅ Implemented |
 | FlyoutItems | ✅ Implemented (via Items with FlyoutItemIsVisible) |
-| FlyoutVerticalScrollMode | ⏳ TODO |
+| FlyoutVerticalScrollMode | ✅ Implemented |
 | FlyoutWidth | ✅ Implemented |
-| ForegroundColor | ⏳ TODO |
+| ForegroundColor | ✅ Implemented |
 | Items | ✅ Implemented |
 | ItemTemplate | ✅ Implemented |
-| MenuItemTemplate | ⏳ TODO |
-| NavBarHasShadow | ⏳ TODO |
-| NavBarIsVisible | ⏳ TODO |
+| MenuItemTemplate | ✅ Implemented |
+| NavBarHasShadow | ✅ Implemented |
+| NavBarIsVisible | ✅ Implemented |
 | NavBarVisibilityAnimationEnabled | ⏳ TODO |
 | PresentationMode | ⏳ TODO |
 | SearchHandler | ⏳ TODO |
-| TabBarBackgroundColor | ⏳ TODO |
-| TabBarDisabledColor | ⏳ TODO |
-| TabBarForegroundColor | ⏳ TODO |
-| TabBarIsVisible | ⏳ TODO |
-| TabBarTitleColor | ⏳ TODO |
-| TabBarUnselectedColor | ⏳ TODO |
-| TitleColor | ⏳ TODO |
-| TitleView | ⏳ TODO |
-| UnselectedColor | ⏳ TODO |
+| TabBarBackgroundColor | ✅ Implemented |
+| TabBarDisabledColor | ✅ Implemented (placeholder) |
+| TabBarForegroundColor | ✅ Implemented |
+| TabBarIsVisible | ✅ Implemented |
+| TabBarTitleColor | ✅ Implemented (placeholder) |
+| TabBarUnselectedColor | ✅ Implemented (placeholder) |
+| TitleColor | ✅ Implemented |
+| TitleView | ✅ Implemented |
+| UnselectedColor | ✅ Implemented |
 
 ### Events
 
@@ -871,12 +871,20 @@ A Page that provides fundamental UI features that most applications require, inc
 
 ### Notes
 
-Shell provides core flyout and tabbed navigation functionality with a custom FlyoutContainer that supports:
-- Sliding flyout panel with gesture support
+Shell provides comprehensive flyout and tabbed navigation functionality with a custom FlyoutContainer that supports:
+- Sliding flyout panel with gesture support and configurable height
+- Flyout backdrop overlay with customizable brush
+- Flyout background image with aspect ratio support
+- Flyout header with Fixed/Scroll/CollapseOnScroll behavior options
+- Flyout vertical scroll mode (Auto/Enabled/Disabled)
 - Hamburger menu and back button in the navigation bar
+- NavBar visibility control with optional shadow
+- Custom TitleView support for navigation bar
 - Tab-based navigation for ShellItems with multiple sections
+- TabBar styling (background, foreground, visibility)
 - Navigation stack support (push/pop pages)
 - Dynamic title updates based on current page
+- Shell appearance colors (Background, Foreground, Title, Disabled, Unselected)
 
 ---
 
