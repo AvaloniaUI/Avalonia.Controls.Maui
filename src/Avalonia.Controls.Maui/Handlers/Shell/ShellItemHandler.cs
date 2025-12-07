@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using Avalonia.Controls;
+using Avalonia.Controls.Maui.Platform;
 using Avalonia.Layout;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -258,5 +259,111 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
             // Single section mode
             _contentControl.Content = control;
         }
+    }
+
+    /// <summary>
+    /// Updates the visibility of the tab bar based on the Shell's TabBarIsVisible attached property.
+    /// </summary>
+    public void UpdateTabBarVisibility()
+    {
+        if (_tabControl == null || VirtualView == null)
+            return;
+
+        // Get the Shell from the parent hierarchy
+        var shell = VirtualView.Parent as Microsoft.Maui.Controls.Shell;
+        if (shell == null)
+            return;
+
+        // Check TabBarIsVisible for the current page
+        var currentPage = shell.CurrentPage;
+        var isVisible = currentPage != null
+            ? Microsoft.Maui.Controls.Shell.GetTabBarIsVisible(currentPage)
+            : true;
+
+        // In Avalonia TabControl, we can hide the tab strip by setting TabStripPlacement
+        // or by changing the template. For now, we'll use visibility on each tab item's header.
+        // A full implementation would require a custom TabControl style.
+
+        // For simplicity, we'll set the entire tab strip to visible/hidden
+        // This requires accessing the tab strip part of the template
+        _tabControl.IsVisible = isVisible || !_showTabs;
+    }
+
+    /// <summary>
+    /// Updates the background color of the tab bar.
+    /// </summary>
+    public void UpdateTabBarBackgroundColor()
+    {
+        if (_tabControl == null || VirtualView == null)
+            return;
+
+        var shell = VirtualView.Parent as Microsoft.Maui.Controls.Shell;
+        if (shell == null)
+            return;
+
+        // TabBarBackgroundColor is an attached property
+        var color = Microsoft.Maui.Controls.Shell.GetTabBarBackgroundColor(shell);
+        if (color != null)
+        {
+            _tabControl.Background = color.ToPlatform();
+        }
+        else
+        {
+            _tabControl.ClearValue(TabControl.BackgroundProperty);
+        }
+    }
+
+    /// <summary>
+    /// Updates the foreground color of the tab bar.
+    /// </summary>
+    public void UpdateTabBarForegroundColor()
+    {
+        if (_tabControl == null || VirtualView == null)
+            return;
+
+        var shell = VirtualView.Parent as Microsoft.Maui.Controls.Shell;
+        if (shell == null)
+            return;
+
+        // TabBarForegroundColor is an attached property
+        var color = Microsoft.Maui.Controls.Shell.GetTabBarForegroundColor(shell);
+        if (color != null)
+        {
+            _tabControl.Foreground = color.ToPlatform();
+        }
+        else
+        {
+            _tabControl.ClearValue(TabControl.ForegroundProperty);
+        }
+    }
+
+    /// <summary>
+    /// Updates the title color of the tab bar (active tab text color).
+    /// </summary>
+    public void UpdateTabBarTitleColor()
+    {
+        // TabBarTitleColor applies to the selected tab's text
+        // This would require styling individual tab items
+        // For now, this is a placeholder that could be enhanced with custom styling
+    }
+
+    /// <summary>
+    /// Updates the disabled color of the tab bar.
+    /// </summary>
+    public void UpdateTabBarDisabledColor()
+    {
+        // TabBarDisabledColor applies to disabled tabs
+        // This would require styling individual tab items when disabled
+        // For now, this is a placeholder
+    }
+
+    /// <summary>
+    /// Updates the unselected color of the tab bar (inactive tab text color).
+    /// </summary>
+    public void UpdateTabBarUnselectedColor()
+    {
+        // TabBarUnselectedColor applies to unselected tabs' text
+        // This would require styling individual tab items
+        // For now, this is a placeholder that could be enhanced with custom styling
     }
 }

@@ -1,16 +1,22 @@
 using Avalonia.Interactivity;
-using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Input;
+using Avalonia.Controls.Maui.Services;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using PlatformView = Avalonia.Controls.Maui.Platform.MauiButton;
+using System.Threading;
+using System.Threading.Tasks;
+using PlatformView = Avalonia.Controls.Maui.MauiButton;
+using MButton = Microsoft.Maui.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
 public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
 {
+    private CancellationTokenSource? _imageSourceCts;
+    private ImageSourcePartLoader? _imageSourcePartLoader;
+
     public static IPropertyMapper<IButton, IButtonHandler> Mapper = new PropertyMapper<IButton, IButtonHandler>(ViewHandler.ViewMapper)
     {
         // IText properties
@@ -24,14 +30,15 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         // IButton properties
         [nameof(IButton.Background)] = MapBackground,
         [nameof(IButton.Padding)] = MapPadding,
+        [nameof(MButton.ContentLayout)] = MapContentLayout,
         
         // IButtonStroke properties
         [nameof(IButtonStroke.StrokeThickness)] = MapStrokeThickness,
         [nameof(IButtonStroke.StrokeColor)] = MapStrokeColor,
         [nameof(IButtonStroke.CornerRadius)] = MapCornerRadius,
         
-        // IImage properties
-        [nameof(IImage.Source)] = MapImageSource,
+        // Button image properties
+        [nameof(MButton.ImageSource)] = MapImageSource,
     };
 
     public static CommandMapper<IButton, IButtonHandler> CommandMapper = new(ViewCommandMapper);
@@ -51,7 +58,8 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
     {
     }
 
-    public ImageSourcePartLoader ImageSourceLoader => null!;
+    public ImageSourcePartLoader ImageSourceLoader =>
+        _imageSourcePartLoader ??= new ImageSourcePartLoader(new ButtonImageSourcePartSetter(this));
 
     IButton IButtonHandler.VirtualView => VirtualView;
 
@@ -135,13 +143,50 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdatePadding(handler.VirtualView);
     }
     
-    [NotImplemented("Implement proper image source loading when image infrastructure is ready")]
     public static void MapImageSource(IButtonHandler handler, IButton button)
+    {
+        if (handler is not ButtonHandler buttonHandler || handler.VirtualView is null)
+            return;
+
+        buttonHandler._imageSourceCts?.Cancel();
+        buttonHandler._imageSourceCts = null;
+
+        var imageSource = button switch
+        {
+            MButton mauiButton => mauiButton.ImageSource,
+            IImageSourcePart imagePart => imagePart.Source,
+            _ => null
+        };
+
+        if (imageSource == null)
+        {
+            if (handler.PlatformView is PlatformView pv)
+            {
+                pv.ImageSource = null;
+            }
+            return;
+        }
+
+        var cts = new CancellationTokenSource();
+        buttonHandler._imageSourceCts = cts;
+        _ = buttonHandler.LoadImageSourceAsync(imageSource, cts.Token);
+    }
+
+    public static void MapContentLayout(IButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
 
-        platformView.UpdateImageSource(handler.VirtualView);
+        var layout = button switch
+        {
+            MButton mauiButton => mauiButton.ContentLayout,
+            _ => null
+        };
+
+        if (layout is MButton.ButtonContentLayout value)
+        {
+            platformView.UpdateContentLayout(value);
+        }
     }
 
     protected override void ConnectHandler(PlatformView platformView)
@@ -158,6 +203,8 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.RemoveHandler(InputElement.PointerPressedEvent, OnPointerPressed);
         platformView.RemoveHandler(InputElement.PointerReleasedEvent, OnPointerReleased);
         platformView.Click -= OnClick;
+        _imageSourceCts?.Cancel();
+        _imageSourceCts = null;
         
         base.DisconnectHandler(platformView);
     }
@@ -183,6 +230,52 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         if (VirtualView is IButton button)
         {
             button.Released();
+        }
+    }
+
+    private async Task LoadImageSourceAsync(IImageSource imageSource, CancellationToken token)
+    {
+        try
+        {
+            var provider = this.GetRequiredService<IImageSourceServiceProvider>();
+            if (provider.GetImageSourceService(imageSource.GetType()) is IAvaloniaImageSourceService service)
+            {
+                var result = await service.GetImageAsync(imageSource, 1.0f, token);
+                if (token.IsCancellationRequested)
+                    return;
+
+                if (PlatformView is PlatformView platformView)
+                {
+                    platformView.ImageSource = result?.Value as Avalonia.Media.IImage;
+                }
+            }
+            else if (PlatformView is PlatformView platformView)
+            {
+                platformView.ImageSource = null;
+            }
+        }
+        catch
+        {
+            if (PlatformView is PlatformView platformView)
+            {
+                platformView.ImageSource = null;
+            }
+        }
+    }
+
+    partial class ButtonImageSourcePartSetter : ImageSourcePartSetter<IButtonHandler>
+    {
+        public ButtonImageSourcePartSetter(IButtonHandler handler)
+            : base(handler)
+        {
+        }
+
+        public override void SetImageSource(object? platformImage)
+        {
+            if (Handler?.PlatformView is PlatformView button)
+            {
+                button.ImageSource = platformImage as Avalonia.Media.IImage;
+            }
         }
     }
 }

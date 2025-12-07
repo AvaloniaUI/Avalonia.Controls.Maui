@@ -3,6 +3,51 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ControlGallery.Pages.ImagePage"
              Title="Image">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Image Background Colors -->
+            <Color x:Key="LightImageBackground">#F0F0F0</Color>
+            <Color x:Key="DarkImageBackground">#2a2a2a</Color>
+
+            <!-- Colored Image Backgrounds for Aspect Modes -->
+            <Color x:Key="LightGreenTint">#E8F5E9</Color>
+            <Color x:Key="DarkGreenTint">#1b3a1f</Color>
+
+            <Color x:Key="LightOrangeTint">#FFF3E0</Color>
+            <Color x:Key="DarkOrangeTint">#3d2a1a</Color>
+
+            <Color x:Key="LightBlueTint">#E3F2FD</Color>
+            <Color x:Key="DarkBlueTint">#1a2a3d</Color>
+
+            <Color x:Key="LightPurpleTint">#F3E5F5</Color>
+            <Color x:Key="DarkPurpleTint">#2d1a3d</Color>
+
+            <Color x:Key="LightPinkTint">#FCE4EC</Color>
+            <Color x:Key="DarkPinkTint">#3d1a2d</Color>
+
+            <Color x:Key="LightCyanTint">#E0F2F1</Color>
+            <Color x:Key="DarkCyanTint">#1a3d3a</Color>
+
+            <Color x:Key="LightYellowTint">#FFF9C4</Color>
+            <Color x:Key="DarkYellowTint">#3d3a1a</Color>
+
+            <Color x:Key="LightBlueTint2">#E1F5FE</Color>
+            <Color x:Key="DarkBlueTint2">#1a2d3d</Color>
+
+            <!-- Gallery Colors -->
+            <Color x:Key="LightRedTint">#FFEBEE</Color>
+            <Color x:Key="DarkRedTint">#3d1a1a</Color>
+
+            <Color x:Key="LightIndigoTint">#E8EAF6</Color>
+            <Color x:Key="DarkIndigoTint">#1a1a3d</Color>
+
+            <Color x:Key="LightCyanTint2">#E0F7FA</Color>
+            <Color x:Key="DarkCyanTint2">#1a3a3d</Color>
+
+            <Color x:Key="LightLimeTint">#F1F8E9</Color>
+            <Color x:Key="DarkLimeTint">#2a3d1a</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="24">
@@ -28,7 +73,7 @@
                            Source="dotnet_bot.png"
                            Aspect="AspectFit"
                            HeightRequest="200"
-                           BackgroundColor="#F0F0F0" />
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightImageBackground}, Dark={StaticResource DarkImageBackground}}" />
                 </VerticalStackLayout>
             </Border>
 
@@ -48,7 +93,7 @@
                            Source="https://framerusercontent.com/images/9tXJ0X4yPgCHwR0ZXbMZekNnR18.png"
                            Aspect="AspectFit"
                            HeightRequest="200"
-                           BackgroundColor="#F0F0F0" />
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightImageBackground}, Dark={StaticResource DarkImageBackground}}" />
                     <Label x:Name="UriStatusLabel"
                            Text="Status: Loading..."
                            FontSize="12"
@@ -70,7 +115,7 @@
                     <Image Source="dotnet_bot.png"
                            Aspect="AspectFit"
                            HeightRequest="150"
-                           BackgroundColor="#E8F5E9" />
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightGreenTint}, Dark={StaticResource DarkGreenTint}}" />
 
                     <Label Text="AspectFill - Maintains aspect ratio, fills bounds"
                            FontSize="12"
@@ -78,7 +123,7 @@
                     <Image Source="dotnet_bot.png"
                            Aspect="AspectFill"
                            HeightRequest="150"
-                           BackgroundColor="#FFF3E0" />
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightOrangeTint}, Dark={StaticResource DarkOrangeTint}}" />
 
                     <Label Text="Fill - Stretches to fill bounds"
                            FontSize="12"
@@ -86,7 +131,7 @@
                     <Image Source="dotnet_bot.png"
                            Aspect="Fill"
                            HeightRequest="150"
-                           BackgroundColor="#E3F2FD" />
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightBlueTint}, Dark={StaticResource DarkBlueTint}}" />
 
                     <Label Text="Center - Centers without scaling"
                            FontSize="12"
@@ -94,7 +139,7 @@
                     <Image Source="dotnet_bot.png"
                            Aspect="Center"
                            HeightRequest="150"
-                           BackgroundColor="#F3E5F5" />
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightPurpleTint}, Dark={StaticResource DarkPurpleTint}}" />
                 </VerticalStackLayout>
             </Border>
 
@@ -107,25 +152,33 @@
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Interactive Aspect Switcher"
                            FontAttributes="Bold" />
-                    <Picker x:Name="AspectPicker"
-                            Title="Select Aspect"
-                            SelectedIndexChanged="OnAspectChanged">
-                        <Picker.Items>
-                            <x:String>AspectFit</x:String>
-                            <x:String>AspectFill</x:String>
-                            <x:String>Fill</x:String>
-                            <x:String>Center</x:String>
-                        </Picker.Items>
-                    </Picker>
+                    <Label Text="Click buttons to change the aspect mode"
+                           FontSize="12"
+                           TextColor="Gray" />
+                    <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                        <Button Text="AspectFit"
+                                Clicked="OnAspectButtonClicked"
+                                CommandParameter="AspectFit" />
+                        <Button Text="AspectFill"
+                                Clicked="OnAspectButtonClicked"
+                                CommandParameter="AspectFill" />
+                        <Button Text="Fill"
+                                Clicked="OnAspectButtonClicked"
+                                CommandParameter="Fill" />
+                        <Button Text="Center"
+                                Clicked="OnAspectButtonClicked"
+                                CommandParameter="Center" />
+                    </HorizontalStackLayout>
                     <Image x:Name="InteractiveImage"
                            Source="dotnet_bot.png"
                            Aspect="AspectFit"
                            HeightRequest="200"
-                           BackgroundColor="#FCE4EC" />
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightPinkTint}, Dark={StaticResource DarkPinkTint}}" />
                     <Label x:Name="AspectStatusLabel"
                            Text="Current Aspect: AspectFit"
                            FontAttributes="Italic"
-                           FontSize="12" />
+                           FontSize="12"
+                           HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Border>
 
@@ -150,7 +203,7 @@
                            Source="dotnet_bot.png"
                            Aspect="AspectFit"
                            HeightRequest="150"
-                           BackgroundColor="#E0F2F1" />
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightCyanTint}, Dark={StaticResource DarkCyanTint}}" />
                 </VerticalStackLayout>
             </Border>
 
@@ -169,7 +222,7 @@
                     <Image x:Name="DynamicImage"
                            Aspect="AspectFit"
                            HeightRequest="200"
-                           BackgroundColor="#FFF9C4" />
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightYellowTint}, Dark={StaticResource DarkYellowTint}}" />
                     <Label x:Name="DynamicStatusLabel"
                            FontSize="12"
                            FontAttributes="Italic"
@@ -208,7 +261,7 @@
                            Aspect="AspectFit"
                            HeightRequest="200"
                            IsAnimationPlaying="True"
-                           BackgroundColor="#E1F5FE" />
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightBlueTint2}, Dark={StaticResource DarkBlueTint2}}" />
                     <HorizontalStackLayout Spacing="12">
                         <Button Text="Toggle Animation"
                                 Clicked="OnToggleGifAnimation" />
@@ -235,22 +288,22 @@
                           RowSpacing="8">
                         <Image Source="https://picsum.photos/200/200?random=1"
                                Aspect="AspectFill"
-                               BackgroundColor="#FFEBEE"
+                               BackgroundColor="{AppThemeBinding Light={StaticResource LightRedTint}, Dark={StaticResource DarkRedTint}}"
                                Grid.Row="0"
                                Grid.Column="0" />
                         <Image Source="https://picsum.photos/200/200?random=2"
                                Aspect="AspectFill"
-                               BackgroundColor="#E8EAF6"
+                               BackgroundColor="{AppThemeBinding Light={StaticResource LightIndigoTint}, Dark={StaticResource DarkIndigoTint}}"
                                Grid.Row="0"
                                Grid.Column="1" />
                         <Image Source="https://picsum.photos/200/200?random=3"
                                Aspect="AspectFill"
-                               BackgroundColor="#E0F7FA"
+                               BackgroundColor="{AppThemeBinding Light={StaticResource LightCyanTint2}, Dark={StaticResource DarkCyanTint2}}"
                                Grid.Row="1"
                                Grid.Column="0" />
                         <Image Source="https://picsum.photos/200/200?random=4"
                                Aspect="AspectFill"
-                               BackgroundColor="#F1F8E9"
+                               BackgroundColor="{AppThemeBinding Light={StaticResource LightLimeTint}, Dark={StaticResource DarkLimeTint}}"
                                Grid.Row="1"
                                Grid.Column="1" />
                     </Grid>

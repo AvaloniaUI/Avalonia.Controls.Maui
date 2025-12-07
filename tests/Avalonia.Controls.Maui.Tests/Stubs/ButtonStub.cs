@@ -1,5 +1,6 @@
 using Microsoft.Maui;
 using MauiGraphics = Microsoft.Maui.Graphics;
+using MButton = Microsoft.Maui.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Tests.Stubs;
 
@@ -18,6 +19,7 @@ public class ButtonStub : StubBase, IButton, IText, ITextStyle, IPadding, IButto
     private int _cornerRadius;
     private IImageSource? _imageSource;
     private MauiGraphics.Paint? _background;
+    private MButton.ButtonContentLayout _contentLayout = new(MButton.ButtonContentLayout.ImagePosition.Left, 10);
 
     // Event counters for testing
     public int ClickedCount { get; private set; }
@@ -111,6 +113,12 @@ public class ButtonStub : StubBase, IButton, IText, ITextStyle, IPadding, IButto
     public void UpdateIsLoading(bool isLoading)
     {
         // Hook for testing image loading state
+    }
+
+    public MButton.ButtonContentLayout ContentLayout
+    {
+        get => _contentLayout;
+        set => SetProperty(ref _contentLayout, value);
     }
 
     IImageSource? IImageSourcePart.Source => ImageSource;

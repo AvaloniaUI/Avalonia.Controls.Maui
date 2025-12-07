@@ -64,12 +64,12 @@ Displays text and responds to a tap or click that directs the app to carry out a
 | CharacterSpacing | ✅ Implemented |
 | Command | ✅ Implemented |
 | CommandParameter | ✅ Implemented |
-| ContentLayout | ⏳ TODO |
+| ContentLayout | ✅ Implemented |
 | CornerRadius | ✅ Implemented |
 | FontAttributes | ⏳ TODO |
 | FontFamily | ⏳ TODO |
 | FontSize | ✅ Implemented |
-| ImageSource | ⏳ TODO |
+| ImageSource | ✅ Implemented |
 | IsPressed | ⏳ TODO |
 | LineBreakMode | ⏳ TODO |
 | Padding | ✅ Implemented |
@@ -136,21 +136,34 @@ Displays a scrollable list of selectable data items, using different layout spec
 
 | Property | Status |
 |----------|--------|
-| EmptyView | ⏳ TODO |
-| EmptyViewTemplate | ⏳ TODO |
-| Footer | ⏳ TODO |
-| FooterTemplate | ⏳ TODO |
-| Header | ⏳ TODO |
-| HeaderTemplate | ⏳ TODO |
-| ItemsLayout | ⏳ TODO |
-| ItemsSource | ⏳ TODO |
-| ItemTemplate | ⏳ TODO |
-| ItemsUpdatingScrollMode | ⏳ TODO |
-| RemainingItemsThreshold | ⏳ TODO |
+| EmptyView | ✅ Implemented |
+| EmptyViewTemplate | ✅ Implemented |
+| Footer | ✅ Implemented |
+| FooterTemplate | ✅ Implemented |
+| Header | ✅ Implemented |
+| HeaderTemplate | ✅ Implemented |
+| ItemsLayout | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| ItemsUpdatingScrollMode | ✅ Implemented |
+| RemainingItemsThreshold | ✅ Implemented |
 | RemainingItemsThresholdReachedCommand | ⏳ TODO |
-| SelectedItem | ⏳ TODO |
-| SelectedItems | ⏳ TODO |
-| SelectionMode | ⏳ TODO |
+| SelectedItem | ✅ Implemented |
+| SelectedItems | ✅ Implemented |
+| SelectionMode | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| RemainingItemsThresholdReached | ✅ Implemented |
+| SelectionChanged | ✅ Implemented |
+
+### Notes
+
+- Supports LinearItemsLayout (Vertical/Horizontal) and GridItemsLayout
+- Grouping supported via IsGrouped, GroupHeaderTemplate, GroupFooterTemplate
+- Custom CollectionViewStackPanel ensures items fill cross-axis in horizontal layouts
 
 ---
 
@@ -345,22 +358,22 @@ Displays an image and responds to a tap or click that directs an app to carry ou
 
 | Property | Status |
 |----------|--------|
-| Source | ⏳ TODO |
-| Aspect | ⏳ TODO |
-| BorderColor | ⏳ TODO |
-| BorderWidth | ⏳ TODO |
-| Command | ⏳ TODO |
-| CommandParameter | ⏳ TODO |
-| CornerRadius | ⏳ TODO |
-| Padding | ⏳ TODO |
+| Source | ✅ Implemented |
+| Aspect | ✅ Implemented |
+| BorderColor | ✅ Implemented |
+| BorderWidth | ✅ Implemented |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
+| CornerRadius | ✅ Implemented |
+| Padding | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Clicked | ⏳ TODO |
-| Pressed | ⏳ TODO |
-| Released | ⏳ TODO |
+| Clicked | ✅ Implemented |
+| Pressed | ✅ Implemented |
+| Released | ✅ Implemented |
 
 ---
 
@@ -392,23 +405,23 @@ Displays single-line and multi-line text.
 
 | Property | Status |
 |----------|--------|
-| CharacterSpacing | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
+| CharacterSpacing | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
 | FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| FormattedText | ⏳ TODO |
-| HorizontalTextAlignment | ⏳ TODO |
-| LineBreakMode | ⏳ TODO |
-| LineHeight | ⏳ TODO |
-| MaxLines | ⏳ TODO |
-| Padding | ⏳ TODO |
-| Text | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| TextDecorations | ⏳ TODO |
-| TextTransform | ⏳ TODO |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| FormattedText | ✅ Implemented |
+| HorizontalTextAlignment | ✅ Implemented |
+| LineBreakMode | ✅ Implemented |
+| LineHeight | ✅ Implemented |
+| MaxLines | ✅ Implemented |
+| Padding | ✅ Implemented |
+| Text | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| TextDecorations | ✅ Implemented |
+| TextTransform | ✅ Implemented |
 | TextType | ⏳ TODO |
-| VerticalTextAlignment | ⏳ TODO |
+| VerticalTextAlignment | ✅ Implemented |
 
 ---
 
@@ -506,36 +519,36 @@ A Page that manages the navigation and user-experience of a stack of other pages
 
 | Property | Status |
 |----------|--------|
-| BarBackground | ⏳ TODO |
-| BarBackgroundColor | ⏳ TODO |
-| BarTextColor | ⏳ TODO |
-| CurrentPage | ⏳ TODO |
+| BarBackground | ✅ Done |
+| BarBackgroundColor | ✅ Done |
+| BarTextColor | ✅ Done |
+| CurrentPage | ✅ Done |
 | RootPage | ⏳ TODO |
-| HasBackButton | ⏳ TODO |
-| HasNavigationBar | ⏳ TODO |
-| BackButtonTitle | ⏳ TODO |
-| TitleView | ⏳ TODO |
-| IconColor | ⏳ TODO |
-| TitleIconImageSource | ⏳ TODO |
+| HasBackButton | ✅ Done |
+| HasNavigationBar | ✅ Done |
+| BackButtonTitle | ✅ Done |
+| TitleView | ✅ Done |
+| IconColor | ✅ Done |
+| TitleIconImageSource | ✅ Done |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Popped | ⏳ TODO |
-| PoppedToRoot | ⏳ TODO |
-| Pushed | ⏳ TODO |
+| Popped | ✅ Done (handled by MAUI NavigationPage) |
+| PoppedToRoot | ✅ Done (handled by MAUI NavigationPage) |
+| Pushed | ✅ Done (handled by MAUI NavigationPage) |
 
 ### Methods
 
 | Method | Status |
 |--------|--------|
-| PopAsync | ⏳ TODO |
-| PopAsync(bool) | ⏳ TODO |
-| PopToRootAsync | ⏳ TODO |
-| PopToRootAsync(bool) | ⏳ TODO |
-| PushAsync | ⏳ TODO |
-| PushAsync(bool) | ⏳ TODO |
+| PopAsync | ✅ Done |
+| PopAsync(bool) | ✅ Done |
+| PopToRootAsync | ✅ Done (via MAUI NavigationPage) |
+| PopToRootAsync(bool) | ✅ Done (via MAUI NavigationPage) |
+| PushAsync | ✅ Done |
+| PushAsync(bool) | ✅ Done |
 
 ---
 
@@ -739,19 +752,19 @@ Provides scrolling of its content, which is typically a layout.
 
 | Property | Status |
 |----------|--------|
-| Content | ⏳ TODO |
-| ContentSize | ⏳ TODO |
-| HorizontalScrollBarVisibility | ⏳ TODO |
-| Orientation | ⏳ TODO |
-| ScrollX | ⏳ TODO |
-| ScrollY | ⏳ TODO |
-| VerticalScrollBarVisibility | ⏳ TODO |
+| Content | ✅ Implemented |
+| ContentSize | ✅ Implemented |
+| HorizontalScrollBarVisibility | ✅ Implemented |
+| Orientation | ✅ Implemented |
+| ScrollX | ✅ Implemented |
+| ScrollY | ✅ Implemented |
+| VerticalScrollBarVisibility | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Scrolled | ⏳ TODO |
+| Scrolled | ✅ Implemented |
 
 ---
 
@@ -797,48 +810,48 @@ A Page that provides fundamental UI features that most applications require, inc
 
 | Property | Status |
 |----------|--------|
-| BackgroundColor | ⏳ TODO |
-| CurrentItem | ⏳ TODO |
-| CurrentPage | ⏳ TODO |
+| BackgroundColor | ✅ Implemented |
+| CurrentItem | ✅ Implemented |
+| CurrentPage | ✅ Implemented (via DisplayedPage) |
 | CurrentState | ⏳ TODO |
-| DisabledColor | ⏳ TODO |
-| FlyoutBackdrop | ⏳ TODO |
-| FlyoutBackground | ⏳ TODO |
-| FlyoutBackgroundColor | ⏳ TODO |
-| FlyoutBackgroundImage | ⏳ TODO |
-| FlyoutBackgroundImageAspect | ⏳ TODO |
-| FlyoutBehavior | ⏳ TODO |
-| FlyoutContent | ⏳ TODO |
-| FlyoutContentTemplate | ⏳ TODO |
-| FlyoutFooter | ⏳ TODO |
-| FlyoutFooterTemplate | ⏳ TODO |
-| FlyoutHeader | ⏳ TODO |
-| FlyoutHeaderBehavior | ⏳ TODO |
-| FlyoutHeaderTemplate | ⏳ TODO |
-| FlyoutHeight | ⏳ TODO |
-| FlyoutIcon | ⏳ TODO |
-| FlyoutIsPresented | ⏳ TODO |
-| FlyoutItems | ⏳ TODO |
-| FlyoutVerticalScrollMode | ⏳ TODO |
-| FlyoutWidth | ⏳ TODO |
-| ForegroundColor | ⏳ TODO |
-| Items | ⏳ TODO |
-| ItemTemplate | ⏳ TODO |
-| MenuItemTemplate | ⏳ TODO |
-| NavBarHasShadow | ⏳ TODO |
-| NavBarIsVisible | ⏳ TODO |
+| DisabledColor | ✅ Implemented |
+| FlyoutBackdrop | ✅ Implemented |
+| FlyoutBackground | ✅ Implemented |
+| FlyoutBackgroundColor | ✅ Implemented |
+| FlyoutBackgroundImage | ✅ Implemented |
+| FlyoutBackgroundImageAspect | ✅ Implemented |
+| FlyoutBehavior | ✅ Implemented (Disabled/Flyout/Locked) |
+| FlyoutContent | ✅ Implemented |
+| FlyoutContentTemplate | ✅ Implemented |
+| FlyoutFooter | ✅ Implemented |
+| FlyoutFooterTemplate | ✅ Implemented |
+| FlyoutHeader | ✅ Implemented |
+| FlyoutHeaderBehavior | ✅ Implemented |
+| FlyoutHeaderTemplate | ✅ Implemented |
+| FlyoutHeight | ✅ Implemented |
+| FlyoutIcon | ✅ Implemented (via FlyoutIcon/Icon on ShellItems) |
+| FlyoutIsPresented | ✅ Implemented |
+| FlyoutItems | ✅ Implemented (via Items with FlyoutItemIsVisible) |
+| FlyoutVerticalScrollMode | ✅ Implemented |
+| FlyoutWidth | ✅ Implemented |
+| ForegroundColor | ✅ Implemented |
+| Items | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| MenuItemTemplate | ✅ Implemented |
+| NavBarHasShadow | ✅ Implemented |
+| NavBarIsVisible | ✅ Implemented |
 | NavBarVisibilityAnimationEnabled | ⏳ TODO |
 | PresentationMode | ⏳ TODO |
 | SearchHandler | ⏳ TODO |
-| TabBarBackgroundColor | ⏳ TODO |
-| TabBarDisabledColor | ⏳ TODO |
-| TabBarForegroundColor | ⏳ TODO |
-| TabBarIsVisible | ⏳ TODO |
-| TabBarTitleColor | ⏳ TODO |
-| TabBarUnselectedColor | ⏳ TODO |
-| TitleColor | ⏳ TODO |
-| TitleView | ⏳ TODO |
-| UnselectedColor | ⏳ TODO |
+| TabBarBackgroundColor | ✅ Implemented |
+| TabBarDisabledColor | ✅ Implemented (placeholder) |
+| TabBarForegroundColor | ✅ Implemented |
+| TabBarIsVisible | ✅ Implemented |
+| TabBarTitleColor | ✅ Implemented (placeholder) |
+| TabBarUnselectedColor | ✅ Implemented (placeholder) |
+| TitleColor | ✅ Implemented |
+| TitleView | ✅ Implemented |
+| UnselectedColor | ✅ Implemented |
 
 ### Events
 
@@ -854,6 +867,23 @@ A Page that provides fundamental UI features that most applications require, inc
 | GoToAsync | ⏳ TODO |
 | GoToAsync(bool) | ⏳ TODO |
 | GoToAsync(ShellNavigationState) | ⏳ TODO |
+
+### Notes
+
+Shell provides comprehensive flyout and tabbed navigation functionality with a custom FlyoutContainer that supports:
+- Sliding flyout panel with gesture support and configurable height
+- Flyout backdrop overlay with customizable brush
+- Flyout background image with aspect ratio support
+- Flyout header with Fixed/Scroll/CollapseOnScroll behavior options
+- Flyout vertical scroll mode (Auto/Enabled/Disabled)
+- Hamburger menu and back button in the navigation bar
+- NavBar visibility control with optional shadow
+- Custom TitleView support for navigation bar
+- Tab-based navigation for ShellItems with multiple sections
+- TabBar styling (background, foreground, visibility)
+- Navigation stack support (push/pop pages)
+- Dynamic title updates based on current page
+- Shell appearance colors (Background, Foreground, Title, Disabled, Unselected)
 
 ---
 
@@ -958,6 +988,35 @@ Displays a table of scrollable items that can be grouped into sections.
 | Root | ⏳ TODO |
 | HasUnevenRows | ⏳ TODO |
 | RowHeight | ⏳ TODO |
+
+---
+
+## TitleBar
+
+A View control that provides title bar functionality for a window. The standard title bar height is 32px but can be set to a larger value. The title bar can be hidden by setting the IsVisible property, which will cause the window content to be displayed in the title bar region.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Icon | ✅ Done (via TemplatedView) |
+| Title | ✅ Done |
+| Subtitle | ✅ Done |
+| ForegroundColor | ✅ Done (via TemplatedView) |
+| LeadingContent | ✅ Done (via TemplatedView) |
+| Content | ✅ Done (via TemplatedView) |
+| TrailingContent | ✅ Done (via TemplatedView) |
+| PassthroughElements | ✅ Done |
+
+### Notes
+
+- TitleBar is a TemplatedView that renders its own content
+- Integrated with Window.TitleBar property
+- Supports active/inactive visual states for window focus changes
+- Custom title bar content is rendered through the TemplatedView pattern
+- Window dragging is supported by clicking on non-interactive areas of the TitleBar
+- PassthroughElements (including LeadingContent, Content, TrailingContent) receive input directly instead of triggering window drag
+- Uses Avalonia's ExtendClientAreaToDecorationsHint for custom title bar support with system window buttons
 
 ---
 

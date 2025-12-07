@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.ScrollViewPage"
+             x:DataType="pages:ScrollViewPage"
+             Title="ScrollView Page">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="16">
+            <Label Text="ScrollView Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- Vertical scrolling content with ScrollX/ScrollY -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    StrokeThickness="1"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Vertical scrolling content (ScrollX/ScrollY)" FontAttributes="Bold"/>
+                    <ScrollView x:Name="DetectScrollView"
+                                HeightRequest="140"
+                                Scrolled="OnDetectScrollViewScrolled">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Drag vertically" FontAttributes="Italic"/>
+                            <BoxView HeightRequest="40" Color="#FFB3E5FC"/>
+                            <BoxView HeightRequest="40" Color="#FFC8E6C9"/>
+                            <BoxView HeightRequest="40" Color="#FFFFF9C4"/>
+                            <BoxView HeightRequest="40" Color="#FFFFCCBC"/>
+                            <BoxView HeightRequest="40" Color="#FFD1C4E9"/>
+                            <BoxView HeightRequest="40" Color="#FFB2DFDB"/>
+                            <BoxView HeightRequest="40" Color="#FFFFF59D"/>
+                        </VerticalStackLayout>
+                    </ScrollView>
+                    <Label x:Name="VerticalScrollStatusLabel"
+                           Text="Scrolled to: (0, 0)"
+                           FontSize="14"/>
+                    <Label x:Name="VerticalScrollXYLabel"
+                           Text="ScrollX: 0, ScrollY: 0"
+                           FontSize="14" />
+                    <Label x:Name="VerticalContentSizeLabel"
+                           Text="Content size: (0, 0)"
+                           FontSize="14"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Horizontal scrolling content with ScrollX/ScrollY -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    StrokeThickness="1"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Horizontal scrolling content (ScrollX/ScrollY)" FontAttributes="Bold"/>
+                    <ScrollView x:Name="HorizontalDetectScrollView"
+                                Orientation="Horizontal"
+                                HeightRequest="120"
+                                HorizontalScrollBarVisibility="Always"
+                                VerticalScrollBarVisibility="Never"
+                                Scrolled="OnHorizontalDetectScrollViewScrolled">
+                        <HorizontalStackLayout Spacing="16" Padding="10">
+                            <Label Text="Drag horizontally" FontAttributes="Italic"/>
+                        <BoxView WidthRequest="140" Color="#FFBBDEFB"/>
+                        <BoxView WidthRequest="140" Color="#FF80CBC4"/>
+                        <BoxView WidthRequest="140" Color="#FFA5D6A7"/>
+                        <BoxView WidthRequest="140" Color="#FFFFE082"/>
+                        <BoxView WidthRequest="140" Color="#FFFFAB91"/>
+                        <BoxView WidthRequest="140" Color="#FFD1C4E9"/>
+                        <BoxView WidthRequest="140" Color="#FFFFCDD2"/>
+                    </HorizontalStackLayout>
+                    </ScrollView>
+                <Label x:Name="HorizontalStatusLabel"
+                       Text="Scrolled to: (0, 0)"
+                       FontSize="14"/>
+                <Label x:Name="HorizontalScrollXYLabel"
+                       Text="ScrollX: 0, ScrollY: 0"
+                       FontSize="14"/>
+                <Label x:Name="HorizontalContentSizeLabel"
+                       Text="Content size: (0, 0)"
+                       FontSize="14"/>
+            </VerticalStackLayout>
+        </Border>
+            
+            <!-- Change orientation at runtime -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    StrokeThickness="1"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Change orientation at runtime" FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Vertical" Clicked="OnOrientationButtonClicked"/>
+                        <Button Text="Horizontal" Clicked="OnOrientationButtonClicked"/>
+                        <Button Text="Both" Clicked="OnOrientationButtonClicked"/>
+                        <Button Text="Neither" Clicked="OnOrientationButtonClicked"/>
+                    </HorizontalStackLayout>
+                    <ScrollView x:Name="DynamicOrientationScrollView"
+                                HeightRequest="140"
+                                Orientation="Vertical"
+                                VerticalScrollBarVisibility="Always"
+                                HorizontalScrollBarVisibility="Default">
+                        <StackLayout x:Name="DynamicOrientationStack"
+                                     Orientation="Vertical"
+                                     Spacing="12"
+                                     Padding="10">
+                            <Label Text="This content will adapt to the orientation."
+                                   FontAttributes="Italic"/>
+                            <BoxView HeightRequest="120" WidthRequest="120" Color="#FFB2DFDB"/>
+                            <BoxView HeightRequest="120" WidthRequest="120" Color="#FFF8BBD0"/>
+                            <BoxView HeightRequest="120" WidthRequest="120" Color="#FFB3E5FC"/>
+                            <BoxView HeightRequest="120" WidthRequest="120" Color="#FFFFF9C4"/>
+                            <BoxView HeightRequest="120" WidthRequest="120" Color="#FFFFCCBC"/>
+                            <BoxView HeightRequest="120" WidthRequest="120" Color="#FFBBDEFB"/>
+                            <BoxView HeightRequest="120" WidthRequest="120" Color="#FF80CBC4"/>
+                            <BoxView HeightRequest="120" WidthRequest="120" Color="#FFA5D6A7"/>
+                            <BoxView HeightRequest="120" WidthRequest="120" Color="#FFFFE082"/>
+                            <BoxView HeightRequest="120" WidthRequest="120" Color="#FFFFAB91"/>
+                        </StackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Scroll programmatically -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    StrokeThickness="1"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Scroll programmatically" FontAttributes="Bold"/>
+                    <ScrollView x:Name="ProgrammaticScrollView"
+                                HeightRequest="140">
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Programmatic scroll target area" FontAttributes="Italic"/>
+                            <Label Text="Top" FontSize="14"/>
+                            <BoxView HeightRequest="60" Color="#FFBBDEFB"/>
+                            <BoxView HeightRequest="60" Color="#FF80CBC4"/>
+                            <BoxView HeightRequest="60" Color="#FFA5D6A7"/>
+                            <BoxView HeightRequest="60" Color="#FFFFE082"/>
+                            <BoxView HeightRequest="60" Color="#FFFFAB91"/>
+                            <Label x:Name="ProgrammaticBottomMarker"
+                                   Text="Bottom marker"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light=#1E88E5, Dark=#90CAF9}"/>
+                        </VerticalStackLayout>
+                    </ScrollView>
+                    <HorizontalStackLayout Spacing="12">
+                        <Button Text="Scroll to top"
+                                Clicked="OnScrollToTopClicked"/>
+                        <Button Text="Scroll to bottom"
+                                Clicked="OnScrollToBottomClicked"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Scroll bar visibility -->
+            <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
+                    StrokeThickness="1"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Scroll bar visibility" FontAttributes="Bold"/>
+                    <ScrollView x:Name="VisibilityScrollView"
+                                HeightRequest="120"
+                                Orientation="Horizontal"
+                                HorizontalScrollBarVisibility="Default"
+                                VerticalScrollBarVisibility="Default">
+                        <HorizontalStackLayout Spacing="12" Padding="0,0,20,0">
+                            <BoxView WidthRequest="120" Color="#FFDCEDC8"/>
+                            <BoxView WidthRequest="120" Color="#FFFFF9C4"/>
+                            <BoxView WidthRequest="120" Color="#FFB3E5FC"/>
+                            <BoxView WidthRequest="120" Color="#FFD1C4E9"/>
+                            <BoxView WidthRequest="120" Color="#FFFFCDD2"/>
+                            <BoxView WidthRequest="120" Color="#FFE0F7FA"/>
+                            <BoxView WidthRequest="120" Color="#FFFFF3E0"/>
+                            <BoxView WidthRequest="120" Color="#FFE8F5E9"/>
+                            <BoxView WidthRequest="120" Color="#FFFCE4EC"/>
+                            <BoxView WidthRequest="120" Color="#FFE3F2FD"/>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Scroll bars" FontAttributes="Bold"/>
+                        <HorizontalStackLayout Spacing="8">
+                            <Button Text="H Default" Clicked="OnHorizontalVisibilityClicked"/>
+                            <Button Text="H Always" Clicked="OnHorizontalVisibilityClicked"/>
+                            <Button Text="H Never" Clicked="OnHorizontalVisibilityClicked"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="8">
+                            <Button Text="V Default" Clicked="OnVerticalVisibilityClicked"/>
+                            <Button Text="V Always" Clicked="OnVerticalVisibilityClicked"/>
+                            <Button Text="V Never" Clicked="OnVerticalVisibilityClicked"/>
+                        </HorizontalStackLayout>
+                        <Label Text="Orientation" FontAttributes="Bold"/>
+                        <HorizontalStackLayout Spacing="8">
+                            <Button Text="Vertical" Clicked="OnVisibilityOrientationClicked"/>
+                            <Button Text="Horizontal" Clicked="OnVisibilityOrientationClicked"/>
+                            <Button Text="Both" Clicked="OnVisibilityOrientationClicked"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

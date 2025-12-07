@@ -28,6 +28,39 @@ public static class MauiTestAppBuilderExtensions
         // Register image source service
         builder.Services.AddSingleton<IImageSourceService<IFileImageSource>, AvaloniaFileImageSourceService>();
 
+        // Register handlers for test stubs
+        builder.ConfigureMauiHandlers(handlers =>
+        {
+            // Core control stubs
+            handlers.AddHandler<Tests.Stubs.ActivityIndicatorStub, Avalonia.Controls.Maui.Handlers.ActivityIndicatorHandler>();
+            handlers.AddHandler<Tests.Stubs.BorderStub, Avalonia.Controls.Maui.Handlers.BorderHandler>();
+            handlers.AddHandler<Tests.Stubs.BoxViewStub, Avalonia.Controls.Maui.Handlers.BoxViewHandler>();
+            handlers.AddHandler<Tests.Stubs.ButtonStub, Avalonia.Controls.Maui.Handlers.ButtonHandler>();
+            handlers.AddHandler<Tests.Stubs.CheckBoxStub, Avalonia.Controls.Maui.Handlers.CheckBoxHandler>();
+            handlers.AddHandler<Tests.Stubs.ImageStub, Avalonia.Controls.Maui.Handlers.ImageHandler>();
+            handlers.AddHandler<Tests.Stubs.ImageButtonStub, Avalonia.Controls.Maui.Handlers.ImageButtonHandler>();
+            handlers.AddHandler<Tests.Stubs.LabelStub, Avalonia.Controls.Maui.Handlers.LabelHandler>();
+            handlers.AddHandler<Tests.Stubs.PageStub, Avalonia.Controls.Maui.Handlers.PageHandler>();
+            handlers.AddHandler<Tests.Stubs.PickerStub, Avalonia.Controls.Maui.Handlers.PickerHandler>();
+            handlers.AddHandler<Tests.Stubs.ProgressBarStub, Avalonia.Controls.Maui.Handlers.ProgressBarHandler>();
+            handlers.AddHandler<Tests.Stubs.ScrollViewStub, Avalonia.Controls.Maui.Handlers.ScrollViewHandler>();
+            handlers.AddHandler<Tests.Stubs.SliderStub, Avalonia.Controls.Maui.Handlers.SliderHandler>();
+
+            // SwipeView stubs
+            handlers.AddHandler<Tests.Stubs.SwipeViewStub, Avalonia.Controls.Maui.Handlers.SwipeViewHandler>();
+            handlers.AddHandler<ISwipeItemMenuItem, Avalonia.Controls.Maui.Handlers.SwipeItemMenuItemHandler>();
+            handlers.AddHandler<ISwipeItemView, Avalonia.Controls.Maui.Handlers.SwipeItemViewHandler>();
+
+            // Shape stubs
+            handlers.AddHandler<Tests.Stubs.RectangleStub, Tests.Stubs.RectangleStubHandler>();
+            handlers.AddHandler<Tests.Stubs.EllipseStub, Tests.Stubs.EllipseStubHandler>();
+            handlers.AddHandler<Tests.Stubs.LineStub, Tests.Stubs.LineStubHandler>();
+            handlers.AddHandler<Tests.Stubs.PolygonStub, Tests.Stubs.PolygonStubHandler>();
+            handlers.AddHandler<Tests.Stubs.PolylineStub, Tests.Stubs.PolylineStubHandler>();
+            handlers.AddHandler<Tests.Stubs.PathStub, Tests.Stubs.PathStubHandler>();
+            handlers.AddHandler<Tests.Stubs.RoundRectangleStub, Tests.Stubs.RoundRectangleStubHandler>();
+        });
+
         return builder;
     }
 }

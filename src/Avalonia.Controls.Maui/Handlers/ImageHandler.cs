@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Avalonia.Platform;
 using Microsoft.Maui;
@@ -6,6 +7,7 @@ using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Extensions.Logging;
 using Avalonia.Labs.Gif;
 using Avalonia.Animation;
@@ -19,7 +21,6 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
 {
     private readonly AImage _staticImage;
     private GifImage? _gifImage;
-    private bool _isGif;
     private CancellationTokenSource? _loadCts;
 
     private static readonly ConcurrentDictionary<string, Uri?> AssetCache = new();
@@ -30,6 +31,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
         [nameof(IImage.IsAnimationPlaying)] = MapIsAnimationPlaying,
         [nameof(IImage.Source)] = MapSource,
         [nameof(IView.Opacity)] = MapOpacity,
+        [nameof(IView.Clip)] = MapClip,
         // IsLoading is read-only and updated automatically by the handler
     };
 
@@ -85,6 +87,28 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
     public static void MapAspect(IImageHandler handler, IImage image)
     {
         (handler.PlatformView as AGrid)?.UpdateAspect(image.Aspect);
+    }
+
+    public static void MapClip(IImageHandler handler, IView view)
+    {
+        if (handler is ImageHandler imageHandler)
+        {
+            imageHandler.UpdateImageClip(view);
+        }
+    }
+
+    private void UpdateImageClip(IView view)
+    {
+        // Apply clip to the inner image controls instead of the container Grid
+        // This ensures the clip geometry coordinates align with the actual image content
+        var avaloniaGeometry = (view.Clip as Microsoft.Maui.Controls.Shapes.Geometry)?.ToPlatform();
+
+        _staticImage.Clip = avaloniaGeometry;
+
+        if (_gifImage != null)
+        {
+            _gifImage.Clip = avaloniaGeometry;
+        }
     }
 
     internal async Task LoadSourceAsync(IImage image, CancellationToken token)
@@ -150,16 +174,25 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
                 return;
             }
 
-            var updateIsLoading = VirtualView?
-                .GetType()
-                .GetMethod("UpdateIsLoading", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-            updateIsLoading?.Invoke(VirtualView, new object[] { isLoading });
+            if (VirtualView != null)
+            {
+                UpdateIsLoadingViaReflection(VirtualView, isLoading);
+            }
         }
         catch
         {
             // Ignore reflection errors
         }
+    }
+
+    [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Custom IImage implementations may expose UpdateIsLoading via reflection.")]
+    private static void UpdateIsLoadingViaReflection(object virtualView, bool isLoading)
+    {
+        var updateIsLoading = virtualView
+            .GetType()
+            .GetMethod("UpdateIsLoading", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+
+        updateIsLoading?.Invoke(virtualView, new object[] { isLoading });
     }
 
     private async Task LoadGifAsync(IImageSource source, bool shouldPlay, CancellationToken token)
@@ -210,7 +243,6 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
 
             _staticImage.IsVisible = false;
             _gifImage.IsVisible = true;
-            _isGif = true;
         }
         catch (Exception ex)
         {
@@ -230,23 +262,24 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
             {
                 IsVisible = false,
                 Stretch = _staticImage.Stretch,
-                Opacity = _staticImage.Opacity
+                Opacity = _staticImage.Opacity,
+                Clip = _staticImage.Clip
             };
         }
         else
         {
             _gifImage.Stretch = _staticImage.Stretch;
             _gifImage.Opacity = _staticImage.Opacity;
+            _gifImage.Clip = _staticImage.Clip;
         }
     }
 
     private async Task LoadStaticAsync(IImageSource source, CancellationToken token)
     {
-        _isGif = false;
-        if (_gifImage != null) 
+        if (_gifImage != null)
         {
             _gifImage.IsVisible = false;
-            try { _gifImage.Source = null; } catch { }
+            try { _gifImage.Source = null!; } catch { }
         }
 
         var provider = this.GetRequiredService<IImageSourceServiceProvider>();
@@ -282,10 +315,9 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
         _staticImage.IsVisible = false;
         if (_gifImage != null)
         {
-            _gifImage.Source = null;
+            _gifImage.Source = null!;
             _gifImage.IsVisible = false;
         }
-        _isGif = false;
     }
 
     private async Task<Uri?> ResolveGifUriAsync(IImageSource source)
@@ -322,7 +354,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
         return null;
     }
 
-    private bool TryFindEmbeddedGif(string fileName, out Uri result)
+    private bool TryFindEmbeddedGif(string fileName, out Uri? result)
     {
         result = null;
         var targetName = Path.GetFileName(fileName);

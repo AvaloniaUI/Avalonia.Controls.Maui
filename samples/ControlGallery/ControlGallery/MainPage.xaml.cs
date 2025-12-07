@@ -1,8 +1,5 @@
-using System;
 using System.Windows.Input;
-using Microsoft.Maui.Controls;
 using ControlGallery.Pages;
-using WordPuzzle;
 
 namespace ControlGallery;
 
@@ -24,9 +21,11 @@ public partial class MainPage : FlyoutPage
         Page page = pageType.Name switch
         {
             nameof(FontsPage) => new FontsPage(),
+            nameof(NavigationDemoPage) => new NavigationPage(new NavigationDemoPage()),
             nameof(ActivityIndicatorPage) => new ActivityIndicatorPage(),
+            nameof(BoxViewPage) => new BoxViewPage(),
             nameof(ButtonPage) => new ButtonPage(),
-            nameof(PickerPage) => new PickerPage(),
+            nameof(ImageButtonPage) => new ImageButtonPage(),
             nameof(CheckBoxPage) => new CheckBoxPage(),
             nameof(ImagePage) => new ImagePage(),
             nameof(ProgressBarPage) => new ProgressBarPage(),
@@ -39,12 +38,16 @@ public partial class MainPage : FlyoutPage
             nameof(PolylinePage) => new PolylinePage(),
             nameof(PathPage) => new PathPage(),
             nameof(RoundRectanglePage) => new RoundRectanglePage(),
+            nameof(ScrollViewPage) => new ScrollViewPage(),
             nameof(SliderPage) => new SliderPage(),
             nameof(SwitchPage) => new SwitchPage(),
             nameof(ClipPage) => new ClipPage(),
             nameof(ShadowPage) => new ShadowPage(),
             nameof(GraphicsViewPage) => new GraphicsViewPage(),
             nameof(ThemePage) => new ThemePage(),
+            nameof(TitleBarPage) => new TitleBarPage(),
+			nameof(CollectionViewPage) => new CollectionViewPage(),
+			nameof(PickerPage) => new PickerPage(),
             "MainPage" when pageType.Namespace == "RpnCalculator" => new RpnCalculator.MainPage(),
             "SolitairePage" when pageType.Namespace == "SolitaireEncryption" => new SolitaireEncryption.SolitairePage(),
             "TipCalcPage" when pageType.Namespace == "TipCalc" => new TipCalc.TipCalcPage(),

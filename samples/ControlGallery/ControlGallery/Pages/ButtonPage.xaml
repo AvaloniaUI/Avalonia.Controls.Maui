@@ -428,6 +428,55 @@
                 </VerticalStackLayout>
             </Border>
             
+            <!-- Content Layout -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Content Layout"
+                           FontAttributes="Bold"/>
+                    <Label Text="Adjust icon position and spacing using ContentLayout."/>
+
+                    <Button Text="Image Left (12 spacing)"
+                            ImageSource="dotnet_bot.png"
+                            ContentLayout="Left,12"
+                            Padding="16,10"
+                            BackgroundColor="White"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            TextColor="Black"/>
+
+                    <Button Text="Image Right (10 spacing)"
+                            ImageSource="dotnet_bot.png"
+                            ContentLayout="Right,10"
+                            Padding="16,10"
+                            BackgroundColor="White"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            TextColor="Black"/>
+
+                    <Button Text="Image Top (8 spacing)"
+                            ImageSource="dotnet_bot.png"
+                            ContentLayout="Top,8"
+                            Padding="16,12"
+                            BackgroundColor="White"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            TextColor="Black"/>
+
+                    <Button Text="Image Bottom (10 spacing)"
+                            ImageSource="dotnet_bot.png"
+                            ContentLayout="Bottom,10"
+                            Padding="16,14"
+                            BackgroundColor="White"
+                            BorderColor="Gray"
+                            BorderWidth="1"
+                            TextColor="Black"/>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

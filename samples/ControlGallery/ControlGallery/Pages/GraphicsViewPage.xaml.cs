@@ -46,23 +46,17 @@ public partial class GraphicsViewPage : ContentPage
     private void OnStartInteraction(object sender, TouchEventArgs e)
     {
         var point = e.Touches.FirstOrDefault();
-        if (point != null)
-        {
-            InteractiveDrawable.StartDrawing(point);
-            InteractionLabel.Text = $"Start at: ({point.X:F1}, {point.Y:F1})";
-            interactiveGraphicsView.Invalidate();
-        }
+        InteractiveDrawable.StartDrawing(point);
+        InteractionLabel.Text = $"Start at: ({point.X:F1}, {point.Y:F1})";
+        interactiveGraphicsView.Invalidate();
     }
 
     private void OnDragInteraction(object sender, TouchEventArgs e)
     {
         var point = e.Touches.FirstOrDefault();
-        if (point != null)
-        {
-            InteractiveDrawable.AddPoint(point);
-            InteractionLabel.Text = $"Drawing at: ({point.X:F1}, {point.Y:F1})";
-            interactiveGraphicsView.Invalidate();
-        }
+        InteractiveDrawable.AddPoint(point);
+        InteractionLabel.Text = $"Drawing at: ({point.X:F1}, {point.Y:F1})";
+        interactiveGraphicsView.Invalidate();
     }
 
     private void OnEndInteraction(object sender, TouchEventArgs e)

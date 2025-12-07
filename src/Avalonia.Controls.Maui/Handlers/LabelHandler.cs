@@ -1,15 +1,16 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Media;
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
 using AvaloniaThickness = Avalonia.Thickness;
 using MauiLabel = Microsoft.Maui.Controls.Label;
+using MauiSpan = Microsoft.Maui.Controls.Span;
+using MauiFormattedString = Microsoft.Maui.Controls.FormattedString;
 using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
 using AvaloniaVerticalAlignment = Avalonia.Layout.VerticalAlignment;
 using PlatformView = Avalonia.Controls.Control;
@@ -33,6 +34,8 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>, ILabelHandle
         [nameof(ITextStyle.TextColor)] = MapTextColor,
         [nameof(ILabel.TextDecorations)] = MapTextDecorations,
         [nameof(ILabel.Background)] = MapBackground,
+        [nameof(MauiLabel.TextTransform)] = MapTextTransform,
+        [nameof(MauiLabel.FormattedText)] = MapFormattedText,
     };
 
     public static CommandMapper<ILabel, ILabelHandler> CommandMapper = new(ViewCommandMapper)
@@ -106,6 +109,12 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>, ILabelHandle
 
     public static void MapLineHeight(ILabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateLineHeight(label);
+
+    public static void MapTextTransform(ILabelHandler handler, ILabel label) =>
+        ((AvaloniaTextBlock)handler.PlatformView)?.UpdateTextTransform(label);
+
+    public static void MapFormattedText(ILabelHandler handler, ILabel label) =>
+        ((AvaloniaTextBlock)handler.PlatformView)?.UpdateFormattedText(label, handler);
 }
 
 public static class LabelTextBlockExtensions
@@ -286,7 +295,16 @@ public static class LabelTextBlockExtensions
 
     internal static void UpdateTextPlainText(this AvaloniaTextBlock textBlock, ILabel label)
     {
-        textBlock.Text = label.Text;
+        var text = label.Text ?? string.Empty;
+
+        // Apply text transform if this is a MAUI Label
+        if (label is MauiLabel mauiLabel)
+        {
+            text = mauiLabel.UpdateFormsText(text, mauiLabel.TextTransform);
+        }
+
+        textBlock.Inlines?.Clear();
+        textBlock.Text = text;
     }
 
     internal static void UpdateBackground(this AvaloniaTextBlock textBlock, IView view)
@@ -301,5 +319,113 @@ public static class LabelTextBlockExtensions
         {
             textBlock.ClearValue(AvaloniaTextBlock.BackgroundProperty);
         }
+    }
+
+    public static void UpdateTextTransform(this AvaloniaTextBlock textBlock, ILabel label)
+    {
+        if (label is not MauiLabel mauiLabel)
+        {
+            return;
+        }
+
+        // Re-apply text with transform
+        textBlock.UpdateTextPlainText(label);
+    }
+
+    
+
+    public static void UpdateFormattedText(this AvaloniaTextBlock textBlock, ILabel label, ILabelHandler handler)
+    {
+        if (label is not MauiLabel mauiLabel)
+        {
+            return;
+        }
+
+        var formattedText = mauiLabel.FormattedText;
+        if (formattedText == null || formattedText.Spans.Count == 0)
+        {
+            // Fall back to plain text if no formatted text
+            textBlock.UpdateTextPlainText(label);
+            return;
+        }
+
+        // Clear existing content
+        textBlock.Text = null;
+        textBlock.Inlines?.Clear();
+
+        if (textBlock.Inlines == null)
+        {
+            return;
+        }
+
+        var fontManager = handler.GetRequiredService<IFontManager>();
+
+        foreach (var span in formattedText.Spans)
+        {
+            var run = CreateRun(span, fontManager);
+            textBlock.Inlines.Add(run);
+        }
+    }
+
+    private static Run CreateRun(MauiSpan span, IFontManager fontManager)
+    {
+        var text = span.Text ?? string.Empty;
+
+        // Apply text transform
+        text = span.UpdateFormsText(text, span.TextTransform);
+
+        var run = new Run(text);
+
+        // Apply text color
+        if (span.TextColor != null)
+        {
+            run.Foreground = span.TextColor.ToPlatform();
+        }
+
+        // Apply background color
+        if (span.BackgroundColor != null)
+        {
+            run.Background = span.BackgroundColor.ToPlatform();
+        }
+
+        // Apply font
+        var font = span.ToFont();
+        if (!font.IsDefault)
+        {
+            run.FontSize = fontManager.GetFontSize(font);
+            run.FontFamily = fontManager.GetFontFamily(font);
+            run.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
+            run.FontWeight = FontManager.ToAvaloniaFontWeight(font.Weight);
+        }
+
+        // Apply text decorations
+        var decorations = span.TextDecorations;
+        if (decorations != Microsoft.Maui.TextDecorations.None)
+        {
+            var textDecorations = new TextDecorationCollection();
+
+            if (decorations.HasFlag(Microsoft.Maui.TextDecorations.Underline))
+            {
+                textDecorations.Add(new TextDecoration { Location = TextDecorationLocation.Underline });
+            }
+
+            if (decorations.HasFlag(Microsoft.Maui.TextDecorations.Strikethrough))
+            {
+                textDecorations.Add(new TextDecoration { Location = TextDecorationLocation.Strikethrough });
+            }
+
+            if (textDecorations.Count > 0)
+            {
+                run.TextDecorations = textDecorations;
+            }
+        }
+
+        // Apply character spacing
+        if (span.CharacterSpacing != 0 && run.FontSize > 0)
+        {
+            run.LetterSpacing = span.CharacterSpacing * run.FontSize / 1000;
+        }
+
+        return run;
     }
 }
