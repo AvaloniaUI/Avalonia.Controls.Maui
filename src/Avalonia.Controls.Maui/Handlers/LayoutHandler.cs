@@ -229,7 +229,7 @@ internal static class LayoutPanelExtensions
         }
         else
         {
-            panel.ClearValue(Panel.BackgroundProperty);
+            panel.Background = Avalonia.Media.Brushes.Transparent;
         }
     }
 
