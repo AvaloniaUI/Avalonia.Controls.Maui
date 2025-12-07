@@ -812,32 +812,32 @@ A Page that provides fundamental UI features that most applications require, inc
 | Property | Status |
 |----------|--------|
 | BackgroundColor | ⏳ TODO |
-| CurrentItem | ⏳ TODO |
-| CurrentPage | ⏳ TODO |
+| CurrentItem | ✅ Implemented |
+| CurrentPage | ✅ Implemented (via DisplayedPage) |
 | CurrentState | ⏳ TODO |
 | DisabledColor | ⏳ TODO |
 | FlyoutBackdrop | ⏳ TODO |
-| FlyoutBackground | ⏳ TODO |
-| FlyoutBackgroundColor | ⏳ TODO |
+| FlyoutBackground | ✅ Implemented |
+| FlyoutBackgroundColor | ✅ Implemented |
 | FlyoutBackgroundImage | ⏳ TODO |
 | FlyoutBackgroundImageAspect | ⏳ TODO |
-| FlyoutBehavior | ⏳ TODO |
-| FlyoutContent | ⏳ TODO |
+| FlyoutBehavior | ✅ Implemented (Disabled/Flyout/Locked) |
+| FlyoutContent | ✅ Implemented |
 | FlyoutContentTemplate | ⏳ TODO |
-| FlyoutFooter | ⏳ TODO |
-| FlyoutFooterTemplate | ⏳ TODO |
-| FlyoutHeader | ⏳ TODO |
+| FlyoutFooter | ✅ Implemented |
+| FlyoutFooterTemplate | ✅ Implemented |
+| FlyoutHeader | ✅ Implemented |
 | FlyoutHeaderBehavior | ⏳ TODO |
-| FlyoutHeaderTemplate | ⏳ TODO |
+| FlyoutHeaderTemplate | ✅ Implemented |
 | FlyoutHeight | ⏳ TODO |
-| FlyoutIcon | ⏳ TODO |
-| FlyoutIsPresented | ⏳ TODO |
-| FlyoutItems | ⏳ TODO |
+| FlyoutIcon | ✅ Implemented (via FlyoutIcon/Icon on ShellItems) |
+| FlyoutIsPresented | ✅ Implemented |
+| FlyoutItems | ✅ Implemented (via Items with FlyoutItemIsVisible) |
 | FlyoutVerticalScrollMode | ⏳ TODO |
-| FlyoutWidth | ⏳ TODO |
+| FlyoutWidth | ✅ Implemented |
 | ForegroundColor | ⏳ TODO |
-| Items | ⏳ TODO |
-| ItemTemplate | ⏳ TODO |
+| Items | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
 | MenuItemTemplate | ⏳ TODO |
 | NavBarHasShadow | ⏳ TODO |
 | NavBarIsVisible | ⏳ TODO |
@@ -868,6 +868,15 @@ A Page that provides fundamental UI features that most applications require, inc
 | GoToAsync | ⏳ TODO |
 | GoToAsync(bool) | ⏳ TODO |
 | GoToAsync(ShellNavigationState) | ⏳ TODO |
+
+### Notes
+
+Shell provides core flyout and tabbed navigation functionality with a custom FlyoutContainer that supports:
+- Sliding flyout panel with gesture support
+- Hamburger menu and back button in the navigation bar
+- Tab-based navigation for ShellItems with multiple sections
+- Navigation stack support (push/pop pages)
+- Dynamic title updates based on current page
 
 ---
 
