@@ -14,9 +14,9 @@ internal static class PlanetsService
 			AccentColorEnd = Color.FromArgb("#8d9098"),
 			Images = new()
             {
-                "https://cdn.theatlantic.com/thumbor/D15rQggf6357X1-u6VpTD2N1yQE=/0x27:1041x613/976x549/media/img/mt/2017/04/MercuryImage/original.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/73_carousel_mercury_2.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/75_mercury_carousel_1.jpg"
+                "mercury_1.jpg",
+                "mercury_2.jpg",
+                "mercury_3.jpg"
             }
 		},
         new()
@@ -29,10 +29,10 @@ internal static class PlanetsService
             AccentColorEnd = Color.FromArgb("#d17f21"),
             Images = new()
             {
-                "https://solarsystem.nasa.gov/system/feature_items/images/143_Venus-800x600.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/147_Hubble_Venus_Clouds-800x600.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/146_venus_carousel_3.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/144_PIA00485_Venus_Caldera-800.jpg"
+                "venus_1.jpg",
+                "venus_2.jpg",
+                "venus_3.jpg",
+                "venus_4.jpg"
             }
         },
         new()
@@ -45,9 +45,9 @@ internal static class PlanetsService
             AccentColorEnd = Color.FromArgb("#2e97c7"),
             Images = new()
             {
-                "https://solarsystem.nasa.gov/system/feature_items/images/68_epicearthmoonstill_800.png",
-                "https://solarsystem.nasa.gov/system/feature_items/images/69_earth_carousel_3.jpg",
-                "https://images.newscientist.com/wp-content/uploads/2019/09/09162708/iss048-e-2035_lrg.jpg?width=778"
+                "earth_1.png",
+                "earth_2.jpg",
+                "earth_3.jpg"
             }
         },
         new()
@@ -60,9 +60,9 @@ internal static class PlanetsService
             AccentColorEnd = Color.FromArgb("#eb3333"),
             Images = new()
             {
-                "https://researchfdi.com/wp-content/uploads/2021/10/8944_1-PIA24546-1280.jpeg",
-                "https://www.worldatlas.com/r/w1300-q80/upload/bb/c3/32/shutterstock-1041249343.jpg",
-                "https://www.openaccessgovernment.org/wp-content/uploads/2021/04/dreamstime_xxl_121672573-scaled.jpg"
+                "mars_1.jpeg",
+                "mars_2.jpg",
+                "mars_3.jpg"
             }
         },
         new()
@@ -75,9 +75,9 @@ internal static class PlanetsService
             AccentColorEnd = Color.FromArgb("#cd8026"),
             Images = new()
             {
-                "https://solarsystem.nasa.gov/system/feature_items/images/11_Full_Jupiter-800.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/10_Jupiter_Io_Juno-800.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/13_PIA24237_Jupiter_Cyclones-800.jpg"
+                "jupiter_1.jpg",
+                "jupiter_2.jpg",
+                "jupiter_3.jpg"
             }
         },
         new()
@@ -90,10 +90,10 @@ internal static class PlanetsService
             AccentColorEnd = Color.FromArgb("#c6502f"),
             Images = new()
             {
-                "https://solarsystem.nasa.gov/system/feature_items/images/151_saturn_carousel_1.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/152_saturn_carousel_2.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/155_saturn_carousel_5.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/153_saturn_carousel_3.jpg"
+                "saturn_1.jpg",
+                "saturn_2.jpg",
+                "saturn_3.jpg",
+                "saturn_4.jpg"
             }
         },
         new()
@@ -106,9 +106,9 @@ internal static class PlanetsService
             AccentColorEnd = Color.FromArgb("#996237"),
             Images = new()
             {
-                "https://solarsystem.nasa.gov/system/feature_items/images/88_carousel_uranus.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/89_uranus_carousel_1.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/88_carousel_uranus.jpg"
+                "uranus_1.jpg",
+                "uranus_2.jpg",
+                "uranus_.jpg"
             }
         },
         new()
@@ -121,9 +121,9 @@ internal static class PlanetsService
             AccentColorEnd = Color.FromArgb("#26abe0"),
             Images = new()
             {
-                "https://solarsystem.nasa.gov/system/feature_items/images/82_carousel_neptune_1.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/86_carousel_neptune_5.jpg",
-                "https://solarsystem.nasa.gov/system/feature_items/images/84_neptune_carousel_2.jpg"
+                "neptune_1.jpg",
+                "neptune_2.jpg",
+                "neptune_3.jpg"
             }
         }
     };
