@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 
@@ -82,7 +83,7 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
 
             // For WASM, this will return as MauiAvaloniaContent from SingleViewWindowHandler, so it will not show.
             // We don't support multiple windows in WASM in Avalonia currently.
-            var avaloniaWindow = window.ToPlatform(mauiContext) as global::Avalonia.Controls.Window;
+            var avaloniaWindow = window.ToPlatform(mauiContext) as Window;
             avaloniaWindow?.Show();
         }
     }
@@ -97,7 +98,7 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
     {
         if (args is IWindow window)
         {
-            (window.Handler?.PlatformView as global::Avalonia.Controls.Window)?.Close();
+            (window.Handler?.PlatformView as Window)?.Close();
         }
     }
 
@@ -111,7 +112,7 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
     {
         if (args is IWindow window)
         {
-            if (window.Handler?.PlatformView is global::Avalonia.Controls.Window avaloniaWindow)
+            if (window.Handler?.PlatformView is Window avaloniaWindow)
             {
                 avaloniaWindow.Activate();
             }
@@ -134,7 +135,7 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
             {
                 AppTheme.Dark => ThemeVariant.Dark,
                 AppTheme.Light => ThemeVariant.Light,
-                AppTheme.Unspecified => null, // Use system theme
+                AppTheme.Unspecified => ThemeVariant.Default, // Use system theme
                 _ => null
             };
 

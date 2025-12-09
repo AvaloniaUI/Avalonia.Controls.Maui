@@ -10,6 +10,7 @@
     <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
     <PackageDescription>Avalonia.Controls.Maui are the handlers and renderers for .NET MAUI apps, replacing their default implementations with Avalonia-based ones.</PackageDescription>
     <SignAssembly>true</SignAssembly>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
     
   <ItemGroup>

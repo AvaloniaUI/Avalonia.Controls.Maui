@@ -13,18 +13,6 @@ public partial class ImagePage : ContentPage
 
     private int _currentImageIndex;
 
-    Image? InteractiveImageControl => FindByName("InteractiveImage") as Image;
-    Label? AspectStatusLabelControl => FindByName("AspectStatusLabel") as Label;
-    Picker? AspectPickerControl => FindByName("AspectPicker") as Picker;
-    Image? OpacityImageControl => FindByName("OpacityImage") as Image;
-    Label? OpacityLabelControl => FindByName("OpacityLabel") as Label;
-    Image? DynamicImageControl => FindByName("DynamicImage") as Image;
-    Label? UriStatusLabelControl => FindByName("UriStatusLabel") as Label;
-    Image? GifImageControl => FindByName("GifImage") as Image;
-    Label? GifStatusLabelControl => FindByName("GifStatusLabel") as Label;
-    Image? StreamImageControl => FindByName("StreamImage") as Image;
-    Label? StreamStatusLabelControl => FindByName("StreamStatusLabel") as Label;
-
     public ImagePage()
     {
         InitializeComponent();
@@ -33,63 +21,52 @@ public partial class ImagePage : ContentPage
 
     void InitializeControls()
     {
-        // Set initial aspect picker selection
-        if (AspectPickerControl != null)
-        {
-            AspectPickerControl.SelectedIndex = 0; // AspectFit
-        }
-
         // Update URI status after a delay to simulate loading
         Dispatcher.DispatchDelayed(TimeSpan.FromSeconds(2), () =>
         {
-            if (UriStatusLabelControl != null)
+            if (UriStatusLabel != null)
             {
-                UriStatusLabelControl.Text = "Status: Loaded";
-                UriStatusLabelControl.TextColor = Colors.Green;
+                UriStatusLabel.Text = "Status: Loaded";
+                UriStatusLabel.TextColor = Colors.Green;
             }
         });
     }
 
-    void OnAspectChanged(object? sender, EventArgs e)
+    void OnAspectButtonClicked(object? sender, EventArgs e)
     {
-        if (AspectPickerControl is null || InteractiveImageControl is null || AspectStatusLabelControl is null)
+        if (sender is not Button button)
             return;
 
-        var selectedAspect = AspectPickerControl.SelectedIndex switch
+        if (InteractiveImage is null || AspectStatusLabel is null)
+            return;
+
+        var aspectName = button.CommandParameter as string;
+        var selectedAspect = aspectName switch
         {
-            0 => Aspect.AspectFit,
-            1 => Aspect.AspectFill,
-            2 => Aspect.Fill,
-            3 => Aspect.Center,
+            "AspectFit" => Aspect.AspectFit,
+            "AspectFill" => Aspect.AspectFill,
+            "Fill" => Aspect.Fill,
+            "Center" => Aspect.Center,
             _ => Aspect.AspectFit
         };
 
-        InteractiveImageControl.Aspect = selectedAspect;
-        AspectStatusLabelControl.Text = $"Current Aspect: {GetAspectName(selectedAspect)}";
+        InteractiveImage.Aspect = selectedAspect;
+        AspectStatusLabel.Text = $"Current Aspect: {aspectName}";
     }
-
-    string GetAspectName(Aspect aspect) => aspect switch
-    {
-        Aspect.AspectFit => "AspectFit",
-        Aspect.AspectFill => "AspectFill",
-        Aspect.Fill => "Fill",
-        Aspect.Center => "Center",
-        _ => "Unknown"
-    };
 
     void OnOpacityChanged(object? sender, ValueChangedEventArgs e)
     {
-        if (OpacityImageControl is null || OpacityLabelControl is null)
+        if (OpacityImage is null || OpacityLabel is null)
             return;
 
         var opacity = e.NewValue;
-        OpacityImageControl.Opacity = opacity;
-        OpacityLabelControl.Text = $"Opacity: {opacity:F2}";
+        OpacityImage.Opacity = opacity;
+        OpacityLabel.Text = $"Opacity: {opacity:F2}";
     }
 
     void OnLoadRandomImage(object? sender, EventArgs e)
     {
-        if (DynamicImageControl is null)
+        if (DynamicImage is null)
             return;
 
         // Simply set the source - IsLoading property will automatically update
@@ -97,15 +74,15 @@ public partial class ImagePage : ContentPage
         var imageUrl = _imageUrls[_currentImageIndex];
         _currentImageIndex = (_currentImageIndex + 1) % _imageUrls.Length;
 
-        DynamicImageControl.Source = imageUrl;
+        DynamicImage.Source = imageUrl;
     }
 
     void OnToggleGifAnimation(object? sender, EventArgs e)
     {
-        if (GifImageControl is null || GifStatusLabelControl is null)
+        if (GifImage is null || GifStatusLabel is null)
             return;
 
-        GifImageControl.IsAnimationPlaying = !GifImageControl.IsAnimationPlaying;
-        GifStatusLabelControl.Text = GifImageControl.IsAnimationPlaying ? "Status: Playing" : "Status: Paused";
+        GifImage.IsAnimationPlaying = !GifImage.IsAnimationPlaying;
+        GifStatusLabel.Text = GifImage.IsAnimationPlaying ? "Status: Playing" : "Status: Paused";
     }
 }

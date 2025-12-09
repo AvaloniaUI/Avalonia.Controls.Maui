@@ -1,3 +1,4 @@
+using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Media;
@@ -127,6 +128,59 @@ public static class AvaloniaPropertyHelpers
                 brush.Color.A / 255f);
         }
 
+        return null;
+    }
+
+
+    public static IReadOnlyList<Avalonia.Controls.Documents.Inline>? GetNativeInlines<THandler>(THandler handler)
+        where THandler : IElementHandler
+    {
+        return handler.PlatformView switch
+        {
+            TextBlock textBlock => textBlock.Inlines?.ToList(),
+            _ => null
+        };
+    }
+
+    public static int GetNativeInlineCount<THandler>(THandler handler)
+        where THandler : IElementHandler
+    {
+        return handler.PlatformView switch
+        {
+            TextBlock textBlock => textBlock.Inlines?.Count ?? 0,
+            _ => 0
+        };
+    }
+
+    public static string? GetNativeRunText<THandler>(THandler handler, int index)
+        where THandler : IElementHandler
+    {
+        if (handler.PlatformView is TextBlock textBlock && textBlock.Inlines != null)
+        {
+            var inline = textBlock.Inlines.ElementAtOrDefault(index);
+            if (inline is Avalonia.Controls.Documents.Run run)
+            {
+                return run.Text;
+            }
+        }
+        return null;
+    }
+
+    public static MauiColor? GetNativeRunForeground<THandler>(THandler handler, int index)
+        where THandler : IElementHandler
+    {
+        if (handler.PlatformView is TextBlock textBlock && textBlock.Inlines != null)
+        {
+            var inline = textBlock.Inlines.ElementAtOrDefault(index);
+            if (inline is Avalonia.Controls.Documents.Run run && run.Foreground is SolidColorBrush brush)
+            {
+                return new MauiColor(
+                    brush.Color.R / 255f,
+                    brush.Color.G / 255f,
+                    brush.Color.B / 255f,
+                    brush.Color.A / 255f);
+            }
+        }
         return null;
     }
 }

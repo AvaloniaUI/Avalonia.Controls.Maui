@@ -68,7 +68,7 @@ jobs:
 
     - name: Run Tests
       run: dotnet run --project ${{github.workspace}}/build/_build.csproj -- --target RunTests --configuration Release
-      continue-on-error: true
+      continue-on-error: false
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4

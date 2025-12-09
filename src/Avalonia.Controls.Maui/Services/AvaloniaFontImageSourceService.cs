@@ -5,23 +5,41 @@ using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
+using Microsoft.Maui.Platform;
+using AvaloniaFontManager = Avalonia.Controls.Maui.FontManager;
 
 namespace Avalonia.Controls.Maui.Services;
 
 public class AvaloniaFontImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IFontImageSource>
 {
     private readonly ILogger<AvaloniaFontImageSourceService>? _logger;
+    private readonly IFontManager? _fontManager;
     private const int DefaultSize = 100;
 
-    public AvaloniaFontImageSourceService(ILogger<AvaloniaFontImageSourceService>? logger = null)
+    public AvaloniaFontImageSourceService(IFontManager? fontManager = null, ILogger<AvaloniaFontImageSourceService>? logger = null)
     {
+        _fontManager = fontManager;
         _logger = logger;
     }
 
     public AvaloniaFontImageSourceService()
     {
+    }
+
+    /// <summary>
+    /// Gets the IFontManager, either from constructor injection or from the platform application services.
+    /// </summary>
+    private IFontManager? GetFontManager()
+    {
+        if (_fontManager != null)
+            return _fontManager;
+
+        // Fall back to getting IFontManager from the platform application services at runtime
+        // This is needed because MauiFactory uses Activator.CreateInstance which doesn't support DI
+        return IPlatformApplication.Current?.Services?.GetService<IFontManager>();
     }
 
     public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
@@ -58,8 +76,21 @@ public class AvaloniaFontImageSourceService : IAvaloniaImageSourceService, IImag
             var dpi = new Vector(96 * scale, 96 * scale);
             var renderTarget = new RenderTargetBitmap(pixelSize, dpi);
 
-            // Create Avalonia font
-            var fontFamily = string.IsNullOrEmpty(font.Family) ? FontFamily.Default : new FontFamily(font.Family);
+            // Create Avalonia font - use FontManager if available to resolve registered fonts
+            FontFamily fontFamily;
+            var fontManager = GetFontManager();
+            if (fontManager is AvaloniaFontManager avaloniaFontManager)
+            {
+                fontFamily = avaloniaFontManager.GetFontFamily(font);
+            }
+            else if (string.IsNullOrEmpty(font.Family))
+            {
+                fontFamily = FontFamily.Default;
+            }
+            else
+            {
+                fontFamily = new FontFamily(font.Family);
+            }
             var fontWeight = GetAvaloniaFontWeight(font.Weight);
             var fontStyle = font.Slant == Microsoft.Maui.FontSlant.Italic ? FontStyle.Italic : FontStyle.Normal;
 

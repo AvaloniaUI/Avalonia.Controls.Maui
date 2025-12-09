@@ -22,25 +22,22 @@ public class FakeWeatherService : IWeatherService
         };
     }
 
-    public Task<WeatherData?> GetWeatherData(string query)
+    public async Task<WeatherData?> GetWeatherData(string query)
     {
         // Simulate network delay
-        return Task.Run(async () =>
+        await Task.Delay(500); // Simulate API call delay
+
+        // Extract city name from query (simple parsing)
+        string cityName = ExtractCityFromQuery(query);
+
+        // Return fake data if available, otherwise return default data
+        if (_fakeData.TryGetValue(cityName, out var weatherData))
         {
-            await Task.Delay(500); // Simulate API call delay
+            return weatherData;
+        }
 
-            // Extract city name from query (simple parsing)
-            string cityName = ExtractCityFromQuery(query);
-
-            // Return fake data if available, otherwise return default data
-            if (_fakeData.TryGetValue(cityName, out var weatherData))
-            {
-                return weatherData;
-            }
-
-            // Return default fake data for unknown cities
-            return CreateWeatherData(cityName, 72.0, 8.5, 70, "Clear", "Clear sky", 0.0, 0.0);
-        });
+        // Return default fake data for unknown cities
+        return CreateWeatherData(cityName, 72.0, 8.5, 70, "Clear", "Clear sky", 0.0, 0.0);
     }
 
     private string ExtractCityFromQuery(string query)

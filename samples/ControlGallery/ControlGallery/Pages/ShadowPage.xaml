@@ -3,6 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ControlGallery.Pages.ShadowPage"
              Title="Shadow">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Card Backgrounds -->
+            <Color x:Key="LightBlueCard">#F3F4F6</Color>
+            <Color x:Key="DarkBlueCard">#1e3a5f</Color>
+
+            <Color x:Key="LightYellowCard">#FEF3C7</Color>
+            <Color x:Key="DarkYellowCard">#4a3d1a</Color>
+
+            <Color x:Key="LightCyanCard">#ECFEFF</Color>
+            <Color x:Key="DarkCyanCard">#1a3d3d</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="24">
@@ -22,7 +35,7 @@
                     <Label Text="Soft Card Shadow"
                            FontAttributes="Bold" />
                     <Border HeightRequest="140"
-                            BackgroundColor="#F3F4F6"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource LightBlueCard}, Dark={StaticResource DarkBlueCard}}"
                             Padding="12"
                             Margin="24">
                         <Border.Shadow>
@@ -51,7 +64,7 @@
                     <Label Text="Directional Shadow"
                            FontAttributes="Bold" />
                     <Border HeightRequest="140"
-                            BackgroundColor="#FEF3C7"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource LightYellowCard}, Dark={StaticResource DarkYellowCard}}"
                             Padding="12"
                             Margin="24">
                         <Border.Shadow>
@@ -80,7 +93,7 @@
                     <Label Text="Raised Card"
                            FontAttributes="Bold" />
                     <Border HeightRequest="140"
-                            BackgroundColor="#ECFEFF"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource LightCyanCard}, Dark={StaticResource DarkCyanCard}}"
                             Padding="12"
                             Margin="24">
                         <Border.Shadow>

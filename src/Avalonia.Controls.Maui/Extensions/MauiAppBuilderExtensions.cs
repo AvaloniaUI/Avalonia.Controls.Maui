@@ -1,8 +1,10 @@
 using System.Collections;
+using Avalonia.Controls.Maui.Animations;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Maui;
+using Microsoft.Maui.Animations;
 using Microsoft.Maui.Hosting;
 
 public static class MauiAppBuilderExtensions
@@ -72,6 +74,9 @@ public static class MauiAppBuilderExtensions
         var fontRegistrar = new Avalonia.Controls.Maui.AvaloniaMauiFontRegistrar();
         builder.Services.Replace(ServiceDescriptor.Singleton<IFontRegistrar>(fontRegistrar));
         builder.Services.Replace(ServiceDescriptor.Singleton<IFontManager>(svcs => new Avalonia.Controls.Maui.FontManager(svcs.GetRequiredService<IFontRegistrar>(), svcs)));
+
+        // Register Avalonia-specific animation manager
+        builder.Services.AddSingleton<IAnimationManager>(svcs => new AvaloniaAnimationManager());
 
         return builder
             .ConfigureMauiHandlers(handlers =>
@@ -146,6 +151,7 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.SwipeView, Avalonia.Controls.Maui.Handlers.SwipeViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.SwipeItemView, Avalonia.Controls.Maui.Handlers.SwipeItemViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.RefreshView, Avalonia.Controls.Maui.Handlers.RefreshViewHandler>();
+                handlers.AddHandler<Microsoft.Maui.Controls.TitleBar, Avalonia.Controls.Maui.Handlers.TitleBarHandler>();
 
             })
             .ConfigureImageSources();

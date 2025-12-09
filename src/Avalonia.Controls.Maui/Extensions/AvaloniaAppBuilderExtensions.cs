@@ -27,7 +27,9 @@ public static class AvaloniaAppBuilderExtensions
             {
                 var themeUris = new[]
                 {
+                    "avares://Avalonia.Controls.Maui/Controls/MauiComboBox/MauiComboBox.axaml",
                     "avares://Avalonia.Controls.Maui/Controls/ProgressRing/ProgressRing.axaml",
+                    "avares://Avalonia.Controls.Maui/Controls/RadioButton/MauiRadioButton.axaml",
                 };
 
                 foreach (var uriString in themeUris)

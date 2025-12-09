@@ -476,7 +476,7 @@
                             TextColor="Black"/>
                 </VerticalStackLayout>
             </Border>
-            
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

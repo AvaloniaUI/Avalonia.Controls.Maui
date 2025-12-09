@@ -287,8 +287,8 @@ public class ApplicationHandlerTests : HandlerTestBase
         Assert.Equal(ThemeVariant.Light, avaloniaApp.RequestedThemeVariant);
     }
 
-    [AvaloniaFact(DisplayName = "MapUserAppTheme Sets Null For Unspecified Theme")]
-    public async Task MapUserAppThemeSetsNullForUnspecifiedTheme()
+    [AvaloniaFact(DisplayName = "MapUserAppTheme Sets Default For Unspecified Theme")]
+    public async Task MapUserAppThemeSetsDefaultForUnspecifiedTheme()
     {
         var application = new ApplicationStub
         {
@@ -313,7 +313,7 @@ public class ApplicationHandlerTests : HandlerTestBase
 
         var avaloniaApp = handler.PlatformView as Application;
         Assert.NotNull(avaloniaApp);
-        Assert.Null(avaloniaApp.RequestedThemeVariant);
+        Assert.Equal(ThemeVariant.Default, avaloniaApp.RequestedThemeVariant);
     }
 
     [AvaloniaFact(DisplayName = "MapUserAppTheme Updates Theme When Changed")]

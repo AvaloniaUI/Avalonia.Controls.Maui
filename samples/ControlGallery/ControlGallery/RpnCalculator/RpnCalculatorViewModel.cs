@@ -9,7 +9,7 @@ public class RpnCalculatorViewModel : INotifyPropertyChanged
     string entry = "0";
     Stack<double> stack = new Stack<double>();
 
-    public event PropertyChangedEventHandler PropertyChanged;
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public RpnCalculatorViewModel()
     {
