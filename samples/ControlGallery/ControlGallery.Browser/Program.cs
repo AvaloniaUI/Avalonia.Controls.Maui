@@ -22,10 +22,6 @@ internal sealed partial class Program
                                 {
                                         FontFamily = new FontFamily("avares://ControlGallery.Browser/Assets#Noto Sans"),
                                 },
-                                 new FontFallback
-                                {
-                                        FontFamily = new FontFamily("avares://ControlGallery.Browser/Assets#Noto Sans JP"),
-                                },
                                 new FontFallback
                                 {
                                         FontFamily = new FontFamily("avares://ControlGallery.Browser/Assets#Noto Mono"),
