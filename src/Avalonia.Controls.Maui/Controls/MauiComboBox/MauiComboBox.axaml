@@ -1,7 +1,8 @@
 <ResourceDictionary
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="using:Avalonia.Controls.Maui">
+    xmlns:controls="using:Avalonia.Controls.Maui"
+    x:Class="Avalonia.Controls.Maui.MauiComboBoxResources">
 
   <ResourceDictionary.ThemeDictionaries>
     <ResourceDictionary x:Key="Light">
