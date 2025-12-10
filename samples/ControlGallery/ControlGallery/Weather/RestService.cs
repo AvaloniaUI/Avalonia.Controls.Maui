@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
-using System.Diagnostics;
+﻿using System.Diagnostics;
+using System.Text.Json;
 
 namespace Weather;
 
@@ -21,7 +21,7 @@ public class RestService : IWeatherService
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                weatherData = JsonConvert.DeserializeObject<WeatherData?>(content);
+                weatherData = JsonSerializer.Deserialize(content, WeatherJsonContext.Default.WeatherData);
             }
         }
         catch (Exception ex)

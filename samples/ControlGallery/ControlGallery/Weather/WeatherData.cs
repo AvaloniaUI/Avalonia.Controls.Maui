@@ -1,121 +1,127 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Weather;
 
 public class WeatherData
 {
-    [JsonProperty("name")]
+    [JsonPropertyName("name")]
     public string? Title { get; set; }
 
-    [JsonProperty("coord")]
+    [JsonPropertyName("coord")]
     public Coord? Coord { get; set; }
 
-    [JsonProperty("weather")]
+    [JsonPropertyName("weather")]
     public Weather[]? Weather { get; set; }
 
-    [JsonProperty("base")]
+    [JsonPropertyName("base")]
     public string? Base { get; set; }
 
-    [JsonProperty("main")]
+    [JsonPropertyName("main")]
     public Main? Main { get; set; }
 
-    [JsonProperty("visibility")]
+    [JsonPropertyName("visibility")]
     public long Visibility { get; set; }
 
-    [JsonProperty("wind")]
+    [JsonPropertyName("wind")]
     public Wind? Wind { get; set; }
 
-    [JsonProperty("clouds")]
+    [JsonPropertyName("clouds")]
     public Clouds? Clouds { get; set; }
 
-    [JsonProperty("dt")]
+    [JsonPropertyName("dt")]
     public long Dt { get; set; }
 
-    [JsonProperty("sys")]
+    [JsonPropertyName("sys")]
     public Sys? Sys { get; set; }
 
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public long Id { get; set; }
 
-    [JsonProperty("cod")]
+    [JsonPropertyName("cod")]
     public long Cod { get; set; }
 }
 
 
 public class Clouds
 {
-    [JsonProperty("all")]
+    [JsonPropertyName("all")]
     public long All { get; set; }
 }
 
 public class Coord
 {
-    [JsonProperty("lon")]
+    [JsonPropertyName("lon")]
     public double Lon { get; set; }
 
-    [JsonProperty("lat")]
+    [JsonPropertyName("lat")]
     public double Lat { get; set; }
 }
 
 public class Main
 {
-    [JsonProperty("temp")]
+    [JsonPropertyName("temp")]
     public double Temperature { get; set; }
 
-    [JsonProperty("pressure")]
+    [JsonPropertyName("pressure")]
     public long Pressure { get; set; }
 
-    [JsonProperty("humidity")]
+    [JsonPropertyName("humidity")]
     public long Humidity { get; set; }
 
-    [JsonProperty("temp_min")]
+    [JsonPropertyName("temp_min")]
     public double TempMin { get; set; }
 
-    [JsonProperty("temp_max")]
+    [JsonPropertyName("temp_max")]
     public double TempMax { get; set; }
 }
 
 public class Sys
 {
-    [JsonProperty("type")]
+    [JsonPropertyName("type")]
     public long Type { get; set; }
 
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public long Id { get; set; }
 
-    [JsonProperty("message")]
+    [JsonPropertyName("message")]
     public double Message { get; set; }
 
-    [JsonProperty("country")]
+    [JsonPropertyName("country")]
     public string? Country { get; set; }
 
-    [JsonProperty("sunrise")]
+    [JsonPropertyName("sunrise")]
     public long Sunrise { get; set; }
 
-    [JsonProperty("sunset")]
+    [JsonPropertyName("sunset")]
     public long Sunset { get; set; }
 }
 
 public class Weather
 {
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public long Id { get; set; }
 
-    [JsonProperty("main")]
+    [JsonPropertyName("main")]
     public string? Visibility { get; set; }
 
-    [JsonProperty("description")]
+    [JsonPropertyName("description")]
     public string? Description { get; set; }
 
-    [JsonProperty("icon")]
+    [JsonPropertyName("icon")]
     public string? Icon { get; set; }
 }
 
 public class Wind
 {
-    [JsonProperty("speed")]
+    [JsonPropertyName("speed")]
     public double Speed { get; set; }
 
-    [JsonProperty("deg")]
+    [JsonPropertyName("deg")]
     public long Deg { get; set; }
+}
+
+// Source generator context for NativeAOT compatibility
+[JsonSerializable(typeof(WeatherData))]
+internal partial class WeatherJsonContext : JsonSerializerContext
+{
 }

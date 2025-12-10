@@ -229,13 +229,13 @@
                            HorizontalOptions="Center">
                         <Label.Triggers>
                             <DataTrigger TargetType="Label"
-                                         Binding="{Binding Source={x:Reference DynamicImage}, Path=IsLoading}"
+                                         Binding="{Binding Source={x:Reference DynamicImage}, Path=IsLoading, x:DataType=Image}"
                                          Value="True">
                                 <Setter Property="Text" Value="Loading..." />
                                 <Setter Property="TextColor" Value="Orange" />
                             </DataTrigger>
                             <DataTrigger TargetType="Label"
-                                         Binding="{Binding Source={x:Reference DynamicImage}, Path=IsLoading}"
+                                         Binding="{Binding Source={x:Reference DynamicImage}, Path=IsLoading, x:DataType=Image}"
                                          Value="False">
                                 <Setter Property="Text" Value="Image loaded successfully" />
                                 <Setter Property="TextColor" Value="Green" />
