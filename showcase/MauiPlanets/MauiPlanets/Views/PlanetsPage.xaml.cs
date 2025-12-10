@@ -15,6 +15,12 @@ public partial class PlanetsPage : ContentPage
 
         lstPopularPlanets.ItemsSource = PlanetsService.GetFeaturedPlanets();
         lstAllPlanets.ItemsSource = PlanetsService.GetAllPlanets();
+
+        // Reset the menu state
+        MainContentGrid.TranslationX = 0;
+        MainContentGrid.TranslationY = 0;
+        MainContentGrid.Scale = 1;
+        MainContentGrid.Opacity = 1;
     }
 
     async void Planets_SelectionChanged(System.Object sender, Microsoft.Maui.Controls.SelectionChangedEventArgs e)
