@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:RpnCalculator"
-             x:Class="RpnCalculator.MainPage">
+             x:Class="RpnCalculator.MainPage"
+             x:DataType="local:RpnCalculatorViewModel">
     <ContentPage.Padding>
         <OnPlatform x:TypeArguments="Thickness">
             <On Platform="iOS" Value="0, 20, 0, 0" />
@@ -445,7 +446,7 @@
                     Grid.Row="0" Grid.Column="5"
                     Command="{Binding ClearEntryCommand}" />
 
-            <Button Text="&#x21E6;"
+            <Button Text="DEL"
                     Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="2"
                     Command="{Binding BackspaceCommand}" />
 
