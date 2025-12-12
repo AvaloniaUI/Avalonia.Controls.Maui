@@ -41,6 +41,7 @@ public partial class MainPage : FlyoutPage
             nameof(ScrollViewPage) => new ScrollViewPage(),
             nameof(SliderPage) => new SliderPage(),
             nameof(SwitchPage) => new SwitchPage(),
+            nameof(RadioButtonPage) => new RadioButtonPage(),
             nameof(ClipPage) => new ClipPage(),
             nameof(ShadowPage) => new ShadowPage(),
             nameof(GraphicsViewPage) => new GraphicsViewPage(),

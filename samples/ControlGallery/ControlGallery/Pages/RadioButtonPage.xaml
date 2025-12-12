@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.RadioButtonPage"
+             x:DataType="pages:RadioButtonPage"
+             Title="RadioButton">
+    <ContentPage.Resources>
+        
+        <!-- Custom ControlTemplate -->
+        <ControlTemplate x:Key="CustomRadioButtonTemplate">
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="10"
+                  Padding="0">
+                <Grid WidthRequest="24"
+                      HeightRequest="24"
+                      VerticalOptions="Center">
+                    <Ellipse x:Name="Outer"
+                             Stroke="{TemplateBinding BorderColor}"
+                             StrokeThickness="{TemplateBinding BorderWidth}"
+                             Fill="Transparent"
+                             WidthRequest="24"
+                             HeightRequest="24"/>
+                    <Ellipse x:Name="Inner"
+                             Fill="{TemplateBinding TextColor}"
+                             WidthRequest="12"
+                             HeightRequest="12"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"
+                             IsVisible="False"/>
+                </Grid>
+                <ContentPresenter Grid.Column="1"
+                                  VerticalOptions="Center"/>
+
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroup Name="TemplateCheckStates">
+                        <VisualState Name="Checked">
+                            <VisualState.Setters>
+                                <Setter TargetName="Inner"
+                                        Property="IsVisible"
+                                        Value="True"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState Name="Unchecked">
+                            <VisualState.Setters>
+                                <Setter TargetName="Inner"
+                                        Property="IsVisible"
+                                        Value="False"/>
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateManager.VisualStateGroups>
+            </Grid>
+        </ControlTemplate>
+
+        <!-- Card-style template from MAUI docs -->
+        <ControlTemplate x:Key="CardRadioButtonTemplate">
+            <Border Stroke="#F3F2F1"
+                    StrokeThickness="2"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="#F3F2F1"
+                    HeightRequest="90"
+                    WidthRequest="90"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Start">
+                <VisualStateManager.VisualStateGroups>
+                    <VisualStateGroupList>
+                        <VisualStateGroup x:Name="CheckedStates">
+                            <VisualState x:Name="Checked">
+                                <VisualState.Setters>
+                                    <Setter Property="Stroke" Value="#FF3300"/>
+                                    <Setter TargetName="check" Property="Opacity" Value="1"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                            <VisualState x:Name="Unchecked">
+                                <VisualState.Setters>
+                                    <Setter Property="BackgroundColor" Value="#F3F2F1"/>
+                                    <Setter Property="Stroke" Value="#F3F2F1"/>
+                                    <Setter TargetName="check" Property="Opacity" Value="0"/>
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </VisualStateManager.VisualStateGroups>
+                <Grid Margin="4" WidthRequest="90">
+                    <Grid Margin="0,0,4,0"
+                          WidthRequest="18"
+                          HeightRequest="18"
+                          HorizontalOptions="End"
+                          VerticalOptions="Start">
+                        <Ellipse Stroke="Blue"
+                                 Fill="White"
+                                 WidthRequest="16"
+                                 HeightRequest="16"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center"/>
+                        <Ellipse x:Name="check"
+                                 Fill="Blue"
+                                 WidthRequest="8"
+                                 HeightRequest="8"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center"/>
+                    </Grid>
+                    <ContentPresenter/>
+                </Grid>
+            </Border>
+            
+        </ControlTemplate>
+
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+            <Label Text="RadioButton Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic String Content -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="String Content (Implicit Grouping)"
+                           FontAttributes="Bold"/>
+                    <Label Text="What's your favorite animal?"
+                           TextColor="Gray"
+                           FontSize="12"/>
+                    <RadioButton Content="Cat"/>
+                    <RadioButton Content="Dog"/>
+                    <RadioButton Content="Elephant"/>
+                    <RadioButton Content="Monkey" IsChecked="True"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Disabled State -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Disabled State"
+                           FontAttributes="Bold"/>
+                    <RadioButton Content="Enabled Option"
+                                 GroupName="disabled"
+                                 IsEnabled="True"/>
+                    <RadioButton Content="Disabled Option"
+                                 GroupName="disabled"
+                                 IsEnabled="False"/>
+                    <RadioButton Content="Disabled Checked"
+                                 GroupName="disabled2"
+                                 IsEnabled="False"
+                                 IsChecked="True"/>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Explicit Grouping with GroupName -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Explicit Grouping (GroupName)"
+                           FontAttributes="Bold"/>
+                    <RadioButton Content="Option A"
+                                 GroupName="group1"
+                                 IsChecked="{Binding IsOptionAChecked}"/>
+                    <RadioButton Content="Option B"
+                                 GroupName="group1"/>
+                    <RadioButton Content="Option C"
+                                 GroupName="group1"/>
+                    <Label Text="{Binding BasicSelectedText}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Value + SelectedValue Binding -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10"
+                                     RadioButtonGroup.GroupName="sizes"
+                                     RadioButtonGroup.SelectedValue="{Binding SelectedSize, Mode=TwoWay}">
+                    <Label Text="Value + SelectedValue"
+                           FontAttributes="Bold"/>
+                    <RadioButton Content="Small"
+                                 Value="Small"/>
+                    <RadioButton Content="Medium"
+                                 Value="Medium"/>
+                    <RadioButton Content="Large"
+                                 Value="Large"/>
+                    <Label Text="{Binding SelectedSize, StringFormat='Selected: {0}'}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- TextColor -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="TextColor"
+                           FontAttributes="Bold"/>
+                    <RadioButton Content="Red Text"
+                                 GroupName="textcolor"
+                                 TextColor="Red"
+                                 IsChecked="True"/>
+                    <RadioButton Content="Blue Text"
+                                 GroupName="textcolor"
+                                 TextColor="Blue"/>
+                    <RadioButton Content="Green Text"
+                                 GroupName="textcolor"
+                                 TextColor="Green"/>
+                    <RadioButton Content="Orange Text"
+                                 GroupName="textcolor"
+                                 TextColor="Orange"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Font Properties -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Properties"
+                           FontAttributes="Bold"/>
+                    <RadioButton Content="Small (10pt)"
+                                 GroupName="fonts"
+                                 FontSize="10"
+                                 IsChecked="True"/>
+                    <RadioButton Content="Medium (14pt)"
+                                 GroupName="fonts"
+                                 FontSize="14"/>
+                    <RadioButton Content="Large (18pt)"
+                                 GroupName="fonts"
+                                 FontSize="18"/>
+                    <RadioButton Content="Bold Text"
+                                 GroupName="fonts"
+                                 FontAttributes="Bold"/>
+                    <RadioButton Content="Italic Text"
+                                 GroupName="fonts"
+                                 FontAttributes="Italic"/>
+                    <RadioButton Content="Bold + Italic"
+                                 GroupName="fonts"
+                                 FontAttributes="Bold,Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- CharacterSpacing -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="CharacterSpacing"
+                           FontAttributes="Bold"/>
+                    <RadioButton Content="Normal spacing"
+                                 GroupName="spacing"
+                                 CharacterSpacing="0"
+                                 IsChecked="True"/>
+                    <RadioButton Content="Spacing 2"
+                                 GroupName="spacing"
+                                 CharacterSpacing="2"/>
+                    <RadioButton Content="Spacing 5"
+                                 GroupName="spacing"
+                                 CharacterSpacing="5"/>
+                    <RadioButton Content="Spacing 10"
+                                 GroupName="spacing"
+                                 CharacterSpacing="10"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Border Properties -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="BorderColor + BorderWidth"
+                           FontAttributes="Bold"/>
+                    <RadioButton Content="Red Border (1pt)"
+                                 GroupName="borders"
+                                 BorderColor="Red"
+                                 BorderWidth="1"
+                                 IsChecked="True"/>
+                    <RadioButton Content="Blue Border (2pt)"
+                                 GroupName="borders"
+                                 BorderColor="Blue"
+                                 BorderWidth="2"/>
+                    <RadioButton Content="Green Border (3pt)"
+                                 GroupName="borders"
+                                 BorderColor="Green"
+                                 BorderWidth="3"/>
+                    <RadioButton Content="Purple Border (4pt)"
+                                 GroupName="borders"
+                                 BorderColor="Purple"
+                                 BorderWidth="4"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- CornerRadius -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="CornerRadius"
+                           FontAttributes="Bold"/>
+                    <RadioButton Content="No Radius (0)"
+                                 GroupName="corners"
+                                 BorderColor="DodgerBlue"
+                                 BorderWidth="1"
+                                 CornerRadius="0"
+                                 IsChecked="True"/>
+                    <RadioButton Content="Small Radius (4)"
+                                 GroupName="corners"
+                                 BorderColor="DodgerBlue"
+                                 BorderWidth="1"
+                                 CornerRadius="4"/>
+                    <RadioButton Content="Medium Radius (8)"
+                                 GroupName="corners"
+                                 BorderColor="DodgerBlue"
+                                 BorderWidth="1"
+                                 CornerRadius="8"/>
+                    <RadioButton Content="Large Radius (16)"
+                                 GroupName="corners"
+                                 BorderColor="DodgerBlue"
+                                 BorderWidth="1"
+                                 CornerRadius="16"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Templated Content (Arbitrary Content) -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Arbitrary Content"
+                           FontAttributes="Bold"/>
+                    <RadioButton GroupName="templated" IsChecked="True">
+                        <RadioButton.Content>
+                            <HorizontalStackLayout Spacing="8">
+                                <BoxView Color="CornflowerBlue"
+                                         WidthRequest="12"
+                                         HeightRequest="12"
+                                         CornerRadius="2"
+                                         VerticalOptions="Center"/>
+                                <Label Text="First Option"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </RadioButton.Content>
+                    </RadioButton>
+                    <RadioButton GroupName="templated">
+                        <RadioButton.Content>
+                            <HorizontalStackLayout Spacing="8">
+                                <BoxView Color="OrangeRed"
+                                         WidthRequest="12"
+                                         HeightRequest="12"
+                                         CornerRadius="2"
+                                         VerticalOptions="Center"/>
+                                <Label Text="Second Option"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </RadioButton.Content>
+                    </RadioButton>
+                    <RadioButton GroupName="templated">
+                        <RadioButton.Content>
+                            <HorizontalStackLayout Spacing="8">
+                                <BoxView Color="MediumSeaGreen"
+                                         WidthRequest="12"
+                                         HeightRequest="12"
+                                         CornerRadius="2"
+                                         VerticalOptions="Center"/>
+                                <Label Text="Third Option"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </RadioButton.Content>
+                    </RadioButton>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Custom ControlTemplate -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Custom ControlTemplate"
+                           FontAttributes="Bold"/>
+                    <RadioButton Content="Custom A"
+                                 GroupName="custom"
+                                 ControlTemplate="{StaticResource CustomRadioButtonTemplate}"
+                                 BorderColor="DodgerBlue"
+                                 BorderWidth="2"
+                                 TextColor="DodgerBlue"
+                                 IsChecked="True"/>
+                    <RadioButton Content="Custom B"
+                                 GroupName="custom"
+                                 ControlTemplate="{StaticResource CustomRadioButtonTemplate}"
+                                 BorderColor="DodgerBlue"
+                                 BorderWidth="2"
+                                 TextColor="DodgerBlue"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Card-style ControlTemplate -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Card-Style ControlTemplate"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <RadioButton GroupName="cards"
+                                     ControlTemplate="{StaticResource CardRadioButtonTemplate}"
+                                     IsChecked="True">
+                            <RadioButton.Content>
+                                <VerticalStackLayout VerticalOptions="Center">
+                                    <Label Text="🚗"
+                                           FontSize="32"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Car"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </RadioButton.Content>
+                        </RadioButton>
+                        <RadioButton GroupName="cards"
+                                     ControlTemplate="{StaticResource CardRadioButtonTemplate}">
+                            <RadioButton.Content>
+                                <VerticalStackLayout VerticalOptions="Center">
+                                    <Label Text="🚲"
+                                           FontSize="32"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Bike"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </RadioButton.Content>
+                        </RadioButton>
+                        <RadioButton GroupName="cards"
+                                     ControlTemplate="{StaticResource CardRadioButtonTemplate}">
+                            <RadioButton.Content>
+                                <VerticalStackLayout VerticalOptions="Center">
+                                    <Label Text="🚂"
+                                           FontSize="32"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="Train"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </RadioButton.Content>
+                        </RadioButton>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- IsEnabled + State Changes -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="IsEnabled + State Changes"
+                           FontAttributes="Bold"/>
+
+                    <RadioButton x:Name="StateRadio"
+                                 Content="Stateful Option"
+                                 IsEnabled="{Binding IsStateRadioEnabled}"
+                                 IsChecked="{Binding IsStateRadioChecked}"
+                                 BorderColor="Gray"
+                                 BorderWidth="1"
+                                 CornerRadius="6">
+                        <RadioButton.Triggers>
+                            <DataTrigger TargetType="RadioButton"
+                                         Binding="{Binding IsStateRadioChecked}"
+                                         Value="True">
+                                <Setter Property="TextColor"
+                                        Value="Green"/>
+                            </DataTrigger>
+                            <DataTrigger TargetType="RadioButton"
+                                         Binding="{Binding IsStateRadioEnabled}"
+                                         Value="False">
+                                <Setter Property="TextColor"
+                                        Value="Gray"/>
+                            </DataTrigger>
+                        </RadioButton.Triggers>
+                    </RadioButton>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Toggle Checked"
+                                Command="{Binding ToggleCheckedCommand}"/>
+                        <Button Text="Toggle Enabled"
+                                Command="{Binding ToggleEnabledCommand}"/>
+                    </HorizontalStackLayout>
+
+                    <Label Text="{Binding StateRadioStatus}"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

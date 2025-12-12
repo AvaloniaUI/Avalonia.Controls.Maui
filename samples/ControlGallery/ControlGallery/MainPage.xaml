@@ -107,6 +107,10 @@
 						          Detail="Toggle control with colors"
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type pages:SwitchPage}"/>
+						<TextCell Text="RadioButton"
+						          Detail="RadioButton control"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:RadioButtonPage}"/>
 						<TextCell Text="SwipeView"
 						          Detail="SwipeView control"
 						          Command="{Binding NavigateCommand}"

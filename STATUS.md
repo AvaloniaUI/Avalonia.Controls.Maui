@@ -314,7 +314,7 @@ Used to wrap a view or layout with a border that can be configured with color, s
 
 | Property | Status |
 |----------|--------|
-| BorderColor | ⏳ TODO |
+| BorderColor | ✅ Implemented |
 | CornerRadius | ⏳ TODO |
 | HasShadow | ⏳ TODO |
 | Content | ⏳ TODO |
@@ -666,25 +666,25 @@ A type of button that allows the selection of one option from a set.
 | Property | Status |
 |----------|--------|
 | BorderColor | ⏳ TODO |
-| BorderWidth | ⏳ TODO |
-| CharacterSpacing | ⏳ TODO |
-| Content | ⏳ TODO |
-| ContentTemplate | ⏳ TODO |
-| CornerRadius | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| GroupName | ⏳ TODO |
-| IsChecked | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| TextTransform | ⏳ TODO |
+| BorderWidth | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
+| Content | ✅ Implemented |
+| ContentTemplate | ✅ Implemented |
+| CornerRadius | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontAutoScalingEnabled | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| GroupName | ✅ Implemented |
+| IsChecked | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| TextTransform | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| CheckedChanged | ⏳ TODO |
+| CheckedChanged | ✅ Implemented |
 
 ---
 
