@@ -188,14 +188,29 @@ internal class GridLayoutPanel : Panel
             effectiveHeight = GetHeightConstraint();
         }
 
-        // Calculate cell size - if we have a constraint, use it; otherwise use infinite
-        var cellWidth = double.IsInfinity(effectiveWidth) || effectiveWidth <= 0
-            ? double.PositiveInfinity
-            : Math.Max(0, (effectiveWidth - totalHorizontalSpacing) / actualColumns);
+        // Calculate cell size based on orientation
+        // For Vertical orientation: width is constrained (cross-axis), height is unconstrained (main-axis for scrolling)
+        // For Horizontal orientation: height is constrained (cross-axis), width is unconstrained (main-axis for scrolling)
+        double cellWidth, cellHeight;
 
-        var cellHeight = double.IsInfinity(effectiveHeight) || effectiveHeight <= 0
-            ? double.PositiveInfinity
-            : Math.Max(0, (effectiveHeight - totalVerticalSpacing) / actualRows);
+        if (Orientation == Orientation.Vertical)
+        {
+            // Vertical: constrain width (cross-axis), allow height to grow (main-axis)
+            cellWidth = double.IsInfinity(effectiveWidth) || effectiveWidth <= 0
+                ? double.PositiveInfinity
+                : Math.Max(0, (effectiveWidth - totalHorizontalSpacing) / actualColumns);
+            // Height is unconstrained so items can size to their natural height
+            cellHeight = double.PositiveInfinity;
+        }
+        else
+        {
+            // Horizontal: constrain height (cross-axis), allow width to grow (main-axis)
+            cellHeight = double.IsInfinity(effectiveHeight) || effectiveHeight <= 0
+                ? double.PositiveInfinity
+                : Math.Max(0, (effectiveHeight - totalVerticalSpacing) / actualRows);
+            // Width is unconstrained so items can size to their natural width
+            cellWidth = double.PositiveInfinity;
+        }
 
         var cellSize = new Size(cellWidth, cellHeight);
 
@@ -225,6 +240,7 @@ internal class GridLayoutPanel : Panel
                 // Fallback: use children's desired widths
                 totalWidth = (maxChildWidth * actualColumns) + totalHorizontalSpacing;
             }
+            // Height is based on actual content - this enables scrolling
             totalHeight = (maxChildHeight * actualRows) + totalVerticalSpacing;
         }
         else
@@ -239,6 +255,7 @@ internal class GridLayoutPanel : Panel
                 // Fallback: use children's desired heights
                 totalHeight = (maxChildHeight * actualRows) + totalVerticalSpacing;
             }
+            // Width is based on actual content - this enables scrolling
             totalWidth = (maxChildWidth * actualColumns) + totalHorizontalSpacing;
         }
 
@@ -266,8 +283,7 @@ internal class GridLayoutPanel : Panel
             actualColumns = (int)Math.Ceiling((double)children.Count / actualRows);
         }
 
-        // Calculate cell size from finalSize to ensure items fill the available space
-        // This matches MAUI's behavior where grid items stretch to fill their cells
+        // Calculate spacing
         var totalHorizontalSpacing = HorizontalSpacing * Math.Max(0, actualColumns - 1);
         var totalVerticalSpacing = VerticalSpacing * Math.Max(0, actualRows - 1);
 
@@ -284,13 +300,38 @@ internal class GridLayoutPanel : Panel
             effectiveHeight = GetHeightConstraint();
         }
 
-        var cellWidth = double.IsInfinity(effectiveWidth) || effectiveWidth <= 0
-            ? children.Count > 0 ? children[0].DesiredSize.Width : 0
-            : Math.Max(0, (effectiveWidth - totalHorizontalSpacing) / actualColumns);
+        // Find max child sizes from their desired sizes (set during Measure)
+        double maxChildWidth = 0;
+        double maxChildHeight = 0;
+        foreach (var child in children)
+        {
+            maxChildWidth = Math.Max(maxChildWidth, child.DesiredSize.Width);
+            maxChildHeight = Math.Max(maxChildHeight, child.DesiredSize.Height);
+        }
 
-        var cellHeight = double.IsInfinity(effectiveHeight) || effectiveHeight <= 0
-            ? children.Count > 0 ? children[0].DesiredSize.Height : 0
-            : Math.Max(0, (effectiveHeight - totalVerticalSpacing) / actualRows);
+        // Calculate cell size based on orientation
+        // For Vertical orientation: width is constrained (cross-axis), height uses children's desired size (main-axis)
+        // For Horizontal orientation: height is constrained (cross-axis), width uses children's desired size (main-axis)
+        double cellWidth, cellHeight;
+
+        if (Orientation == Orientation.Vertical)
+        {
+            // Vertical: constrain width (cross-axis), use children's desired height (main-axis)
+            cellWidth = double.IsInfinity(effectiveWidth) || effectiveWidth <= 0
+                ? maxChildWidth
+                : Math.Max(0, (effectiveWidth - totalHorizontalSpacing) / actualColumns);
+            // Height is based on children's desired height to enable scrolling
+            cellHeight = maxChildHeight;
+        }
+        else
+        {
+            // Horizontal: constrain height (cross-axis), use children's desired width (main-axis)
+            cellHeight = double.IsInfinity(effectiveHeight) || effectiveHeight <= 0
+                ? maxChildHeight
+                : Math.Max(0, (effectiveHeight - totalVerticalSpacing) / actualRows);
+            // Width is based on children's desired width to enable scrolling
+            cellWidth = maxChildWidth;
+        }
 
         // Arrange children in grid
         for (int i = 0; i < children.Count; i++)
