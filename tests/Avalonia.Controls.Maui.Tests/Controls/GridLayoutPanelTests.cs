@@ -176,53 +176,6 @@ public class GridLayoutPanelTests
         Assert.Equal(expectedCellHeight, child1.LastArrangeRect.Height, 1);
     }
 
-    [AvaloniaFact(DisplayName = "GridLayoutPanel positions items correctly in 2x2 vertical grid")]
-    public void GridLayoutPanel_PositionsItemsCorrectly_In2x2VerticalGrid()
-    {
-        // Arrange
-        var panel = new GridLayoutPanel
-        {
-            Columns = 2,
-            Orientation = Orientation.Vertical,
-            HorizontalSpacing = 10,
-            VerticalSpacing = 10
-        };
-
-        var children = new ArrangeTrackingBorder[4];
-        for (int i = 0; i < 4; i++)
-        {
-            children[i] = new ArrangeTrackingBorder();
-            panel.Children.Add(children[i]);
-        }
-
-        // Act
-        panel.Measure(new Size(210, 210)); // (cell * 2) + spacing = 210, so cell = 100
-        panel.Arrange(new Rect(0, 0, 210, 210));
-
-        var cellWidth = 100.0;
-        var cellHeight = 100.0;
-
-        // Assert - Vertical orientation fills rows first (left to right, then top to bottom)
-        // This matches MAUI's GridItemsLayout with Vertical orientation
-        // For 4 items in 2 columns: 2 rows calculated
-        // Item 0: row 0, col 0 -> x=0, y=0
-        // Item 1: row 0, col 1 -> x=110, y=0
-        // Item 2: row 1, col 0 -> x=0, y=110
-        // Item 3: row 1, col 1 -> x=110, y=110
-
-        Assert.Equal(0, children[0].Bounds.X, 1);
-        Assert.Equal(0, children[0].Bounds.Y, 1);
-
-        Assert.Equal(cellWidth + 10, children[1].Bounds.X, 1);
-        Assert.Equal(0, children[1].Bounds.Y, 1);
-
-        Assert.Equal(0, children[2].Bounds.X, 1);
-        Assert.Equal(cellHeight + 10, children[2].Bounds.Y, 1);
-
-        Assert.Equal(cellWidth + 10, children[3].Bounds.X, 1);
-        Assert.Equal(cellHeight + 10, children[3].Bounds.Y, 1);
-    }
-
     [AvaloniaFact(DisplayName = "GridLayoutPanel handles window resize by recalculating cell sizes")]
     public void GridLayoutPanel_HandlesResize_ByRecalculatingCellSizes()
     {

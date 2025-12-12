@@ -273,6 +273,9 @@ public class CollectionView : TemplatedControl
         if (templateItemsControl != null)
             _itemsControl = templateItemsControl;
 
+        // Apply scrollbar visibility settings to the template's scroll viewer
+        OnScrollBarVisibilityChanged();
+
         UpdateEmptyView();
     }
 
@@ -442,10 +445,11 @@ public class CollectionView : TemplatedControl
                 _itemsControl.ItemsPanel = gridPanel;
 
                 // Disable horizontal scrolling so width constraint is passed to children
+                // Use user's setting for vertical scrollbar, falling back to Auto if not set
                 if (_scrollViewer != null)
                 {
                     _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
-                    _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                    _scrollViewer.VerticalScrollBarVisibility = VerticalScrollBarVisibility;
                 }
             }
             else
@@ -462,9 +466,10 @@ public class CollectionView : TemplatedControl
                 _itemsControl.ItemsPanel = gridPanel;
 
                 // Disable vertical scrolling so height constraint is passed to children
+                // Use user's setting for horizontal scrollbar, falling back to Auto if not set
                 if (_scrollViewer != null)
                 {
-                    _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                    _scrollViewer.HorizontalScrollBarVisibility = HorizontalScrollBarVisibility;
                     _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
                 }
             }
@@ -483,16 +488,17 @@ public class CollectionView : TemplatedControl
             _itemsControl.ItemsPanel = stackPanel;
 
             // Configure ScrollViewer based on orientation
+            // Use user's setting for the scroll-axis scrollbar, falling back to Auto if not set
             if (_scrollViewer != null)
             {
                 if (linearLayout.Orientation == Microsoft.Maui.Controls.ItemsLayoutOrientation.Vertical)
                 {
                     _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
-                    _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                    _scrollViewer.VerticalScrollBarVisibility = VerticalScrollBarVisibility;
                 }
                 else
                 {
-                    _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                    _scrollViewer.HorizontalScrollBarVisibility = HorizontalScrollBarVisibility;
                     _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
                 }
             }
