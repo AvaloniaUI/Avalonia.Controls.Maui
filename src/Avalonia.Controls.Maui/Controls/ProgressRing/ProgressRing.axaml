@@ -1,63 +1,70 @@
-<ResourceDictionary
+<ProgressBar
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:Avalonia.Controls.Maui"
-    x:Class="Avalonia.Controls.Maui.ProgressRingResources">
+    x:Class="Avalonia.Controls.Maui.ProgressRing">
 
-    <ResourceDictionary.ThemeDictionaries>
-        <ResourceDictionary x:Key="Light">
-            <SolidColorBrush x:Key="ProgressRingTrackBrush" Color="#20000000" />
+    <ProgressBar.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="ProgressRingTrackBrush" Color="#20000000" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <SolidColorBrush x:Key="ProgressRingTrackBrush" Color="#20FFFFFF" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
         </ResourceDictionary>
-        <ResourceDictionary x:Key="Dark">
-            <SolidColorBrush x:Key="ProgressRingTrackBrush" Color="#20FFFFFF" />
-        </ResourceDictionary>
-    </ResourceDictionary.ThemeDictionaries>
+    </ProgressBar.Resources>
 
-    <ControlTheme x:Key="{x:Type controls:ProgressRing}" TargetType="controls:ProgressRing">
-        <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
-        <Setter Property="Background" Value="{DynamicResource ProgressRingTrackBrush}" />
-        <Setter Property="Width" Value="32" />
-        <Setter Property="Height" Value="32" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Panel>
-                    <Border x:Name="PART_Indicator"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-                    <controls:ProgressRingVisual
-                        IsIndeterminate="{TemplateBinding IsIndeterminate}"
-                        IsActive="{TemplateBinding IsActive}"
-                        Value="{TemplateBinding Value}"
-                        Minimum="{TemplateBinding Minimum}"
-                        Maximum="{TemplateBinding Maximum}"
-                        Foreground="{TemplateBinding Foreground}"
-                        Background="{TemplateBinding Background}"
-                        StrokeThickness="4" />
-                </Panel>
-            </ControlTemplate>
-        </Setter>
-    </ControlTheme>
-    
-    <!-- Custom themes inherit the theme-aware colors -->
-    <ControlTheme x:Key="ThreeDotsLoader" TargetType="controls:ProgressRing">
-        <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
-        <Setter Property="Width" Value="60" />
-        <Setter Property="Height" Value="20" />
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Border x:Name="PART_Indicator" Background="Transparent">
-                    <Canvas Width="60" Height="20">
-                        <Ellipse Name="Dot1" Width="12" Height="12" Fill="{TemplateBinding Foreground}" Canvas.Left="4" Canvas.Top="4" />
-                        <Ellipse Name="Dot2" Width="12" Height="12" Fill="{TemplateBinding Foreground}" Canvas.Left="24" Canvas.Top="4" />
-                        <Ellipse Name="Dot3" Width="12" Height="12" Fill="{TemplateBinding Foreground}" Canvas.Left="44" Canvas.Top="4" />
-                    </Canvas>
-                </Border>
-            </ControlTemplate>
-        </Setter>
-        
-        <Style Selector="^:active /template/ Ellipse#Dot1">
+    <ProgressBar.Styles>
+        <!-- Default ProgressRing Style -->
+        <Style Selector="controls|ProgressRing">
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+            <Setter Property="Background" Value="{DynamicResource ProgressRingTrackBrush}" />
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Panel>
+                        <Border x:Name="PART_Indicator"
+                                IsHitTestVisible="False"
+                                Opacity="0" />
+                        <controls:ProgressRingVisual
+                            IsIndeterminate="{TemplateBinding IsIndeterminate}"
+                            IsActive="{TemplateBinding IsActive}"
+                            Value="{TemplateBinding Value}"
+                            Minimum="{TemplateBinding Minimum}"
+                            Maximum="{TemplateBinding Maximum}"
+                            Foreground="{TemplateBinding Foreground}"
+                            Background="{TemplateBinding Background}"
+                            StrokeThickness="4" />
+                    </Panel>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <!-- ThreeDotsLoader Theme -->
+        <Style Selector="controls|ProgressRing.ThreeDotsLoader">
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+            <Setter Property="Width" Value="60" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border x:Name="PART_Indicator" Background="Transparent">
+                        <Canvas Width="60" Height="20">
+                            <Ellipse Name="Dot1" Width="12" Height="12" Fill="{TemplateBinding Foreground}" Canvas.Left="4" Canvas.Top="4" />
+                            <Ellipse Name="Dot2" Width="12" Height="12" Fill="{TemplateBinding Foreground}" Canvas.Left="24" Canvas.Top="4" />
+                            <Ellipse Name="Dot3" Width="12" Height="12" Fill="{TemplateBinding Foreground}" Canvas.Left="44" Canvas.Top="4" />
+                        </Canvas>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="controls|ProgressRing.ThreeDotsLoader:active /template/ Ellipse#Dot1">
             <Style.Animations>
                 <Animation Duration="0:0:1.2" IterationCount="Infinite">
                     <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.3"/><Setter Property="(Canvas.Top)" Value="4"/></KeyFrame>
@@ -66,7 +73,7 @@
                 </Animation>
             </Style.Animations>
         </Style>
-        <Style Selector="^:active /template/ Ellipse#Dot2">
+        <Style Selector="controls|ProgressRing.ThreeDotsLoader:active /template/ Ellipse#Dot2">
             <Style.Animations>
                 <Animation Duration="0:0:1.2" IterationCount="Infinite" Delay="0:0:0.15">
                     <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.3"/><Setter Property="(Canvas.Top)" Value="4"/></KeyFrame>
@@ -75,7 +82,7 @@
                 </Animation>
             </Style.Animations>
         </Style>
-        <Style Selector="^:active /template/ Ellipse#Dot3">
+        <Style Selector="controls|ProgressRing.ThreeDotsLoader:active /template/ Ellipse#Dot3">
             <Style.Animations>
                 <Animation Duration="0:0:1.2" IterationCount="Infinite" Delay="0:0:0.3">
                     <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.3"/><Setter Property="(Canvas.Top)" Value="4"/></KeyFrame>
@@ -85,31 +92,32 @@
             </Style.Animations>
         </Style>
 
-        <Style Selector="^:not(:active)">
+        <Style Selector="controls|ProgressRing.ThreeDotsLoader:not(:active)">
             <Setter Property="Opacity" Value="0" />
         </Style>
-    </ControlTheme>
 
-    <ControlTheme x:Key="SpinningSquares" TargetType="controls:ProgressRing">
-        <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
-        <Setter Property="Width" Value="48" />
-        <Setter Property="Height" Value="48" />
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Border x:Name="PART_Indicator" Background="Transparent">
-                    <Canvas Width="48" Height="48">
-                        <Rectangle Name="Rect1" Width="16" Height="16" Fill="{TemplateBinding Foreground}" Canvas.Left="16" Canvas.Top="0">
-                            <Rectangle.RenderTransform><RotateTransform Angle="0" CenterX="8" CenterY="24" /></Rectangle.RenderTransform>
-                        </Rectangle>
-                        <Rectangle Name="Rect2" Width="12" Height="12" Fill="{TemplateBinding Foreground}" Opacity="0.7" Canvas.Left="18" Canvas.Top="2">
-                            <Rectangle.RenderTransform><RotateTransform Angle="0" CenterX="6" CenterY="22" /></Rectangle.RenderTransform>
-                        </Rectangle>
-                    </Canvas>
-                </Border>
-            </ControlTemplate>
-        </Setter>
-        
-        <Style Selector="^:active /template/ Rectangle#Rect1">
+        <!-- SpinningSquares Theme -->
+        <Style Selector="controls|ProgressRing.SpinningSquares">
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border x:Name="PART_Indicator" Background="Transparent">
+                        <Canvas Width="48" Height="48">
+                            <Rectangle Name="Rect1" Width="16" Height="16" Fill="{TemplateBinding Foreground}" Canvas.Left="16" Canvas.Top="0">
+                                <Rectangle.RenderTransform><RotateTransform Angle="0" CenterX="8" CenterY="24" /></Rectangle.RenderTransform>
+                            </Rectangle>
+                            <Rectangle Name="Rect2" Width="12" Height="12" Fill="{TemplateBinding Foreground}" Opacity="0.7" Canvas.Left="18" Canvas.Top="2">
+                                <Rectangle.RenderTransform><RotateTransform Angle="0" CenterX="6" CenterY="22" /></Rectangle.RenderTransform>
+                            </Rectangle>
+                        </Canvas>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="controls|ProgressRing.SpinningSquares:active /template/ Rectangle#Rect1">
             <Style.Animations>
                 <Animation Duration="0:0:2" IterationCount="Infinite">
                     <KeyFrame Cue="0%"><Setter Property="RenderTransform"><RotateTransform Angle="0" CenterX="8" CenterY="24" /></Setter></KeyFrame>
@@ -117,7 +125,7 @@
                 </Animation>
             </Style.Animations>
         </Style>
-        <Style Selector="^:active /template/ Rectangle#Rect2">
+        <Style Selector="controls|ProgressRing.SpinningSquares:active /template/ Rectangle#Rect2">
             <Style.Animations>
                 <Animation Duration="0:0:2" IterationCount="Infinite" Delay="0:0:0.15">
                     <KeyFrame Cue="0%"><Setter Property="RenderTransform"><RotateTransform Angle="0" CenterX="6" CenterY="22" /></Setter></KeyFrame>
@@ -126,24 +134,25 @@
             </Style.Animations>
         </Style>
 
-        <Style Selector="^:not(:active)">
+        <Style Selector="controls|ProgressRing.SpinningSquares:not(:active)">
             <Setter Property="Opacity" Value="0" />
         </Style>
-    </ControlTheme>
 
-    <ControlTheme x:Key="PulsingRing" TargetType="controls:ProgressRing">
-        <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
-        <Setter Property="Width" Value="40" />
-        <Setter Property="Height" Value="40" />
-        <Setter Property="Template">
-            <ControlTemplate>
-                <Border x:Name="PART_Indicator" Background="Transparent">
-                    <Ellipse Name="Ring" Width="40" Height="40" Stroke="{TemplateBinding Foreground}" StrokeThickness="3" Opacity="0.3" />
-                </Border>
-            </ControlTemplate>
-        </Setter>
+        <!-- PulsingRing Theme -->
+        <Style Selector="controls|ProgressRing.PulsingRing">
+            <Setter Property="Foreground" Value="{DynamicResource SystemAccentColor}" />
+            <Setter Property="Width" Value="40" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border x:Name="PART_Indicator" Background="Transparent">
+                        <Ellipse Name="Ring" Width="40" Height="40" Stroke="{TemplateBinding Foreground}" StrokeThickness="3" Opacity="0.3" />
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
 
-        <Style Selector="^:active /template/ Ellipse#Ring">
+        <Style Selector="controls|ProgressRing.PulsingRing:active /template/ Ellipse#Ring">
             <Style.Animations>
                 <Animation Duration="0:0:1.5" IterationCount="Infinite">
                     <KeyFrame Cue="0%"><Setter Property="Opacity" Value="0.3"/><Setter Property="Width" Value="40"/><Setter Property="Height" Value="40"/></KeyFrame>
@@ -153,9 +162,9 @@
             </Style.Animations>
         </Style>
 
-        <Style Selector="^:not(:active)">
+        <Style Selector="controls|ProgressRing.PulsingRing:not(:active)">
             <Setter Property="Opacity" Value="0" />
         </Style>
-    </ControlTheme>
+    </ProgressBar.Styles>
 
-</ResourceDictionary>
+</ProgressBar>

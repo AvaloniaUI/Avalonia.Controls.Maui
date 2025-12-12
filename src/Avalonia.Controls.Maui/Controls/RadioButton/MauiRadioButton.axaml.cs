@@ -9,7 +9,7 @@ namespace Avalonia.Controls.Maui;
 /// This is necessary because MAUI's RadioButton ControlTemplate typically includes its own
 /// visual indicator, and we don't want to show the Avalonia default indicator as well.
 /// </summary>
-public class MauiRadioButton : RadioButton
+public partial class MauiRadioButton : RadioButton
 {
     static MauiRadioButton()
     {
@@ -19,5 +19,6 @@ public class MauiRadioButton : RadioButton
 
     public MauiRadioButton()
     {
+        InitializeComponent();
     }
 }
