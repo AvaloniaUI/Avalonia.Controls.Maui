@@ -5,12 +5,13 @@ using Avalonia.Automation.Peers;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
+using Avalonia.VisualTree;
 
 namespace Avalonia.Controls.Maui;
 
 /// <summary>
-/// A panel that arranges items in a grid with fixed columns/rows and spacing,
-/// without stretching items to fill available space.
+/// A panel that arranges items in a grid with fixed columns/rows and spacing.
+/// Items stretch to fill their cells, matching MAUI's GridItemsLayout behavior.
 /// </summary>
 internal class GridLayoutPanel : Panel
 {
@@ -64,6 +65,88 @@ internal class GridLayoutPanel : Panel
         AffectsMeasure<GridLayoutPanel>(ColumnsProperty, RowsProperty, HorizontalSpacingProperty, VerticalSpacingProperty, OrientationProperty);
     }
 
+    /// <summary>
+    /// Gets the width constraint from the CollectionView or ScrollViewer ancestor.
+    /// This is necessary because when inside a ScrollViewer, the available width can be infinite,
+    /// but we need to constrain cells to the actual viewport width.
+    /// </summary>
+    private double GetWidthConstraint()
+    {
+        // First, try to find the CollectionView ancestor
+        var collectionView = this.FindAncestorOfType<CollectionView>();
+        if (collectionView != null)
+        {
+            var width = collectionView.Width;
+            if (!double.IsNaN(width) && width > 0)
+            {
+                return width;
+            }
+            var boundsWidth = collectionView.Bounds.Width;
+            if (boundsWidth > 0 && !double.IsInfinity(boundsWidth) && !double.IsNaN(boundsWidth))
+            {
+                return boundsWidth;
+            }
+        }
+
+        // Fallback: try the ScrollViewer's viewport
+        var scrollViewer = this.FindAncestorOfType<ScrollViewer>();
+        if (scrollViewer != null)
+        {
+            var viewportWidth = scrollViewer.Viewport.Width;
+            if (viewportWidth > 0 && !double.IsInfinity(viewportWidth) && !double.IsNaN(viewportWidth))
+            {
+                return viewportWidth;
+            }
+            var boundsWidth = scrollViewer.Bounds.Width;
+            if (boundsWidth > 0 && !double.IsInfinity(boundsWidth) && !double.IsNaN(boundsWidth))
+            {
+                return boundsWidth;
+            }
+        }
+
+        return double.PositiveInfinity;
+    }
+
+    /// <summary>
+    /// Gets the height constraint from the CollectionView or ScrollViewer ancestor.
+    /// </summary>
+    private double GetHeightConstraint()
+    {
+        // First, try to find the CollectionView ancestor
+        var collectionView = this.FindAncestorOfType<CollectionView>();
+        if (collectionView != null)
+        {
+            var height = collectionView.Height;
+            if (!double.IsNaN(height) && height > 0)
+            {
+                return height;
+            }
+            var boundsHeight = collectionView.Bounds.Height;
+            if (boundsHeight > 0 && !double.IsInfinity(boundsHeight) && !double.IsNaN(boundsHeight))
+            {
+                return boundsHeight;
+            }
+        }
+
+        // Fallback: try the ScrollViewer's viewport
+        var scrollViewer = this.FindAncestorOfType<ScrollViewer>();
+        if (scrollViewer != null)
+        {
+            var viewportHeight = scrollViewer.Viewport.Height;
+            if (viewportHeight > 0 && !double.IsInfinity(viewportHeight) && !double.IsNaN(viewportHeight))
+            {
+                return viewportHeight;
+            }
+            var boundsHeight = scrollViewer.Bounds.Height;
+            if (boundsHeight > 0 && !double.IsInfinity(boundsHeight) && !double.IsNaN(boundsHeight))
+            {
+                return boundsHeight;
+            }
+        }
+
+        return double.PositiveInfinity;
+    }
+
     protected override Size MeasureOverride(Size availableSize)
     {
         var children = Children;
@@ -87,17 +170,32 @@ internal class GridLayoutPanel : Panel
             actualColumns = (int)Math.Ceiling((double)children.Count / actualRows);
         }
 
-        // Calculate available size per cell
+        // Calculate spacing
         var totalHorizontalSpacing = HorizontalSpacing * Math.Max(0, actualColumns - 1);
         var totalVerticalSpacing = VerticalSpacing * Math.Max(0, actualRows - 1);
 
-        var cellWidth = double.IsInfinity(availableSize.Width)
-            ? double.PositiveInfinity
-            : Math.Max(0, (availableSize.Width - totalHorizontalSpacing) / actualColumns);
+        // If available width is infinite (inside ScrollViewer), get constraint from ancestor
+        var effectiveWidth = availableSize.Width;
+        if (double.IsInfinity(effectiveWidth))
+        {
+            effectiveWidth = GetWidthConstraint();
+        }
 
-        var cellHeight = double.IsInfinity(availableSize.Height)
+        // If available height is infinite (inside ScrollViewer), get constraint from ancestor
+        var effectiveHeight = availableSize.Height;
+        if (double.IsInfinity(effectiveHeight))
+        {
+            effectiveHeight = GetHeightConstraint();
+        }
+
+        // Calculate cell size - if we have a constraint, use it; otherwise use infinite
+        var cellWidth = double.IsInfinity(effectiveWidth) || effectiveWidth <= 0
             ? double.PositiveInfinity
-            : Math.Max(0, (availableSize.Height - totalVerticalSpacing) / actualRows);
+            : Math.Max(0, (effectiveWidth - totalHorizontalSpacing) / actualColumns);
+
+        var cellHeight = double.IsInfinity(effectiveHeight) || effectiveHeight <= 0
+            ? double.PositiveInfinity
+            : Math.Max(0, (effectiveHeight - totalVerticalSpacing) / actualRows);
 
         var cellSize = new Size(cellWidth, cellHeight);
 
@@ -112,9 +210,37 @@ internal class GridLayoutPanel : Panel
             maxChildHeight = Math.Max(maxChildHeight, child.DesiredSize.Height);
         }
 
-        // Calculate total size needed
-        var totalWidth = (maxChildWidth * actualColumns) + totalHorizontalSpacing;
-        var totalHeight = (maxChildHeight * actualRows) + totalVerticalSpacing;
+        // Calculate total size
+        double totalWidth, totalHeight;
+
+        if (Orientation == Orientation.Vertical)
+        {
+            // For vertical grid: width is constrained, height grows with content
+            if (!double.IsInfinity(effectiveWidth) && effectiveWidth > 0)
+            {
+                totalWidth = effectiveWidth;
+            }
+            else
+            {
+                // Fallback: use children's desired widths
+                totalWidth = (maxChildWidth * actualColumns) + totalHorizontalSpacing;
+            }
+            totalHeight = (maxChildHeight * actualRows) + totalVerticalSpacing;
+        }
+        else
+        {
+            // For horizontal grid: height is constrained, width grows with content
+            if (!double.IsInfinity(effectiveHeight) && effectiveHeight > 0)
+            {
+                totalHeight = effectiveHeight;
+            }
+            else
+            {
+                // Fallback: use children's desired heights
+                totalHeight = (maxChildHeight * actualRows) + totalVerticalSpacing;
+            }
+            totalWidth = (maxChildWidth * actualColumns) + totalHorizontalSpacing;
+        }
 
         return new Size(totalWidth, totalHeight);
     }
@@ -140,18 +266,31 @@ internal class GridLayoutPanel : Panel
             actualColumns = (int)Math.Ceiling((double)children.Count / actualRows);
         }
 
-        // Calculate cell size from children's desired sizes
-        double maxChildWidth = 0;
-        double maxChildHeight = 0;
+        // Calculate cell size from finalSize to ensure items fill the available space
+        // This matches MAUI's behavior where grid items stretch to fill their cells
+        var totalHorizontalSpacing = HorizontalSpacing * Math.Max(0, actualColumns - 1);
+        var totalVerticalSpacing = VerticalSpacing * Math.Max(0, actualRows - 1);
 
-        foreach (var child in children)
+        // Get effective dimensions, falling back to ancestor constraints if finalSize is problematic
+        var effectiveWidth = finalSize.Width;
+        if (double.IsInfinity(effectiveWidth) || effectiveWidth <= 0)
         {
-            maxChildWidth = Math.Max(maxChildWidth, child.DesiredSize.Width);
-            maxChildHeight = Math.Max(maxChildHeight, child.DesiredSize.Height);
+            effectiveWidth = GetWidthConstraint();
         }
 
-        var cellWidth = maxChildWidth;
-        var cellHeight = maxChildHeight;
+        var effectiveHeight = finalSize.Height;
+        if (double.IsInfinity(effectiveHeight) || effectiveHeight <= 0)
+        {
+            effectiveHeight = GetHeightConstraint();
+        }
+
+        var cellWidth = double.IsInfinity(effectiveWidth) || effectiveWidth <= 0
+            ? children.Count > 0 ? children[0].DesiredSize.Width : 0
+            : Math.Max(0, (effectiveWidth - totalHorizontalSpacing) / actualColumns);
+
+        var cellHeight = double.IsInfinity(effectiveHeight) || effectiveHeight <= 0
+            ? children.Count > 0 ? children[0].DesiredSize.Height : 0
+            : Math.Max(0, (effectiveHeight - totalVerticalSpacing) / actualRows);
 
         // Arrange children in grid
         for (int i = 0; i < children.Count; i++)
@@ -160,15 +299,16 @@ internal class GridLayoutPanel : Panel
 
             if (Orientation == Orientation.Vertical)
             {
-                // Vertical orientation: fill down columns first (top to bottom, then left to right)
-                col = i / actualRows;
-                row = i % actualRows;
+                // Vertical orientation: fill across rows first, then down (left to right, then top to bottom)
+                // This matches MAUI's GridItemsLayout with Vertical orientation
+                row = i / actualColumns;
+                col = i % actualColumns;
             }
             else
             {
-                // Horizontal orientation: fill across rows first (left to right, then top to bottom)
-                row = i / actualColumns;
-                col = i % actualColumns;
+                // Horizontal orientation: fill down columns first, then across (top to bottom, then left to right)
+                col = i / actualRows;
+                row = i % actualRows;
             }
 
             var x = col * (cellWidth + HorizontalSpacing);
