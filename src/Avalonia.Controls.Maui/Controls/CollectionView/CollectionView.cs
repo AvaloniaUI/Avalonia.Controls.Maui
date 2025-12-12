@@ -273,6 +273,9 @@ public class CollectionView : TemplatedControl
         if (templateItemsControl != null)
             _itemsControl = templateItemsControl;
 
+        // Apply scrollbar visibility settings to the template's scroll viewer
+        OnScrollBarVisibilityChanged();
+
         UpdateEmptyView();
     }
 
@@ -425,12 +428,13 @@ public class CollectionView : TemplatedControl
         if (e.NewValue is Microsoft.Maui.Controls.GridItemsLayout gridLayout)
         {
             // For grid layouts, use our custom GridLayoutPanel that handles spacing properly
-            // MAUI's Vertical grid = flows down in columns (like reading top-to-bottom, left-to-right)
-            // MAUI's Horizontal grid = flows right in rows (like reading left-to-right, top-to-bottom)
+            // Configure ScrollViewer to disable scrolling in the cross-axis direction
+            // This ensures the width/height constraint flows through properly to children
 
             if (gridLayout.Orientation == Microsoft.Maui.Controls.ItemsLayoutOrientation.Vertical)
             {
                 // Vertical orientation: Span = number of columns
+                // Scrolls vertically, width is constrained to viewport
                 var gridPanel = new FuncTemplate<Panel?>(() => new GridLayoutPanel
                 {
                     Columns = gridLayout.Span,
@@ -439,10 +443,19 @@ public class CollectionView : TemplatedControl
                     VerticalSpacing = gridLayout.VerticalItemSpacing
                 });
                 _itemsControl.ItemsPanel = gridPanel;
+
+                // Disable horizontal scrolling so width constraint is passed to children
+                // Use user's setting for vertical scrollbar, falling back to Auto if not set
+                if (_scrollViewer != null)
+                {
+                    _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                    _scrollViewer.VerticalScrollBarVisibility = VerticalScrollBarVisibility;
+                }
             }
             else
             {
                 // Horizontal orientation: Span = number of rows
+                // Scrolls horizontally, height is constrained to viewport
                 var gridPanel = new FuncTemplate<Panel?>(() => new GridLayoutPanel
                 {
                     Rows = gridLayout.Span,
@@ -451,6 +464,14 @@ public class CollectionView : TemplatedControl
                     VerticalSpacing = gridLayout.VerticalItemSpacing
                 });
                 _itemsControl.ItemsPanel = gridPanel;
+
+                // Disable vertical scrolling so height constraint is passed to children
+                // Use user's setting for horizontal scrollbar, falling back to Auto if not set
+                if (_scrollViewer != null)
+                {
+                    _scrollViewer.HorizontalScrollBarVisibility = HorizontalScrollBarVisibility;
+                    _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                }
             }
         }
         else if (e.NewValue is Microsoft.Maui.Controls.LinearItemsLayout linearLayout)
@@ -465,6 +486,22 @@ public class CollectionView : TemplatedControl
                 Spacing = linearLayout.ItemSpacing
             });
             _itemsControl.ItemsPanel = stackPanel;
+
+            // Configure ScrollViewer based on orientation
+            // Use user's setting for the scroll-axis scrollbar, falling back to Auto if not set
+            if (_scrollViewer != null)
+            {
+                if (linearLayout.Orientation == Microsoft.Maui.Controls.ItemsLayoutOrientation.Vertical)
+                {
+                    _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                    _scrollViewer.VerticalScrollBarVisibility = VerticalScrollBarVisibility;
+                }
+                else
+                {
+                    _scrollViewer.HorizontalScrollBarVisibility = HorizontalScrollBarVisibility;
+                    _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                }
+            }
         }
     }
 
