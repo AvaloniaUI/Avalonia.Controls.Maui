@@ -207,11 +207,7 @@ public partial class MauiSearchBar : TemplatedControl
             }
             UpdateClearButtonVisibility();
         }
-        else if (change.Property == PlaceholderProperty)
-        {
-            if (_textBox != null)
-                _textBox.Watermark = Placeholder;
-        }
+
         else if (change.Property == IsReadOnlyProperty)
         {
             if (_textBox != null)
@@ -256,7 +252,7 @@ public partial class MauiSearchBar : TemplatedControl
         {
             _textBox.Text = Text;
         }
-        _textBox.Watermark = Placeholder;
+
         _textBox.IsReadOnly = IsReadOnly;
         _textBox.MaxLength = MaxLength;
         _textBox.TextAlignment = HorizontalTextAlignment;

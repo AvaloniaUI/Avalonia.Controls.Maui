@@ -71,15 +71,23 @@
                                 FontSize="{TemplateBinding FontSize}"
                                 FontFamily="{TemplateBinding FontFamily}"
                                 FontWeight="{TemplateBinding FontWeight}"
-                                LetterSpacing="{TemplateBinding CharacterSpacing}"
                                 VerticalAlignment="Stretch"
-                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}">
-                                <TextBox.Styles>
-                                    <Style Selector="TextBlock#PART_Watermark">
-                                        <Setter Property="Foreground" Value="{Binding PlaceholderForeground, RelativeSource={RelativeSource AncestorType=controls:MauiSearchBar}}" />
-                                    </Style>
-                                </TextBox.Styles>
-                            </TextBox>
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+
+                            <TextBlock
+                                Name="PART_Placeholder"
+                                Grid.Column="1"
+                                Text="{TemplateBinding Placeholder}"
+                                Foreground="{TemplateBinding PlaceholderForeground}"
+                                FontSize="{TemplateBinding FontSize}"
+                                FontFamily="{TemplateBinding FontFamily}"
+                                FontWeight="{TemplateBinding FontWeight}"
+                                LetterSpacing="{TemplateBinding CharacterSpacing}"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="{TemplateBinding HorizontalTextAlignment}"
+                                IsHitTestVisible="False"
+                                IsVisible="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNullOrEmpty}}"
+                                Margin="1,0" />
 
                             <Button
                                 Name="PART_ClearButton"
