@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="AlohaKit.Gallery.RatingView"
+    xmlns:controls="clr-namespace:AlohaKit.Controls;assembly=AlohaKit"
+    Title="Rating">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            
+            <Style x:Key="SettingsSliderStyle" TargetType="Slider">
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="WidthRequest" Value="100" />
+                <Setter Property="ThumbColor" Value="{AppThemeBinding Light={StaticResource LightAccentColor}, Dark={StaticResource DarkAccentColor}}" />
+                <Setter Property="Margin" Value="0, 0, 12, 0" />
+            </Style>
+
+            <Style x:Key="SettingsTextStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="9" />
+            </Style>
+
+            <Style x:Key="SettingsEntryStyle" TargetType="Entry">
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="WidthRequest" Value="80" />
+                <Setter Property="Margin" Value="6, 0" />
+            </Style>
+            
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!-- DESCRIPTION -->
+        <StackLayout
+            Style="{StaticResource SectionContainerStyle}">
+            <Label          
+                Text="Rating is a control that allows users to rate by selecting number of items (stars) from a predefined number of items."/>
+        </StackLayout>
+        <!-- FEATURES -->
+        <StackLayout    
+            Grid.Row="1"
+            BackgroundColor="{AppThemeBinding Light={StaticResource LightBackgroundSecondaryColor}, Dark={StaticResource DarkBackgroundSecondaryColor}}"
+            Style="{StaticResource SectionContainerStyle}">
+            <Label 
+                Text="Features"
+                Style="{StaticResource SectionTitleStyle}"/>
+            <Label   
+                Text="- Exposes a Value property that is used to set and read the number of the selected items."/>
+            <Label   
+                Text="- Supports read-only mode."/>
+            <Label   
+                Text="- You can control the visual appearance of the shapes."/>
+        </StackLayout>
+        <!-- SETTINGS -->
+        <StackLayout
+            Grid.Row="2"
+            Style="{StaticResource SectionContainerStyle}">
+            <Label 
+                Text="Settings"
+                Style="{StaticResource SectionTitleStyle}"/>
+            <StackLayout
+                Orientation="Horizontal"
+                Margin="0, 6">
+                <Grid 
+                    RowDefinitions="Auto, *"
+                    Style="{StaticResource SettingsSectionLayoutStyle}">
+                    <Label
+                        Text="Value"
+                        Style="{StaticResource SettingsTextStyle}"/>
+                    <Grid
+                        ColumnDefinitions="*, Auto">
+                        <Slider     
+                            x:Name="ValueSlider"
+                            Grid.Row="1"
+                            Minimum="0"
+                            Value="3"
+                            Maximum="5"
+                            Style="{StaticResource SettingsSliderStyle}"/>
+                        <Label
+                            Grid.Column="1"
+                            VerticalOptions="Center"
+                            Text="{Binding Source={x:Reference ValueSlider}, Path=Value, StringFormat='{0:F2}'}"/>
+                    </Grid>
+                </Grid>
+            </StackLayout>
+            <StackLayout
+                Orientation="Horizontal"
+                Margin="0, 6">
+                <Label 
+                    Text="Selected Fill Color"
+                    VerticalOptions="Center"
+                    Style="{StaticResource SettingsTextStyle}"/>
+                <Entry
+                    x:Name="SelectedFillColorEntry"
+                    Placeholder="SelectedFillColor"
+                    Text="#EE9CA7"
+                    TextChanged="OnSelectedFillColorEntryTextChanged"
+                    Style="{StaticResource SettingsEntryStyle}"/>
+                <Label 
+                    Text="UnSelected Fill Color"
+                    VerticalOptions="Center"
+                    Style="{StaticResource SettingsTextStyle}"/>
+                <Entry 
+                    x:Name="UnSelectedFillColorEntry"
+                    Placeholder="UnSelectedFillColor"
+                    Text="#FBFCFD"
+                    TextChanged="OnUnSelectedFillColorEntryTextChanged"
+                    Style="{StaticResource SettingsEntryStyle}"/>
+            </StackLayout>
+            <StackLayout
+                Orientation="Horizontal"
+                Margin="0, 6">
+                <Label 
+                    Text="Selected Stroke Color"
+                    VerticalOptions="Center"
+                    Style="{StaticResource SettingsTextStyle}"/>
+                <Entry
+                    x:Name="SelectedStrokeColorEntry"
+                    Placeholder="SelectedStrokeColor"
+                    Text="#EE9CA7"
+                    TextChanged="OnSelectedStrokeColorEntryTextChanged"
+                    Style="{StaticResource SettingsEntryStyle}"/>
+                <Label 
+                    Text="UnSelected Stroke Color"
+                    VerticalOptions="Center"
+                    Style="{StaticResource SettingsTextStyle}"/>
+                <Entry 
+                    x:Name="UnSelectedStrokeColorEntry"
+                    Placeholder="UnSelectedStrokeColor"
+                    Text="#2C3E50"
+                    TextChanged="OnUnSelectedStrokeColorEntryTextChanged"
+                    Style="{StaticResource SettingsEntryStyle}"/>
+            </StackLayout>
+        </StackLayout>
+        <controls:Rating
+            Grid.Row="3"
+            x:Name="Rating"
+            Value="{Binding Source={x:Reference ValueSlider}, Path=Value}"/>
+    </Grid>
+</ContentPage>

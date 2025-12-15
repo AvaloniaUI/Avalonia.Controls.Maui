@@ -38,6 +38,18 @@
             "stopAtEntry": false
         },
         {
+            "name": "AlohaKit Gallery Desktop",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_alohakit_gallery_desktop",
+            "program": "${workspaceFolder}/showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/bin/Debug/net10.0/AlohaKit.Gallery.Desktop.dll",
+            "args": [ 
+            ],
+            "cwd": "${workspaceFolder}/showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/bin/Debug/net10.0",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
