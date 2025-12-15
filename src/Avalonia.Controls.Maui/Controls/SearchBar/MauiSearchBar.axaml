@@ -71,6 +71,7 @@
                                 FontSize="{TemplateBinding FontSize}"
                                 FontFamily="{TemplateBinding FontFamily}"
                                 FontWeight="{TemplateBinding FontWeight}"
+                                LetterSpacing="{TemplateBinding CharacterSpacing}"
                                 VerticalAlignment="Stretch"
                                 VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
 
