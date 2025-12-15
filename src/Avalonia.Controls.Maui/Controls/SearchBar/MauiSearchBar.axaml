@@ -85,7 +85,7 @@
                                 FontWeight="{TemplateBinding FontWeight}"
                                 LetterSpacing="{TemplateBinding CharacterSpacing}"
                                 VerticalAlignment="Center"
-                                HorizontalAlignment="{TemplateBinding HorizontalTextAlignment}"
+                                TextAlignment="{TemplateBinding HorizontalTextAlignment}"
                                 IsHitTestVisible="False"
                                 IsVisible="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNullOrEmpty}}"
                                 Margin="1,0" />
