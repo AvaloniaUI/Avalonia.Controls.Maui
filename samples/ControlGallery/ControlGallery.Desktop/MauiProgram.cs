@@ -21,7 +21,6 @@ public static class MauiProgram
         builder
              .UseMauiApp<MauiAppStub>()
              .UseAvaloniaApp()
-             .UseAvaloniaResources()
              .UseAvaloniaGraphics()
              .ConfigureFonts(fonts =>
             {
