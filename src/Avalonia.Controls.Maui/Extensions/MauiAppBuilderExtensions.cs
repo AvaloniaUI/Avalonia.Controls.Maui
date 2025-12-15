@@ -1,14 +1,18 @@
 using System.Collections;
 using Avalonia.Controls.Maui.Animations;
+using Avalonia.Controls.Maui.LifecycleEvents;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Maui;
 using Microsoft.Maui.Animations;
 using Microsoft.Maui.Hosting;
+using Microsoft.Maui.LifecycleEvents;
 
 public static class MauiAppBuilderExtensions
 {
+    private const string RegistrationKey = "__AvaloniaControlsMauiResourcesRegistered";
+
     /// <summary>
     /// Configures Avalonia-specific services for MAUI image handling
     /// </summary>
@@ -154,7 +158,37 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.TitleBar, Avalonia.Controls.Maui.Handlers.TitleBarHandler>();
 
             })
+            .UseAvaloniaResources()
             .ConfigureImageSources();
+    }
+
+    /// <summary>
+    /// Registers the built-in Avalonia themes and all control templates/styles
+    /// shipped with Avalonia.Controls.Maui.
+    /// </summary>
+    private static MauiAppBuilder UseAvaloniaResources(this MauiAppBuilder builder)
+    {
+        builder.ConfigureLifecycleEvents(events =>
+        {
+            events.AddWindows(avalonia =>
+            {
+                avalonia.OnLaunching((application, _) => RegisterResources(application));
+            });
+        });
+
+        return builder;
+    }
+
+    private static void RegisterResources(Avalonia.Application application)
+    {
+        if (application.Resources.ContainsKey(RegistrationKey))
+            return;
+
+        application.Resources[RegistrationKey] = true;
+
+        application.Resources.MergedDictionaries.Add(new Avalonia.Controls.Maui.MauiRadioButtonResources());
+        application.Resources.MergedDictionaries.Add(new Avalonia.Controls.Maui.ProgressRingResources());
+        application.Resources.MergedDictionaries.Add(new Avalonia.Controls.Maui.MauiComboBoxResources());
     }
 
     class ImageSourceRegistration
