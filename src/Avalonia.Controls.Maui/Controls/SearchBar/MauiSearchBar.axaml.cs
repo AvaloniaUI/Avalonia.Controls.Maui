@@ -1,17 +1,23 @@
-using System;
-using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Media;
 
 namespace Avalonia.Controls.Maui.Controls;
 
-public class MauiSearchBar : TemplatedControl
+/// <summary>
+/// A search bar control that provides text input with search-related functionality.
+/// Supports placeholder text, clear button, and search button pressed events.
+/// </summary>
+public partial class MauiSearchBar : TemplatedControl
 {
     internal TextBox? _textBox;
     private Button? _clearButton;
     private Button? _searchButton;
+    private Button? _searchIconButton;
+    private PathIcon? _clearIcon;
+    private PathIcon? _searchIcon;
 
     public static readonly StyledProperty<string> TextProperty =
         AvaloniaProperty.Register<MauiSearchBar, string>(nameof(Text), defaultValue: string.Empty);
@@ -42,6 +48,12 @@ public class MauiSearchBar : TemplatedControl
 
     public static readonly StyledProperty<TextAlignment> HorizontalTextAlignmentProperty =
         AvaloniaProperty.Register<MauiSearchBar, TextAlignment>(nameof(HorizontalTextAlignment), defaultValue: TextAlignment.Left);
+
+    public static readonly StyledProperty<VerticalAlignment> VerticalContentAlignmentProperty =
+        AvaloniaProperty.Register<MauiSearchBar, VerticalAlignment>(nameof(VerticalContentAlignment), defaultValue: VerticalAlignment.Center);
+
+    public static readonly StyledProperty<IBrush?> SearchIconColorProperty =
+        AvaloniaProperty.Register<MauiSearchBar, IBrush?>(nameof(SearchIconColor));
 
     public string Text
     {
@@ -103,13 +115,30 @@ public class MauiSearchBar : TemplatedControl
         set => SetValue(HorizontalTextAlignmentProperty, value);
     }
 
+    public VerticalAlignment VerticalContentAlignment
+    {
+        get => GetValue(VerticalContentAlignmentProperty);
+        set => SetValue(VerticalContentAlignmentProperty, value);
+    }
+
+    public IBrush? SearchIconColor
+    {
+        get => GetValue(SearchIconColorProperty);
+        set => SetValue(SearchIconColorProperty, value);
+    }
+
     public event EventHandler<RoutedEventArgs>? SearchButtonPressed;
     public event EventHandler<TextChangedEventArgs>? TextChanged;
+
+    public MauiSearchBar()
+    {
+        InitializeComponent();
+    }
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
-
+        
         if (_textBox != null)
         {
             _textBox.TextChanged -= OnTextBoxTextChanged;
@@ -126,9 +155,17 @@ public class MauiSearchBar : TemplatedControl
             _searchButton.Click -= OnSearchButtonClick;
         }
 
+        if (_searchIconButton != null)
+        {
+            _searchIconButton.Click -= OnSearchIconButtonClick;
+        }
+
         _textBox = e.NameScope.Find<TextBox>("PART_TextBox");
         _clearButton = e.NameScope.Find<Button>("PART_ClearButton");
         _searchButton = e.NameScope.Find<Button>("PART_SearchButton");
+        _searchIconButton = e.NameScope.Find<Button>("PART_SearchIconButton");
+        _clearIcon = e.NameScope.Find<PathIcon>("PART_ClearIcon");
+        _searchIcon = e.NameScope.Find<PathIcon>("PART_SearchIcon");
 
         if (_textBox != null)
         {
@@ -146,29 +183,68 @@ public class MauiSearchBar : TemplatedControl
         {
             _searchButton.Click += OnSearchButtonClick;
         }
+
+        if (_searchIconButton != null)
+        {
+            _searchIconButton.Click += OnSearchIconButtonClick;
+        }
+
+        // Icon colors are handled via TemplateBinding in the AXAML template
+        // No code-behind assignment needed, local values would override bindings
     }
 
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
 
-        if (change.Property == TextProperty ||
-            change.Property == PlaceholderProperty ||
-            change.Property == PlaceholderForegroundProperty ||
-            change.Property == IsReadOnlyProperty ||
-            change.Property == MaxLengthProperty ||
-            change.Property == CharacterSpacingProperty ||
-            change.Property == HorizontalTextAlignmentProperty ||
-            change.Property == CursorPositionProperty ||
-            change.Property == SelectionLengthProperty)
+        // Handle Text property separately to avoid caret position issues
+        if (change.Property == TextProperty)
         {
-            UpdateTextBoxProperties();
+            // Only update TextBox if the change came from outside (not from user typing)
+            if (_textBox != null && _textBox.Text != Text)
+            {
+                _textBox.Text = Text;
+            }
+            UpdateClearButtonVisibility();
+        }
+        else if (change.Property == PlaceholderProperty)
+        {
+            if (_textBox != null)
+                _textBox.Watermark = Placeholder;
+        }
+        else if (change.Property == IsReadOnlyProperty)
+        {
+            if (_textBox != null)
+                _textBox.IsReadOnly = IsReadOnly;
+        }
+        else if (change.Property == MaxLengthProperty)
+        {
+            if (_textBox != null)
+                _textBox.MaxLength = MaxLength;
+        }
+        else if (change.Property == HorizontalTextAlignmentProperty)
+        {
+            if (_textBox != null)
+                _textBox.TextAlignment = HorizontalTextAlignment;
+        }
+        else if (change.Property == CursorPositionProperty)
+        {
+            if (_textBox != null && CursorPosition >= 0 && CursorPosition <= (Text?.Length ?? 0))
+            {
+                _textBox.CaretIndex = CursorPosition;
+            }
+        }
+        else if (change.Property == SelectionLengthProperty)
+        {
+            if (_textBox != null && SelectionLength > 0)
+            {
+                _textBox.SelectionStart = CursorPosition;
+                _textBox.SelectionEnd = CursorPosition + SelectionLength;
+            }
         }
 
-        if (change.Property == CancelButtonColorProperty && _clearButton != null)
-        {
-            _clearButton.Foreground = CancelButtonColor;
-        }
+        // SearchIconColor and CancelButtonColor are handled via TemplateBinding
+        // No code-behind needed, TemplateBinding automatically syncs on property changes
     }
 
     private void UpdateTextBoxProperties()
@@ -176,27 +252,18 @@ public class MauiSearchBar : TemplatedControl
         if (_textBox == null)
             return;
 
-        _textBox.Text = Text;
+        if (_textBox.Text != Text)
+        {
+            _textBox.Text = Text;
+        }
         _textBox.Watermark = Placeholder;
         _textBox.IsReadOnly = IsReadOnly;
         _textBox.MaxLength = MaxLength;
         _textBox.TextAlignment = HorizontalTextAlignment;
 
-        if (PlaceholderForeground != null)
-        {
-            // Note: Avalonia doesn't have direct PlaceholderForeground on TextBox
-            // This would need to be handled through styles
-        }
-
-        if (CursorPosition >= 0 && CursorPosition <= Text.Length)
+        if (CursorPosition >= 0 && CursorPosition <= (Text?.Length ?? 0))
         {
             _textBox.CaretIndex = CursorPosition;
-        }
-
-        if (SelectionLength > 0)
-        {
-            _textBox.SelectionStart = CursorPosition;
-            _textBox.SelectionEnd = CursorPosition + SelectionLength;
         }
     }
 
@@ -206,6 +273,15 @@ public class MauiSearchBar : TemplatedControl
         {
             Text = _textBox.Text ?? string.Empty;
             TextChanged?.Invoke(this, e);
+        }
+        UpdateClearButtonVisibility();
+    }
+
+    private void UpdateClearButtonVisibility()
+    {
+        if (_clearButton != null)
+        {
+            _clearButton.IsVisible = !string.IsNullOrEmpty(Text);
         }
     }
 
@@ -229,7 +305,12 @@ public class MauiSearchBar : TemplatedControl
         SearchButtonPressed?.Invoke(this, e);
     }
 
-    public void FocusSearchBar()
+    private void OnSearchIconButtonClick(object? sender, RoutedEventArgs e)
+    {
+        SearchButtonPressed?.Invoke(this, e);
+    }
+
+    public void Focus()
     {
         _textBox?.Focus();
     }

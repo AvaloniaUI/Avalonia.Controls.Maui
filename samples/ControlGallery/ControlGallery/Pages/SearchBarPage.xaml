@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.SearchBarPage"
+             x:DataType="pages:SearchBarPage"
+             Title="SearchBar">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="SearchBar Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic SearchBar -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic SearchBar"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="Search something..."/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- SearchButtonPressed Event -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="SearchButtonPressed Event"
+                           FontAttributes="Bold"/>
+                    <Label Text="Press Enter or tap search icon to trigger"
+                           TextColor="Gray"
+                           FontSize="12"/>
+                    <SearchBar x:Name="SearchEventBar"
+                               Placeholder="Type and press Enter/Search"
+                               SearchButtonPressed="OnSearchEventTriggered"/>
+                    <Label x:Name="SearchEventLabel"
+                           Text="Waiting for search event..."
+                           FontSize="Small"
+                           TextColor="Gray"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- SearchCommand -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="SearchCommand"
+                           FontAttributes="Bold"/>
+                    <Label Text="Uses ICommand binding (MVVM pattern)"
+                           TextColor="Gray"
+                           FontSize="12"/>
+                    <SearchBar x:Name="CommandSearchBar"
+                               Placeholder="Type and press Enter/Search"
+                               SearchCommand="{Binding SearchCommand}"
+                               SearchCommandParameter="MyParameter"/>
+                    <Label x:Name="CommandResultLabel"
+                           Text="Command not executed yet..."
+                           FontSize="Small"
+                           TextColor="Gray"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Color -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Color"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="Type to see red text"
+                               TextColor="Red"/>
+                    <SearchBar Placeholder="Type to see blue text"
+                               TextColor="Blue"/>
+                    <SearchBar Placeholder="Type to see green text"
+                               TextColor="Green"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Placeholder Color -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Placeholder Color"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="Coral placeholder"
+                               PlaceholderColor="Coral"/>
+                    <SearchBar Placeholder="SkyBlue placeholder"
+                               PlaceholderColor="SkyBlue"/>
+                    <SearchBar Placeholder="LimeGreen placeholder"
+                               PlaceholderColor="LimeGreen"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Search Icon Color -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Search Icon Color"
+                           FontAttributes="Bold"/>
+                    <Label Text="Customize the magnifying glass icon color (MauiSearchBar Attached Property)"
+                           TextColor="Gray"
+                           FontSize="12"/>
+                    <SearchBar Placeholder="Red search icon"
+                               SearchIconColor="Red"/>
+                    <SearchBar Placeholder="Orange search icon"
+                               SearchIconColor="Orange"/>
+                    <SearchBar Placeholder="Purple search icon"
+                               SearchIconColor="Purple"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Cancel Button Color -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cancel Button Colors"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="Type to see clear button"
+                               Text="Red cancel button"
+                               CancelButtonColor="Red"/>
+                    <SearchBar Placeholder="Type to see clear button"
+                               Text="Purple cancel button"
+                               CancelButtonColor="Purple"/>
+                    <SearchBar Placeholder="Type to see clear button"
+                               Text="Orange cancel button"
+                               CancelButtonColor="Orange"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Font Customization -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Customization"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="FontSize 12"
+                               FontSize="12"/>
+                    <SearchBar Placeholder="FontSize 18"
+                               FontSize="18"/>
+                    <SearchBar Placeholder="FontSize 24"
+                               FontSize="24"/>
+                    <SearchBar Placeholder="Bold text"
+                               FontAttributes="Bold"
+                               Text="Bold SearchBar"/>
+                    <SearchBar Placeholder="Italic text"
+                               FontAttributes="Italic"
+                               Text="Italic SearchBar"/>
+                    <SearchBar Placeholder="Courier New font"
+                               FontFamily="Courier New"
+                               Text="Monospace Font"/>
+                    <SearchBar Placeholder="Georgia font"
+                               FontFamily="Georgia"
+                               Text="Serif Font"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Character Spacing -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Character Spacing"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="No spacing (0)"
+                               Text="Normal text"
+                               CharacterSpacing="0"/>
+                    <SearchBar Placeholder="Spacing 2"
+                               Text="Spaced text"
+                               CharacterSpacing="2"/>
+                    <SearchBar Placeholder="Spacing 5"
+                               Text="Wide spacing"
+                               CharacterSpacing="5"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Selection Length -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Selection Length"
+                           FontAttributes="Bold"/>
+                    <Label Text="Focus the SearchBar, then tap buttons to select text"
+                           TextColor="Gray"
+                           FontSize="12"/>
+                    <SearchBar x:Name="SelectionSearchBar"
+                               Placeholder="Focus and use buttons below"
+                               Text="Select this text"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Select All"
+                                Clicked="OnSelectAllClicked"/>
+                        <Button Text="Select 5 chars"
+                                Clicked="OnSelect5Clicked"/>
+                        <Button Text="Clear Selection"
+                                Clicked="OnClearSelectionClicked"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Horizontal Text Alignment -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Horizontal Text Alignment"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="Left aligned (Start)"
+                               Text="Left aligned"
+                               HorizontalTextAlignment="Start"/>
+                    <SearchBar Placeholder="Center aligned"
+                               Text="Center aligned"
+                               HorizontalTextAlignment="Center"/>
+                    <SearchBar Placeholder="Right aligned (End)"
+                               Text="Right aligned"
+                               HorizontalTextAlignment="End"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Vertical Text Alignment -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Vertical Text Alignment"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="Top aligned"
+                               Text="Top aligned"
+                               VerticalTextAlignment="Start"
+                               HeightRequest="80"/>
+                    <SearchBar Placeholder="Center aligned"
+                               Text="Center aligned"
+                               VerticalTextAlignment="Center"
+                               HeightRequest="80"/>
+                    <SearchBar Placeholder="Bottom aligned"
+                               Text="Bottom aligned"
+                               VerticalTextAlignment="End"
+                               HeightRequest="80"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Read-Only Mode -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Read-Only Mode"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="This is read-only"
+                               Text="Cannot edit this text"
+                               IsReadOnly="True"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Switch IsToggled="{Binding IsReadOnly}"/>
+                        <Label Text="{Binding IsReadOnly, StringFormat='IsReadOnly: {0}'}"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <SearchBar Placeholder="Toggle read-only above"
+                               Text="{Binding EditableText}"
+                               IsReadOnly="{Binding IsReadOnly}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Max Length -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Max Length"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="Max 10 characters"
+                               MaxLength="10"/>
+                    <SearchBar Placeholder="Max 20 characters"
+                               MaxLength="20"/>
+                    <SearchBar Placeholder="Max 5 characters"
+                               MaxLength="5"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Cursor Position and Selection -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cursor Position"
+                           FontAttributes="Bold"/>
+                    <SearchBar x:Name="CursorSearchBar"
+                               Placeholder="Focus to change cursor"
+                               Text="Hello World Example"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Start"
+                                Clicked="OnCursorStartClicked"/>
+                        <Button Text="Middle"
+                                Clicked="OnCursorMiddleClicked"/>
+                        <Button Text="End"
+                                Clicked="OnCursorEndClicked"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Event Handling -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Event Handling"
+                           FontAttributes="Bold"/>
+                    <SearchBar Placeholder="Type to see TextChanged event"
+                               TextChanged="OnTextChanged"
+                               SearchButtonPressed="OnSearchButtonPressed"/>
+                    <Label Text="{Binding EventLog}"
+                           TextColor="DarkGray"
+                           FontSize="12"/>
+                    <Button Text="Clear Log"
+                            Command="{Binding ClearLogCommand}"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
