@@ -95,7 +95,7 @@ public partial class SearchBarPage : ContentPage, INotifyPropertyChanged
     {
         var text = CommandSearchBar?.Text ?? string.Empty;
         var param = parameter?.ToString() ?? "null";
-        CommandResultLabel.Text = $"✓ Command executed! Query: '{text}', Parameter: '{param}'";
+        CommandResultLabel.Text = $"Command executed! Query: '{text}', Parameter: '{param}'";
         CommandResultLabel.TextColor = Colors.Green;
     }
 
@@ -124,7 +124,7 @@ public partial class SearchBarPage : ContentPage, INotifyPropertyChanged
         if (sender is SearchBar searchBar)
         {
             var text = searchBar.Text ?? "empty";
-            SearchEventLabel.Text = $"✓ SearchButtonPressed! Query: '{text}'";
+            SearchEventLabel.Text = $"SearchButtonPressed! Query: '{text}'";
             SearchEventLabel.TextColor = Colors.Green;
         }
     }
