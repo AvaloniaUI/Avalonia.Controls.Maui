@@ -74,4 +74,24 @@ public static class TextCellExtensions
         // Reduce opacity for clearer disabled visual feedback
         platformView.Opacity = cell.IsEnabled ? 1.0 : 0.75;
     }
+
+    /// <summary>
+    /// Updates the height from the <see cref="Cell"/>.
+    /// </summary>
+    /// <param name="platformView">The platform view.</param>
+    /// <param name="cell">The MAUI cell.</param>
+    public static void UpdateHeight(this MauiTextCell platformView, Cell cell)
+    {
+        // Cell.Height defaults to -1 (auto-size)
+        if (cell.Height > 0)
+        {
+            platformView.Height = cell.Height;
+            platformView.MinHeight = cell.Height;
+        }
+        else
+        {
+            platformView.ClearValue(Avalonia.Layout.Layoutable.HeightProperty);
+            platformView.MinHeight = 44; // Default MinHeight
+        }
+    }
 }

@@ -189,6 +189,31 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Dynamic Height Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Cell Height" FontAttributes="Bold"/>
+                    <Button Text="Randomize Heights" Clicked="OnRandomizeHeightsClicked"/>
+                    <TableView x:Name="DynamicHeightTableView" Intent="Data" HasUnevenRows="True">
+                        <TableRoot>
+                            <TableSection Title="Variable Heights">
+                                <TextCell x:Name="DynamicCell1" Text="Cell 1" Detail="Height: Default"/>
+                                <TextCell x:Name="DynamicCell2" Text="Cell 2" Detail="Height: Default"/>
+                                <TextCell x:Name="DynamicCell3" Text="Cell 3" Detail="Height: Default"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                    <Label x:Name="HeightStatusLabel" 
+                           Text="Click button to randomize heights" 
+                           TextColor="Gray"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+            
             <!-- Right-to-Left Layout Example -->
             <Border Stroke="Gray" Padding="10">
                 <Border.StrokeShape>

@@ -59,4 +59,25 @@ public partial class TableViewPage : ContentPage
             LifecycleStatusLabel.TextColor = Colors.Orange;
         }
     }
+
+    private readonly Random _random = new();
+
+    private void OnRandomizeHeightsClicked(object sender, EventArgs e)
+    {
+        var height1 = _random.Next(48, 120);
+        var height2 = _random.Next(48, 120);
+        var height3 = _random.Next(48, 120);
+
+        DynamicCell1.Height = height1;
+        DynamicCell1.Detail = $"Height: {height1}";
+
+        DynamicCell2.Height = height2;
+        DynamicCell2.Detail = $"Height: {height2}";
+
+        DynamicCell3.Height = height3;
+        DynamicCell3.Detail = $"Height: {height3}";
+
+        HeightStatusLabel.Text = $"Heights: {height1}, {height2}, {height3}";
+        HeightStatusLabel.TextColor = Colors.Purple;
+    }
 }
