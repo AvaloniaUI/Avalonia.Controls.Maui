@@ -4,7 +4,6 @@
         xmlns:styling="clr-namespace:Avalonia.Markup.Xaml.Styling;assembly=Avalonia.Markup.Xaml"
         x:Class="Avalonia.Controls.Maui.ControlStyles">
 
-  <styling:StyleInclude Source="avares://Avalonia.Controls.Maui/Controls/CollectionView/CollectionView.axaml" />
   <styling:StyleInclude Source="avares://Avalonia.Controls.Maui/Platform/MauiStepper.axaml" />
   <styling:StyleInclude Source="avares://Avalonia.Controls.Maui/Platform/MauiIndicatorView.axaml" />
 
