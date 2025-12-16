@@ -139,13 +139,6 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
 
     private void RegisterMauiControlsResources()
     {
-        const string RegistrationKey = "__AvaloniaControlsMauiResourcesRegistered";
-
-        if (Resources.ContainsKey(RegistrationKey))
-            return;
-
-        Resources[RegistrationKey] = true;
-
         Resources.MergedDictionaries.Add(new MauiRadioButtonResources());
         Resources.MergedDictionaries.Add(new ProgressRingResources());
         Resources.MergedDictionaries.Add(new MauiComboBoxResources());
