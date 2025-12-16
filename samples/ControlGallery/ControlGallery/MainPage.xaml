@@ -72,7 +72,8 @@
 						<TextCell Text="CollectionView"
 						          Detail="Collection display with templates"
 						          Command="{Binding NavigateCommand}"
-						          CommandParameter="{x:Type pages:CollectionViewPage}"/>						<TextCell Text="ImageButton"
+						          CommandParameter="{x:Type pages:CollectionViewPage}"/>
+						<TextCell Text="ImageButton"
 						          Detail="ImageButton control"
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type pages:ImageButtonPage}"/>
@@ -83,7 +84,8 @@
 						<TextCell Text="Picker"
 						          Detail="Picker control"
 						          Command="{Binding NavigateCommand}"
-						          CommandParameter="{x:Type pages:PickerPage}"/>						<TextCell Text="GraphicsView"
+						          CommandParameter="{x:Type pages:PickerPage}"/>
+						<TextCell Text="GraphicsView"
 								  Detail="Custom drawing and graphics"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:GraphicsViewPage}"/>
@@ -111,6 +113,10 @@
 						          Detail="SwipeView control"
 						          Command="{Binding NavigateCommand}"
 						          CommandParameter="{x:Type pages:SwipeViewPage}"/>
+						<TextCell Text="TableView"
+						          Detail="TableView with cell types"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:TableViewPage}"/>
 					</TableSection>
 					<TableSection Title="Effects">
 						<TextCell Text="Clip"
