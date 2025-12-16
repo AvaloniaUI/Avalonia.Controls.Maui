@@ -1,21 +1,17 @@
-using Avalonia.Controls;
+using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Platform;
-using System;
 
 namespace Avalonia.Controls.Maui.Handlers.Cells;
 
-/// <summary>
-/// Handler for MAUI ViewCell (Cell with custom View content)
-/// </summary>
-public class ViewCellHandler : ElementHandler<ViewCell, global::Avalonia.Controls.Border>
+public class ViewCellHandler : ElementHandler<ViewCell, MauiViewCell>
 {
     public static IPropertyMapper<ViewCell, ViewCellHandler> Mapper =
         new PropertyMapper<ViewCell, ViewCellHandler>(ElementMapper)
         {
             [nameof(ViewCell.View)] = MapView,
+            [nameof(Cell.IsEnabled)] = MapIsEnabled,
         };
 
     public static CommandMapper<ViewCell, ViewCellHandler> CommandMapper =
@@ -35,30 +31,18 @@ public class ViewCellHandler : ElementHandler<ViewCell, global::Avalonia.Control
     {
     }
 
-    protected override global::Avalonia.Controls.Border CreatePlatformElement()
+    protected override MauiViewCell CreatePlatformElement()
     {
-        return new global::Avalonia.Controls.Border
-        {
-            Padding = new Thickness(0),
-            Background = global::Avalonia.Media.Brushes.Transparent,
-            MinHeight = 44
-        };
+        return new MauiViewCell();
+    }
+
+    public static void MapIsEnabled(ViewCellHandler handler, ViewCell viewCell)
+    {
+        handler.PlatformView.UpdateIsEnabled(viewCell);
     }
 
     public static void MapView(ViewCellHandler handler, ViewCell viewCell)
     {
-        if (handler.PlatformView is null || handler.MauiContext is null)
-            return;
-
-        handler.PlatformView.Child = null;
-
-        if (viewCell.View != null)
-        {
-            var platformView = viewCell.View.ToPlatform(handler.MauiContext);
-            if (platformView is Control control)
-            {
-                handler.PlatformView.Child = control;
-            }
-        }
+        handler.PlatformView.UpdateView(viewCell, handler.MauiContext);
     }
 }
