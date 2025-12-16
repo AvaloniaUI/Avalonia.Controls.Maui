@@ -6,7 +6,6 @@
 
   <styling:StyleInclude Source="avares://Avalonia.Controls.Maui/Controls/CollectionView/CollectionView.axaml" />
   <styling:StyleInclude Source="avares://Avalonia.Controls.Maui/Platform/MauiStepper.axaml" />
-  <styling:StyleInclude Source="avares://Avalonia.Controls.Maui/Platform/MauiSearchBar.axaml" />
   <styling:StyleInclude Source="avares://Avalonia.Controls.Maui/Platform/MauiIndicatorView.axaml" />
 
 </Styles>

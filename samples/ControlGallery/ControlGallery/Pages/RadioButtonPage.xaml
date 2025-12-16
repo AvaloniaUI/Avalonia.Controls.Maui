@@ -9,7 +9,7 @@
     <ContentPage.Resources>
         
         <!-- Custom ControlTemplate -->
-        <ControlTemplate x:Key="CustomRadioButtonTemplate">
+        <ControlTemplate x:Key="CustomRadioButtonTemplate" x:DataType="RadioButton">
             <Grid ColumnDefinitions="Auto,*"
                   ColumnSpacing="10"
                   Padding="0">
@@ -17,13 +17,13 @@
                       HeightRequest="24"
                       VerticalOptions="Center">
                     <Ellipse x:Name="Outer"
-                             Stroke="{TemplateBinding BorderColor}"
-                             StrokeThickness="{TemplateBinding BorderWidth}"
+                             Stroke="{Binding BorderColor, Source={RelativeSource TemplatedParent}}"
+                             StrokeThickness="{Binding BorderWidth, Source={RelativeSource TemplatedParent}}"
                              Fill="Transparent"
                              WidthRequest="24"
                              HeightRequest="24"/>
                     <Ellipse x:Name="Inner"
-                             Fill="{TemplateBinding TextColor}"
+                             Fill="{Binding TextColor, Source={RelativeSource TemplatedParent}}"
                              WidthRequest="12"
                              HeightRequest="12"
                              HorizontalOptions="Center"
