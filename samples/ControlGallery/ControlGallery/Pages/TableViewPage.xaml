@@ -362,6 +362,39 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Context Actions Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Context Actions (Right-Click)" FontAttributes="Bold"/>
+                    <TableView Intent="Settings">
+                        <TableRoot>
+                            <TableSection Title="Right-click cells">
+                                <TextCell Text="Action Cell" Detail="Right-click me!">
+
+                                    <TextCell.ContextActions>
+                                        <MenuItem Text="Action 1" Command="{Binding ContextActionCommand}" CommandParameter="Action 1"/>
+                                        <MenuItem Text="Delete" IsDestructive="True" Command="{Binding ContextActionCommand}" CommandParameter="Delete"/>
+                                    </TextCell.ContextActions>
+                                </TextCell>
+                                <SwitchCell Text="Switch with Actions">
+                                    <SwitchCell.ContextActions>
+                                        <MenuItem Text="Toggle" Command="{Binding ContextActionCommand}" CommandParameter="Toggle"/>
+                                    </SwitchCell.ContextActions>
+                                </SwitchCell>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                    <Label x:Name="ContextStatusLabel"
+                           Text="Right-click cells to see context menu" 
+                           TextColor="Gray"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

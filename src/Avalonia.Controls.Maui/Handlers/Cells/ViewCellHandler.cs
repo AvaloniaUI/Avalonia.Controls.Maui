@@ -12,6 +12,7 @@ public class ViewCellHandler : ElementHandler<ViewCell, MauiViewCell>
         {
             [nameof(ViewCell.View)] = MapView,
             [nameof(Cell.IsEnabled)] = MapIsEnabled,
+            ["ContextActions"] = MapContextActions,
         };
 
     public static CommandMapper<ViewCell, ViewCellHandler> CommandMapper =
@@ -64,5 +65,10 @@ public class ViewCellHandler : ElementHandler<ViewCell, MauiViewCell>
     public static void MapView(ViewCellHandler handler, ViewCell viewCell)
     {
         handler.PlatformView.UpdateView(viewCell, handler.MauiContext);
+    }
+
+    public static void MapContextActions(ViewCellHandler handler, ViewCell viewCell)
+    {
+        handler.PlatformView.UpdateContextActions(viewCell);
     }
 }

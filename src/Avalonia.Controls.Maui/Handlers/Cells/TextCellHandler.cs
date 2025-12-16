@@ -17,6 +17,7 @@ public class TextCellHandler : ElementHandler<TextCell, MauiTextCell>
             [nameof(TextCell.DetailColor)] = MapDetailColor,
             [nameof(Cell.IsEnabled)] = MapIsEnabled,
             [nameof(Cell.Height)] = MapHeight,
+            ["ContextActions"] = MapContextActions,
         };
 
     public static CommandMapper<TextCell, TextCellHandler> CommandMapper =
@@ -99,5 +100,10 @@ public class TextCellHandler : ElementHandler<TextCell, MauiTextCell>
     public static void MapHeight(TextCellHandler handler, TextCell textCell)
     {
         handler.PlatformView.UpdateHeight(textCell);
+    }
+
+    public static void MapContextActions(TextCellHandler handler, TextCell textCell)
+    {
+        handler.PlatformView.UpdateContextActions(textCell);
     }
 }

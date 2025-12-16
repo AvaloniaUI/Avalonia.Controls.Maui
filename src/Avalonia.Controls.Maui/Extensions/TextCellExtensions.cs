@@ -94,4 +94,14 @@ public static class TextCellExtensions
             platformView.MinHeight = 44; // Default MinHeight
         }
     }
+
+    /// <summary>
+    /// Updates the context actions (right-click menu) from the <see cref="Cell"/>.
+    /// </summary>
+    /// <param name="platformView">The platform view.</param>
+    /// <param name="cell">The MAUI cell.</param>
+    public static void UpdateContextActions(this MauiTextCell platformView, Cell cell)
+    {
+        platformView.ContextMenu = CellExtensions.BuildContextMenu(cell);
+    }
 }

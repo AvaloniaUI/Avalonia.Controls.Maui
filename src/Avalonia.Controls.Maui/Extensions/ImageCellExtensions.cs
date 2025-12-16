@@ -122,4 +122,14 @@ public static class ImageCellExtensions
         // Reduce opacity for clearer disabled visual feedback
         platformView.Opacity = cell.IsEnabled ? 1.0 : 0.75;
     }
+
+    /// <summary>
+    /// Updates the context actions (right-click menu) from the <see cref="Cell"/>.
+    /// </summary>
+    /// <param name="platformView">The platform view.</param>
+    /// <param name="cell">The MAUI cell.</param>
+    public static void UpdateContextActions(this MauiImageCell platformView, Cell cell)
+    {
+        platformView.ContextMenu = CellExtensions.BuildContextMenu(cell);
+    }
 }

@@ -5,6 +5,7 @@ namespace ControlGallery.Pages;
 public partial class TableViewPage : ContentPage
 {
     public ICommand TapCommand { get; }
+    public ICommand ContextActionCommand { get; }
     private int _tapCount;
 
     public TableViewPage()
@@ -15,6 +16,12 @@ public partial class TableViewPage : ContentPage
             _tapCount++;
             CommandStatusLabel.Text = $"Command executed! (Tap #{_tapCount})";
             CommandStatusLabel.TextColor = Colors.Green;
+        });
+
+        ContextActionCommand = new Command<string>((actionName) =>
+        {
+            ContextStatusLabel.Text = $"Context Action: {actionName}";
+            ContextStatusLabel.TextColor = actionName == "Delete" ? Colors.Red : Colors.Blue;
         });
         BindingContext = this;
     }

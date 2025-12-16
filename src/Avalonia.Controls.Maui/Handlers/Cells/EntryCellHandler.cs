@@ -18,6 +18,7 @@ public class EntryCellHandler : ElementHandler<EntryCell, MauiEntryCell>
             [nameof(EntryCell.VerticalTextAlignment)] = MapVerticalTextAlignment,
             [nameof(EntryCell.Keyboard)] = MapKeyboard,
             [nameof(Cell.IsEnabled)] = MapIsEnabled,
+            ["ContextActions"] = MapContextActions,
         };
 
     public static CommandMapper<EntryCell, EntryCellHandler> CommandMapper =
@@ -123,5 +124,10 @@ public class EntryCellHandler : ElementHandler<EntryCell, MauiEntryCell>
     public static void MapIsEnabled(EntryCellHandler handler, EntryCell entryCell)
     {
         handler.PlatformView.UpdateIsEnabled(entryCell);
+    }
+
+    public static void MapContextActions(EntryCellHandler handler, EntryCell entryCell)
+    {
+        handler.PlatformView.UpdateContextActions(entryCell);
     }
 }

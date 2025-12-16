@@ -14,6 +14,7 @@ public class SwitchCellHandler : ElementHandler<SwitchCell, MauiSwitchCell>
             [nameof(SwitchCell.On)] = MapOn,
             [nameof(SwitchCell.OnColor)] = MapOnColor,
             [nameof(Cell.IsEnabled)] = MapIsEnabled,
+            ["ContextActions"] = MapContextActions,
         };
 
     public static CommandMapper<SwitchCell, SwitchCellHandler> CommandMapper =
@@ -94,5 +95,10 @@ public class SwitchCellHandler : ElementHandler<SwitchCell, MauiSwitchCell>
     public static void MapIsEnabled(SwitchCellHandler handler, SwitchCell switchCell)
     {
         handler.PlatformView.UpdateIsEnabled(switchCell);
+    }
+
+    public static void MapContextActions(SwitchCellHandler handler, SwitchCell switchCell)
+    {
+        handler.PlatformView.UpdateContextActions(switchCell);
     }
 }

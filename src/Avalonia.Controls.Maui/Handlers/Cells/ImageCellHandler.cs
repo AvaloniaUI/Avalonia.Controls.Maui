@@ -17,6 +17,7 @@ public class ImageCellHandler : ElementHandler<ImageCell, MauiImageCell>
             [nameof(ImageCell.DetailColor)] = MapDetailColor,
             [nameof(ImageCell.ImageSource)] = MapImageSource,
             [nameof(Cell.IsEnabled)] = MapIsEnabled,
+            ["ContextActions"] = MapContextActions,
         };
 
     public static CommandMapper<ImageCell, ImageCellHandler> CommandMapper =
@@ -99,6 +100,11 @@ public class ImageCellHandler : ElementHandler<ImageCell, MauiImageCell>
     public static void MapIsEnabled(ImageCellHandler handler, ImageCell imageCell)
     {
         handler.PlatformView.UpdateIsEnabled(imageCell);
+    }
+
+    public static void MapContextActions(ImageCellHandler handler, ImageCell imageCell)
+    {
+        handler.PlatformView.UpdateContextActions(imageCell);
     }
 }
 
