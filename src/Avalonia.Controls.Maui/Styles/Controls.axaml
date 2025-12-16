@@ -11,8 +11,8 @@
                 <MergeResourceInclude Source="../Controls/MauiComboBox/MauiComboBox.axaml" />
                 <MergeResourceInclude Source="../Controls/RadioButton/MauiRadioButton.axaml" />
                 <MergeResourceInclude Source="../Controls/SearchBar/MauiSearchBar.axaml" />
-
-                <MergeResourceInclude Source="../Platform/MauiStepper.axaml" />
+                <MergeResourceInclude Source="../Controls/Stepper/Stepper.axaml" />
+                
                 <MergeResourceInclude Source="../Platform/MauiIndicatorView.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

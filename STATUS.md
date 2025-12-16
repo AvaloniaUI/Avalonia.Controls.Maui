@@ -971,16 +971,16 @@ Enables you to select a double value from a range of incremental values.
 
 | Property | Status |
 |----------|--------|
-| Increment | ⏳ TODO |
-| Maximum | ⏳ TODO |
-| Minimum | ⏳ TODO |
-| Value | ⏳ TODO |
+| Increment | ✅ Implemented |
+| Maximum | ✅ Implemented |
+| Minimum | ✅ Implemented |
+| Value | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| ValueChanged | ⏳ TODO |
+| ValueChanged | ✅ Implemented |
 
 ---
 

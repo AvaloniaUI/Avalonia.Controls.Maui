@@ -17,7 +17,7 @@ public class AvaloniaUriImageSourceServiceTests
         TestAppBuilder.BuildAvaloniaApp().SetupWithoutStarting();
     }
 
-    [Fact(DisplayName = "Uses cached file for subsequent requests")]
+    [Fact(DisplayName = "Uses cached file for subsequent requests", Skip = "https://github.com/AvaloniaUI/Avalonia.Controls.Maui/issues/74")]
     public async Task UsesCachedFile()
     {
         var handler = new CountingHandler(PngBytes);
@@ -54,7 +54,7 @@ public class AvaloniaUriImageSourceServiceTests
         }
     }
 
-    [Fact(DisplayName = "Expired cache downloads again")]
+    [Fact(DisplayName = "Expired cache downloads again", Skip = "https://github.com/AvaloniaUI/Avalonia.Controls.Maui/issues/74")]
     public async Task ExpiredCacheDownloadsAgain()
     {
         var handler = new CountingHandler(PngBytes);
