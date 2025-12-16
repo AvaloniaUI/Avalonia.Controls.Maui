@@ -175,7 +175,7 @@ A control that enables the creation of custom, reusable controls.
 
 | Property | Status |
 |----------|--------|
-| Content | ⏳ TODO |
+| Content | ✅ Implemented  |
 
 ---
 
@@ -776,29 +776,28 @@ A user input control used to initiate a search.
 
 | Property | Status |
 |----------|--------|
-| CancelButtonColor | ⏳ TODO |
-| CharacterSpacing | ⏳ TODO |
-| CursorPosition | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| HorizontalTextAlignment | ⏳ TODO |
-| Placeholder | ⏳ TODO |
-| PlaceholderColor | ⏳ TODO |
-| SearchCommand | ⏳ TODO |
-| SearchCommandParameter | ⏳ TODO |
-| SelectionLength | ⏳ TODO |
-| Text | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| VerticalTextAlignment | ⏳ TODO |
+| CancelButtonColor | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
+| CursorPosition | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| HorizontalTextAlignment | ✅ Implemented |
+| Placeholder | ✅ Implemented |
+| PlaceholderColor | ✅ Implemented |
+| SearchCommand | ✅ Implemented |
+| SearchCommandParameter | ✅ Implemented |
+| SelectionLength | ✅ Implemented |
+| Text | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| VerticalTextAlignment | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| TextChanged | ⏳ TODO |
-| SearchButtonPressed | ⏳ TODO |
+| TextChanged | ✅ Implemented |
+| SearchButtonPressed | ✅ Implemented |
 
 ---
 
