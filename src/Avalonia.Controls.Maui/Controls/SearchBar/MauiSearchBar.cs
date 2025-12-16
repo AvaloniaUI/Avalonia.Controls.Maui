@@ -130,11 +130,6 @@ public partial class MauiSearchBar : TemplatedControl
     public event EventHandler<RoutedEventArgs>? SearchButtonPressed;
     public event EventHandler<TextChangedEventArgs>? TextChanged;
 
-    public MauiSearchBar()
-    {
-        InitializeComponent();
-    }
-
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
