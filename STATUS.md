@@ -175,7 +175,7 @@ A control that enables the creation of custom, reusable controls.
 
 | Property | Status |
 |----------|--------|
-| Content | ⏳ TODO |
+| Content | ✅ Implemented  |
 
 ---
 
