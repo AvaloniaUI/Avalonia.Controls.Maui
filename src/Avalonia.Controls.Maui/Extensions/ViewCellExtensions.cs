@@ -24,8 +24,22 @@ public static class ViewCellExtensions
         if (cell.View != null)
         {
             var viewPlatform = cell.View.ToPlatform(context);
-            if (viewPlatform is Avalonia.Controls.Control control)
+            if (viewPlatform is Control control)
             {
+                // Detach from current parent to avoid "already has parent" error during virtualization
+                if (control.Parent is Decorator oldParent)
+                {
+                    oldParent.Child = null;
+                }
+                else if (control.Parent is Panel oldPanel)
+                {
+                    oldPanel.Children.Remove(control);
+                }
+                else if (control.Parent is ContentControl oldContent)
+                {
+                    oldContent.Content = null;
+                }
+                
                 platformView.Child = control;
             }
         }
