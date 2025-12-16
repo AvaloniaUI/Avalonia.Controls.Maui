@@ -39,13 +39,27 @@ public class TextCellHandler : ElementHandler<TextCell, MauiTextCell>
     {
         var cell = new MauiTextCell();
         cell.PointerReleased += OnCellPointerReleased;
+        cell.AttachedToVisualTree += OnCellAttachedToVisualTree;
+        cell.DetachedFromVisualTree += OnCellDetachedFromVisualTree;
         return cell;
     }
 
     protected override void DisconnectHandler(MauiTextCell platformView)
     {
         platformView.PointerReleased -= OnCellPointerReleased;
+        platformView.AttachedToVisualTree -= OnCellAttachedToVisualTree;
+        platformView.DetachedFromVisualTree -= OnCellDetachedFromVisualTree;
         base.DisconnectHandler(platformView);
+    }
+
+    private void OnCellAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendAppearing();
+    }
+
+    private void OnCellDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendDisappearing();
     }
 
     private void OnCellPointerReleased(object? sender, PointerReleasedEventArgs e)

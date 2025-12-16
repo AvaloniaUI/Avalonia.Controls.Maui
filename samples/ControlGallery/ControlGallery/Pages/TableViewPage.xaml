@@ -278,6 +278,38 @@
                 </VerticalStackLayout>
             </Border>
             
+            <!-- Cell Lifecycle Events Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cell Lifecycle Events" FontAttributes="Bold"/>
+                    <Label Text="TextCell Appearing/Disappearing events fire when cells enter/leave the visual tree. Scroll to see events trigger."
+                           FontSize="11" TextColor="Gray"/>
+                    <TableView Intent="Data">
+                        <TableRoot>
+                            <TableSection Title="Lifecycle Events">
+                                <TextCell Text="Cell 1" Detail="Scroll to trigger events"
+                                          Appearing="OnCellAppearing" 
+                                          Disappearing="OnCellDisappearing"/>
+                                <TextCell Text="Cell 2" Detail="Appearing/Disappearing"
+                                          Appearing="OnCellAppearing" 
+                                          Disappearing="OnCellDisappearing"/>
+                                <TextCell Text="Cell 3" Detail="Watch status below"
+                                          Appearing="OnCellAppearing" 
+                                          Disappearing="OnCellDisappearing"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                    <Label x:Name="LifecycleStatusLabel" 
+                           Text="Lifecycle: Waiting..." 
+                           TextColor="Gray"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+            
             <!-- Interactive Features Example -->
             <Border Stroke="Gray" Padding="10">
                 <Border.StrokeShape>

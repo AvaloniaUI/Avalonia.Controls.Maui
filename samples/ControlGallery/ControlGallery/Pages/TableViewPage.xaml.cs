@@ -36,4 +36,27 @@ public partial class TableViewPage : ContentPage
             CommandStatusLabel.TextColor = Colors.Blue;
         }
     }
+
+    private int _appearingCount;
+    private int _disappearingCount;
+
+    private void OnCellAppearing(object sender, EventArgs e)
+    {
+        _appearingCount++;
+        if (sender is TextCell cell)
+        {
+            LifecycleStatusLabel.Text = $"Appearing: {cell.Text} (Total: {_appearingCount} appearing, {_disappearingCount} disappearing)";
+            LifecycleStatusLabel.TextColor = Colors.Green;
+        }
+    }
+
+    private void OnCellDisappearing(object sender, EventArgs e)
+    {
+        _disappearingCount++;
+        if (sender is TextCell cell)
+        {
+            LifecycleStatusLabel.Text = $"Disappearing: {cell.Text} (Total: {_appearingCount} appearing, {_disappearingCount} disappearing)";
+            LifecycleStatusLabel.TextColor = Colors.Orange;
+        }
+    }
 }

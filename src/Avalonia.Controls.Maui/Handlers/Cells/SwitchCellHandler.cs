@@ -36,6 +36,8 @@ public class SwitchCellHandler : ElementHandler<SwitchCell, MauiSwitchCell>
     protected override MauiSwitchCell CreatePlatformElement()
     {
         var cell = new MauiSwitchCell();
+        cell.AttachedToVisualTree += OnCellAttachedToVisualTree;
+        cell.DetachedFromVisualTree += OnCellDetachedFromVisualTree;
         return cell;
     }
 
@@ -49,6 +51,18 @@ public class SwitchCellHandler : ElementHandler<SwitchCell, MauiSwitchCell>
     {
         base.DisconnectHandler(platformView);
         platformView.ToggleSwitch.IsCheckedChanged -= OnCheckedChanged;
+        platformView.AttachedToVisualTree -= OnCellAttachedToVisualTree;
+        platformView.DetachedFromVisualTree -= OnCellDetachedFromVisualTree;
+    }
+
+    private void OnCellAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendAppearing();
+    }
+
+    private void OnCellDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendDisappearing();
     }
 
     private void OnCheckedChanged(object? sender, Interactivity.RoutedEventArgs e)

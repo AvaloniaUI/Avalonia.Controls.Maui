@@ -40,13 +40,27 @@ public class ImageCellHandler : ElementHandler<ImageCell, MauiImageCell>
     {
         var cell = new MauiImageCell();
         cell.PointerReleased += OnCellPointerReleased;
+        cell.AttachedToVisualTree += OnCellAttachedToVisualTree;
+        cell.DetachedFromVisualTree += OnCellDetachedFromVisualTree;
         return cell;
     }
 
     protected override void DisconnectHandler(MauiImageCell platformView)
     {
         platformView.PointerReleased -= OnCellPointerReleased;
+        platformView.AttachedToVisualTree -= OnCellAttachedToVisualTree;
+        platformView.DetachedFromVisualTree -= OnCellDetachedFromVisualTree;
         base.DisconnectHandler(platformView);
+    }
+
+    private void OnCellAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendAppearing();
+    }
+
+    private void OnCellDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendDisappearing();
     }
 
     private void OnCellPointerReleased(object? sender, PointerReleasedEventArgs e)

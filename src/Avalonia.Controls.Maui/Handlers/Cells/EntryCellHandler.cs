@@ -15,6 +15,8 @@ public class EntryCellHandler : ElementHandler<EntryCell, MauiEntryCell>
             [nameof(EntryCell.Placeholder)] = MapPlaceholder,
             [nameof(EntryCell.LabelColor)] = MapLabelColor,
             [nameof(EntryCell.HorizontalTextAlignment)] = MapHorizontalTextAlignment,
+            [nameof(EntryCell.VerticalTextAlignment)] = MapVerticalTextAlignment,
+            [nameof(EntryCell.Keyboard)] = MapKeyboard,
             [nameof(Cell.IsEnabled)] = MapIsEnabled,
         };
 
@@ -40,6 +42,8 @@ public class EntryCellHandler : ElementHandler<EntryCell, MauiEntryCell>
         var cell = new MauiEntryCell();
         cell.Input.TextChanged += OnTextChanged;
         cell.Input.KeyDown += OnInputKeyDown;
+        cell.AttachedToVisualTree += OnCellAttachedToVisualTree;
+        cell.DetachedFromVisualTree += OnCellDetachedFromVisualTree;
         return cell;
     }
 
@@ -48,6 +52,18 @@ public class EntryCellHandler : ElementHandler<EntryCell, MauiEntryCell>
         base.DisconnectHandler(platformView);
         platformView.Input.TextChanged -= OnTextChanged;
         platformView.Input.KeyDown -= OnInputKeyDown;
+        platformView.AttachedToVisualTree -= OnCellAttachedToVisualTree;
+        platformView.DetachedFromVisualTree -= OnCellDetachedFromVisualTree;
+    }
+
+    private void OnCellAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendAppearing();
+    }
+
+    private void OnCellDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendDisappearing();
     }
 
     private void OnInputKeyDown(object? sender, Input.KeyEventArgs e)
@@ -92,6 +108,16 @@ public class EntryCellHandler : ElementHandler<EntryCell, MauiEntryCell>
     public static void MapHorizontalTextAlignment(EntryCellHandler handler, EntryCell entryCell)
     {
         handler.PlatformView.UpdateHorizontalTextAlignment(entryCell);
+    }
+
+    public static void MapVerticalTextAlignment(EntryCellHandler handler, EntryCell entryCell)
+    {
+        handler.PlatformView.UpdateVerticalTextAlignment(entryCell);
+    }
+
+    public static void MapKeyboard(EntryCellHandler handler, EntryCell entryCell)
+    {
+        handler.PlatformView.UpdateKeyboard(entryCell);
     }
 
     public static void MapIsEnabled(EntryCellHandler handler, EntryCell entryCell)

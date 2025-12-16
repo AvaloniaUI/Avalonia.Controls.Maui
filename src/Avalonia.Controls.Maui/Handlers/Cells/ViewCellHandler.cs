@@ -33,7 +33,27 @@ public class ViewCellHandler : ElementHandler<ViewCell, MauiViewCell>
 
     protected override MauiViewCell CreatePlatformElement()
     {
-        return new MauiViewCell();
+        var cell = new MauiViewCell();
+        cell.AttachedToVisualTree += OnCellAttachedToVisualTree;
+        cell.DetachedFromVisualTree += OnCellDetachedFromVisualTree;
+        return cell;
+    }
+
+    protected override void DisconnectHandler(MauiViewCell platformView)
+    {
+        platformView.AttachedToVisualTree -= OnCellAttachedToVisualTree;
+        platformView.DetachedFromVisualTree -= OnCellDetachedFromVisualTree;
+        base.DisconnectHandler(platformView);
+    }
+
+    private void OnCellAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendAppearing();
+    }
+
+    private void OnCellDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendDisappearing();
     }
 
     public static void MapIsEnabled(ViewCellHandler handler, ViewCell viewCell)
