@@ -87,4 +87,10 @@ public partial class TableViewPage : ContentPage
         HeightStatusLabel.Text = $"Heights: {height1}, {height2}, {height3}";
         HeightStatusLabel.TextColor = Colors.Purple;
     }
+
+    private void OnViewCellTapped(object sender, EventArgs e)
+    {
+        ContextStatusLabel.Text = "ViewCell Tapped!";
+        ContextStatusLabel.TextColor = Colors.Magenta;
+    }
 }

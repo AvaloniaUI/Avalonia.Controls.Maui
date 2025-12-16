@@ -384,6 +384,25 @@
                                         <MenuItem Text="Toggle" Command="{Binding ContextActionCommand}" CommandParameter="Toggle"/>
                                     </SwitchCell.ContextActions>
                                 </SwitchCell>
+                                <ImageCell Text="Image Cell" Detail="With actions" ImageSource="dotnet_bot.png">
+                                    <ImageCell.ContextActions>
+                                        <MenuItem Text="View Image" Command="{Binding ContextActionCommand}" CommandParameter="View Image"/>
+                                    </ImageCell.ContextActions>
+                                </ImageCell>
+                                <EntryCell Label="Entry Cell" Text="Right-click me">
+                                    <EntryCell.ContextActions>
+                                        <MenuItem Text="Clear" Command="{Binding ContextActionCommand}" CommandParameter="Clear Entry"/>
+                                    </EntryCell.ContextActions>
+                                </EntryCell>
+                                <ViewCell Tapped="OnViewCellTapped">
+                                    <ViewCell.ContextActions>
+                                        <MenuItem Text="Custom Action" Command="{Binding ContextActionCommand}" CommandParameter="ViewCell Action"/>
+                                    </ViewCell.ContextActions>
+                                    <StackLayout Orientation="Horizontal" Padding="15,10">
+                                        <Label Text="Custom View Cell" VerticalOptions="Center"/>
+                                        <BoxView Color="Blue" WidthRequest="20" HeightRequest="20" Margin="10,0" VerticalOptions="Center"/>
+                                    </StackLayout>
+                                </ViewCell>
                             </TableSection>
                         </TableRoot>
                     </TableView>
