@@ -306,6 +306,34 @@ Enables you to enter and edit a single line of text.
 
 ---
 
+## EntryCell (Deprecated)
+
+Displays an entry with a label and placeholder, for use in a TableView or ListView.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Label | ✅ Implemented |
+| Text | ✅ Implemented |
+| Placeholder | ✅ Implemented |
+| LabelColor | ✅ Implemented |
+| HorizontalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ✅ Implemented |
+| Keyboard | ✅ Implemented |
+| IsEnabled | ✅ Implemented |
+| ContextActions | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| Completed | ✅ Implemented |
+| Appearing | ✅ Implemented |
+| Disappearing | ✅ Implemented |
+
+---
+
 ## Frame (Deprecated)
 
 Used to wrap a view or layout with a border that can be configured with color, shadow, and other options.
@@ -374,6 +402,31 @@ Displays an image and responds to a tap or click that directs an app to carry ou
 | Clicked | ✅ Implemented |
 | Pressed | ✅ Implemented |
 | Released | ✅ Implemented |
+
+---
+
+## ImageCell (Deprecated)
+
+Displays an image with text and detail text, for use in a TableView or ListView.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Text | ✅ Implemented |
+| Detail | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| DetailColor | ✅ Implemented |
+| ImageSource | ✅ Implemented |
+| IsEnabled | ✅ Implemented |
+| ContextActions | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| Appearing | ✅ Implemented |
+| Disappearing | ✅ Implemented |
 
 ---
 
@@ -976,6 +1029,30 @@ Enables you to select a boolean value using a type of button that can either be 
 
 ---
 
+## SwitchCell (Deprecated)
+
+Displays a switch with a label, for use in a TableView or ListView.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Text | ✅ Implemented |
+| On | ✅ Implemented |
+| OnColor | ✅ Implemented |
+| IsEnabled | ✅ Implemented |
+| ContextActions | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| OnChanged | ✅ Implemented |
+| Appearing | ✅ Implemented |
+| Disappearing | ✅ Implemented |
+
+---
+
 ## TableView (Deprecated)
 
 Displays a table of scrollable items that can be grouped into sections.
@@ -988,6 +1065,33 @@ Displays a table of scrollable items that can be grouped into sections.
 | Root | ✅ Implemented  |
 | HasUnevenRows | ✅ Implemented  |
 | RowHeight | ✅ Implemented  |
+
+---
+
+## TextCell (Deprecated)
+
+Displays text and detail text, for use in a TableView or ListView.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Text | ✅ Implemented |
+| Detail | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| DetailColor | ✅ Implemented |
+| IsEnabled | ✅ Implemented |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
+| ContextActions | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| Tapped | ✅ Implemented |
+| Appearing | ✅ Implemented |
+| Disappearing | ✅ Implemented |
 
 ---
 
@@ -1042,6 +1146,28 @@ Enables you to select a time with the platform time picker.
 | Event | Status |
 |-------|--------|
 | PropertyChanged | ⏳ TODO |
+
+---
+
+## ViewCell (Deprecated)
+
+A cell containing a developer-defined view, for use in a TableView or ListView.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| View | ✅ Implemented |
+| IsEnabled | ✅ Implemented |
+| ContextActions | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| Tapped | ✅ Implemented |
+| Appearing | ✅ Implemented |
+| Disappearing | ✅ Implemented |
 
 ---
 
