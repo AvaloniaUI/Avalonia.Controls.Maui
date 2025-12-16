@@ -1,0 +1,21 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Avalonia.Controls.Maui.ControlStyles">
+
+    <Styles.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Small optimization: -->
+                <!-- MergeResourceInclude instead of ResourceInclude copies resources from inner dictionary to outer one -->
+                <MergeResourceInclude Source="../Controls/ProgressRing/ProgressRing.axaml" />
+                <MergeResourceInclude Source="../Controls/MauiComboBox/MauiComboBox.axaml" />
+                <MergeResourceInclude Source="../Controls/RadioButton/MauiRadioButton.axaml" />
+                <MergeResourceInclude Source="../Controls/SearchBar/MauiSearchBar.axaml" />
+
+                <MergeResourceInclude Source="../Platform/MauiStepper.axaml" />
+                <MergeResourceInclude Source="../Platform/MauiIndicatorView.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Styles.Resources>
+
+</Styles>
