@@ -5,8 +5,8 @@ namespace Avalonia.Controls.Maui;
 
 public partial class ControlStyles : Styles
 {
-    public ControlStyles()
+    public ControlStyles(IServiceProvider? serviceProvider = null)
     {
-        AvaloniaXamlLoader.Load(this);
+        AvaloniaXamlLoader.Load(serviceProvider, this);
     }
 }
