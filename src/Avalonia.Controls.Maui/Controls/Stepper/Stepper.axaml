@@ -1,19 +1,25 @@
-<ResourceDictionary xmlns="https://github.com/avaloniaui"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="using:Avalonia.Controls.Maui.Controls"
-                    x:ClassModifier="internal">
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:ClassModifier="internal"
+    xmlns:controls="using:Avalonia.Controls.Maui">
 
-    <ControlTheme x:Key="{x:Type controls:MauiStepper}"
-                  TargetType="controls:MauiStepper">
+    <ControlTheme x:Key="{x:Type controls:Stepper}" TargetType="controls:Stepper">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
         <Setter Property="Template">
             <ControlTemplate>
-                <Border Background="{TemplateBinding Background}"
+                <Border
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="4">
                     <StackPanel Orientation="Horizontal" Spacing="0">
                         <Button Name="PART_MinusButton"
                                 Content="-"
+                                Background="{TemplateBinding Background}"
                                 Width="40"
                                 Height="32"
                                 FontSize="18"
@@ -24,6 +30,7 @@
                                 CornerRadius="4 0 0 4" />
                         <Button Name="PART_PlusButton"
                                 Content="+"
+                                Background="{TemplateBinding Background}"
                                 Width="40"
                                 Height="32"
                                 FontSize="18"
@@ -37,4 +44,5 @@
             </ControlTemplate>
         </Setter>
     </ControlTheme>
+
 </ResourceDictionary>
