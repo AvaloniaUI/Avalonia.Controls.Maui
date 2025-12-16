@@ -1,16 +1,11 @@
-using Avalonia.Controls;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Platform;
-using AvaloniaRadioButton = global::Avalonia.Controls.Maui.MauiRadioButton;
+using PlatformView = Avalonia.Controls.Maui.MauiRadioButton;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-/// <summary>
-/// Handler for MAUI IRadioButton to Avalonia RadioButton mapping
-/// </summary>
-public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>, IRadioButtonHandler
+public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadioButtonHandler
 {
     public static IPropertyMapper<IRadioButton, IRadioButtonHandler> Mapper = new PropertyMapper<IRadioButton, IRadioButtonHandler>(ViewHandler.ViewMapper)
     {
@@ -19,9 +14,13 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>
         [nameof(ITextStyle.Font)] = MapFont,
         [nameof(ITextStyle.TextColor)] = MapTextColor,
         [nameof(IRadioButton.Content)] = MapContent,
-        [nameof(IRadioButton.StrokeColor)] = MapStrokeColor,
-        [nameof(IRadioButton.StrokeThickness)] = MapStrokeThickness,
-        [nameof(IRadioButton.CornerRadius)] = MapCornerRadius,
+        [nameof(IButtonStroke.StrokeColor)] = MapStrokeColor,
+        [nameof(IButtonStroke.StrokeThickness)] = MapStrokeThickness,
+        [nameof(IButtonStroke.CornerRadius)] = MapCornerRadius,
+        ["ContentTemplate"] = MapContent,
+        ["GroupName"] = MapGroupName,
+        ["TextTransform"] = MapContent,
+        ["Value"] = MapValue,
     };
 
     public static CommandMapper<IRadioButton, IRadioButtonHandler> CommandMapper = new(ViewCommandMapper)
@@ -44,33 +43,25 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>
 
     IRadioButton IRadioButtonHandler.VirtualView => VirtualView;
 
-    System.Object IRadioButtonHandler.PlatformView => PlatformView;
+    Object IRadioButtonHandler.PlatformView => PlatformView;
 
-    protected override AvaloniaRadioButton CreatePlatformView()
+    protected override PlatformView CreatePlatformView()
     {
-        return new AvaloniaRadioButton();
+        return new PlatformView();
     }
 
     public override bool NeedsContainer => false;
 
-    protected override void ConnectHandler(AvaloniaRadioButton platformView)
+    protected override void ConnectHandler(PlatformView platformView)
     {
         platformView.IsCheckedChanged += OnIsCheckedChanged;
         base.ConnectHandler(platformView);
     }
 
-    protected override void DisconnectHandler(AvaloniaRadioButton platformView)
+    protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.IsCheckedChanged -= OnIsCheckedChanged;
         base.DisconnectHandler(platformView);
-    }
-
-    private void OnIsCheckedChanged(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        if (VirtualView != null && sender is AvaloniaRadioButton radioButton)
-        {
-            VirtualView.IsChecked = radioButton.IsChecked == true;
-        }
     }
 
     public static void MapIsChecked(IRadioButtonHandler handler, IRadioButton radioButton)
@@ -78,8 +69,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
 
-        var platformView = (AvaloniaRadioButton)handler.PlatformView;
-        platformView.IsChecked = radioButton.IsChecked;
+        ((PlatformView)handler.PlatformView).UpdateIsChecked(radioButton);
     }
 
     public static void MapContent(IRadioButtonHandler handler, IRadioButton radioButton)
@@ -87,19 +77,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
 
-        var platformView = (AvaloniaRadioButton)handler.PlatformView;
-
-        // If Content is IView, we need to convert it to a platform control
-        if (radioButton.PresentedContent is IView view)
-        {
-            _ = handler.MauiContext ?? throw new InvalidOperationException($"MauiContext cannot be null");
-            platformView.Content = (Control)view.ToPlatform(handler.MauiContext);
-        }
-        // Otherwise, use Content directly (string, etc.)
-        else if (radioButton.Content != null)
-        {
-            platformView.Content = radioButton.Content;
-        }
+        ((PlatformView)handler.PlatformView).UpdateContent(handler, radioButton);
     }
 
     public static void MapStrokeColor(IRadioButtonHandler handler, IRadioButton radioButton)
@@ -107,12 +85,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
 
-        var platformView = (AvaloniaRadioButton)handler.PlatformView;
-
-        if (radioButton.StrokeColor != null)
-        {
-            platformView.BorderBrush = radioButton.StrokeColor.ToPlatform();
-        }
+        ((PlatformView)handler.PlatformView).UpdateStrokeColor(radioButton);
     }
 
     public static void MapStrokeThickness(IRadioButtonHandler handler, IRadioButton radioButton)
@@ -120,8 +93,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
 
-        var platformView = (AvaloniaRadioButton)handler.PlatformView;
-        platformView.BorderThickness = new global::Avalonia.Thickness(radioButton.StrokeThickness);
+        ((PlatformView)handler.PlatformView).UpdateStrokeThickness(radioButton);
     }
 
     public static void MapCornerRadius(IRadioButtonHandler handler, IRadioButton radioButton)
@@ -129,8 +101,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
 
-        var platformView = (AvaloniaRadioButton)handler.PlatformView;
-        platformView.CornerRadius = new global::Avalonia.CornerRadius(radioButton.CornerRadius);
+        ((PlatformView)handler.PlatformView).UpdateCornerRadius(radioButton);
     }
 
     public static void MapCharacterSpacing(IRadioButtonHandler handler, IRadioButton radioButton)
@@ -138,9 +109,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
 
-        // Note: Avalonia RadioButton doesn't directly support character spacing
-        // This would require custom styling
-        // TODO: Implement character spacing through custom styling
+        ((PlatformView)handler.PlatformView).UpdateCharacterSpacing(radioButton);
     }
 
     public static void MapFont(IRadioButtonHandler handler, IRadioButton radioButton)
@@ -149,9 +118,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>
             return;
 
         var fontManager = handler.GetRequiredService<IFontManager>();
-        var platformView = (AvaloniaRadioButton)handler.PlatformView;
-
-        platformView.UpdateFont(radioButton, fontManager);
+        ((PlatformView)handler.PlatformView).UpdateFont(radioButton, fontManager);
     }
 
     public static void MapTextColor(IRadioButtonHandler handler, IRadioButton radioButton)
@@ -159,11 +126,30 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, AvaloniaRadioButton>
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
 
-        var platformView = (AvaloniaRadioButton)handler.PlatformView;
+        ((PlatformView)handler.PlatformView).UpdateTextColor(radioButton);
+    }
 
-        if (radioButton.TextColor != null)
+    public static void MapGroupName(IRadioButtonHandler handler, IRadioButton radioButton)
+    {
+        if (handler.PlatformView is null || handler.VirtualView is null)
+            return;
+
+        ((PlatformView)handler.PlatformView).UpdateGroupName(radioButton);
+    }
+
+    public static void MapValue(IRadioButtonHandler handler, IRadioButton radioButton)
+    {
+        if (handler.PlatformView is null || handler.VirtualView is null)
+            return;
+
+        ((PlatformView)handler.PlatformView).UpdateValue(radioButton);
+    }
+
+    private void OnIsCheckedChanged(object? sender, Interactivity.RoutedEventArgs e)
+    {
+        if (VirtualView != null && sender is PlatformView radioButton)
         {
-            platformView.Foreground = radioButton.TextColor.ToPlatform();
+            VirtualView.IsChecked = radioButton.IsChecked == true;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -43,7 +44,10 @@ public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Con
 
     public static void MapContent(IContentViewHandler handler, IContentView page)
     {
-        ((ContentViewHandler)handler).UpdateContent();
+        if (handler.PlatformView is Avalonia.Controls.Maui.Platform.ContentView platformView)
+        {
+            platformView.UpdateContent(page, handler.MauiContext);
+        }
     }
 
     protected override Avalonia.Controls.Maui.Platform.ContentView CreatePlatformView()
@@ -69,17 +73,5 @@ public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Con
         _ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
 
         PlatformView.CrossPlatformLayout = VirtualView;
-    }
-
-    void UpdateContent()
-    {
-        _ = PlatformView ?? throw new InvalidOperationException($"{nameof(PlatformView)} should have been set by base class.");
-        _ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
-        _ = MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
-
-        PlatformView.Children.Clear();
-
-        if (VirtualView.PresentedContent is IView view)
-            PlatformView.Children.Add((Control)view.ToPlatform(MauiContext));
     }
 }
