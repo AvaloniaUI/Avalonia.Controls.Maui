@@ -982,12 +982,12 @@ Displays a table of scrollable items that can be grouped into sections.
 
 ### Properties
 
-| Property | Status |
-|----------|--------|
-| Intent | ⏳ TODO |
-| Root | ⏳ TODO |
-| HasUnevenRows | ⏳ TODO |
-| RowHeight | ⏳ TODO |
+| Property | Status         |
+|----------|----------------|
+| Intent | ✅ Implemented  |
+| Root | ✅ Implemented  |
+| HasUnevenRows | ✅ Implemented  |
+| RowHeight | ✅ Implemented  |
 
 ---
 
