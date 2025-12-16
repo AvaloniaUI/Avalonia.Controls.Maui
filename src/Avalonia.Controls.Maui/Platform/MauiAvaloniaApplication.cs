@@ -35,6 +35,8 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
     {
         IPlatformApplication.Current = this;
 
+        Styles.Add(new ControlStyles());
+
         var mauiApp = CreateMauiApp();
 
         var rootContext = new MauiContext(mauiApp.Services);

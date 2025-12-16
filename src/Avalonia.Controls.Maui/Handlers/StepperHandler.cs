@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
-using PlatformView = Avalonia.Controls.Maui.Controls.MauiStepper;
+using PlatformView = Avalonia.Controls.Maui.Stepper;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -13,7 +13,7 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
         [nameof(IStepper.Maximum)] = MapMaximum,
         [nameof(IStepper.Minimum)] = MapMinimum,
         [nameof(IStepper.Value)] = MapValue,
-        [nameof(IView.Background)] = MapBackground,
+        [nameof(IStepper.Background)] = MapBackground,
     };
 
     public static CommandMapper<IStepper, IStepperHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)

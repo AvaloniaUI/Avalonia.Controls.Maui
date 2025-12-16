@@ -1,35 +1,88 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:Avalonia.Controls.Maui">
+                    xmlns:controls="using:Avalonia.Controls.Maui"
+                    x:ClassModifier="internal">
 
-    <!--
-    MauiRadioButton theme that only displays content without the default radio indicator.
-    This is needed because MAUI's RadioButton ControlTemplate provides its own indicator,
-    and we don't want to duplicate it with Avalonia's default RadioButton indicator.
-    -->
-    <ControlTheme x:Key="{x:Type controls:MauiRadioButton}" TargetType="controls:MauiRadioButton">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="VerticalContentAlignment" Value="Stretch" />
-        <Setter Property="Template">
-            <ControlTemplate>
-                <!-- Simple template that only shows content, no radio indicator -->
-                <ContentPresenter x:Name="PART_ContentPresenter"
-                                  Background="{TemplateBinding Background}"
-                                  BorderBrush="{TemplateBinding BorderBrush}"
-                                  BorderThickness="{TemplateBinding BorderThickness}"
-                                  CornerRadius="{TemplateBinding CornerRadius}"
-                                  ContentTemplate="{TemplateBinding ContentTemplate}"
-                                  Content="{TemplateBinding Content}"
-                                  Padding="{TemplateBinding Padding}"
-                                  RecognizesAccessKey="True"
-                                  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
-            </ControlTemplate>
-        </Setter>
-    </ControlTheme>
+  <ControlTheme x:Key="{x:Type controls:MauiRadioButton}"
+                TargetType="controls:MauiRadioButton">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="4" />
+    <Setter Property="Template">
+      <ControlTemplate>
+        <!-- Outer border for BorderColor/BorderWidth/CornerRadius properties -->
+        <Border Name="OuterBorder"
+                Background="{TemplateBinding Background}"
+                BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}"
+                CornerRadius="{TemplateBinding CornerRadius}"
+                Padding="{TemplateBinding Padding}">
+          <Grid ColumnDefinitions="Auto,*">
+            <!-- Radio indicator circle - hidden when ShowIndicator is false -->
+            <Grid Name="IndicatorContainer" Width="18">
+              <Ellipse Name="border"
+                       Width="18"
+                       Height="18"
+                       VerticalAlignment="Center"
+                       Stroke="{DynamicResource ThemeBorderMidBrush}"
+                       StrokeThickness="1" />
+              <Ellipse Name="checkMark"
+                       Width="10"
+                       Height="10"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Stretch="Uniform"
+                       UseLayoutRounding="False" />
+              <Ellipse Name="indeterminateMark"
+                       Width="10"
+                       Height="10"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Fill="{DynamicResource ThemeAccentBrush}"
+                       Stretch="Uniform"
+                       UseLayoutRounding="False" />
+            </Grid>
+            <ContentPresenter Name="PART_ContentPresenter"
+                              Grid.Column="1"
+                              Margin="4,0,0,0"
+                              VerticalAlignment="Center"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}" />
+          </Grid>
+        </Border>
+      </ControlTemplate>
+    </Setter>
 
+    <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="RecognizesAccessKey" Value="True" />
+    </Style>
+
+    <Style Selector="^:pointerover /template/ Ellipse#border">
+      <Setter Property="Stroke" Value="{DynamicResource ThemeBorderHighBrush}" />
+    </Style>
+    <Style Selector="^ /template/ Ellipse#checkMark">
+      <Setter Property="Fill" Value="{DynamicResource HighlightBrush}" />
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="^ /template/ Ellipse#indeterminateMark">
+      <Setter Property="IsVisible" Value="False" />
+    </Style>
+    <Style Selector="^:checked /template/ Ellipse#checkMark">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="^:indeterminate /template/ Ellipse#indeterminateMark">
+      <Setter Property="IsVisible" Value="True" />
+    </Style>
+    <Style Selector="^:disabled /template/ Ellipse#border">
+      <Setter Property="Opacity" Value="{DynamicResource ThemeDisabledOpacity}" />
+    </Style>
+
+    <!-- Hide indicator when ShowIndicator is false (custom ControlTemplate in use) -->
+    <Style Selector="^[ShowIndicator=False] /template/ Grid#IndicatorContainer">
+      <Setter Property="IsVisible" Value="False" />
+      <Setter Property="Width" Value="0" />
+    </Style>
+    <Style Selector="^[ShowIndicator=False] /template/ ContentPresenter#PART_ContentPresenter">
+      <Setter Property="Margin" Value="0" />
+    </Style>
+  </ControlTheme>
 </ResourceDictionary>
