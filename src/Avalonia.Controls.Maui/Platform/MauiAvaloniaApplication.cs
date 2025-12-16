@@ -71,6 +71,8 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
 
         Services.InvokeLifecycleEvents<AvaloniaLifecycle.OnLaunched>(del => del(this, args));
 
+        RegisterMauiControlsResources();
+
         base.OnFrameworkInitializationCompleted();
     }
 
@@ -133,5 +135,14 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
     private void OnActualThemeVariantChanged(object? sender, EventArgs e)
     {
         Application?.ThemeChanged();
+    }
+
+    private void RegisterMauiControlsResources()
+    {
+        Resources.MergedDictionaries.Add(new MauiRadioButtonResources());
+        Resources.MergedDictionaries.Add(new ProgressRingResources());
+        Resources.MergedDictionaries.Add(new MauiComboBoxResources());
+
+        Styles.Add(new ControlStyles());
     }
 }
