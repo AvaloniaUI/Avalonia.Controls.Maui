@@ -5,6 +5,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<UseMaui>true</UseMaui>
+		<NoWarn>CS0618</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Label="AOT Validation">

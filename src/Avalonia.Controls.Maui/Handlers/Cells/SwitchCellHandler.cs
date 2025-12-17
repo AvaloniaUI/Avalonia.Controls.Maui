@@ -1,17 +1,11 @@
-using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Media;
+using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
-using System;
 
 namespace Avalonia.Controls.Maui.Handlers.Cells;
 
-/// <summary>
-/// Handler for MAUI SwitchCell
-/// </summary>
-public class SwitchCellHandler : ElementHandler<SwitchCell, global::Avalonia.Controls.Border>
+public class SwitchCellHandler : ElementHandler<SwitchCell, MauiSwitchCell>
 {
     public static IPropertyMapper<SwitchCell, SwitchCellHandler> Mapper =
         new PropertyMapper<SwitchCell, SwitchCellHandler>(ElementMapper)
@@ -19,14 +13,12 @@ public class SwitchCellHandler : ElementHandler<SwitchCell, global::Avalonia.Con
             [nameof(SwitchCell.Text)] = MapText,
             [nameof(SwitchCell.On)] = MapOn,
             [nameof(SwitchCell.OnColor)] = MapOnColor,
+            [nameof(Cell.IsEnabled)] = MapIsEnabled,
+            ["ContextActions"] = MapContextActions,
         };
 
     public static CommandMapper<SwitchCell, SwitchCellHandler> CommandMapper =
         new(ElementCommandMapper);
-
-    private TextBlock? _textBlock;
-    private ToggleSwitch? _switch;
-    private bool _isUpdating;
 
     public SwitchCellHandler() : base(Mapper, CommandMapper)
     {
@@ -42,73 +34,71 @@ public class SwitchCellHandler : ElementHandler<SwitchCell, global::Avalonia.Con
     {
     }
 
-    protected override global::Avalonia.Controls.Border CreatePlatformElement()
+    protected override MauiSwitchCell CreatePlatformElement()
     {
-        _textBlock = new TextBlock
+        var cell = new MauiSwitchCell();
+        cell.AttachedToVisualTree += OnCellAttachedToVisualTree;
+        cell.DetachedFromVisualTree += OnCellDetachedFromVisualTree;
+        return cell;
+    }
+
+    protected override void ConnectHandler(MauiSwitchCell platformView)
+    {
+        base.ConnectHandler(platformView);
+        platformView.ToggleSwitch.IsCheckedChanged += OnCheckedChanged;
+    }
+
+    protected override void DisconnectHandler(MauiSwitchCell platformView)
+    {
+        base.DisconnectHandler(platformView);
+        platformView.ToggleSwitch.IsCheckedChanged -= OnCheckedChanged;
+        platformView.AttachedToVisualTree -= OnCellAttachedToVisualTree;
+        platformView.DetachedFromVisualTree -= OnCellDetachedFromVisualTree;
+    }
+
+    private void OnCellAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendAppearing();
+    }
+
+    private void OnCellDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendDisappearing();
+    }
+
+    private void OnCheckedChanged(object? sender, Interactivity.RoutedEventArgs e)
+    {
+        if (VirtualView != null)
         {
-            FontSize = 16,
-            VerticalAlignment = VerticalAlignment.Center
-        };
-
-        _switch = new ToggleSwitch
-        {
-            VerticalAlignment = VerticalAlignment.Center
-        };
-
-        _switch.IsCheckedChanged += (s, e) =>
-        {
-            if (_isUpdating || VirtualView is null)
-                return;
-
-            _isUpdating = true;
-            VirtualView.On = _switch.IsChecked ?? false;
-            _isUpdating = false;
-        };
-
-        var grid = new global::Avalonia.Controls.Grid
-        {
-            ColumnDefinitions = new ColumnDefinitions("*,Auto"),
-            Margin = new Thickness(16, 8)
-        };
-
-        global::Avalonia.Controls.Grid.SetColumn(_textBlock, 0);
-        global::Avalonia.Controls.Grid.SetColumn(_switch, 1);
-
-        grid.Children.Add(_textBlock);
-        grid.Children.Add(_switch);
-
-        return new global::Avalonia.Controls.Border
-        {
-            Child = grid,
-            Background = global::Avalonia.Media.Brushes.Transparent,
-            MinHeight = 44
-        };
+            if (VirtualView.On != PlatformView.ToggleSwitch.IsChecked)
+            {
+                VirtualView.On = PlatformView.ToggleSwitch.IsChecked ?? false;
+            }
+        }
     }
 
     public static void MapText(SwitchCellHandler handler, SwitchCell switchCell)
     {
-        if (handler._textBlock is null)
-            return;
-
-        handler._textBlock.Text = switchCell.Text ?? string.Empty;
+        handler.PlatformView.UpdateText(switchCell);
     }
 
     public static void MapOn(SwitchCellHandler handler, SwitchCell switchCell)
     {
-        if (handler._switch is null || handler._isUpdating)
-            return;
-
-        handler._isUpdating = true;
-        handler._switch.IsChecked = switchCell.On;
-        handler._isUpdating = false;
+        handler.PlatformView.UpdateOn(switchCell, false);
     }
 
     public static void MapOnColor(SwitchCellHandler handler, SwitchCell switchCell)
     {
-        if (handler._switch is null)
-            return;
+        handler.PlatformView.UpdateOnColor(switchCell);
+    }
 
-        // OnColor could be used to customize the switch appearance
-        // For now, we'll use the default Avalonia styling
+    public static void MapIsEnabled(SwitchCellHandler handler, SwitchCell switchCell)
+    {
+        handler.PlatformView.UpdateIsEnabled(switchCell);
+    }
+
+    public static void MapContextActions(SwitchCellHandler handler, SwitchCell switchCell)
+    {
+        handler.PlatformView.UpdateContextActions(switchCell);
     }
 }

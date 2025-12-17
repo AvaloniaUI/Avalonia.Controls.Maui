@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.TableViewPage"
+             x:DataType="pages:TableViewPage"
+             Title="TableView">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Label Text="TableView Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+            
+            <!-- Deprecation Notice -->
+            <Border BackgroundColor="#FFF3CD" Stroke="#856404" Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Deprecated Control" 
+                           FontAttributes="Bold" 
+                           TextColor="#856404"/>
+                    <Label Text="TableView and its cells (TextCell, SwitchCell, EntryCell, ImageCell, ViewCell) are deprecated in .NET MAUI 9+. Use CollectionView instead for new development."
+                           TextColor="#856404"
+                           FontSize="12"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- TextCell Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="TextCell Examples" FontAttributes="Bold"/>
+                    <TableView Intent="Menu">
+                        <TableRoot>
+                            <TableSection Title="Chapters">
+                                <TextCell Text="1. Introduction to .NET MAUI"
+                                          Detail="Learn about .NET MAUI and what it provides."/>
+                                <TextCell Text="2. Anatomy of an app"
+                                          Detail="Learn about the visual elements in .NET MAUI"/>
+                                <TextCell Text="3. Text controls"
+                                          Detail="Learn about the .NET MAUI controls that display text."/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- SwitchCell Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="SwitchCell Examples" FontAttributes="Bold"/>
+                    <TableView Intent="Settings">
+                        <TableRoot>
+                            <TableSection Title="Settings">
+                                <SwitchCell Text="Airplane Mode" On="False"/>
+                                <SwitchCell Text="Wi-Fi" On="True"/>
+                                <SwitchCell Text="Bluetooth" On="True"/>
+                                <SwitchCell Text="Notifications" On="True"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- EntryCell Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="EntryCell Examples" FontAttributes="Bold"/>
+                    <TableView Intent="Form">
+                        <TableRoot>
+                            <TableSection Title="User Information">
+                                <EntryCell Label="Name" Placeholder="Enter your name"/>
+                                <EntryCell Label="Email" Placeholder="Enter your email" Keyboard="Email"/>
+                                <EntryCell Label="Phone" Placeholder="Enter your phone" Keyboard="Telephone"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ImageCell Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ImageCell Examples" FontAttributes="Bold"/>
+                    <TableView Intent="Data">
+                        <TableRoot>
+                            <TableSection Title="Team">
+                                <ImageCell Text="Alice Johnson"
+                                           Detail="Software Engineer"
+                                           ImageSource="dotnet_bot.png"/>
+                                <ImageCell Text="Bob Smith"
+                                           Detail="Product Manager"
+                                           ImageSource="dotnet_bot.png"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ViewCell Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ViewCell Examples" FontAttributes="Bold"/>
+                    <TableView Intent="Data">
+                        <TableRoot>
+                            <TableSection Title="Custom Cells">
+                                <ViewCell>
+                                    <Grid Padding="10" ColumnDefinitions="Auto,*,Auto">
+                                        <Image Source="dotnet_bot.png"
+                                               WidthRequest="40"
+                                               HeightRequest="40"/>
+                                        <VerticalStackLayout Grid.Column="1" Padding="10,0">
+                                            <Label Text="Custom ViewCell"
+                                                   FontAttributes="Bold"/>
+                                            <Label Text="Fully customizable appearance"
+                                                   FontSize="12"
+                                                   TextColor="Gray"/>
+                                        </VerticalStackLayout>
+                                        <Button Grid.Column="2"
+                                                Text="Action"
+                                                VerticalOptions="Center"/>
+                                    </Grid>
+                                </ViewCell>
+                                <ViewCell>
+                                    <StackLayout Orientation="Horizontal" Padding="10">
+                                        <BoxView Color="CornflowerBlue"
+                                                 WidthRequest="40"
+                                                 HeightRequest="40"
+                                                 CornerRadius="20"/>
+                                        <Label Text="Another custom cell with BoxView"
+                                               VerticalOptions="Center"
+                                               Margin="10,0"/>
+                                    </StackLayout>
+                                </ViewCell>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Size Items Example (HasUnevenRows and RowHeight) -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Size Items (HasUnevenRows, RowHeight)" FontAttributes="Bold"/>
+                    <TableView Intent="Data" HasUnevenRows="True" RowHeight="60">
+                        <TableRoot>
+                            <TableSection Title="Uniform Height (RowHeight=60)">
+                                <TextCell Text="Fixed height row 1" Detail="All rows have same height"/>
+                                <TextCell Text="Fixed height row 2" Detail="Consistent sizing"/>
+                                <TextCell Text="Fixed height row 3" Detail="Better for performance"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                    <TableView Intent="Data" HasUnevenRows="True">
+                        <TableRoot>
+                            <TableSection Title="Uneven Rows (HasUnevenRows=True)">
+                                <TextCell Text="Short row"/>
+                                <TextCell Text="Medium row" Detail="With some detail text"/>
+                                <ViewCell>
+                                    <VerticalStackLayout Padding="16,10">
+                                        <Label Text="Tall custom row" FontAttributes="Bold"/>
+                                        <Label Text="This row has much more content"/>
+                                        <Label Text="And will be taller than others"/>
+                                        <Label Text="Because HasUnevenRows allows variable heights"/>
+                                    </VerticalStackLayout>
+                                </ViewCell>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Dynamic Height Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Cell Height" FontAttributes="Bold"/>
+                    <Button Text="Randomize Heights" Clicked="OnRandomizeHeightsClicked"/>
+                    <TableView x:Name="DynamicHeightTableView" Intent="Data" HasUnevenRows="True">
+                        <TableRoot>
+                            <TableSection Title="Variable Heights">
+                                <TextCell x:Name="DynamicCell1" Text="Cell 1" Detail="Height: Default"/>
+                                <TextCell x:Name="DynamicCell2" Text="Cell 2" Detail="Height: Default"/>
+                                <TextCell x:Name="DynamicCell3" Text="Cell 3" Detail="Height: Default"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                    <Label x:Name="HeightStatusLabel" 
+                           Text="Click button to randomize heights" 
+                           TextColor="Gray"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Right-to-Left Layout Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*, Auto" Margin="5">
+                        <Label x:Name="FlowDirectionLabel" 
+                               Text="FlowDirection: RightToLeft" 
+                               VerticalOptions="Center"
+                               FontAttributes="Bold"/>
+                        <Switch Toggled="OnFlowDirectionToggled" 
+                                IsToggled="True"
+                                Grid.Column="1"/>
+                    </Grid>
+                    
+                    <TableView x:Name="RtlTableView" Intent="Settings" FlowDirection="RightToLeft">
+                        <TableRoot>
+                            <TableSection Title="إعدادات">
+                                <SwitchCell Text="الوضع الليلي" On="True"/>
+                                <SwitchCell Text="الإشعارات" On="False"/>
+                                <TextCell Text="اللغة" Detail="العربية"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Custom Section Color Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Custom Section Color" FontAttributes="Bold"/>
+                    <TableView Intent="Settings">
+                        <TableRoot>
+                            <TableSection Title="Standard Section">
+                                <TextCell Text="Default Color" Detail="Gray header"/>
+                            </TableSection>
+                            <TableSection Title="Custom Color Section" TextColor="Purple">
+                                <TextCell Text="Custom Color" Detail="Purple header"/>
+                            </TableSection>
+                            <TableSection Title="Red Warning Section" TextColor="Red">
+                                <TextCell Text="Critical Item" Detail="Red header"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Disabled Cells Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Disabled Cells" FontAttributes="Bold"/>
+                    <TableView Intent="Data">
+                        <TableRoot>
+                            <TableSection Title="Disabled State">
+                                <TextCell Text="Disabled TextCell" Detail="Cannot be tapped" IsEnabled="False"/>
+                                <SwitchCell Text="Disabled SwitchCell" On="True" IsEnabled="False"/>
+                                <EntryCell Label="Disabled Entry" Text="Cannot edit" IsEnabled="False"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Styled Cells Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Styled Cells" FontAttributes="Bold"/>
+                    <TableView Intent="Data">
+                        <TableRoot>
+                            <TableSection Title="Custom Styling">
+                                <SwitchCell Text="OnColor Cyan" On="True" OnColor="Cyan"/>
+                                <TextCell Text="Colored Text" Detail="Detail is Gray" TextColor="Blue" DetailColor="Gray"/>
+                                <EntryCell Label="Purple Label" Text="Entry Text" LabelColor="Purple"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Cell Lifecycle Events Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cell Lifecycle Events" FontAttributes="Bold"/>
+                    <Label Text="TextCell Appearing/Disappearing events fire when cells enter/leave the visual tree. Scroll to see events trigger."
+                           FontSize="11" TextColor="Gray"/>
+                    <TableView Intent="Data">
+                        <TableRoot>
+                            <TableSection Title="Lifecycle Events">
+                                <TextCell Text="Cell 1" Detail="Scroll to trigger events"
+                                          Appearing="OnCellAppearing" 
+                                          Disappearing="OnCellDisappearing"/>
+                                <TextCell Text="Cell 2" Detail="Appearing/Disappearing"
+                                          Appearing="OnCellAppearing" 
+                                          Disappearing="OnCellDisappearing"/>
+                                <TextCell Text="Cell 3" Detail="Watch status below"
+                                          Appearing="OnCellAppearing" 
+                                          Disappearing="OnCellDisappearing"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                    <Label x:Name="LifecycleStatusLabel" 
+                           Text="Lifecycle: Waiting..." 
+                           TextColor="Gray"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Interactive Features Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive Features" FontAttributes="Bold"/>
+                    <TableView Intent="Form">
+                        <TableRoot>
+                            <TableSection Title="Commands &amp; Events">
+                                <TextCell Text="Tap Me (Command)" 
+                                          Detail="Updates status label below" 
+                                          Command="{Binding TapCommand}"/>
+                                <EntryCell Label="Completed Event" 
+                                           Placeholder="Type and press Enter" 
+                                           Completed="OnEntryCompleted"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                    <Label x:Name="CommandStatusLabel" 
+                           Text="Status: Waiting for events..." 
+                           TextColor="Gray"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Context Actions Example -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Context Actions (Right-Click)" FontAttributes="Bold"/>
+                    <TableView Intent="Settings">
+                        <TableRoot>
+                            <TableSection Title="Right-click cells">
+                                <TextCell Text="Action Cell" Detail="Right-click me!">
+
+                                    <TextCell.ContextActions>
+                                        <MenuItem Text="Action 1" Command="{Binding ContextActionCommand}" CommandParameter="Action 1"/>
+                                        <MenuItem Text="Delete" IsDestructive="True" Command="{Binding ContextActionCommand}" CommandParameter="Delete"/>
+                                    </TextCell.ContextActions>
+                                </TextCell>
+                                <SwitchCell Text="Switch with Actions">
+                                    <SwitchCell.ContextActions>
+                                        <MenuItem Text="Toggle" Command="{Binding ContextActionCommand}" CommandParameter="Toggle"/>
+                                    </SwitchCell.ContextActions>
+                                </SwitchCell>
+                                <ImageCell Text="Image Cell" Detail="With actions" ImageSource="dotnet_bot.png">
+                                    <ImageCell.ContextActions>
+                                        <MenuItem Text="View Image" Command="{Binding ContextActionCommand}" CommandParameter="View Image"/>
+                                    </ImageCell.ContextActions>
+                                </ImageCell>
+                                <EntryCell Label="Entry Cell" Text="Right-click me">
+                                    <EntryCell.ContextActions>
+                                        <MenuItem Text="Clear" Command="{Binding ContextActionCommand}" CommandParameter="Clear Entry"/>
+                                    </EntryCell.ContextActions>
+                                </EntryCell>
+                                <ViewCell Tapped="OnViewCellTapped">
+                                    <ViewCell.ContextActions>
+                                        <MenuItem Text="Custom Action" Command="{Binding ContextActionCommand}" CommandParameter="ViewCell Action"/>
+                                    </ViewCell.ContextActions>
+                                    <StackLayout Orientation="Horizontal" Padding="15,10">
+                                        <Label Text="Custom View Cell" VerticalOptions="Center"/>
+                                        <BoxView Color="Blue" WidthRequest="20" HeightRequest="20" Margin="10,0" VerticalOptions="Center"/>
+                                    </StackLayout>
+                                </ViewCell>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
+                    <Label x:Name="ContextStatusLabel"
+                           Text="Right-click cells to see context menu" 
+                           TextColor="Gray"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
