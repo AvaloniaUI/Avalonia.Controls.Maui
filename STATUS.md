@@ -616,6 +616,32 @@ A Page that manages the navigation and user-experience of a stack of other pages
 | PushAsync(bool) | ✅ Done |
 
 ---
+ 
+ ## Page
+ 
+ Visual element that occupies the entire screen.
+ 
+ ### Properties
+ 
+ | Property | Status |
+ |----------|--------|
+ | Background | ✅ Implemented |
+ | BackgroundImageSource | ✅ Implemented |
+ | Content | ✅ Implemented |
+ | IsBusy | ✅ Implemented |
+ | Padding | ⏳ TODO |
+ | Title | ⏳ TODO |
+ | IconImageSource | ⏳ TODO |
+ 
+ ### Methods
+ 
+ | Method                  | Status |
+ |-------------------------|--------|
+ | DisplayAlertAsync       | ✅ Implemented |
+ | DisplayActionSheetAsync | ✅ Implemented |
+ | DisplayPromptAsync      | ✅ Implemented |
+
+ ---
 
 ## Path
 
