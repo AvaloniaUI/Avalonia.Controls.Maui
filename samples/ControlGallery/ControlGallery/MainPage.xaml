@@ -138,9 +138,13 @@
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:SwitchPage}"/>
 						<TextCell Text="SwipeView"
-								  Detail="SwipeView control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:SwipeViewPage}"/>
+						          Detail="SwipeView control"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:SwipeViewPage}"/>
+						<TextCell Text="TableView"
+						          Detail="TableView with cell types"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:TableViewPage}"/>
 					</TableSection>
 					<TableSection Title="Effects">
 						<TextCell Text="Clip"

@@ -1,4 +1,3 @@
-using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Media;
@@ -23,18 +22,26 @@ public static class SliderExtensions
     private const double TrackHeightFallback = 4.0;
 
     /// <summary>Syncs the slider minimum value.</summary>
+    /// <param name="control">Avalonia slider instance.</param>
+    /// <param name="slider">MAUI slider providing the value.</param>
     public static void UpdateMinimum(this AvaloniaSlider control, ISlider slider) =>
         control.Minimum = slider.Minimum;
 
     /// <summary>Syncs the slider maximum value.</summary>
+    /// <param name="control">Avalonia slider instance.</param>
+    /// <param name="slider">MAUI slider providing the value.</param>
     public static void UpdateMaximum(this AvaloniaSlider control, ISlider slider) =>
         control.Maximum = slider.Maximum;
 
     /// <summary>Syncs the slider current value.</summary>
+    /// <param name="control">Avalonia slider instance.</param>
+    /// <param name="slider">MAUI slider providing the value.</param>
     public static void UpdateValue(this AvaloniaSlider control, ISlider slider) =>
         control.Value = slider.Value;
 
     /// <summary>Applies the minimum track color to the decrease track.</summary>
+    /// <param name="control">Avalonia slider instance.</param>
+    /// <param name="slider">MAUI slider providing the color.</param>
     public static void UpdateMinimumTrackColor(this AvaloniaSlider control, ISlider slider)
     {
         RemoveTaggedStyles(control, MinimumTrackStyleTag);
@@ -51,6 +58,8 @@ public static class SliderExtensions
     }
 
     /// <summary>Applies the maximum track color to the increase track.</summary>
+    /// <param name="control">Avalonia slider instance.</param>
+    /// <param name="slider">MAUI slider providing the color.</param>
     public static void UpdateMaximumTrackColor(this AvaloniaSlider control, ISlider slider)
     {
         RemoveTaggedStyles(control, MaximumTrackStyleTag);
@@ -67,6 +76,8 @@ public static class SliderExtensions
     }
 
     /// <summary>Applies the thumb color across all thumb visual states.</summary>
+    /// <param name="control">Avalonia slider instance.</param>
+    /// <param name="slider">MAUI slider providing the color.</param>
     public static void UpdateThumbColor(this AvaloniaSlider control, ISlider slider)
     {
         RemoveTaggedStyles(control, ThumbStyleTag);
@@ -92,16 +103,29 @@ public static class SliderExtensions
         ApplyThumbTemplate(control, brush);
     }
 
-    /// <summary>Updates the thumb image source (not implemented yet).</summary>
-    [NotImplemented("Implement proper image source loading when image infrastructure is ready")]
-    public static void UpdateThumbImageSource(this AvaloniaSlider control, ISlider slider) { }
-
-    /// <summary>Applies all slider color customizations (min, max, thumb).</summary>
-    public static void UpdateSliderAppearance(this AvaloniaSlider control, ISlider slider)
+    /// <summary>Updates the thumb to display a custom image.</summary>
+    /// <param name="control">Avalonia slider instance.</param>
+    /// <param name="image">Resolved platform image for the thumb.</param>
+    public static void UpdateThumbImageSource(this AvaloniaSlider control, Avalonia.Media.IImage? image)
     {
-        UpdateMinimumTrackColor(control, slider);
-        UpdateMaximumTrackColor(control, slider);
-        UpdateThumbColor(control, slider);
+        RemoveTaggedStyles(control, ThumbStyleTag);
+        RemoveTaggedStyles(control, ThumbPointerOverStyleTag);
+        RemoveTaggedStyles(control, ThumbPressedStyleTag);
+
+        if (image == null || image is not IImageBrushSource brushSource)
+        {
+            // Reset to default visuals; thumb color mapping (if any) will reapply styling.
+            ClearThumbResources(control);
+            return;
+        }
+
+        var brush = new ImageBrush
+        {
+            Source = brushSource,
+            Stretch = Stretch.UniformToFill
+        };
+
+        ApplyThumbImage(control, brush, image);
     }
 
     private static void ApplyTrackResources(AvaloniaSlider control, bool isMinimumTrack, IBrush brush)
@@ -270,6 +294,42 @@ public static class SliderExtensions
                     CornerRadius = new CornerRadius(radius),
                     Background = brush,
                     BorderBrush = brush
+                });
+        }
+
+        Apply(control);
+        control.TemplateApplied += OnTemplateApplied;
+
+        void OnTemplateApplied(object? sender, TemplateAppliedEventArgs e)
+        {
+            Apply(control, e);
+            control.TemplateApplied -= OnTemplateApplied;
+        }
+    }
+
+    private static void ApplyThumbImage(AvaloniaSlider control, IBrush brush, Avalonia.Media.IImage image)
+    {
+        void Apply(AvaloniaSlider slider, TemplateAppliedEventArgs? args = null)
+        {
+            var thumb = args?.NameScope.Find<Thumb>("PART_Thumb") ??
+                        slider.GetVisualDescendants().OfType<Thumb>().FirstOrDefault();
+
+            if (thumb == null)
+                return;
+
+            var size = image.Size;
+            // Use the original image size without clamping or resizing
+            var width = size.Width > 0 && !double.IsNaN(size.Width) ? size.Width : ThumbSizeFallback;
+            var height = size.Height > 0 && !double.IsNaN(size.Height) ? size.Height : ThumbSizeFallback;
+
+            var radius = Math.Min(width, height) / 2;
+
+            thumb.Template = new FuncControlTemplate<Thumb>((_, __) =>
+                new Border
+                {
+                    Width = width,
+                    Height = height,
+                    Background = brush
                 });
         }
 
