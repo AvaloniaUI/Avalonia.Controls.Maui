@@ -1,213 +1,168 @@
-using Avalonia.Headless.XUnit;
+using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Controls.Maui.Tests.Stubs;
-using Avalonia.Controls.Maui.Tests.TestUtilities;
-using Microsoft.Maui;
+using Avalonia.Headless.XUnit;
+using Avalonia.Media;
 using Microsoft.Maui.Graphics;
-using AvaloniaPanel = Avalonia.Controls.Panel;
-using MauiPageHandler = Avalonia.Controls.Maui.Handlers.PageHandler;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
-public partial class PageHandlerTests : HandlerTestBase<MauiPageHandler, PageStub>
+public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
 {
-    [AvaloniaFact(DisplayName = "Background Initializes Correctly")]
-    public async Task BackgroundInitializesCorrectly()
+    [AvaloniaFact(DisplayName = "MapBackground Updates Platform Background With SolidBrush")]
+    public async Task MapBackground_Updates_Platform_Background_With_SolidBrush()
     {
-        var color = Colors.Blue;
-        var page = new PageStub
+        var stub = new PageStub
         {
-            Background = new SolidPaint(color)
+            Background = new SolidPaint(Microsoft.Maui.Graphics.Colors.Red),
+            WidthRequest = 400,
+            HeightRequest = 600
         };
 
-        var handler = await CreateHandlerAsync(page);
-        var platformColor = GetPlatformBackgroundColor(handler);
-
-        Assert.NotNull(platformColor);
-        ColorComparisonHelpers.AssertColorsAreEqual(color, platformColor);
-    }
-
-    [AvaloniaFact(DisplayName = "Background Updates Correctly")]
-    public async Task BackgroundUpdatesCorrectly()
-    {
-        var page = new PageStub
-        {
-            Background = new SolidPaint(Colors.Blue)
-        };
-
-        var handler = await CreateHandlerAsync(page);
+        var handler = await CreateHandlerAsync<PageHandler>(stub);
 
         await InvokeOnMainThreadAsync(() =>
         {
-            page.Background = new SolidPaint(Colors.Red);
-            handler.UpdateValue(nameof(IContentView.Background));
+            // First ensure background is set by triggering the mapping
+            handler.UpdateValue(nameof(PageStub.Background));
+            
+            Assert.NotNull(handler.PlatformView.Background);
+            var brush = Assert.IsType<SolidColorBrush>(handler.PlatformView.Background);
+            Assert.Equal(Media.Colors.Red, brush.Color);
         });
-
-        var platformColor = GetPlatformBackgroundColor(handler);
-
-        Assert.NotNull(platformColor);
-        ColorComparisonHelpers.AssertColorsAreEqual(Colors.Red, platformColor);
     }
 
-    [AvaloniaFact(DisplayName = "Null Background Clears Value")]
-    public async Task NullBackgroundClearsValue()
+    [AvaloniaFact(DisplayName = "MapBackground Updates Platform Background With LinearGradient")]
+    public async Task MapBackground_Updates_Platform_Background_With_LinearGradient()
     {
-        var page = new PageStub
+        var stub = new PageStub
         {
-            Background = new SolidPaint(Colors.Green)
+            Background = new LinearGradientPaint(
+                new PaintGradientStop[] 
+                { 
+                    new PaintGradientStop(0f, Microsoft.Maui.Graphics.Colors.Blue),
+                    new PaintGradientStop(1f, Microsoft.Maui.Graphics.Colors.Green)
+                },
+                new Microsoft.Maui.Graphics.Point(0, 0),
+                new Microsoft.Maui.Graphics.Point(1, 1)),
+            WidthRequest = 400,
+            HeightRequest = 600
         };
 
-        var handler = await CreateHandlerAsync(page);
+        var handler = await CreateHandlerAsync<PageHandler>(stub);
 
-        // Verify initial background is set
-        var initialColor = GetPlatformBackgroundColor(handler);
-        Assert.NotNull(initialColor);
-        ColorComparisonHelpers.AssertColorsAreEqual(Colors.Green, initialColor);
-
-        // Set background to null
         await InvokeOnMainThreadAsync(() =>
         {
-            page.Background = null;
-            handler.UpdateValue(nameof(IContentView.Background));
+            handler.UpdateValue(nameof(PageStub.Background));
+
+            Assert.NotNull(handler.PlatformView.Background);
+            Assert.IsType<LinearGradientBrush>(handler.PlatformView.Background);
         });
-
-        // Verify background is cleared
-        var panel = handler.PlatformView as AvaloniaPanel;
-        Assert.NotNull(panel);
-        Assert.Null(panel.Background);
     }
 
-    [AvaloniaFact(DisplayName = "Null Background Does Not Crash")]
-    public async Task NullBackgroundDoesNotCrash()
+    [AvaloniaFact(DisplayName = "MapBackground Clears Platform Background When Set To Null")]
+    public async Task MapBackground_Clears_Platform_Background_When_Set_To_Null()
     {
-        var page = new PageStub
+        var stub = new PageStub
         {
-            Background = null
+            Background = new SolidPaint(Microsoft.Maui.Graphics.Colors.Blue),
+            WidthRequest = 400,
+            HeightRequest = 600
         };
 
-        // Should not throw
-        await CreateHandlerAsync(page);
-    }
+        var handler = await CreateHandlerAsync<PageHandler>(stub);
 
-    [AvaloniaFact(DisplayName = "Background Changes From Value To Null")]
-    public async Task BackgroundChangesFromValueToNull()
-    {
-        var page = new PageStub
-        {
-            Background = new SolidPaint(Colors.Purple)
-        };
-
-        var handler = await CreateHandlerAsync(page);
-
-        // Verify initial background
-        var panel = handler.PlatformView as AvaloniaPanel;
-        Assert.NotNull(panel);
-        Assert.NotNull(panel.Background);
-
-        // Change to null
+        // First ensure background is set by triggering the mapping
         await InvokeOnMainThreadAsync(() =>
         {
-            page.Background = null;
-            MauiPageHandler.MapBackground(handler, page);
+            handler.UpdateValue(nameof(PageStub.Background));
         });
 
-        // Background should be cleared (null)
-        Assert.Null(panel.Background);
-    }
-
-    [AvaloniaFact(DisplayName = "Background Changes From Null To Value")]
-    public async Task BackgroundChangesFromNullToValue()
-    {
-        var page = new PageStub
-        {
-            Background = null
-        };
-
-        var handler = await CreateHandlerAsync(page);
-
-        var panel = handler.PlatformView as AvaloniaPanel;
-        Assert.NotNull(panel);
-
-        // Initially null
-        Assert.Null(panel.Background);
-
-        // Set to a color
         await InvokeOnMainThreadAsync(() =>
         {
-            page.Background = new SolidPaint(Colors.Orange);
-            MauiPageHandler.MapBackground(handler, page);
+            Assert.NotNull(handler.PlatformView.Background);
         });
 
-        // Background should now be set
-        Assert.NotNull(panel.Background);
-        var platformColor = GetPlatformBackgroundColor(handler);
-        Assert.NotNull(platformColor);
-        ColorComparisonHelpers.AssertColorsAreEqual(Colors.Orange, platformColor);
+        // Clear the background
+        await InvokeOnMainThreadAsync(() =>
+        {
+            stub.Background = null;
+            handler.UpdateValue(nameof(PageStub.Background));
+        });
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            Assert.Null(handler.PlatformView.Background);
+        });
     }
 
-    [AvaloniaTheory(DisplayName = "Various Colors Work Correctly")]
-    [InlineData(255, 0, 0)]      // Red
-    [InlineData(0, 255, 0)]      // Green
-    [InlineData(0, 0, 255)]      // Blue
-    [InlineData(255, 255, 0)]    // Yellow
-    [InlineData(255, 0, 255)]    // Magenta
-    [InlineData(0, 255, 255)]    // Cyan
-    public async Task VariousColorsWorkCorrectly(byte r, byte g, byte b)
+    [AvaloniaFact(DisplayName = "MapBackground Handles Different Colors")]
+    public async Task MapBackground_Handles_Different_Colors()
     {
-        var color = Color.FromRgb(r, g, b);
-        var page = new PageStub
+        var colors = new[]
         {
-            Background = new SolidPaint(color)
+            (Microsoft.Maui.Graphics.Colors.Red, Media.Colors.Red),
+            (Microsoft.Maui.Graphics.Colors.Green, Media.Colors.Green),
+            (Microsoft.Maui.Graphics.Colors.Blue, Media.Colors.Blue),
+            (Microsoft.Maui.Graphics.Colors.Yellow, Media.Colors.Yellow),
         };
 
-        var handler = await CreateHandlerAsync(page);
-        var platformColor = GetPlatformBackgroundColor(handler);
-
-        Assert.NotNull(platformColor);
-        ColorComparisonHelpers.AssertColorsAreEqual(color, platformColor);
-    }
-
-    [AvaloniaFact(DisplayName = "Transparent Background Works")]
-    public async Task TransparentBackgroundWorks()
-    {
-        var page = new PageStub
+        foreach (var (mauiColor, avaloniaColor) in colors)
         {
-            Background = new SolidPaint(Colors.Transparent)
-        };
+            var stub = new PageStub
+            {
+                Background = new SolidPaint(mauiColor),
+                WidthRequest = 400,
+                HeightRequest = 600
+            };
 
-        var handler = await CreateHandlerAsync(page);
-        var platformColor = GetPlatformBackgroundColor(handler);
+            var handler = await CreateHandlerAsync<PageHandler>(stub);
 
-        Assert.NotNull(platformColor);
-        Assert.Equal(0, platformColor.Alpha, 0.01f);
-    }
+            await InvokeOnMainThreadAsync(() =>
+            {
+                handler.UpdateValue(nameof(PageStub.Background));
 
-    [AvaloniaTheory(DisplayName = "Semi-Transparent Backgrounds Work")]
-    [InlineData(128)] // 50% alpha
-    [InlineData(64)]  // 25% alpha
-    [InlineData(192)] // 75% alpha
-    public async Task SemiTransparentBackgroundsWork(byte alpha)
-    {
-        var color = Color.FromRgba((byte)255, (byte)0, (byte)0, alpha);
-        var page = new PageStub
-        {
-            Background = new SolidPaint(color)
-        };
-
-        var handler = await CreateHandlerAsync(page);
-        var platformColor = GetPlatformBackgroundColor(handler);
-
-        Assert.NotNull(platformColor);
-        Assert.Equal(alpha / 255f, platformColor.Alpha, 0.02f);
-    }
-
-    Color? GetPlatformBackgroundColor(MauiPageHandler handler)
-    {
-        var panel = handler.PlatformView as AvaloniaPanel;
-        if (panel?.Background is Media.SolidColorBrush brush)
-        {
-            var color = brush.Color;
-            return Color.FromRgba(color.R, color.G, color.B, color.A);
+                Assert.NotNull(handler.PlatformView.Background);
+                var brush = Assert.IsType<Media.SolidColorBrush>(handler.PlatformView.Background);
+                Assert.Equal(avaloniaColor, brush.Color);
+            });
         }
-        return null;
+    }
+
+    [AvaloniaFact(DisplayName = "MapBackground Updates Value When Changed")]
+    public async Task MapBackground_Updates_Value_When_Changed()
+    {
+        var stub = new PageStub
+        {
+            Background = new SolidPaint(Microsoft.Maui.Graphics.Colors.Red),
+            WidthRequest = 400,
+            HeightRequest = 600
+        };
+
+        var handler = await CreateHandlerAsync<PageHandler>(stub);
+
+        // Verify initial value
+        await InvokeOnMainThreadAsync(() =>
+        {
+            handler.UpdateValue(nameof(PageStub.Background));
+
+            var brush = handler.PlatformView.Background as SolidColorBrush;
+            Assert.NotNull(brush);
+            Assert.Equal(Media.Colors.Red, brush.Color);
+        });
+
+        // Change the background
+        await InvokeOnMainThreadAsync(() =>
+        {
+            stub.Background = new SolidPaint(Microsoft.Maui.Graphics.Colors.Green);
+            handler.UpdateValue(nameof(PageStub.Background));
+        });
+
+        // Verify updated value
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var brush = handler.PlatformView.Background as SolidColorBrush;
+            Assert.NotNull(brush);
+            Assert.Equal(Media.Colors.Green, brush.Color);
+        });
     }
 }

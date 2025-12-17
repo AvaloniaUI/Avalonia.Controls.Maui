@@ -552,6 +552,23 @@ A Page that manages the navigation and user-experience of a stack of other pages
 
 ---
 
+## Page
+
+Visual element that occupies the entire screen.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Background | ✅ Implemented |
+| BackgroundImageSource | ✅ Implemented |
+| Content | ✅ Implemented |
+| Title | ⏳ TODO |
+| IconImageSource | ⏳ TODO |
+| Padding | ⏳ TODO |
+
+---
+
 ## Path
 
 Displays curves and complex shapes.
