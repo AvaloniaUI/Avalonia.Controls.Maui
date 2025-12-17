@@ -167,6 +167,18 @@ Displays a scrollable list of selectable data items, using different layout spec
 
 ---
 
+## ContentPresenter
+
+Layout manager for templated views.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Content | ✅ Implemented |
+
+---
+
 ## ContentView
 
 A control that enables the creation of custom, reusable controls.
