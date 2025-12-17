@@ -952,7 +952,7 @@ Enables you to select a double value from a continuous range.
 | MaximumTrackColor | ✅ Implemented |
 | MinimumTrackColor | ✅ Implemented |
 | ThumbColor | ✅ Implemented |
-| ThumbImageSource | ⏳ TODO |
+| ThumbImageSource | ✅ Implemented |
 | Value | ✅ Implemented |
 
 ### Events
