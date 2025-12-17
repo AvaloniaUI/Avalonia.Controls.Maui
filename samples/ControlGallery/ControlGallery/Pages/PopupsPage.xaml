@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.PopupsPage"
+             Title="Popups">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="24" Padding="20">
+            <Label Text="Popups"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Label x:Name="ResultLabel"
+                   Text="Tap a sample to see the result here."
+                   TextColor="{DynamicResource SecondaryTextColor}"
+                   HorizontalOptions="Center" />
+
+            <!-- Alerts Section -->
+            <Border Stroke="{DynamicResource SeparatorColor}"
+                    StrokeThickness="1"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Alerts"
+                           FontAttributes="Bold" />
+                    <Button Text="Simple alert"
+                            Clicked="OnSimpleAlertClicked" />
+                    <Button Text="Question (Yes/No)"
+                            Clicked="OnAlertYesNoClicked" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Action Sheets Section -->
+            <Border Stroke="{DynamicResource SeparatorColor}"
+                    StrokeThickness="1"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Action Sheets"
+                           FontAttributes="Bold" />
+                    <Button Text="Share options"
+                            Clicked="OnSimpleActionSheetClicked" />
+                    <Button Text="Save or delete (destructive)"
+                            Clicked="OnActionSheetCancelDeleteClicked" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Prompts Section -->
+            <Border Stroke="{DynamicResource SeparatorColor}"
+                    StrokeThickness="1"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Prompts"
+                           FontAttributes="Bold" />
+                    <Button Text="Enter your name"
+                            Clicked="OnSimplePromptClicked" />
+                    <Button Text="Enter a number (default 10)"
+                            Clicked="OnNumberPromptClicked" />
+            </VerticalStackLayout>
+            </Border>
+
+            <!-- Busy Indicator Section -->
+            <Border Stroke="{DynamicResource SeparatorColor}"
+                    StrokeThickness="1"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Busy Indicator"
+                           FontAttributes="Bold" />
+                    <Button Text="Show busy (2 seconds)"
+                            Clicked="OnShowBusyClicked" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

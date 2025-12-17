@@ -55,6 +55,10 @@
 								  Detail="Custom window title bar"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:TitleBarPage}"/>
+						<TextCell Text="Popups"
+								  Detail="Alerts, ActionSheets, and Prompts"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:PopupsPage}"/>
 					</TableSection>
 					<TableSection Title="Views">
 						<TextCell Text="ActivityIndicator"
