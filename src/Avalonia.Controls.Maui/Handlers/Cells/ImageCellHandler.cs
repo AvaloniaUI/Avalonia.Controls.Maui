@@ -1,21 +1,12 @@
-using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Media;
-using Avalonia.Controls.Maui.Services;
-using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Controls.Maui.Extensions;
+using Avalonia.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Platform;
-using System;
-using System.Threading.Tasks;
 
 namespace Avalonia.Controls.Maui.Handlers.Cells;
 
-/// <summary>
-/// Handler for MAUI ImageCell (TextCell with an image)
-/// </summary>
-public class ImageCellHandler : ElementHandler<ImageCell, global::Avalonia.Controls.Border>
+public class ImageCellHandler : ElementHandler<ImageCell, MauiImageCell>
 {
     public static IPropertyMapper<ImageCell, ImageCellHandler> Mapper =
         new PropertyMapper<ImageCell, ImageCellHandler>(ElementMapper)
@@ -25,16 +16,12 @@ public class ImageCellHandler : ElementHandler<ImageCell, global::Avalonia.Contr
             [nameof(ImageCell.TextColor)] = MapTextColor,
             [nameof(ImageCell.DetailColor)] = MapDetailColor,
             [nameof(ImageCell.ImageSource)] = MapImageSource,
+            [nameof(Cell.IsEnabled)] = MapIsEnabled,
+            ["ContextActions"] = MapContextActions,
         };
 
     public static CommandMapper<ImageCell, ImageCellHandler> CommandMapper =
         new(ElementCommandMapper);
-
-    private StackPanel? _contentStack;
-    private StackPanel? _textStack;
-    private global::Avalonia.Controls.Image? _image;
-    private TextBlock? _textBlock;
-    private TextBlock? _detailBlock;
 
     public ImageCellHandler() : base(Mapper, CommandMapper)
     {
@@ -50,177 +37,74 @@ public class ImageCellHandler : ElementHandler<ImageCell, global::Avalonia.Contr
     {
     }
 
-    protected override global::Avalonia.Controls.Border CreatePlatformElement()
+    protected override MauiImageCell CreatePlatformElement()
     {
-        _image = new global::Avalonia.Controls.Image
+        var cell = new MauiImageCell();
+        cell.PointerReleased += OnCellPointerReleased;
+        cell.AttachedToVisualTree += OnCellAttachedToVisualTree;
+        cell.DetachedFromVisualTree += OnCellDetachedFromVisualTree;
+        return cell;
+    }
+
+    protected override void DisconnectHandler(MauiImageCell platformView)
+    {
+        platformView.PointerReleased -= OnCellPointerReleased;
+        platformView.AttachedToVisualTree -= OnCellAttachedToVisualTree;
+        platformView.DetachedFromVisualTree -= OnCellDetachedFromVisualTree;
+        base.DisconnectHandler(platformView);
+    }
+
+    private void OnCellAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendAppearing();
+    }
+
+    private void OnCellDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        VirtualView?.SendDisappearing();
+    }
+
+    private void OnCellPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (VirtualView?.Command?.CanExecute(VirtualView.CommandParameter) == true)
         {
-            Width = 40,
-            Height = 40,
-            Stretch = global::Avalonia.Media.Stretch.UniformToFill,
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(0, 0, 12, 0)
-        };
-
-        _textBlock = new TextBlock
-        {
-            FontSize = 16,
-            VerticalAlignment = VerticalAlignment.Center
-        };
-
-        _detailBlock = new TextBlock
-        {
-            FontSize = 13,
-            Opacity = 0.7,
-            VerticalAlignment = VerticalAlignment.Center
-        };
-
-        _textStack = new StackPanel
-        {
-            Orientation = Orientation.Vertical,
-            Spacing = 2,
-            VerticalAlignment = VerticalAlignment.Center
-        };
-
-        _textStack.Children.Add(_textBlock);
-        _textStack.Children.Add(_detailBlock);
-
-        _contentStack = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            Spacing = 0,
-            Margin = new Thickness(16, 12)
-        };
-
-        _contentStack.Children.Add(_image);
-        _contentStack.Children.Add(_textStack);
-
-        var border = new global::Avalonia.Controls.Border
-        {
-            Child = _contentStack,
-            MinHeight = 64,
-            Background = global::Avalonia.Media.Brushes.Transparent,
-            Cursor = new global::Avalonia.Input.Cursor(global::Avalonia.Input.StandardCursorType.Hand)
-        };
-
-        // Handle cell taps
-        border.Tapped += (s, e) =>
-        {
-            if (VirtualView?.Command?.CanExecute(VirtualView.CommandParameter) == true)
-            {
-                VirtualView.Command.Execute(VirtualView.CommandParameter);
-            }
-        };
-
-        return border;
+            VirtualView.Command.Execute(VirtualView.CommandParameter);
+        }
     }
 
     public static void MapText(ImageCellHandler handler, ImageCell imageCell)
     {
-        if (handler._textBlock is null)
-            return;
-
-        handler._textBlock.Text = imageCell.Text ?? string.Empty;
-        handler._textBlock.IsVisible = !string.IsNullOrEmpty(imageCell.Text);
+        handler.PlatformView.UpdateText(imageCell);
     }
 
     public static void MapDetail(ImageCellHandler handler, ImageCell imageCell)
     {
-        if (handler._detailBlock is null)
-            return;
-
-        handler._detailBlock.Text = imageCell.Detail ?? string.Empty;
-        handler._detailBlock.IsVisible = !string.IsNullOrEmpty(imageCell.Detail);
+        handler.PlatformView.UpdateDetail(imageCell);
     }
 
     public static void MapTextColor(ImageCellHandler handler, ImageCell imageCell)
     {
-        if (handler._textBlock is null)
-            return;
-
-        if (imageCell.TextColor != null)
-        {
-            handler._textBlock.Foreground = new global::Avalonia.Media.SolidColorBrush(
-                Color.FromArgb(
-                    (byte)(imageCell.TextColor.Alpha * 255),
-                    (byte)(imageCell.TextColor.Red * 255),
-                    (byte)(imageCell.TextColor.Green * 255),
-                    (byte)(imageCell.TextColor.Blue * 255)
-                )
-            );
-        }
-        else
-        {
-            handler._textBlock.ClearValue(TextBlock.ForegroundProperty);
-        }
+        handler.PlatformView.UpdateTextColor(imageCell);
     }
 
     public static void MapDetailColor(ImageCellHandler handler, ImageCell imageCell)
     {
-        if (handler._detailBlock is null)
-            return;
-
-        if (imageCell.DetailColor != null)
-        {
-            handler._detailBlock.Foreground = new global::Avalonia.Media.SolidColorBrush(
-                Color.FromArgb(
-                    (byte)(imageCell.DetailColor.Alpha * 255),
-                    (byte)(imageCell.DetailColor.Red * 255),
-                    (byte)(imageCell.DetailColor.Green * 255),
-                    (byte)(imageCell.DetailColor.Blue * 255)
-                )
-            );
-        }
-        else
-        {
-            handler._detailBlock.ClearValue(TextBlock.ForegroundProperty);
-        }
+        handler.PlatformView.UpdateDetailColor(imageCell);
     }
 
     public static void MapImageSource(ImageCellHandler handler, ImageCell imageCell)
     {
-        if (handler._image is null || handler.MauiContext is null)
-            return;
-
-        if (imageCell.ImageSource != null)
-        {
-            handler._image.IsVisible = true;
-
-            // Load image asynchronously using Avalonia's image source services
-            _ = LoadImageAsync(handler, imageCell);
-        }
-        else
-        {
-            handler._image.IsVisible = false;
-            handler._image.Source = null;
-        }
+        handler.PlatformView.UpdateImageSource(imageCell, handler.MauiContext);
     }
 
-    private static async Task LoadImageAsync(ImageCellHandler handler, ImageCell imageCell)
+    public static void MapIsEnabled(ImageCellHandler handler, ImageCell imageCell)
     {
-        if (handler._image is null || handler.MauiContext is null || imageCell.ImageSource is null)
-            return;
+        handler.PlatformView.UpdateIsEnabled(imageCell);
+    }
 
-        try
-        {
-            var services = handler.MauiContext.Services;
-            var imageSourceServiceProvider = services.GetRequiredService<IImageSourceServiceProvider>();
-            var imageSourceService = imageSourceServiceProvider.GetRequiredImageSourceService(imageCell.ImageSource);
-
-            var result = await imageSourceService.GetImageAsync(imageCell.ImageSource, 1.0f);
-
-            if (handler._image != null && result is IImageSourceServiceResult<global::Avalonia.Media.Imaging.Bitmap> bitmapResult)
-            {
-                handler._image.Source = bitmapResult.Value;
-            }
-        }
-        catch (Exception)
-        {
-            // If image loading fails, hide the image for now.
-            if (handler._image != null)
-            {
-                handler._image.IsVisible = false;
-                handler._image.Source = null;
-            }
-        }
+    public static void MapContextActions(ImageCellHandler handler, ImageCell imageCell)
+    {
+        handler.PlatformView.UpdateContextActions(imageCell);
     }
 }
+

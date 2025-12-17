@@ -1,8 +1,10 @@
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using MauiColor = Microsoft.Maui.Graphics.Color;
 using MauiColors = Microsoft.Maui.Graphics.Colors;
@@ -130,6 +132,26 @@ public class SliderHandlerTests : HandlerTestBase<MauiSliderHandler, SliderStub>
         Assert.Equal(10, slider.Value);
     }
 
+    [AvaloniaFact(DisplayName = "ThumbImageSource sets thumb image brush")]
+    public async Task ThumbImageSourceSetsThumbImageBrush()
+    {
+        var slider = new SliderStub();
+        var handler = await CreateHandlerAsync(slider);
+
+        Avalonia.Media.IImage platformImage = await CreateBitmapAsync(32, 32);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            SliderExtensions.UpdateThumbImageSource(handler.PlatformView!, platformImage);
+            Dispatcher.UIThread.RunJobs();
+        });
+
+        var brush = await InvokeOnMainThreadAsync(() =>
+            InspectSlider(handler, s => GetImageBrush(GetThumb(s))));
+
+        Assert.NotNull(brush);
+    }
+
     private MauiColor? GetMinimumTrackColor(MauiSliderHandler handler)
     {
         var brush = InspectSlider(handler, slider => GetTrackBrush(slider, "PART_DecreaseButton"));
@@ -249,6 +271,34 @@ public class SliderHandlerTests : HandlerTestBase<MauiSliderHandler, SliderStub>
         thumb.UpdateLayout();
 
         return thumb;
+    }
+
+    private static IBrush? GetImageBrush(Thumb thumb)
+    {
+        if (thumb.Background is IImageBrush imgBrush)
+            return imgBrush;
+
+        var border = thumb.GetVisualDescendants().OfType<Border>().FirstOrDefault();
+        if (border?.Background is IImageBrush borderBrush)
+            return borderBrush;
+
+        return null;
+    }
+
+    private static async Task<Avalonia.Media.Imaging.RenderTargetBitmap> CreateBitmapAsync(int width, int height)
+    {
+        var rtb = new Avalonia.Media.Imaging.RenderTargetBitmap(
+            new Avalonia.PixelSize(width, height),
+            new Avalonia.Vector(96, 96));
+
+        using (var ctx = rtb.CreateDrawingContext())
+        {
+            ctx.FillRectangle(
+                Avalonia.Media.Brushes.Blue,
+                new Avalonia.Rect(0, 0, width, height));
+        }
+
+        return rtb;
     }
 
     private static MauiColor? GetColorFromBrush(IBrush? brush)

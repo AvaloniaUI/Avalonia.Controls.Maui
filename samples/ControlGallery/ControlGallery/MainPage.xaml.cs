@@ -46,6 +46,7 @@ public partial class MainPage : FlyoutPage
             nameof(ContentViewPage) => new ContentViewPage(),
             nameof(ClipPage) => new ClipPage(),
             nameof(ShadowPage) => new ShadowPage(),
+            nameof(TableViewPage) => new TableViewPage(),
             nameof(GraphicsViewPage) => new GraphicsViewPage(),
             nameof(ThemePage) => new ThemePage(),
             nameof(TitleBarPage) => new TitleBarPage(),

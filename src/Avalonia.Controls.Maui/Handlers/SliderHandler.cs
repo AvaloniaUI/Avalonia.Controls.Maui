@@ -1,13 +1,18 @@
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui.Services;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using PlatformView = Avalonia.Controls.Slider;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
 public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
 {
+    private CancellationTokenSource? _thumbImageCts;
+
     public static IPropertyMapper<ISlider, ISliderHandler> Mapper = new PropertyMapper<ISlider, ISliderHandler>(ViewHandler.ViewMapper)
     {
         [nameof(ISlider.Maximum)] = MapMaximum,
@@ -57,6 +62,8 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.PropertyChanged -= OnSliderPropertyChanged;
+        _thumbImageCts?.Cancel();
+        _thumbImageCts = null;
         base.DisconnectHandler(platformView);
     }
 
@@ -108,12 +115,26 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         }
     }
 
-    [NotImplemented("Implement proper image source loading when image infrastructure is ready")]
     public static void MapThumbImageSource(ISliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
-            platformView.UpdateThumbImageSource(slider);
+            if (handler is not SliderHandler sh)
+                return;
+
+            sh._thumbImageCts?.Cancel();
+            sh._thumbImageCts = null;
+
+            if (slider.ThumbImageSource == null)
+            {
+                platformView.UpdateThumbImageSource(null);
+                platformView.UpdateThumbColor(slider);
+                return;
+            }
+
+            var cts = new CancellationTokenSource();
+            sh._thumbImageCts = cts;
+            _ = sh.LoadThumbImageAsync(slider.ThumbImageSource, cts.Token);
         }
     }  
     
@@ -122,6 +143,30 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         if (e.Property == PlatformView.ValueProperty && VirtualView != null)
         {
             VirtualView.Value = (double)(e.NewValue ?? 0);
+        }
+    }
+
+    private async Task LoadThumbImageAsync(IImageSource imageSource, CancellationToken token)
+    {
+        try
+        {
+            var provider = this.GetRequiredService<IImageSourceServiceProvider>();
+            if (provider.GetImageSourceService(imageSource.GetType()) is IAvaloniaImageSourceService service)
+            {
+                var result = await service.GetImageAsync(imageSource, 1.0f, token);
+                if (token.IsCancellationRequested)
+                    return;
+
+                PlatformView?.UpdateThumbImageSource(result?.Value as Avalonia.Media.IImage);
+            }
+            else
+            {
+                PlatformView?.UpdateThumbImageSource(null);
+            }
+        }
+        catch
+        {
+            PlatformView?.UpdateThumbImageSource(null);
         }
     }
 }
