@@ -1,9 +1,7 @@
-using Avalonia.Controls;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using System;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -13,8 +11,6 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// </summary>
 public partial class SingleViewWindowHandler : Microsoft.Maui.Handlers.WindowHandler
 {
-    static readonly AlertManager s_alertManager = new();
-
     static IPropertyMapper<IWindow, IWindowHandler> mapper = new PropertyMapper<IWindow, IWindowHandler>(ElementHandler.ElementMapper)
     {
         [nameof(IWindow.Title)] = mapTitle,
@@ -38,7 +34,7 @@ public partial class SingleViewWindowHandler : Microsoft.Maui.Handlers.WindowHan
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            s_alertManager.Subscribe(window);
+            window.AlertManager.Subscribe();
             window.ModalPushed += OnModalPushed;
             window.ModalPopped += OnModalPopped;
         }
@@ -48,7 +44,7 @@ public partial class SingleViewWindowHandler : Microsoft.Maui.Handlers.WindowHan
     {
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            s_alertManager.Unsubscribe(window);
+            window.AlertManager.Unsubscribe();
             window.ModalPushed -= OnModalPushed;
             window.ModalPopped -= OnModalPopped;
         }

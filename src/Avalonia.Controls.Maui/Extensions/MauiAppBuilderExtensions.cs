@@ -1,5 +1,6 @@
 using System.Collections;
 using Avalonia.Controls.Maui.Animations;
+using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -77,6 +78,8 @@ public static class MauiAppBuilderExtensions
 
         // Register Avalonia-specific animation manager
         builder.Services.AddSingleton<IAnimationManager>(svcs => new AvaloniaAnimationManager());
+
+        builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.AlertManager.IAlertManagerSubscription, AlertManager.AlertRequestHelper>();
 
         return builder
             .ConfigureMauiHandlers(handlers =>

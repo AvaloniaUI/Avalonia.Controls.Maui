@@ -1,0 +1,41 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:platform="clr-namespace:Avalonia.Controls.Maui.Platform"
+        x:Class="Avalonia.Controls.Maui.Platform.MauiPromptDialog"
+        x:DataType="platform:MauiPromptDialog"
+        Title="{Binding Title}"
+        Width="350"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        Background="{DynamicResource ThemeBackgroundBrush}">
+    <StackPanel Margin="20" Spacing="12">
+        <TextBlock Text="{Binding Message}"
+                   Foreground="{DynamicResource ThemeForegroundBrush}"
+                   FontWeight="Medium"
+                   TextWrapping="Wrap"
+                   IsVisible="{Binding HasMessage}"/>
+
+        <TextBox Name="InputTextBox"
+                 Text="{Binding InputValue}"
+                 Watermark="{Binding Placeholder}"
+                 MaxLength="{Binding MaxLength}"
+                 MinWidth="240"
+                 AcceptsReturn="False"
+                 HorizontalAlignment="Stretch"/>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10">
+            <Button Content="{Binding AcceptText}"
+                    Command="{Binding AcceptCommand}"
+                    IsDefault="True"
+                    MinWidth="80"/>
+            <Button Content="{Binding CancelText}"
+                    Command="{Binding CancelCommand}"
+                    IsCancel="True"
+                    MinWidth="80"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

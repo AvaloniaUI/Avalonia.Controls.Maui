@@ -8,9 +8,11 @@
         SizeToContent="Height"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
-        ShowInTaskbar="False">
+        ShowInTaskbar="False"
+        Background="{DynamicResource ThemeBackgroundBrush}">
     <StackPanel Margin="20">
         <TextBlock Text="{Binding AlertMessage}"
+                   Foreground="{DynamicResource ThemeForegroundBrush}"
                    TextWrapping="Wrap"
                    Margin="0,0,0,20"/>
         <StackPanel Orientation="Horizontal"
