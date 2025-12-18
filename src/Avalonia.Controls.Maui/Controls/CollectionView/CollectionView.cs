@@ -111,6 +111,7 @@ public class CollectionView : TemplatedControl
         FooterProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.UpdateHeaderFooter());
         FooterTemplateProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.UpdateHeaderFooter());
         RemainingItemsThresholdProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.UpdateRemainingItemsThreshold());
+        BackgroundProperty.Changed.AddClassHandler<CollectionView>((cv, e) => cv.OnBackgroundChanged());
     }
 
     public CollectionView()
@@ -122,6 +123,7 @@ public class CollectionView : TemplatedControl
     private void InitializeDefaultTemplate()
     {
         _rootPanel = new Panel();
+
         _scrollViewer = new ScrollViewer
         {
             HorizontalScrollBarVisibility = HorizontalScrollBarVisibility,
@@ -140,6 +142,22 @@ public class CollectionView : TemplatedControl
         // For TemplatedControl, add to both visual and logical children
         VisualChildren.Add(_rootPanel);
         LogicalChildren.Add(_rootPanel);
+    }
+
+    public void UpdateBackground(Media.IBrush? brush)
+    {
+        if (_rootPanel != null)
+        {
+            _rootPanel.Background = brush;
+        }
+    }
+
+    private void OnBackgroundChanged()
+    {
+        if (_rootPanel != null)
+        {
+            _rootPanel.Background = Background;
+        }
     }
 
     public IEnumerable? ItemsSource

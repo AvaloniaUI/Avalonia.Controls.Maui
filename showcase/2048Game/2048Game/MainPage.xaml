@@ -116,7 +116,7 @@
                     <CollectionView
                         HeightRequest="336"
                         WidthRequest="340"
-                        BackgroundColor="#a49381"
+                        Background="#a49381"
                         VerticalOptions="Center"
                         HorizontalOptions="Center"
                         ItemsSource="{Binding Tiles}">
