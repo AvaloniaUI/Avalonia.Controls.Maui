@@ -3,7 +3,6 @@ using _2048Game.Data;
 using _2048Game.Enums;
 using _2048Game.ViewModels;
 using Microsoft.Maui.Controls;
-using SkiaSharp.Extended.UI.Controls;
 
 namespace _2048Game;
 
@@ -15,20 +14,6 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
         CurrentViewModel = (MainPageViewModel)BindingContext;
-    }
-
-    private void DisplayConfettiAnimation()
-    {
-        var sus = new SKConfettiSystem()
-        {
-            Lifetime = 2,
-            Colors = new SKConfettiColorCollection(ConfettiConfig.Colors),
-            Shapes = new SKConfettiShapeCollection(ConfettiConfig.GetShapes(ConfettiConfig.Shapes).SelectMany(s => s)),
-            MinimumInitialVelocity = 30,
-            MaximumInitialVelocity = 150,
-            Emitter = SKConfettiEmitter.Burst(100),
-            EmitterBounds = SKConfettiEmitterBounds.Top,
-        };
     }
 
     void MainPageViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

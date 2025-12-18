@@ -1,28 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Avalonia.Controls.Maui;
-using CommunityToolkit.Maui;
-using Microsoft.Maui;
+﻿using CommunityToolkit.Maui;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
-using Microsoft.Maui.Platform;
-using SkiaSharp.Views.Maui.Controls.Hosting;
 
-namespace _2048Game.Desktop;
+namespace _2048Game.Browser;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
-	{
+    public static MauiApp CreateMauiApp()
+    {
 		var builder = MauiApp
 			.CreateBuilder();
 
 		builder
 			.UseMauiApp<_2048Game.App>()
-			.UseAvaloniaApp()
+			.UseAvaloniaApp(true)
 			.UseAvaloniaGraphics()
 			.UseMauiCommunityToolkit()
 			.ConfigureFonts(fonts =>
@@ -36,6 +28,5 @@ public static class MauiProgram
 			});
 
 		return builder.Build();
-	}
+    }
 }
-

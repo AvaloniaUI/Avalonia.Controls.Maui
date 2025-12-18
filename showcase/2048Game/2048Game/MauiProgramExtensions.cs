@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace _2048Game;
 
@@ -11,7 +10,6 @@ public static class MauiProgramExtensions
 		builder
 			.UseMauiApp<App>()
 			.UseMauiCommunityToolkit()
-			.UseSkiaSharp()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
