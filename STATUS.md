@@ -486,7 +486,7 @@ Displays single-line and multi-line text.
 | TextDecorations | ✅ Implemented |
 | TextTransform | ✅ Implemented |
 | TextType | ⏳ TODO |
-| VerticalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ⏳ TODO |
 
 ---
 

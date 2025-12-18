@@ -236,20 +236,7 @@ public static class LabelTextBlockExtensions
 
     public static void UpdateVerticalTextAlignment(this TextBlock textBlock, ILabel label)
     {
-        switch (label.VerticalTextAlignment)
-        {
-            case Microsoft.Maui.TextAlignment.Start:
-                textBlock.VerticalAlignment = AvaloniaVerticalAlignment.Top;
-                break;
-            case Microsoft.Maui.TextAlignment.Center:
-                textBlock.VerticalAlignment = AvaloniaVerticalAlignment.Center;
-                break;
-            case Microsoft.Maui.TextAlignment.End:
-                textBlock.VerticalAlignment = AvaloniaVerticalAlignment.Bottom;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        // TODO: Avalonia TextBlock does not have VerticalTextAlignment property
     }
 
     public static void UpdateLineBreakMode(this AvaloniaTextBlock textBlock, ILabel label)
