@@ -56,6 +56,12 @@
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:TitleBarPage}"/>
 					</TableSection>
+					<TableSection Title="Gestures">
+						<TextCell Text="GestureRecognizers"
+								  Detail="Tap, Pan, Swipe, Pinch, Pointer gestures"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:GestureRecognizersPage}"/>
+					</TableSection>
 					<TableSection Title="Views">
 						<TextCell Text="ActivityIndicator"
 								  Detail="ActivityIndicator control"

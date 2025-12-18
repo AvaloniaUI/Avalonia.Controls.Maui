@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.GestureRecognizersPage"
+             x:DataType="pages:GestureRecognizersPage"
+             Title="Gesture Recognizers">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="Gesture Recognizers"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <Label Text="Interact with the boxes below to test different gesture recognizers."
+                   FontSize="14"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"/>
+
+            <!-- TapGestureRecognizer -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="TapGestureRecognizer"
+                           FontAttributes="Bold"/>
+                    <Label Text="Tap the boxes below. Single tap and double tap are supported."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <!-- Single Tap -->
+                        <Border x:Name="SingleTapBox"
+                                BackgroundColor="LightBlue"
+                                WidthRequest="120"
+                                HeightRequest="80">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnSingleTap" NumberOfTapsRequired="1"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Single Tap"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Border>
+
+                        <!-- Double Tap -->
+                        <Border x:Name="DoubleTapBox"
+                                BackgroundColor="LightGreen"
+                                WidthRequest="120"
+                                HeightRequest="80">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnDoubleTap" NumberOfTapsRequired="2"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Double Tap"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Border>
+                    </HorizontalStackLayout>
+
+                    <Label x:Name="TapResultLabel"
+                           Text="Tap a box..."
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- PanGestureRecognizer -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="PanGestureRecognizer"
+                           FontAttributes="Bold"/>
+                    <Label Text="Click and drag the box below to pan it around."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <Border BackgroundColor="LightGray"
+                            HeightRequest="150"
+                            Padding="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Grid>
+                            <Border x:Name="PanBox"
+                                    BackgroundColor="Orange"
+                                    WidthRequest="80"
+                                    HeightRequest="80"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <PanGestureRecognizer PanUpdated="OnPanUpdated"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="Drag Me"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="White"
+                                       FontAttributes="Bold"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <Label x:Name="PanResultLabel"
+                           Text="Pan status: Idle"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- SwipeGestureRecognizer -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="SwipeGestureRecognizer"
+                           FontAttributes="Bold"/>
+                    <Label Text="Swipe in any direction on the box below."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <Border x:Name="SwipeBox"
+                            BackgroundColor="MediumPurple"
+                            HeightRequest="120"
+                            Padding="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <SwipeGestureRecognizer Direction="Left" Swiped="OnSwiped"/>
+                            <SwipeGestureRecognizer Direction="Right" Swiped="OnSwiped"/>
+                            <SwipeGestureRecognizer Direction="Up" Swiped="OnSwiped"/>
+                            <SwipeGestureRecognizer Direction="Down" Swiped="OnSwiped"/>
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label Text="Swipe Here"
+                                   HorizontalOptions="Center"
+                                   TextColor="White"
+                                   FontAttributes="Bold"
+                                   FontSize="18"/>
+                            <Label x:Name="SwipeDirectionLabel"
+                                   Text="(any direction)"
+                                   HorizontalOptions="Center"
+                                   TextColor="White"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Label x:Name="SwipeResultLabel"
+                           Text="Swipe status: Waiting..."
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- PinchGestureRecognizer -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="PinchGestureRecognizer"
+                           FontAttributes="Bold"/>
+                    <Label Text="Use two fingers (touch) to pinch and zoom the image."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <Border BackgroundColor="LightGray"
+                            HeightRequest="200"
+                            Padding="10">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Image x:Name="PinchImage"
+                               Source="dotnet_bot.png"
+                               WidthRequest="100"
+                               HeightRequest="100"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Aspect="AspectFit">
+                            <Image.GestureRecognizers>
+                                <PinchGestureRecognizer PinchUpdated="OnPinchUpdated"/>
+                            </Image.GestureRecognizers>
+                        </Image>
+                    </Border>
+
+                    <Label x:Name="PinchResultLabel"
+                           Text="Pinch status: Scale = 1.0"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+
+                    <Button Text="Reset Scale"
+                            Clicked="OnResetPinchScale"
+                            HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- PointerGestureRecognizer -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="PointerGestureRecognizer"
+                           FontAttributes="Bold"/>
+                    <Label Text="Move your pointer (mouse/touch) over the box to see events."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <Border x:Name="PointerBox"
+                            BackgroundColor="Teal"
+                            HeightRequest="120"
+                            Padding="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <PointerGestureRecognizer PointerEntered="OnPointerEntered"
+                                                      PointerExited="OnPointerExited"
+                                                      PointerMoved="OnPointerMoved"
+                                                      PointerPressed="OnPointerPressed"
+                                                      PointerReleased="OnPointerReleased"/>
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center">
+                            <Label x:Name="PointerStateLabel"
+                                   Text="Hover Over Me"
+                                   HorizontalOptions="Center"
+                                   TextColor="White"
+                                   FontAttributes="Bold"
+                                   FontSize="18"/>
+                            <Label x:Name="PointerPositionLabel"
+                                   Text="Position: --"
+                                   HorizontalOptions="Center"
+                                   TextColor="White"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Label x:Name="PointerResultLabel"
+                           Text="Pointer status: Outside"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Combined Gestures -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Combined Gestures"
+                           FontAttributes="Bold"/>
+                    <Label Text="This box responds to both tap and pan gestures."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <Border BackgroundColor="LightGray"
+                            HeightRequest="150"
+                            Padding="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Grid>
+                            <Border x:Name="CombinedBox"
+                                    BackgroundColor="Coral"
+                                    WidthRequest="100"
+                                    HeightRequest="100"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="50"/>
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCombinedTap"/>
+                                    <PanGestureRecognizer PanUpdated="OnCombinedPan"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="Tap or Drag"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="White"
+                                       FontAttributes="Bold"
+                                       FontSize="12"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <Label x:Name="CombinedResultLabel"
+                           Text="Interaction: None"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

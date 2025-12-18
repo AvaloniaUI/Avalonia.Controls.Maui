@@ -54,6 +54,7 @@ public partial class MainPage : FlyoutPage
             nameof(CollectionViewPage) => new CollectionViewPage(),
             nameof(PickerPage) => new PickerPage(),
             nameof(StepperPage) => new StepperPage(),
+            nameof(GestureRecognizersPage) => new GestureRecognizersPage(),
             "MainPage" when pageType.Namespace == "RpnCalculator" => new RpnCalculator.MainPage(),
             "SolitairePage" when pageType.Namespace == "SolitaireEncryption" => new SolitaireEncryption.SolitairePage(),
             "TipCalcPage" when pageType.Namespace == "TipCalc" => new TipCalc.TipCalcPage(),
