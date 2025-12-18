@@ -2,9 +2,10 @@
 <?xaml-comp compile="true" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <Color x:Key="Primary">#512BD4</Color>
-    <Color x:Key="Secondary">#DFD8F7</Color>
-    <Color x:Key="Tertiary">#2B0B98</Color>
+    <!-- 2048 Game Theme Colors -->
+    <Color x:Key="Primary">#8f7a66</Color>
+    <Color x:Key="Secondary">#bbada0</Color>
+    <Color x:Key="Tertiary">#776e65</Color>
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>
     <Color x:Key="Gray100">#E1E1E1</Color>
@@ -15,6 +16,34 @@
     <Color x:Key="Gray600">#404040</Color>
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#141414</Color>
+
+    <!-- 2048 Game Specific Colors - Light Mode -->
+    <Color x:Key="GameBackgroundLight">#faf8ef</Color>
+    <Color x:Key="BoardBackgroundLight">#bbada0</Color>
+    <Color x:Key="ScoreBoxBackgroundLight">#bbada0</Color>
+    <Color x:Key="GameTextDarkLight">#776e65</Color>
+    <Color x:Key="GameTextLightLight">#f9f6f2</Color>
+    <Color x:Key="LogoGoldLight">#edc22e</Color>
+    <Color x:Key="ButtonColorLight">#8f7a66</Color>
+
+    <!-- 2048 Game Specific Colors - Dark Mode (warm brown/yellow tones) -->
+    <Color x:Key="GameBackgroundDark">#2d2416</Color>
+    <Color x:Key="BoardBackgroundDark">#4a3c2a</Color>
+    <Color x:Key="ScoreBoxBackgroundDark">#5c4a34</Color>
+    <Color x:Key="GameTextDarkDark">#f5e6c8</Color>
+    <Color x:Key="GameTextLightDark">#faf8ef</Color>
+    <Color x:Key="LogoGoldDark">#f2b179</Color>
+    <Color x:Key="ButtonColorDark">#d4a43a</Color>
+
+    <!-- Legacy keys for compatibility -->
+    <Color x:Key="GameBackground">#faf8ef</Color>
+    <Color x:Key="BoardBackground">#bbada0</Color>
+    <Color x:Key="ScoreBoxBackground">#bbada0</Color>
+    <Color x:Key="GameTextDark">#776e65</Color>
+    <Color x:Key="GameTextLight">#f9f6f2</Color>
+    <Color x:Key="LogoGold">#edc22e</Color>
+    <Color x:Key="ButtonOrange">#8f7a66</Color>
+    <Color x:Key="ButtonOrangeHover">#9f8b77</Color>
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}" />
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}" />
