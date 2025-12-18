@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.BorderPage"
+             Title="Border">
+    <ContentPage.Resources>
+        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+        <Color x:Key="SectionBorderDark">#444444</Color>
+        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+        <Color x:Key="AccentPrimary">#6200EE</Color>
+        <Color x:Key="AccentSecondary">#03DAC5</Color>
+    </ContentPage.Resources>
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="Border Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic Border -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Border"
+                           FontAttributes="Bold"/>
+                    
+                    <Border Stroke="{AppThemeBinding Light=#C49B33, Dark=#FFD700}"
+                            StrokeThickness="4"
+                            Background="{AppThemeBinding Light=#2B0B98, Dark=#4B2BC8}"
+                            Padding="16,8"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="40,0,0,40"/>
+                        </Border.StrokeShape>
+                        <Label Text=".NET MAUI"
+                               TextColor="White"
+                               FontSize="18"
+                               FontAttributes="Bold"/>
+                    </Border>
+                    
+                    <Border Stroke="{AppThemeBinding Light=DarkBlue, Dark=LightSkyBlue}"
+                            StrokeThickness="2"
+                            Padding="12"
+                            HorizontalOptions="Center">
+                        <Label Text="Simple rectangular border"/>
+                    </Border>
+                    
+                    <Border Stroke="{AppThemeBinding Light=#C49B33, Dark=#FFD700}"
+                            StrokeThickness="4"
+                            WidthRequest="200"
+                            HeightRequest="200"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="30"/>
+                        </Border.StrokeShape>
+                        <Image Source="dotnet_logo.png"
+                               Aspect="AspectFill"/>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Shape Switching Section -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive Shape Switching"
+                           FontAttributes="Bold"/>
+                    <Label Text="Tap buttons to change the border shape"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Border x:Name="ShapeSwitchBorder"
+                            Stroke="{AppThemeBinding Light=#E91E63, Dark=#FF4081}"
+                            StrokeThickness="4"
+                            Background="{AppThemeBinding Light=#FCE4EC, Dark=#3D1F29}"
+                            WidthRequest="250"
+                            HeightRequest="120"
+                            Padding="20"
+                            HorizontalOptions="Center">
+                        <Label x:Name="ShapeLabel"
+                               Text="Rectangle"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontSize="16"
+                               FontAttributes="Bold"/>
+                    </Border>
+                    
+                    <FlexLayout Wrap="Wrap"
+                                JustifyContent="Center"
+                                AlignItems="Center">
+                        <Button Text="Rectangle"
+                                Margin="4"
+                                Clicked="OnShapeRectangleClicked"/>
+                        <Button Text="RoundRect (10)"
+                                Margin="4"
+                                Clicked="OnShapeRoundRect10Clicked"/>
+                        <Button Text="RoundRect (30)"
+                                Margin="4"
+                                Clicked="OnShapeRoundRect30Clicked"/>
+                        <Button Text="Pill Shape"
+                                Margin="4"
+                                Clicked="OnShapePillClicked"/>
+                        <Button Text="Asymmetric"
+                                Margin="4"
+                                Clicked="OnShapeAsymmetricClicked"/>
+                        <Button Text="Ellipse"
+                                Margin="4"
+                                Clicked="OnShapeEllipseClicked"/>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- StrokeShape Variations -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="StrokeShape Variations"
+                           FontAttributes="Bold"/>
+                    
+                    <Border Stroke="{AppThemeBinding Light=Purple, Dark=MediumPurple}"
+                            StrokeThickness="3"
+                            Padding="16"
+                            Background="{AppThemeBinding Light=LightPink, Dark=#4A2040}"
+                            HorizontalOptions="Center">
+                        <Label Text="Rectangle (Default)"/>
+                    </Border>
+                    
+                    <Border Stroke="{AppThemeBinding Light=Green, Dark=LightGreen}"
+                            StrokeThickness="3"
+                            Padding="16"
+                            Background="{AppThemeBinding Light=LightGreen, Dark=#204020}"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="20"/>
+                        </Border.StrokeShape>
+                        <Label Text="RoundRectangle (20)"/>
+                    </Border>
+                    
+                    <Border Stroke="{AppThemeBinding Light=Blue, Dark=LightSkyBlue}"
+                            StrokeThickness="3"
+                            Padding="16"
+                            Background="{AppThemeBinding Light=LightBlue, Dark=#203040}"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="0,30,0,30"/>
+                        </Border.StrokeShape>
+                        <Label Text="Asymmetric Corners"/>
+                    </Border>
+                    
+                    <Border Stroke="{AppThemeBinding Light=Orange, Dark=Gold}"
+                            StrokeThickness="3"
+                            Padding="20"
+                            Background="{AppThemeBinding Light=Wheat, Dark=#4A3D20}"
+                            WidthRequest="200"
+                            HeightRequest="100"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <Ellipse/>
+                        </Border.StrokeShape>
+                        <Label Text="Ellipse"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Stroke Thickness -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="StrokeThickness Variations"
+                           FontAttributes="Bold"/>
+                    
+                    <Border Stroke="{AppThemeBinding Light=Red, Dark=#FF6B6B}"
+                            StrokeThickness="1"
+                            Padding="12"
+                            HorizontalOptions="Center">
+                        <Label Text="Thickness: 1"/>
+                    </Border>
+                    
+                    <Border Stroke="{AppThemeBinding Light=Red, Dark=#FF6B6B}"
+                            StrokeThickness="3"
+                            Padding="12"
+                            HorizontalOptions="Center">
+                        <Label Text="Thickness: 3"/>
+                    </Border>
+                    
+                    <Border Stroke="{AppThemeBinding Light=Red, Dark=#FF6B6B}"
+                            StrokeThickness="6"
+                            Padding="12"
+                            HorizontalOptions="Center">
+                        <Label Text="Thickness: 6"/>
+                    </Border>
+                    
+                    <Border Stroke="{AppThemeBinding Light=Red, Dark=#FF6B6B}"
+                            StrokeThickness="10"
+                            Padding="12"
+                            HorizontalOptions="Center">
+                        <Label Text="Thickness: 10"/>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Dash Patterns -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="StrokeDashArray Patterns"
+                           FontAttributes="Bold"/>
+                    
+                    <Border Stroke="{AppThemeBinding Light=DarkSlateGray, Dark=LightSlateGray}"
+                            StrokeThickness="3"
+                            StrokeDashArray="4,2"
+                            Padding="16"
+                            HorizontalOptions="Center">
+                        <Label Text="Dash: 4,2"/>
+                    </Border>
+                    
+                    <Border Stroke="{AppThemeBinding Light=DarkSlateGray, Dark=LightSlateGray}"
+                            StrokeThickness="3"
+                            StrokeDashArray="1,1"
+                            Padding="16"
+                            HorizontalOptions="Center">
+                        <Label Text="Dotted: 1,1"/>
+                    </Border>
+                    
+                    <Border Stroke="{AppThemeBinding Light=DarkSlateGray, Dark=LightSlateGray}"
+                            StrokeThickness="3"
+                            StrokeDashArray="6,2,2,2"
+                            Padding="16"
+                            HorizontalOptions="Center">
+                        <Label Text="Dash-Dot: 6,2,2,2"/>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Gradient Stroke -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Gradient Strokes"
+                           FontAttributes="Bold"/>
+                    
+                    <Border StrokeThickness="6"
+                            Padding="20"
+                            Background="{AppThemeBinding Light=#2B0B98, Dark=#4B2BC8}"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="20"/>
+                        </Border.StrokeShape>
+                        <Border.Stroke>
+                            <LinearGradientBrush EndPoint="0,1">
+                                <GradientStop Color="Orange" Offset="0.1"/>
+                                <GradientStop Color="Brown" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Border.Stroke>
+                        <Label Text="Linear Gradient Border"
+                               TextColor="White"
+                               FontSize="16"/>
+                    </Border>
+                    
+                    <Border StrokeThickness="6"
+                            Padding="20"
+                            Background="{AppThemeBinding Light=MidnightBlue, Dark=#2C3E50}"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="20"/>
+                        </Border.StrokeShape>
+                        <Border.Stroke>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="Cyan" Offset="0.0"/>
+                                <GradientStop Color="Magenta" Offset="0.5"/>
+                                <GradientStop Color="Yellow" Offset="1.0"/>
+                            </LinearGradientBrush>
+                        </Border.Stroke>
+                        <Label Text="Diagonal Gradient"
+                               TextColor="White"
+                               FontSize="16"/>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Animated Border Section -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Animated Border"
+                           FontAttributes="Bold"/>
+                    <Label Text="Watch the border animate!"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Border x:Name="AnimatedBorder"
+                            Stroke="{StaticResource AccentPrimary}"
+                            StrokeThickness="4"
+                            StrokeDashArray="8,4"
+                            Background="{AppThemeBinding Light=#F0E6FF, Dark=#2D1F4A}"
+                            WidthRequest="200"
+                            HeightRequest="100"
+                            Padding="20"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle x:Name="AnimatedRoundRect" CornerRadius="10"/>
+                        </Border.StrokeShape>
+                        <Label Text="Dash Animation"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontAttributes="Bold"/>
+                    </Border>
+                    
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Button x:Name="DashAnimationButton"
+                                Text="Start Dash Loop"
+                                Clicked="OnToggleDashAnimationClicked"/>
+                        <Button Text="Pulse Color"
+                                Clicked="OnPulseColorClicked"/>
+                        <Button Text="Animate Thickness"
+                                Clicked="OnAnimateThicknessClicked"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Interactive Corner Radius -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive Corner Radius"
+                           FontAttributes="Bold"/>
+                    <Label Text="Use sliders to adjust individual corners"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Border x:Name="InteractiveBorder"
+                            Stroke="{AppThemeBinding Light=Purple, Dark=MediumPurple}"
+                            StrokeThickness="4"
+                            Background="{AppThemeBinding Light=#E6E6FA, Dark=#2D1F3D}"
+                            WidthRequest="200"
+                            HeightRequest="120"
+                            Padding="20"
+                            HorizontalOptions="Center">
+                        <Border.StrokeShape>
+                            <RoundRectangle x:Name="InteractiveRoundRect"
+                                            CornerRadius="0,0,0,0"/>
+                        </Border.StrokeShape>
+                        <Label Text="Drag sliders!"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               FontAttributes="Bold"/>
+                    </Border>
+                    
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          RowDefinitions="Auto,Auto,Auto,Auto"
+                          ColumnSpacing="10"
+                          RowSpacing="5"
+                          Padding="10">
+                        
+                        <Label Text="Top-Left:"
+                               VerticalOptions="Center"/>
+                        <Slider x:Name="TopLeftSlider"
+                                Grid.Column="1"
+                                Minimum="0"
+                                Maximum="60"
+                                Value="0"
+                                ValueChanged="OnCornerSliderChanged"/>
+                        <Label x:Name="TopLeftValue"
+                               Grid.Column="2"
+                               Text="0"
+                               WidthRequest="30"/>
+                        
+                        <Label Text="Top-Right:"
+                               Grid.Row="1"
+                               VerticalOptions="Center"/>
+                        <Slider x:Name="TopRightSlider"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Minimum="0"
+                                Maximum="60"
+                                Value="0"
+                                ValueChanged="OnCornerSliderChanged"/>
+                        <Label x:Name="TopRightValue"
+                               Grid.Row="1"
+                               Grid.Column="2"
+                               Text="0"
+                               WidthRequest="30"/>
+                        
+                        <Label Text="Bottom-Right:"
+                               Grid.Row="2"
+                               VerticalOptions="Center"/>
+                        <Slider x:Name="BottomRightSlider"
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Minimum="0"
+                                Maximum="60"
+                                Value="0"
+                                ValueChanged="OnCornerSliderChanged"/>
+                        <Label x:Name="BottomRightValue"
+                               Grid.Row="2"
+                               Grid.Column="2"
+                               Text="0"
+                               WidthRequest="30"/>
+                        
+                        <Label Text="Bottom-Left:"
+                               Grid.Row="3"
+                               VerticalOptions="Center"/>
+                        <Slider x:Name="BottomLeftSlider"
+                                Grid.Row="3"
+                                Grid.Column="1"
+                                Minimum="0"
+                                Maximum="60"
+                                Value="0"
+                                ValueChanged="OnCornerSliderChanged"/>
+                        <Label x:Name="BottomLeftValue"
+                               Grid.Row="3"
+                               Grid.Column="2"
+                               Text="0"
+                               WidthRequest="30"/>
+                    </Grid>
+                    
+                    <Button Text="Set All Corners to 30"
+                            Clicked="OnSetAllCornersClicked"
+                            HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
