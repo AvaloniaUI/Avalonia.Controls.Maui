@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="2048Game.Desktop/2048Game.Desktop.csproj" />
+  <Project Path="2048Game.iOS/2048Game.iOS.csproj" />
+  <Project Path="2048Game.Mac/2048Game.Mac.csproj" />
+  <Project Path="2048Game/2048Game.csproj" />
+</Solution>

@@ -1,0 +1,193 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="_2048Game.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behaviors="clr-namespace:_2048Game.Behaviors"
+    xmlns:converters="clr-namespace:_2048Game.Converters"
+    xmlns:models="clr-namespace:_2048Game.Models"
+    xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:enums="clr-namespace:_2048Game.Enums"
+    NavigationPage.HasNavigationBar="False"
+    BackgroundColor="WhiteSmoke"
+    Padding="0"
+    xmlns:viewModels="clr-namespace:_2048Game.ViewModels">
+    <ContentPage.BindingContext>
+        <viewModels:MainPageViewModel PropertyChanged="MainPageViewModel_PropertyChanged" />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <converters:StringToTileBackgroundColorConverter x:Key="StringToTileBackgroundColorConverter" />
+        <converters:StringToTileTextColorConverter x:Key="StringToTileTextColorConverter" />
+        <toolkit:EnumToBoolConverter x:Key="IsGameOverConverter">
+            <toolkit:EnumToBoolConverter.TrueValues>
+                <enums:LevelState>GameOver</enums:LevelState>
+                <enums:LevelState>GameOver</enums:LevelState>
+            </toolkit:EnumToBoolConverter.TrueValues>
+        </toolkit:EnumToBoolConverter>
+        <Style x:Key="NumberTileBorder" TargetType="Border">
+            <Setter Property="HeightRequest" Value="70" />
+            <Setter Property="WidthRequest" Value="70" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 5" />
+            <Setter Property="Stroke" Value="Transparent" />
+        </Style>
+        <Style x:Key="NumberTileGrid" TargetType="Grid">
+            <Setter Property="HeightRequest" Value="75" />
+            <Setter Property="WidthRequest" Value="75" />
+        </Style>
+    </ContentPage.Resources>
+    <Grid x:Name="MainGrid"
+          Margin="{OnPlatform Android='0,30,0,0', iOS=0}" RowDefinitions="Auto,*,Auto,Auto">
+            <Grid
+                Padding="20"
+                Grid.Row="0"
+                ColumnDefinitions="*,*,*"
+                ColumnSpacing="10"
+                RowDefinitions="Auto, Auto, Auto"
+                RowSpacing="10">
+                <Label
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    BackgroundColor="#edc22e"
+                    FontSize="32"
+                    HorizontalTextAlignment="Center"
+                    Text="2048"
+                    TextColor="White"
+                    VerticalTextAlignment="Center" >
+                </Label>
+
+                <VerticalStackLayout
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Padding="5"
+                    BackgroundColor="Gray">
+                    <Label Style="{StaticResource WhiteLabelStyle}" Text="Score" />
+                    <Grid>
+                        <Label Style="{StaticResource WhiteLabelStyle}" Text="{Binding Score}" />
+                        <Label x:Name="AddedScoreLabel" IsVisible="False" Style="{StaticResource WhiteLabelStyle}" Text="{Binding AddedScore}" />
+                    </Grid>
+                </VerticalStackLayout>
+                <VerticalStackLayout
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Padding="5"
+                    BackgroundColor="Gray">
+                    <Label Style="{StaticResource WhiteLabelStyle}" Text="Best" />
+                    <Label Style="{StaticResource WhiteLabelStyle}" Text="{Binding BestScore}" />
+                </VerticalStackLayout>
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    BackgroundColor="{StaticResource Orange100Accent}"
+                    Command="{Binding NewGameCommand}"
+                    CornerRadius="5"
+                    FontAttributes="Bold"
+                    Text="NEW" />
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    BackgroundColor="{StaticResource Orange100Accent}"
+                    CornerRadius="5"
+                    FontAttributes="Bold"
+                    Clicked="UndoButton_Clicked"
+                    Text="UNDO" />
+                <Label
+                    Grid.Row="2"
+                    Grid.ColumnSpan="3"
+                    FontSize="15"
+                    HorizontalTextAlignment="Center"
+                    Text="Join the numbers and get to the 2048 tile!"
+                    TextColor="Gray" />
+            </Grid>
+            <Border Grid.Row="1"
+                    VerticalOptions="Start"
+                    HeightRequest="336"
+                    WidthRequest="340">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="5" />
+                </Border.StrokeShape>
+                <CollectionView
+                    HeightRequest="336"
+                    WidthRequest="340"
+                    BackgroundColor="#a49381"
+                    VerticalOptions="CenterAndExpand"
+                    ItemsSource="{Binding Tiles}">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout
+                            Orientation="Vertical" Span="4" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:NumberTile">
+                            <Grid
+                                x:Name="MyToolsPhotosItem"
+                                Margin="4"
+                                Style="{StaticResource NumberTileGrid}">
+                                <Border
+                                    x:Name="tttt"
+                                    Padding="0"
+                                    BackgroundColor="{Binding Number, Converter={StaticResource StringToTileBackgroundColorConverter}}"
+                                    Stroke="Transparent"
+                                    Style="{StaticResource NumberTileBorder}">
+                                    <Border.Behaviors>
+                                        <behaviors:TileStateBehavior />
+                                    </Border.Behaviors>
+                                    <Label
+                                        FontFamily="PoppinsBold"
+                                        Margin="0,5,0,0"
+                                        FontSize="36"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="Center"
+                                        HorizontalTextAlignment="Center"
+                                        Text="{Binding Number}"
+                                        TextColor="{Binding Number, Converter={StaticResource StringToTileTextColorConverter}}"
+                                        VerticalTextAlignment="Center" />
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Path=SelectTileCommand, Source={RelativeSource AncestorType={x:Type viewModels:MainPageViewModel}}}" CommandParameter="{Binding}" />
+                                    </Border.GestureRecognizers>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.GestureRecognizers>
+                        <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated" />
+                    </CollectionView.GestureRecognizers>
+                </CollectionView>
+            </Border>
+            <Grid  Padding="25,20,25,20" VerticalOptions="Start" Grid.Row="2">
+                <Label Text="Moves:" TextColor="Gray">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span FontFamily="PoppinsRegular" Text="Moves: " FontSize="15"/>
+                            <Span FontFamily="PoppinsSemibold" FontSize="16" Text="{Binding TotalMoves}"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label HorizontalOptions="End" HorizontalTextAlignment="End" Text="{Binding FormattedTime}" FontSize="16" TextColor="Gray"/>
+            </Grid>
+            <!-- GameOver Overlay -->
+            <Border Grid.RowSpan="2"
+                    Grid.Row="1"
+                    VerticalOptions="Start"
+                    IsVisible="{Binding State, Converter={StaticResource IsGameOverConverter}}"
+                    BackgroundColor="#AA000000"
+                    HorizontalOptions="Center"
+                    HeightRequest="336"
+                    WidthRequest="340"
+                    Stroke="Transparent">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <Grid>
+
+                     <Button
+                            VerticalOptions="End"
+                            HeightRequest="40"
+                            BackgroundColor="{StaticResource Orange100Accent}"
+                            Command="{Binding NewGameCommand}"
+                            CornerRadius="5"
+                            FontAttributes="Bold"
+                            Text="Play Again" />
+                </Grid>
+            </Border>
+    </Grid>
+</ContentPage>
