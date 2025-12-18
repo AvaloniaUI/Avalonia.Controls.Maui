@@ -281,7 +281,7 @@ public class Swipe : Grid
     private readonly ContentPresenter _bottomContainer;
     private readonly ContentPresenter _bodyContainer;
     private readonly TransformOperationsTransition _transition;
-    private readonly PanGestureRecognizer _panGestureRecognizer;
+    private readonly SwipeViewPanGestureRecognizer _panGestureRecognizer;
     
     // Cache this object to avoid allocating it on every frame during a swipe.
     private readonly SwipeChangingEventArgs _cachedSwipeChangingArgs;
@@ -324,7 +324,7 @@ public class Swipe : Grid
         _bodyContainer.Transitions ??= new Transitions();
         _bodyContainer.Transitions.Add(_transition);
 
-        _panGestureRecognizer = new PanGestureRecognizer
+        _panGestureRecognizer = new SwipeViewPanGestureRecognizer
         {
             Direction = PanDirection.Left | PanDirection.Right | PanDirection.Up | PanDirection.Down,
             Threshold = GestureThreshold,

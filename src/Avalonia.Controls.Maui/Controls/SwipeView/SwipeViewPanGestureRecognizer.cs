@@ -6,9 +6,10 @@ using Avalonia.Input.GestureRecognizers;
 namespace Avalonia.Controls.Maui;
 
 /// <summary>
-/// The gesture recognizer for pan gesture 
+/// Internal gesture recognizer for pan gestures used by SwipeView.
+/// This is separate from Microsoft.Maui.Controls.PanGestureRecognizer which is handled by GestureManager.
 /// </summary>
-public class PanGestureRecognizer : GestureRecognizer
+internal class SwipeViewPanGestureRecognizer : GestureRecognizer
 {
     private IInputElement? _inputElement;
     private IPointer? _tracking;
