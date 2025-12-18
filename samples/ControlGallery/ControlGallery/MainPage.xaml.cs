@@ -53,7 +53,12 @@ public partial class MainPage : FlyoutPage
             nameof(CollectionViewPage) => new CollectionViewPage(),
             nameof(PickerPage) => new PickerPage(),
             nameof(StepperPage) => new StepperPage(),
+            nameof(StackLayoutPage) => new StackLayoutPage(),
+            nameof(GridPage) => new GridPage(),
+            nameof(FlexLayoutPage) => new FlexLayoutPage(),
+            nameof(AbsoluteLayoutPage) => new AbsoluteLayoutPage(),
             "MainPage" when pageType.Namespace == "RpnCalculator" => new RpnCalculator.MainPage(),
+
             "SolitairePage" when pageType.Namespace == "SolitaireEncryption" => new SolitaireEncryption.SolitairePage(),
             "TipCalcPage" when pageType.Namespace == "TipCalc" => new TipCalc.TipCalcPage(),
             "MainPage" when pageType.Namespace == "Weather" => new Weather.MainPage(),

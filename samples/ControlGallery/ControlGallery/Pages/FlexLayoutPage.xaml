@@ -1,0 +1,376 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.FlexLayoutPage"
+             Title="FlexLayout">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="FlexLayout"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Direction -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Direction Property"
+                           FontAttributes="Bold"/>
+                    
+                    <Label Text="Direction=Row (default)"/>
+                    <FlexLayout Direction="Row"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="50" HeightRequest="50"/>
+                        <BoxView Color="Green" WidthRequest="50" HeightRequest="50"/>
+                        <BoxView Color="Blue" WidthRequest="50" HeightRequest="50"/>
+                    </FlexLayout>
+                    
+                    <Label Text="Direction=RowReverse"/>
+                    <FlexLayout Direction="RowReverse"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="50" HeightRequest="50"/>
+                        <BoxView Color="Green" WidthRequest="50" HeightRequest="50"/>
+                        <BoxView Color="Blue" WidthRequest="50" HeightRequest="50"/>
+                    </FlexLayout>
+                    
+                    <Label Text="Direction=Column"/>
+                    <FlexLayout Direction="Column"
+                                HeightRequest="180"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="50" HeightRequest="50"/>
+                        <BoxView Color="Green" WidthRequest="50" HeightRequest="50"/>
+                        <BoxView Color="Blue" WidthRequest="50" HeightRequest="50"/>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Wrap -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Wrap Property"
+                           FontAttributes="Bold"/>
+                    
+                    <Label Text="Wrap=NoWrap (items overflow)"/>
+                    <FlexLayout Wrap="NoWrap"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="80" HeightRequest="40"/>
+                        <BoxView Color="Orange" WidthRequest="80" HeightRequest="40"/>
+                        <BoxView Color="Yellow" WidthRequest="80" HeightRequest="40"/>
+                        <BoxView Color="Green" WidthRequest="80" HeightRequest="40"/>
+                        <BoxView Color="Blue" WidthRequest="80" HeightRequest="40"/>
+                    </FlexLayout>
+                    
+                    <Label Text="Wrap=Wrap (items wrap to next line)"/>
+                    <FlexLayout Wrap="Wrap"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="80" HeightRequest="40"/>
+                        <BoxView Color="Orange" WidthRequest="80" HeightRequest="40"/>
+                        <BoxView Color="Yellow" WidthRequest="80" HeightRequest="40"/>
+                        <BoxView Color="Green" WidthRequest="80" HeightRequest="40"/>
+                        <BoxView Color="Blue" WidthRequest="80" HeightRequest="40"/>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- JustifyContent -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="JustifyContent Property"
+                           FontAttributes="Bold"/>
+                    
+                    <Label Text="JustifyContent=Start"/>
+                    <FlexLayout JustifyContent="Start"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Green" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Blue" WidthRequest="40" HeightRequest="40"/>
+                    </FlexLayout>
+                    
+                    <Label Text="JustifyContent=Center"/>
+                    <FlexLayout JustifyContent="Center"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Green" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Blue" WidthRequest="40" HeightRequest="40"/>
+                    </FlexLayout>
+                    
+                    <Label Text="JustifyContent=End"/>
+                    <FlexLayout JustifyContent="End"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Green" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Blue" WidthRequest="40" HeightRequest="40"/>
+                    </FlexLayout>
+                    
+                    <Label Text="JustifyContent=SpaceBetween"/>
+                    <FlexLayout JustifyContent="SpaceBetween"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Green" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Blue" WidthRequest="40" HeightRequest="40"/>
+                    </FlexLayout>
+                    
+                    <Label Text="JustifyContent=SpaceAround"/>
+                    <FlexLayout JustifyContent="SpaceAround"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Green" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Blue" WidthRequest="40" HeightRequest="40"/>
+                    </FlexLayout>
+                    
+                    <Label Text="JustifyContent=SpaceEvenly"/>
+                    <FlexLayout JustifyContent="SpaceEvenly"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Green" WidthRequest="40" HeightRequest="40"/>
+                        <BoxView Color="Blue" WidthRequest="40" HeightRequest="40"/>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- AlignItems -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="AlignItems Property"
+                           FontAttributes="Bold"/>
+                    
+                    <Label Text="AlignItems=Start"/>
+                    <FlexLayout AlignItems="Start"
+                                HeightRequest="80"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="40" HeightRequest="30"/>
+                        <BoxView Color="Green" WidthRequest="40" HeightRequest="50"/>
+                        <BoxView Color="Blue" WidthRequest="40" HeightRequest="40"/>
+                    </FlexLayout>
+                    
+                    <Label Text="AlignItems=Center"/>
+                    <FlexLayout AlignItems="Center"
+                                HeightRequest="80"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="40" HeightRequest="30"/>
+                        <BoxView Color="Green" WidthRequest="40" HeightRequest="50"/>
+                        <BoxView Color="Blue" WidthRequest="40" HeightRequest="40"/>
+                    </FlexLayout>
+                    
+                    <Label Text="AlignItems=End"/>
+                    <FlexLayout AlignItems="End"
+                                HeightRequest="80"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="40" HeightRequest="30"/>
+                        <BoxView Color="Green" WidthRequest="40" HeightRequest="50"/>
+                        <BoxView Color="Blue" WidthRequest="40" HeightRequest="40"/>
+                    </FlexLayout>
+                    
+                    <Label Text="AlignItems=Stretch"/>
+                    <FlexLayout AlignItems="Stretch"
+                                HeightRequest="80"
+                                BackgroundColor="LightGray"
+                                Padding="5">
+                        <BoxView Color="Red" WidthRequest="40"/>
+                        <BoxView Color="Green" WidthRequest="40"/>
+                        <BoxView Color="Blue" WidthRequest="40"/>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- FlexLayout.Grow -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="FlexLayout.Grow Attached Property"
+                           FontAttributes="Bold"/>
+                    <Label Text="Controls how items grow to fill available space"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Label Text="Grow=0 (no growing)"/>
+                    <FlexLayout BackgroundColor="LightGray"
+                                Padding="5"
+                                HeightRequest="50">
+                        <BoxView Color="Red" WidthRequest="50" FlexLayout.Grow="0"/>
+                        <BoxView Color="Green" WidthRequest="50" FlexLayout.Grow="0"/>
+                        <BoxView Color="Blue" WidthRequest="50" FlexLayout.Grow="0"/>
+                    </FlexLayout>
+                    
+                    <Label Text="Grow=1 on middle item"/>
+                    <FlexLayout BackgroundColor="LightGray"
+                                Padding="5"
+                                HeightRequest="50">
+                        <BoxView Color="Red" WidthRequest="50" FlexLayout.Grow="0"/>
+                        <BoxView Color="Green" FlexLayout.Grow="1"/>
+                        <BoxView Color="Blue" WidthRequest="50" FlexLayout.Grow="0"/>
+                    </FlexLayout>
+                    
+                    <Label Text="Grow=1 on all items (equal distribution)"/>
+                    <FlexLayout BackgroundColor="LightGray"
+                                Padding="5"
+                                HeightRequest="50">
+                        <BoxView Color="Red" FlexLayout.Grow="1"/>
+                        <BoxView Color="Green" FlexLayout.Grow="1"/>
+                        <BoxView Color="Blue" FlexLayout.Grow="1"/>
+                    </FlexLayout>
+                    
+                    <Label Text="Proportional: Grow=1, Grow=2, Grow=3"/>
+                    <FlexLayout BackgroundColor="LightGray"
+                                Padding="5"
+                                HeightRequest="50">
+                        <BoxView Color="Red" FlexLayout.Grow="1"/>
+                        <BoxView Color="Green" FlexLayout.Grow="2"/>
+                        <BoxView Color="Blue" FlexLayout.Grow="3"/>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- FlexLayout.Basis -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="FlexLayout.Basis Attached Property"
+                           FontAttributes="Bold"/>
+                    <Label Text="Sets the initial size of flex items"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <FlexLayout BackgroundColor="LightGray"
+                                Padding="5"
+                                HeightRequest="50">
+                        <BoxView Color="Red" FlexLayout.Basis="50"/>
+                        <BoxView Color="Green" FlexLayout.Basis="100"/>
+                        <BoxView Color="Blue" FlexLayout.Basis="150"/>
+                    </FlexLayout>
+                    <Label Text="Basis: 50, 100, 150 (pixels)"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Holy Grail Layout -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Holy Grail Layout"
+                           FontAttributes="Bold"/>
+                    <Label Text="Classic header-sidebar-content-sidebar-footer pattern"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <FlexLayout Direction="Column"
+                                HeightRequest="250">
+                        
+                        <!-- Header -->
+                        <Label Text="HEADER"
+                               FontSize="16"
+                               BackgroundColor="Aqua"
+                               HorizontalTextAlignment="Center"
+                               Padding="10"/>
+                        
+                        <!-- Body -->
+                        <FlexLayout FlexLayout.Grow="1">
+                            
+                            <!-- Content -->
+                            <Label Text="CONTENT"
+                                   FontSize="16"
+                                   BackgroundColor="LightGray"
+                                   HorizontalTextAlignment="Center"
+                                   VerticalTextAlignment="Center"
+                                   FlexLayout.Grow="1"/>
+                            
+                            <!-- Navigation -->
+                            <BoxView FlexLayout.Basis="60"
+                                     FlexLayout.Order="-1"
+                                     Color="Blue"/>
+                            
+                            <!-- Aside -->
+                            <BoxView FlexLayout.Basis="60"
+                                     Color="Green"/>
+                        </FlexLayout>
+                        
+                        <!-- Footer -->
+                        <Label Text="FOOTER"
+                               FontSize="16"
+                               BackgroundColor="Pink"
+                               HorizontalTextAlignment="Center"
+                               Padding="10"/>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- FlexLayout.Order -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="FlexLayout.Order Attached Property"
+                           FontAttributes="Bold"/>
+                    <Label Text="Controls the visual order of items (default is 0)"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Label Text="Items ordered: 1, 2, 3 but displayed as 3, 1, 2"/>
+                    <FlexLayout BackgroundColor="LightGray"
+                                Padding="5"
+                                HeightRequest="60">
+                        <Label Text="Item 1 (Order=0)"
+                               BackgroundColor="Red"
+                               TextColor="White"
+                               Padding="10"
+                               FlexLayout.Order="0"/>
+                        <Label Text="Item 2 (Order=1)"
+                               BackgroundColor="Green"
+                               TextColor="White"
+                               Padding="10"
+                               FlexLayout.Order="1"/>
+                        <Label Text="Item 3 (Order=-1)"
+                               BackgroundColor="Blue"
+                               TextColor="White"
+                               Padding="10"
+                               FlexLayout.Order="-1"/>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

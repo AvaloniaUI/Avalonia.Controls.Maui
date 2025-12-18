@@ -56,6 +56,25 @@
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:TitleBarPage}"/>
 					</TableSection>
+					<TableSection Title="Layouts">
+						<TextCell Text="StackLayout"
+								  Detail="Vertical and horizontal stacking"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:StackLayoutPage}"/>
+						<TextCell Text="Grid"
+								  Detail="Rows, columns, and spanning"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:GridPage}"/>
+						<TextCell Text="FlexLayout"
+								  Detail="Flexible box layout"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:FlexLayoutPage}"/>
+						<TextCell Text="AbsoluteLayout"
+								  Detail="Absolute and proportional positioning"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:AbsoluteLayoutPage}"/>
+					</TableSection>
+
 					<TableSection Title="Views">
 						<TextCell Text="ActivityIndicator"
 								  Detail="ActivityIndicator control"
