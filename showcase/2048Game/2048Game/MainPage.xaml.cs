@@ -141,5 +141,26 @@ public partial class MainPage : ContentPage
     {
         // TODO: Implement undo functionality
     }
+
+    private void GameContainer_SizeChanged(object sender, EventArgs e)
+    {
+        const double originalWidth = 340.0;
+        const double originalHeight = 336.0;
+
+        var containerWidth = GameContainer.Width;
+        var containerHeight = GameContainer.Height;
+
+        if (containerWidth <= 0 || containerHeight <= 0)
+            return;
+
+        // Calculate scale to fit while maintaining aspect ratio
+        var scaleX = containerWidth / originalWidth;
+        var scaleY = containerHeight / originalHeight;
+        var scale = Math.Min(scaleX, scaleY);
+
+        // Apply uniform scale to both borders
+        GameBorder.Scale = scale;
+        GameOverBorder.Scale = scale;
+    }
 }
 
