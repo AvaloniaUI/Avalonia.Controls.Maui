@@ -77,6 +77,11 @@ public static class ViewExtensions
             control.ClearValue(PlatformView.HeightProperty);
     }
 
+    public static void UpdateMargin(this PlatformView control, IView view)
+    {
+        control.Margin = view.Margin.ToPlatform();
+    }
+
     /// <summary>
     /// Updates the minimum height of a platform view based on the .NET MAUI view's minimum height property.
     /// </summary>

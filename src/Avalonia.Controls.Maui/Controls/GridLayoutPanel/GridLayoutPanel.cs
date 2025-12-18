@@ -189,44 +189,27 @@ internal class GridLayoutPanel : Panel
         }
 
         // Calculate cell size based on orientation
-        // For Vertical orientation: width is constrained (cross-axis), height may be constrained (main-axis)
-        // For Horizontal orientation: height is constrained (cross-axis), width may be constrained (main-axis)
+        // For Vertical orientation: width is constrained (cross-axis), height is unconstrained (main-axis for scrolling)
+        // For Horizontal orientation: height is constrained (cross-axis), width is unconstrained (main-axis for scrolling)
         double cellWidth, cellHeight;
 
         if (Orientation == Orientation.Vertical)
         {
-            // Vertical: constrain width (cross-axis)
+            // Vertical: constrain width (cross-axis), allow height to grow (main-axis)
             cellWidth = double.IsInfinity(effectiveWidth) || effectiveWidth <= 0
                 ? double.PositiveInfinity
                 : Math.Max(0, (effectiveWidth - totalHorizontalSpacing) / actualColumns);
-            // For height, use container height when available to match MAUI's behavior
-            // Children are measured with this height to allow them to stretch properly
-            if (!double.IsInfinity(effectiveHeight) && effectiveHeight > 0)
-            {
-                cellHeight = Math.Max(0, (effectiveHeight - totalVerticalSpacing) / actualRows);
-            }
-            else
-            {
-                // Height is unconstrained so items can size to their natural height
-                cellHeight = double.PositiveInfinity;
-            }
+            // Height is unconstrained so items can size to their natural height
+            cellHeight = double.PositiveInfinity;
         }
         else
         {
-            // Horizontal: constrain height (cross-axis)
+            // Horizontal: constrain height (cross-axis), allow width to grow (main-axis)
             cellHeight = double.IsInfinity(effectiveHeight) || effectiveHeight <= 0
                 ? double.PositiveInfinity
                 : Math.Max(0, (effectiveHeight - totalVerticalSpacing) / actualRows);
-            // For width, use container width when available to match MAUI's behavior
-            if (!double.IsInfinity(effectiveWidth) && effectiveWidth > 0)
-            {
-                cellWidth = Math.Max(0, (effectiveWidth - totalHorizontalSpacing) / actualColumns);
-            }
-            else
-            {
-                // Width is unconstrained so items can size to their natural width
-                cellWidth = double.PositiveInfinity;
-            }
+            // Width is unconstrained so items can size to their natural width
+            cellWidth = double.PositiveInfinity;
         }
 
         var cellSize = new Size(cellWidth, cellHeight);
@@ -247,7 +230,7 @@ internal class GridLayoutPanel : Panel
 
         if (Orientation == Orientation.Vertical)
         {
-            // For vertical grid: width is constrained
+            // For vertical grid: width is constrained, height grows with content
             if (!double.IsInfinity(effectiveWidth) && effectiveWidth > 0)
             {
                 totalWidth = effectiveWidth;
@@ -257,24 +240,12 @@ internal class GridLayoutPanel : Panel
                 // Fallback: use children's desired widths
                 totalWidth = (maxChildWidth * actualColumns) + totalHorizontalSpacing;
             }
-            
-            // For height: use container height when available and sufficient
-            // This matches MAUI's GridItemsLayout behavior where cells divide the container evenly
-            if (!double.IsInfinity(effectiveHeight) && effectiveHeight > 0)
-            {
-                var heightFromChildren = (maxChildHeight * actualRows) + totalVerticalSpacing;
-                // Use container height if it can accommodate all children, otherwise use children's height (will scroll)
-                totalHeight = effectiveHeight >= heightFromChildren ? effectiveHeight : heightFromChildren;
-            }
-            else
-            {
-                // No container height constraint, use children's heights
-                totalHeight = (maxChildHeight * actualRows) + totalVerticalSpacing;
-            }
+            // Height is based on actual content - this enables scrolling
+            totalHeight = (maxChildHeight * actualRows) + totalVerticalSpacing;
         }
         else
         {
-            // For horizontal grid: height is constrained
+            // For horizontal grid: height is constrained, width grows with content
             if (!double.IsInfinity(effectiveHeight) && effectiveHeight > 0)
             {
                 totalHeight = effectiveHeight;
@@ -284,20 +255,8 @@ internal class GridLayoutPanel : Panel
                 // Fallback: use children's desired heights
                 totalHeight = (maxChildHeight * actualRows) + totalVerticalSpacing;
             }
-            
-            // For width: use container width when available and sufficient
-            // This matches MAUI's GridItemsLayout behavior where cells divide the container evenly
-            if (!double.IsInfinity(effectiveWidth) && effectiveWidth > 0)
-            {
-                var widthFromChildren = (maxChildWidth * actualColumns) + totalHorizontalSpacing;
-                // Use container width if it can accommodate all children, otherwise use children's width (will scroll)
-                totalWidth = effectiveWidth >= widthFromChildren ? effectiveWidth : widthFromChildren;
-            }
-            else
-            {
-                // No container width constraint, use children's widths
-                totalWidth = (maxChildWidth * actualColumns) + totalHorizontalSpacing;
-            }
+            // Width is based on actual content - this enables scrolling
+            totalWidth = (maxChildWidth * actualColumns) + totalHorizontalSpacing;
         }
 
         return new Size(totalWidth, totalHeight);
@@ -351,53 +310,27 @@ internal class GridLayoutPanel : Panel
         }
 
         // Calculate cell size based on orientation
-        // For Vertical orientation: width is constrained (cross-axis), height may use container or child size (main-axis)
-        // For Horizontal orientation: height is constrained (cross-axis), width may use container or child size (main-axis)
+        // For Vertical orientation: width is constrained (cross-axis), height uses children's desired size (main-axis)
+        // For Horizontal orientation: height is constrained (cross-axis), width uses children's desired size (main-axis)
         double cellWidth, cellHeight;
 
         if (Orientation == Orientation.Vertical)
         {
-            // Vertical: constrain width (cross-axis)
+            // Vertical: constrain width (cross-axis), use children's desired height (main-axis)
             cellWidth = double.IsInfinity(effectiveWidth) || effectiveWidth <= 0
                 ? maxChildWidth
                 : Math.Max(0, (effectiveWidth - totalHorizontalSpacing) / actualColumns);
-            
-            // For cell height, use container height when available and sufficient
-            // This matches MAUI's GridItemsLayout behavior where cells divide the container evenly
-            if (!double.IsInfinity(effectiveHeight) && effectiveHeight > 0)
-            {
-                var heightFromContainer = (effectiveHeight - totalVerticalSpacing) / actualRows;
-                // Use container-based height if it provides at least as much space as children need
-                // Otherwise use child's desired height (will cause scrolling)
-                cellHeight = heightFromContainer >= maxChildHeight ? heightFromContainer : maxChildHeight;
-            }
-            else
-            {
-                // No valid container height, use child's desired height
-                cellHeight = maxChildHeight;
-            }
+            // Height is based on children's desired height to enable scrolling
+            cellHeight = maxChildHeight;
         }
         else
         {
-            // Horizontal: constrain height (cross-axis)
+            // Horizontal: constrain height (cross-axis), use children's desired width (main-axis)
             cellHeight = double.IsInfinity(effectiveHeight) || effectiveHeight <= 0
                 ? maxChildHeight
                 : Math.Max(0, (effectiveHeight - totalVerticalSpacing) / actualRows);
-            
-            // For cell width, use container width when available and sufficient
-            // This matches MAUI's GridItemsLayout behavior where cells divide the container evenly
-            if (!double.IsInfinity(effectiveWidth) && effectiveWidth > 0)
-            {
-                var widthFromContainer = (effectiveWidth - totalHorizontalSpacing) / actualColumns;
-                // Use container-based width if it provides at least as much space as children need
-                // Otherwise use child's desired width (will cause scrolling)
-                cellWidth = widthFromContainer >= maxChildWidth ? widthFromContainer : maxChildWidth;
-            }
-            else
-            {
-                // No valid container width, use child's desired width
-                cellWidth = maxChildWidth;
-            }
+            // Width is based on children's desired width to enable scrolling
+            cellWidth = maxChildWidth;
         }
 
         // Arrange children in grid
