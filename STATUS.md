@@ -1235,7 +1235,7 @@ All controls inherit these common properties from the View and VisualElement bas
 | Effects | IList<Effect> | ⏳ TODO |
 | FlowDirection | FlowDirection | ✅ Implemented |
 | Frame | Rect | ⏳ TODO |
-| GestureRecognizers | IList<IGestureRecognizer> | ⏳ TODO |
+| GestureRecognizers | IList<IGestureRecognizer> | ✅ Implemented |
 | Handler | IViewHandler | ⏳ TODO |
 | Height | double | ✅ Implemented |
 | HeightRequest | double | ✅ Implemented |
