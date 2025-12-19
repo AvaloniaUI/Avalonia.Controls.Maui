@@ -4,7 +4,7 @@ using Avalonia.Headless.XUnit;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using AvaloniaDatePickerHandler = Avalonia.Controls.Maui.Handlers.DatePickerHandler;
-using AvaloniaDatePicker = global::Avalonia.Controls.DatePicker;
+using AvaloniaDatePicker = Avalonia.Controls.DatePicker;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -224,7 +224,7 @@ public partial class DatePickerHandlerTests : HandlerTestBase<AvaloniaDatePicker
         if (handler.PlatformView is not AvaloniaDatePicker datePicker)
             return null;
 
-        if (datePicker.Foreground is Avalonia.Media.SolidColorBrush brush)
+        if (datePicker.Foreground is Media.SolidColorBrush brush)
         {
             return new Color(
                 brush.Color.R / 255f,
@@ -244,13 +244,7 @@ public partial class DatePickerHandlerTests : HandlerTestBase<AvaloniaDatePicker
         return datePicker.FontSize;
     }
 
-    Avalonia.Media.FontFamily? GetNativeFontFamily(AvaloniaDatePickerHandler handler)
-    {
-        if (handler.PlatformView is not AvaloniaDatePicker datePicker)
-            return null;
 
-        return datePicker.FontFamily;
-    }
 
     Avalonia.Media.FontWeight GetNativeFontWeight(AvaloniaDatePickerHandler handler)
     {
@@ -268,7 +262,7 @@ public partial class DatePickerHandlerTests : HandlerTestBase<AvaloniaDatePicker
         return datePicker.FontStyle;
     }
 
-    #region Additional Edge Case Tests
+
 
     [AvaloniaFact(DisplayName = "Date At MinValue Works")]
     public async Task DateAtMinValueWorks()
@@ -626,5 +620,5 @@ public partial class DatePickerHandlerTests : HandlerTestBase<AvaloniaDatePicker
         Assert.NotNull(handler.PlatformView);
     }
 
-    #endregion
+
 }
