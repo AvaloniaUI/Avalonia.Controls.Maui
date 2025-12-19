@@ -457,6 +457,128 @@
                             HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
+            <!-- Feature Cards -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Feature Cards"
+                           FontAttributes="Bold"/>
+                    
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="15" RowSpacing="15">
+                        <Border StrokeShape="RoundRectangle 12" 
+                                StrokeThickness="0"
+                                Padding="16" 
+                                BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#212121}">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Lorem Ipsum" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+                                <Label Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit." FontSize="13" TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                StrokeShape="RoundRectangle 12" 
+                                StrokeThickness="0"
+                                Padding="16" 
+                                BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#212121}">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Dolor Sit Amet" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+                                <Label Text="Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." FontSize="13" TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="1"
+                                StrokeShape="RoundRectangle 12" 
+                                StrokeThickness="0"
+                                Padding="16" 
+                                BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#212121}">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Consectetur Elit" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+                                <Label Text="Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris." FontSize="13" TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="1"
+                                StrokeShape="RoundRectangle 12" 
+                                StrokeThickness="0"
+                                Padding="16" 
+                                BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#212121}">
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Sed Do Eiusmod" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+                                <Label Text="Duis aute irure dolor in reprehenderit in voluptate velit esse cillum." FontSize="13" TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+            <!-- Profile Example -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Profile Card (Ellipse Clipping)"
+                           FontAttributes="Bold"/>
+                    
+                    <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#424242}"
+                            StrokeThickness="1"
+                            Padding="20"
+                            HorizontalOptions="Center"
+                            Background="{AppThemeBinding Light=White, Dark=#303030}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="20"/>
+                        </Border.StrokeShape>
+                        <Border.Shadow>
+                            <Shadow Brush="#99000000"
+                                    Offset="5,5"
+                                    Radius="20"
+                                    Opacity="0.2"/>
+                        </Border.Shadow>
+                        
+                        <VerticalStackLayout Spacing="15" 
+                                             WidthRequest="250"
+                                             HorizontalOptions="Center">
+                            
+                            <!-- Circular Avatar -->
+                            <Border Stroke="{AppThemeBinding Light={StaticResource AccentPrimary}, Dark={StaticResource AccentSecondary}}"
+                                    StrokeThickness="4"
+                                    WidthRequest="100"
+                                    HeightRequest="100"
+                                    HorizontalOptions="Center">
+                                <Border.StrokeShape>
+                                    <Ellipse/>
+                                </Border.StrokeShape>
+                                <Image Source="dotnet_logo.png"
+                                       Aspect="AspectFill"
+                                       WidthRequest="100"
+                                       HeightRequest="100"/>
+                            </Border>
+                            
+                            <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
+                                <Label Text="Jane Doe"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=Black, Dark=White}"/>
+                                <Label Text="Senior Software Engineer"
+                                       FontSize="14"
+                                       HorizontalOptions="Center"
+                                       TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                            </VerticalStackLayout>
+                            
+                            <Button Text="View Profile"
+                                    HorizontalOptions="Fill"
+                                    BackgroundColor="{AppThemeBinding Light={StaticResource AccentPrimary}, Dark={StaticResource AccentSecondary}}"
+                                    TextColor="White"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
 
         </VerticalStackLayout>
     </ScrollView>
