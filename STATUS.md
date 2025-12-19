@@ -25,16 +25,16 @@ A container control that draws a border, background, or both, around another con
 
 | Property | Status |
 |----------|--------|
-| Content | ⏳ TODO |
-| Padding | ⏳ TODO |
-| StrokeShape | ⏳ TODO |
-| Stroke | ⏳ TODO |
-| StrokeThickness | ⏳ TODO |
-| StrokeDashArray | ⏳ TODO |
-| StrokeDashOffset | ⏳ TODO |
-| StrokeLineCap | ⏳ TODO |
-| StrokeLineJoin | ⏳ TODO |
-| StrokeMiterLimit | ⏳ TODO |
+| Content | ✅ Implemented |
+| Padding | ✅ Implemented |
+| StrokeShape | ✅ Implemented |
+| Stroke | ✅ Implemented |
+| StrokeThickness | ✅ Implemented |
+| StrokeDashArray | ✅ Implemented |
+| StrokeDashOffset | ✅ Implemented |
+| StrokeLineCap | ✅ Implemented |
+| StrokeLineJoin | ✅ Implemented |
+| StrokeMiterLimit | ✅ Implemented |
 
 ---
 
