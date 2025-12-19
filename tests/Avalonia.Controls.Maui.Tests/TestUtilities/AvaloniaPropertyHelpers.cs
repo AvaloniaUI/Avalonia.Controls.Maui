@@ -1,6 +1,6 @@
 using System.Linq;
 using Avalonia.Controls;
-using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui;
 using Avalonia.Media;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
@@ -99,7 +99,7 @@ public static class AvaloniaPropertyHelpers
             TextBlock textBlock => textBlock.Padding,
             Border border => border.Padding,
             ContentControl contentControl => contentControl.Padding,
-            BorderView borderView => borderView.Padding,
+            MauiBorder borderView => borderView.Padding,
             _ => throw new NotImplementedException()
         };
 
@@ -115,7 +115,7 @@ public static class AvaloniaPropertyHelpers
             Border border => border.Background,
             ContentControl contentControl => contentControl.Background,
             TextBlock textBlock => textBlock.Background,
-            BorderView control => control.Background,
+            MauiBorder control => control.Background,
             _ => throw new NotImplementedException()
         };
 
@@ -183,4 +183,5 @@ public static class AvaloniaPropertyHelpers
         }
         return null;
     }
+
 }

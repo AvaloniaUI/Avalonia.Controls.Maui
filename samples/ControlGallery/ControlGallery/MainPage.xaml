@@ -69,6 +69,10 @@
 								  Detail="Simple colored rectangles"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:BoxViewPage}"/>
+						<TextCell Text="Border"
+								  Detail="Border with shapes and strokes"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:BorderPage}"/>
 						<TextCell Text="Button"
 								  Detail="Button control"
 								  Command="{Binding NavigateCommand}"
