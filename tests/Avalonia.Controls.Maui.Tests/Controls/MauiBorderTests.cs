@@ -35,9 +35,10 @@ public class MauiBorderTests
 
         var clip = child.Clip;
         Assert.NotNull(clip);
-        // Clip is based on strokeThickness
-        var expectedClipWidth = expectedChildWidth - stroke;
-        var expectedClipHeight = expectedChildHeight - stroke;
+        // Clip is based on strokeThickness relative to the Border Size (not Child size)
+        // because the clip defines the BORDER shape.
+        var expectedClipWidth = finalSize.Width - stroke;
+        var expectedClipHeight = finalSize.Height - stroke;
 
         Assert.Equal(expectedClipWidth, clip!.Bounds.Width, 3);
         Assert.Equal(expectedClipHeight, clip.Bounds.Height, 3);
@@ -195,8 +196,8 @@ public class MauiBorderTests
         Assert.NotNull(child.Clip);
     }
 
-    [AvaloniaFact(DisplayName = "Zero stroke thickness creates no clip")]
-    public void ZeroStrokeThickness_CreatesNoClip()
+    [AvaloniaFact(DisplayName = "Zero stroke thickness with rounded corners creates clip")]
+    public void ZeroStrokeThickness_WithRoundedCorners_CreatesClip()
     {
         var border = new MauiBorder
         {
@@ -211,7 +212,8 @@ public class MauiBorderTests
         border.Measure(size);
         border.Arrange(new Rect(size));
         
-        Assert.Null(child.Clip);
+        // Even with 0 stroke, we must clip to the CornerRadius
+        Assert.NotNull(child.Clip);
     }
 
     [AvaloniaFact(DisplayName = "Large stroke thickness reduces clip size")]
