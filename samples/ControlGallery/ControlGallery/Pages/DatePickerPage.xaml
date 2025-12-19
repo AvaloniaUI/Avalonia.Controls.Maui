@@ -117,11 +117,14 @@
                            TextColor="Gray"
                            Margin="0,0,0,4" />
 
-                    <HorizontalStackLayout Spacing="16">
-                        <DatePicker TextColor="Red" />
-                        <DatePicker TextColor="Green" />
-                        <DatePicker TextColor="Blue" />
-                    </HorizontalStackLayout>
+                    <FlexLayout Wrap="Wrap" 
+                                JustifyContent="Start" 
+                                AlignItems="Start" 
+                                Direction="Row">
+                        <DatePicker TextColor="Red" Margin="0,0,16,8" />
+                        <DatePicker TextColor="Green" Margin="0,0,16,8" />
+                        <DatePicker TextColor="Blue" Margin="0,0,16,8" />
+                    </FlexLayout>
 
                     <DatePicker TextColor="#9333ea" />
                 </VerticalStackLayout>
