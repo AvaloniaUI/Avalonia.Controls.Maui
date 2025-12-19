@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.DatePickerPage"
+             Title="DatePicker">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="24">
+
+            <Label Text="DatePicker Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <Label Text="The DatePicker invokes the platform's date-picker control and allows the user to select a date."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
+
+            <!-- Basic DatePicker -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Basic DatePicker"
+                           FontAttributes="Bold" />
+                    <Label Text="A simple date picker with the DateSelected event."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <DatePicker x:Name="BasicDatePicker"
+                                DateSelected="OnBasicDateSelected" />
+                    <Label x:Name="SelectedDateLabel"
+                           Text="Selected date: (none)"
+                           FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Date Range -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Date Range (MinimumDate / MaximumDate)"
+                           FontAttributes="Bold" />
+                    <Label Text="Restricts the selectable date range. This picker only allows dates in 2024."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <DatePicker x:Name="RangeDatePicker"
+                                MinimumDate="01/01/2024"
+                                MaximumDate="12/31/2024"
+                                Date="06/15/2024"
+                                DateSelected="OnRangeDateSelected" />
+                    <Label x:Name="RangeDateLabel"
+                           Text="Date: June 15, 2024"
+                           FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Custom Format -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Custom Format"
+                           FontAttributes="Bold" />
+                    <Label Text="The Format property controls how the date is displayed."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Short date (d):"
+                               FontSize="12" />
+                        <DatePicker Format="d" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Long date (D):"
+                               FontSize="12" />
+                        <DatePicker Format="D" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Month/Day (M):"
+                               FontSize="12" />
+                        <DatePicker Format="M" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Year/Month (Y):"
+                               FontSize="12" />
+                        <DatePicker Format="Y" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Color -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Text Color"
+                           FontAttributes="Bold" />
+                    <Label Text="TextColor sets the color of the displayed date."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <HorizontalStackLayout Spacing="16">
+                        <DatePicker TextColor="Red" />
+                        <DatePicker TextColor="Green" />
+                        <DatePicker TextColor="Blue" />
+                    </HorizontalStackLayout>
+
+                    <DatePicker TextColor="#9333ea" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Font Styling -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Font Styling"
+                           FontAttributes="Bold" />
+                    <Label Text="FontSize, FontAttributes, and FontFamily customize the appearance."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Large (FontSize=20):"
+                               FontSize="12" />
+                        <DatePicker FontSize="20" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Bold:"
+                               FontSize="12" />
+                        <DatePicker FontAttributes="Bold" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Italic:"
+                               FontSize="12" />
+                        <DatePicker FontAttributes="Italic" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Bold + Large + Colored:"
+                               FontSize="12" />
+                        <DatePicker FontAttributes="Bold"
+                                    FontSize="18"
+                                    TextColor="#2563eb" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Character Spacing -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Character Spacing"
+                           FontAttributes="Bold" />
+                    <Label Text="CharacterSpacing increases the space between characters (limited support)."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <DatePicker CharacterSpacing="6"
+                                FontSize="16" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Programmatic Control -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Programmatic Control"
+                           FontAttributes="Bold" />
+                    <Label Text="Set the date programmatically using buttons."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <DatePicker x:Name="ProgrammaticDatePicker" />
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Today"
+                                Clicked="OnSetTodayClicked"
+                                HorizontalOptions="Start" />
+                        <Button Text="Clear"
+                                Clicked="OnClearDateClicked"
+                                HorizontalOptions="Start" />
+                        <Button Text="Set to 2025"
+                                Clicked="OnSetTo2025Clicked"
+                                HorizontalOptions="Start" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Disabled State -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Disabled State"
+                           FontAttributes="Bold" />
+                    <Label Text="A DatePicker with IsEnabled set to False."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <DatePicker IsEnabled="False"
+                                Date="01/01/2024" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
