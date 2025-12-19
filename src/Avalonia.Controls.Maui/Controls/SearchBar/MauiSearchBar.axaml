@@ -82,7 +82,7 @@
                             TextAlignment="{TemplateBinding HorizontalTextAlignment}"
                             IsHitTestVisible="False"
                             IsVisible="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNullOrEmpty}}"
-                            Margin="1,0" />
+                            Margin="6,0,6,0" />
 
                         <Button
                             Name="PART_ClearButton"
