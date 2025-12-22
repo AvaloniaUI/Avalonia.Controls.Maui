@@ -10,21 +10,21 @@
 			BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
 			x:Name="FlyoutPageMenu"
 			Title="Control Gallery">
-            <Grid RowDefinitions="Auto,*">
-                <SearchBar Placeholder="Search..."
-                           TextChanged="OnSearchBarTextChanged"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-                           Margin="6"/>
+			<Grid RowDefinitions="Auto,*">
+				<SearchBar Placeholder="Search..."
+						   TextChanged="OnSearchBarTextChanged"
+						   BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+						   Margin="6"/>
 
-                <TableView Grid.Row="1"
-                           x:Name="MenuTableView"
-                           Intent="Menu"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}">
-                    <TableView.Root>
-                        <!-- Items will be populated in code-behind -->
-                    </TableView.Root>
-                </TableView>
-            </Grid>
+				<TableView Grid.Row="1"
+					x:Name="MenuTableView"
+					Intent="Menu"
+					BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}">
+					<TableView.Root>
+						<!-- Items will be populated in code-behind -->
+					</TableView.Root>
+				</TableView>
+			</Grid>
 		</ContentPage>
 	</FlyoutPage.Flyout>
 	<FlyoutPage.Detail>

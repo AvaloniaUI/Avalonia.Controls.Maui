@@ -6,9 +6,9 @@ namespace ControlGallery;
 
 public partial class MainPage : FlyoutPage
 {
-    private List<SampleGroup> _allSamples;
+    private List<SampleGroup> _allSamples = new List<SampleGroup>();
 
-    public ObservableCollection<SampleGroup> FilteredSamples { get; private set; }
+    public ObservableCollection<SampleGroup> FilteredSamples { get; private set; } = new ObservableCollection<SampleGroup>();
     public ICommand NavigateCommand { get; private set; }
 
     public MainPage()
@@ -88,6 +88,14 @@ public partial class MainPage : FlyoutPage
                 new("TitleBar", "Custom window title bar", typeof(TitleBarPage))
             }),
 
+            new SampleGroup("Layout", new List<SampleItem>
+            {
+                new("StackLayout", "Vertical and horizontal stacking", typeof(StackLayoutPage)),
+                new("Grid", "Rows, columns, and spanning", typeof(GridPage)),
+                new("FlexLayout", "Flexible box layout", typeof(FlexLayoutPage)),
+                new("AbsoluteLayout", "Absolute positioning of elements", typeof(AbsoluteLayoutPage))
+            }),
+
             new SampleGroup("Views", new List<SampleItem>
             {
                 new("ActivityIndicator", "ActivityIndicator control", typeof(ActivityIndicatorPage)),
@@ -96,6 +104,7 @@ public partial class MainPage : FlyoutPage
                 new("Button", "Button control", typeof(ButtonPage)),
                 new("CollectionView", "Collection display with templates", typeof(CollectionViewPage)),
                 new("ContentView", "Custom content", typeof(ContentViewPage)),
+                new("DatePicker", "Date picker control", typeof(DatePickerPage)),
                 new("GraphicsView", "Custom drawing and graphics", typeof(GraphicsViewPage)),
                 new("Image", "Image display with various sources", typeof(ImagePage)),
                 new("ImageButton", "ImageButton control", typeof(ImageButtonPage)),
@@ -145,7 +154,7 @@ public partial class MainPage : FlyoutPage
 
     private void NavigateToPage(Type pageType)
     {
-        Page page = null;
+        Page? page = null;
 
         // Custom instantiation logic for specific pages if needed
         if (pageType == typeof(NavigationDemoPage))
