@@ -3,7 +3,6 @@ using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 using System.Collections;
 using System.Collections.Specialized;
-using Avalonia.Controls.Maui.Platform;
 
 namespace Avalonia.Controls.Maui.Controls;
 
