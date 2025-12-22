@@ -4,7 +4,7 @@
              x:Class="ControlGallery.Pages.WelcomePage"
              Title="Welcome">
 
-    <ScrollView BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}">
+    <ScrollView>
         <Grid RowDefinitions="Auto,*">
             <!-- Header Banner -->
             <Grid
@@ -28,7 +28,7 @@
                        TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
 
                 <BoxView HeightRequest="1"
-                         Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}"
+                         Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
                          Margin="0,15"/>
 
                 <!-- Features Section -->
@@ -43,7 +43,7 @@
                     <Border StrokeShape="RoundRectangle 12" 
                             StrokeThickness="0"
                             Padding="16" 
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
                         <VerticalStackLayout Spacing="8">
                             <Label Text="Cross-Platform" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
                             <Label Text="One codebase for Mobile, Desktop and Web scenarios." FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
@@ -54,7 +54,7 @@
                             StrokeShape="RoundRectangle 12" 
                             StrokeThickness="0"
                             Padding="16" 
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
                         <VerticalStackLayout Spacing="8">
                             <Label Text="Pixel Perfect" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
                             <Label Text="Consistent look and feel across all platforms." FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
@@ -65,7 +65,7 @@
                             StrokeShape="RoundRectangle 12" 
                             StrokeThickness="0"
                             Padding="16" 
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
                         <VerticalStackLayout Spacing="8">
                             <Label Text="High Performance" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
                             <Label Text="Built on top of Avalonia's rendering engine." FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
@@ -76,7 +76,7 @@
                             StrokeShape="RoundRectangle 12" 
                             StrokeThickness="0"
                             Padding="16" 
-                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
                         <VerticalStackLayout Spacing="8">
                             <Label Text="MAUI Compatible" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
                             <Label Text="Use existing .NET MAUI controls and layouts." FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
