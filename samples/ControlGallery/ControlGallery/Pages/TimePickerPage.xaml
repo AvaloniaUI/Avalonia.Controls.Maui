@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.TimePickerPage"
+             Title="TimePicker">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="24">
+
+            <Label Text="TimePicker Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+            
+            <!-- Basic TimePicker -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Basic TimePicker"
+                           FontAttributes="Bold" />
+                    <Label Text="A simple time picker with data binding."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <TimePicker x:Name="BasicTimePicker" />
+                    <Label Text="{Binding Source={x:Reference BasicTimePicker}, Path=Time, StringFormat='Selected Time: {0}'}"
+                           FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Preselected Time -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Preselected Time"
+                           FontAttributes="Bold" />
+                    <Label Text="A TimePicker initialized with a specific time (14:30:00)."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <TimePicker Time="14:30:00" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Format Variations -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Format Variations"
+                           FontAttributes="Bold" />
+                    <Label Text="The Format property controls the clock display (12h vs 24h)."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="12-hour format (h:mm tt):"
+                               FontSize="12" />
+                        <TimePicker Format="h:mm tt"
+                                    Time="16:20:00" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="24-hour format (HH:mm):"
+                               FontSize="12" />
+                        <TimePicker Format="HH:mm"
+                                    Time="16:45:00" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Short time (t):"
+                               FontSize="12" />
+                        <TimePicker Format="t"
+                                    Time="09:30:00" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Long time (T):"
+                               FontSize="12" />
+                        <TimePicker Format="T"
+                                    Time="21:15:00" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Color -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Text Color"
+                           FontAttributes="Bold" />
+                    <Label Text="TextColor sets the color of the displayed time."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <FlexLayout Wrap="Wrap" 
+                                JustifyContent="Start" 
+                                AlignItems="Start" 
+                                Direction="Row">
+                        <TimePicker TextColor="Red" Time="08:00:00" Margin="0,0,16,8" />
+                        <TimePicker TextColor="Green" Time="12:00:00" Margin="0,0,16,8" />
+                        <TimePicker TextColor="Blue" Time="18:00:00" Margin="0,0,16,8" />
+                    </FlexLayout>
+
+                    <TimePicker TextColor="#9333ea" Time="22:00:00" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Font Styling -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Font Styling"
+                           FontAttributes="Bold" />
+                    <Label Text="FontSize, FontAttributes, and FontFamily customize the appearance."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Large (FontSize=20):"
+                               FontSize="12" />
+                        <TimePicker FontSize="20" Time="10:00:00" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Bold:"
+                               FontSize="12" />
+                        <TimePicker FontAttributes="Bold" Time="11:00:00" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Italic:"
+                               FontSize="12" />
+                        <TimePicker FontAttributes="Italic" Time="12:00:00" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Bold + Large + Colored:"
+                               FontSize="12" />
+                        <TimePicker FontAttributes="Bold"
+                                    FontSize="18"
+                                    TextColor="#2563eb"
+                                    Time="13:30:00" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Character Spacing -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Character Spacing"
+                           FontAttributes="Bold" />
+                    <Label Text="CharacterSpacing increases the space between characters (limited support)."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <TimePicker CharacterSpacing="6"
+                                FontSize="16"
+                                Time="15:00:00" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Programmatic Control -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Programmatic Control"
+                           FontAttributes="Bold" />
+                    <Label Text="Set the time programmatically using buttons."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <TimePicker x:Name="ProgrammaticTimePicker" />
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="8:00 AM"
+                                Clicked="OnSetTime8Clicked"
+                                HorizontalOptions="Start" />
+                        <Button Text="12:00 PM"
+                                Clicked="OnSetTime12Clicked"
+                                HorizontalOptions="Start" />
+                        <Button Text="5:00 PM"
+                                Clicked="OnSetTime17Clicked"
+                                HorizontalOptions="Start" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Disabled State -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Disabled State"
+                           FontAttributes="Bold" />
+                    <Label Text="A TimePicker with IsEnabled set to False."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <TimePicker IsEnabled="False"
+                                Time="09:00:00" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

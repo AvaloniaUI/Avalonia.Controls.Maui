@@ -109,6 +109,10 @@
 								  Detail="Picker control"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:PickerPage}"/>
+						<TextCell Text="TimePicker"
+								  Detail="Time selection control"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:TimePickerPage}"/>
 						<TextCell Text="ProgressBar"
 								  Detail="Progress indicator control"
 								  Command="{Binding NavigateCommand}"
