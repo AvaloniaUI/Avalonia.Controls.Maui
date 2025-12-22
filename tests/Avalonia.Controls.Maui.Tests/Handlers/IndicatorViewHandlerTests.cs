@@ -100,7 +100,7 @@ public partial class IndicatorViewHandlerTests : HandlerTestBase<AvaloniaIndicat
         var handler = await CreateHandlerAsync(indicatorView);
         var platformColor = await InvokeOnMainThreadAsync(() =>
         {
-            if (handler.PlatformView?.IndicatorColor is Media.SolidColorBrush brush)
+            if (handler.PlatformView.IndicatorColor is Media.SolidColorBrush brush)
             {
                 return new Color(
                     brush.Color.R / 255f,
@@ -126,7 +126,7 @@ public partial class IndicatorViewHandlerTests : HandlerTestBase<AvaloniaIndicat
         var handler = await CreateHandlerAsync(indicatorView);
         var platformColor = await InvokeOnMainThreadAsync(() =>
         {
-            if (handler.PlatformView?.SelectedIndicatorColor is Media.SolidColorBrush brush)
+            if (handler.PlatformView.SelectedIndicatorColor is Media.SolidColorBrush brush)
             {
                 return new Color(
                     brush.Color.R / 255f,
@@ -475,7 +475,7 @@ public partial class IndicatorViewHandlerTests : HandlerTestBase<AvaloniaIndicat
         var handler = await CreateHandlerAsync(indicatorView);
         var platformColor = await InvokeOnMainThreadAsync(() =>
         {
-            if (handler.PlatformView?.IndicatorColor is Media.SolidColorBrush brush)
+            if (handler.PlatformView.IndicatorColor is Media.SolidColorBrush brush)
             {
                 return new Color(
                     brush.Color.R / 255f,
@@ -507,7 +507,7 @@ public partial class IndicatorViewHandlerTests : HandlerTestBase<AvaloniaIndicat
         var handler = await CreateHandlerAsync(indicatorView);
         var platformColor = await InvokeOnMainThreadAsync(() =>
         {
-            if (handler.PlatformView?.SelectedIndicatorColor is Media.SolidColorBrush brush)
+            if (handler.PlatformView.SelectedIndicatorColor is Media.SolidColorBrush brush)
             {
                 return new Color(
                     brush.Color.R / 255f,
@@ -648,8 +648,10 @@ public partial class IndicatorViewHandlerTests : HandlerTestBase<AvaloniaIndicat
     {
         await InvokeOnMainThreadAsync(() =>
         {
-            var control = new MauiIndicatorView();
-            control.ItemsSource = new List<string> { "A", "B", "C" };
+            var control = new MauiIndicatorView
+            {
+                ItemsSource = new List<string> { "A", "B", "C" }
+            };
             Assert.Equal(3, control.Count);
             
             control.ItemsSource = null;
@@ -663,8 +665,10 @@ public partial class IndicatorViewHandlerTests : HandlerTestBase<AvaloniaIndicat
     {
         await InvokeOnMainThreadAsync(() =>
         {
-            var control = new MauiIndicatorView();
-            control.ItemsSource = new List<string> { "A", "B" };
+            var control = new MauiIndicatorView
+            {
+                ItemsSource = new List<string> { "A", "B" }
+            };
             Assert.Equal(2, control.Count);
             
             control.ItemsSource = new List<string> { "1", "2", "3", "4", "5" };
@@ -792,7 +796,7 @@ public partial class IndicatorViewHandlerTests : HandlerTestBase<AvaloniaIndicat
             control.IndicatorTemplate = (index, isSelected) =>
             {
                 callCount++;
-                return new Avalonia.Controls.Shapes.Rectangle { Width = 10, Height = 10, Fill = Avalonia.Media.Brushes.Blue };
+                return new Avalonia.Controls.Shapes.Rectangle { Width = 10, Height = 10, Fill = Media.Brushes.Blue };
             };
             
             var firstCallCount = callCount;
@@ -800,7 +804,7 @@ public partial class IndicatorViewHandlerTests : HandlerTestBase<AvaloniaIndicat
             control.IndicatorTemplate = (index, isSelected) =>
             {
                 callCount++;
-                return new Avalonia.Controls.Shapes.Ellipse { Width = 10, Height = 10, Fill = Avalonia.Media.Brushes.Red };
+                return new Avalonia.Controls.Shapes.Ellipse { Width = 10, Height = 10, Fill = Media.Brushes.Red };
             };
             
             // Second template assignment should trigger re-evaluation
