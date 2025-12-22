@@ -18,10 +18,10 @@ public static class ContentPresenterExtensions
     /// <param name="mauiContext">The MauiContext.</param>
     public static void UpdateContent(this MauiContentPresenter platformView, IContentView contentView, IMauiContext? mauiContext)
     {
+        platformView.Children.Clear();
+
         if (mauiContext == null)
             return;
-
-        platformView.Children.Clear();
 
         if (contentView.PresentedContent is IView view)
             platformView.Children.Add((Control)view.ToPlatform(mauiContext));
