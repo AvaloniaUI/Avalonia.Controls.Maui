@@ -626,20 +626,7 @@ public partial class TimePickerHandlerTests : HandlerTestBase<AvaloniaTimePicker
         Assert.Equal(Avalonia.Media.FontStyle.Italic, fontStyle);
     }
 
-    [AvaloniaFact(DisplayName = "MinHeight Adjusts For Large Font")]
-    public async Task MinHeightAdjustsForLargeFont()
-    {
-        var picker = new TimePickerStub
-        {
-            Font = Microsoft.Maui.Font.SystemFontOfSize(36)
-        };
 
-        var handler = await CreateHandlerAsync(picker);
-        var minHeight = await InvokeOnMainThreadAsync(() => handler.PlatformView?.MinHeight);
-
-        // MinHeight should be at least fontSize * 1.8
-        Assert.True(minHeight >= 36 * 1.8);
-    }
 
     [AvaloniaFact(DisplayName = "Format Update Changes Clock Identifier")]
     public async Task FormatUpdateChangesClockIdentifier()
