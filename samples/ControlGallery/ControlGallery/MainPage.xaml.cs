@@ -108,6 +108,7 @@ public partial class MainPage : FlyoutPage
                 new("GraphicsView", "Custom drawing and graphics", typeof(GraphicsViewPage)),
                 new("Image", "Image display with various sources", typeof(ImagePage)),
                 new("ImageButton", "ImageButton control", typeof(ImageButtonPage)),
+                new("IndicatorView", "Position indicators for items", typeof(IndicatorViewPage)),
                 new("CheckBox", "CheckBox control for selections", typeof(CheckBoxPage)),
                 new("Picker", "Picker control", typeof(PickerPage)),
                 new("ProgressBar", "Progress indicator control", typeof(ProgressBarPage)),
