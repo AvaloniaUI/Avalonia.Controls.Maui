@@ -1,0 +1,17 @@
+using Avalonia;
+using Avalonia.Markup.Xaml;
+using Avalonia.Controls.Maui.Platform;
+using Microsoft.Maui.Hosting;
+using ChatApp;
+
+namespace ChatApp.Browser;
+
+public class App : MauiAvaloniaApplication
+{
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+    }
+
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+}

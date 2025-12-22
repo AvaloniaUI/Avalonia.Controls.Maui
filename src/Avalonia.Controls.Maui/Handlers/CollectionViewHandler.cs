@@ -125,8 +125,18 @@ public class CollectionViewHandler : ViewHandler<Microsoft.Maui.Controls.Collect
                 if (handler.MauiContext == null)
                     return new TextBlock { Text = item?.ToString() ?? string.Empty };
 
+                // Resolve the actual template to use
+                DataTemplate? actualTemplate = itemsView.ItemTemplate;
+                if (itemsView.ItemTemplate is DataTemplateSelector selector)
+                {
+                    actualTemplate = selector.SelectTemplate(item, handler.VirtualView);
+                }
+
+                if (actualTemplate == null)
+                    return new TextBlock { Text = item?.ToString() ?? string.Empty };
+
                 // Create MAUI view from template
-                var mauiView = itemsView.ItemTemplate.CreateContent() as Microsoft.Maui.Controls.View;
+                var mauiView = actualTemplate.CreateContent() as Microsoft.Maui.Controls.View;
                 if (mauiView == null)
                     return new TextBlock { Text = item?.ToString() ?? string.Empty };
 
