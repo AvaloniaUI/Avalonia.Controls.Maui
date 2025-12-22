@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.StackLayoutPage"
+             Title="StackLayout">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="StackLayout"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic Vertical StackLayout -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Vertical StackLayout"
+                           FontAttributes="Bold"/>
+                    <Label Text="Primary colors"/>
+                    <BoxView Color="Red"
+                             HeightRequest="40"/>
+                    <BoxView Color="Yellow"
+                             HeightRequest="40"/>
+                    <BoxView Color="Blue"
+                             HeightRequest="40"/>
+                    <Label Text="Secondary colors"/>
+                    <BoxView Color="Green"
+                             HeightRequest="40"/>
+                    <BoxView Color="Orange"
+                             HeightRequest="40"/>
+                    <BoxView Color="Purple"
+                             HeightRequest="40"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Horizontal StackLayout -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Horizontal StackLayout"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout HorizontalOptions="Center">
+                        <BoxView Color="Red"
+                                 WidthRequest="40"
+                                 HeightRequest="40"/>
+                        <BoxView Color="Yellow"
+                                 WidthRequest="40"
+                                 HeightRequest="40"/>
+                        <BoxView Color="Blue"
+                                 WidthRequest="40"
+                                 HeightRequest="40"/>
+                        <BoxView Color="Green"
+                                 WidthRequest="40"
+                                 HeightRequest="40"/>
+                        <BoxView Color="Orange"
+                                 WidthRequest="40"
+                                 HeightRequest="40"/>
+                        <BoxView Color="Purple"
+                                 WidthRequest="40"
+                                 HeightRequest="40"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Spacing Options -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Spacing Options"
+                           FontAttributes="Bold"/>
+                    
+                    <Label Text="Spacing = 0"/>
+                    <HorizontalStackLayout Spacing="0"
+                                           HorizontalOptions="Center">
+                        <BoxView Color="Red" WidthRequest="30" HeightRequest="30"/>
+                        <BoxView Color="Green" WidthRequest="30" HeightRequest="30"/>
+                        <BoxView Color="Blue" WidthRequest="30" HeightRequest="30"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label Text="Spacing = 10"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <BoxView Color="Red" WidthRequest="30" HeightRequest="30"/>
+                        <BoxView Color="Green" WidthRequest="30" HeightRequest="30"/>
+                        <BoxView Color="Blue" WidthRequest="30" HeightRequest="30"/>
+                    </HorizontalStackLayout>
+                    
+                    <Label Text="Spacing = 20"/>
+                    <HorizontalStackLayout Spacing="20"
+                                           HorizontalOptions="Center">
+                        <BoxView Color="Red" WidthRequest="30" HeightRequest="30"/>
+                        <BoxView Color="Green" WidthRequest="30" HeightRequest="30"/>
+                        <BoxView Color="Blue" WidthRequest="30" HeightRequest="30"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Vertical Options / Alignment -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="VerticalOptions Alignment"
+                           FontAttributes="Bold"/>
+                    
+                    <Grid HeightRequest="120"
+                          ColumnDefinitions="*,*,*,*"
+                          BackgroundColor="LightGray">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Start"
+                                   VerticalOptions="Start"
+                                   BackgroundColor="LightBlue"
+                                   Padding="5"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Center"
+                                   VerticalOptions="Center"
+                                   BackgroundColor="LightGreen"
+                                   Padding="5"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2">
+                            <Label Text="End"
+                                   VerticalOptions="End"
+                                   BackgroundColor="LightCoral"
+                                   Padding="5"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="3">
+                            <Label Text="Fill"
+                                   VerticalOptions="Fill"
+                                   BackgroundColor="LightYellow"
+                                   Padding="5"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- HorizontalOptions / Alignment -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="HorizontalOptions Alignment"
+                           FontAttributes="Bold"/>
+                    
+                    <VerticalStackLayout BackgroundColor="LightGray"
+                                         Padding="10"
+                                         Spacing="5">
+                        <BoxView Color="Red"
+                                 HeightRequest="30"
+                                 WidthRequest="100"
+                                 HorizontalOptions="Start"/>
+                        <Label Text="Start" HorizontalOptions="Start"/>
+                        
+                        <BoxView Color="Green"
+                                 HeightRequest="30"
+                                 WidthRequest="100"
+                                 HorizontalOptions="Center"/>
+                        <Label Text="Center" HorizontalOptions="Center"/>
+                        
+                        <BoxView Color="Blue"
+                                 HeightRequest="30"
+                                 WidthRequest="100"
+                                 HorizontalOptions="End"/>
+                        <Label Text="End" HorizontalOptions="End"/>
+                        
+                        <BoxView Color="Purple"
+                                 HeightRequest="30"
+                                 HorizontalOptions="Fill"/>
+                        <Label Text="Fill" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Combined StackLayout -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Combined (Nested) StackLayout"
+                           FontAttributes="Bold"/>
+                    
+                    <VerticalStackLayout Spacing="10"
+                                         BackgroundColor="LightGray"
+                                         Padding="10">
+                        <HorizontalStackLayout Spacing="10"
+                                               HorizontalOptions="Center">
+                            <BoxView Color="Red" WidthRequest="50" HeightRequest="50"/>
+                            <BoxView Color="Orange" WidthRequest="50" HeightRequest="50"/>
+                            <BoxView Color="Yellow" WidthRequest="50" HeightRequest="50"/>
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="10"
+                                               HorizontalOptions="Center">
+                            <BoxView Color="Green" WidthRequest="50" HeightRequest="50"/>
+                            <BoxView Color="Blue" WidthRequest="50" HeightRequest="50"/>
+                            <BoxView Color="Purple" WidthRequest="50" HeightRequest="50"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- VerticalStackLayout vs HorizontalStackLayout -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="VerticalStackLayout vs HorizontalStackLayout"
+                           FontAttributes="Bold"/>
+                    <Label Text="Use VerticalStackLayout and HorizontalStackLayout for better performance than StackLayout with Orientation property."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0"
+                                             BackgroundColor="LightBlue"
+                                             Padding="10"
+                                             Spacing="5">
+                            <Label Text="VerticalStackLayout" FontAttributes="Bold"/>
+                            <BoxView Color="Navy" HeightRequest="20"/>
+                            <BoxView Color="Teal" HeightRequest="20"/>
+                            <BoxView Color="Maroon" HeightRequest="20"/>
+                        </VerticalStackLayout>
+                        
+                        <HorizontalStackLayout Grid.Column="1"
+                                               BackgroundColor="LightGreen"
+                                               Padding="10"
+                                               Spacing="5">
+                            <Label Text="H" FontAttributes="Bold"/>
+                            <BoxView Color="Navy" WidthRequest="20"/>
+                            <BoxView Color="Teal" WidthRequest="20"/>
+                            <BoxView Color="Maroon" WidthRequest="20"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

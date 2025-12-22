@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.AbsoluteLayoutPage"
+             x:DataType="pages:AbsoluteLayoutPage"
+             Title="AbsoluteLayout">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="AbsoluteLayout"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Absolute Positioning -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Absolute Positioning"
+                           FontAttributes="Bold"/>
+                    <Label Text="Using fixed x, y coordinates and sizes"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <AbsoluteLayout HeightRequest="150"
+                                    BackgroundColor="LightGray">
+                        <BoxView Color="Red"
+                                 AbsoluteLayout.LayoutBounds="10,10,60,60"/>
+                        <BoxView Color="Green"
+                                 AbsoluteLayout.LayoutBounds="80,30,60,60"/>
+                        <BoxView Color="Blue"
+                                 AbsoluteLayout.LayoutBounds="150,50,60,60"/>
+                        <BoxView Color="Yellow"
+                                 AbsoluteLayout.LayoutBounds="220,70,60,60"/>
+                    </AbsoluteLayout>
+                    <Label Text="LayoutBounds='x,y,width,height' in pixels"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Proportional Positioning -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Proportional Positioning"
+                           FontAttributes="Bold"/>
+                    <Label Text="Using LayoutFlags=PositionProportional (0-1 values)"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <AbsoluteLayout HeightRequest="150"
+                                    BackgroundColor="LightGray">
+                        <BoxView Color="Red"
+                                 WidthRequest="40"
+                                 HeightRequest="40"
+                                 AbsoluteLayout.LayoutFlags="PositionProportional"
+                                 AbsoluteLayout.LayoutBounds="0,0,40,40"/>
+                        <BoxView Color="Green"
+                                 WidthRequest="40"
+                                 HeightRequest="40"
+                                 AbsoluteLayout.LayoutFlags="PositionProportional"
+                                 AbsoluteLayout.LayoutBounds="0.5,0.5,40,40"/>
+                        <BoxView Color="Blue"
+                                 WidthRequest="40"
+                                 HeightRequest="40"
+                                 AbsoluteLayout.LayoutFlags="PositionProportional"
+                                 AbsoluteLayout.LayoutBounds="1,1,40,40"/>
+                    </AbsoluteLayout>
+                    <Label Text="Position (0,0)=TopLeft, (0.5,0.5)=Center, (1,1)=BottomRight"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Proportional Sizing -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Proportional Sizing"
+                           FontAttributes="Bold"/>
+                    <Label Text="Using LayoutFlags=SizeProportional (0-1 for width/height)"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <AbsoluteLayout HeightRequest="150"
+                                    BackgroundColor="LightGray">
+                        <BoxView Color="Red"
+                                 AbsoluteLayout.LayoutFlags="SizeProportional"
+                                 AbsoluteLayout.LayoutBounds="10,10,0.5,0.3"/>
+                        <BoxView Color="Blue"
+                                 AbsoluteLayout.LayoutFlags="SizeProportional"
+                                 AbsoluteLayout.LayoutBounds="10,80,0.8,0.4"/>
+                    </AbsoluteLayout>
+                    <Label Text="Width=0.5 means 50% of container width"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- All Proportional -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="All Proportional (Position and Size)"
+                           FontAttributes="Bold"/>
+                    <Label Text="Using LayoutFlags=All"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <AbsoluteLayout HeightRequest="150"
+                                    BackgroundColor="LightGray">
+                        <BoxView Color="Red"
+                                 AbsoluteLayout.LayoutFlags="All"
+                                 AbsoluteLayout.LayoutBounds="0,0,0.25,0.25"/>
+                        <BoxView Color="Green"
+                                 AbsoluteLayout.LayoutFlags="All"
+                                 AbsoluteLayout.LayoutBounds="0.5,0.5,0.25,0.25"/>
+                        <BoxView Color="Blue"
+                                 AbsoluteLayout.LayoutFlags="All"
+                                 AbsoluteLayout.LayoutBounds="1,1,0.25,0.25"/>
+                    </AbsoluteLayout>
+                    <Label Text="All values are proportional (0-1)"
+                           FontSize="12"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Overlapping Elements -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Overlapping Elements"
+                           FontAttributes="Bold"/>
+                    <Label Text="Elements can overlap - later items appear on top"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <AbsoluteLayout HeightRequest="150"
+                                    BackgroundColor="LightGray">
+                        <BoxView Color="Red"
+                                 AbsoluteLayout.LayoutBounds="30,30,100,100"/>
+                        <BoxView Color="Green"
+                                 Opacity="0.8"
+                                 AbsoluteLayout.LayoutBounds="60,50,100,100"/>
+                        <BoxView Color="Blue"
+                                 Opacity="0.8"
+                                 AbsoluteLayout.LayoutBounds="90,70,100,100"/>
+                        <Label Text="Stacked!"
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               AbsoluteLayout.LayoutBounds="100,100,100,30"/>
+                    </AbsoluteLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Chessboard Pattern -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Chessboard Pattern"
+                           FontAttributes="Bold"/>
+                    <Label Text="Classic checkerboard using proportional positioning"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <ContentView SizeChanged="OnChessboardSizeChanged">
+                        <AbsoluteLayout x:Name="ChessboardLayout"
+                                        WidthRequest="240"
+                                        HeightRequest="240"
+                                        BackgroundColor="WhiteSmoke"
+                                        HorizontalOptions="Center">
+                            <!-- Row 0 -->
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.00,0.00,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.29,0.00,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.57,0.00,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.86,0.00,0.125,0.125"/>
+                            <!-- Row 1 -->
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.14,0.14,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.43,0.14,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.71,0.14,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="1.00,0.14,0.125,0.125"/>
+                            <!-- Row 2 -->
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.00,0.29,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.29,0.29,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.57,0.29,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.86,0.29,0.125,0.125"/>
+                            <!-- Row 3 -->
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.14,0.43,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.43,0.43,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.71,0.43,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="1.00,0.43,0.125,0.125"/>
+                            <!-- Row 4 -->
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.00,0.57,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.29,0.57,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.57,0.57,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.86,0.57,0.125,0.125"/>
+                            <!-- Row 5 -->
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.14,0.71,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.43,0.71,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.71,0.71,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="1.00,0.71,0.125,0.125"/>
+                            <!-- Row 6 -->
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.00,0.86,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.29,0.86,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.57,0.86,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.86,0.86,0.125,0.125"/>
+                            <!-- Row 7 -->
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.14,1.00,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.43,1.00,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0.71,1.00,0.125,0.125"/>
+                            <BoxView Color="Black" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="1.00,1.00,0.125,0.125"/>
+                        </AbsoluteLayout>
+                    </ContentView>
+                </VerticalStackLayout>
+            </Border>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

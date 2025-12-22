@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.PageBasePage"
+             Title="Page Base">
+    <ContentPage.BackgroundImageSource>
+        <FileImageSource File="dotnet_bot.png" />
+    </ContentPage.BackgroundImageSource>
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            
+            <Label Text="Page Base"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Status Section -->
+            <Border Stroke="Gray"
+                    Padding="10"
+                    BackgroundColor="#80000000">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Status"
+                           FontAttributes="Bold"
+                           TextColor="White"/>
+                    <Label x:Name="StatusLabel" 
+                           Text="This page has a BackgroundImageSource set via FileImageSource." 
+                           TextColor="White" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Background Image Section -->
+            <Border Stroke="Gray"
+                    Padding="10"
+                    BackgroundColor="#80000000">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Background Image"
+                           FontAttributes="Bold"
+                           TextColor="White"/>
+                    <Button Text="Change Background Image" 
+                            Clicked="OnChangeBackground" />
+                    <Button Text="Clear Background Image" 
+                            Clicked="OnClearBackgroundImage" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Background Color Section -->
+            <Border Stroke="Gray"
+                    Padding="10"
+                    BackgroundColor="#80000000">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Background Color"
+                           FontAttributes="Bold"
+                           TextColor="White"/>
+                    <Button Text="Set Red Background" 
+                            Clicked="OnSetRedBackground" />
+                    <Button Text="Set Gradient Background" 
+                            Clicked="OnSetGradientBackground" />
+                    <Button Text="Clear Background" 
+                            Clicked="OnClearBackground" />
+                </VerticalStackLayout>
+            </Border>
+
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
