@@ -10,7 +10,11 @@ namespace ControlGallery;
 
 internal sealed partial class Program
 {
-        private static Task Main(string[] args) => BuildAvaloniaApp()
+        private static Task Main(string[] args)
+        {
+                // Set the current cutlure to en-us, so we do not need to pull in another font to handle other culture glyphs for WASM.
+                System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("EN-US");
+                return BuildAvaloniaApp()
                 .WithInterFont()
                 .With(
                   new FontManagerOptions
@@ -34,6 +38,7 @@ internal sealed partial class Program
                         },
                   })
                 .StartBrowserAppAsync("out");
+        }
 
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<AvaloniaApp>();

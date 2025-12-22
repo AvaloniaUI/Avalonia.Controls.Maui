@@ -199,21 +199,21 @@ Enables you to select a date with the platform date picker.
 
 | Property | Status |
 |----------|--------|
-| MinimumDate | ⏳ TODO |
-| MaximumDate | ⏳ TODO |
-| Date | ⏳ TODO |
-| Format | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| CharacterSpacing | ⏳ TODO |
+| MinimumDate | ✅ Implemented |
+| MaximumDate | ✅ Implemented |
+| Date | ✅ Implemented |
+| Format | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| DateSelected | ⏳ TODO |
+| DateSelected | ✅ Implemented |
 
 ---
 
@@ -615,6 +615,23 @@ A Page that manages the navigation and user-experience of a stack of other pages
 | PopToRootAsync(bool) | ✅ Done (via MAUI NavigationPage) |
 | PushAsync | ✅ Done |
 | PushAsync(bool) | ✅ Done |
+
+---
+
+## Page
+
+Visual element that occupies the entire screen.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Background | ✅ Implemented |
+| BackgroundImageSource | ✅ Implemented |
+| Content | ✅ Implemented |
+| Title | ⏳ TODO |
+| IconImageSource | ⏳ TODO |
+| Padding | ⏳ TODO |
 
 ---
 
