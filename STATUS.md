@@ -199,21 +199,21 @@ Enables you to select a date with the platform date picker.
 
 | Property | Status |
 |----------|--------|
-| MinimumDate | ⏳ TODO |
-| MaximumDate | ⏳ TODO |
-| Date | ⏳ TODO |
-| Format | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| CharacterSpacing | ⏳ TODO |
+| MinimumDate | ✅ Implemented |
+| MaximumDate | ✅ Implemented |
+| Date | ✅ Implemented |
+| Format | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| DateSelected | ⏳ TODO |
+| DateSelected | ✅ Implemented |
 
 ---
 
