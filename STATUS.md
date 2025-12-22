@@ -1143,20 +1143,19 @@ Enables you to select a time with the platform time picker.
 
 | Property | Status |
 |----------|--------|
-| CharacterSpacing | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| Format | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| Time | ⏳ TODO |
+| CharacterSpacing | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| Format | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| Time | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| PropertyChanged | ⏳ TODO |
+| SelectedTimeChanged | ✅ Implemented |
 
 ---
 
