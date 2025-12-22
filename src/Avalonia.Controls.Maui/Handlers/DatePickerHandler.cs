@@ -1,13 +1,11 @@
+using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
-using AvaloniaDatePicker = global::Avalonia.Controls.DatePicker;
+using PlatformView = Avalonia.Controls.DatePicker;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-/// <summary>
-/// Handler for MAUI IDatePicker to Avalonia DatePicker mapping
-/// </summary>
-public class DatePickerHandler : ViewHandler<IDatePicker, AvaloniaDatePicker>, IDatePickerHandler
+public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePickerHandler
 {
     public static IPropertyMapper<IDatePicker, IDatePickerHandler> Mapper = new PropertyMapper<IDatePicker, IDatePickerHandler>(ViewHandler.ViewMapper)
     {
@@ -40,121 +38,84 @@ public class DatePickerHandler : ViewHandler<IDatePicker, AvaloniaDatePicker>, I
 
     IDatePicker IDatePickerHandler.VirtualView => VirtualView;
 
-    System.Object IDatePickerHandler.PlatformView => PlatformView;
+    object IDatePickerHandler.PlatformView => PlatformView;
 
-    protected override AvaloniaDatePicker CreatePlatformView()
-    {
-        return new AvaloniaDatePicker();
-    }
+    protected override PlatformView CreatePlatformView() => new PlatformView();
 
     public override bool NeedsContainer => false;
 
-    protected override void ConnectHandler(AvaloniaDatePicker platformView)
+    protected override void ConnectHandler(PlatformView platformView)
     {
         platformView.SelectedDateChanged += OnSelectedDateChanged;
         base.ConnectHandler(platformView);
     }
 
-    protected override void DisconnectHandler(AvaloniaDatePicker platformView)
+    protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.SelectedDateChanged -= OnSelectedDateChanged;
         base.DisconnectHandler(platformView);
     }
 
-    private void OnSelectedDateChanged(object? sender, global::Avalonia.Controls.DatePickerSelectedValueChangedEventArgs e)
-    {
-        if (VirtualView != null && e.NewDate.HasValue)
-        {
-            VirtualView.Date = e.NewDate.Value.DateTime;
-        }
-    }
-
     public static void MapDate(IDatePickerHandler handler, IDatePicker datePicker)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        var platformView = (AvaloniaDatePicker)handler.PlatformView;
-        if (datePicker.Date is null)
-        {
-            platformView.SelectedDate = null;
-        }
-        else
-        {
-            platformView.SelectedDate = new DateTimeOffset(datePicker.Date.Value);
-        }
+        platformView.UpdateDate(datePicker);
     }
 
     public static void MapMinimumDate(IDatePickerHandler handler, IDatePicker datePicker)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        // Note: Avalonia DatePicker doesn't have built-in MinimumDate property
-        // This would require custom validation or template modification
-        // TODO: Implement custom validation for minimum date
+        platformView.UpdateMinimumDate(datePicker);
     }
 
     public static void MapMaximumDate(IDatePickerHandler handler, IDatePicker datePicker)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        // Note: Avalonia DatePicker doesn't have built-in MaximumDate property
-        // This would require custom validation or template modification
-        // TODO: Implement custom validation for maximum date
+        platformView.UpdateMaximumDate(datePicker);
     }
 
     public static void MapFormat(IDatePickerHandler handler, IDatePicker datePicker)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        // Note: Avalonia DatePicker uses separate DayFormat, MonthFormat, YearFormat properties
-        // MAUI uses a single Format string. This would require parsing the format string
-        // and mapping to individual format properties
-        // TODO: Implement format string parsing and mapping
+        platformView.UpdateFormat(datePicker);
     }
 
     public static void MapCharacterSpacing(IDatePickerHandler handler, IDatePicker datePicker)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        // Note: Avalonia DatePicker doesn't directly support character spacing
-        // This would require custom styling
-        // TODO: Implement character spacing through custom styling
+        platformView.UpdateCharacterSpacing(datePicker);
     }
 
     public static void MapFont(IDatePickerHandler handler, IDatePicker datePicker)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView)
             return;
 
         var fontManager = handler.GetRequiredService<IFontManager>();
-        var platformView = (AvaloniaDatePicker)handler.PlatformView;
-        var font = datePicker.Font;
-
-        if (font.IsDefault)
-            return;
-
-        if (font.Size > 0)
-            platformView.FontSize = font.Size;
-
-        if (font.Family != null)
-            platformView.FontFamily = font.Family;
+        platformView.UpdateFont(datePicker, fontManager);
     }
 
     public static void MapTextColor(IDatePickerHandler handler, IDatePicker datePicker)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
+        if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        var platformView = (AvaloniaDatePicker)handler.PlatformView;
-
-        if (datePicker.TextColor != null)
-        {
-            platformView.Foreground = datePicker.TextColor.ToPlatform();
-        }
+        platformView.UpdateTextColor(datePicker);
+    }
+    
+    void OnSelectedDateChanged(object? sender, DatePickerSelectedValueChangedEventArgs e)
+    {
+        if (VirtualView != null && e.NewDate.HasValue)
+            VirtualView.Date = e.NewDate.Value.DateTime;
     }
 }

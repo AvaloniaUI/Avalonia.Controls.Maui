@@ -55,6 +55,10 @@
 								  Detail="Custom window title bar"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:TitleBarPage}"/>
+						<TextCell Text="Page"
+								  Detail="Page base"
+								  Command="{Binding NavigateCommand}"
+								  CommandParameter="{x:Type pages:PageBasePage}"/>
 					</TableSection>
 					<TableSection Title="Layouts">
 						<TextCell Text="StackLayout"
@@ -100,18 +104,18 @@
 								  Detail="Custom content"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:ContentViewPage}"/>
-						<TextCell Text="ImageButton"
-								  Detail="ImageButton control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ImageButtonPage}"/>
 						<TextCell Text="CheckBox"
 								  Detail="CheckBox control for selections"
 								  Command="{Binding NavigateCommand}"
 								  CommandParameter="{x:Type pages:CheckBoxPage}"/>
-						<TextCell Text="Picker"
-								  Detail="Picker control"
+						<TextCell Text="DatePicker"
+								  Detail="Date selection control"
 								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:PickerPage}"/>
+								  CommandParameter="{x:Type pages:DatePickerPage}"/>
+						<TextCell Text="ImageButton"
+						          Detail="ImageButton control"
+						          Command="{Binding NavigateCommand}"
+						          CommandParameter="{x:Type pages:ImageButtonPage}"/>
 						<TextCell Text="GraphicsView"
 								  Detail="Custom drawing and graphics"
 								  Command="{Binding NavigateCommand}"
