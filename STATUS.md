@@ -1278,6 +1278,7 @@ All controls inherit these common properties from the View and VisualElement bas
 | ScaleY | double | ✅ Implemented |
 | Shadow | Shadow | ✅ Implemented |
 | StyleId | string | ✅ Implemented |
+| ToolTip | string | ✅ Implemented |
 | TranslationX | double | ✅ Implemented |
 | TranslationY | double | ✅ Implemented |
 | Triggers | IList<TriggerBase> | ⏳ TODO |

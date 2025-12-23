@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.TooltipsPage"
+             Title="Tooltips">
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <Label Text="Tooltips"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- Basic Tooltips -->
+            <Border Stroke="Gray" Padding="20">
+                <VerticalStackLayout Spacing="20">
+                    <Label Text="Basic Tooltips" FontAttributes="Bold" FontSize="18"/>
+                    <Label Text="Tooltips provide helpful hints when hovering over controls." TextColor="Gray"/>
+                    
+                    <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
+                        <Button Text="Save" 
+                                BackgroundColor="#3B82F6"
+                                TextColor="White"
+                                ToolTipProperties.Text="Save your changes" />
+                        
+                        <Button Text="Delete" 
+                                BackgroundColor="#EF4444"
+                                TextColor="White"
+                                ToolTipProperties.Text="Permanently delete this item" />
+                        
+                        <Button Text="Settings" 
+                                BackgroundColor="#64748B"
+                                TextColor="White"
+                                ToolTipProperties.Text="Open application settings" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Tooltips on Various Controls -->
+            <Border Stroke="Gray" Padding="20">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Tooltips on Various Controls" FontAttributes="Bold" FontSize="18"/>
+                    
+                    <Label Text="Hover over me!"
+                           FontSize="16"
+                           Padding="10"
+                           BackgroundColor="#E0F2FE"
+                           HorizontalOptions="Start"
+                           ToolTipProperties.Text="This is a Label with a tooltip" />
+                    
+                    <Entry Placeholder="Enter your email"
+                           ToolTipProperties.Text="Please enter a valid email address" />
+                    
+                    <Image Source="dotnet_bot.png"
+                           WidthRequest="80"
+                           HeightRequest="80"
+                           HorizontalOptions="Start"
+                           ToolTipProperties.Text="The .NET Bot mascot" />
+                    
+                    <BoxView Color="#10B981"
+                             WidthRequest="100"
+                             HeightRequest="50"
+                             CornerRadius="10"
+                             HorizontalOptions="Start"
+                             ToolTipProperties.Text="A green BoxView element" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Dynamic Tooltips -->
+            <Border Stroke="Gray" Padding="20">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Dynamic Tooltips" FontAttributes="Bold" FontSize="18"/>
+                    <Label Text="Tooltip text can be changed at runtime." TextColor="Gray"/>
+                    
+                    <Button x:Name="DynamicTooltipButton"
+                            Text="Hover me, then click!"
+                            BackgroundColor="#8B5CF6"
+                            TextColor="White"
+                            Clicked="OnDynamicTooltipButtonClicked"
+                            ToolTipProperties.Text="Click count: 0" />
+                    
+                    <Label x:Name="ClickCountLabel" Text="Click the button to update its tooltip." TextColor="Gray"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Slider with Tooltip -->
+            <Border Stroke="Gray" Padding="20">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Slider with Value Tooltip" FontAttributes="Bold" FontSize="18"/>
+                    
+                    <Slider x:Name="TooltipSlider"
+                            Minimum="0"
+                            Maximum="100"
+                            Value="50"
+                            ValueChanged="OnSliderValueChanged"
+                            ToolTipProperties.Text="Value: 50" />
+                    
+                    <Label x:Name="SliderValueLabel" Text="Current value: 50" TextColor="Gray" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

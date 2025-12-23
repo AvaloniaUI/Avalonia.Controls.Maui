@@ -139,6 +139,11 @@ public partial class MainPage : FlyoutPage
                 new("RoundRectangle", "Custom corner radii", typeof(RoundRectanglePage))
             }),
 
+            new SampleGroup("Core", new List<SampleItem>
+            {
+                new("Tooltips", "Tooltips on various controls", typeof(TooltipsPage)),
+            }),
+
             new SampleGroup("Settings", new List<SampleItem>
             {
                 new("Theme", "Theme toggle and AppThemeBinding", typeof(ThemePage))
