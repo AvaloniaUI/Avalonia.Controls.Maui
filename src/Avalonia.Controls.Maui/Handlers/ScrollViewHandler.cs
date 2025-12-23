@@ -5,12 +5,11 @@ using GraphicsSize = Microsoft.Maui.Graphics.Size;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>, IScrollViewHandler
+public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
 {
-    object IScrollViewHandler.PlatformView => PlatformView;
     private EventHandler<ScrollChangedEventArgs>? _scrollChangedHandler;
 
-    public static IPropertyMapper<IScrollView, IScrollViewHandler> Mapper = new PropertyMapper<IScrollView, IScrollViewHandler>(ViewMapper)
+    public static IPropertyMapper<IScrollView, ScrollViewHandler> Mapper = new PropertyMapper<IScrollView, ScrollViewHandler>(ViewMapper)
     {
         [nameof(IScrollView.Content)] = MapContent,
         [nameof(IScrollView.HorizontalScrollBarVisibility)] = MapHorizontalScrollBarVisibility,
@@ -18,7 +17,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>,
         [nameof(IScrollView.Orientation)] = MapOrientation,
     };
 
-    public static CommandMapper<IScrollView, IScrollViewHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IScrollView, ScrollViewHandler> CommandMapper = new(ViewCommandMapper)
     {
         [nameof(IScrollView.RequestScrollTo)] = MapRequestScrollTo,
     };
@@ -70,7 +69,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>,
         }
     }
 
-    public static void MapContent(IScrollViewHandler handler, IScrollView scrollView)
+    public static void MapContent(ScrollViewHandler handler, IScrollView scrollView)
     {
         if (handler.PlatformView is ScrollViewer platformView)
         {
@@ -79,7 +78,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>,
         }
     }
 
-    public static void MapHorizontalScrollBarVisibility(IScrollViewHandler handler, IScrollView scrollView)
+    public static void MapHorizontalScrollBarVisibility(ScrollViewHandler handler, IScrollView scrollView)
     {
         if (handler.PlatformView is ScrollViewer platformView)
         {
@@ -88,7 +87,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>,
         }
     }
 
-    public static void MapVerticalScrollBarVisibility(IScrollViewHandler handler, IScrollView scrollView)
+    public static void MapVerticalScrollBarVisibility(ScrollViewHandler handler, IScrollView scrollView)
     {
         if (handler.PlatformView is ScrollViewer platformView)
         {
@@ -97,7 +96,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>,
         }
     }
 
-    public static void MapOrientation(IScrollViewHandler handler, IScrollView scrollView)
+    public static void MapOrientation(ScrollViewHandler handler, IScrollView scrollView)
     {
         if (handler.PlatformView is ScrollViewer platformView)
         {
@@ -106,7 +105,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>,
         }
     }
 
-    public static void MapRequestScrollTo(IScrollViewHandler handler, IScrollView scrollView, object? args)
+    public static void MapRequestScrollTo(ScrollViewHandler handler, IScrollView scrollView, object? args)
     {
         if (args is not ScrollToRequest request)
             return;

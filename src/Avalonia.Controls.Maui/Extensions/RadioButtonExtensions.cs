@@ -11,7 +11,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// Provides extension methods for updating <see cref="PlatformView"/> properties from MAUI
 /// <see cref="IRadioButton"/> values.
 /// </summary>
-public static class RadioButttonExtensions
+public static class RadioButtonExtensions
 {
     /// <summary>
     /// Updates the checked state of the platform radio button.
@@ -30,7 +30,7 @@ public static class RadioButttonExtensions
     /// <param name="platformView">The Avalonia radio button.</param>
     /// <param name="handler">The handler providing access to <see cref="IMauiContext"/>.</param>
     /// <param name="radioButton">The cross-platform radio button.</param>
-    public static void UpdateContent(this PlatformView platformView, IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void UpdateContent(this PlatformView platformView, Avalonia.Controls.Maui.Handlers.RadioButtonHandler handler, IRadioButton radioButton)
     {
         // Check if a custom ControlTemplate is applied
         bool hasControlTemplate = false;

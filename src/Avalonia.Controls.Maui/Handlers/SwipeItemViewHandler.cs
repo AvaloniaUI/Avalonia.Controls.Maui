@@ -9,14 +9,14 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for .NET MAUI SwipeItemView to Avalonia ContentControl mapping
 /// </summary>
-public partial class SwipeItemViewHandler : ContentViewHandler, ISwipeItemViewHandler
+public partial class SwipeItemViewHandler : ContentViewHandler
 {
-    public static new IPropertyMapper<ISwipeItemView, ISwipeItemViewHandler> Mapper =
-        new PropertyMapper<ISwipeItemView, ISwipeItemViewHandler>(ContentViewHandler.Mapper)
+    public static new IPropertyMapper<ISwipeItemView, SwipeItemViewHandler> Mapper =
+        new PropertyMapper<ISwipeItemView, SwipeItemViewHandler>(ContentViewHandler.Mapper)
         {
         };
 
-    public static new CommandMapper<ISwipeItemView, ISwipeItemViewHandler> CommandMapper =
+    public static new CommandMapper<ISwipeItemView, SwipeItemViewHandler> CommandMapper =
         new(ContentViewHandler.CommandMapper)
         {
         };
@@ -34,8 +34,4 @@ public partial class SwipeItemViewHandler : ContentViewHandler, ISwipeItemViewHa
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
-
-    ISwipeItemView ISwipeItemViewHandler.VirtualView => (ISwipeItemView)VirtualView;
-
-    object ISwipeItemViewHandler.PlatformView => PlatformView;
 }

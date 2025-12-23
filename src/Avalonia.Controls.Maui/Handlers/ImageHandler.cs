@@ -17,7 +17,7 @@ using IImage = Microsoft.Maui.IImage;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
+public partial class ImageHandler : ViewHandler<IImage, AGrid>
 {
     private readonly AImage _staticImage;
     private GifImage? _gifImage;
@@ -25,7 +25,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
 
     private static readonly ConcurrentDictionary<string, Uri?> AssetCache = new();
 
-    public static IPropertyMapper<IImage, IImageHandler> Mapper = new PropertyMapper<IImage, IImageHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IImage, ImageHandler> Mapper = new PropertyMapper<IImage, ImageHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IImage.Aspect)] = MapAspect,
         [nameof(IImage.IsAnimationPlaying)] = MapIsAnimationPlaying,
@@ -35,7 +35,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
         // IsLoading is read-only and updated automatically by the handler
     };
 
-    public static CommandMapper<IImage, IImageHandler> CommandMapper = new(ViewHandler.ViewCommandMapper);
+    public static CommandMapper<IImage, ImageHandler> CommandMapper = new(ViewHandler.ViewCommandMapper);
 
     public ImageHandler() : base(Mapper, CommandMapper)
     {
@@ -60,10 +60,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
         return grid;
     }
 
-    IImage IImageHandler.VirtualView => VirtualView;
-    object IImageHandler.PlatformView => PlatformView;
-
-    public static void MapSource(IImageHandler handler, IImage image)
+    public static void MapSource(ImageHandler handler, IImage image)
     {
         if (handler is ImageHandler h)
         {
@@ -74,22 +71,22 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
         }
     }
     
-    public static void MapIsAnimationPlaying(IImageHandler handler, IImage image)
+    public static void MapIsAnimationPlaying(ImageHandler handler, IImage image)
     {
         (handler.PlatformView as AGrid)?.UpdateIsAnimationPlaying(image.IsAnimationPlaying);
     }
 
-    public static void MapOpacity(IImageHandler handler, IView view)
+    public static void MapOpacity(ImageHandler handler, IView view)
     {
         (handler.PlatformView as AGrid)?.UpdateImageOpacity(view.Opacity);
     }
 
-    public static void MapAspect(IImageHandler handler, IImage image)
+    public static void MapAspect(ImageHandler handler, IImage image)
     {
         (handler.PlatformView as AGrid)?.UpdateAspect(image.Aspect);
     }
 
-    public static void MapClip(IImageHandler handler, IView view)
+    public static void MapClip(ImageHandler handler, IView view)
     {
         if (handler is ImageHandler imageHandler)
         {
@@ -412,9 +409,9 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>, IImageHandler
     public virtual ImageSourcePartLoader SourceLoader => 
         new ImageSourcePartLoader(new ImageImageSourcePartSetter(this));
         
-    partial class ImageImageSourcePartSetter : ImageSourcePartSetter<IImageHandler>
+    partial class ImageImageSourcePartSetter : ImageSourcePartSetter<ImageHandler>
     {
-        public ImageImageSourcePartSetter(IImageHandler handler) : base(handler) { }
+        public ImageImageSourcePartSetter(ImageHandler handler) : base(handler) { }
         public override void SetImageSource(object? platformImage) { /* Handled by manual loaders */ }
     }
 }

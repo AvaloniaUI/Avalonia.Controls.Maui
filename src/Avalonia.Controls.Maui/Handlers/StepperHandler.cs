@@ -5,9 +5,9 @@ using PlatformView = Avalonia.Controls.Maui.Stepper;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStepperHandler
+public partial class StepperHandler : ViewHandler<IStepper, PlatformView>
 {
-    public static IPropertyMapper<IStepper, IStepperHandler> Mapper = new PropertyMapper<IStepper, IStepperHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IStepper, StepperHandler> Mapper = new PropertyMapper<IStepper, StepperHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IStepper.Interval)] = MapIncrement,
         [nameof(IStepper.Maximum)] = MapMaximum,
@@ -16,7 +16,7 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
         [nameof(IStepper.Background)] = MapBackground,
     };
 
-    public static CommandMapper<IStepper, IStepperHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
+    public static CommandMapper<IStepper, StepperHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 
@@ -59,7 +59,7 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
         VirtualView.Value = PlatformView.Value;
     }
 
-    public static void MapMinimum(IStepperHandler handler, IStepper stepper)
+    public static void MapMinimum(StepperHandler handler, IStepper stepper)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -67,7 +67,7 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
         }
     }
 
-    public static void MapMaximum(IStepperHandler handler, IStepper stepper)
+    public static void MapMaximum(StepperHandler handler, IStepper stepper)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -75,7 +75,7 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
         }
     }
 
-    public static void MapIncrement(IStepperHandler handler, IStepper stepper)
+    public static void MapIncrement(StepperHandler handler, IStepper stepper)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -83,7 +83,7 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
         }
     }
 
-    public static void MapValue(IStepperHandler handler, IStepper stepper)
+    public static void MapValue(StepperHandler handler, IStepper stepper)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -91,12 +91,8 @@ public partial class StepperHandler : ViewHandler<IStepper, PlatformView>, IStep
         }
     }
 
-    public static void MapBackground(IStepperHandler handler, IStepper stepper)
+    public static void MapBackground(StepperHandler handler, IStepper stepper)
     {
         ViewHandler.MapBackground(handler, stepper);
     }
-
-    IStepper IStepperHandler.VirtualView => VirtualView;
-
-    object IStepperHandler.PlatformView => PlatformView;
 }

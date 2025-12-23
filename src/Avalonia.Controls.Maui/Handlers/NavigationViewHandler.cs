@@ -11,17 +11,17 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// Handler for MAUI NavigationPage that uses Avalonia's TransitioningContentControl
 /// to provide animated page navigation.
 /// </summary>
-public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, NavigationView>, INavigationViewHandler
+public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, NavigationView>
 {
     private StackNavigationManager? _navigationManager;
     private ILogger<NavigationViewHandler>? _logger;
 
-    public static IPropertyMapper<IStackNavigationView, INavigationViewHandler> Mapper =
-        new PropertyMapper<IStackNavigationView, INavigationViewHandler>(ViewMapper)
+    public static IPropertyMapper<IStackNavigationView, NavigationViewHandler> Mapper =
+        new PropertyMapper<IStackNavigationView, NavigationViewHandler>(ViewMapper)
         {
         };
 
-    public static CommandMapper<IStackNavigationView, INavigationViewHandler> CommandMapper =
+    public static CommandMapper<IStackNavigationView, NavigationViewHandler> CommandMapper =
         new(ViewCommandMapper)
         {
             [nameof(IStackNavigation.RequestNavigation)] = RequestNavigation
@@ -40,10 +40,6 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, N
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
-
-    IStackNavigationView INavigationViewHandler.VirtualView => VirtualView;
-
-    NavigationView INavigationViewHandler.PlatformView => PlatformView;
 
     ILogger? Logger =>
         _logger ??= MauiContext?.Services?.GetService<ILoggerFactory>()?.CreateLogger<NavigationViewHandler>();
@@ -105,7 +101,7 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, N
     /// <summary>
     /// Handles navigation requests from the virtual view.
     /// </summary>
-    public static void RequestNavigation(INavigationViewHandler handler, IStackNavigation stackNavigation, object? args)
+    public static void RequestNavigation(NavigationViewHandler handler, IStackNavigation stackNavigation, object? args)
     {
         if (handler is NavigationViewHandler platformHandler && args is NavigationRequest navigationRequest)
         {
@@ -123,13 +119,4 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, N
     /// </summary>
     protected virtual StackNavigationManager CreateNavigationManager() =>
         _navigationManager ??= new StackNavigationManager(MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null"));
-}
-
-/// <summary>
-/// Interface for navigation view handlers.
-/// </summary>
-public partial interface INavigationViewHandler : IViewHandler
-{
-    new IStackNavigationView VirtualView { get; }
-    new NavigationView PlatformView { get; }
 }

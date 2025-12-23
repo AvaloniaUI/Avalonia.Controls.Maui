@@ -4,13 +4,13 @@ using PlatformView = Avalonia.Controls.Separator;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class MenuFlyoutSeparatorHandler : ElementHandler<IMenuFlyoutSeparator, PlatformView>, IMenuFlyoutSeparatorHandler
+public partial class MenuFlyoutSeparatorHandler : ElementHandler<IMenuFlyoutSeparator, PlatformView>
 {
-    public static IPropertyMapper<IMenuFlyoutSeparator, IMenuFlyoutSeparatorHandler> Mapper = new PropertyMapper<IMenuFlyoutSeparator, IMenuFlyoutSeparatorHandler>(ElementMapper)
+    public static IPropertyMapper<IMenuFlyoutSeparator, MenuFlyoutSeparatorHandler> Mapper = new PropertyMapper<IMenuFlyoutSeparator, MenuFlyoutSeparatorHandler>(ElementMapper)
     {
     };
 
-    public static CommandMapper<IMenuFlyoutSeparator, IMenuFlyoutSeparatorHandler> CommandMapper = new(ElementCommandMapper)
+    public static CommandMapper<IMenuFlyoutSeparator, MenuFlyoutSeparatorHandler> CommandMapper = new(ElementCommandMapper)
     {
     };
 
@@ -26,8 +26,4 @@ public partial class MenuFlyoutSeparatorHandler : ElementHandler<IMenuFlyoutSepa
     {
         return new PlatformView();
     }
-
-    IMenuFlyoutSeparator IMenuFlyoutSeparatorHandler.VirtualView => VirtualView;
-
-    object IMenuFlyoutSeparatorHandler.PlatformView => PlatformView;
 }

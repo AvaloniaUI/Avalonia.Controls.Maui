@@ -5,9 +5,9 @@ using PlatformView = Avalonia.Controls.TimePicker;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class TimePickerHandler : ViewHandler<ITimePicker, PlatformView>, ITimePickerHandler
+public class TimePickerHandler : ViewHandler<ITimePicker, PlatformView>
 {
-    public static IPropertyMapper<ITimePicker, ITimePickerHandler> Mapper = new PropertyMapper<ITimePicker, ITimePickerHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<ITimePicker, TimePickerHandler> Mapper = new PropertyMapper<ITimePicker, TimePickerHandler>(ViewHandler.ViewMapper)
     {
         [nameof(ITimePicker.CharacterSpacing)] = MapCharacterSpacing,
         [nameof(ITimePicker.Font)] = MapFont,
@@ -16,7 +16,7 @@ public class TimePickerHandler : ViewHandler<ITimePicker, PlatformView>, ITimePi
         [nameof(ITimePicker.Time)] = MapTime,
     };
 
-    public static CommandMapper<ITimePicker, ITimePickerHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<ITimePicker, TimePickerHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
@@ -34,10 +34,6 @@ public class TimePickerHandler : ViewHandler<ITimePicker, PlatformView>, ITimePi
     {
     }
 
-    ITimePicker ITimePickerHandler.VirtualView => VirtualView;
-
-    object ITimePickerHandler.PlatformView => PlatformView;
-
     protected override PlatformView CreatePlatformView() => new PlatformView();
 
     public override bool NeedsContainer => false;
@@ -54,7 +50,7 @@ public class TimePickerHandler : ViewHandler<ITimePicker, PlatformView>, ITimePi
         base.DisconnectHandler(platformView);
     }
 
-    public static void MapTime(ITimePickerHandler handler, ITimePicker timePicker)
+    public static void MapTime(TimePickerHandler handler, ITimePicker timePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -62,7 +58,7 @@ public class TimePickerHandler : ViewHandler<ITimePicker, PlatformView>, ITimePi
         platformView.UpdateTime(timePicker);
     }
 
-    public static void MapFormat(ITimePickerHandler handler, ITimePicker timePicker)
+    public static void MapFormat(TimePickerHandler handler, ITimePicker timePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -70,7 +66,7 @@ public class TimePickerHandler : ViewHandler<ITimePicker, PlatformView>, ITimePi
         platformView.UpdateFormat(timePicker);
     }
 
-    public static void MapCharacterSpacing(ITimePickerHandler handler, ITimePicker timePicker)
+    public static void MapCharacterSpacing(TimePickerHandler handler, ITimePicker timePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -78,7 +74,7 @@ public class TimePickerHandler : ViewHandler<ITimePicker, PlatformView>, ITimePi
         platformView.UpdateCharacterSpacing(timePicker);
     }
 
-    public static void MapFont(ITimePickerHandler handler, ITimePicker timePicker)
+    public static void MapFont(TimePickerHandler handler, ITimePicker timePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -87,7 +83,7 @@ public class TimePickerHandler : ViewHandler<ITimePicker, PlatformView>, ITimePi
         platformView.UpdateFont(timePicker, fontManager);
     }
 
-    public static void MapTextColor(ITimePickerHandler handler, ITimePicker timePicker)
+    public static void MapTextColor(TimePickerHandler handler, ITimePicker timePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;

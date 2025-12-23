@@ -4,15 +4,15 @@ using PlatformView = Avalonia.Controls.Menu;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class ToolbarHandler : ElementHandler<IToolbar, PlatformView>, IToolbarHandler
+public partial class ToolbarHandler : ElementHandler<IToolbar, PlatformView>
 {
-    public static IPropertyMapper<IToolbar, IToolbarHandler> Mapper =
-        new PropertyMapper<IToolbar, IToolbarHandler>(ElementMapper)
+    public static IPropertyMapper<IToolbar, ToolbarHandler> Mapper =
+        new PropertyMapper<IToolbar, ToolbarHandler>(ElementMapper)
         {
             [nameof(IToolbar.Title)] = MapTitle,
         };
 
-    public static CommandMapper<IToolbar, IToolbarHandler> CommandMapper = new();
+    public static CommandMapper<IToolbar, ToolbarHandler> CommandMapper = new();
 
     public ToolbarHandler() : base(Mapper, CommandMapper)
     {
@@ -33,14 +33,10 @@ public partial class ToolbarHandler : ElementHandler<IToolbar, PlatformView>, IT
         return new PlatformView();
     }
 
-    public static void MapTitle(IToolbarHandler handler, IToolbar toolbar)
+    public static void MapTitle(ToolbarHandler handler, IToolbar toolbar)
     {
         // Avalonia Menu doesn't have a direct Title property
         // Title is typically handled by the window/page that contains the menu
         // This is a platform difference between Windows/MAUI and Avalonia
     }
-
-    IToolbar IToolbarHandler.VirtualView => VirtualView;
-
-    object IToolbarHandler.PlatformView => PlatformView;
 }

@@ -11,7 +11,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// Window handler for single-view application lifetimes (browser, mobile, etc.)
 /// This handler creates a ContentControl instead of a Window to avoid windowing platform dependencies.
 /// </summary>
-public partial class SingleViewWindowHandler : Microsoft.Maui.Handlers.WindowHandler
+public partial class SingleViewWindowHandler : ElementHandler<IWindow, object>
 {
     static readonly AlertManager s_alertManager = new();
 
