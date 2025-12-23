@@ -735,4 +735,112 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             Assert.Equal("My Tab", textBlock.Text);
         });
     }
+    [AvaloniaFact(DisplayName = "Adding Child Update Tab Items")]
+    public async Task Adding_Child_Updates_Tab_Items()
+    {
+        EnsureHandlerCreated();
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var stub = new TabbedPageStub();
+            stub.Children.Add(new ContentPage { Title = "Tab 1" });
+            var handler = CreateHandler<TabbedPageHandler>(stub);
+
+            Assert.Single(handler.PlatformView.Items);
+
+            // Add a new child
+            stub.Children.Add(new ContentPage { Title = "Tab 2" });
+
+            Assert.Equal(2, handler.PlatformView.Items.Count);
+            var tab2 = Assert.IsType<TabItem>(handler.PlatformView.Items[1]);
+            Assert.Equal("Tab 2", tab2.Header);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Removing Child Updates Tab Items")]
+    public async Task Removing_Child_Updates_Tab_Items()
+    {
+        EnsureHandlerCreated();
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var stub = new TabbedPageStub();
+            var page1 = new ContentPage { Title = "Tab 1" };
+            var page2 = new ContentPage { Title = "Tab 2" };
+            stub.Children.Add(page1);
+            stub.Children.Add(page2);
+
+            var handler = CreateHandler<TabbedPageHandler>(stub);
+            Assert.Equal(2, handler.PlatformView.Items.Count);
+
+            // Remove the first child
+            stub.Children.Remove(page1);
+
+            Assert.Single(handler.PlatformView.Items);
+            var tab = Assert.IsType<TabItem>(handler.PlatformView.Items[0]);
+            Assert.Equal("Tab 2", tab.Header);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Removing Selected Child Updates Selection")]
+    public async Task Removing_Selected_Child_Updates_Selection()
+    {
+        EnsureHandlerCreated();
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var stub = new TabbedPageStub();
+            var page1 = new ContentPage { Title = "Tab 1" };
+            var page2 = new ContentPage { Title = "Tab 2" };
+            stub.Children.Add(page1);
+            stub.Children.Add(page2);
+
+            var handler = CreateHandler<TabbedPageHandler>(stub);
+            
+            // Select first tab
+            stub.CurrentPage = page1;
+            handler.UpdateValue(nameof(TabbedPage.CurrentPage));
+            Assert.Equal(0, handler.PlatformView.SelectedIndex);
+
+            // Remove selected tab
+            stub.Children.Remove(page1);
+
+            // Should select the remaining tab (now at index 0)
+            Assert.Single(handler.PlatformView.Items);
+            Assert.Equal(0, handler.PlatformView.SelectedIndex);
+            var selectedTab = Assert.IsType<TabItem>(handler.PlatformView.SelectedItem);
+            Assert.Equal("Tab 2", selectedTab.Header);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "ItemsSource Populates Tab Items")]
+    public async Task ItemsSource_Populates_Tab_Items()
+    {
+        EnsureHandlerCreated();
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var stub = new TabbedPageStub();
+            var items = new List<string> { "Item 1", "Item 2", "Item 3" };
+            
+            stub.ItemsSource = items;
+            stub.ItemTemplate = new DataTemplate(() =>
+            {
+                var page = new ContentPage();
+                page.SetBinding(ContentPage.TitleProperty, ".");
+                return page;
+            });
+            
+            var handler = CreateHandler<TabbedPageHandler>(stub);
+            
+            // Verify items are created (MAUI logic creates pages from ItemsSource)
+            Assert.Equal(3, handler.PlatformView.Items.Count);
+            
+            // Verify selection via ItemsSource object
+            stub.SelectedItem = "Item 2";
+            handler.UpdateValue(nameof(TabbedPage.SelectedItem));
+            
+            Assert.Equal(1, handler.PlatformView.SelectedIndex);
+        });
+    }
 }
