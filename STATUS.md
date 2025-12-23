@@ -629,7 +629,7 @@ Visual element that occupies the entire screen.
 | BackgroundImageSource | ✅ Implemented |
 | Content | ✅ Implemented |
 | Title | ⏳ TODO |
-| IconImageSource | ⏳ TODO |
+| IconImageSource | ✅ Implemented |
 | Padding | ⏳ TODO |
 
 ---
@@ -1078,6 +1078,25 @@ Displays a switch with a label, for use in a TableView or ListView.
 | OnChanged | ✅ Implemented |
 | Appearing | ✅ Implemented |
 | Disappearing | ✅ Implemented |
+
+---
+
+## TabbedPage
+
+A Page that allows navigation between multiple sub-pages using tabs.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| BarBackgroundColor | ✅ Implemented |
+| BarTextColor | ✅ Implemented |
+| CurrentPage | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| SelectedItem | ✅ Implemented |
+| SelectedTabColor | ✅ Implemented |
+| UnselectedTabColor | ✅ Implemented |
 
 ---
 

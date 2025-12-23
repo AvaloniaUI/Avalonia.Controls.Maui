@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.TabbedPage"
+             x:DataType="pages:TabbedPage"
+             Title="TabbedPage">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="TabbedPage"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic TabbedPage -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic TabbedPage"
+                           FontAttributes="Bold"/>
+                    <Label Text="A simple TabbedPage with three tabs (Children collection)."
+                           FontSize="12"/>
+                    <Button Text="Open Basic TabbedPage"
+                            Clicked="OnOpenBasicTabbedPage"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ItemsSource / DataTemplate (FIRST - Most Important) -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ItemsSource with DataTemplate"
+                           FontAttributes="Bold"/>
+                    <Label Text="TabbedPage populated from a data collection using ItemsSource and ItemTemplate."
+                           FontSize="12"/>
+                    <Button Text="ItemsSource Demo"
+                            Clicked="OnOpenItemsSourceTabbedPage"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- SelectedItem (from MultiPage<T>) -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="SelectedItem Binding"
+                           FontAttributes="Bold"/>
+                    <Label Text="TabbedPage with SelectedItem set programmatically (inherited from MultiPage)."
+                           FontSize="12"/>
+                    <Button Text="SelectedItem Demo"
+                            Clicked="OnOpenSelectedItemTabbedPage"/>
+                </VerticalStackLayout>
+            </Border>
+
+
+
+            <!-- Tab Icons -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Tab Icons"
+                           FontAttributes="Bold"/>
+                    <Label Text="TabbedPage with icons on tabs using Page.IconImageSource."
+                           FontSize="12"/>
+                    <Button Text="Tabs with Icons"
+                            Clicked="OnOpenIconsTabbedPage"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Bar Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Bar Background Color"
+                           FontAttributes="Bold"/>
+                    <Label Text="TabbedPage with custom BarBackgroundColor."
+                           FontSize="12"/>
+                    <Button Text="Blue Bar Background"
+                            Clicked="OnOpenBlueBarTabbedPage"/>
+                    <Button Text="Dark Bar Background"
+                            Clicked="OnOpenDarkBarTabbedPage"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Bar Text Color -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Bar Text Color"
+                           FontAttributes="Bold"/>
+                    <Label Text="TabbedPage with custom BarTextColor."
+                           FontSize="12"/>
+                    <Button Text="White Text on Dark Bar"
+                            Clicked="OnOpenWhiteTextTabbedPage"/>
+                    <Button Text="Red Text on Light Bar"
+                            Clicked="OnOpenRedTextTabbedPage"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Selected/Unselected Tab Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Tab Selection Colors"
+                           FontAttributes="Bold"/>
+                    <Label Text="Custom colors for selected and unselected tabs."
+                           FontSize="12"/>
+                    <Button Text="Custom Tab Colors"
+                            Clicked="OnOpenCustomTabColorsTabbedPage"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Gradient Background -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Gradient Bar Background"
+                           FontAttributes="Bold"/>
+                    <Label Text="TabbedPage with gradient BarBackground brush."
+                           FontSize="12"/>
+                    <Button Text="Gradient Background"
+                            Clicked="OnOpenGradientTabbedPage"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Dynamic Tabs -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Tabs"
+                           FontAttributes="Bold"/>
+                    <Label Text="Add and remove tabs dynamically."
+                           FontSize="12"/>
+                    <Button Text="Dynamic Tab Demo"
+                            Clicked="OnOpenDynamicTabbedPage"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

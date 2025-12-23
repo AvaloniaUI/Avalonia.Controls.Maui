@@ -16,5 +16,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>
+    
+    <StyleInclude Source="avares://Avalonia.Controls.Maui/Controls/TabbedPage/TabbedPage.axaml" />
 
 </Styles>
