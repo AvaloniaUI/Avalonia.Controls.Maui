@@ -15,7 +15,7 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, object>
 {
     static readonly AlertManager s_alertManager = new();
 
-    static IPropertyMapper<IWindow, IWindowHandler> mapper = new PropertyMapper<IWindow, IWindowHandler>(ElementHandler.ElementMapper)
+    static IPropertyMapper<IWindow, WindowHandler> mapper = new PropertyMapper<IWindow, WindowHandler>(ElementHandler.ElementMapper)
     {
         [nameof(IWindow.Title)] = mapTitle,
         [nameof(IWindow.Content)] = mapContent,
@@ -66,20 +66,20 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, object>
         // Modal support would need to be implemented differently for single-view platforms
     }
 
-    static void mapTitle(IWindowHandler handler, IWindow window)
+    static void mapTitle(WindowHandler handler, IWindow window)
     {
         // Title mapping is not relevant for single-view platforms
         // In browser, this could potentially update the document title
     }
 
-    static void mapContent(IWindowHandler handler, IWindow window)
+    static void mapContent(WindowHandler handler, IWindow window)
     {
         var avContent = GetMauiContent(handler);
         var content = window.Content?.ToPlatform(handler.MauiContext!);
         avContent.SetMainContent(content);
     }
 
-    static MauiAvaloniaContent GetMauiContent(IWindowHandler handler)
+    static MauiAvaloniaContent GetMauiContent(WindowHandler handler)
     {
         _ = handler.MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
         return (MauiAvaloniaContent)handler.PlatformView;
