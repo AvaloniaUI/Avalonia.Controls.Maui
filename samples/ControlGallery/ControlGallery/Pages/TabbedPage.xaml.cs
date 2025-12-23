@@ -1,10 +1,12 @@
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.Shapes;
+using ControlsTabbedPage = Microsoft.Maui.Controls.TabbedPage;
 
 namespace ControlGallery.Pages;
 
-public partial class TabbedPageDemoPage : ContentPage
+public partial class TabbedPage : ContentPage
 {
-    public TabbedPageDemoPage()
+    public TabbedPage()
     {
         InitializeComponent();
     }
@@ -20,13 +22,13 @@ public partial class TabbedPageDemoPage : ContentPage
         // If the current page is a FlyoutPage, set its Detail
         if (window.Page is FlyoutPage flyoutPage)
         {
-            flyoutPage.Detail = new TabbedPageDemoPage();
+            flyoutPage.Detail = new TabbedPage();
         }
         else
         {
-            // Otherwise, restore the MainPage with TabbedPageDemoPage as Detail
+            // Otherwise, restore the MainPage with TabbedPage as Detail
             var mainPage = new MainPage();
-            mainPage.Detail = new TabbedPageDemoPage();
+            mainPage.Detail = new TabbedPage();
             window.Page = mainPage;
         }
     }
@@ -39,7 +41,7 @@ public partial class TabbedPageDemoPage : ContentPage
 
     private void OnOpenIconsTabbedPage(object sender, EventArgs e)
     {
-        var tabbedPage = new TabbedPage
+        var tabbedPage = new ControlsTabbedPage
         {
             Title = "Tabs with Icons",
             BarBackgroundColor = Colors.SlateBlue,
@@ -108,10 +110,40 @@ public partial class TabbedPageDemoPage : ContentPage
 
     private void OnOpenCustomTabColorsTabbedPage(object sender, EventArgs e)
     {
-        var tabbedPage = CreateBasicTabbedPage();
-        // Only set tab selection colors - no BarBackgroundColor to avoid overlap
-        tabbedPage.SelectedTabColor = Colors.Orange;
-        tabbedPage.UnselectedTabColor = Colors.LightGray;
+        var tabbedPage = new ControlsTabbedPage
+        {
+            Title = "Custom Colors",
+            BarBackgroundColor = Color.FromArgb("#1F2937"), // Dark Slate
+            BarTextColor = Colors.White,
+            SelectedTabColor = Color.FromArgb("#8B5CF6"), // Vibrant Violet
+            UnselectedTabColor = Color.FromArgb("#6B7280") // Cool Gray
+        };
+
+        tabbedPage.Children.Add(new ContentPage
+        {
+            Title = "Feed",
+            IconImageSource = "dotnet_bot.png", 
+            Content = CreateTabContent("Feed", "News feed content")
+        });
+
+        tabbedPage.Children.Add(new ContentPage
+        {
+            Title = "Explore",
+            Content = CreateTabContent("Explore", "Discover new items")
+        });
+
+        tabbedPage.Children.Add(new ContentPage
+        {
+            Title = "Notifications",
+            Content = CreateTabContent("Notifications", "User notifications")
+        });
+        
+        tabbedPage.Children.Add(new ContentPage
+        {
+            Title = "Profile",
+            Content = CreateTabContent("Profile", "User settings")
+        });
+
         Application.Current?.Windows[0].Page = tabbedPage;
     }
 
@@ -135,11 +167,13 @@ public partial class TabbedPageDemoPage : ContentPage
 
     private void OnOpenDynamicTabbedPage(object sender, EventArgs e)
     {
-        var tabbedPage = new TabbedPage
+        var tabbedPage = new ControlsTabbedPage
         {
             Title = "Dynamic Tabs",
-            BarBackgroundColor = Colors.Indigo,
-            BarTextColor = Colors.White
+            BarBackgroundColor = Color.FromArgb("#312E81"), // Indigo 900
+            BarTextColor = Colors.White,
+            SelectedTabColor = Color.FromArgb("#4338CA"), // Indigo 700
+            UnselectedTabColor = Color.FromArgb("#312E81") // Indigo 900 (Same as bar)
         };
 
         var controlPage = new ContentPage
@@ -147,6 +181,9 @@ public partial class TabbedPageDemoPage : ContentPage
             Title = "Controls",
             Content = CreateDynamicControlsContent(tabbedPage)
         };
+        
+        // Ensure contrast for the white/dark card
+        controlPage.SetAppThemeColor(ContentPage.BackgroundColorProperty, Colors.GhostWhite, Colors.Black);
 
         tabbedPage.Children.Add(controlPage);
         tabbedPage.Children.Add(new ContentPage
@@ -157,12 +194,16 @@ public partial class TabbedPageDemoPage : ContentPage
 
         Application.Current?.Windows[0].Page = tabbedPage;
     }
-
-    private TabbedPage CreateBasicTabbedPage()
+    
+    private ControlsTabbedPage CreateBasicTabbedPage()
     {
-        var tabbedPage = new TabbedPage
+        var tabbedPage = new ControlsTabbedPage
         {
-            Title = "TabbedPage Sample"
+            Title = "TabbedPage Sample",
+            BarBackgroundColor = Colors.RoyalBlue,
+            BarTextColor = Colors.White,
+            SelectedTabColor = Colors.White,
+            UnselectedTabColor = Colors.RoyalBlue
         };
 
         tabbedPage.Children.Add(new ContentPage
@@ -183,31 +224,6 @@ public partial class TabbedPageDemoPage : ContentPage
             Content = CreateTabContent("Settings", "Application settings and preferences.")
         });
 
-        // Add a back button to each page
-        foreach (var child in tabbedPage.Children)
-        {
-            if (child is ContentPage page)
-            {
-                var existingContent = page.Content;
-                page.Content = new VerticalStackLayout
-                {
-                    Spacing = 20,
-                    Padding = 20,
-                    Children =
-                    {
-                        new Button
-                        {
-                            Text = "Back to Demo",
-                            BackgroundColor = Colors.Gray,
-                            TextColor = Colors.White,
-                            Command = new Command(NavigateBackToDemo)
-                        },
-                        existingContent
-                    }
-                };
-            }
-        }
-
         return tabbedPage;
     }
 
@@ -223,7 +239,7 @@ public partial class TabbedPageDemoPage : ContentPage
             {
                 new Button
                 {
-                    Text = "Back to Demo",
+                    Text = "Back",
                     BackgroundColor = Colors.Gray,
                     TextColor = Colors.White,
                     Command = new Command(NavigateBackToDemo)
@@ -260,36 +276,42 @@ public partial class TabbedPageDemoPage : ContentPage
         };
     }
 
-    private View CreateDynamicControlsContent(TabbedPage tabbedPage)
+    private View CreateDynamicControlsContent(ControlsTabbedPage tabbedPage)
     {
         var tabCounter = 2;
 
         var addButton = new Button
         {
             Text = "Add Tab",
-            BackgroundColor = Colors.Green,
-            TextColor = Colors.White
+            BackgroundColor = Color.FromArgb("#10B981"), // Emerald 500
+            TextColor = Colors.White,
+            FontAttributes = FontAttributes.Bold,
+            CornerRadius = 8
         };
 
         var removeButton = new Button
         {
             Text = "Remove Last Tab",
-            BackgroundColor = Colors.Red,
-            TextColor = Colors.White
+            BackgroundColor = Color.FromArgb("#EF4444"), // Red 500
+            TextColor = Colors.White,
+            FontAttributes = FontAttributes.Bold,
+            CornerRadius = 8 
         };
 
         var backButton = new Button
         {
-            Text = "Back to Demo",
-            BackgroundColor = Colors.Gray,
-            TextColor = Colors.White
+            Text = "Back",
+            BackgroundColor = Color.FromArgb("#6B7280"), // Gray 500
+            TextColor = Colors.White,
+            CornerRadius = 8
         };
 
         var tabCountLabel = new Label
         {
             Text = $"Current tab count: {tabbedPage.Children.Count}",
-            FontSize = 16,
-            HorizontalOptions = LayoutOptions.Center
+            FontSize = 18,
+            HorizontalOptions = LayoutOptions.Center,
+            TextColor = Colors.Gray
         };
 
         addButton.Clicked += (s, e) =>
@@ -317,31 +339,53 @@ public partial class TabbedPageDemoPage : ContentPage
             NavigateBackToDemo();
         };
 
-        return new VerticalStackLayout
+        var cardBorder = new Border
         {
-            Spacing = 15,
-            Padding = 20,
-            Children =
+            Stroke = Color.FromArgb("#E5E7EB"),
+            StrokeThickness = 1,
+            Padding = 30,
+            HorizontalOptions = LayoutOptions.Center,
+            VerticalOptions = LayoutOptions.Center,
+            StrokeShape = new RoundRectangle { CornerRadius = 12 },
+            Content = new VerticalStackLayout
             {
-                new Label
+                Spacing = 20,
+                WidthRequest = 300,
+                Children =
                 {
-                    Text = "Dynamic Tab Controls",
-                    FontSize = 24,
-                    FontAttributes = FontAttributes.Bold,
-                    HorizontalOptions = LayoutOptions.Center
-                },
-                tabCountLabel,
-                addButton,
-                removeButton,
-                new BoxView { HeightRequest = 20 },
-                backButton
+                    new Label
+                    {
+                        Text = "Tab Manager",
+                        FontSize = 24,
+                        FontAttributes = FontAttributes.Bold,
+                        HorizontalOptions = LayoutOptions.Center
+                    },
+                    new BoxView { HeightRequest = 1, Color = Color.FromArgb("#E5E7EB") },
+                    tabCountLabel,
+                    new VerticalStackLayout 
+                    { 
+                        Spacing = 10,
+                        Children = { addButton, removeButton }
+                    },
+                    new BoxView { HeightRequest = 20, Color = Colors.Transparent },
+                    backButton
+                }
             }
         };
+
+        // Set adaptive adjustments
+        cardBorder.SetAppThemeColor(Border.BackgroundColorProperty, Colors.White, Color.FromArgb("#1F2937")); // White / Gray 800
+        cardBorder.SetAppThemeColor(Border.StrokeProperty, Color.FromArgb("#E5E7EB"), Color.FromArgb("#374151")); // Gray 200 / Gray 700
+        
+        var titleLabel = (Label)((VerticalStackLayout)cardBorder.Content).Children[0];
+        titleLabel.SetAppThemeColor(Label.TextColorProperty, Color.FromArgb("#111827"), Colors.White); // Gray 900 / White
+
+        return cardBorder;
     }
 
     private void OnOpenSelectedItemTabbedPage(object sender, EventArgs e)
     {
-        var tabbedPage = new TabbedPage
+        var tabbedPage = new ControlsTabbedPage
         {
             Title = "SelectedItem TabbedPage",
             BarBackgroundColor = Colors.Indigo,
@@ -374,7 +418,7 @@ public partial class TabbedPageDemoPage : ContentPage
                 {
                     new Button
                     {
-                        Text = "Back to Demo",
+                        Text = "Back",
                         BackgroundColor = Colors.Gray,
                         TextColor = Colors.White,
                         Command = new Command(NavigateBackToDemo)
@@ -405,7 +449,7 @@ public partial class TabbedPageDemoPage : ContentPage
 
     private void OnOpenItemsSourceTabbedPage(object sender, EventArgs e)
     {
-        var tabbedPage = new TabbedPage
+        var tabbedPage = new ControlsTabbedPage
         {
             Title = "ItemsSource TabbedPage",
             BarBackgroundColor = Colors.Teal,
@@ -438,7 +482,7 @@ public partial class TabbedPageDemoPage : ContentPage
                 {
                     new Button
                     {
-                        Text = "Back to Demo",
+                        Text = "Back",
                         BackgroundColor = Colors.Gray,
                         TextColor = Colors.White,
                         Command = new Command(NavigateBackToDemo)

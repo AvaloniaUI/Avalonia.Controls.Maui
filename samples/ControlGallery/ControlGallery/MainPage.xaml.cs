@@ -84,8 +84,8 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Pages", new List<SampleItem>
             {
-                new("NavigationPage", "Navigation stack with animated transitions", typeof(NavigationDemoPage)),
-                new("TabbedPage", "Tabbed navigation with customizable bar colors", typeof(TabbedPageDemoPage)),
+                new("NavigationPage", "Navigation stack", typeof(NavigationDemoPage)),
+                new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
                 new("TitleBar", "Custom window title bar", typeof(TitleBarPage))
             }),
 

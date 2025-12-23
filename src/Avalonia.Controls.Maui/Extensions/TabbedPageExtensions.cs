@@ -328,9 +328,9 @@ public static class TabbedPageExtensions
     }
 
     /// <summary>
-    /// Reapplies all tab colors from stored resources after tab items are rebuilt.
+    /// Reapplies all tab colors from stored resources after tab items are rebuilt or selection changes.
     /// </summary>
-    private static void ApplyAllTabColors(TabControl tabControl, TabbedPage tabbedPage)
+    public static void ApplyAllTabColors(this TabControl tabControl, TabbedPage tabbedPage)
     {
         // Apply bar background resource (template will pick it up via DynamicResource)
         if (tabbedPage.BarBackground != null)

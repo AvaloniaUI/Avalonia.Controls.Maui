@@ -2,21 +2,33 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ControlGallery.Pages"
-             x:Class="ControlGallery.Pages.TabbedPageDemoPage"
-             x:DataType="pages:TabbedPageDemoPage"
-             Title="TabbedPage Demo">
+             x:Class="ControlGallery.Pages.TabbedPage"
+             x:DataType="pages:TabbedPage"
+             Title="TabbedPage">
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="TabbedPage Demo"
+            <Label Text="TabbedPage"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
 
-            <Label Text="This demo showcases TabbedPage features including ItemsSource, bar colors, tab colors, and navigation within tabs."
-                   HorizontalOptions="Center"
-                   HorizontalTextAlignment="Center"/>
+            <!-- Basic TabbedPage -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic TabbedPage"
+                           FontAttributes="Bold"/>
+                    <Label Text="A simple TabbedPage with three tabs (Children collection)."
+                           FontSize="12"/>
+                    <Button Text="Open Basic TabbedPage"
+                            Clicked="OnOpenBasicTabbedPage"/>
+                </VerticalStackLayout>
+            </Border>
 
             <!-- ItemsSource / DataTemplate (FIRST - Most Important) -->
             <Border Stroke="Gray"
@@ -50,21 +62,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Basic TabbedPage -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Basic TabbedPage"
-                           FontAttributes="Bold"/>
-                    <Label Text="A simple TabbedPage with three tabs (Children collection)."
-                           FontSize="12"/>
-                    <Button Text="Open Basic TabbedPage"
-                            Clicked="OnOpenBasicTabbedPage"/>
-                </VerticalStackLayout>
-            </Border>
+
 
             <!-- Tab Icons -->
             <Border Stroke="Gray"
