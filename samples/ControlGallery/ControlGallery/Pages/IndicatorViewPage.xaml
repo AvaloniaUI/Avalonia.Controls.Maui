@@ -300,7 +300,7 @@
                                        Position="2"
                                        HorizontalOptions="Center">
                             <IndicatorView.IndicatorTemplate>
-                                <DataTemplate>
+                                <DataTemplate x:DataType="x:Null">
                                     <Frame CornerRadius="12"
                                            Padding="10,6"
                                            HasShadow="False"
