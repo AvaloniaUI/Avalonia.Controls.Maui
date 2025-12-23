@@ -143,6 +143,6 @@ public partial class TabbedPageHandler : ViewHandler<TabbedPage, TabControl>
         }
         
         // Re-apply tab colors when selection changes to update Selected/Unselected states
-        PlatformView.ApplyAllTabColors(VirtualView);
+        PlatformView.UpdateTabColors(VirtualView);
     }
 }

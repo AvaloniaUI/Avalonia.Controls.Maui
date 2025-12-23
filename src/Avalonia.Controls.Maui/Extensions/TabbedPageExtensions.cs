@@ -201,7 +201,7 @@ public static class TabbedPageExtensions
         }
 
         // Reapply bar and tab colors after rebuilding items
-        ApplyAllTabColors(tabControl, tabbedPage);
+        UpdateTabColors(tabControl, tabbedPage);
 
         // Apply SelectedItem if set
         tabControl.UpdateSelectedItem(tabbedPage);
@@ -330,7 +330,7 @@ public static class TabbedPageExtensions
     /// <summary>
     /// Reapplies all tab colors from stored resources after tab items are rebuilt or selection changes.
     /// </summary>
-    public static void ApplyAllTabColors(this TabControl tabControl, TabbedPage tabbedPage)
+    public static void UpdateTabColors(this TabControl tabControl, TabbedPage tabbedPage)
     {
         // Apply bar background resource (template will pick it up via DynamicResource)
         if (tabbedPage.BarBackground != null)
