@@ -127,7 +127,7 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.ViewCell, Avalonia.Controls.Maui.Handlers.Cells.ViewCellHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.SwitchCell, Avalonia.Controls.Maui.Handlers.Cells.SwitchCellHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.EntryCell, Avalonia.Controls.Maui.Handlers.Cells.EntryCellHandler>();
-                handlers.AddHandler<Microsoft.Maui.Controls.TabbedPage, Avalonia.Controls.Maui.Handlers.TabbedViewHandler>();
+                handlers.AddHandler<Microsoft.Maui.Controls.TabbedPage, Avalonia.Controls.Maui.Handlers.TabbedPageHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.FlyoutPage, Avalonia.Controls.Maui.Handlers.FlyoutViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Shell, Avalonia.Controls.Maui.Handlers.Shell.ShellHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.ShellItem, Avalonia.Controls.Maui.Handlers.Shell.ShellItemHandler>();
