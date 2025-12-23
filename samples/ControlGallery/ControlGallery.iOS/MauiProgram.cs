@@ -7,6 +7,8 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 
 		builder
+		.UseAvaloniaApp(true)
+		.UseAvaloniaGraphics()
 		.UseMauiApp<MauiAppStub>()
 		.ConfigureFonts(fonts =>
 		{
