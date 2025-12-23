@@ -84,7 +84,8 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Pages", new List<SampleItem>
             {
-                new("NavigationPage", "Navigation stack with animated transitions", typeof(NavigationDemoPage)),
+                new("NavigationPage", "Navigation stack", typeof(NavigationDemoPage)),
+                new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
                 new("TitleBar", "Custom window title bar", typeof(TitleBarPage))
             }),
 
@@ -118,7 +119,8 @@ public partial class MainPage : FlyoutPage
                 new("Stepper", "Numeric increment/decrement control", typeof(StepperPage)),
                 new("Switch", "Toggle control with colors", typeof(SwitchPage)),
                 new("SwipeView", "SwipeView control", typeof(SwipeViewPage)),
-                new("TableView", "TableView with cell types", typeof(TableViewPage))
+                new("TableView", "TableView with cell types", typeof(TableViewPage)),
+                new("TimePicker", "TimePicker control", typeof(TimePickerPage))
             }),
 
             new SampleGroup("Effects", new List<SampleItem>

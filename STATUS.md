@@ -629,7 +629,7 @@ Visual element that occupies the entire screen.
 | BackgroundImageSource | ✅ Implemented |
 | Content | ✅ Implemented |
 | Title | ⏳ TODO |
-| IconImageSource | ⏳ TODO |
+| IconImageSource | ✅ Implemented |
 | Padding | ⏳ TODO |
 
 ---
@@ -1081,6 +1081,25 @@ Displays a switch with a label, for use in a TableView or ListView.
 
 ---
 
+## TabbedPage
+
+A Page that allows navigation between multiple sub-pages using tabs.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| BarBackgroundColor | ✅ Implemented |
+| BarTextColor | ✅ Implemented |
+| CurrentPage | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| SelectedItem | ✅ Implemented |
+| SelectedTabColor | ✅ Implemented |
+| UnselectedTabColor | ✅ Implemented |
+
+---
+
 ## TableView (Deprecated)
 
 Displays a table of scrollable items that can be grouped into sections.
@@ -1160,20 +1179,19 @@ Enables you to select a time with the platform time picker.
 
 | Property | Status |
 |----------|--------|
-| CharacterSpacing | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| Format | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| Time | ⏳ TODO |
+| CharacterSpacing | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| Format | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| Time | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| PropertyChanged | ⏳ TODO |
+| SelectedTimeChanged | ✅ Implemented |
 
 ---
 

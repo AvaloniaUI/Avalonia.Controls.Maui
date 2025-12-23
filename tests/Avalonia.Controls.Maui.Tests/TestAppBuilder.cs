@@ -45,6 +45,7 @@ public static class MauiTestAppBuilderExtensions
             handlers.AddHandler<Tests.Stubs.ProgressBarStub, Avalonia.Controls.Maui.Handlers.ProgressBarHandler>();
             handlers.AddHandler<Tests.Stubs.ScrollViewStub, Avalonia.Controls.Maui.Handlers.ScrollViewHandler>();
             handlers.AddHandler<Tests.Stubs.SliderStub, Avalonia.Controls.Maui.Handlers.SliderHandler>();
+            handlers.AddHandler<Tests.Stubs.TabbedPageStub, Avalonia.Controls.Maui.Handlers.TabbedPageHandler>();
 
             // SwipeView stubs
             handlers.AddHandler<Tests.Stubs.SwipeViewStub, Avalonia.Controls.Maui.Handlers.SwipeViewHandler>();

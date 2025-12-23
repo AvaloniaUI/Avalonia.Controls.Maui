@@ -6,6 +6,7 @@
 		<Nullable>enable</Nullable>
 		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
 		<UseMaui>true</UseMaui>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<ItemGroup>
