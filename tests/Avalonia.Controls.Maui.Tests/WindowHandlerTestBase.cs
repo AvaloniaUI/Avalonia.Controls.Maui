@@ -96,7 +96,7 @@ public abstract class WindowHandlerTestBase : IAsyncDisposable
 
         // Create and connect the window handler first
         var handlerFactory = mauiContext.Services.GetRequiredService<IMauiHandlersFactory>();
-        var windowHandler = handlerFactory.GetHandler(typeof(MauiWindow)) as IWindowHandler;
+        var windowHandler = handlerFactory.GetHandler(typeof(MauiWindow)) as WindowHandler;
 
         if (windowHandler != null)
         {
