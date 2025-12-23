@@ -3,5 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 		     xmlns:shimmer="http://schemas.syncfusion.com/maui/toolkit"
 			 x:Class="MobileSandbox.MainPage">
-
+<Image
+                Source="dotnet_bot.png"
+                HeightRequest="185"
+                Aspect="AspectFit"
+                SemanticProperties.Description="dot net bot in a submarine number ten" />
 </ContentPage>
