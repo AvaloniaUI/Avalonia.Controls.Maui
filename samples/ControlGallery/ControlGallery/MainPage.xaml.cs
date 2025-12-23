@@ -118,7 +118,8 @@ public partial class MainPage : FlyoutPage
                 new("Stepper", "Numeric increment/decrement control", typeof(StepperPage)),
                 new("Switch", "Toggle control with colors", typeof(SwitchPage)),
                 new("SwipeView", "SwipeView control", typeof(SwipeViewPage)),
-                new("TableView", "TableView with cell types", typeof(TableViewPage))
+                new("TableView", "TableView with cell types", typeof(TableViewPage)),
+                new("TimePicker", "TimePicker control", typeof(TimePickerPage))
             }),
 
             new SampleGroup("Effects", new List<SampleItem>
