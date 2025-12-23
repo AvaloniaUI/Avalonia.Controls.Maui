@@ -26,7 +26,8 @@
                            TextColor="Gray"
                            Margin="0,0,0,4" />
                     <TimePicker x:Name="BasicTimePicker" />
-                    <Label Text="{Binding Source={x:Reference BasicTimePicker}, Path=Time, StringFormat='Selected Time: {0}'}"
+                    <Label x:DataType="TimePicker"
+                           Text="{Binding Source={x:Reference BasicTimePicker}, Path=Time, StringFormat='Selected Time: {0}'}"
                            FontAttributes="Italic" />
                 </VerticalStackLayout>
             </Border>

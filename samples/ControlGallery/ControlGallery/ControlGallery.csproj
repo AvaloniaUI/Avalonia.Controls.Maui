@@ -6,6 +6,7 @@
 		<Nullable>enable</Nullable>
 		<UseMaui>true</UseMaui>
 		<NoWarn>CS0618</NoWarn>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 
 	<PropertyGroup Label="AOT Validation">
