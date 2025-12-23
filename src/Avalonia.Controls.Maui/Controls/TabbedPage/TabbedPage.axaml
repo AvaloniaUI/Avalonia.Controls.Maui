@@ -1,0 +1,56 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- TabbedPage TabControl Style - Adds a backgroundable tab strip wrapper -->
+    <Style Selector="TabControl.TabbedPage">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="TabControl">
+                <Border HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}">
+                    <DockPanel>
+                        <!-- Tab Strip with Background Border -->
+                        <Border x:Name="PART_TabStripBackground"
+                                DockPanel.Dock="Top"
+                                Background="{DynamicResource TabbedPageBarBackground}">
+                            <ItemsPresenter Name="PART_ItemsPresenter"
+                                            ItemsPanel="{TemplateBinding ItemsPanel}" />
+                        </Border>
+                        <!-- Content Area -->
+                        <ContentPresenter Name="PART_SelectedContentHost"
+                                          Margin="{TemplateBinding Padding}"
+                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                          Content="{TemplateBinding SelectedContent}"
+                                          ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <!-- Tab placement positioning -->
+    <Style Selector="TabControl.TabbedPage[TabStripPlacement=Top] /template/ Border#PART_TabStripBackground">
+        <Setter Property="DockPanel.Dock" Value="Top" />
+    </Style>
+    <Style Selector="TabControl.TabbedPage[TabStripPlacement=Bottom] /template/ Border#PART_TabStripBackground">
+        <Setter Property="DockPanel.Dock" Value="Bottom" />
+    </Style>
+    <Style Selector="TabControl.TabbedPage[TabStripPlacement=Left] /template/ Border#PART_TabStripBackground">
+        <Setter Property="DockPanel.Dock" Value="Left" />
+    </Style>
+    <Style Selector="TabControl.TabbedPage[TabStripPlacement=Left] /template/ Border#PART_TabStripBackground > ItemsPresenter > WrapPanel">
+        <Setter Property="Orientation" Value="Vertical" />
+    </Style>
+    <Style Selector="TabControl.TabbedPage[TabStripPlacement=Right] /template/ Border#PART_TabStripBackground">
+        <Setter Property="DockPanel.Dock" Value="Right" />
+    </Style>
+    <Style Selector="TabControl.TabbedPage[TabStripPlacement=Right] /template/ Border#PART_TabStripBackground > ItemsPresenter > WrapPanel">
+        <Setter Property="Orientation" Value="Vertical" />
+    </Style>
+
+</Styles>
