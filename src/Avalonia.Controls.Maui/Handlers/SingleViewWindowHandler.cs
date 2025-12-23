@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.VisualTree;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
@@ -22,8 +23,22 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
         // X, Y, Width, Height, Min/Max dimensions are not relevant for single-view platforms
     };
 
+    static CommandMapper<IWindow, SingleViewWindowHandler> CommandMapper = new(ElementCommandMapper)
+    {
+        [nameof(IWindow.RequestDisplayDensity)] = MapRequestDisplayDensity,
+    };
+
+    private static void MapRequestDisplayDensity(SingleViewWindowHandler handler, IWindow window, object? arg3)
+    {
+        if (arg3 is DisplayDensityRequest request)
+        {
+            var toplevel = handler.PlatformView.GetVisualRoot() as Avalonia.Controls.TopLevel;
+            request.SetResult((float)(toplevel?.RenderScaling ?? 1.0));
+        }
+    }
+
     public SingleViewWindowHandler()
-        : base(mapper)
+        : base(mapper, CommandMapper)
     {
     }
 
