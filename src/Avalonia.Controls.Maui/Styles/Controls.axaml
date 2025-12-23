@@ -12,6 +12,7 @@
                 <MergeResourceInclude Source="../Controls/SearchBar/MauiSearchBar.axaml" />
                 <MergeResourceInclude Source="../Controls/Stepper/Stepper.axaml" />
                 <MergeResourceInclude Source="../Platform/MauiIndicatorView.axaml" />
+                <MergeResourceInclude Source="TimePickerResources.axaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>
