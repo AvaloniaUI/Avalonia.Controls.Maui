@@ -11,11 +11,11 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// Window handler for single-view application lifetimes (browser, mobile, etc.)
 /// This handler creates a ContentControl instead of a Window to avoid windowing platform dependencies.
 /// </summary>
-public partial class SingleViewWindowHandler : ElementHandler<IWindow, object>
+public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.Controls.ContentControl>
 {
     static readonly AlertManager s_alertManager = new();
 
-    static IPropertyMapper<IWindow, WindowHandler> mapper = new PropertyMapper<IWindow, WindowHandler>(ElementHandler.ElementMapper)
+    static IPropertyMapper<IWindow, SingleViewWindowHandler> mapper = new PropertyMapper<IWindow, SingleViewWindowHandler>(ElementHandler.ElementMapper)
     {
         [nameof(IWindow.Title)] = mapTitle,
         [nameof(IWindow.Content)] = mapContent,
@@ -27,12 +27,12 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, object>
     {
     }
 
-    protected override object CreatePlatformElement()
+    protected override Avalonia.Controls.ContentControl CreatePlatformElement()
     {
         return new MauiAvaloniaContent();
     }
 
-    protected override void ConnectHandler(object platformView)
+    protected override void ConnectHandler(Avalonia.Controls.ContentControl platformView)
     {
         base.ConnectHandler(platformView);
 
@@ -44,7 +44,7 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, object>
         }
     }
 
-    protected override void DisconnectHandler(object platformView)
+    protected override void DisconnectHandler(Avalonia.Controls.ContentControl platformView)
     {
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
@@ -66,20 +66,20 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, object>
         // Modal support would need to be implemented differently for single-view platforms
     }
 
-    static void mapTitle(WindowHandler handler, IWindow window)
+    static void mapTitle(SingleViewWindowHandler handler, IWindow window)
     {
         // Title mapping is not relevant for single-view platforms
         // In browser, this could potentially update the document title
     }
 
-    static void mapContent(WindowHandler handler, IWindow window)
+    static void mapContent(SingleViewWindowHandler handler, IWindow window)
     {
         var avContent = GetMauiContent(handler);
         var content = window.Content?.ToPlatform(handler.MauiContext!);
         avContent.SetMainContent(content);
     }
 
-    static MauiAvaloniaContent GetMauiContent(WindowHandler handler)
+    static MauiAvaloniaContent GetMauiContent(SingleViewWindowHandler handler)
     {
         _ = handler.MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
         return (MauiAvaloniaContent)handler.PlatformView;

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class WindowHandler : ElementHandler<IWindow, object>
+public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.Window>
 {
     static readonly AlertManager s_alertManager = new();
 
@@ -33,12 +33,12 @@ public partial class WindowHandler : ElementHandler<IWindow, object>
     {
     }
 
-    protected override object CreatePlatformElement()
+    protected override Avalonia.Controls.Window CreatePlatformElement()
     {
         return new MauiAvaloniaWindow();
     }
 
-    protected override void ConnectHandler(object platformView)
+    protected override void ConnectHandler(Avalonia.Controls.Window platformView)
     {
         base.ConnectHandler(platformView);
 
@@ -58,7 +58,7 @@ public partial class WindowHandler : ElementHandler<IWindow, object>
         }
     }
 
-    protected override void DisconnectHandler(object platformView)
+    protected override void DisconnectHandler(Avalonia.Controls.Window platformView)
     {
         var avWindow = (Window)platformView;
 
