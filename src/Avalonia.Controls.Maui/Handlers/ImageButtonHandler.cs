@@ -211,7 +211,7 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         {
         }
 
-#if !IOS && !MACCATALYST && !ANDROID
+#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
         public override void SetImageSource(object? platformImage)
         {
             if (Handler?.PlatformView is PlatformView imageButton)

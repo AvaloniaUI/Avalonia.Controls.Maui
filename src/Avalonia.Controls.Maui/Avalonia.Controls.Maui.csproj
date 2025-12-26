@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DotNetTfm);$(DotNetTfm)-ios;$(DotNetTfm)-maccatalyst;$(DotNetTfm)-android</TargetFrameworks>
+    <TargetFrameworks>$(DotNetTfm);$(DotNetTfm)-ios;$(DotNetTfm)-maccatalyst;$(DotNetTfm)-android;$(DotNetTfm)-windows10.0.19041.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
     <IsAotCompatible>true</IsAotCompatible>
@@ -11,10 +11,12 @@
     <PackageDescription>Avalonia.Controls.Maui are the handlers and renderers for .NET MAUI apps, replacing their default implementations with Avalonia-based ones.</PackageDescription>
     <SignAssembly>true</SignAssembly>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <!-- Platform-specific settings -->
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
   </PropertyGroup>
     
   <ItemGroup>
@@ -33,14 +35,22 @@
     <!-- Exclude platform-specific files from non-platform builds -->
     <Compile Remove="**/*.iOS.cs" />
     <Compile Remove="**/*.Android.cs" />
+    <Compile Remove="**/*.Windows.cs" />
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
     <Compile Remove="**/*.Android.cs" />
+    <Compile Remove="**/*.Windows.cs" />
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <Compile Remove="**/*.iOS.cs" />
+    <Compile Remove="**/*.Windows.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <Compile Remove="**/*.iOS.cs" />
+    <Compile Remove="**/*.Android.cs" />
   </ItemGroup>
 
 </Project>
