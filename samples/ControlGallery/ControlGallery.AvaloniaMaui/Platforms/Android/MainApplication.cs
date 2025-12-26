@@ -1,15 +1,19 @@
 ﻿using Android.App;
 using Android.Runtime;
+using Avalonia;
+using Avalonia.Android;
 
 namespace ControlGallery.AvaloniaMaui;
 
 [Application]
-public class MainApplication : MauiApplication
+public class Application : AvaloniaAndroidApplication<App>
 {
-	public MainApplication(IntPtr handle, JniHandleOwnership ownership)
-		: base(handle, ownership)
+	protected Application(nint javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
 	{
 	}
 
-	protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
+    {
+        return base.CustomizeAppBuilder(builder);
+    }
 }
