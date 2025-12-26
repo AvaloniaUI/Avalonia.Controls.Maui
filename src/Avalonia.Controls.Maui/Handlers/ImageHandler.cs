@@ -412,6 +412,8 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     partial class ImageImageSourcePartSetter : ImageSourcePartSetter<ImageHandler>
     {
         public ImageImageSourcePartSetter(ImageHandler handler) : base(handler) { }
+#if !IOS && !MACCATALYST && !ANDROID
         public override void SetImageSource(object? platformImage) { /* Handled by manual loaders */ }
+#endif
     }
 }

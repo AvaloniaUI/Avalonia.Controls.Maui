@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Avalonia.Controls.Maui;
 
-public class FontManager : IFontManager
+public partial class FontManager : IFontManager
 {
     private readonly ConcurrentDictionary<string, global::Avalonia.Media.FontFamily> _fontFamilies = new();
     private readonly IFontRegistrar _fontRegistrar;

@@ -1,4 +1,5 @@
 using Avalonia.Controls.Maui.Controls;
+using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui.Extensions;
@@ -88,7 +89,7 @@ public static class SearchBarExtensions
         if (font.IsDefault)
             return;
 
-        platformView.FontSize = fontManager.GetFontSize(font);
+        platformView.FontSize = fontManager.GetFontSizeAsDouble(font);
         platformView.FontFamily = fontManager.GetFontFamily(font);
         platformView.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
         platformView.FontWeight = FontManager.ToAvaloniaFontWeight(font.Weight);

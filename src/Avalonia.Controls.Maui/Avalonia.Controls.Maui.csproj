@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>$(DotNetTfm)</TargetFramework>
+    <TargetFrameworks>$(DotNetTfm);$(DotNetTfm)-ios;$(DotNetTfm)-maccatalyst;$(DotNetTfm)-android</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
     <IsAotCompatible>true</IsAotCompatible>
@@ -11,6 +11,10 @@
     <PackageDescription>Avalonia.Controls.Maui are the handlers and renderers for .NET MAUI apps, replacing their default implementations with Avalonia-based ones.</PackageDescription>
     <SignAssembly>true</SignAssembly>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Platform-specific settings -->
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
   </PropertyGroup>
     
   <ItemGroup>
@@ -22,6 +26,21 @@
   <ItemGroup>
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="build/$(TargetFramework)/Avalonia.Controls.Maui.targets" />
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="buildTransitive/$(TargetFramework)/Avalonia.Controls.Maui.targets" />
+  </ItemGroup>
+
+  <!-- Platform-specific file includes -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == ''">
+    <!-- Exclude platform-specific files from non-platform builds -->
+    <Compile Remove="**/*.iOS.cs" />
+    <Compile Remove="**/*.Android.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <Compile Remove="**/*.Android.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <Compile Remove="**/*.iOS.cs" />
   </ItemGroup>
 
 </Project>

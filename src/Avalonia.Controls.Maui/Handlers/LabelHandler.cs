@@ -388,7 +388,7 @@ public static class LabelTextBlockExtensions
         var font = span.ToFont();
         if (!font.IsDefault)
         {
-            run.FontSize = fontManager.GetFontSize(font);
+            run.FontSize = fontManager.GetFontSizeAsDouble(font);
             run.FontFamily = fontManager.GetFontFamily(font);
             run.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
             run.FontWeight = FontManager.ToAvaloniaFontWeight(font.Weight);

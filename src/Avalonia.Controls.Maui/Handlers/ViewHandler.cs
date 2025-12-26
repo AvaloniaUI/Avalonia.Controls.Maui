@@ -563,7 +563,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
     /// <summary>
-    /// Maps the abstract <see cref="IView.TranslationX"/> property to the platform-specific implementations.
+    /// Maps the abstract TranslationX property to the platform-specific implementations.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
@@ -573,7 +573,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
     /// <summary>
-    /// Maps the abstract <see cref="IView.TranslationY"/> property to the platform-specific implementations.
+    /// Maps the abstract TranslationY property to the platform-specific implementations.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
@@ -583,7 +583,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
     /// <summary>
-    /// Maps the abstract <see cref="IView.Scale"/> property to the platform-specific implementations.
+    /// Maps the abstract Scale property to the platform-specific implementations.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
@@ -593,7 +593,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
     /// <summary>
-    /// Maps the abstract <see cref="IView.ScaleX"/> property to the platform-specific implementations.
+    /// Maps the abstract ScaleX property to the platform-specific implementations.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
@@ -603,7 +603,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
     /// <summary>
-    /// Maps the abstract <see cref="IView.ScaleY"/> property to the platform-specific implementations.
+    /// Maps the abstract ScaleY property to the platform-specific implementations.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
@@ -613,7 +613,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
     /// <summary>
-    /// Maps the abstract <see cref="IView.Rotation"/> property to the platform-specific implementations.
+    /// Maps the abstract Rotation property to the platform-specific implementations.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
@@ -623,7 +623,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
     /// <summary>
-    /// Maps the abstract <see cref="IView.RotationX"/> property to the platform-specific implementations.
+    /// Maps the abstract RotationX property to the platform-specific implementations.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
@@ -633,7 +633,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
     /// <summary>
-    /// Maps the abstract <see cref="IView.RotationY"/> property to the platform-specific implementations.
+    /// Maps the abstract RotationY property to the platform-specific implementations.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
@@ -643,7 +643,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
     /// <summary>
-    /// Maps the abstract <see cref="IView.AnchorX"/> property to the platform-specific implementations.
+    /// Maps the abstract AnchorX property to the platform-specific implementations.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
@@ -653,7 +653,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
     /// <summary>
-    /// Maps the abstract <see cref="IView.AnchorY"/> property to the platform-specific implementations.
+    /// Maps the abstract AnchorY property to the platform-specific implementations.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>

@@ -65,4 +65,6 @@
 	  <ProjectReference Include="../ControlGallery/ControlGallery.csproj" />
 	</ItemGroup>
 
+	<Import Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.targets" />
+
 </Project>

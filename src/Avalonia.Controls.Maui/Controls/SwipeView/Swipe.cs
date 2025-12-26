@@ -804,6 +804,8 @@ public class Swipe : Grid
     }
 
     /// <summary>
+    /// Sets the swipe state with optional animation.
+    /// </summary>
     internal void SetSwipeState(SwipeState targetState, bool animated = true)
     {
         var requested = targetState;

@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public abstract class MauiView : Panel, ICrossPlatformLayoutBacking, IVisualTreeElementProvidable
+public abstract partial class MauiView : Panel, ICrossPlatformLayoutBacking, IVisualTreeElementProvidable
 {
     bool _invalidateParentWhenMovedToWindow;
     double _lastMeasureHeight = double.NaN;
@@ -103,6 +103,27 @@ public abstract class MauiView : Panel, ICrossPlatformLayoutBacking, IVisualTree
 
     public IVisualTreeElement? GetElement()
     {
+#if IOS || MACCATALYST || ANDROID
+        // On platform builds, we can't use IsThisMyPlatformView because it expects native views.
+        // Instead, we check if the handler's platform view matches this MauiView.
+        if (View is IVisualTreeElement viewElement)
+        {
+            if (IsAvaloniaViewMatch(viewElement))
+            {
+                return viewElement;
+            }
+        }
+
+        if (CrossPlatformLayout is IVisualTreeElement layoutElement)
+        {
+            if (IsAvaloniaViewMatch(layoutElement))
+            {
+                return layoutElement;
+            }
+        }
+
+        return null;
+#else
         if (View is IVisualTreeElement viewElement &&
             viewElement.IsThisMyPlatformView(this))
         {
@@ -116,7 +137,23 @@ public abstract class MauiView : Panel, ICrossPlatformLayoutBacking, IVisualTree
         }
 
         return null;
+#endif
     }
+
+#if IOS || MACCATALYST || ANDROID
+    /// <summary>
+    /// Checks if this MauiView is the platform view for the given visual tree element.
+    /// </summary>
+    private bool IsAvaloniaViewMatch(IVisualTreeElement element)
+    {
+        // Check if the element has a handler with this as the platform view
+        if (element is IView view && view.Handler?.PlatformView == this)
+        {
+            return true;
+        }
+        return false;
+    }
+#endif
 
     public void InvalidateAncestorsMeasuresWhenMovedToWindow()
     {

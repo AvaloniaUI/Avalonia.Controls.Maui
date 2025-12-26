@@ -634,7 +634,7 @@ public static class ViewExtensions
     /// <param name="provider">The image source service provider.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <remarks>Implementation pending - image background logic needs to be added.</remarks>
-    [NotImplemented("Pending to implement image background logic.")]
+    [Avalonia.Controls.Maui.Platform.NotImplemented("Pending to implement image background logic.")]
     public static Task UpdateBackgroundImageSourceAsync(this PlatformView control, IImageSource? imageSource, IImageSourceServiceProvider provider)
     {
         // TODO: Implement image background logic
@@ -647,7 +647,7 @@ public static class ViewExtensions
     /// <param name="control">The platform view to update.</param>
     /// <param name="view">The .NET MAUI view containing border properties.</param>
     /// <remarks>Implementation pending - border logic needs to be added.</remarks>
-    [NotImplemented("Type or member is obsolete.")]
+    [Avalonia.Controls.Maui.Platform.NotImplemented("Type or member is obsolete.")]
     public static void UpdateBorder(this PlatformView control, IView view)
     {
         // Type or member is obsolete.

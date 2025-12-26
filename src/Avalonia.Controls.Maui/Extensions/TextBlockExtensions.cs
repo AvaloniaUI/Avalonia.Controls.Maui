@@ -28,7 +28,7 @@ public static class TextBlockExtensions
 
         // Cast to our FontManager implementation to access Avalonia-specific methods
         // Set font size using FontManager's size resolution logic
-        textBlock.FontSize = fontManager.GetFontSize(font);
+        textBlock.FontSize = fontManager.GetFontSizeAsDouble(font);
 
         // Set font family using FontManager (handles custom fonts via IFontRegistrar)
         textBlock.FontFamily = fontManager.GetFontFamily(font);
