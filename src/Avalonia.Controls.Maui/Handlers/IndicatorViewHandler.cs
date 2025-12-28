@@ -9,10 +9,10 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI IndicatorView to Avalonia MauiIndicatorView mapping
 /// </summary>
-public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, PlatformView>, IIndicatorViewHandler
+public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, PlatformView>
 {
-    public static IPropertyMapper<IIndicatorView, IIndicatorViewHandler> Mapper =
-        new PropertyMapper<IIndicatorView, IIndicatorViewHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IIndicatorView, IndicatorViewHandler> Mapper =
+        new PropertyMapper<IIndicatorView, IndicatorViewHandler>(ViewHandler.ViewMapper)
         {
             [nameof(IIndicatorView.Count)] = MapCount,
             [nameof(IIndicatorView.Position)] = MapPosition,
@@ -24,7 +24,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
             [nameof(IIndicatorView.IndicatorsShape)] = MapIndicatorShape,
         };
 
-    public static CommandMapper<IIndicatorView, IIndicatorViewHandler> CommandMapper =
+    public static CommandMapper<IIndicatorView, IndicatorViewHandler> CommandMapper =
         new(ViewCommandMapper)
         {
         };
@@ -48,7 +48,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         return new PlatformView();
     }
 
-    public static void MapCount(IIndicatorViewHandler handler, IIndicatorView indicator)
+    public static void MapCount(IndicatorViewHandler handler, IIndicatorView indicator)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -56,7 +56,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         platformView.Count = indicator.Count;
     }
 
-    public static void MapPosition(IIndicatorViewHandler handler, IIndicatorView indicator)
+    public static void MapPosition(IndicatorViewHandler handler, IIndicatorView indicator)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -64,7 +64,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         platformView.Position = indicator.Position;
     }
 
-    public static void MapHideSingle(IIndicatorViewHandler handler, IIndicatorView indicator)
+    public static void MapHideSingle(IndicatorViewHandler handler, IIndicatorView indicator)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -72,7 +72,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         platformView.HideSingle = indicator.HideSingle;
     }
 
-    public static void MapMaximumVisible(IIndicatorViewHandler handler, IIndicatorView indicator)
+    public static void MapMaximumVisible(IndicatorViewHandler handler, IIndicatorView indicator)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -80,7 +80,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         platformView.MaximumVisible = indicator.MaximumVisible;
     }
 
-    public static void MapIndicatorSize(IIndicatorViewHandler handler, IIndicatorView indicator)
+    public static void MapIndicatorSize(IndicatorViewHandler handler, IIndicatorView indicator)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -88,7 +88,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         platformView.IndicatorSize = indicator.IndicatorSize;
     }
 
-    public static void MapIndicatorColor(IIndicatorViewHandler handler, IIndicatorView indicator)
+    public static void MapIndicatorColor(IndicatorViewHandler handler, IIndicatorView indicator)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -109,7 +109,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         }
     }
 
-    public static void MapSelectedIndicatorColor(IIndicatorViewHandler handler, IIndicatorView indicator)
+    public static void MapSelectedIndicatorColor(IndicatorViewHandler handler, IIndicatorView indicator)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -130,7 +130,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         }
     }
 
-    public static void MapIndicatorShape(IIndicatorViewHandler handler, IIndicatorView indicator)
+    public static void MapIndicatorShape(IndicatorViewHandler handler, IIndicatorView indicator)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -139,8 +139,4 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         platformView.IsCircleShape = indicator.IndicatorsShape is Microsoft.Maui.Graphics.IShape shape &&
                                       shape.GetType().Name.Contains("Ellipse");
     }
-
-    IIndicatorView IIndicatorViewHandler.VirtualView => VirtualView;
-
-    object IIndicatorViewHandler.PlatformView => PlatformView;
 }

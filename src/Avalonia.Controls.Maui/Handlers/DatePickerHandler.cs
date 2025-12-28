@@ -5,9 +5,9 @@ using PlatformView = Avalonia.Controls.DatePicker;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePickerHandler
+public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>
 {
-    public static IPropertyMapper<IDatePicker, IDatePickerHandler> Mapper = new PropertyMapper<IDatePicker, IDatePickerHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IDatePicker, DatePickerHandler> Mapper = new PropertyMapper<IDatePicker, DatePickerHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IDatePicker.CharacterSpacing)] = MapCharacterSpacing,
         [nameof(IDatePicker.Date)] = MapDate,
@@ -18,7 +18,7 @@ public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePi
         [nameof(IDatePicker.TextColor)] = MapTextColor,
     };
 
-    public static CommandMapper<IPicker, IDatePickerHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IPicker, DatePickerHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
@@ -36,10 +36,6 @@ public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePi
     {
     }
 
-    IDatePicker IDatePickerHandler.VirtualView => VirtualView;
-
-    object IDatePickerHandler.PlatformView => PlatformView;
-
     protected override PlatformView CreatePlatformView() => new PlatformView();
 
     public override bool NeedsContainer => false;
@@ -56,7 +52,7 @@ public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePi
         base.DisconnectHandler(platformView);
     }
 
-    public static void MapDate(IDatePickerHandler handler, IDatePicker datePicker)
+    public static void MapDate(DatePickerHandler handler, IDatePicker datePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -64,7 +60,7 @@ public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePi
         platformView.UpdateDate(datePicker);
     }
 
-    public static void MapMinimumDate(IDatePickerHandler handler, IDatePicker datePicker)
+    public static void MapMinimumDate(DatePickerHandler handler, IDatePicker datePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -72,7 +68,7 @@ public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePi
         platformView.UpdateMinimumDate(datePicker);
     }
 
-    public static void MapMaximumDate(IDatePickerHandler handler, IDatePicker datePicker)
+    public static void MapMaximumDate(DatePickerHandler handler, IDatePicker datePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -80,7 +76,7 @@ public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePi
         platformView.UpdateMaximumDate(datePicker);
     }
 
-    public static void MapFormat(IDatePickerHandler handler, IDatePicker datePicker)
+    public static void MapFormat(DatePickerHandler handler, IDatePicker datePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -88,7 +84,7 @@ public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePi
         platformView.UpdateFormat(datePicker);
     }
 
-    public static void MapCharacterSpacing(IDatePickerHandler handler, IDatePicker datePicker)
+    public static void MapCharacterSpacing(DatePickerHandler handler, IDatePicker datePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -96,7 +92,7 @@ public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePi
         platformView.UpdateCharacterSpacing(datePicker);
     }
 
-    public static void MapFont(IDatePickerHandler handler, IDatePicker datePicker)
+    public static void MapFont(DatePickerHandler handler, IDatePicker datePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -105,7 +101,7 @@ public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>, IDatePi
         platformView.UpdateFont(datePicker, fontManager);
     }
 
-    public static void MapTextColor(IDatePickerHandler handler, IDatePicker datePicker)
+    public static void MapTextColor(DatePickerHandler handler, IDatePicker datePicker)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;

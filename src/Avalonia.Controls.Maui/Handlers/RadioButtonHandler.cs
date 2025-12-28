@@ -5,9 +5,9 @@ using PlatformView = Avalonia.Controls.Maui.MauiRadioButton;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadioButtonHandler
+public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>
 {
-    public static IPropertyMapper<IRadioButton, IRadioButtonHandler> Mapper = new PropertyMapper<IRadioButton, IRadioButtonHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IRadioButton, RadioButtonHandler> Mapper = new PropertyMapper<IRadioButton, RadioButtonHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IRadioButton.IsChecked)] = MapIsChecked,
         [nameof(ITextStyle.CharacterSpacing)] = MapCharacterSpacing,
@@ -23,7 +23,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         ["Value"] = MapValue,
     };
 
-    public static CommandMapper<IRadioButton, IRadioButtonHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IRadioButton, RadioButtonHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
@@ -40,10 +40,6 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
-
-    IRadioButton IRadioButtonHandler.VirtualView => VirtualView;
-
-    Object IRadioButtonHandler.PlatformView => PlatformView;
 
     protected override PlatformView CreatePlatformView()
     {
@@ -64,7 +60,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         base.DisconnectHandler(platformView);
     }
 
-    public static void MapIsChecked(IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void MapIsChecked(RadioButtonHandler handler, IRadioButton radioButton)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
@@ -72,15 +68,15 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         ((PlatformView)handler.PlatformView).UpdateIsChecked(radioButton);
     }
 
-    public static void MapContent(IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void MapContent(RadioButtonHandler handler, IRadioButton radioButton)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
 
-        ((PlatformView)handler.PlatformView).UpdateContent(handler, radioButton);
+        RadioButtonExtensions.UpdateContent((PlatformView)handler.PlatformView, handler, radioButton);
     }
 
-    public static void MapStrokeColor(IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void MapStrokeColor(RadioButtonHandler handler, IRadioButton radioButton)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
@@ -88,7 +84,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         ((PlatformView)handler.PlatformView).UpdateStrokeColor(radioButton);
     }
 
-    public static void MapStrokeThickness(IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void MapStrokeThickness(RadioButtonHandler handler, IRadioButton radioButton)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
@@ -96,7 +92,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         ((PlatformView)handler.PlatformView).UpdateStrokeThickness(radioButton);
     }
 
-    public static void MapCornerRadius(IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void MapCornerRadius(RadioButtonHandler handler, IRadioButton radioButton)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
@@ -104,7 +100,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         ((PlatformView)handler.PlatformView).UpdateCornerRadius(radioButton);
     }
 
-    public static void MapCharacterSpacing(IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void MapCharacterSpacing(RadioButtonHandler handler, IRadioButton radioButton)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
@@ -112,7 +108,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         ((PlatformView)handler.PlatformView).UpdateCharacterSpacing(radioButton);
     }
 
-    public static void MapFont(IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void MapFont(RadioButtonHandler handler, IRadioButton radioButton)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
@@ -121,7 +117,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         ((PlatformView)handler.PlatformView).UpdateFont(radioButton, fontManager);
     }
 
-    public static void MapTextColor(IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void MapTextColor(RadioButtonHandler handler, IRadioButton radioButton)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
@@ -129,7 +125,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         ((PlatformView)handler.PlatformView).UpdateTextColor(radioButton);
     }
 
-    public static void MapGroupName(IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void MapGroupName(RadioButtonHandler handler, IRadioButton radioButton)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;
@@ -137,7 +133,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>, IRadi
         ((PlatformView)handler.PlatformView).UpdateGroupName(radioButton);
     }
 
-    public static void MapValue(IRadioButtonHandler handler, IRadioButton radioButton)
+    public static void MapValue(RadioButtonHandler handler, IRadioButton radioButton)
     {
         if (handler.PlatformView is null || handler.VirtualView is null)
             return;

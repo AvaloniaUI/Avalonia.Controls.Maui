@@ -12,17 +12,17 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI FlyoutView to Avalonia SplitView mapping
 /// </summary>
-public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>, IFlyoutViewHandler
+public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
 {
     // Like IViewHandler.ContainerView, those properties should be set with priority because other mappers depend on them.
-    private static readonly IPropertyMapper<IFlyoutView, IFlyoutViewHandler> FlyoutLayoutMapper = new PropertyMapper<IFlyoutView, IFlyoutViewHandler>()
+    private static readonly IPropertyMapper<IFlyoutView, FlyoutViewHandler> FlyoutLayoutMapper = new PropertyMapper<IFlyoutView, FlyoutViewHandler>()
     {
         [nameof(IFlyoutView.Flyout)] = MapFlyout,
         [nameof(IFlyoutView.Detail)] = MapDetail,
     };
 
-    public static IPropertyMapper<IFlyoutView, IFlyoutViewHandler> Mapper =
-        new PropertyMapper<IFlyoutView, IFlyoutViewHandler>(ViewHandler.ViewMapper, FlyoutLayoutMapper)
+    public static IPropertyMapper<IFlyoutView, FlyoutViewHandler> Mapper =
+        new PropertyMapper<IFlyoutView, FlyoutViewHandler>(ViewHandler.ViewMapper, FlyoutLayoutMapper)
         {
             [nameof(IFlyoutView.IsPresented)] = MapIsPresented,
             [nameof(IFlyoutView.FlyoutBehavior)] = MapFlyoutBehavior,
@@ -30,7 +30,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>,
             [nameof(IFlyoutView.IsGestureEnabled)] = MapIsGestureEnabled,
         };
 
-    public static CommandMapper<IFlyoutView, IFlyoutViewHandler> CommandMapper =
+    public static CommandMapper<IFlyoutView, FlyoutViewHandler> CommandMapper =
         new(ViewCommandMapper)
         {
         };
@@ -86,7 +86,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>,
         }
     }
 
-    public static void MapFlyout(IFlyoutViewHandler handler, IFlyoutView flyoutView)
+    public static void MapFlyout(FlyoutViewHandler handler, IFlyoutView flyoutView)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -105,7 +105,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>,
         }
     }
 
-    public static void MapDetail(IFlyoutViewHandler handler, IFlyoutView flyoutView)
+    public static void MapDetail(FlyoutViewHandler handler, IFlyoutView flyoutView)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -124,7 +124,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>,
         }
     }
 
-    public static void MapIsPresented(IFlyoutViewHandler handler, IFlyoutView flyoutView)
+    public static void MapIsPresented(FlyoutViewHandler handler, IFlyoutView flyoutView)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -132,7 +132,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>,
         platformView.IsFlyoutOpen = flyoutView.IsPresented;
     }
 
-    public static void MapFlyoutBehavior(IFlyoutViewHandler handler, IFlyoutView flyoutView)
+    public static void MapFlyoutBehavior(FlyoutViewHandler handler, IFlyoutView flyoutView)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -140,7 +140,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>,
         platformView.FlyoutBehavior = (Platform.FlyoutBehavior)(int)flyoutView.FlyoutBehavior;
     }
 
-    public static void MapFlyoutWidth(IFlyoutViewHandler handler, IFlyoutView flyoutView)
+    public static void MapFlyoutWidth(FlyoutViewHandler handler, IFlyoutView flyoutView)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -156,7 +156,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>,
         }
     }
 
-    public static void MapIsGestureEnabled(IFlyoutViewHandler handler, IFlyoutView flyoutView)
+    public static void MapIsGestureEnabled(FlyoutViewHandler handler, IFlyoutView flyoutView)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -164,14 +164,10 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>,
         platformView.IsGestureEnabled = flyoutView.IsGestureEnabled;
     }
 
-    public static void MapToolbar(IFlyoutViewHandler handler, IFlyoutView flyoutView)
+    public static void MapToolbar(FlyoutViewHandler handler, IFlyoutView flyoutView)
     {
         // Toolbar support would require wrapping the detail content in a DockPanel
         // This is not currently implemented with the custom FlyoutContainer
         // TODO: Add toolbar support by wrapping detail content when toolbar is present
     }
-
-    IFlyoutView IFlyoutViewHandler.VirtualView => VirtualView;
-
-    object IFlyoutViewHandler.PlatformView => PlatformView;
 }

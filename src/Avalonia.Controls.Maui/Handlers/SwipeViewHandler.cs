@@ -8,10 +8,10 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for .NET MAUI SwipeView to Avalonia.Labs Swipe mapping
 /// </summary>
-public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, ISwipeViewHandler
+public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>
 {
-    public static IPropertyMapper<ISwipeView, ISwipeViewHandler> Mapper =
-        new PropertyMapper<ISwipeView, ISwipeViewHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<ISwipeView, SwipeViewHandler> Mapper =
+        new PropertyMapper<ISwipeView, SwipeViewHandler>(ViewHandler.ViewMapper)
         {
             [nameof(ISwipeView.Background)] = MapBackground,
             [nameof(ISwipeView.Content)] = MapContent,
@@ -22,7 +22,7 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
             [nameof(ISwipeView.Threshold)] = MapThreshold,
         };
 
-    public static CommandMapper<ISwipeView, ISwipeViewHandler> CommandMapper =
+    public static CommandMapper<ISwipeView, SwipeViewHandler> CommandMapper =
         new(ViewCommandMapper)
         {
             [nameof(ISwipeView.RequestOpen)] = MapRequestOpen,
@@ -66,49 +66,49 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
         base.DisconnectHandler(platformView);
     }
     
-    public static void MapBackground(ISwipeViewHandler handler, ISwipeView swipeView)
+    public static void MapBackground(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateBackground(swipeView);
     }
 
-    public static void MapContent(ISwipeViewHandler handler, ISwipeView swipeView)
+    public static void MapContent(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateContent(swipeView, handler.MauiContext);
     }
 
-    public static void MapLeftItems(ISwipeViewHandler handler, ISwipeView swipeView)
+    public static void MapLeftItems(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateLeftItems(swipeView, handler.MauiContext);
     }
 
-    public static void MapRightItems(ISwipeViewHandler handler, ISwipeView swipeView)
+    public static void MapRightItems(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateRightItems(swipeView, handler.MauiContext);
     }
 
-    public static void MapTopItems(ISwipeViewHandler handler, ISwipeView swipeView)
+    public static void MapTopItems(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateTopItems(swipeView, handler.MauiContext);
     }
 
-    public static void MapBottomItems(ISwipeViewHandler handler, ISwipeView swipeView)
+    public static void MapBottomItems(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateBottomItems(swipeView, handler.MauiContext);
     }
 
-    public static void MapThreshold(ISwipeViewHandler handler, ISwipeView swipeView)
+    public static void MapThreshold(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateThreshold(swipeView);
     }
 
-    public static void MapRequestOpen(ISwipeViewHandler handler, ISwipeView swipeView, object? args)
+    public static void MapRequestOpen(SwipeViewHandler handler, ISwipeView swipeView, object? args)
     {
         if (handler.PlatformView is PlatformView platformView && args is SwipeViewOpenRequest request)
         {
@@ -125,7 +125,7 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
         }
     }
 
-    public static void MapRequestClose(ISwipeViewHandler handler, ISwipeView swipeView, object? args)
+    public static void MapRequestClose(SwipeViewHandler handler, ISwipeView swipeView, object? args)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.SetSwipeState(SwipeState.Hidden, animated: true);
@@ -179,7 +179,4 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>, I
             _ => null
         };
     }
-
-    ISwipeView ISwipeViewHandler.VirtualView => VirtualView;
-    object ISwipeViewHandler.PlatformView => PlatformView;
 }
