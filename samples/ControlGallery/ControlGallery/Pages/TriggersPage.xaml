@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ControlGallery.Triggers"
+             x:Class="ControlGallery.Pages.TriggersPage"
+             Title="Triggers">
+    <ContentPage.Resources>
+        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+        <Color x:Key="SectionBorderDark">#444444</Color>
+        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+    </ContentPage.Resources>
+    
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <Label Text="Triggers" 
+                   Style="{StaticResource Headline}" />
+
+            <!-- Property Trigger -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Property Trigger" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="The Entry background changes when you type 'Green'." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <Entry Placeholder="Type 'Green'">
+                        <Entry.Triggers>
+                            <Trigger TargetType="Entry" Property="Text" Value="Green">
+                                <Setter Property="BackgroundColor" Value="#CCFFCC" />
+                                <Setter Property="TextColor" Value="DarkGreen" />
+                            </Trigger>
+                        </Entry.Triggers>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Data Trigger -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Data Trigger" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="Button is enabled only when CheckBox is checked." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <CheckBox x:Name="EnableCheckBox" />
+                    <Label Text="Check to enable button" 
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+
+                    <Button Text="Save" IsEnabled="False" >
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding Source={x:Reference EnableCheckBox}, Path=IsChecked}" Value="True">
+                                <Setter Property="IsEnabled" Value="True" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Event Trigger -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Event Trigger" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="Clicking the button triggers a Fade animation." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <Button Text="Click to Fade">
+                        <Button.Triggers>
+                            <EventTrigger Event="Clicked">
+                                <local:FadeTriggerAction StartsFrom="1" />
+                            </EventTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Multi Trigger -->
+             <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Multi Trigger" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="Entry turns orange ONLY when CheckBox is checked AND text is '123'." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <CheckBox x:Name="MultiTriggerCheckBox" />
+                    <Label Text="Check enabling condition" 
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+
+                    <Entry Placeholder="Type '123'">
+                        <Entry.Triggers>
+                            <MultiTrigger TargetType="Entry">
+                                <MultiTrigger.Conditions>
+                                    <BindingCondition Binding="{Binding Source={x:Reference MultiTriggerCheckBox}, Path=IsChecked}" Value="True" />
+                                    <PropertyCondition Property="Text" Value="123" />
+                                </MultiTrigger.Conditions>
+                                <Setter Property="TextColor" Value="DarkOrange" />
+                                <Setter Property="BackgroundColor" Value="#FFE0B2" />
+                            </MultiTrigger>
+                        </Entry.Triggers>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
