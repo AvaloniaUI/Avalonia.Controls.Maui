@@ -11,9 +11,9 @@ using AvaloniaVerticalAlignment = Avalonia.Layout.VerticalAlignment;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class EntryHandler : ViewHandler<IEntry, AvaloniaTextBox>, IEntryHandler
+public class EntryHandler : ViewHandler<IEntry, AvaloniaTextBox>
 {
-    public static IPropertyMapper<IEntry, IEntryHandler> Mapper = new PropertyMapper<IEntry, IEntryHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IEntry, EntryHandler> Mapper = new PropertyMapper<IEntry, EntryHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IEntry.Background)] = MapBackground,
         [nameof(IEntry.CharacterSpacing)] = MapCharacterSpacing,
@@ -36,7 +36,7 @@ public class EntryHandler : ViewHandler<IEntry, AvaloniaTextBox>, IEntryHandler
         [nameof(IEntry.SelectionLength)] = MapSelectionLength
     };
 
-    public static CommandMapper<IEntry, IEntryHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IEntry, EntryHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
@@ -53,10 +53,6 @@ public class EntryHandler : ViewHandler<IEntry, AvaloniaTextBox>, IEntryHandler
         : base(mapper, commandMapper)
     {
     }
-
-    IEntry IEntryHandler.VirtualView => VirtualView;
-
-    System.Object IEntryHandler.PlatformView => PlatformView;
 
     protected override AvaloniaTextBox CreatePlatformView()
     {
@@ -85,77 +81,77 @@ public class EntryHandler : ViewHandler<IEntry, AvaloniaTextBox>, IEntryHandler
 
     public override bool NeedsContainer => false;
 
-    public static void MapBackground(IEntryHandler handler, IEntry entry)
+    public static void MapBackground(EntryHandler handler, IEntry entry)
     {
         handler.UpdateValue(nameof(IViewHandler.ContainerView));
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateBackground(entry);
     }
 
-    public static void MapText(IEntryHandler handler, IEntry entry) =>
+    public static void MapText(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateText(entry);
 
-    public static void MapTextColor(IEntryHandler handler, IEntry entry) =>
+    public static void MapTextColor(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateTextColor(entry);
 
-    public static void MapCharacterSpacing(IEntryHandler handler, IEntry entry) =>
+    public static void MapCharacterSpacing(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateCharacterSpacing(entry);
 
-    public static void MapFont(IEntryHandler handler, IEntry entry)
+    public static void MapFont(EntryHandler handler, IEntry entry)
     {
         var fontManager = handler.GetRequiredService<IFontManager>();
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateFont(entry, fontManager);
     }
 
-    public static void MapHorizontalTextAlignment(IEntryHandler handler, IEntry entry) =>
+    public static void MapHorizontalTextAlignment(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateHorizontalTextAlignment(entry);
 
-    public static void MapVerticalTextAlignment(IEntryHandler handler, IEntry entry) =>
+    public static void MapVerticalTextAlignment(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateVerticalTextAlignment(entry);
 
-    public static void MapIsPassword(IEntryHandler handler, IEntry entry) =>
+    public static void MapIsPassword(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateIsPassword(entry);
 
-    public static void MapIsReadOnly(IEntryHandler handler, IEntry entry) =>
+    public static void MapIsReadOnly(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateIsReadOnly(entry);
 
-    public static void MapIsTextPredictionEnabled(IEntryHandler handler, IEntry entry)
+    public static void MapIsTextPredictionEnabled(EntryHandler handler, IEntry entry)
     {
         // Avalonia doesn't have direct text prediction support
     }
 
-    public static void MapIsSpellCheckEnabled(IEntryHandler handler, IEntry entry)
+    public static void MapIsSpellCheckEnabled(EntryHandler handler, IEntry entry)
     {
         // Avalonia doesn't have direct spell check support
     }
 
-    public static void MapKeyboard(IEntryHandler handler, IEntry entry)
+    public static void MapKeyboard(EntryHandler handler, IEntry entry)
     {
         // Keyboard handling is platform-specific and not directly applicable to Avalonia
     }
 
-    public static void MapMaxLength(IEntryHandler handler, IEntry entry) =>
+    public static void MapMaxLength(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateMaxLength(entry);
 
-    public static void MapPlaceholder(IEntryHandler handler, IEntry entry) =>
+    public static void MapPlaceholder(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdatePlaceholder(entry);
 
-    public static void MapPlaceholderColor(IEntryHandler handler, IEntry entry)
+    public static void MapPlaceholderColor(EntryHandler handler, IEntry entry)
     {
         // Avalonia TextBox doesn't directly support placeholder color customization
     }
 
-    public static void MapReturnType(IEntryHandler handler, IEntry entry)
+    public static void MapReturnType(EntryHandler handler, IEntry entry)
     {
         // Return type is typically handled by platform-specific keyboard
     }
 
-    public static void MapClearButtonVisibility(IEntryHandler handler, IEntry entry) =>
+    public static void MapClearButtonVisibility(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateClearButtonVisibility(entry);
 
-    public static void MapCursorPosition(IEntryHandler handler, IEntry entry) =>
+    public static void MapCursorPosition(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateCursorPosition(entry);
 
-    public static void MapSelectionLength(IEntryHandler handler, IEntry entry) =>
+    public static void MapSelectionLength(EntryHandler handler, IEntry entry) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateSelectionLength(entry);
 }
 

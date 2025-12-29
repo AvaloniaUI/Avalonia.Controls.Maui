@@ -5,18 +5,18 @@ using PlatformView = Avalonia.Controls.ContextMenu;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class MenuFlyoutHandler : ElementHandler<IMenuFlyout, PlatformView>, IMenuFlyoutHandler
+public partial class MenuFlyoutHandler : ElementHandler<IMenuFlyout, PlatformView>
 {
-    public static IPropertyMapper<IMenuFlyout, IMenuFlyoutHandler> Mapper = new PropertyMapper<IMenuFlyout, IMenuFlyoutHandler>(ElementMapper)
+    public static IPropertyMapper<IMenuFlyout, MenuFlyoutHandler> Mapper = new PropertyMapper<IMenuFlyout, MenuFlyoutHandler>(ElementMapper)
     {
     };
 
-    public static CommandMapper<IMenuFlyout, IMenuFlyoutHandler> CommandMapper = new(ElementCommandMapper)
+    public static CommandMapper<IMenuFlyout, MenuFlyoutHandler> CommandMapper = new(ElementCommandMapper)
     {
-        [nameof(IMenuFlyoutHandler.Add)] = MapAdd,
-        [nameof(IMenuFlyoutHandler.Remove)] = MapRemove,
-        [nameof(IMenuFlyoutHandler.Clear)] = MapClear,
-        [nameof(IMenuFlyoutHandler.Insert)] = MapInsert,
+        [nameof(MenuFlyoutHandler.Add)] = MapAdd,
+        [nameof(MenuFlyoutHandler.Remove)] = MapRemove,
+        [nameof(MenuFlyoutHandler.Clear)] = MapClear,
+        [nameof(MenuFlyoutHandler.Insert)] = MapInsert,
     };
 
     public MenuFlyoutHandler() : this(Mapper, CommandMapper)
@@ -43,7 +43,7 @@ public partial class MenuFlyoutHandler : ElementHandler<IMenuFlyout, PlatformVie
         }
     }
 
-    public static void MapAdd(IMenuFlyoutHandler handler, IMenuFlyout menuElement, object? arg)
+    public static void MapAdd(MenuFlyoutHandler handler, IMenuFlyout menuElement, object? arg)
     {
         if (arg is ContextFlyoutItemHandlerUpdate args)
         {
@@ -51,7 +51,7 @@ public partial class MenuFlyoutHandler : ElementHandler<IMenuFlyout, PlatformVie
         }
     }
 
-    public static void MapRemove(IMenuFlyoutHandler handler, IMenuFlyout menuElement, object? arg)
+    public static void MapRemove(MenuFlyoutHandler handler, IMenuFlyout menuElement, object? arg)
     {
         if (arg is ContextFlyoutItemHandlerUpdate args)
         {
@@ -59,7 +59,7 @@ public partial class MenuFlyoutHandler : ElementHandler<IMenuFlyout, PlatformVie
         }
     }
 
-    public static void MapInsert(IMenuFlyoutHandler handler, IMenuFlyout menuElement, object? arg)
+    public static void MapInsert(MenuFlyoutHandler handler, IMenuFlyout menuElement, object? arg)
     {
         if (arg is ContextFlyoutItemHandlerUpdate args)
         {
@@ -67,7 +67,7 @@ public partial class MenuFlyoutHandler : ElementHandler<IMenuFlyout, PlatformVie
         }
     }
 
-    public static void MapClear(IMenuFlyoutHandler handler, IMenuFlyout menuElement, object? arg)
+    public static void MapClear(MenuFlyoutHandler handler, IMenuFlyout menuElement, object? arg)
     {
         handler.Clear();
     }
@@ -102,10 +102,6 @@ public partial class MenuFlyoutHandler : ElementHandler<IMenuFlyout, PlatformVie
             PlatformView.Items.Insert(index, platformView);
         }
     }
-
-    IMenuFlyout IMenuFlyoutHandler.VirtualView => VirtualView;
-
-    object IMenuFlyoutHandler.PlatformView => PlatformView;
 
     protected override void DisconnectHandler(PlatformView platformView)
     {

@@ -5,15 +5,15 @@ using PlatformView = Avalonia.Controls.Maui.ProgressRing;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, ProgressRing>, IActivityIndicatorHandler
+public partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, ProgressRing>
 {
-    public static IPropertyMapper<IActivityIndicator, IActivityIndicatorHandler> Mapper = new PropertyMapper<IActivityIndicator, IActivityIndicatorHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IActivityIndicator, ActivityIndicatorHandler> Mapper = new PropertyMapper<IActivityIndicator, ActivityIndicatorHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IActivityIndicator.Color)] = MapColor,
         [nameof(IActivityIndicator.IsRunning)] = MapIsRunning,
     };
 
-    public static CommandMapper<IActivityIndicator, IActivityIndicatorHandler> CommandMapper = new(ViewCommandMapper);
+    public static CommandMapper<IActivityIndicator, ActivityIndicatorHandler> CommandMapper = new(ViewCommandMapper);
 
     public ActivityIndicatorHandler() : base(Mapper, CommandMapper)
     {
@@ -29,10 +29,6 @@ public partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, 
     {
     }
 
-    IActivityIndicator IActivityIndicatorHandler.VirtualView => VirtualView;
-
-    object IActivityIndicatorHandler.PlatformView => PlatformView;
-
     protected override ProgressRing CreatePlatformView()
     {
         return new ProgressRing
@@ -41,7 +37,7 @@ public partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, 
         };
     }
 
-    public static void MapIsRunning(IActivityIndicatorHandler handler, IActivityIndicator activityIndicator)
+    public static void MapIsRunning(ActivityIndicatorHandler handler, IActivityIndicator activityIndicator)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -49,7 +45,7 @@ public partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, 
         }
     }
 
-    public static void MapColor(IActivityIndicatorHandler handler, IActivityIndicator activityIndicator)
+    public static void MapColor(ActivityIndicatorHandler handler, IActivityIndicator activityIndicator)
     {
         if (handler.PlatformView is PlatformView platformView)
         {

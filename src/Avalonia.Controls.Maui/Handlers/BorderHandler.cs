@@ -5,10 +5,10 @@ using PlatformView = Avalonia.Controls.Maui.MauiBorder;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHandler
+public class BorderHandler : ViewHandler<IBorderView, PlatformView>
 {
-    public static IPropertyMapper<IBorderView, IBorderHandler> Mapper =
-        new PropertyMapper<IBorderView, IBorderHandler>(ViewMapper)
+    public static IPropertyMapper<IBorderView, BorderHandler> Mapper =
+        new PropertyMapper<IBorderView, BorderHandler>(ViewMapper)
         {
             [nameof(IBorderView.Content)] = MapContent,
             [nameof(IBorderView.Background)] = MapBackground,
@@ -23,7 +23,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
             [nameof(IPadding.Padding)] = MapPadding,
         };
 
-    public static CommandMapper<IBorderView, IBorderHandler> CommandMapper =
+    public static CommandMapper<IBorderView, BorderHandler> CommandMapper =
         new(ViewCommandMapper);
 
     public BorderHandler() : base(Mapper, CommandMapper)
@@ -40,16 +40,12 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
     {
     }
 
-    IBorderView IBorderHandler.VirtualView => VirtualView;
-
-    object IBorderHandler.PlatformView => PlatformView;
-
     protected override PlatformView CreatePlatformView()
     {
         return new PlatformView();
     }
 
-    public static void MapContent(IBorderHandler handler, IBorderView border)
+    public static void MapContent(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -57,7 +53,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         platformView.UpdateContent(border, handler.MauiContext);
     }
 
-    public static void MapBackground(IBorderHandler handler, IBorderView border)
+    public static void MapBackground(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -65,7 +61,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         platformView.UpdateBackground(border);
     }
 
-    public static void MapStroke(IBorderHandler handler, IBorderView border)
+    public static void MapStroke(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -73,7 +69,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         platformView.UpdateStroke(border);
     }
 
-    public static void MapStrokeThickness(IBorderHandler handler, IBorderView border)
+    public static void MapStrokeThickness(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -81,7 +77,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         platformView.UpdateStrokeThickness(border);
     }
 
-    public static void MapStrokeShape(IBorderHandler handler, IBorderView border)
+    public static void MapStrokeShape(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -89,7 +85,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         platformView.UpdateStrokeShape(border);
     }
 
-    public static void MapStrokeDashPattern(IBorderHandler handler, IBorderView border)
+    public static void MapStrokeDashPattern(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -97,7 +93,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         platformView.UpdateStrokeDashPattern(border);
     }
 
-    public static void MapStrokeDashOffset(IBorderHandler handler, IBorderView border)
+    public static void MapStrokeDashOffset(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -105,7 +101,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         platformView.UpdateStrokeDashOffset(border);
     }
 
-    public static void MapStrokeLineCap(IBorderHandler handler, IBorderView border)
+    public static void MapStrokeLineCap(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -113,7 +109,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         platformView.UpdateStrokeLineCap(border);
     }
 
-    public static void MapStrokeLineJoin(IBorderHandler handler, IBorderView border)
+    public static void MapStrokeLineJoin(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -121,7 +117,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         platformView.UpdateStrokeLineJoin(border);
     }
 
-    public static void MapStrokeMiterLimit(IBorderHandler handler, IBorderView border)
+    public static void MapStrokeMiterLimit(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -129,7 +125,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>, IBorderHand
         platformView.UpdateStrokeMiterLimit(border);
     }
 
-    public static void MapPadding(IBorderHandler handler, IBorderView border)
+    public static void MapPadding(BorderHandler handler, IBorderView border)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
