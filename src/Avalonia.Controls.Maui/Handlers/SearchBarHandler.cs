@@ -6,10 +6,10 @@ using PlatformView = Avalonia.Controls.Maui.Controls.MauiSearchBar;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class SearchBarHandler : ViewHandler<ISearchBar, PlatformView>, ISearchBarHandler
+public partial class SearchBarHandler : ViewHandler<ISearchBar, PlatformView>
 {
-    public static IPropertyMapper<ISearchBar, ISearchBarHandler> Mapper =
-        new PropertyMapper<ISearchBar, ISearchBarHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<ISearchBar, SearchBarHandler> Mapper =
+        new PropertyMapper<ISearchBar, SearchBarHandler>(ViewHandler.ViewMapper)
         {
             [nameof(ISearchBar.Text)] = MapText,
             [nameof(ISearchBar.Placeholder)] = MapPlaceholder,
@@ -27,7 +27,7 @@ public partial class SearchBarHandler : ViewHandler<ISearchBar, PlatformView>, I
             ["SearchIconColor"] = MapSearchIconColor,
         };
 
-    public static CommandMapper<ISearchBar, ISearchBarHandler> CommandMapper =
+    public static CommandMapper<ISearchBar, SearchBarHandler> CommandMapper =
         new(ViewCommandMapper)
         {
             [nameof(ISearchBar.Focus)] = MapFocus,
@@ -87,43 +87,43 @@ public partial class SearchBarHandler : ViewHandler<ISearchBar, PlatformView>, I
         VirtualView.SearchButtonPressed();
     }
     
-    public static void MapText(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapText(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateText(searchBar);
     }
 
-    public static void MapSearchIconColor(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapSearchIconColor(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateSearchIconColor(searchBar);
     }
 
-    public static void MapPlaceholder(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapPlaceholder(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdatePlaceholder(searchBar);
     }
 
-    public static void MapPlaceholderColor(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapPlaceholderColor(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdatePlaceholderColor(searchBar);
     }
     
-    public static void MapTextColor(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapTextColor(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateTextColor(searchBar);
     }
     
-    public static void MapCharacterSpacing(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapCharacterSpacing(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateCharacterSpacing(searchBar);
     }
 
-    public static void MapFont(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapFont(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -132,49 +132,49 @@ public partial class SearchBarHandler : ViewHandler<ISearchBar, PlatformView>, I
         }
     }
     
-    public static void MapHorizontalTextAlignment(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapHorizontalTextAlignment(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateHorizontalTextAlignment(searchBar);
     }
 
-    public static void MapVerticalTextAlignment(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapVerticalTextAlignment(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateVerticalTextAlignment(searchBar);
     }
 
-    public static void MapIsReadOnly(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapIsReadOnly(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateIsReadOnly(searchBar);
     }
 
-    public static void MapMaxLength(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapMaxLength(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateMaxLength(searchBar);
     }
 
-    public static void MapCancelButtonColor(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapCancelButtonColor(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateCancelButtonColor(searchBar);
     }
 
-    public static void MapCursorPosition(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapCursorPosition(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateCursorPosition(searchBar);
     }
 
-    public static void MapSelectionLength(ISearchBarHandler handler, ISearchBar searchBar)
+    public static void MapSelectionLength(SearchBarHandler handler, ISearchBar searchBar)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateSelectionLength(searchBar);
     }
 
-    public static void MapFocus(ISearchBarHandler handler, ISearchBar searchBar, object? args)
+    public static void MapFocus(SearchBarHandler handler, ISearchBar searchBar, object? args)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -185,8 +185,4 @@ public partial class SearchBarHandler : ViewHandler<ISearchBar, PlatformView>, I
             }
         }
     }
-
-    ISearchBar ISearchBarHandler.VirtualView => VirtualView;
-
-    object ISearchBarHandler.PlatformView => PlatformView;
 }

@@ -12,15 +12,15 @@ using PlatformView = System.Object;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Controls.Maui.Platform.ContentView>, IContentViewHandler
+public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Controls.Maui.Platform.ContentView>
 {
-    public static IPropertyMapper<IContentView, IContentViewHandler> Mapper =
-        new PropertyMapper<IContentView, IContentViewHandler>(ViewMapper)
+    public static IPropertyMapper<IContentView, ContentViewHandler> Mapper =
+        new PropertyMapper<IContentView, ContentViewHandler>(ViewMapper)
         {
             [nameof(IContentView.Content)] = MapContent,
         };
 
-    public static CommandMapper<IContentView, IContentViewHandler> CommandMapper =
+    public static CommandMapper<IContentView, ContentViewHandler> CommandMapper =
         new(ViewCommandMapper);
 
     public ContentViewHandler() : base(Mapper, CommandMapper)
@@ -38,11 +38,7 @@ public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Con
     {
     }
 
-    IContentView IContentViewHandler.VirtualView => VirtualView;
-
-    PlatformView IContentViewHandler.PlatformView => PlatformView;
-
-    public static void MapContent(IContentViewHandler handler, IContentView page)
+    public static void MapContent(ContentViewHandler handler, IContentView page)
     {
         if (handler.PlatformView is Avalonia.Controls.Maui.Platform.ContentView platformView)
         {

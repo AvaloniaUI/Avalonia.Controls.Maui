@@ -9,23 +9,23 @@ using System.Text;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
+public partial class LayoutHandler : ViewHandler<ILayout, Panel>
 {
-    public static IPropertyMapper<ILayout, ILayoutHandler> Mapper = new PropertyMapper<ILayout, ILayoutHandler>(ViewMapper)
+    public static IPropertyMapper<ILayout, LayoutHandler> Mapper = new PropertyMapper<ILayout, LayoutHandler>(ViewMapper)
     {
         [nameof(ILayout.Background)] = MapBackground,
         [nameof(ILayout.ClipsToBounds)] = MapClipsToBounds,
         [nameof(IView.InputTransparent)] = MapInputTransparent,
     };
 
-    public static CommandMapper<ILayout, ILayoutHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<ILayout, LayoutHandler> CommandMapper = new(ViewCommandMapper)
     {
-        [nameof(ILayoutHandler.Add)] = MapAdd,
-        [nameof(ILayoutHandler.Remove)] = MapRemove,
-        [nameof(ILayoutHandler.Clear)] = MapClear,
-        [nameof(ILayoutHandler.Insert)] = MapInsert,
-        [nameof(ILayoutHandler.Update)] = MapUpdate,
-        [nameof(ILayoutHandler.UpdateZIndex)] = MapUpdateZIndex,
+        [nameof(LayoutHandler.Add)] = MapAdd,
+        [nameof(LayoutHandler.Remove)] = MapRemove,
+        [nameof(LayoutHandler.Clear)] = MapClear,
+        [nameof(LayoutHandler.Insert)] = MapInsert,
+        [nameof(LayoutHandler.Update)] = MapUpdate,
+        [nameof(LayoutHandler.UpdateZIndex)] = MapUpdateZIndex,
     };
 
     public LayoutHandler() : base(Mapper, CommandMapper)
@@ -37,10 +37,6 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
     {
     }
 
-    ILayout ILayoutHandler.VirtualView => VirtualView;
-
-    System.Object ILayoutHandler.PlatformView => PlatformView;
-
     protected override Panel CreatePlatformView()
     {
         return new LayoutPanel()
@@ -50,22 +46,22 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
         };
     }
 
-    public static void MapBackground(ILayoutHandler handler, ILayout layout)
+    public static void MapBackground(LayoutHandler handler, ILayout layout)
     {
         ((LayoutHandler)handler).PlatformView?.UpdateBackground(layout);
     }
 
-    public static void MapInputTransparent(ILayoutHandler handler, ILayout layout)
+    public static void MapInputTransparent(LayoutHandler handler, ILayout layout)
     {
         // TODO: Implement InputTransparent
     }
 
-    public static void MapClipsToBounds(ILayoutHandler handler, ILayout layout)
+    public static void MapClipsToBounds(LayoutHandler handler, ILayout layout)
     {
         ((LayoutHandler)handler).PlatformView?.UpdateClipsToBounds(layout);
     }
 
-    public static void MapAdd(ILayoutHandler handler, ILayout layout, object? arg)
+    public static void MapAdd(LayoutHandler handler, ILayout layout, object? arg)
     {
         if (arg is LayoutHandlerUpdate args)
         {
@@ -73,7 +69,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
         }
     }
 
-    public static void MapRemove(ILayoutHandler handler, ILayout layout, object? arg)
+    public static void MapRemove(LayoutHandler handler, ILayout layout, object? arg)
     {
         if (arg is LayoutHandlerUpdate args)
         {
@@ -81,7 +77,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
         }
     }
 
-    public static void MapInsert(ILayoutHandler handler, ILayout layout, object? arg)
+    public static void MapInsert(LayoutHandler handler, ILayout layout, object? arg)
     {
         if (arg is LayoutHandlerUpdate args)
         {
@@ -89,12 +85,12 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
         }
     }
 
-    public static void MapClear(ILayoutHandler handler, ILayout layout, object? arg)
+    public static void MapClear(LayoutHandler handler, ILayout layout, object? arg)
     {
         handler.Clear();
     }
 
-    static void MapUpdate(ILayoutHandler handler, ILayout layout, object? arg)
+    static void MapUpdate(LayoutHandler handler, ILayout layout, object? arg)
     {
         if (arg is LayoutHandlerUpdate args)
         {
@@ -102,7 +98,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>, ILayoutHandler
         }
     }
 
-    static void MapUpdateZIndex(ILayoutHandler handler, ILayout layout, object? arg)
+    static void MapUpdateZIndex(LayoutHandler handler, ILayout layout, object? arg)
     {
         if (arg is IView view)
         {

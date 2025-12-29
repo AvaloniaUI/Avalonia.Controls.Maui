@@ -5,11 +5,11 @@ using PlatformView = System.Object;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class PickerHandler : ViewHandler<IPicker, MauiComboBox>, IPickerHandler
+public partial class PickerHandler : ViewHandler<IPicker, MauiComboBox>
 {
     bool _isUpdatingSelection;
 
-    public static IPropertyMapper<IPicker, IPickerHandler> Mapper = new PropertyMapper<IPicker, PickerHandler>(ViewMapper)
+    public static IPropertyMapper<IPicker, PickerHandler> Mapper = new PropertyMapper<IPicker, PickerHandler>(ViewMapper)
     {
         [nameof(IPicker.CharacterSpacing)] = MapCharacterSpacing,
         [nameof(IPicker.Font)] = MapFont,
@@ -105,7 +105,7 @@ public partial class PickerHandler : ViewHandler<IPicker, MauiComboBox>, IPicker
         handler.PlatformView.UpdateCharacterSpacing(handler.VirtualView);
     }
 
-    public static CommandMapper<IPicker, IPickerHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IPicker, PickerHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
@@ -122,10 +122,6 @@ public partial class PickerHandler : ViewHandler<IPicker, MauiComboBox>, IPicker
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
-
-    IPicker IPickerHandler.VirtualView => VirtualView;
-
-    PlatformView IPickerHandler.PlatformView => PlatformView;
 
     protected override MauiComboBox CreatePlatformView()
     {

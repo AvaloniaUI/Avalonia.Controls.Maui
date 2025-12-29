@@ -5,10 +5,10 @@ using PlatformView = Avalonia.Controls.CheckBox;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>, ICheckBoxHandler
+public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>
 {
-    public static IPropertyMapper<ICheckBox, ICheckBoxHandler> Mapper =
-        new PropertyMapper<ICheckBox, ICheckBoxHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<ICheckBox, CheckBoxHandler> Mapper =
+        new PropertyMapper<ICheckBox, CheckBoxHandler>(ViewHandler.ViewMapper)
         {
             [nameof(ICheckBox.Background)] = MapBackground,
             [nameof(ICheckBox.IsChecked)] = MapIsChecked,
@@ -33,10 +33,6 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>, ICheckBoxHa
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
-
-    ICheckBox ICheckBoxHandler.VirtualView => VirtualView;
-
-    System.Object ICheckBoxHandler.PlatformView => PlatformView;
 
     protected override PlatformView CreatePlatformView()
     {
@@ -65,18 +61,18 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>, ICheckBoxHa
 
     public override bool NeedsContainer => false;
 
-    public static void MapBackground(ICheckBoxHandler handler, ICheckBox checkBox)
+    public static void MapBackground(CheckBoxHandler handler, ICheckBox checkBox)
     {
         handler.UpdateValue(nameof(IViewHandler.ContainerView));
         ((PlatformView)handler.PlatformView)?.UpdateBackground(checkBox);
     }
 
-    public static void MapIsChecked(ICheckBoxHandler handler, ICheckBox checkBox) =>
+    public static void MapIsChecked(CheckBoxHandler handler, ICheckBox checkBox) =>
         ((PlatformView)handler.PlatformView)?.UpdateIsChecked(checkBox);
 
-    public static void MapForeground(ICheckBoxHandler handler, ICheckBox checkBox) =>
+    public static void MapForeground(CheckBoxHandler handler, ICheckBox checkBox) =>
         ((PlatformView)handler.PlatformView)?.UpdateForeground(checkBox);
 
-    public static void MapColor(ICheckBoxHandler handler, ICheckBox checkBox) =>
+    public static void MapColor(CheckBoxHandler handler, ICheckBox checkBox) =>
         handler.UpdateValue(nameof(ICheckBox.Foreground));
 }

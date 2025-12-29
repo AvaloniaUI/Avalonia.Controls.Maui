@@ -11,12 +11,12 @@ using PlatformView = Avalonia.Controls.Maui.MauiImageButton;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImageButtonHandler
+public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>
 {
     private CancellationTokenSource? _imageSourceCts;
     private ImageSourcePartLoader? _imageSourcePartLoader;
 
-    public static IPropertyMapper<IImageButton, IImageButtonHandler> Mapper = new PropertyMapper<IImageButton, IImageButtonHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IImageButton, ImageButtonHandler> Mapper = new PropertyMapper<IImageButton, ImageButtonHandler>(ViewHandler.ViewMapper)
     {
         // IImage properties
         [nameof(IImage.Source)] = MapImageSource,
@@ -32,7 +32,7 @@ public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImag
         [nameof(IButtonStroke.CornerRadius)] = MapCornerRadius,
     };
 
-    public static CommandMapper<IImageButton, IImageButtonHandler> CommandMapper = new(ViewCommandMapper);
+    public static CommandMapper<IImageButton, ImageButtonHandler> CommandMapper = new(ViewCommandMapper);
 
     public ImageButtonHandler()
         : base(Mapper, CommandMapper)
@@ -51,24 +51,14 @@ public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImag
 
     public virtual ImageSourcePartLoader SourceLoader =>
         _imageSourcePartLoader ??= new ImageSourcePartLoader(new ImageButtonImageSourcePartSetter(this));
-
-    IImageButton IImageButtonHandler.VirtualView => VirtualView;
-
-    IImage IImageHandler.VirtualView => VirtualView;
-
-    object IImageHandler.PlatformView =>
-        PlatformView.GetImage() ?? throw new InvalidOperationException("ImageButton did not contain an Image element.");
-
-    object IImageButtonHandler.PlatformView => PlatformView;
-
-    ImageSourcePartLoader IImageHandler.SourceLoader => SourceLoader;
+        
 
     protected override MauiImageButton CreatePlatformView()
     {
         return new MauiImageButton();
     }
 
-    public static void MapBackground(IImageButtonHandler handler, IImageButton imageButton)
+    public static void MapBackground(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -76,7 +66,7 @@ public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImag
         platformView.UpdateImageButtonBackground(handler.VirtualView);
     }
 
-    public static void MapStrokeColor(IImageButtonHandler handler, IImageButton imageButton)
+    public static void MapStrokeColor(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -84,7 +74,7 @@ public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImag
         platformView.UpdateStrokeColor(handler.VirtualView);
     }
 
-    public static void MapStrokeThickness(IImageButtonHandler handler, IImageButton imageButton)
+    public static void MapStrokeThickness(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -92,7 +82,7 @@ public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImag
         platformView.UpdateStrokeThickness(handler.VirtualView);
     }
 
-    public static void MapCornerRadius(IImageButtonHandler handler, IImageButton imageButton)
+    public static void MapCornerRadius(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -100,7 +90,7 @@ public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImag
         platformView.UpdateCornerRadius(handler.VirtualView);
     }
 
-    public static void MapPadding(IImageButtonHandler handler, IImageButton imageButton)
+    public static void MapPadding(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -108,7 +98,7 @@ public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImag
         platformView.UpdatePadding(handler.VirtualView);
     }
 
-    public static void MapAspect(IImageButtonHandler handler, IImageButton imageButton)
+    public static void MapAspect(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -116,7 +106,7 @@ public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImag
         platformView.UpdateAspect(handler.VirtualView);
     }
 
-    public static void MapImageSource(IImageButtonHandler handler, IImageButton imageButton)
+    public static void MapImageSource(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler is not ImageButtonHandler imageButtonHandler || handler.VirtualView is null)
             return;
@@ -214,9 +204,9 @@ public class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>, IImag
         }
     }
 
-    partial class ImageButtonImageSourcePartSetter : ImageSourcePartSetter<IImageButtonHandler>
+    partial class ImageButtonImageSourcePartSetter : ImageSourcePartSetter<ImageButtonHandler>
     {
-        public ImageButtonImageSourcePartSetter(IImageButtonHandler handler)
+        public ImageButtonImageSourcePartSetter(ImageButtonHandler handler)
             : base(handler)
         {
         }
