@@ -143,6 +143,8 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Core", new List<SampleItem>
             {
+                new("Animations", "ViewExtensions animations", typeof(AnimationPage)),
+                new("Brushes", "Solid and Gradient brushes", typeof(BrushesPage)),
                 new("Tooltips", "Tooltips on various controls", typeof(TooltipsPage)),
             }),
 
