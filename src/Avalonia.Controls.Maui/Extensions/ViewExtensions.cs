@@ -34,7 +34,6 @@ public static class ViewExtensions
             }
             if (group.Children[0] is global::Avalonia.Media.ScaleTransform scale)
             {
-                // Simulate 3D rotation using orthographic projection (Scale = Cos(Angle))
                 double radX = view.RotationX * (Math.PI / 180.0);
                 double radY = view.RotationY * (Math.PI / 180.0);
                 
