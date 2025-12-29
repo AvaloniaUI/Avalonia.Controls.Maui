@@ -146,10 +146,10 @@ public partial class MainPage : FlyoutPage
                 new("Animations", "ViewExtensions animations", typeof(AnimationPage)),
                 new("Behaviors", "Validation Behaviors", typeof(BehaviorsPage)),
                 new("Brushes", "Solid and Gradient brushes", typeof(BrushesPage)),
+                new("Styles", "Styles and Style Classes", typeof(StylesPage)),
                 new("Tooltips", "Tooltips on various controls", typeof(TooltipsPage)),
                 new("Triggers", "Visual states and actions", typeof(TriggersPage)),
                 new("Visual States", "VisualStateManager examples", typeof(VisualStateManagerPage)),
-                new("Styles", "Styles and Style Classes", typeof(StylesPage)),
             }),
 
             new SampleGroup("Settings", new List<SampleItem>
