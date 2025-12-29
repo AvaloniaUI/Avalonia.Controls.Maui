@@ -5,18 +5,18 @@ using PlatformView = Avalonia.Controls.Menu;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class MenuBarHandler : ElementHandler<IMenuBar, PlatformView>, IMenuBarHandler
+public partial class MenuBarHandler : ElementHandler<IMenuBar, PlatformView>
 {
-    public static IPropertyMapper<IMenuBar, IMenuBarHandler> Mapper = new PropertyMapper<IMenuBar, IMenuBarHandler>(ElementMapper)
+    public static IPropertyMapper<IMenuBar, MenuBarHandler> Mapper = new PropertyMapper<IMenuBar, MenuBarHandler>(ElementMapper)
     {
     };
 
-    public static CommandMapper<IMenuBar, IMenuBarHandler> CommandMapper = new(ElementCommandMapper)
+    public static CommandMapper<IMenuBar, MenuBarHandler> CommandMapper = new(ElementCommandMapper)
     {
-        [nameof(IMenuBarHandler.Add)] = MapAdd,
-        [nameof(IMenuBarHandler.Remove)] = MapRemove,
-        [nameof(IMenuBarHandler.Clear)] = MapClear,
-        [nameof(IMenuBarHandler.Insert)] = MapInsert,
+        [nameof(MenuBarHandler.Add)] = MapAdd,
+        [nameof(MenuBarHandler.Remove)] = MapRemove,
+        [nameof(MenuBarHandler.Clear)] = MapClear,
+        [nameof(MenuBarHandler.Insert)] = MapInsert,
     };
 
     public MenuBarHandler() : this(Mapper, CommandMapper)
@@ -43,7 +43,7 @@ public partial class MenuBarHandler : ElementHandler<IMenuBar, PlatformView>, IM
         }
     }
 
-    public static void MapAdd(IMenuBarHandler handler, IMenuBar layout, object? arg)
+    public static void MapAdd(MenuBarHandler handler, IMenuBar layout, object? arg)
     {
         if (arg is MenuBarHandlerUpdate args)
         {
@@ -51,7 +51,7 @@ public partial class MenuBarHandler : ElementHandler<IMenuBar, PlatformView>, IM
         }
     }
 
-    public static void MapRemove(IMenuBarHandler handler, IMenuBar layout, object? arg)
+    public static void MapRemove(MenuBarHandler handler, IMenuBar layout, object? arg)
     {
         if (arg is MenuBarHandlerUpdate args)
         {
@@ -59,7 +59,7 @@ public partial class MenuBarHandler : ElementHandler<IMenuBar, PlatformView>, IM
         }
     }
 
-    public static void MapInsert(IMenuBarHandler handler, IMenuBar layout, object? arg)
+    public static void MapInsert(MenuBarHandler handler, IMenuBar layout, object? arg)
     {
         if (arg is MenuBarHandlerUpdate args)
         {
@@ -67,7 +67,7 @@ public partial class MenuBarHandler : ElementHandler<IMenuBar, PlatformView>, IM
         }
     }
 
-    public static void MapClear(IMenuBarHandler handler, IMenuBar layout, object? arg)
+    public static void MapClear(MenuBarHandler handler, IMenuBar layout, object? arg)
     {
         handler.Clear();
     }
@@ -102,10 +102,6 @@ public partial class MenuBarHandler : ElementHandler<IMenuBar, PlatformView>, IM
             PlatformView.Items.Insert(index, platformView);
         }
     }
-
-    IMenuBar IMenuBarHandler.VirtualView => VirtualView;
-
-    object IMenuBarHandler.PlatformView => PlatformView;
 
     public override void OnDisconnectHandler(object platformView)
     {

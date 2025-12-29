@@ -11,9 +11,9 @@ using AvaloniaVerticalAlignment = Avalonia.Layout.VerticalAlignment;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class EditorHandler : ViewHandler<IEditor, AvaloniaTextBox>, IEditorHandler
+public class EditorHandler : ViewHandler<IEditor, AvaloniaTextBox>
 {
-    public static IPropertyMapper<IEditor, IEditorHandler> Mapper = new PropertyMapper<IEditor, IEditorHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IEditor, EditorHandler> Mapper = new PropertyMapper<IEditor, EditorHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IEditor.Background)] = MapBackground,
         [nameof(IEditor.CharacterSpacing)] = MapCharacterSpacing,
@@ -33,7 +33,7 @@ public class EditorHandler : ViewHandler<IEditor, AvaloniaTextBox>, IEditorHandl
         [nameof(IEditor.SelectionLength)] = MapSelectionLength
     };
 
-    public static CommandMapper<IEditor, IEditorHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IEditor, EditorHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
@@ -50,11 +50,7 @@ public class EditorHandler : ViewHandler<IEditor, AvaloniaTextBox>, IEditorHandl
         : base(mapper, commandMapper)
     {
     }
-
-    IEditor IEditorHandler.VirtualView => VirtualView;
-
-    System.Object IEditorHandler.PlatformView => PlatformView;
-
+    
     protected override AvaloniaTextBox CreatePlatformView()
     {
         return new AvaloniaTextBox
@@ -66,66 +62,66 @@ public class EditorHandler : ViewHandler<IEditor, AvaloniaTextBox>, IEditorHandl
 
     public override bool NeedsContainer => false;
 
-    public static void MapBackground(IEditorHandler handler, IEditor editor)
+    public static void MapBackground(EditorHandler handler, IEditor editor)
     {
         handler.UpdateValue(nameof(IViewHandler.ContainerView));
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateBackground(editor);
     }
 
-    public static void MapText(IEditorHandler handler, IEditor editor) =>
+    public static void MapText(EditorHandler handler, IEditor editor) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorText(editor);
 
-    public static void MapTextColor(IEditorHandler handler, IEditor editor) =>
+    public static void MapTextColor(EditorHandler handler, IEditor editor) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorTextColor(editor);
 
-    public static void MapCharacterSpacing(IEditorHandler handler, IEditor editor) =>
+    public static void MapCharacterSpacing(EditorHandler handler, IEditor editor) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorCharacterSpacing(editor);
 
-    public static void MapFont(IEditorHandler handler, IEditor editor)
+    public static void MapFont(EditorHandler handler, IEditor editor)
     {
         var fontManager = handler.GetRequiredService<IFontManager>();
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateFont(editor, fontManager);
     }
 
-    public static void MapHorizontalTextAlignment(IEditorHandler handler, IEditor editor) =>
+    public static void MapHorizontalTextAlignment(EditorHandler handler, IEditor editor) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorHorizontalTextAlignment(editor);
 
-    public static void MapVerticalTextAlignment(IEditorHandler handler, IEditor editor) =>
+    public static void MapVerticalTextAlignment(EditorHandler handler, IEditor editor) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorVerticalTextAlignment(editor);
 
-    public static void MapIsReadOnly(IEditorHandler handler, IEditor editor) =>
+    public static void MapIsReadOnly(EditorHandler handler, IEditor editor) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorIsReadOnly(editor);
 
-    public static void MapIsTextPredictionEnabled(IEditorHandler handler, IEditor editor)
+    public static void MapIsTextPredictionEnabled(EditorHandler handler, IEditor editor)
     {
         // Avalonia doesn't have direct text prediction support
     }
 
-    public static void MapIsSpellCheckEnabled(IEditorHandler handler, IEditor editor)
+    public static void MapIsSpellCheckEnabled(EditorHandler handler, IEditor editor)
     {
         // Avalonia doesn't have direct spell check support
     }
 
-    public static void MapKeyboard(IEditorHandler handler, IEditor editor)
+    public static void MapKeyboard(EditorHandler handler, IEditor editor)
     {
         // Keyboard handling is platform-specific and not directly applicable to Avalonia
     }
 
-    public static void MapMaxLength(IEditorHandler handler, IEditor editor) =>
+    public static void MapMaxLength(EditorHandler handler, IEditor editor) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorMaxLength(editor);
 
-    public static void MapPlaceholder(IEditorHandler handler, IEditor editor) =>
+    public static void MapPlaceholder(EditorHandler handler, IEditor editor) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorPlaceholder(editor);
 
-    public static void MapPlaceholderColor(IEditorHandler handler, IEditor editor)
+    public static void MapPlaceholderColor(EditorHandler handler, IEditor editor)
     {
         // Avalonia TextBox doesn't directly support placeholder color customization
     }
 
-    public static void MapCursorPosition(IEditorHandler handler, IEditor editor) =>
+    public static void MapCursorPosition(EditorHandler handler, IEditor editor) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorCursorPosition(editor);
 
-    public static void MapSelectionLength(IEditorHandler handler, IEditor editor) =>
+    public static void MapSelectionLength(EditorHandler handler, IEditor editor) =>
         ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorSelectionLength(editor);
 }
 

@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
+public class SliderHandler : ViewHandler<ISlider, PlatformView>
 {
     private CancellationTokenSource? _thumbImageCts;
 
-    public static IPropertyMapper<ISlider, ISliderHandler> Mapper = new PropertyMapper<ISlider, ISliderHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<ISlider, SliderHandler> Mapper = new PropertyMapper<ISlider, SliderHandler>(ViewHandler.ViewMapper)
     {
         [nameof(ISlider.Maximum)] = MapMaximum,
         [nameof(ISlider.MaximumTrackColor)] = MapMaximumTrackColor,
@@ -24,7 +24,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         [nameof(ISlider.Value)] = MapValue,
     };
 
-    public static CommandMapper<ISlider, ISliderHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<ISlider, SliderHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
@@ -41,10 +41,6 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
-
-    Microsoft.Maui.ISlider ISliderHandler.VirtualView => VirtualView;
-
-    System.Object ISliderHandler.PlatformView => PlatformView;
 
     protected override PlatformView CreatePlatformView()
     {
@@ -67,7 +63,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         base.DisconnectHandler(platformView);
     }
 
-    public static void MapMinimum(ISliderHandler handler, ISlider slider)
+    public static void MapMinimum(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -75,7 +71,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         }
     }
 
-    public static void MapMaximum(ISliderHandler handler, ISlider slider)
+    public static void MapMaximum(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -83,7 +79,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         }
     }
 
-    public static void MapValue(ISliderHandler handler, ISlider slider)
+    public static void MapValue(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -91,7 +87,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         }
     }
 
-    public static void MapMinimumTrackColor(ISliderHandler handler, ISlider slider)
+    public static void MapMinimumTrackColor(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -99,7 +95,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         }
     }
 
-    public static void MapMaximumTrackColor(ISliderHandler handler, ISlider slider)
+    public static void MapMaximumTrackColor(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -107,7 +103,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         }
     }
 
-    public static void MapThumbColor(ISliderHandler handler, ISlider slider)
+    public static void MapThumbColor(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
         {
@@ -115,7 +111,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>, ISliderHandler
         }
     }
 
-    public static void MapThumbImageSource(ISliderHandler handler, ISlider slider)
+    public static void MapThumbImageSource(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
         {

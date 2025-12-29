@@ -5,20 +5,20 @@ using PlatformView = Avalonia.Controls.MenuItem;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformView>, IMenuBarItemHandler
+public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformView>
 {
-    public static IPropertyMapper<IMenuBarItem, IMenuBarItemHandler> Mapper = new PropertyMapper<IMenuBarItem, IMenuBarItemHandler>(ElementMapper)
+    public static IPropertyMapper<IMenuBarItem, MenuBarItemHandler> Mapper = new PropertyMapper<IMenuBarItem, MenuBarItemHandler>(ElementMapper)
     {
         [nameof(IMenuBarItem.Text)] = MapText,
         [nameof(IMenuBarItem.IsEnabled)] = MapIsEnabled,
     };
 
-    public static CommandMapper<IMenuBarItem, IMenuBarItemHandler> CommandMapper = new(ElementCommandMapper)
+    public static CommandMapper<IMenuBarItem, MenuBarItemHandler> CommandMapper = new(ElementCommandMapper)
     {
-        [nameof(IMenuBarItemHandler.Add)] = MapAdd,
-        [nameof(IMenuBarItemHandler.Remove)] = MapRemove,
-        [nameof(IMenuBarItemHandler.Clear)] = MapClear,
-        [nameof(IMenuBarItemHandler.Insert)] = MapInsert,
+        [nameof(MenuBarItemHandler.Add)] = MapAdd,
+        [nameof(MenuBarItemHandler.Remove)] = MapRemove,
+        [nameof(MenuBarItemHandler.Clear)] = MapClear,
+        [nameof(MenuBarItemHandler.Insert)] = MapInsert,
     };
 
     public MenuBarItemHandler() : this(Mapper, CommandMapper)
@@ -34,13 +34,13 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         return new PlatformView();
     }
 
-    public static void MapText(IMenuBarItemHandler handler, IMenuBarItem view)
+    public static void MapText(MenuBarItemHandler handler, IMenuBarItem view)
     {
         if (handler is MenuBarItemHandler platformHandler)
             platformHandler.PlatformView.Header = view.Text;
     }
 
-    public static void MapIsEnabled(IMenuBarItemHandler handler, IMenuBarItem view)
+    public static void MapIsEnabled(MenuBarItemHandler handler, IMenuBarItem view)
     {
         if (handler is MenuBarItemHandler platformHandler)
             platformHandler.PlatformView.IsEnabled = view.IsEnabled;
@@ -57,7 +57,7 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
-    public static void MapAdd(IMenuBarItemHandler handler, IMenuBarItem layout, object? arg)
+    public static void MapAdd(MenuBarItemHandler handler, IMenuBarItem layout, object? arg)
     {
         if (arg is MenuBarItemHandlerUpdate args)
         {
@@ -65,7 +65,7 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
-    public static void MapRemove(IMenuBarItemHandler handler, IMenuBarItem layout, object? arg)
+    public static void MapRemove(MenuBarItemHandler handler, IMenuBarItem layout, object? arg)
     {
         if (arg is MenuBarItemHandlerUpdate args)
         {
@@ -73,7 +73,7 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
-    public static void MapInsert(IMenuBarItemHandler handler, IMenuBarItem layout, object? arg)
+    public static void MapInsert(MenuBarItemHandler handler, IMenuBarItem layout, object? arg)
     {
         if (arg is MenuBarItemHandlerUpdate args)
         {
@@ -81,7 +81,7 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
-    public static void MapClear(IMenuBarItemHandler handler, IMenuBarItem layout, object? arg)
+    public static void MapClear(MenuBarItemHandler handler, IMenuBarItem layout, object? arg)
     {
         handler.Clear();
     }
@@ -116,10 +116,6 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
             PlatformView.Items.Insert(index, platformView);
         }
     }
-
-    IMenuBarItem IMenuBarItemHandler.VirtualView => VirtualView;
-
-    object IMenuBarItemHandler.PlatformView => PlatformView;
 
     public override void OnDisconnectHandler(object platformView)
     {

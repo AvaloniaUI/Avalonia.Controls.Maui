@@ -8,10 +8,10 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// Handler for .NET MAUI SwipeItemMenuItem to Avalonia platform-native menu item mapping.
 /// Maps ISwipeItemMenuItem cross-platform interface to platform-specific menu item implementations.
 /// </summary>
-public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuItem, PlatformView>, ISwipeItemMenuItemHandler
+public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuItem, PlatformView>
 {
-    public static IPropertyMapper<ISwipeItemMenuItem, ISwipeItemMenuItemHandler> Mapper =
-        new PropertyMapper<ISwipeItemMenuItem, ISwipeItemMenuItemHandler>(ElementHandler.ElementMapper)
+    public static IPropertyMapper<ISwipeItemMenuItem, SwipeItemMenuItemHandler> Mapper =
+        new PropertyMapper<ISwipeItemMenuItem, SwipeItemMenuItemHandler>(ElementHandler.ElementMapper)
         {
             [nameof(ISwipeItemMenuItem.Visibility)] = MapVisibility,
             [nameof(IView.Background)] = MapBackground,
@@ -22,7 +22,7 @@ public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuIte
             [nameof(IMenuElement.Source)] = MapSource,
         };
 
-    public static CommandMapper<ISwipeItemMenuItem, ISwipeItemMenuItemHandler> CommandMapper =
+    public static CommandMapper<ISwipeItemMenuItem, SwipeItemMenuItemHandler> CommandMapper =
         new(ElementHandler.ElementCommandMapper)
         {
         };
@@ -67,50 +67,46 @@ public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuIte
         base.DisconnectHandler(platformView);
     }
     
-    ISwipeItemMenuItem ISwipeItemMenuItemHandler.VirtualView => VirtualView;
-
-    object ISwipeItemMenuItemHandler.PlatformView => PlatformView;
-    
-    public static void MapVisibility(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
+    public static void MapVisibility(SwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateVisibility(view);
     }
 
-    public static void MapBackground(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
+    public static void MapBackground(SwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateBackground(view);
     }
 
-    public static void MapText(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
+    public static void MapText(SwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateText(view);
     }
 
-    public static void MapTextColor(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
+    public static void MapTextColor(SwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateTextColor(view);
     }
 
-    public static void MapCharacterSpacing(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
+    public static void MapCharacterSpacing(SwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateCharacterSpacing(view);
     }
 
-    public static void MapFont(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
+    public static void MapFont(SwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateFont(view, handler);
     }
 
-    public static void MapSource(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view) =>
+    public static void MapSource(SwipeItemMenuItemHandler handler, ISwipeItemMenuItem view) =>
         MapSourceAsync(handler, view).FireAndForget(handler);
 
-    public static async Task MapSourceAsync(ISwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
+    public static async Task MapSourceAsync(SwipeItemMenuItemHandler handler, ISwipeItemMenuItem view)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
