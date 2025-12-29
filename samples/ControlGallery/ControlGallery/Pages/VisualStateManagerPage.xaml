@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.VisualStateManagerPage"
+             Title="VisualStateManager">
+    <ContentPage.Resources>
+        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+        <Color x:Key="SectionBorderDark">#444444</Color>
+        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+        
+        <Style TargetType="Button" x:Key="StatefulButtonStyle">
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource Primary}}" />
+                                <Setter Property="Scale" Value="1" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
+                                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                                <Setter Property="Scale" Value="0.95" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
+    
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <Label Text="Visual States" 
+                   Style="{StaticResource Headline}" />
+
+            <!-- Common States -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Common States (Normal/Disabled)" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="Toggle the switch to disable the button and trigger the VisualState change." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Label Text="Is Enabled:" VerticalOptions="Center" 
+                               TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                        <Switch x:Name="EnableSwitch" IsToggled="True" />
+                    </HorizontalStackLayout>
+
+                    <Button Text="I have Visual States!" 
+                            IsEnabled="{Binding Source={x:Reference EnableSwitch}, Path=IsToggled}"
+                            Style="{StaticResource StatefulButtonStyle}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Custom States -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Custom States" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="Click buttons to switch the BoxView's visual state." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <BoxView x:Name="StatefulBox" 
+                             HeightRequest="100" 
+                             WidthRequest="100" 
+                             HorizontalOptions="Center"
+                             Color="Gray">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="ValidationStates">
+                                <VisualState x:Name="Neutral">
+                                    <VisualState.Setters>
+                                        <Setter Property="Color" Value="Gray" />
+                                        <Setter Property="Rotation" Value="0" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Success">
+                                    <VisualState.Setters>
+                                        <Setter Property="Color" Value="Green" />
+                                        <Setter Property="Rotation" Value="45" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                                <VisualState x:Name="Error">
+                                    <VisualState.Setters>
+                                        <Setter Property="Color" Value="Red" />
+                                        <Setter Property="Rotation" Value="-45" />
+                                    </VisualState.Setters>
+                                </VisualState>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                    </BoxView>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Button Text="Neutral" Clicked="OnNeutralClicked" BackgroundColor="Gray"/>
+                        <Button Text="Success" Clicked="OnSuccessClicked" BackgroundColor="Green"/>
+                        <Button Text="Error" Clicked="OnErrorClicked" BackgroundColor="Red"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
