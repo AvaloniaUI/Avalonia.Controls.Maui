@@ -110,8 +110,8 @@ internal class GestureManager : IDisposable
         control.AddHandler(Control.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Bubble);
         control.AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Bubble);
         control.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Bubble);
-        control.AddHandler(InputElement.PointerEnteredEvent, OnPointerEntered, RoutingStrategies.Bubble);
-        control.AddHandler(InputElement.PointerExitedEvent, OnPointerExited, RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.PointerEnteredEvent, OnPointerEntered, RoutingStrategies.Direct | RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.PointerExitedEvent, OnPointerExited, RoutingStrategies.Direct | RoutingStrategies.Bubble);
     }
 
     private void UnsubscribeFromGestureEvents(AvaloniaControl control)
@@ -341,8 +341,6 @@ internal class GestureManager : IDisposable
         
         // Release pointer capture
         e.Pointer.Capture(null);
-        _panOriginVisual = null;
-        _panRootVisual = null;
 
         var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
         foreach (var recognizer in panRecognizers)
@@ -395,6 +393,9 @@ internal class GestureManager : IDisposable
                 }
             }
         }
+        
+        _panOriginVisual = null;
+        _panRootVisual = null;
         e.Handled = true;
     }
 
