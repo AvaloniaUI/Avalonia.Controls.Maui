@@ -160,11 +160,13 @@ internal class GestureManager : IDisposable
 
         int clickCount = e.ClickCount;
 
-        // Handle pan gesture recognizers
+        // Handle pan & swipe gesture recognizers
         var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
+        var swipeRecognizers = recognizers.OfType<Microsoft.Maui.Controls.SwipeGestureRecognizer>().ToList();
         
-        if (panRecognizers.Count > 0)
+        if (panRecognizers.Count > 0 || swipeRecognizers.Count > 0)
         {
+            // Only set Handled if we have recognizers that need to capture input
             e.Handled = true;
             
             _isPanning = true;
@@ -244,7 +246,7 @@ internal class GestureManager : IDisposable
             {
                 if (!t.IsCanceled)
                 {
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    Threading.Dispatcher.UIThread.Post(() =>
                     {
                         foreach (var recognizer in capturedRecognizers)
                         {
@@ -343,18 +345,60 @@ internal class GestureManager : IDisposable
         _panRootVisual = null;
 
         var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
-        if (panRecognizers.Count == 0)
-            return;
-
         foreach (var recognizer in panRecognizers)
         {
             if (recognizer is IPanGestureController controller)
                 controller.SendPanCompleted(view, 0);
         }
+
+        var swipeRecognizers = recognizers.OfType<SwipeGestureRecognizer>().ToList();
+        if (swipeRecognizers.Count > 0)
+        {
+            var releasedPoint = e.GetPosition(_panRootVisual);
+            double totalX = releasedPoint.X - _panStartPoint.X;
+            double totalY = releasedPoint.Y - _panStartPoint.Y;
+
+            foreach (var recognizer in swipeRecognizers)
+            {
+                // Check if horizontal or vertical
+                bool isHorizontal = Math.Abs(totalX) > Math.Abs(totalY);
+                double threshold = recognizer.Threshold; // Default is usually 100
+                
+                // If Threshold is 0, use a reasonable default.
+                if (threshold <= 0) threshold = 48;
+
+                Microsoft.Maui.SwipeDirection? detectedDirection = null;
+
+                if (isHorizontal)
+                {
+                    if (Math.Abs(totalX) > threshold)
+                    {
+                        if (totalX > 0) detectedDirection = Microsoft.Maui.SwipeDirection.Right;
+                        else detectedDirection = Microsoft.Maui.SwipeDirection.Left;
+                    }
+                }
+                else
+                {
+                    if (Math.Abs(totalY) > threshold)
+                    {
+                        if (totalY > 0) detectedDirection = Microsoft.Maui.SwipeDirection.Down;
+                        else detectedDirection = Microsoft.Maui.SwipeDirection.Up;
+                    }
+                }
+
+                if (detectedDirection.HasValue)
+                {
+                    if ((recognizer.Direction & detectedDirection.Value) == detectedDirection.Value)
+                    {
+                        recognizer.SendSwiped(view, detectedDirection.Value);
+                    }
+                }
+            }
+        }
         e.Handled = true;
     }
 
-    private void OnPointerEntered(object? sender, Avalonia.Input.PointerEventArgs e)
+    private void OnPointerEntered(object? sender, Input.PointerEventArgs e)
     {
         if (_view is not View view)
             return;
@@ -377,7 +421,7 @@ internal class GestureManager : IDisposable
         e.Handled = true;
     }
 
-    private void OnPointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
+    private void OnPointerExited(object? sender, Input.PointerEventArgs e)
     {
         if (_view is not View view)
             return;

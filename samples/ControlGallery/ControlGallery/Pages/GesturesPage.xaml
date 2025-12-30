@@ -153,6 +153,40 @@
                     <Label x:Name="PointerPositionLabel" Text="Position: -" HorizontalOptions="Center" FontSize="12" />
                 </VerticalStackLayout>
             </Border>
+            
+            <!-- Swipe Gesture -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Swipe Gesture" FontAttributes="Bold"/>
+                    <Label Text="SwipeGestureRecognizer (Left, Right, Up, Down)" FontSize="12" FontAttributes="Italic"/>
+
+                    <Border x:Name="SwipeBox" 
+                            HeightRequest="150" 
+                            StrokeThickness="1"
+                            Stroke="Gray"
+                            BackgroundColor="LightCyan">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <SwipeGestureRecognizer Direction="Left" Swiped="OnSwiped" />
+                            <SwipeGestureRecognizer Direction="Right" Swiped="OnSwiped" />
+                            <SwipeGestureRecognizer Direction="Up" Swiped="OnSwiped" />
+                            <SwipeGestureRecognizer Direction="Down" Swiped="OnSwiped" />
+                        </Border.GestureRecognizers>
+                        <Label x:Name="SwipeLabel" 
+                               Text="Swipe me!" 
+                               VerticalOptions="Center" 
+                               HorizontalOptions="Center" 
+                               TextColor="Black"
+                               FontAttributes="Bold"/>
+                    </Border>
+                    <Label x:Name="SwipeStatusLabel" Text="Last Swipe: None" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
 
         </VerticalStackLayout>
     </ScrollView>

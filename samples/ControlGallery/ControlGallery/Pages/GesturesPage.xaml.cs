@@ -116,4 +116,22 @@ public partial class GesturesPage : ContentPage
 
         PointerPositionLabel.Text = $"Box: {boxPos} | Page: {pagePos}";
     }
+
+    private void OnSwiped(object sender, SwipedEventArgs e)
+    {
+        SwipeStatusLabel.Text = $"Last Swipe: {e.Direction}";
+        SwipeBox.BackgroundColor = GetColorForDirection(e.Direction);
+    }
+    
+    private Color GetColorForDirection(SwipeDirection direction)
+    {
+        return direction switch
+        {
+            SwipeDirection.Left => Colors.LightPink,
+            SwipeDirection.Right => Colors.LightGreen,
+            SwipeDirection.Up => Colors.LightBlue,
+            SwipeDirection.Down => Colors.LightYellow,
+            _ => Colors.LightCyan
+        };
+    }
 }
