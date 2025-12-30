@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.GesturesPage"
+             Title="Gestures">
+    <ContentPage.Resources>
+        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+        <Color x:Key="SectionBorderDark">#444444</Color>
+        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            
+            <Label Text="Gestures"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Single Tap -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Single Tap" FontAttributes="Bold"/>
+                    <Label Text="TapGestureRecognizer with NumberOfTapsRequired=&quot;1&quot;" FontSize="12" FontAttributes="Italic"/>
+
+                    <Border x:Name="SingleTapBox" 
+                            HeightRequest="150" 
+                            StrokeThickness="1"
+                            Stroke="Gray"
+                            BackgroundColor="LightBlue">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnSingleTapTapped" NumberOfTapsRequired="1" />
+                        </Border.GestureRecognizers>
+                        <Label x:Name="SingleTapLabel" 
+                               Text="Tap me!" 
+                               VerticalOptions="Center" 
+                               HorizontalOptions="Center" 
+                               FontAttributes="Bold"/>
+                    </Border>
+                    <Label x:Name="SingleTapCountLabel" Text="Taps: 0" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Double Tap -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Double Tap" FontAttributes="Bold"/>
+                    <Label Text="TapGestureRecognizer with NumberOfTapsRequired=&quot;2&quot;" FontSize="12" FontAttributes="Italic"/>
+
+                    <Border x:Name="DoubleTapBox" 
+                            HeightRequest="150" 
+                            StrokeThickness="1"
+                            Stroke="Gray"
+                            BackgroundColor="LightCoral">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnDoubleTapTapped" NumberOfTapsRequired="2" />
+                        </Border.GestureRecognizers>
+                        <Label x:Name="DoubleTapLabel" 
+                               Text="Double tap me!" 
+                               VerticalOptions="Center" 
+                               HorizontalOptions="Center" 
+                               FontAttributes="Bold"/>
+                    </Border>
+                    <Label x:Name="DoubleTapCountLabel" Text="Double Taps: 0" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Pan Gesture -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Pan Gesture" FontAttributes="Bold"/>
+                    <Label Text="PanGestureRecognizer - drag the box around" FontSize="12" FontAttributes="Italic"/>
+
+                    <Border HeightRequest="200" 
+                            StrokeThickness="1"
+                            Stroke="Gray"
+                            BackgroundColor="#F0F0F0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <AbsoluteLayout>
+                            <Border x:Name="PanBox" 
+                                    HeightRequest="60" 
+                                    WidthRequest="60"
+                                    StrokeThickness="0"
+                                    BackgroundColor="MediumPurple"
+                                    AbsoluteLayout.LayoutBounds="0.5,0.5,60,60"
+                                    AbsoluteLayout.LayoutFlags="PositionProportional">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <PanGestureRecognizer PanUpdated="OnPanUpdated" />
+                                </Border.GestureRecognizers>
+                                <Label Text="Drag me" 
+                                       FontSize="10"
+                                       TextColor="White"
+                                       VerticalOptions="Center" 
+                                       HorizontalOptions="Center"/>
+                            </Border>
+                        </AbsoluteLayout>
+                    </Border>
+                    <Label x:Name="PanStatusLabel" Text="Pan: Idle" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

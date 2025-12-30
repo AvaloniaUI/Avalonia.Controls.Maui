@@ -146,6 +146,7 @@ public partial class MainPage : FlyoutPage
                 new("Animations", "ViewExtensions animations", typeof(AnimationPage)),
                 new("Behaviors", "Validation Behaviors", typeof(BehaviorsPage)),
                 new("Brushes", "Solid and Gradient brushes", typeof(BrushesPage)),
+                new("Gestures", "Tap, Swipe, Pan and more", typeof(GesturesPage)),
                 new("Styles", "Styles and Style Classes", typeof(StylesPage)),
                 new("Tooltips", "Tooltips on various controls", typeof(TooltipsPage)),
                 new("Triggers", "Visual states and actions", typeof(TriggersPage)),
