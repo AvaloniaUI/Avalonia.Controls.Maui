@@ -174,8 +174,33 @@ namespace Avalonia.Controls.Maui.Extensions
         /// <param name="editor">The virtual view.</param>
         public static void UpdateEditorCursorPosition(this AvaloniaTextBox textBox, IEditor editor)
         {
-            if (textBox.CaretIndex != editor.CursorPosition)
-                textBox.CaretIndex = editor.CursorPosition;
+            var newPosition = Math.Min(editor.CursorPosition, textBox.Text?.Length ?? 0);
+            
+            // If the cursor position matches the current selection start, and we have a selection,
+            // setting CaretIndex might clear the selection. 
+            // However, MAUI's CursorPosition is usually the start of the selection.
+            // If we are just moving the cursor (SelectionLength == 0), we set CaretIndex.
+            // If SelectionLength > 0, we rely on UpdateEditorSelectionLength to set the range.
+            
+            if (editor.SelectionLength == 0 && textBox.CaretIndex != newPosition)
+            {
+                textBox.CaretIndex = newPosition;
+            }
+            else if (editor.SelectionLength > 0)
+            {
+                // If there is a selection, we generally expect UpdateEditorSelectionLength to handle the range.
+                // However, if only CursorPosition changes (e.g. shift-arrow), we need to update the selection range
+                // to maintain the correct length from the new start position.
+                int start = newPosition;
+                int end = start + editor.SelectionLength;
+                end = Math.Min(end, textBox.Text?.Length ?? 0);
+                
+                if (textBox.SelectionStart != start || textBox.SelectionEnd != end)
+                {
+                    textBox.SelectionStart = start;
+                    textBox.SelectionEnd = end;
+                }
+            }
         }
 
         /// <summary>
@@ -185,10 +210,13 @@ namespace Avalonia.Controls.Maui.Extensions
         /// <param name="editor">The virtual view.</param>
         public static void UpdateEditorSelectionLength(this AvaloniaTextBox textBox, IEditor editor)
         {
-            if (textBox.SelectionStart != editor.CursorPosition || textBox.SelectionEnd != editor.CursorPosition + editor.SelectionLength)
+            var start = Math.Min(editor.CursorPosition, textBox.Text?.Length ?? 0);
+            var end = Math.Min(start + editor.SelectionLength, textBox.Text?.Length ?? 0);
+            
+            if (textBox.SelectionStart != start || textBox.SelectionEnd != end)
             {
-                textBox.SelectionStart = editor.CursorPosition;
-                textBox.SelectionEnd = editor.CursorPosition + editor.SelectionLength;
+                textBox.SelectionStart = start;
+                textBox.SelectionEnd = end;
             }
         }
         

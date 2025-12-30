@@ -159,7 +159,11 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
         {
             // Already on UI thread, execute directly
-            platformView.Measure(new global::Avalonia.Size(widthConstraint, heightConstraint));
+            var avaloniaConstraint = new global::Avalonia.Size(
+                double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
+                double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
+
+            platformView.Measure(avaloniaConstraint);
             var avaloniaSize = platformView.DesiredSize;
             return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
         }
@@ -168,7 +172,11 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
             // Not on UI thread, invoke synchronously on UI thread
             return Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                platformView.Measure(new global::Avalonia.Size(widthConstraint, heightConstraint));
+                var avaloniaConstraint = new global::Avalonia.Size(
+                    double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
+                    double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
+
+                platformView.Measure(avaloniaConstraint);
                 var avaloniaSize = platformView.DesiredSize;
                 return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
             }).GetAwaiter().GetResult();

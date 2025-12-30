@@ -23,6 +23,8 @@ namespace Avalonia.Controls.Maui.Controls
             set => SetValue(PlaceholderForegroundProperty, value);
         }
 
+        public event EventHandler<Interactivity.RoutedEventArgs>? SelectionChanged;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="MauiEditor"/> class.
         /// </summary>
@@ -30,6 +32,27 @@ namespace Avalonia.Controls.Maui.Controls
         {
             AcceptsReturn = true;
             TextWrapping = TextWrapping.Wrap;
+            
+            // Ensure selection is visible
+            SelectionBrush = Brushes.Blue;
+            SelectionForegroundBrush = Brushes.White;
+        }
+
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+        {
+            base.OnPropertyChanged(change);
+
+            if (change.Property == CaretIndexProperty ||
+                change.Property == SelectionStartProperty ||
+                change.Property == SelectionEndProperty)
+            {
+                RaiseSelectionChanged();
+            }
+        }
+
+        public void RaiseSelectionChanged()
+        {
+            SelectionChanged?.Invoke(this, new Interactivity.RoutedEventArgs());
         }
     }
 }

@@ -56,12 +56,14 @@ namespace Avalonia.Controls.Maui.Handlers
         {
             base.ConnectHandler(platformView);
             platformView.TextChanged += OnTextChanged;
+            platformView.SelectionChanged += OnSelectionChanged;
             platformView.LostFocus += OnLostFocus;
         }
 
         protected override void DisconnectHandler(MauiEditor platformView)
         {
             platformView.TextChanged -= OnTextChanged;
+            platformView.SelectionChanged -= OnSelectionChanged;
             platformView.LostFocus -= OnLostFocus;
             base.DisconnectHandler(platformView);
         }
@@ -145,6 +147,15 @@ namespace Avalonia.Controls.Maui.Handlers
             {
                 editor.SendCompleted();
             }
+        }
+
+        private void OnSelectionChanged(object? sender, Interactivity.RoutedEventArgs e)
+        {
+            if (VirtualView is null || PlatformView is null)
+                return;
+
+            VirtualView.CursorPosition = PlatformView.SelectionStart;
+            VirtualView.SelectionLength = PlatformView.SelectionEnd - PlatformView.SelectionStart;
         }
     }
 }

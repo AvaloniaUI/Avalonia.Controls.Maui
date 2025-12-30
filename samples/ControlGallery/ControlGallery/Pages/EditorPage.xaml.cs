@@ -52,5 +52,43 @@ namespace ControlGallery.Pages
             CompletedLabel.Text = $"Completed! Text: \"{CompletedEditor.Text}\"";
             CompletedLabel.TextColor = Colors.Green;
         }
+
+        private void OnSetCursorStart(object? sender, EventArgs e)
+        {
+            CursorEditor.CursorPosition = 0;
+            CursorEditor.Focus();
+        }
+
+        private void OnSetCursorMiddle(object? sender, EventArgs e)
+        {
+            CursorEditor.CursorPosition = (CursorEditor.Text?.Length ?? 0) / 2;
+            CursorEditor.Focus();
+        }
+
+        private void OnSetCursorEnd(object? sender, EventArgs e)
+        {
+            CursorEditor.CursorPosition = CursorEditor.Text?.Length ?? 0;
+            CursorEditor.Focus();
+        }
+
+        private void OnSelectFirst5(object? sender, EventArgs e)
+        {
+            SelectionEditor.CursorPosition = 0;
+            SelectionEditor.SelectionLength = Math.Min(5, SelectionEditor.Text?.Length ?? 0);
+            SelectionEditor.Focus();
+        }
+
+        private void OnSelectAll(object? sender, EventArgs e)
+        {
+            SelectionEditor.CursorPosition = 0;
+            SelectionEditor.SelectionLength = SelectionEditor.Text?.Length ?? 0;
+            SelectionEditor.Focus();
+        }
+
+        private void OnClearSelection(object? sender, EventArgs e)
+        {
+            SelectionEditor.SelectionLength = 0;
+            SelectionEditor.Focus();
+        }
     }
 }

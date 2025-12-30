@@ -195,7 +195,41 @@
                     <Editor Placeholder="Max Length (10)" MaxLength="10" />
                 </VerticalStackLayout>
             </Border>
+            
+            <!-- Cursor Position -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cursor Position" FontAttributes="Bold" />
+                    <Editor x:Name="CursorEditor" Text="Cursor Position Test" HeightRequest="80" />
+                    <Label Text="{Binding CursorPosition, Source={x:Reference CursorEditor}, StringFormat='Current Position: {0}'}" FontSize="12" TextColor="Gray"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Start" Clicked="OnSetCursorStart" />
+                        <Button Text="Middle" Clicked="OnSetCursorMiddle" />
+                        <Button Text="End" Clicked="OnSetCursorEnd" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
 
+            <!-- Selection Range -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Selection Range" FontAttributes="Bold" />
+                    <Editor x:Name="SelectionEditor" Text="Select some text in this editor to see the length update." HeightRequest="80" />
+                    <Label Text="{Binding SelectionLength, Source={x:Reference SelectionEditor}, StringFormat='Selection Length: {0}'}" FontSize="12" TextColor="Gray"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="First 5" Clicked="OnSelectFirst5" />
+                        <Button Text="Select All" Clicked="OnSelectAll" />
+                        <Button Text="Clear" Clicked="OnClearSelection" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            
             <!-- Completed Event -->
             <Border Stroke="Gray" Padding="10">
                 <Border.StrokeShape>

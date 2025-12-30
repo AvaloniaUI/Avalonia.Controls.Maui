@@ -180,6 +180,51 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
             Assert.False(platformView.IsReadOnly);
         }
 
+        [AvaloniaFact(DisplayName = "CursorPosition Updates VirtualView From PlatformView")]
+        public async Task CursorPositionUpdatesVirtualViewFromPlatformView()
+        {
+            var editor = new EditorStub
+            {
+                Text = "Test Content",
+                CursorPosition = 0
+            };
+
+            var handler = await CreateHandlerAsync(editor);
+            var platformView = (MauiEditor)handler.PlatformView!;
+            
+            // Simulate platform selection change
+            platformView.SelectionStart = 5;
+            platformView.SelectionEnd = 5; // Cursor position only
+            
+            // Trigger event manually as test environment might not do it automatically
+            platformView.RaiseSelectionChanged();
+
+            Assert.Equal(5, editor.CursorPosition);
+        }
+
+        [AvaloniaFact(DisplayName = "SelectionLength Updates VirtualView From PlatformView")]
+        public async Task SelectionLengthUpdatesVirtualViewFromPlatformView()
+        {
+            var editor = new EditorStub
+            {
+                Text = "Test Content",
+                SelectionLength = 0
+            };
+
+            var handler = await CreateHandlerAsync(editor);
+            var platformView = (MauiEditor)handler.PlatformView!;
+            
+            // Simulate platform selection change
+            platformView.SelectionStart = 0;
+            platformView.SelectionEnd = 4; // Select "Test"
+            
+            // Trigger event manually
+            platformView.RaiseSelectionChanged();
+
+            Assert.Equal(4, editor.SelectionLength);
+            Assert.Equal(0, editor.CursorPosition);
+        }
+
         [AvaloniaTheory(DisplayName = "CharacterSpacing Mapped Correctly")]
         [InlineData(0)]
         [InlineData(1)]
@@ -228,6 +273,10 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
             var platformView = (MauiEditor)handler.PlatformView!;
             
             var actualLength = platformView.SelectionEnd - platformView.SelectionStart;
+            if (selectionLength != actualLength)
+            {
+                System.Diagnostics.Debug.WriteLine($"Test Failed. Expected: {selectionLength}, Actual: {actualLength}. Text: '{platformView.Text}', SelStart: {platformView.SelectionStart}, SelEnd: {platformView.SelectionEnd}, CaretIndex: {platformView.CaretIndex}");
+            }
             Assert.Equal(selectionLength, actualLength);
         }
 
