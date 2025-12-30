@@ -110,6 +110,8 @@ internal class GestureManager : IDisposable
         control.AddHandler(Control.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Bubble);
         control.AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Bubble);
         control.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.PointerEnteredEvent, OnPointerEntered, RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.PointerExitedEvent, OnPointerExited, RoutingStrategies.Bubble);
     }
 
     private void UnsubscribeFromGestureEvents(AvaloniaControl control)
@@ -117,6 +119,8 @@ internal class GestureManager : IDisposable
         control.RemoveHandler(Control.PointerPressedEvent, OnPointerPressed);
         control.RemoveHandler(Control.PointerMovedEvent, OnPointerMoved);
         control.RemoveHandler(Control.PointerReleasedEvent, OnPointerReleased);
+        control.RemoveHandler(InputElement.PointerEnteredEvent, OnPointerEntered);
+        control.RemoveHandler(InputElement.PointerExitedEvent, OnPointerExited);
     }
 
     private CancellationTokenSource? _singleTapCts;
@@ -142,6 +146,18 @@ internal class GestureManager : IDisposable
             return;
 
         var point = e.GetPosition(sender as Visual);
+        var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
+        
+        // Handle PointerGestureRecognizer.PointerPressed
+        if (pointerRecognizers.Count > 0)
+        {
+            var args = GetPointerArgs(point);
+            foreach (var recognizer in pointerRecognizers)
+            {
+                recognizer.SendPointerPressed(view, args.GetPosition, null, args.Buttons);
+            }
+        }
+
         int clickCount = e.ClickCount;
 
         // Handle pan gesture recognizers
@@ -242,10 +258,7 @@ internal class GestureManager : IDisposable
 
     private void OnPointerMoved(object? sender, Input.PointerEventArgs e)
     {
-        if (e.Handled || !_isPanning)
-            return;
-
-        if (sender as Visual != _panOriginVisual)
+        if (e.Handled)
             return;
 
         if (_view is not View view)
@@ -255,13 +268,33 @@ internal class GestureManager : IDisposable
         if (recognizers == null || recognizers.Count == 0)
             return;
 
+        // 1. Handle PointerGestureRecognizer (Always)
+        var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
+        if (pointerRecognizers.Count > 0)
+        {
+             var point = e.GetPosition(sender as Visual);
+             var args = GetPointerArgs(point);
+             foreach (var recognizer in pointerRecognizers)
+             {
+                 recognizer.SendPointerMoved(view, args.GetPosition, null, args.Buttons);
+             }
+        }
+
+        // 2. Handle PanGestureRecognizer (Only if panning)
+        if (!_isPanning)
+            return;
+
+        // For Pan, we strictly check origin
+        if (sender as Visual != _panOriginVisual)
+            return;
+
         var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
         if (panRecognizers.Count == 0)
             return;
 
-        var point = e.GetPosition(_panRootVisual);
-        double totalX = point.X - _panStartPoint.X;
-        double totalY = point.Y - _panStartPoint.Y;
+        var panPoint = e.GetPosition(_panRootVisual);
+        double totalX = panPoint.X - _panStartPoint.X;
+        double totalY = panPoint.Y - _panStartPoint.Y;
 
         foreach (var recognizer in panRecognizers)
         {
@@ -273,6 +306,29 @@ internal class GestureManager : IDisposable
 
     private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
+        if (e.Handled)
+            return;
+
+        if (_view is not View view)
+            return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null || recognizers.Count == 0)
+            return;
+
+        // 1. Handle PointerGestureRecognizer (Always)
+        var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
+        if (pointerRecognizers.Count > 0)
+        {
+             var point = e.GetPosition(sender as Visual);
+             var args = GetPointerArgs(point);
+             foreach (var recognizer in pointerRecognizers)
+             {
+                 recognizer.SendPointerReleased(view, args.GetPosition, null, args.Buttons);
+             }
+        }
+
+        // 2. Handle PanGestureRecognizer (Only if panning)
         if (!_isPanning)
             return;
 
@@ -286,13 +342,6 @@ internal class GestureManager : IDisposable
         _panOriginVisual = null;
         _panRootVisual = null;
 
-        if (_view is not View view)
-            return;
-
-        var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null || recognizers.Count == 0)
-            return;
-
         var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
         if (panRecognizers.Count == 0)
             return;
@@ -304,6 +353,58 @@ internal class GestureManager : IDisposable
         }
         e.Handled = true;
     }
+
+    private void OnPointerEntered(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        if (_view is not View view)
+            return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null || recognizers.Count == 0)
+            return;
+
+        var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
+        if (pointerRecognizers.Count == 0)
+            return;
+
+        var point = e.GetPosition(sender as Visual);
+        var args = GetPointerArgs(point);
+
+        foreach (var recognizer in pointerRecognizers)
+        {
+            recognizer.SendPointerEntered(view, args.GetPosition, null, args.Buttons);
+        }
+        e.Handled = true;
+    }
+
+    private void OnPointerExited(object? sender, Avalonia.Input.PointerEventArgs e)
+    {
+        if (_view is not View view)
+            return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null || recognizers.Count == 0)
+            return;
+
+        var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
+        if (pointerRecognizers.Count == 0)
+            return;
+
+        var point = e.GetPosition(sender as Visual);
+        var args = GetPointerArgs(point);
+
+        foreach (var recognizer in pointerRecognizers)
+        {
+            recognizer.SendPointerExited(view, args.GetPosition, null, args.Buttons);
+        }
+        e.Handled = true;
+    }
+    
+    private (Func<Microsoft.Maui.IElement?, Microsoft.Maui.Graphics.Point?> GetPosition, ButtonsMask Buttons) GetPointerArgs(Point point)
+    {
+        return (GetPositionFunc(point), (ButtonsMask)1);
+    }
+
 
     private static Func<Microsoft.Maui.IElement?, Microsoft.Maui.Graphics.Point?> GetPositionFunc(Point point)
     {

@@ -118,6 +118,42 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Pointer Gesture -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Pointer Gesture" FontAttributes="Bold"/>
+                    <Label Text="PointerGestureRecognizer - Hover, Press, Move" FontSize="12" FontAttributes="Italic"/>
+
+                    <Border x:Name="PointerBox" 
+                            HeightRequest="150" 
+                            StrokeThickness="1"
+                            Stroke="Gray"
+                            BackgroundColor="LightGoldenrodYellow">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <PointerGestureRecognizer PointerEntered="OnPointerEntered"
+                                                      PointerExited="OnPointerExited"
+                                                      PointerMoved="OnPointerMoved"
+                                                      PointerPressed="OnPointerPressed"
+                                                      PointerReleased="OnPointerReleased"/>
+                        </Border.GestureRecognizers>
+                        <Label x:Name="PointerLabel" 
+                               Text="Hover/Click me!" 
+                               TextColor="Black"
+                               VerticalOptions="Center" 
+                               HorizontalOptions="Center" 
+                               FontAttributes="Bold"/>
+                    </Border>
+                    <Label x:Name="PointerStatusLabel" Text="Status: Idle" HorizontalOptions="Center" />
+                    <Label x:Name="PointerPositionLabel" Text="Position: -" HorizontalOptions="Center" FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

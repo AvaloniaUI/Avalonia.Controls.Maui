@@ -70,4 +70,50 @@ public partial class GesturesPage : ContentPage
                 break;
         }
     }
+
+    private void OnPointerEntered(object sender, PointerEventArgs e)
+    {
+        PointerStatusLabel.Text = "Status: Entered";
+        UpdatePointerPosition(e);
+        PointerBox.BackgroundColor = Colors.LightGreen;
+    }
+
+    private void OnPointerExited(object sender, PointerEventArgs e)
+    {
+        PointerStatusLabel.Text = "Status: Exited";
+        PointerPositionLabel.Text = "Position: -";
+        PointerBox.BackgroundColor = Colors.LightGoldenrodYellow;
+    }
+
+    private void OnPointerMoved(object sender, PointerEventArgs e)
+    {
+        PointerStatusLabel.Text = "Status: Moving";
+        UpdatePointerPosition(e);
+    }
+
+    private void OnPointerPressed(object sender, PointerEventArgs e)
+    {
+        PointerStatusLabel.Text = "Status: Pressed";
+        UpdatePointerPosition(e);
+        PointerBox.BackgroundColor = Colors.Orange;
+    }
+
+    private void OnPointerReleased(object sender, PointerEventArgs e)
+    {
+        PointerStatusLabel.Text = "Status: Released";
+        UpdatePointerPosition(e);
+        PointerBox.BackgroundColor = Colors.LightGreen; // Back to hover state
+    }
+
+    private void UpdatePointerPosition(PointerEventArgs e)
+    {
+        var relativeToBox = e.GetPosition(PointerBox);
+        var relativeToPage = e.GetPosition(this);
+        
+        // Handle null points safely
+        string boxPos = relativeToBox.HasValue ? $"({relativeToBox.Value.X:F0}, {relativeToBox.Value.Y:F0})" : "null";
+        string pagePos = relativeToPage.HasValue ? $"({relativeToPage.Value.X:F0}, {relativeToPage.Value.Y:F0})" : "null";
+
+        PointerPositionLabel.Text = $"Box: {boxPos} | Page: {pagePos}";
+    }
 }
