@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.FramePage"
+             Title="Frame">
+    <ContentPage.Resources>
+        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+        <Color x:Key="SectionBorderDark">#444444</Color>
+        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+        <Color x:Key="FrameBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="FrameBackgroundDark">#2D2D2D</Color>
+        <Color x:Key="AccentPrimary">#6200EE</Color>
+        <Color x:Key="AccentSecondary">#03DAC5</Color>
+    </ContentPage.Resources>
+    
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="Frame Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+            
+            <!-- Deprecation Notice -->
+            <Border BackgroundColor="#FFF3CD" Stroke="#856404" Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Deprecated Control" 
+                           FontAttributes="Bold" 
+                           TextColor="#856404"/>
+                    <Label Text="Frame is deprecated in .NET MAUI 9+. Use Border instead for new development."
+                           TextColor="#856404"
+                           FontSize="12"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Basic Frame -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Frame"
+                           FontAttributes="Bold"/>
+                    <Label Text="A simple frame wrapping a label"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                           HorizontalOptions="Center"
+                           Padding="16">
+                        <Label Text="Frame wrapped around a Label"/>
+                    </Frame>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Styled Frame -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Styled Frame"
+                           FontAttributes="Bold"/>
+                    <Label Text="Frame with BorderColor and CornerRadius"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                           BorderColor="{AppThemeBinding Light=Gray, Dark=LightGray}"
+                           CornerRadius="10"
+                           HorizontalOptions="Center"
+                           Padding="16">
+                        <Label Text="BorderColor=Gray, CornerRadius=10"/>
+                    </Frame>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                           BorderColor="{AppThemeBinding Light=Blue, Dark=LightSkyBlue}"
+                           CornerRadius="20"
+                           HorizontalOptions="Center"
+                           Padding="16">
+                        <Label Text="BorderColor=Blue, CornerRadius=20"/>
+                    </Frame>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                           BorderColor="{AppThemeBinding Light=Green, Dark=LightGreen}"
+                           CornerRadius="30"
+                           HorizontalOptions="Center"
+                           Padding="16">
+                        <Label Text="BorderColor=Green, CornerRadius=30"/>
+                    </Frame>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Shadow Frame -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Shadow Frame"
+                           FontAttributes="Bold"/>
+                    <Label Text="Frame with HasShadow property"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                        <VerticalStackLayout Spacing="5">
+                            <Frame HasShadow="False"
+                                   BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                                   BorderColor="{AppThemeBinding Light=Gray, Dark=LightGray}"
+                                   CornerRadius="10"
+                                   Padding="16">
+                                <Label Text="HasShadow=False"/>
+                            </Frame>
+                            <Label Text="No Shadow" 
+                                   HorizontalOptions="Center"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+                        
+                        <VerticalStackLayout Spacing="5">
+                            <Frame HasShadow="True"
+                                   BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                                   BorderColor="{AppThemeBinding Light=Gray, Dark=LightGray}"
+                                   CornerRadius="10"
+                                   Padding="16">
+                                <Label Text="HasShadow=True"/>
+                            </Frame>
+                            <Label Text="With Shadow" 
+                                   HorizontalOptions="Center"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Card Example -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Card Example"
+                           FontAttributes="Bold"/>
+                    <Label Text="Frame with complex layout as content"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                           BorderColor="{AppThemeBinding Light=Gray, Dark=#555555}"
+                           CornerRadius="5"
+                           Padding="12"
+                           HorizontalOptions="Center"
+                           WidthRequest="300">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Card Example"
+                                   FontSize="16"
+                                   FontAttributes="Bold"/>
+                            <BoxView Color="{AppThemeBinding Light=Gray, Dark=LightGray}"
+                                     HeightRequest="1"
+                                     HorizontalOptions="Fill"/>
+                            <Label Text="Frames can wrap more complex layouts to create UI components like this card."/>
+                        </VerticalStackLayout>
+                    </Frame>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Background Colors -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Background Colors"
+                           FontAttributes="Bold"/>
+                    <Label Text="Frame with different background colors"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#1E3A5F}"
+                           BorderColor="{AppThemeBinding Light=#2196F3, Dark=#64B5F6}"
+                           CornerRadius="10"
+                           HorizontalOptions="Center"
+                           Padding="16">
+                        <Label Text="Blue Theme" TextColor="{AppThemeBinding Light=#1565C0, Dark=#90CAF9}"/>
+                    </Frame>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light=#E8F5E9, Dark=#1B4332}"
+                           BorderColor="{AppThemeBinding Light=#4CAF50, Dark=#81C784}"
+                           CornerRadius="10"
+                           HorizontalOptions="Center"
+                           Padding="16">
+                        <Label Text="Green Theme" TextColor="{AppThemeBinding Light=#2E7D32, Dark=#A5D6A7}"/>
+                    </Frame>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#4A3728}"
+                           BorderColor="{AppThemeBinding Light=#FF9800, Dark=#FFB74D}"
+                           CornerRadius="10"
+                           HorizontalOptions="Center"
+                           Padding="16">
+                        <Label Text="Orange Theme" TextColor="{AppThemeBinding Light=#E65100, Dark=#FFCC80}"/>
+                    </Frame>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Interactive Frame -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive Frame"
+                           FontAttributes="Bold"/>
+                    <Label Text="Adjust properties dynamically"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Frame x:Name="InteractiveFrame"
+                           BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                           BorderColor="{AppThemeBinding Light=Purple, Dark=MediumPurple}"
+                           CornerRadius="10"
+                           HasShadow="False"
+                           Padding="20"
+                           HorizontalOptions="Center">
+                        <Label x:Name="InteractiveLabel"
+                               Text="Interactive Frame"
+                               HorizontalOptions="Center"/>
+                    </Frame>
+                    
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          RowDefinitions="Auto,Auto"
+                          ColumnSpacing="10"
+                          RowSpacing="10"
+                          Padding="10">
+                        
+                        <Label Text="Corner Radius:"
+                               VerticalOptions="Center"/>
+                        <Slider x:Name="CornerRadiusSlider"
+                                Grid.Column="1"
+                                Minimum="0"
+                                Maximum="50"
+                                Value="10"
+                                ValueChanged="OnCornerRadiusChanged"/>
+                        <Label x:Name="CornerRadiusValue"
+                               Grid.Column="2"
+                               Text="10"
+                               WidthRequest="30"/>
+                        
+                        <Label Text="Has Shadow:"
+                               Grid.Row="1"
+                               VerticalOptions="Center"/>
+                        <Switch x:Name="ShadowSwitch"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                HorizontalOptions="Start"
+                                Toggled="OnShadowToggled"/>
+                    </Grid>
+                    
+                    <FlexLayout Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
+                        <Button Text="Red Border"
+                                Margin="4"
+                                Clicked="OnRedBorderClicked"/>
+                        <Button Text="Blue Border"
+                                Margin="4"
+                                Clicked="OnBlueBorderClicked"/>
+                        <Button Text="Green Border"
+                                Margin="4"
+                                Clicked="OnGreenBorderClicked"/>
+                        <Button Text="No Border"
+                                Margin="4"
+                                Clicked="OnNoBorderClicked"/>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Circle Image (Clipping) -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Round Elements"
+                           FontAttributes="Bold"/>
+                    <Label Text="Using CornerRadius and IsClippedToBounds for circular content"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                        <VerticalStackLayout Spacing="5">
+                            <Frame BorderColor="{AppThemeBinding Light=Black, Dark=White}"
+                                   BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                                   CornerRadius="50"
+                                   HeightRequest="100"
+                                   WidthRequest="100"
+                                   IsClippedToBounds="True"
+                                   Padding="0"
+                                   HorizontalOptions="Center">
+                                <Image Source="dotnet_logo.png"
+                                       Aspect="AspectFill"
+                                       HeightRequest="100"
+                                       WidthRequest="100"/>
+                            </Frame>
+                            <Label Text="Circle Image"
+                                   HorizontalOptions="Center"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+                        
+                        <VerticalStackLayout Spacing="5">
+                            <Frame BorderColor="{AppThemeBinding Light={StaticResource AccentPrimary}, Dark={StaticResource AccentSecondary}}"
+                                   BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                                   CornerRadius="25"
+                                   HeightRequest="100"
+                                   WidthRequest="100"
+                                   IsClippedToBounds="True"
+                                   Padding="0"
+                                   HorizontalOptions="Center">
+                                <Image Source="dotnet_logo.png"
+                                       Aspect="AspectFill"
+                                       HeightRequest="100"
+                                       WidthRequest="100"/>
+                            </Frame>
+                            <Label Text="Rounded Square"
+                                   HorizontalOptions="Center"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Padding Variations -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Padding Variations"
+                           FontAttributes="Bold"/>
+                    <Label Text="Different padding values"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                           BorderColor="{AppThemeBinding Light=Gray, Dark=LightGray}"
+                           CornerRadius="8"
+                           Padding="5"
+                           HorizontalOptions="Center">
+                        <Label Text="Padding=5"/>
+                    </Frame>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                           BorderColor="{AppThemeBinding Light=Gray, Dark=LightGray}"
+                           CornerRadius="8"
+                           Padding="15"
+                           HorizontalOptions="Center">
+                        <Label Text="Padding=15"/>
+                    </Frame>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                           BorderColor="{AppThemeBinding Light=Gray, Dark=LightGray}"
+                           CornerRadius="8"
+                           Padding="30"
+                           HorizontalOptions="Center">
+                        <Label Text="Padding=30"/>
+                    </Frame>
+                    
+                    <Frame BackgroundColor="{AppThemeBinding Light={StaticResource FrameBackgroundLight}, Dark={StaticResource FrameBackgroundDark}}"
+                           BorderColor="{AppThemeBinding Light=Gray, Dark=LightGray}"
+                           CornerRadius="8"
+                           Padding="10,30"
+                           HorizontalOptions="Center">
+                        <Label Text="Padding=10,30 (H,V)"/>
+                    </Frame>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
