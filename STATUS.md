@@ -355,10 +355,13 @@ Used to wrap a view or layout with a border that can be configured with color, s
 | Property | Status |
 |----------|--------|
 | BorderColor | ✅ Implemented |
-| CornerRadius | ⏳ TODO |
-| HasShadow | ⏳ TODO |
-| Content | ⏳ TODO |
-| Padding | ⏳ TODO |
+| CornerRadius | ✅ Implemented |
+| HasShadow | ✅ Implemented |
+| Content | ✅ Implemented |
+| Padding | ✅ Implemented |
+| Background | ✅ Implemented |
+| BackgroundColor | ✅ Implemented |
+| IsClippedToBounds | ✅ Implemented |
 
 ---
 
