@@ -111,18 +111,26 @@ internal class GestureManager : IDisposable
 
     private void SubscribeToGestureEvents(AvaloniaControl control)
     {
-        control.AddHandler(global::Avalonia.Controls.Control.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel | RoutingStrategies.Bubble);
+        // Only subscribe to Bubble to avoid handling the same click twice
+        control.AddHandler(global::Avalonia.Controls.Control.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Bubble);
+        control.AddHandler(global::Avalonia.Controls.Control.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Bubble);
+        control.AddHandler(global::Avalonia.Controls.Control.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Bubble);
     }
 
     private void UnsubscribeFromGestureEvents(AvaloniaControl control)
     {
         control.RemoveHandler(global::Avalonia.Controls.Control.PointerPressedEvent, OnPointerPressed);
+        control.RemoveHandler(global::Avalonia.Controls.Control.PointerMovedEvent, OnPointerMoved);
+        control.RemoveHandler(global::Avalonia.Controls.Control.PointerReleasedEvent, OnPointerReleased);
     }
 
-    private DateTime? _lastTapTime;
-    private global::Avalonia.Point? _lastTapPosition;
-    private const double DoubleTapThresholdMs = 300;
-    private const double DoubleTapDistanceThreshold = 10;
+    private System.Threading.CancellationTokenSource? _singleTapCts;
+    private const int DoubleTapDelayMs = 300;
+
+    // Pan gesture state
+    private bool _isPanning;
+    private global::Avalonia.Point _panStartPoint;
+    private global::Avalonia.Point _lastPanPoint;
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
@@ -133,49 +141,159 @@ internal class GestureManager : IDisposable
         if (recognizers == null || recognizers.Count == 0)
             return;
 
+        var point = e.GetPosition(sender as global::Avalonia.Visual);
+        int clickCount = e.ClickCount;
+
+        // Handle pan gesture recognizers
+        var panRecognizers = recognizers.OfType<PanGestureRecognizer>().ToList();
+        if (panRecognizers.Count > 0)
+        {
+            _isPanning = true;
+            _panStartPoint = point;
+            _lastPanPoint = point;
+            
+            // Fire Started event
+            foreach (var recognizer in panRecognizers)
+            {
+                recognizer.SendPanStarted(view, Application.Current?.MainPage?.Id ?? 0);
+            }
+        }
+
+        // Handle tap gesture recognizers
         var tapRecognizers = recognizers.OfType<TapGestureRecognizer>().ToList();
         if (tapRecognizers.Count == 0)
             return;
 
-        var point = e.GetPosition(sender as global::Avalonia.Visual);
-        var now = DateTime.Now;
+        // Separate recognizers by type
+        var singleTapRecognizers = tapRecognizers.Where(r => r.NumberOfTapsRequired == 1).ToList();
+        var doubleTapRecognizers = tapRecognizers.Where(r => r.NumberOfTapsRequired == 2).ToList();
 
-        // Determine if this is a double tap
-        int tapCount = 1;
-        if (_lastTapTime != null && _lastTapPosition != null)
-        {
-            var timeSinceLastTap = (now - _lastTapTime.Value).TotalMilliseconds;
-            var distanceFromLastTap = Math.Sqrt(
-                Math.Pow(point.X - _lastTapPosition.Value.X, 2) +
-                Math.Pow(point.Y - _lastTapPosition.Value.Y, 2));
+        bool hasSingleTap = singleTapRecognizers.Count > 0;
+        bool hasDoubleTap = doubleTapRecognizers.Count > 0;
 
-            if (timeSinceLastTap <= DoubleTapThresholdMs && distanceFromLastTap <= DoubleTapDistanceThreshold)
-            {
-                tapCount = 2;
-                _lastTapTime = null;
-                _lastTapPosition = null;
-            }
-            else
-            {
-                _lastTapTime = now;
-                _lastTapPosition = point;
-            }
-        }
-        else
+        // Case 1: Only single-tap recognizers - fire on every tap immediately
+        if (hasSingleTap && !hasDoubleTap)
         {
-            _lastTapTime = now;
-            _lastTapPosition = point;
-        }
-
-        // Find matching recognizers
-        foreach (var recognizer in tapRecognizers)
-        {
-            if (recognizer.NumberOfTapsRequired == tapCount)
+            foreach (var recognizer in singleTapRecognizers)
             {
                 recognizer.SendTapped(view, GetPositionFunc(point));
+            }
+            e.Handled = true;
+            return;
+        }
+
+        // Case 2: Only double-tap recognizers - fire when ClickCount >= 2
+        if (hasDoubleTap && !hasSingleTap)
+        {
+            if (clickCount >= 2)
+            {
+                foreach (var recognizer in doubleTapRecognizers)
+                {
+                    recognizer.SendTapped(view, GetPositionFunc(point));
+                }
                 e.Handled = true;
             }
+            return;
         }
+
+        // Case 3: Both single and double-tap recognizers
+        // This is the complex case that requires delayed single-tap
+        if (clickCount >= 2)
+        {
+            // Cancel any pending single-tap and fire double-tap
+            _singleTapCts?.Cancel();
+            _singleTapCts = null;
+            
+            foreach (var recognizer in doubleTapRecognizers)
+            {
+                recognizer.SendTapped(view, GetPositionFunc(point));
+            }
+            e.Handled = true;
+        }
+        else if (clickCount == 1)
+        {
+            // Delay single-tap to allow for a potential double-tap
+            _singleTapCts?.Cancel();
+            _singleTapCts = new System.Threading.CancellationTokenSource();
+            var cts = _singleTapCts;
+            var capturedPoint = point;
+            var capturedView = view;
+            var capturedRecognizers = singleTapRecognizers.ToList();
+            
+            _ = System.Threading.Tasks.Task.Delay(DoubleTapDelayMs, cts.Token).ContinueWith(t =>
+            {
+                if (!t.IsCanceled)
+                {
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        foreach (var recognizer in capturedRecognizers)
+                        {
+                            recognizer.SendTapped(capturedView, GetPositionFunc(capturedPoint));
+                        }
+                    });
+                }
+            }, System.Threading.Tasks.TaskScheduler.Default);
+        }
+    }
+
+    private void OnPointerMoved(object? sender, PointerEventArgs e)
+    {
+        if (!_isPanning)
+            return;
+
+        if (_view is not View view)
+            return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null || recognizers.Count == 0)
+            return;
+
+        var panRecognizers = recognizers.OfType<PanGestureRecognizer>().ToList();
+        if (panRecognizers.Count == 0)
+            return;
+
+        var point = e.GetPosition(sender as global::Avalonia.Visual);
+        double totalX = point.X - _panStartPoint.X;
+        double totalY = point.Y - _panStartPoint.Y;
+
+        _lastPanPoint = point;
+
+        // Fire Running event
+        foreach (var recognizer in panRecognizers)
+        {
+            recognizer.SendPanRunning(view, totalX, totalY, Application.Current?.MainPage?.Id ?? 0);
+        }
+        e.Handled = true;
+    }
+
+    private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (!_isPanning)
+            return;
+
+        _isPanning = false;
+
+        if (_view is not View view)
+            return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null || recognizers.Count == 0)
+            return;
+
+        var panRecognizers = recognizers.OfType<PanGestureRecognizer>().ToList();
+        if (panRecognizers.Count == 0)
+            return;
+
+        var point = e.GetPosition(sender as global::Avalonia.Visual);
+        double totalX = point.X - _panStartPoint.X;
+        double totalY = point.Y - _panStartPoint.Y;
+
+        // Fire Completed event
+        foreach (var recognizer in panRecognizers)
+        {
+            recognizer.SendPanCompleted(view, totalX, totalY, Application.Current?.MainPage?.Id ?? 0);
+        }
+        e.Handled = true;
     }
 
     private static Func<Microsoft.Maui.IElement?, Microsoft.Maui.Graphics.Point?> GetPositionFunc(global::Avalonia.Point point)
