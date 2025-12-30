@@ -225,33 +225,33 @@ Enables you to enter and edit multiple lines of text.
 
 | Property | Status |
 |----------|--------|
-| AutoSize | ⏳ TODO |
-| CharacterSpacing | ⏳ TODO |
-| CursorPosition | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| HorizontalTextAlignment | ⏳ TODO |
+| AutoSize | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
+| CursorPosition | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontAutoScalingEnabled | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| HorizontalTextAlignment | ✅ Implemented |
 | IsTextPredictionEnabled | ⏳ TODO |
-| Placeholder | ⏳ TODO |
-| PlaceholderColor | ⏳ TODO |
-| SelectionLength | ⏳ TODO |
-| Text | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| VerticalTextAlignment | ⏳ TODO |
-| IsReadOnly | ⏳ TODO |
+| Placeholder | ✅ Implemented |
+| PlaceholderColor | ✅ Implemented |
+| SelectionLength | ✅ Implemented |
+| Text | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| VerticalTextAlignment | ✅ Implemented |
+| IsReadOnly | ✅ Implemented |
 | IsSpellCheckEnabled | ⏳ TODO |
 | Keyboard | ⏳ TODO |
-| MaxLength | ⏳ TODO |
-| TextTransform | ⏳ TODO |
+| MaxLength | ✅ Implemented |
+| TextTransform | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| TextChanged | ⏳ TODO |
-| Completed | ⏳ TODO |
+| TextChanged | ✅ Implemented |
+| Completed | ✅ Implemented |
 
 ---
 
