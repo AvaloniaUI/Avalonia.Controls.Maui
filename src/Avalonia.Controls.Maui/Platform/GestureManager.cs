@@ -1,12 +1,10 @@
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Internals;
-using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
 using AvaloniaControl = Avalonia.Controls.Control;
+using AvaloniaTopLevel = Avalonia.Controls.TopLevel;
 
 namespace Avalonia.Controls.Maui.Platform;
 
@@ -83,7 +81,7 @@ internal class GestureManager : IDisposable
             DisconnectGestures();
         }
 
-        // The connected Gesture Manager is already setup and watching the correct view
+        // Already setup and watching the correct view
         if (IsConnected)
             return;
 
@@ -105,35 +103,37 @@ internal class GestureManager : IDisposable
 
     private void OnGestureRecognizersCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        // Gesture recognizers collection changed, no action needed for Avalonia
-        // as we handle all gestures through event subscriptions
     }
 
     private void SubscribeToGestureEvents(AvaloniaControl control)
     {
-        // Only subscribe to Bubble to avoid handling the same click twice
-        control.AddHandler(global::Avalonia.Controls.Control.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Bubble);
-        control.AddHandler(global::Avalonia.Controls.Control.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Bubble);
-        control.AddHandler(global::Avalonia.Controls.Control.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Bubble);
+        control.AddHandler(Control.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Bubble);
     }
 
     private void UnsubscribeFromGestureEvents(AvaloniaControl control)
     {
-        control.RemoveHandler(global::Avalonia.Controls.Control.PointerPressedEvent, OnPointerPressed);
-        control.RemoveHandler(global::Avalonia.Controls.Control.PointerMovedEvent, OnPointerMoved);
-        control.RemoveHandler(global::Avalonia.Controls.Control.PointerReleasedEvent, OnPointerReleased);
+        control.RemoveHandler(Control.PointerPressedEvent, OnPointerPressed);
+        control.RemoveHandler(Control.PointerMovedEvent, OnPointerMoved);
+        control.RemoveHandler(Control.PointerReleasedEvent, OnPointerReleased);
     }
 
-    private System.Threading.CancellationTokenSource? _singleTapCts;
+    private CancellationTokenSource? _singleTapCts;
     private const int DoubleTapDelayMs = 300;
 
     // Pan gesture state
     private bool _isPanning;
-    private global::Avalonia.Point _panStartPoint;
-    private global::Avalonia.Point _lastPanPoint;
+    private Point _panStartPoint;
+    private Visual? _panOriginVisual;
+    private Visual? _panRootVisual;
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
+        // Skip if already handled by another GestureManager
+        if (e.Handled)
+            return;
+        
         if (_view is not View view)
             return;
 
@@ -141,21 +141,34 @@ internal class GestureManager : IDisposable
         if (recognizers == null || recognizers.Count == 0)
             return;
 
-        var point = e.GetPosition(sender as global::Avalonia.Visual);
+        var point = e.GetPosition(sender as Visual);
         int clickCount = e.ClickCount;
 
         // Handle pan gesture recognizers
-        var panRecognizers = recognizers.OfType<PanGestureRecognizer>().ToList();
+        var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
+        
         if (panRecognizers.Count > 0)
         {
-            _isPanning = true;
-            _panStartPoint = point;
-            _lastPanPoint = point;
+            e.Handled = true;
             
-            // Fire Started event
+            _isPanning = true;
+            _panOriginVisual = sender as Visual;
+            // Use TopLevel for coordinates
+            _panRootVisual = (_panOriginVisual as AvaloniaControl) != null 
+                ? AvaloniaTopLevel.GetTopLevel(_panOriginVisual as AvaloniaControl) 
+                : _panOriginVisual;
+            if (_panRootVisual == null) _panRootVisual = _panOriginVisual;
+            _panStartPoint = e.GetPosition(_panRootVisual);
+            
+            if (sender is IInputElement inputElement)
+            {
+                e.Pointer.Capture(inputElement);
+            }
+            
             foreach (var recognizer in panRecognizers)
             {
-                recognizer.SendPanStarted(view, Application.Current?.MainPage?.Id ?? 0);
+                if (recognizer is IPanGestureController controller)
+                    controller.SendPanStarted(view, 0);
             }
         }
 
@@ -171,56 +184,47 @@ internal class GestureManager : IDisposable
         bool hasSingleTap = singleTapRecognizers.Count > 0;
         bool hasDoubleTap = doubleTapRecognizers.Count > 0;
 
-        // Case 1: Only single-tap recognizers - fire on every tap immediately
+        // Only single-tap: fire immediately
         if (hasSingleTap && !hasDoubleTap)
         {
             foreach (var recognizer in singleTapRecognizers)
-            {
                 recognizer.SendTapped(view, GetPositionFunc(point));
-            }
             e.Handled = true;
             return;
         }
 
-        // Case 2: Only double-tap recognizers - fire when ClickCount >= 2
+        // Only double-tap: fire when ClickCount >= 2
         if (hasDoubleTap && !hasSingleTap)
         {
             if (clickCount >= 2)
             {
                 foreach (var recognizer in doubleTapRecognizers)
-                {
                     recognizer.SendTapped(view, GetPositionFunc(point));
-                }
                 e.Handled = true;
             }
             return;
         }
 
-        // Case 3: Both single and double-tap recognizers
-        // This is the complex case that requires delayed single-tap
+        // Both single and double-tap: delay single-tap to detect double-tap
         if (clickCount >= 2)
         {
-            // Cancel any pending single-tap and fire double-tap
             _singleTapCts?.Cancel();
             _singleTapCts = null;
             
             foreach (var recognizer in doubleTapRecognizers)
-            {
                 recognizer.SendTapped(view, GetPositionFunc(point));
-            }
             e.Handled = true;
         }
         else if (clickCount == 1)
         {
-            // Delay single-tap to allow for a potential double-tap
             _singleTapCts?.Cancel();
-            _singleTapCts = new System.Threading.CancellationTokenSource();
+            _singleTapCts = new CancellationTokenSource();
             var cts = _singleTapCts;
             var capturedPoint = point;
             var capturedView = view;
             var capturedRecognizers = singleTapRecognizers.ToList();
             
-            _ = System.Threading.Tasks.Task.Delay(DoubleTapDelayMs, cts.Token).ContinueWith(t =>
+            _ = Task.Delay(DoubleTapDelayMs, cts.Token).ContinueWith(t =>
             {
                 if (!t.IsCanceled)
                 {
@@ -232,13 +236,16 @@ internal class GestureManager : IDisposable
                         }
                     });
                 }
-            }, System.Threading.Tasks.TaskScheduler.Default);
+            }, TaskScheduler.Default);
         }
     }
 
-    private void OnPointerMoved(object? sender, PointerEventArgs e)
+    private void OnPointerMoved(object? sender, Input.PointerEventArgs e)
     {
-        if (!_isPanning)
+        if (e.Handled || !_isPanning)
+            return;
+
+        if (sender as Visual != _panOriginVisual)
             return;
 
         if (_view is not View view)
@@ -248,20 +255,18 @@ internal class GestureManager : IDisposable
         if (recognizers == null || recognizers.Count == 0)
             return;
 
-        var panRecognizers = recognizers.OfType<PanGestureRecognizer>().ToList();
+        var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
         if (panRecognizers.Count == 0)
             return;
 
-        var point = e.GetPosition(sender as global::Avalonia.Visual);
+        var point = e.GetPosition(_panRootVisual);
         double totalX = point.X - _panStartPoint.X;
         double totalY = point.Y - _panStartPoint.Y;
 
-        _lastPanPoint = point;
-
-        // Fire Running event
         foreach (var recognizer in panRecognizers)
         {
-            recognizer.SendPanRunning(view, totalX, totalY, Application.Current?.MainPage?.Id ?? 0);
+            if (recognizer is IPanGestureController controller)
+                controller.SendPan(view, totalX, totalY, 0);
         }
         e.Handled = true;
     }
@@ -271,7 +276,15 @@ internal class GestureManager : IDisposable
         if (!_isPanning)
             return;
 
+        if (sender as Visual != _panOriginVisual)
+            return;
+
         _isPanning = false;
+        
+        // Release pointer capture
+        e.Pointer.Capture(null);
+        _panOriginVisual = null;
+        _panRootVisual = null;
 
         if (_view is not View view)
             return;
@@ -280,23 +293,19 @@ internal class GestureManager : IDisposable
         if (recognizers == null || recognizers.Count == 0)
             return;
 
-        var panRecognizers = recognizers.OfType<PanGestureRecognizer>().ToList();
+        var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
         if (panRecognizers.Count == 0)
             return;
 
-        var point = e.GetPosition(sender as global::Avalonia.Visual);
-        double totalX = point.X - _panStartPoint.X;
-        double totalY = point.Y - _panStartPoint.Y;
-
-        // Fire Completed event
         foreach (var recognizer in panRecognizers)
         {
-            recognizer.SendPanCompleted(view, totalX, totalY, Application.Current?.MainPage?.Id ?? 0);
+            if (recognizer is IPanGestureController controller)
+                controller.SendPanCompleted(view, 0);
         }
         e.Handled = true;
     }
 
-    private static Func<Microsoft.Maui.IElement?, Microsoft.Maui.Graphics.Point?> GetPositionFunc(global::Avalonia.Point point)
+    private static Func<Microsoft.Maui.IElement?, Microsoft.Maui.Graphics.Point?> GetPositionFunc(Point point)
     {
         return (relativeTo) => new Microsoft.Maui.Graphics.Point(point.X, point.Y);
     }
