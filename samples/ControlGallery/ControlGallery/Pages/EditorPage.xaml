@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.EditorPage"
+             Title="Editor">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Label Text="Editor" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+
+            <!-- Basic Editor -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Editor" FontAttributes="Bold" />
+                    <Editor Placeholder="Type something here..."/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Fixed Height -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Fixed Height (100)" FontAttributes="Bold" />
+                    <Editor Placeholder="Fixed height editor" HeightRequest="100"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- AutoSize -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="AutoSize" FontAttributes="Bold" />
+                    <Label Text="Disabled (Fixed):" FontSize="12" />
+                    <Editor Text="This editor has a fixed height and won't expand." AutoSize="Disabled" HeightRequest="60"/>
+                    <Label Text="TextChanges (Auto-expand):" FontSize="12" />
+                    <Editor Text="This editor expands as you type more content. Try adding multiple lines to see it grow automatically!" AutoSize="TextChanges"/>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Background Color -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Background Color" FontAttributes="Bold" />
+                    <Editor Text="Light Yellow" BackgroundColor="LightGoldenrodYellow" />
+                    <Editor Text="Light Blue" BackgroundColor="LightBlue" />
+                    <Editor Text="Light Green" BackgroundColor="LightGreen" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Dynamic Background -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Background" FontAttributes="Bold" />
+                    <Editor x:Name="DynamicEditor" Placeholder="Background changes on button click" HeightRequest="80"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Red" Clicked="OnRedClicked" BackgroundColor="Red" TextColor="White" />
+                        <Button Text="Green" Clicked="OnGreenClicked" BackgroundColor="Green" TextColor="White" />
+                        <Button Text="Blue" Clicked="OnBlueClicked" BackgroundColor="Blue" TextColor="White" />
+                        <Button Text="Clear" Clicked="OnClearClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Text Color -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Color" FontAttributes="Bold" />
+                    <Editor Text="Blue Text" TextColor="Blue"/>
+                    <Editor Text="Green Text" TextColor="Green"/>
+                    <Editor Text="Red Text" TextColor="Red"/>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Dynamic Text Color -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Text Color" FontAttributes="Bold" />
+                    <Editor x:Name="DynamicTextColorEditor" Text="Text color changes on button click" HeightRequest="80"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Red" Clicked="OnTextRedClicked" BackgroundColor="Red" TextColor="White" />
+                        <Button Text="Green" Clicked="OnTextGreenClicked" BackgroundColor="Green" TextColor="White" />
+                        <Button Text="Blue" Clicked="OnTextBlueClicked" BackgroundColor="Blue" TextColor="White" />
+                        <Button Text="Reset" Clicked="OnTextResetClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Placeholder Color -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Placeholder Color" FontAttributes="Bold" />
+                    <Editor Placeholder="Blue Placeholder" PlaceholderColor="Blue"/>
+                    <Editor Placeholder="Green Placeholder" PlaceholderColor="Green"/>
+                    <Editor Placeholder="Red Placeholder" PlaceholderColor="Red"/>
+                </VerticalStackLayout>
+            </Border>
+
+             <!-- Font Options -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Options" FontAttributes="Bold" />
+                    
+                    <Label Text="Font Size:" FontSize="12" />
+                    <Editor Text="Small Font (12)" FontSize="12" />
+                    <Editor Text="Large Font (24)" FontSize="24" />
+                    
+                    <Label Text="Font Attributes:" FontSize="12" />
+                    <Editor Text="Bold Text" FontAttributes="Bold" />
+                    <Editor Text="Italic Text" FontAttributes="Italic" />
+                    
+                    <Label Text="Font Family:" FontSize="12" />
+                    <Editor Text="Courier New" FontFamily="Courier New" />
+                    <Editor Text="Georgia" FontFamily="Georgia" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Character Spacing -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Character Spacing" FontAttributes="Bold" />
+                    <Editor Text="Tight Spacing (-1)" CharacterSpacing="-1" />
+                    <Editor Text="Wide Spacing (5)" CharacterSpacing="5" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Transform -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Transform" FontAttributes="Bold" />
+                    <Editor Text="Uppercase Text" TextTransform="Uppercase" />
+                    <Editor Text="Lowercase Text" TextTransform="Lowercase" />
+                    <Editor Text="None (Default)" TextTransform="None" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Alignment -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Alignment" FontAttributes="Bold" />
+                    
+                    <Label Text="Horizontal:" FontSize="12" />
+                    <Editor Text="Start Aligned" HorizontalTextAlignment="Start" />
+                    <Editor Text="Center Aligned" HorizontalTextAlignment="Center" />
+                    <Editor Text="End Aligned" HorizontalTextAlignment="End" />
+                    
+                    <Label Text="Vertical (Height 100):" FontSize="12" />
+                    <Editor Text="Top Aligned" VerticalTextAlignment="Start" HeightRequest="100" />
+                    <Editor Text="Center Aligned" VerticalTextAlignment="Center" HeightRequest="100" />
+                    <Editor Text="Bottom Aligned" VerticalTextAlignment="End" HeightRequest="100" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Read Only & Max Length -->
+             <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Constraints" FontAttributes="Bold" />
+                    <Editor Text="Read Only Content" IsReadOnly="True" />
+                    <Editor Placeholder="Max Length (10)" MaxLength="10" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Completed Event -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Completed Event" FontAttributes="Bold" />
+                    <Label Text="The Completed event fires when the editor loses focus." FontSize="12" />
+                    <Editor x:Name="CompletedEditor" Placeholder="Type something and tap outside..." Completed="OnEditorCompleted" HeightRequest="80"/>
+                    <Label x:Name="CompletedLabel" Text="Status: Waiting for input..." TextColor="Gray" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Disabled State -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Disabled State" FontAttributes="Bold" />
+                    <Editor Text="This editor is disabled" IsEnabled="False" HeightRequest="60"/>
+                    <Editor Placeholder="Disabled with placeholder" IsEnabled="False" HeightRequest="60"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
