@@ -56,7 +56,7 @@
                     </HorizontalStackLayout>
 
                     <Button Text="I have Visual States!" 
-                            IsEnabled="{Binding Source={x:Reference EnableSwitch}, Path=IsToggled}"
+                            IsEnabled="{Binding Source={x:Reference EnableSwitch}, Path=IsToggled, x:DataType=Switch}"
                             Style="{StaticResource StatefulButtonStyle}" />
                 </VerticalStackLayout>
             </Border>

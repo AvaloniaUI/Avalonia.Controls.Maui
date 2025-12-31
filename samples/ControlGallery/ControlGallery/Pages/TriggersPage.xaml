@@ -57,7 +57,7 @@
 
                     <Button Text="Save" IsEnabled="False" >
                         <Button.Triggers>
-                            <DataTrigger TargetType="Button" Binding="{Binding Source={x:Reference EnableCheckBox}, Path=IsChecked}" Value="True">
+                            <DataTrigger TargetType="Button" Binding="{Binding Source={x:Reference EnableCheckBox}, Path=IsChecked, x:DataType=CheckBox}" Value="True">
                                 <Setter Property="IsEnabled" Value="True" />
                             </DataTrigger>
                         </Button.Triggers>
@@ -107,7 +107,7 @@
                         <Entry.Triggers>
                             <MultiTrigger TargetType="Entry">
                                 <MultiTrigger.Conditions>
-                                    <BindingCondition Binding="{Binding Source={x:Reference MultiTriggerCheckBox}, Path=IsChecked}" Value="True" />
+                                    <BindingCondition Binding="{Binding Source={x:Reference MultiTriggerCheckBox}, Path=IsChecked, x:DataType=CheckBox}" Value="True" />
                                     <PropertyCondition Property="Text" Value="123" />
                                 </MultiTrigger.Conditions>
                                 <Setter Property="TextColor" Value="DarkOrange" />
