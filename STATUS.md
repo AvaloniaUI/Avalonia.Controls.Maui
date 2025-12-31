@@ -1265,7 +1265,7 @@ All controls inherit these common properties from the View and VisualElement bas
 | AutomationId | string | ✅ Implemented |
 | Background | Brush | ✅ Implemented |
 | BackgroundColor | Color | ✅ Implemented |
-| Behaviors | IList<Behavior> | ⏳ TODO |
+| Behaviors | IList<Behavior> | ✅ Implemented |
 | BindingContext | object | ⏳ TODO |
 | Bounds | Rect | ⏳ TODO |
 | Clip | Geometry | ✅ Implemented |
@@ -1299,9 +1299,10 @@ All controls inherit these common properties from the View and VisualElement bas
 | ScaleY | double | ✅ Implemented |
 | Shadow | Shadow | ✅ Implemented |
 | StyleId | string | ✅ Implemented |
+| ToolTip | string | ✅ Implemented |
 | TranslationX | double | ✅ Implemented |
 | TranslationY | double | ✅ Implemented |
-| Triggers | IList<TriggerBase> | ⏳ TODO |
+| Triggers | IList<TriggerBase> | ✅ Implemented |
 | VerticalOptions | LayoutOptions | ✅ Implemented |
 | Width | double | ✅ Implemented |
 | WidthRequest | double | ✅ Implemented |

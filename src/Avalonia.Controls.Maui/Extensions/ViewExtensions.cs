@@ -34,8 +34,11 @@ public static class ViewExtensions
             }
             if (group.Children[0] is global::Avalonia.Media.ScaleTransform scale)
             {
-                scale.ScaleX = view.ScaleX * view.Scale;
-                scale.ScaleY = view.ScaleY * view.Scale;
+                double radX = view.RotationX * (Math.PI / 180.0);
+                double radY = view.RotationY * (Math.PI / 180.0);
+                
+                scale.ScaleX = view.ScaleX * view.Scale * Math.Cos(radY);
+                scale.ScaleY = view.ScaleY * view.Scale * Math.Cos(radX);
             }
             if (group.Children[1] is global::Avalonia.Media.RotateTransform rotate)
             {
