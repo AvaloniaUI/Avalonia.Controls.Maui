@@ -188,6 +188,56 @@
                 </VerticalStackLayout>
             </Border>
 
+             <!-- Combined Gestures -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Combined Gestures"
+                           FontAttributes="Bold"/>
+                    <Label Text="This box responds to both tap and pan gestures."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <Border BackgroundColor="LightGray"
+                            HeightRequest="150"
+                            Padding="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Grid>
+                            <Border x:Name="CombinedBox"
+                                    BackgroundColor="Coral"
+                                    WidthRequest="100"
+                                    HeightRequest="100"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="50"/>
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCombinedTap"/>
+                                    <PanGestureRecognizer PanUpdated="OnCombinedPan"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="Tap or Drag"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="White"
+                                       FontAttributes="Bold"
+                                       FontSize="12"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <Label x:Name="CombinedResultLabel"
+                           Text="Interaction: None"
+                           HorizontalOptions="Center"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

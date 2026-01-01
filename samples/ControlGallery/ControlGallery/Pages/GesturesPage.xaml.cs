@@ -11,6 +11,11 @@ public partial class GesturesPage : ContentPage
     private double _panX;
     private double _panY;
 
+    // Combined gesture tracking
+    private double _combinedPanX;
+    private double _combinedPanY;
+    private int _combinedTapCount;
+
     public GesturesPage()
     {
         InitializeComponent();
@@ -134,4 +139,42 @@ public partial class GesturesPage : ContentPage
             _ => Colors.LightCyan
         };
     }
+
+    #region Combined Gestures
+
+    private void OnCombinedTap(object? sender, TappedEventArgs e)
+    {
+        _combinedTapCount++;
+
+        // Cycle through colors on tap
+        var colors = new[] { Colors.Coral, Colors.Crimson, Colors.DarkOrange, Colors.Tomato };
+        CombinedBox.BackgroundColor = colors[_combinedTapCount % colors.Length];
+
+        CombinedResultLabel.Text = $"Tapped {_combinedTapCount} times";
+    }
+
+    private void OnCombinedPan(object? sender, PanUpdatedEventArgs e)
+    {
+        switch (e.StatusType)
+        {
+            case GestureStatus.Running:
+                _combinedPanX += e.TotalX;
+                _combinedPanY += e.TotalY;
+
+                // Clamp to reasonable bounds
+                _combinedPanX = Math.Clamp(_combinedPanX, -100, 100);
+                _combinedPanY = Math.Clamp(_combinedPanY, -50, 50);
+
+                CombinedBox.TranslationX = _combinedPanX;
+                CombinedBox.TranslationY = _combinedPanY;
+                CombinedResultLabel.Text = $"Panning: X={_combinedPanX:F0}, Y={_combinedPanY:F0}";
+                break;
+
+            case GestureStatus.Completed:
+                CombinedResultLabel.Text = $"Pan completed at X={_combinedPanX:F0}, Y={_combinedPanY:F0}";
+                break;
+        }
+    }
+
+    #endregion
 }
