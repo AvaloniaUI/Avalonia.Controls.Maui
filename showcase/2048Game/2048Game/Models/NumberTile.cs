@@ -17,6 +17,6 @@ namespace _2048Game.Models
         private bool isNumberMultiplied;
 
         [ObservableProperty]
-        private string number;
+        private string number = string.Empty;
     }
 }

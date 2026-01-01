@@ -4,8 +4,8 @@ namespace _2048Game.Behaviors
 {
     public class TileStateBehavior : Behavior<Border>
     {
-        private Border border;
-        private NumberTile numberTile;
+        private Border? border;
+        private NumberTile? numberTile;
 
         protected override void OnAttachedTo(Border bindable)
         {
@@ -19,7 +19,8 @@ namespace _2048Game.Behaviors
         {
             base.OnDetachingFrom(bindable);
 
-            border.BindingContextChanged -= OnBindingContextChanged;
+            if (border is not null)
+                border.BindingContextChanged -= OnBindingContextChanged;
 
             if (numberTile is not null)
             {
@@ -27,24 +28,26 @@ namespace _2048Game.Behaviors
             }
         }
 
-        private void OnBindingContextChanged(object sender, EventArgs e)
+        private void OnBindingContextChanged(object? sender, EventArgs e)
         {
-            if (border.BindingContext is NumberTile tile)
+            if (border?.BindingContext is NumberTile tile)
             {
                 numberTile = tile;
                 numberTile.PropertyChanged += OnTileViewModelPropertyChanged;
             }
         }
 
-        private async void OnTileViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private async void OnTileViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
+            if (border is null || numberTile is null) return;
+
             if(e.PropertyName == nameof(NumberTile.IsNumberMultiplied))
             {
                 if (numberTile.IsNumberMultiplied)
                 {
                     double borderScale = border.Scale;
-                    await border.ScaleTo(borderScale * 1.25, 150);
-                    await border.ScaleTo(borderScale, 150);
+                    await border.ScaleToAsync(borderScale * 1.25, 150);
+                    await border.ScaleToAsync(borderScale, 150);
                 }
                 numberTile.IsNumberMultiplied = false;
             }

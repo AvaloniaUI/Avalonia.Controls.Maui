@@ -4,9 +4,9 @@ namespace _2048Game.Converters
 {
     public class StringToTileTextColorConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            int.TryParse(value.ToString(), out int parsedValue);
+            int.TryParse(value?.ToString(), out int parsedValue);
             switch (parsedValue)
             {
                 case 0:
@@ -43,9 +43,9 @@ namespace _2048Game.Converters
             }
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            return (bool)value ? 1 : 0;
+            return value is bool boolValue && boolValue ? 1 : 0;
         }
     }
 }

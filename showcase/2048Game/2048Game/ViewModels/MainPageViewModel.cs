@@ -24,16 +24,14 @@ namespace _2048Game.ViewModels
         private Random oR = new Random();
         private Boolean gameOver = false;
         private int iNewX, iNewY;
-        private NumberTile currentTile;
-        private CancellationTokenSource cancelAnimationTokenSource;
         private int guessedCount;
         private LevelState state;
-        private string _mauiRobotPhrase;
+        private string _mauiRobotPhrase = string.Empty;
 
         [ObservableProperty]
         private int totalMoves;
 
-        private string formattedTime;
+        private string formattedTime = string.Empty;
         public string FormattedTime
         {
             get => formattedTime;
@@ -125,7 +123,7 @@ namespace _2048Game.ViewModels
             State = LevelState.Playing;
             ResetGame();
             Update();
-            LoadAsync();
+            _ = LoadAsync();
         }
         public MainPageViewModel()
         {
@@ -137,7 +135,7 @@ namespace _2048Game.ViewModels
             }
 
             Update();
-            LoadAsync();
+            _ = LoadAsync();
             _timer = new Timer(new TimerCallback((s) => UpdateTimerInUI()), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
         }
 
