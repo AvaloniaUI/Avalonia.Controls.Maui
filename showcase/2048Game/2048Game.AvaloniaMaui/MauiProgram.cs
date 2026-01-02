@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Maui;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace _2048Game.AvaloniaMaui;
 
@@ -12,7 +11,6 @@ public static class MauiProgram
 			.UseMauiApp<_2048Game.App>()
 			.UseAvaloniaApp(true)
 			.UseAvaloniaGraphics()
-			.UseMauiCommunityToolkit()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

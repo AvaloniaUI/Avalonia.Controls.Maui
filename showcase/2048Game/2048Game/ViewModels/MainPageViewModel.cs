@@ -3,7 +3,6 @@ using _2048Game.Enums;
 using _2048Game.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using CommunityToolkit.Maui;
 using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
