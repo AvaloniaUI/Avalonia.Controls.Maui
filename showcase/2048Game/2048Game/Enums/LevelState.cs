@@ -3,6 +3,7 @@
     public enum LevelState
     {
         None,
+        AttractMode,
         Playing,
         Complete,
         GameOver

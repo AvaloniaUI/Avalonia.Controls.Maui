@@ -28,6 +28,7 @@ namespace _2048Game.ViewModels
         public event EventHandler<IEnumerable<NumberTile>>? TilesInitialized;
         public event EventHandler<NumberTile>? TileCreated;
         public event EventHandler<MoveResult>? MoveRequested;
+        public event EventHandler? AttractModeStarted;
 
         // Active tiles (entity-based, not fixed grid cells)
         private readonly List<NumberTile> _activeTiles = new();
@@ -86,10 +87,17 @@ namespace _2048Game.ViewModels
                 iBoard[i] = new int[4];
             }
 
-            // Initialize with 2 random tiles
-            SpawnInitialTiles();
+            // Start in attract mode
+            State = LevelState.AttractMode;
 
             _timer = new Timer(new TimerCallback((s) => UpdateTimerInUI()), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+        }
+
+        public void StartAttractMode()
+        {
+            State = LevelState.AttractMode;
+            _activeTiles.Clear();
+            AttractModeStarted?.Invoke(this, EventArgs.Empty);
         }
 
         private void SpawnInitialTiles()

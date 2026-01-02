@@ -19,6 +19,7 @@
         <converters:StringToTileBackgroundColorConverter x:Key="StringToTileBackgroundColorConverter" />
         <converters:StringToTileTextColorConverter x:Key="StringToTileTextColorConverter" />
         <converters:EnumToBoolConverter x:Key="IsGameOverConverter" TrueValue="{x:Static enums:LevelState.GameOver}" />
+        <converters:EnumToBoolConverter x:Key="IsAttractModeConverter" TrueValue="{x:Static enums:LevelState.AttractMode}" />
         <Style x:Key="NumberTileBorder" TargetType="Border">
             <Setter Property="HeightRequest" Value="70" />
             <Setter Property="WidthRequest" Value="70" />
@@ -134,6 +135,42 @@
 
                         <Grid.GestureRecognizers>
                             <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated" />
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                </Border>
+                <!-- Attract Mode Overlay (text only - tiles animate in TileLayer) -->
+                <Border x:Name="AttractModeBorder"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        HeightRequest="336"
+                        WidthRequest="340"
+                        IsVisible="{Binding State, Converter={StaticResource IsAttractModeConverter}}"
+                        BackgroundColor="#AA000000"
+                        Stroke="Transparent">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="5" />
+                    </Border.StrokeShape>
+                    <Grid>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                            <Label Text="2048"
+                                   FontFamily="PoppinsBold"
+                                   FontSize="48"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   Opacity="0.9">
+                                <Label.Shadow>
+                                    <Shadow Brush="Black" Offset="2,2" Radius="4" Opacity="0.5" />
+                                </Label.Shadow>
+                            </Label>
+                            <Label Text="Tap to Play"
+                                   FontFamily="PoppinsSemibold"
+                                   FontSize="18"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   Opacity="0.8" />
+                        </VerticalStackLayout>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="AttractMode_Tapped" />
                         </Grid.GestureRecognizers>
                     </Grid>
                 </Border>
