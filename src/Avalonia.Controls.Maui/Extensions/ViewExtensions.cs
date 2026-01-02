@@ -81,6 +81,18 @@ public static class ViewExtensions
     }
 
     /// <summary>
+    /// Updates the margin of a platform view based on the .NET MAUI view's margin property.
+    /// </summary>
+    /// <param name="control">The platform view to update.</param>
+    /// <param name="view">The .NET MAUI view containing the margin property.</param>
+    /// <remarks>Converts MAUI's Thickness margin to Avalonia's Thickness margin.</remarks>
+    public static void UpdateMargin(this PlatformView control, IView view)
+    {
+        var margin = view.Margin;
+        control.Margin = new Thickness(margin.Left, margin.Top, margin.Right, margin.Bottom);
+    }
+
+    /// <summary>
     /// Updates the minimum height of a platform view based on the .NET MAUI view's minimum height property.
     /// </summary>
     /// <param name="control">The platform view to update.</param>

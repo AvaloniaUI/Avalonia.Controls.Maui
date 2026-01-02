@@ -47,6 +47,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
             [nameof(IContextFlyoutElement.ContextFlyout)] = MapContextFlyout,
             [nameof(IView.HorizontalLayoutAlignment)] = MapHorizontalLayoutAlignment,
             [nameof(IView.VerticalLayoutAlignment)] = MapVerticalLayoutAlignment,
+            [nameof(IView.Margin)] = MapMargin,
         };
 
     /// <summary>
@@ -739,6 +740,19 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     public static void MapVerticalLayoutAlignment(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateVerticalLayoutAlignment(view);
+    }
+
+    /// <summary>
+    /// Maps the abstract <see cref="IView.Margin"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
+    public static void MapMargin(IViewHandler handler, IView view)
+    {
+        if (handler.IsConnectingHandler() && view.Margin == default)
+            return;
+
+        ((PlatformView?)handler.PlatformView)?.UpdateMargin(view);
     }
 
     /// <summary>
