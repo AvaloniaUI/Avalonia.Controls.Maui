@@ -113,50 +113,29 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="5" />
                     </Border.StrokeShape>
-                    <CollectionView
-                        HeightRequest="336"
-                        WidthRequest="340"
-                        Background="{AppThemeBinding Light=#a49381, Dark={StaticResource BoardBackgroundDark}}"
-                        VerticalOptions="Center"
-                        HorizontalOptions="Center"
-                        ItemsSource="{Binding Tiles}">
-                    <CollectionView.ItemsLayout>
-                        <GridItemsLayout
-                            Orientation="Vertical" Span="4" />
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:NumberTile">
-                            <Grid
-                                x:Name="MyToolsPhotosItem"
-                                Margin="4"
-                                Style="{StaticResource NumberTileGrid}">
-                                <Border
-                                    x:Name="tttt"
-                                    Padding="0"
-                                    BackgroundColor="{Binding Number, Converter={StaticResource StringToTileBackgroundColorConverter}}"
-                                    Stroke="Transparent"
-                                    Style="{StaticResource NumberTileBorder}">
-                                    <Border.Behaviors>
-                                        <behaviors:TileStateBehavior />
-                                    </Border.Behaviors>
-                                    <Label
-                                        FontFamily="PoppinsBold"
-                                        Margin="0,5,0,0"
-                                        FontSize="36"
-                                        VerticalOptions="Center"
-                                        HorizontalOptions="Center"
-                                        HorizontalTextAlignment="Center"
-                                        Text="{Binding Number}"
-                                        TextColor="{Binding Number, Converter={StaticResource StringToTileTextColorConverter}}"
-                                        VerticalTextAlignment="Center" />
-                                </Border>
-                            </Grid>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.GestureRecognizers>
-                        <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated" />
-                    </CollectionView.GestureRecognizers>
-                    </CollectionView>
+                    <Grid x:Name="TileContainer"
+                          HeightRequest="336"
+                          WidthRequest="340"
+                          Background="{AppThemeBinding Light=#a49381, Dark={StaticResource BoardBackgroundDark}}"
+                          VerticalOptions="Center"
+                          HorizontalOptions="Center">
+                        <!-- Background grid with empty cell placeholders -->
+                        <Grid x:Name="BackgroundGrid"
+                              RowDefinitions="*,*,*,*"
+                              ColumnDefinitions="*,*,*,*"
+                              RowSpacing="8"
+                              ColumnSpacing="8"
+                              Padding="8">
+                            <!-- Empty cell backgrounds will be created programmatically -->
+                        </Grid>
+
+                        <!-- Tile layer for animated tiles -->
+                        <AbsoluteLayout x:Name="TileLayer" />
+
+                        <Grid.GestureRecognizers>
+                            <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated" />
+                        </Grid.GestureRecognizers>
+                    </Grid>
                 </Border>
                 <!-- GameOver Overlay -->
                 <Border x:Name="GameOverBorder"

@@ -1,31 +1,36 @@
-﻿using _2048Game.Data;
 using _2048Game.Enums;
 using _2048Game.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Windows.Input;
-using System.ComponentModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace _2048Game.ViewModels
 {
     /// <summary>
-    /// Game logic been refered from https://github.com/jakowskidev/u2048_Jakowski
+    /// Game logic refactored for tile movement animations
+    /// Original game logic reference: https://github.com/jakowskidev/u2048_Jakowski
     /// </summary>
     public partial class MainPageViewModel : ObservableObject
     {
+        // Board state
         private int[][] iBoard;
-        private int iScore = 0, iBest = 0, iAdded = 0;
-        private int addNum = 2;
-        private Random oR = new Random();
-        private Boolean gameOver = false;
-        private int iNewX, iNewY;
-        private int guessedCount;
-        private LevelState state;
-        private string _mauiRobotPhrase = string.Empty;
+        private int iScore = 0, iBest = 0;
+        private readonly Random oR = new();
+        private bool gameOver = false;
+
+        // Undo state history
+        private readonly Stack<GameState> _stateHistory = new();
+        private const int MaxUndoHistory = 10;
+
+        // Events for view communication
+        public event EventHandler<IEnumerable<NumberTile>>? TilesInitialized;
+        public event EventHandler<NumberTile>? TileCreated;
+        public event EventHandler<MoveResult>? MoveRequested;
+
+        // Active tiles (entity-based, not fixed grid cells)
+        private readonly List<NumberTile> _activeTiles = new();
 
         [ObservableProperty]
         private int totalMoves;
@@ -58,592 +63,586 @@ namespace _2048Game.ViewModels
             get => addedScore;
             set
             {
-                //need to notify even for same value.
                 addedScore = value;
                 OnPropertyChanged(nameof(AddedScore));
             }
         }
 
-        public int GuessedCount
-        {
-            get => guessedCount;
-            set => SetProperty(ref guessedCount, value);
-        }
-
+        private LevelState state;
         public LevelState State
         {
             get => state;
             set => SetProperty(ref state, value);
         }
-        public string MauiRobotPhrase
-        {
-            get => _mauiRobotPhrase;
-            set => SetProperty(ref _mauiRobotPhrase, value);
-        }
-        
-        public ObservableRangeCollection<NumberTile> GuessedTiles { get; } = new ObservableRangeCollection<NumberTile>();
 
-       
-        private ObservableCollection<NumberTile> tiles = new ObservableCollection<NumberTile>();
-        public ObservableCollection<NumberTile> Tiles
-        {
-            get => tiles;
-            set => SetProperty(ref tiles, value);
-        }
+        private readonly Timer _timer;
+        private DateTime startTime = DateTime.Now;
 
-
-        [RelayCommand]
-        void LeftSwipe()
-        {
-            MoveBoard(Direction.Left);
-            UpdateGame();
-        }
-        [RelayCommand]
-        void RightSwipe()
-        {
-            MoveBoard(Direction.Right);
-            UpdateGame();
-        }
-        [RelayCommand]
-        void UpSwipe()
-        {
-            MoveBoard(Direction.Up);
-            UpdateGame();
-        }
-        [RelayCommand]
-        void DownSwipe()
-        {
-            MoveBoard(Direction.Down);
-            UpdateGame();
-        }
-        [RelayCommand]
-        void NewGame()
-        {
-            State = LevelState.Playing;
-            ResetGame();
-            Update();
-            _ = LoadAsync();
-        }
         public MainPageViewModel()
         {
-            MauiRobotPhrase = "Hello! I am MauiRobots.";
-            this.iBoard = new int[4][];
+            iBoard = new int[4][];
             for (int i = 0; i < 4; i++)
             {
                 iBoard[i] = new int[4];
             }
 
-            Update();
-            _ = LoadAsync();
+            // Initialize with 2 random tiles
+            SpawnInitialTiles();
+
             _timer = new Timer(new TimerCallback((s) => UpdateTimerInUI()), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
         }
 
-        void UpdateGame()
+        private void SpawnInitialTiles()
         {
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    var index = 0;
-                    if (i == 1) index += 3;
-                    if (i == 2) index += 6;
-                    if (i == 3) index += 9;
-                    if (iBoard[i][j] > 0)
-                    {
-                        Tiles[i + j + index].Number = iBoard[i][j].ToString();
-                        if(i == iNewX && j == iNewY)
-                        {
-                            Tiles[i + j + index].IsNewNumberGenerated = true;
-                        }
-                    }
-                    else 
-                    {
-                        Tiles[i + j + index].Number = String.Empty;
-                    }
-                }
-            }
-            if (iAdded > 0)
-            {
-                AddedScore = $"+ {iAdded}";
-            }
-            Score = iScore.ToString();
-            BestScore = iBest.ToString();
-            //See if Game Over
-            if(IsGameOver())
-            {
+            _activeTiles.Clear();
 
-            }
-        }
-        private DateTime startTime = DateTime.Now;
-        Timer _timer;
-        
-        private void UpdateTimerInUI()
-        {
-            TimeSpan spent = DateTime.Now - startTime;
-            string elapsedTime = string.Format("{0:00}:{1:00}",
-                spent.Minutes, spent.Seconds);
-            FormattedTime = elapsedTime;
-        }
-       
-        public void Update()
-        {
-            while (!gameOver && addNum > 0)
+            // Spawn 2 initial tiles
+            for (int i = 0; i < 2; i++)
             {
-                int nX = oR.Next(0, 4), nY = oR.Next(0, 4);
-
-                if (iBoard[nX][nY] == 0)
-                {
-                    iBoard[nX][nY] = oR.Next(0, 20) == 0 ? oR.Next(0, 15) == 0 ? 8 : 4 : 2;
-                    iNewX = nX;
-                    iNewY = nY;
-                    --addNum;
-                }
-            }
-        }
-
-        private async Task LoadAsync()
-        {
-            var numberRepository = new GameRepository();
-
-            var allShapes = await numberRepository.ListAsync();
-            var actualTiles = new List<NumberTile>();
-
-            foreach (var item in allShapes)
-            {
-                actualTiles.Add(item);
-            }
-            // 0,0 0,1 0,2 0,3
-            // 1,0 1,1 1,2 1,3
-            // 2,0 2,1 2,2 2,3
-            // 3,0 3,1 3,2 3,3
-            for (int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    if (iBoard[i][j] > 0)
-                    {
-                        var index = 0;
-                        if (i == 1) index += 3;
-                        if (i == 2) index += 6;
-                        if (i == 3) index += 9;
-                        actualTiles[i + j + index].Number = iBoard[i][j].ToString();
-                    }
-                }
+                SpawnRandomTile(notify: false);
             }
 
             State = LevelState.Playing;
-            Tiles = new ObservableCollection<NumberTile>(actualTiles);
+            TilesInitialized?.Invoke(this, _activeTiles);
         }
 
-        public void MoveBoard(Direction nDirection)
+        private NumberTile? SpawnRandomTile(bool notify = true)
         {
-            TotalMoves += 1;
-            iNewX = -1;
-            iNewY = -1;
-            iAdded = 0;
-            Boolean bAdd = false;
-
-            switch (nDirection)
+            // Find empty cells
+            var emptyCells = new List<(int row, int col)>();
+            for (int i = 0; i < 4; i++)
             {
-                case Direction.Left:
-                    for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
+                {
+                    if (iBoard[i][j] == 0)
                     {
-                        for (int j = 0; j < 4; j++)
-                        {
-                            for (int k = j + 1; k < 4; k++)
-                            {
-                                if (iBoard[i][k] == 0)
-                                {
-                                    continue;
-                                }
-                                else if (iBoard[i][k] == iBoard[i][j])
-                                {
-                                    iBoard[i][j] *= 2;
-                                    Tiles[i + j + GetAddOnIndex(i)].IsNumberMultiplied = true;
-                                    iAdded = iBoard[i][j];
-                                    iScore += iBoard[i][j];
-                                    iBoard[i][k] = 0;
-                                    bAdd = true;
-                                    break;
-                                }
-                                else
-                                {
-                                    if (iBoard[i][j] == 0 && iBoard[i][k] != 0)
-                                    {
-                                        iBoard[i][j] = iBoard[i][k];
-                                        iBoard[i][k] = 0;
-                                        j--;
-                                        bAdd = true;
-                                        break;
-                                    }
-                                    else if (iBoard[i][j] != 0)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                        emptyCells.Add((i, j));
                     }
-                    break;
-                case Direction.Down:
-                    for (int j = 0; j < 4; j++)
-                    {
-                        for (int i = 3; i >= 0; i--)
-                        {
-                            for (int k = i - 1; k >= 0; k--)
-                            {
-                                if (iBoard[k][j] == 0)
-                                {
-                                    continue;
-                                }
-                                else if (iBoard[k][j] == iBoard[i][j])
-                                {
-                                    iBoard[i][j] *= 2;
-                                    Tiles[i + j + GetAddOnIndex(i)].IsNumberMultiplied = true;
-                                    iAdded = iBoard[i][j];
-                                    iScore += iBoard[i][j];
-                                    iBoard[k][j] = 0;
-                                    bAdd = true;
-                                    break;
-                                }
-                                else
-                                {
-                                    if (iBoard[i][j] == 0 && iBoard[k][j] != 0)
-                                    {
-                                        iBoard[i][j] = iBoard[k][j];
-                                        iBoard[k][j] = 0;
-                                        i++;
-                                        bAdd = true;
-                                        break;
-                                    }
-                                    else if (iBoard[i][j] != 0)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case Direction.Right:
-                    for (int i = 0; i < 4; i++)
-                    {
-                        for (int j = 3; j >= 0; j--)
-                        {
-                            for (int k = j - 1; k >= 0; k--)
-                            {
-                                if (iBoard[i][k] == 0)
-                                {
-                                    continue;
-                                }
-                                else if (iBoard[i][k] == iBoard[i][j])
-                                {
-                                    iBoard[i][j] *= 2;
-                                    Tiles[i + j + GetAddOnIndex(i)].IsNumberMultiplied = true;
-                                    iAdded = iBoard[i][j];
-                                    iScore += iBoard[i][j];
-                                    iBoard[i][k] = 0;
-                                    bAdd = true;
-                                    break;
-                                }
-                                else
-                                {
-                                    if (iBoard[i][j] == 0 && iBoard[i][k] != 0)
-                                    {
-                                        iBoard[i][j] = iBoard[i][k];
-                                        iBoard[i][k] = 0;
-                                        j++;
-                                        bAdd = true;
-                                        break;
-                                    }
-                                    else if (iBoard[i][j] != 0)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case Direction.Up:
-                    for (int j = 0; j < 4; j++)
-                    {
-                        for (int i = 0; i < 4; i++)
-                        {
-                            for (int k = i + 1; k < 4; k++)
-                            {
-                                if (iBoard[k][j] == 0)
-                                {
-                                    continue;
-                                }
-                                else if (iBoard[k][j] == iBoard[i][j])
-                                {
-                                    iBoard[i][j] *= 2;
-                                    Tiles[i + j + GetAddOnIndex(i)].IsNumberMultiplied = true;
-                                    iAdded = iBoard[i][j];
-                                    iScore += iBoard[i][j];
-                                    iBoard[k][j] = 0;
-                                    bAdd = true;
-                                    break;
-                                }
-                                else
-                                {
-                                    if (iBoard[i][j] == 0 && iBoard[k][j] != 0)
-                                    {
-                                        iBoard[i][j] = iBoard[k][j];
-                                        iBoard[k][j] = 0;
-                                        i--;
-                                        bAdd = true;
-                                        break;
-                                    }
-                                    else if (iBoard[i][j] != 0)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    break;
+                }
             }
 
-            if (iScore > iBest)
+            if (emptyCells.Count == 0) return null;
+
+            // Pick random empty cell
+            var (row, col) = emptyCells[oR.Next(emptyCells.Count)];
+
+            // Generate value: 90% = 2, 5% = 4, 5% = 8
+            int value = oR.Next(0, 20) == 0 ? (oR.Next(0, 2) == 0 ? 8 : 4) : 2;
+
+            // Update board
+            iBoard[row][col] = value;
+
+            // Create tile entity
+            var tile = new NumberTile
             {
-                iBest = iScore;
+                Row = row,
+                Column = col,
+                Number = value.ToString()
+            };
+
+            _activeTiles.Add(tile);
+
+            if (notify)
+            {
+                TileCreated?.Invoke(this, tile);
             }
 
-            if (bAdd)
+            return tile;
+        }
+
+        [RelayCommand]
+        void NewGame()
+        {
+            // Clear board
+            for (int i = 0; i < 4; i++)
             {
-                ++addNum;
+                for (int j = 0; j < 4; j++)
+                {
+                    iBoard[i][j] = 0;
+                }
             }
 
+            iScore = 0;
+            gameOver = false;
+            startTime = DateTime.Now;
+            TotalMoves = 0;
+            Score = "0";
+
+            SpawnInitialTiles();
+        }
+
+        public void RequestMove(Direction direction)
+        {
+            if (State != LevelState.Playing) return;
+
+            var moveResult = CalculateMove(direction);
+
+            if (moveResult.HasMoved)
+            {
+                // Save state before applying the move
+                SaveState();
+
+                TotalMoves += 1;
+                MoveRequested?.Invoke(this, moveResult);
+            }
+        }
+
+        private void SaveState()
+        {
+            // Clone the board
+            var boardCopy = new int[4][];
+            for (int i = 0; i < 4; i++)
+            {
+                boardCopy[i] = new int[4];
+                for (int j = 0; j < 4; j++)
+                {
+                    boardCopy[i][j] = iBoard[i][j];
+                }
+            }
+
+            // Clone the tiles
+            var tilesCopy = _activeTiles.Select(t => new NumberTile
+            {
+                Id = t.Id,
+                Row = t.Row,
+                Column = t.Column,
+                Number = t.Number
+            }).ToList();
+
+            var state = new GameState
+            {
+                Board = boardCopy,
+                Tiles = tilesCopy,
+                Score = iScore,
+                TotalMoves = TotalMoves
+            };
+
+            _stateHistory.Push(state);
+
+            // Limit history size
+            if (_stateHistory.Count > MaxUndoHistory)
+            {
+                var temp = _stateHistory.ToArray().Take(MaxUndoHistory).ToArray();
+                _stateHistory.Clear();
+                foreach (var s in temp.Reverse())
+                {
+                    _stateHistory.Push(s);
+                }
+            }
+        }
+
+        public bool CanUndo => _stateHistory.Count > 0 && State == LevelState.Playing;
+
+        public void Undo()
+        {
+            if (!CanUndo) return;
+
+            var previousState = _stateHistory.Pop();
+
+            // Restore board
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    iBoard[i][j] = previousState.Board[i][j];
+                }
+            }
+
+            // Restore tiles
+            _activeTiles.Clear();
+            _activeTiles.AddRange(previousState.Tiles);
+
+            // Restore score
+            iScore = previousState.Score;
+            Score = iScore.ToString();
+            TotalMoves = previousState.TotalMoves;
+
+            // Notify view to rebuild tiles
+            TilesInitialized?.Invoke(this, _activeTiles);
+        }
+
+        public void ApplyMove(MoveResult moveResult)
+        {
+            // Update board state based on movements
+            // First, clear all old positions
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    iBoard[i][j] = 0;
+                }
+            }
+
+            // Remove merged tiles from active tiles
+            foreach (var tile in moveResult.TilesToRemove)
+            {
+                _activeTiles.Remove(tile);
+            }
+
+            // Place remaining tiles at their new positions
+            foreach (var tile in _activeTiles)
+            {
+                iBoard[tile.Row][tile.Column] = tile.Value;
+            }
+
+            // Update score
+            if (moveResult.ScoreAdded > 0)
+            {
+                iScore += moveResult.ScoreAdded;
+                AddedScore = $"+ {moveResult.ScoreAdded}";
+
+                if (iScore > iBest)
+                {
+                    iBest = iScore;
+                }
+            }
+
+            Score = iScore.ToString();
+            BestScore = iBest.ToString();
+
+            // Spawn new tile
+            SpawnRandomTile();
+
+            // Check game over
             if (IsGameOver())
             {
+                gameOver = true;
                 State = LevelState.GameOver;
             }
-            Update();
+        }
+
+        private MoveResult CalculateMove(Direction direction)
+        {
+            var result = new MoveResult();
+
+            // Create a working copy of tile positions
+            var tilePositions = _activeTiles
+                .Select(t => (tile: t, row: t.Row, col: t.Column))
+                .ToList();
+
+            // Sort tiles based on direction to process them in order
+            tilePositions = direction switch
+            {
+                Direction.Left => tilePositions.OrderBy(t => t.col).ToList(),
+                Direction.Right => tilePositions.OrderByDescending(t => t.col).ToList(),
+                Direction.Up => tilePositions.OrderBy(t => t.row).ToList(),
+                Direction.Down => tilePositions.OrderByDescending(t => t.row).ToList(),
+                _ => tilePositions
+            };
+
+            // Track which cells will be occupied and by which tile
+            var targetGrid = new NumberTile?[4, 4];
+
+            // Track which tiles have already merged (can only merge once per move)
+            var mergedTiles = new HashSet<Guid>();
+
+            foreach (var (tile, originalRow, originalCol) in tilePositions)
+            {
+                int targetRow = originalRow;
+                int targetCol = originalCol;
+
+                // Move tile as far as possible in the direction
+                switch (direction)
+                {
+                    case Direction.Left:
+                        while (targetCol > 0 && targetGrid[targetRow, targetCol - 1] == null)
+                        {
+                            targetCol--;
+                        }
+                        // Check for merge
+                        if (targetCol > 0)
+                        {
+                            var adjacentTile = targetGrid[targetRow, targetCol - 1];
+                            if (adjacentTile != null &&
+                                adjacentTile.Value == tile.Value &&
+                                !mergedTiles.Contains(adjacentTile.Id))
+                            {
+                                targetCol--;
+                                result.Movements.Add(new TileMovement
+                                {
+                                    Tile = tile,
+                                    FromRow = originalRow,
+                                    FromColumn = originalCol,
+                                    ToRow = targetRow,
+                                    ToColumn = targetCol,
+                                    WillMerge = true,
+                                    MergeTarget = adjacentTile
+                                });
+                                result.TilesToRemove.Add(tile);
+                                result.ScoreAdded += tile.Value * 2;
+                                mergedTiles.Add(adjacentTile.Id);
+                                continue;
+                            }
+                        }
+                        break;
+
+                    case Direction.Right:
+                        while (targetCol < 3 && targetGrid[targetRow, targetCol + 1] == null)
+                        {
+                            targetCol++;
+                        }
+                        if (targetCol < 3)
+                        {
+                            var adjacentTile = targetGrid[targetRow, targetCol + 1];
+                            if (adjacentTile != null &&
+                                adjacentTile.Value == tile.Value &&
+                                !mergedTiles.Contains(adjacentTile.Id))
+                            {
+                                targetCol++;
+                                result.Movements.Add(new TileMovement
+                                {
+                                    Tile = tile,
+                                    FromRow = originalRow,
+                                    FromColumn = originalCol,
+                                    ToRow = targetRow,
+                                    ToColumn = targetCol,
+                                    WillMerge = true,
+                                    MergeTarget = adjacentTile
+                                });
+                                result.TilesToRemove.Add(tile);
+                                result.ScoreAdded += tile.Value * 2;
+                                mergedTiles.Add(adjacentTile.Id);
+                                continue;
+                            }
+                        }
+                        break;
+
+                    case Direction.Up:
+                        while (targetRow > 0 && targetGrid[targetRow - 1, targetCol] == null)
+                        {
+                            targetRow--;
+                        }
+                        if (targetRow > 0)
+                        {
+                            var adjacentTile = targetGrid[targetRow - 1, targetCol];
+                            if (adjacentTile != null &&
+                                adjacentTile.Value == tile.Value &&
+                                !mergedTiles.Contains(adjacentTile.Id))
+                            {
+                                targetRow--;
+                                result.Movements.Add(new TileMovement
+                                {
+                                    Tile = tile,
+                                    FromRow = originalRow,
+                                    FromColumn = originalCol,
+                                    ToRow = targetRow,
+                                    ToColumn = targetCol,
+                                    WillMerge = true,
+                                    MergeTarget = adjacentTile
+                                });
+                                result.TilesToRemove.Add(tile);
+                                result.ScoreAdded += tile.Value * 2;
+                                mergedTiles.Add(adjacentTile.Id);
+                                continue;
+                            }
+                        }
+                        break;
+
+                    case Direction.Down:
+                        while (targetRow < 3 && targetGrid[targetRow + 1, targetCol] == null)
+                        {
+                            targetRow++;
+                        }
+                        if (targetRow < 3)
+                        {
+                            var adjacentTile = targetGrid[targetRow + 1, targetCol];
+                            if (adjacentTile != null &&
+                                adjacentTile.Value == tile.Value &&
+                                !mergedTiles.Contains(adjacentTile.Id))
+                            {
+                                targetRow++;
+                                result.Movements.Add(new TileMovement
+                                {
+                                    Tile = tile,
+                                    FromRow = originalRow,
+                                    FromColumn = originalCol,
+                                    ToRow = targetRow,
+                                    ToColumn = targetCol,
+                                    WillMerge = true,
+                                    MergeTarget = adjacentTile
+                                });
+                                result.TilesToRemove.Add(tile);
+                                result.ScoreAdded += tile.Value * 2;
+                                mergedTiles.Add(adjacentTile.Id);
+                                continue;
+                            }
+                        }
+                        break;
+                }
+
+                // Record movement if position changed
+                if (targetRow != originalRow || targetCol != originalCol)
+                {
+                    result.Movements.Add(new TileMovement
+                    {
+                        Tile = tile,
+                        FromRow = originalRow,
+                        FromColumn = originalCol,
+                        ToRow = targetRow,
+                        ToColumn = targetCol,
+                        WillMerge = false
+                    });
+                }
+
+                // Mark target cell as occupied
+                targetGrid[targetRow, targetCol] = tile;
+            }
+
+            return result;
         }
 
         public bool IsGameOver()
         {
+            // Check if any empty cells
             for (int i = 0; i < 4; i++)
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    if (i - 1 >= 0)
-                    {
-                        if (iBoard[i - 1][j] == iBoard[i][j])
-                        {
-                            return false;
-                        }
-                    }
-
-                    if (i + 1 < 4)
-                    {
-                        if (iBoard[i + 1][j] == iBoard[i][j])
-                        {
-                            return false;
-                        }
-                    }
-
-                    if (j - 1 >= 0)
-                    {
-                        if (iBoard[i][j - 1] == iBoard[i][j])
-                        {
-                            return false;
-                        }
-                    }
-
-                    if (j + 1 < 4)
-                    {
-                        if (iBoard[i][j + 1] == iBoard[i][j])
-                        {
-                            return false;
-                        }
-                    }
-
-                    if (iBoard[i][j] == 0)
-                    {
-                        return false;
-                    }
+                    if (iBoard[i][j] == 0) return false;
                 }
             }
 
-            gameOver = true;
+            // Check if any adjacent cells have same value
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    if (i > 0 && iBoard[i - 1][j] == iBoard[i][j]) return false;
+                    if (i < 3 && iBoard[i + 1][j] == iBoard[i][j]) return false;
+                    if (j > 0 && iBoard[i][j - 1] == iBoard[i][j]) return false;
+                    if (j < 3 && iBoard[i][j + 1] == iBoard[i][j]) return false;
+                }
+            }
+
             return true;
         }
 
-        private void ResetGame()
+        private void UpdateTimerInUI()
         {
-            for (int i = 0; i < 4; i++)
+            TimeSpan spent = DateTime.Now - startTime;
+            string elapsedTime = string.Format("{0:00}:{1:00}", spent.Minutes, spent.Seconds);
+            FormattedTime = elapsedTime;
+        }
+
+        // Keep legacy commands for backwards compatibility (they now use RequestMove)
+        [RelayCommand]
+        void LeftSwipe() => RequestMove(Direction.Left);
+
+        [RelayCommand]
+        void RightSwipe() => RequestMove(Direction.Right);
+
+        [RelayCommand]
+        void UpSwipe() => RequestMove(Direction.Up);
+
+        [RelayCommand]
+        void DownSwipe() => RequestMove(Direction.Down);
+    }
+
+    /// <summary>
+    /// Represents a dynamic data collection that provides notifications when items get added, removed, or when the whole list is refreshed.
+    /// </summary>
+    public class ObservableRangeCollection<T> : ObservableCollection<T>
+    {
+        public ObservableRangeCollection() : base() { }
+
+        public ObservableRangeCollection(IEnumerable<T> collection) : base(collection) { }
+
+        public void AddRange(IEnumerable<T> collection, NotifyCollectionChangedAction notificationMode = NotifyCollectionChangedAction.Add)
+        {
+            if (notificationMode != NotifyCollectionChangedAction.Add && notificationMode != NotifyCollectionChangedAction.Reset)
+                throw new ArgumentException("Mode must be either Add or Reset for AddRange.", nameof(notificationMode));
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+
+            CheckReentrancy();
+
+            var startIndex = Count;
+            var itemsAdded = AddArrangeCore(collection);
+
+            if (!itemsAdded) return;
+
+            if (notificationMode == NotifyCollectionChangedAction.Reset)
             {
-                for (int j = 0; j < 4; j++)
+                RaiseChangeNotificationEvents(action: NotifyCollectionChangedAction.Reset);
+                return;
+            }
+
+            var changedItems = collection is List<T> list ? list : new List<T>(collection);
+            RaiseChangeNotificationEvents(
+                action: NotifyCollectionChangedAction.Add,
+                changedItems: changedItems,
+                startingIndex: startIndex);
+        }
+
+        public void RemoveRange(IEnumerable<T> collection, NotifyCollectionChangedAction notificationMode = NotifyCollectionChangedAction.Reset)
+        {
+            if (notificationMode != NotifyCollectionChangedAction.Remove && notificationMode != NotifyCollectionChangedAction.Reset)
+                throw new ArgumentException("Mode must be either Remove or Reset for RemoveRange.", nameof(notificationMode));
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+
+            CheckReentrancy();
+
+            if (notificationMode == NotifyCollectionChangedAction.Reset)
+            {
+                var raiseEvents = false;
+                foreach (var item in collection)
                 {
-                    this.iBoard[i][j] = 0;
+                    Items.Remove(item);
+                    raiseEvents = true;
+                }
+
+                if (raiseEvents)
+                    RaiseChangeNotificationEvents(action: NotifyCollectionChangedAction.Reset);
+                return;
+            }
+
+            var changedItems = new List<T>(collection);
+            for (var i = 0; i < changedItems.Count; i++)
+            {
+                if (!Items.Remove(changedItems[i]))
+                {
+                    changedItems.RemoveAt(i);
+                    i--;
                 }
             }
 
-            this.addNum = 2;
-            this.iScore = 0;
-            this.iAdded = 0;
-            this.gameOver = false;
-            startTime = DateTime.Now;
-            TotalMoves = 0;
-            Score = "0";
-        }
-        private int GetAddOnIndex(int i)
-        {
-            var index = 0;
-            if (i == 1) index += 3;
-            if (i == 2) index += 6;
-            if (i == 3) index += 9;
-            return index;
-        }
-    }
-
-    /// <summary> 
-	/// Represents a dynamic data collection that provides notifications when items get added, removed, or when the whole list is refreshed. 
-	/// </summary> 
-	/// <typeparam name="T"></typeparam> 
-	public class ObservableRangeCollection<T> : ObservableCollection<T>
-	{
-
-		/// <summary> 
-		/// Initializes a new instance of the System.Collections.ObjectModel.ObservableCollection(Of T) class. 
-		/// </summary> 
-		public ObservableRangeCollection()
-			: base()
-		{
-		}
-
-		/// <summary> 
-		/// Initializes a new instance of the System.Collections.ObjectModel.ObservableCollection(Of T) class that contains elements copied from the specified collection. 
-		/// </summary> 
-		/// <param name="collection">collection: The collection from which the elements are copied.</param> 
-		/// <exception cref="System.ArgumentNullException">The collection parameter cannot be null.</exception> 
-		public ObservableRangeCollection(IEnumerable<T> collection)
-			: base(collection)
-		{
-		}
-
-		/// <summary> 
-		/// Adds the elements of the specified collection to the end of the ObservableCollection(Of T). 
-		/// </summary> 
-		public void AddRange(IEnumerable<T> collection, NotifyCollectionChangedAction notificationMode = NotifyCollectionChangedAction.Add)
-		{
-			if (notificationMode != NotifyCollectionChangedAction.Add && notificationMode != NotifyCollectionChangedAction.Reset)
-				throw new ArgumentException("Mode must be either Add or Reset for AddRange.", nameof(notificationMode));
-			if (collection == null)
-				throw new ArgumentNullException(nameof(collection));
-
-			CheckReentrancy();
-
-			var startIndex = Count;
-
-			var itemsAdded = AddArrangeCore(collection);
-
-			if (!itemsAdded)
-				return;
-
-			if (notificationMode == NotifyCollectionChangedAction.Reset)
-			{
-				RaiseChangeNotificationEvents(action: NotifyCollectionChangedAction.Reset);
-
-				return;
-			}
-
-			var changedItems = collection is List<T> ? (List<T>)collection : new List<T>(collection);
-
-			RaiseChangeNotificationEvents(
-				action: NotifyCollectionChangedAction.Add,
-				changedItems: changedItems,
-				startingIndex: startIndex);
-		}
-
-		/// <summary> 
-		/// Removes the first occurence of each item in the specified collection from ObservableCollection(Of T). NOTE: with notificationMode = Remove, removed items starting index is not set because items are not guaranteed to be consecutive.
-		/// </summary> 
-		public void RemoveRange(IEnumerable<T> collection, NotifyCollectionChangedAction notificationMode = NotifyCollectionChangedAction.Reset)
-		{
-			if (notificationMode != NotifyCollectionChangedAction.Remove && notificationMode != NotifyCollectionChangedAction.Reset)
-				throw new ArgumentException("Mode must be either Remove or Reset for RemoveRange.", nameof(notificationMode));
-			if (collection == null)
-				throw new ArgumentNullException(nameof(collection));
-
-			CheckReentrancy();
-
-			if (notificationMode == NotifyCollectionChangedAction.Reset)
-			{
-				var raiseEvents = false;
-				foreach (var item in collection)
-				{
-					Items.Remove(item);
-					raiseEvents = true;
-				}
-
-				if (raiseEvents)
-					RaiseChangeNotificationEvents(action: NotifyCollectionChangedAction.Reset);
-
-				return;
-			}
-
-			var changedItems = new List<T>(collection);
-			for (var i = 0; i < changedItems.Count; i++)
-			{
-				if (!Items.Remove(changedItems[i]))
-				{
-					changedItems.RemoveAt(i); //Can't use a foreach because changedItems is intended to be (carefully) modified
-					i--;
-				}
-			}
-
-			if (changedItems.Count == 0)
-				return;
+            if (changedItems.Count == 0) return;
 
             RaiseChangeNotificationEvents(
                 action: NotifyCollectionChangedAction.Remove,
                 changedItems: changedItems);
-		}
+        }
 
-		/// <summary> 
-		/// Clears the current collection and replaces it with the specified item. 
-		/// </summary> 
-		public void Replace(T item) => ReplaceRange(new T[] { item });
+        public void Replace(T item) => ReplaceRange(new T[] { item });
 
-		/// <summary> 
-		/// Clears the current collection and replaces it with the specified collection. 
-		/// </summary> 
-		public void ReplaceRange(IEnumerable<T> collection)
-		{
-			if (collection == null)
-				throw new ArgumentNullException(nameof(collection));
+        public void ReplaceRange(IEnumerable<T> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
 
-			CheckReentrancy();
+            CheckReentrancy();
 
-			var previouslyEmpty = Items.Count == 0;
+            var previouslyEmpty = Items.Count == 0;
+            Items.Clear();
+            AddArrangeCore(collection);
+            var currentlyEmpty = Items.Count == 0;
 
-			Items.Clear();
+            if (previouslyEmpty && currentlyEmpty) return;
 
-			AddArrangeCore(collection);
+            RaiseChangeNotificationEvents(action: NotifyCollectionChangedAction.Reset);
+        }
 
-			var currentlyEmpty = Items.Count == 0;
-
-			if (previouslyEmpty && currentlyEmpty)
-				return;
-
-			RaiseChangeNotificationEvents(action: NotifyCollectionChangedAction.Reset);
-		}
-
-		private bool AddArrangeCore(IEnumerable<T> collection)
-		{
-			var itemAdded = false;
-			foreach (var item in collection)
-			{
-				Items.Add(item);
-				itemAdded = true;
-			}
-			return itemAdded;
-		}
+        private bool AddArrangeCore(IEnumerable<T> collection)
+        {
+            var itemAdded = false;
+            foreach (var item in collection)
+            {
+                Items.Add(item);
+                itemAdded = true;
+            }
+            return itemAdded;
+        }
 
         private void RaiseChangeNotificationEvents(NotifyCollectionChangedAction action, List<T>? changedItems = null, int startingIndex = -1)
         {
@@ -655,5 +654,5 @@ namespace _2048Game.ViewModels
             else
                 OnCollectionChanged(new NotifyCollectionChangedEventArgs(action, changedItems: changedItems, startingIndex: startingIndex));
         }
-	}
+    }
 }

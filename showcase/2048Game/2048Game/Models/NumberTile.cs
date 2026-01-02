@@ -5,10 +5,15 @@ namespace _2048Game.Models
 {
     public partial class NumberTile : ObservableObject
     {
-        public int Index { get; set; }
+        // Unique identifier for this tile entity
+        public Guid Id { get; set; } = Guid.NewGuid();
+
+        // Grid position (0-3)
+        [ObservableProperty]
+        private int row;
 
         [ObservableProperty]
-        private bool isNewMatchGenerated;
+        private int column;
 
         [ObservableProperty]
         private bool isNewNumberGenerated;
@@ -18,5 +23,8 @@ namespace _2048Game.Models
 
         [ObservableProperty]
         private string number = string.Empty;
+
+        // Value as integer for calculations
+        public int Value => string.IsNullOrEmpty(Number) ? 0 : int.Parse(Number);
     }
 }
