@@ -190,7 +190,7 @@ public partial class MainPage : ContentPage
                         }
 
                         // Update target tile with new value
-                        if (_attractTileViews.TryGetValue(movement.MergeTargetData.Value.Id, out var targetBorder))
+                        if (movement.MergeTargetData is { } mergeTarget && _attractTileViews.TryGetValue(mergeTarget.Id, out var targetBorder))
                         {
                             int newValue = movement.TileData.Value * 2;
                             UpdateAttractTileAppearance(targetBorder, newValue);
@@ -232,7 +232,7 @@ public partial class MainPage : ContentPage
                     // Handle merges - update merge target value
                     foreach (var movement in moveResult.Movements.Where(m => m.WillMerge && m.MergeTargetData.HasValue))
                     {
-                        var targetId = movement.MergeTargetData.Value.Id;
+                        var targetId = movement.MergeTargetData!.Value.Id;
                         if (!processedIds.Contains(targetId))
                         {
                             int newValue = movement.TileData.Value * 2;
@@ -459,7 +459,7 @@ public partial class MainPage : ContentPage
 
             foreach (var movement in moveResult.Movements)
             {
-                if (_tileViews.TryGetValue(movement.Tile.Id, out var tileView))
+                if (movement.Tile != null && _tileViews.TryGetValue(movement.Tile.Id, out var tileView))
                 {
                     var task = AnimateTileMovement(tileView, movement.Tile, movement.ToRow, movement.ToColumn);
                     animations.Add(task);
@@ -473,7 +473,7 @@ public partial class MainPage : ContentPage
             foreach (var movement in moveResult.Movements.Where(m => m.WillMerge))
             {
                 // Remove the tile that was merged away
-                if (_tileViews.TryGetValue(movement.Tile.Id, out var mergedTile))
+                if (movement.Tile != null && _tileViews.TryGetValue(movement.Tile.Id, out var mergedTile))
                 {
                     TileLayer.Children.Remove(mergedTile);
                     _tileViews.Remove(movement.Tile.Id);
@@ -487,9 +487,9 @@ public partial class MainPage : ContentPage
             }
 
             // Update merge target values
-            foreach (var movement in moveResult.Movements.Where(m => m.WillMerge && m.MergeTarget != null))
+            foreach (var movement in moveResult.Movements.Where(m => m.WillMerge && m.MergeTarget != null && m.Tile != null))
             {
-                var newValue = movement.Tile.Value + movement.MergeTarget!.Value;
+                var newValue = movement.Tile!.Value + movement.MergeTarget!.Value;
                 movement.MergeTarget.Number = newValue.ToString();
 
                 // Update the visual
@@ -716,6 +716,28 @@ public partial class MainPage : ContentPage
         }
     }
 
+    private void DebugButton_Clicked(object sender, EventArgs e)
+    {
+        DebugMenuBorder.IsVisible = true;
+    }
+
+    private void DebugMenuClose_Clicked(object sender, EventArgs e)
+    {
+        DebugMenuBorder.IsVisible = false;
+    }
+
+    private void DebugShowGameOver_Clicked(object sender, EventArgs e)
+    {
+        DebugMenuBorder.IsVisible = false;
+        CurrentViewModel.SetStateForDebug(Enums.LevelState.GameOver);
+    }
+
+    private void DebugShowWin_Clicked(object sender, EventArgs e)
+    {
+        DebugMenuBorder.IsVisible = false;
+        CurrentViewModel.SetStateForDebug(Enums.LevelState.Complete);
+    }
+
     private void GameContainer_SizeChanged(object sender, EventArgs e)
     {
         const double originalWidth = 340.0;
@@ -732,9 +754,11 @@ public partial class MainPage : ContentPage
         var scaleY = containerHeight / originalHeight;
         var scale = Math.Min(scaleX, scaleY);
 
-        // Apply uniform scale to both borders
+        // Apply uniform scale to all overlays
         GameBorder.Scale = scale;
         GameOverBorder.Scale = scale;
         AttractModeBorder.Scale = scale;
+        WinBorder.Scale = scale;
+        DebugMenuBorder.Scale = scale;
     }
 }

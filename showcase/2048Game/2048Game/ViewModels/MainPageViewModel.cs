@@ -18,7 +18,9 @@ namespace _2048Game.ViewModels
         private int[][] iBoard;
         private int iScore = 0, iBest = 0;
         private readonly Random oR = new();
+#pragma warning disable CS0414
         private bool gameOver = false;
+#pragma warning restore CS0414
 
         // Undo state history
         private readonly Stack<GameState> _stateHistory = new();
@@ -98,6 +100,11 @@ namespace _2048Game.ViewModels
             State = LevelState.AttractMode;
             _activeTiles.Clear();
             AttractModeStarted?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void SetStateForDebug(LevelState newState)
+        {
+            State = newState;
         }
 
         private void SpawnInitialTiles()
@@ -315,8 +322,13 @@ namespace _2048Game.ViewModels
             // Spawn new tile
             SpawnRandomTile();
 
+            // Check win condition first
+            if (IsWon())
+            {
+                State = LevelState.Complete;
+            }
             // Check game over
-            if (IsGameOver())
+            else if (IsGameOver())
             {
                 gameOver = true;
                 State = LevelState.GameOver;
@@ -368,6 +380,20 @@ namespace _2048Game.ViewModels
             }
 
             return true;
+        }
+
+        public bool IsWon()
+        {
+            // Check if any tile has reached 2048
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    if (iBoard[i][j] >= 2048) return true;
+                }
+            }
+
+            return false;
         }
 
         private void UpdateTimerInUI()
