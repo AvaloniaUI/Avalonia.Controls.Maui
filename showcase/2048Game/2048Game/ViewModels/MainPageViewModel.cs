@@ -281,10 +281,14 @@ namespace _2048Game.ViewModels
                 }
             }
 
-            // Remove merged tiles from active tiles
-            foreach (var tile in moveResult.TilesToRemove)
+            // Remove merged tiles from active tiles (find by Id from TileData)
+            foreach (var tileData in moveResult.TilesToRemove)
             {
-                _activeTiles.Remove(tile);
+                var tileToRemove = _activeTiles.FirstOrDefault(t => t.Id == tileData.Id);
+                if (tileToRemove != null)
+                {
+                    _activeTiles.Remove(tileToRemove);
+                }
             }
 
             // Place remaining tiles at their new positions
@@ -321,179 +325,20 @@ namespace _2048Game.ViewModels
 
         private MoveResult CalculateMove(Direction direction)
         {
-            var result = new MoveResult();
+            // Convert NumberTile objects to TileData for the shared calculator
+            var tileDataList = _activeTiles.Select(TileData.FromNumberTile);
 
-            // Create a working copy of tile positions
-            var tilePositions = _activeTiles
-                .Select(t => (tile: t, row: t.Row, col: t.Column))
-                .ToList();
+            // Use the shared movement calculator
+            var result = GameMovementCalculator.CalculateMove(tileDataList, direction);
 
-            // Sort tiles based on direction to process them in order
-            tilePositions = direction switch
+            // Populate the NumberTile references for backwards compatibility with view animations
+            foreach (var movement in result.Movements)
             {
-                Direction.Left => tilePositions.OrderBy(t => t.col).ToList(),
-                Direction.Right => tilePositions.OrderByDescending(t => t.col).ToList(),
-                Direction.Up => tilePositions.OrderBy(t => t.row).ToList(),
-                Direction.Down => tilePositions.OrderByDescending(t => t.row).ToList(),
-                _ => tilePositions
-            };
-
-            // Track which cells will be occupied and by which tile
-            var targetGrid = new NumberTile?[4, 4];
-
-            // Track which tiles have already merged (can only merge once per move)
-            var mergedTiles = new HashSet<Guid>();
-
-            foreach (var (tile, originalRow, originalCol) in tilePositions)
-            {
-                int targetRow = originalRow;
-                int targetCol = originalCol;
-
-                // Move tile as far as possible in the direction
-                switch (direction)
+                movement.Tile = _activeTiles.FirstOrDefault(t => t.Id == movement.TileData.Id);
+                if (movement.MergeTargetData.HasValue)
                 {
-                    case Direction.Left:
-                        while (targetCol > 0 && targetGrid[targetRow, targetCol - 1] == null)
-                        {
-                            targetCol--;
-                        }
-                        // Check for merge
-                        if (targetCol > 0)
-                        {
-                            var adjacentTile = targetGrid[targetRow, targetCol - 1];
-                            if (adjacentTile != null &&
-                                adjacentTile.Value == tile.Value &&
-                                !mergedTiles.Contains(adjacentTile.Id))
-                            {
-                                targetCol--;
-                                result.Movements.Add(new TileMovement
-                                {
-                                    Tile = tile,
-                                    FromRow = originalRow,
-                                    FromColumn = originalCol,
-                                    ToRow = targetRow,
-                                    ToColumn = targetCol,
-                                    WillMerge = true,
-                                    MergeTarget = adjacentTile
-                                });
-                                result.TilesToRemove.Add(tile);
-                                result.ScoreAdded += tile.Value * 2;
-                                mergedTiles.Add(adjacentTile.Id);
-                                continue;
-                            }
-                        }
-                        break;
-
-                    case Direction.Right:
-                        while (targetCol < 3 && targetGrid[targetRow, targetCol + 1] == null)
-                        {
-                            targetCol++;
-                        }
-                        if (targetCol < 3)
-                        {
-                            var adjacentTile = targetGrid[targetRow, targetCol + 1];
-                            if (adjacentTile != null &&
-                                adjacentTile.Value == tile.Value &&
-                                !mergedTiles.Contains(adjacentTile.Id))
-                            {
-                                targetCol++;
-                                result.Movements.Add(new TileMovement
-                                {
-                                    Tile = tile,
-                                    FromRow = originalRow,
-                                    FromColumn = originalCol,
-                                    ToRow = targetRow,
-                                    ToColumn = targetCol,
-                                    WillMerge = true,
-                                    MergeTarget = adjacentTile
-                                });
-                                result.TilesToRemove.Add(tile);
-                                result.ScoreAdded += tile.Value * 2;
-                                mergedTiles.Add(adjacentTile.Id);
-                                continue;
-                            }
-                        }
-                        break;
-
-                    case Direction.Up:
-                        while (targetRow > 0 && targetGrid[targetRow - 1, targetCol] == null)
-                        {
-                            targetRow--;
-                        }
-                        if (targetRow > 0)
-                        {
-                            var adjacentTile = targetGrid[targetRow - 1, targetCol];
-                            if (adjacentTile != null &&
-                                adjacentTile.Value == tile.Value &&
-                                !mergedTiles.Contains(adjacentTile.Id))
-                            {
-                                targetRow--;
-                                result.Movements.Add(new TileMovement
-                                {
-                                    Tile = tile,
-                                    FromRow = originalRow,
-                                    FromColumn = originalCol,
-                                    ToRow = targetRow,
-                                    ToColumn = targetCol,
-                                    WillMerge = true,
-                                    MergeTarget = adjacentTile
-                                });
-                                result.TilesToRemove.Add(tile);
-                                result.ScoreAdded += tile.Value * 2;
-                                mergedTiles.Add(adjacentTile.Id);
-                                continue;
-                            }
-                        }
-                        break;
-
-                    case Direction.Down:
-                        while (targetRow < 3 && targetGrid[targetRow + 1, targetCol] == null)
-                        {
-                            targetRow++;
-                        }
-                        if (targetRow < 3)
-                        {
-                            var adjacentTile = targetGrid[targetRow + 1, targetCol];
-                            if (adjacentTile != null &&
-                                adjacentTile.Value == tile.Value &&
-                                !mergedTiles.Contains(adjacentTile.Id))
-                            {
-                                targetRow++;
-                                result.Movements.Add(new TileMovement
-                                {
-                                    Tile = tile,
-                                    FromRow = originalRow,
-                                    FromColumn = originalCol,
-                                    ToRow = targetRow,
-                                    ToColumn = targetCol,
-                                    WillMerge = true,
-                                    MergeTarget = adjacentTile
-                                });
-                                result.TilesToRemove.Add(tile);
-                                result.ScoreAdded += tile.Value * 2;
-                                mergedTiles.Add(adjacentTile.Id);
-                                continue;
-                            }
-                        }
-                        break;
+                    movement.MergeTarget = _activeTiles.FirstOrDefault(t => t.Id == movement.MergeTargetData.Value.Id);
                 }
-
-                // Record movement if position changed
-                if (targetRow != originalRow || targetCol != originalCol)
-                {
-                    result.Movements.Add(new TileMovement
-                    {
-                        Tile = tile,
-                        FromRow = originalRow,
-                        FromColumn = originalCol,
-                        ToRow = targetRow,
-                        ToColumn = targetCol,
-                        WillMerge = false
-                    });
-                }
-
-                // Mark target cell as occupied
-                targetGrid[targetRow, targetCol] = tile;
             }
 
             return result;

@@ -30,6 +30,7 @@ public partial class MainPage : ContentPage
     private CancellationTokenSource? _attractModeCts;
     private bool _isAttractModeRunning = false;
     private readonly List<Border> _attractModeTiles = new(); // Track attract mode tiles separately
+    private readonly Dictionary<Guid, Border> _attractTileViews = new(); // Map tile IDs to Border elements
 
 
     public MainPage()
@@ -86,6 +87,7 @@ public partial class MainPage : ContentPage
                 TileLayer.Children.Remove(tile);
             }
             _attractModeTiles.Clear();
+            _attractTileViews.Clear();
         });
     }
 
@@ -93,15 +95,15 @@ public partial class MainPage : ContentPage
     {
         var random = new Random();
 
-        // Track tiles on the grid: [row, col] -> (Border, value)
-        var gridTiles = new Dictionary<(int row, int col), (Border border, int value)>();
+        // Track tiles on the grid: TileData list (using TileData for shared calculator)
+        var activeTiles = new List<TileData>();
 
         // Spawn initial tiles (like starting a new game)
         await this.Dispatcher.DispatchAsync(() =>
         {
             for (int i = 0; i < 2; i++)
             {
-                SpawnAttractTile(gridTiles, random);
+                SpawnAttractTile(activeTiles, random);
             }
         });
 
@@ -118,15 +120,15 @@ public partial class MainPage : ContentPage
                     var directions = new[] { Direction.Left, Direction.Right, Direction.Up, Direction.Down };
                     var direction = directions[random.Next(directions.Length)];
 
-                    // Calculate move result using real 2048 logic
-                    var moveResult = CalculateAttractMove(gridTiles, direction);
+                    // Calculate move result using the shared game logic
+                    var moveResult = GameMovementCalculator.CalculateMove(activeTiles, direction);
 
                     if (!moveResult.HasMoved)
                     {
                         // Try other directions if this one doesn't work
                         foreach (var altDir in directions.Where(d => d != direction))
                         {
-                            moveResult = CalculateAttractMove(gridTiles, altDir);
+                            moveResult = GameMovementCalculator.CalculateMove(activeTiles, altDir);
                             if (moveResult.HasMoved) break;
                         }
                     }
@@ -134,18 +136,22 @@ public partial class MainPage : ContentPage
                     if (!moveResult.HasMoved)
                     {
                         // Game over state - reset the board
-                        foreach (var tile in gridTiles.Values)
+                        foreach (var tileData in activeTiles)
                         {
-                            await tile.border.FadeToAsync(0, 200);
-                            TileLayer.Children.Remove(tile.border);
-                            _attractModeTiles.Remove(tile.border);
+                            if (_attractTileViews.TryGetValue(tileData.Id, out var border))
+                            {
+                                await border.FadeToAsync(0, 200);
+                                TileLayer.Children.Remove(border);
+                                _attractModeTiles.Remove(border);
+                            }
                         }
-                        gridTiles.Clear();
+                        activeTiles.Clear();
+                        _attractTileViews.Clear();
 
                         // Spawn new initial tiles
                         for (int i = 0; i < 2; i++)
                         {
-                            SpawnAttractTile(gridTiles, random);
+                            SpawnAttractTile(activeTiles, random);
                         }
                         return;
                     }
@@ -156,11 +162,14 @@ public partial class MainPage : ContentPage
                     var moveAnimations = new List<Task>();
                     foreach (var movement in moveResult.Movements)
                     {
-                        var targetPosition = GetTilePosition(movement.ToRow, movement.ToCol);
-                        var currentBounds = AbsoluteLayout.GetLayoutBounds(movement.Border);
-                        double deltaX = targetPosition.X - currentBounds.X;
-                        double deltaY = targetPosition.Y - currentBounds.Y;
-                        moveAnimations.Add(AnimateAttractTileMove(movement.Border, deltaX, deltaY, ct));
+                        if (_attractTileViews.TryGetValue(movement.TileData.Id, out var border))
+                        {
+                            var targetPosition = GetTilePosition(movement.ToRow, movement.ToColumn);
+                            var currentBounds = AbsoluteLayout.GetLayoutBounds(border);
+                            double deltaX = targetPosition.X - currentBounds.X;
+                            double deltaY = targetPosition.Y - currentBounds.Y;
+                            moveAnimations.Add(AnimateAttractTileMove(border, deltaX, deltaY, ct));
+                        }
                     }
 
                     if (moveAnimations.Count > 0)
@@ -170,18 +179,23 @@ public partial class MainPage : ContentPage
 
                     // Process merges
                     var mergeAnimations = new List<Task>();
-                    foreach (var merge in moveResult.Merges)
+                    foreach (var movement in moveResult.Movements.Where(m => m.WillMerge && m.MergeTargetData.HasValue))
                     {
                         // Remove the source tile
-                        TileLayer.Children.Remove(merge.SourceBorder);
-                        _attractModeTiles.Remove(merge.SourceBorder);
+                        if (_attractTileViews.TryGetValue(movement.TileData.Id, out var sourceBorder))
+                        {
+                            TileLayer.Children.Remove(sourceBorder);
+                            _attractModeTiles.Remove(sourceBorder);
+                            _attractTileViews.Remove(movement.TileData.Id);
+                        }
 
                         // Update target tile with new value
-                        int newValue = merge.TargetValue * 2;
-                        UpdateAttractTileAppearance(merge.TargetBorder, newValue);
-                        gridTiles[merge.TargetPos] = (merge.TargetBorder, newValue);
-
-                        mergeAnimations.Add(AnimateAttractMergePulse(merge.TargetBorder, ct));
+                        if (_attractTileViews.TryGetValue(movement.MergeTargetData.Value.Id, out var targetBorder))
+                        {
+                            int newValue = movement.TileData.Value * 2;
+                            UpdateAttractTileAppearance(targetBorder, newValue);
+                            mergeAnimations.Add(AnimateAttractMergePulse(targetBorder, ct));
+                        }
                     }
 
                     if (mergeAnimations.Count > 0)
@@ -189,37 +203,60 @@ public partial class MainPage : ContentPage
                         await Task.WhenAll(mergeAnimations);
                     }
 
-                    // Update grid positions after animations
-                    var newGridTiles = new Dictionary<(int row, int col), (Border border, int value)>();
+                    // Update tile positions after animations
+                    var newActiveTiles = new List<TileData>();
+                    var processedIds = new HashSet<Guid>();
+
+                    // Handle non-merge movements - update position
                     foreach (var movement in moveResult.Movements.Where(m => !m.WillMerge))
                     {
-                        var pos = GetTilePosition(movement.ToRow, movement.ToCol);
-                        movement.Border.TranslationX = 0;
-                        movement.Border.TranslationY = 0;
-                        AbsoluteLayout.SetLayoutBounds(movement.Border, new Rect(pos.X, pos.Y, TileSize, TileSize));
-                        newGridTiles[(movement.ToRow, movement.ToCol)] = (movement.Border, movement.Value);
-                    }
-
-                    // Add merge targets (they stay in place but have new values)
-                    foreach (var merge in moveResult.Merges)
-                    {
-                        newGridTiles[merge.TargetPos] = (merge.TargetBorder, merge.TargetValue * 2);
-                    }
-
-                    // Add tiles that didn't move
-                    foreach (var kvp in gridTiles)
-                    {
-                        if (!moveResult.Movements.Any(m => m.FromRow == kvp.Key.row && m.FromCol == kvp.Key.col) &&
-                            !moveResult.Merges.Any(m => m.SourcePos == kvp.Key))
+                        if (_attractTileViews.TryGetValue(movement.TileData.Id, out var border))
                         {
-                            newGridTiles[kvp.Key] = kvp.Value;
+                            var pos = GetTilePosition(movement.ToRow, movement.ToColumn);
+                            border.TranslationX = 0;
+                            border.TranslationY = 0;
+                            AbsoluteLayout.SetLayoutBounds(border, new Rect(pos.X, pos.Y, TileSize, TileSize));
+
+                            newActiveTiles.Add(new TileData(
+                                movement.TileData.Id,
+                                movement.ToRow,
+                                movement.ToColumn,
+                                movement.TileData.Value));
+                            processedIds.Add(movement.TileData.Id);
                         }
                     }
 
-                    gridTiles = newGridTiles;
+                    // Handle merges - update merge target value
+                    foreach (var movement in moveResult.Movements.Where(m => m.WillMerge && m.MergeTargetData.HasValue))
+                    {
+                        var targetId = movement.MergeTargetData.Value.Id;
+                        if (!processedIds.Contains(targetId))
+                        {
+                            int newValue = movement.TileData.Value * 2;
+                            newActiveTiles.Add(new TileData(
+                                targetId,
+                                movement.ToRow,
+                                movement.ToColumn,
+                                newValue));
+                            processedIds.Add(targetId);
+                        }
+                    }
+
+                    // Add tiles that didn't move
+                    foreach (var tile in activeTiles)
+                    {
+                        if (!processedIds.Contains(tile.Id) &&
+                            !moveResult.TilesToRemove.Any(t => t.Id == tile.Id))
+                        {
+                            newActiveTiles.Add(tile);
+                        }
+                    }
+
+                    activeTiles.Clear();
+                    activeTiles.AddRange(newActiveTiles);
 
                     // Spawn a new tile
-                    SpawnAttractTile(gridTiles, random);
+                    SpawnAttractTile(activeTiles, random);
                 });
 
                 // Pause between moves
@@ -236,14 +273,18 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void SpawnAttractTile(Dictionary<(int row, int col), (Border border, int value)> gridTiles, Random random)
+    private void SpawnAttractTile(List<TileData> activeTiles, Random random)
     {
+        // Find occupied positions
+        var occupiedPositions = new HashSet<(int row, int col)>(
+            activeTiles.Select(t => (t.Row, t.Column)));
+
         var emptySpots = new List<(int row, int col)>();
         for (int r = 0; r < 4; r++)
         {
             for (int c = 0; c < 4; c++)
             {
-                if (!gridTiles.ContainsKey((r, c)))
+                if (!occupiedPositions.Contains((r, c)))
                 {
                     emptySpots.Add((r, c));
                 }
@@ -255,20 +296,24 @@ public partial class MainPage : ContentPage
         var spot = emptySpots[random.Next(emptySpots.Count)];
         int value = random.Next(10) < 9 ? 2 : 4; // 90% chance of 2, 10% chance of 4
 
-        var tile = CreateAttractGameTile(value);
+        var tileId = Guid.NewGuid();
+        var border = CreateAttractGameTile(value);
         var tilePos = GetTilePosition(spot.row, spot.col);
 
-        AbsoluteLayout.SetLayoutBounds(tile, new Rect(tilePos.X, tilePos.Y, TileSize, TileSize));
-        AbsoluteLayout.SetLayoutFlags(tile, AbsoluteLayoutFlags.None);
+        AbsoluteLayout.SetLayoutBounds(border, new Rect(tilePos.X, tilePos.Y, TileSize, TileSize));
+        AbsoluteLayout.SetLayoutFlags(border, AbsoluteLayoutFlags.None);
 
-        tile.Scale = 0;
-        tile.Opacity = 0;
+        border.Scale = 0;
+        border.Opacity = 0;
 
-        TileLayer.Children.Add(tile);
-        _attractModeTiles.Add(tile);
-        gridTiles[spot] = (tile, value);
+        TileLayer.Children.Add(border);
+        _attractModeTiles.Add(border);
+        _attractTileViews[tileId] = border;
 
-        _ = AnimateAttractSpawn(tile, CancellationToken.None);
+        // Add to active tiles list
+        activeTiles.Add(new TileData(tileId, spot.row, spot.col, value));
+
+        _ = AnimateAttractSpawn(border, CancellationToken.None);
     }
 
     private Border CreateAttractGameTile(int value)
@@ -313,158 +358,6 @@ public partial class MainPage : ContentPage
             label.FontSize = value >= 1000 ? 24 : (value >= 100 ? 30 : 36);
             label.TextColor = (Color)_textConverter.Convert(valueStr, typeof(Color), null!, null!)!;
         }
-    }
-
-    private class AttractMoveResult
-    {
-        public List<AttractMovement> Movements { get; } = new();
-        public List<AttractMerge> Merges { get; } = new();
-        public bool HasMoved => Movements.Count > 0;
-    }
-
-    private class AttractMovement
-    {
-        public required Border Border { get; init; }
-        public int FromRow { get; init; }
-        public int FromCol { get; init; }
-        public int ToRow { get; init; }
-        public int ToCol { get; init; }
-        public int Value { get; init; }
-        public bool WillMerge { get; init; }
-    }
-
-    private class AttractMerge
-    {
-        public required Border SourceBorder { get; init; }
-        public required Border TargetBorder { get; init; }
-        public (int row, int col) SourcePos { get; init; }
-        public (int row, int col) TargetPos { get; init; }
-        public int TargetValue { get; init; }
-    }
-
-    private static AttractMoveResult CalculateAttractMove(
-        Dictionary<(int row, int col), (Border border, int value)> gridTiles,
-        Direction direction)
-    {
-        var result = new AttractMoveResult();
-        var merged = new HashSet<(int row, int col)>();
-        var newPositions = new Dictionary<(int row, int col), (Border border, int value)>();
-
-        // Sort positions based on direction
-        var positions = GetSortedPositions(gridTiles.Keys.ToList(), direction);
-
-        foreach (var pos in positions)
-        {
-            if (!gridTiles.TryGetValue(pos, out var tile)) continue;
-
-            var (targetRow, targetCol) = GetFarthestPosition(pos.row, pos.col, direction, newPositions.Keys.ToList());
-
-            // Check for merge possibility
-            var nextPos = GetNextPosition(targetRow, targetCol, direction);
-            if (IsValidPosition(nextPos.row, nextPos.col) &&
-                newPositions.TryGetValue(nextPos, out var nextTile) &&
-                nextTile.value == tile.value &&
-                !merged.Contains(nextPos))
-            {
-                // Merge!
-                result.Movements.Add(new AttractMovement
-                {
-                    Border = tile.border,
-                    FromRow = pos.row,
-                    FromCol = pos.col,
-                    ToRow = nextPos.row,
-                    ToCol = nextPos.col,
-                    Value = tile.value,
-                    WillMerge = true
-                });
-
-                result.Merges.Add(new AttractMerge
-                {
-                    SourceBorder = tile.border,
-                    TargetBorder = nextTile.border,
-                    SourcePos = pos,
-                    TargetPos = nextPos,
-                    TargetValue = tile.value
-                });
-
-                merged.Add(nextPos);
-            }
-            else if (targetRow != pos.row || targetCol != pos.col)
-            {
-                // Move without merge
-                result.Movements.Add(new AttractMovement
-                {
-                    Border = tile.border,
-                    FromRow = pos.row,
-                    FromCol = pos.col,
-                    ToRow = targetRow,
-                    ToCol = targetCol,
-                    Value = tile.value,
-                    WillMerge = false
-                });
-
-                newPositions[(targetRow, targetCol)] = tile;
-            }
-            else
-            {
-                // Tile stays in place
-                newPositions[pos] = tile;
-            }
-        }
-
-        return result;
-    }
-
-    private static (int row, int col) GetFarthestPosition(int row, int col, Direction direction, List<(int row, int col)> occupied)
-    {
-        int dr = direction == Direction.Up ? -1 : (direction == Direction.Down ? 1 : 0);
-        int dc = direction == Direction.Left ? -1 : (direction == Direction.Right ? 1 : 0);
-
-        int newRow = row;
-        int newCol = col;
-
-        while (true)
-        {
-            int nextRow = newRow + dr;
-            int nextCol = newCol + dc;
-
-            if (!IsValidPosition(nextRow, nextCol) || occupied.Contains((nextRow, nextCol)))
-                break;
-
-            newRow = nextRow;
-            newCol = nextCol;
-        }
-
-        return (newRow, newCol);
-    }
-
-    private static (int row, int col) GetNextPosition(int row, int col, Direction direction)
-    {
-        return direction switch
-        {
-            Direction.Up => (row - 1, col),
-            Direction.Down => (row + 1, col),
-            Direction.Left => (row, col - 1),
-            Direction.Right => (row, col + 1),
-            _ => (row, col)
-        };
-    }
-
-    private static bool IsValidPosition(int row, int col)
-    {
-        return row >= 0 && row < 4 && col >= 0 && col < 4;
-    }
-
-    private static List<(int row, int col)> GetSortedPositions(List<(int row, int col)> positions, Direction direction)
-    {
-        return direction switch
-        {
-            Direction.Left => positions.OrderBy(p => p.col).ToList(),
-            Direction.Right => positions.OrderByDescending(p => p.col).ToList(),
-            Direction.Up => positions.OrderBy(p => p.row).ToList(),
-            Direction.Down => positions.OrderByDescending(p => p.row).ToList(),
-            _ => positions
-        };
     }
 
     private static async Task AnimateAttractTileMove(Border tile, double deltaX, double deltaY, CancellationToken ct)
