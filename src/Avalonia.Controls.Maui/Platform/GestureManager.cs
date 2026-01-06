@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using AvaloniaControl = Avalonia.Controls.Control;
+using AvaloniaTopLevel = Avalonia.Controls.TopLevel;
 using AvaloniaPointerEventArgs = Avalonia.Input.PointerEventArgs;
 using MauiPinchGestureRecognizer = Microsoft.Maui.Controls.PinchGestureRecognizer;
 using MauiPanGestureRecognizer = Microsoft.Maui.Controls.PanGestureRecognizer;
@@ -36,6 +37,7 @@ internal class GestureManager : IDisposable
     private bool _isPanning;
     private bool _panHasMoved;  // Track if any movement occurred during pan
     private global::Avalonia.Point _panStartPoint;
+    private global::Avalonia.Visual? _panCoordinateSpace;  // Visual to use for consistent coordinate space
     private int _currentPanGestureId;
     private static int _nextPanGestureId;
     private IPointer? _panPointer;
@@ -102,6 +104,7 @@ internal class GestureManager : IDisposable
     {
         _isPanning = false;
         _panHasMoved = false;
+        _panCoordinateSpace = null;
         _panPointer = null;
         _isSwipeTracking = false;
         _isPinching = false;
@@ -284,7 +287,7 @@ internal class GestureManager : IDisposable
         // Handle Pan gesture - use pointer ID for comparison to be robust
         if (_isPanning && e.Pointer.Id == _panPointerId)
         {
-            UpdatePanGesture(view, recognizers, point);
+            UpdatePanGesture(view, recognizers, e);
         }
     }
 
@@ -420,9 +423,20 @@ internal class GestureManager : IDisposable
         if (panRecognizers.Count == 0 && swipeRecognizers.Count == 0)
             return;
 
+        // Use TopLevel for consistent coordinate space across all pointer events
+        // This prevents jitter caused by sender being different visuals during tunneling
+        _panCoordinateSpace = _platformView is AvaloniaControl control
+            ? AvaloniaTopLevel.GetTopLevel(control)
+            : null;
+
+        // Get start point in the consistent coordinate space
+        var startPoint = _panCoordinateSpace != null
+            ? e.GetPosition(_panCoordinateSpace)
+            : point;
+
         // Start tracking for both pan and swipe
-        _panStartPoint = point;
-        _swipeStartPoint = point;
+        _panStartPoint = startPoint;
+        _swipeStartPoint = startPoint;
         _swipeStartTime = DateTime.Now;
         _isSwipeTracking = swipeRecognizers.Count > 0;
 
@@ -435,9 +449,9 @@ internal class GestureManager : IDisposable
             _currentPanGestureId = ++_nextPanGestureId;
 
             // Capture pointer for pan gesture
-            if (_platformView is AvaloniaControl control)
+            if (_platformView is AvaloniaControl platformControl)
             {
-                e.Pointer.Capture(control);
+                e.Pointer.Capture(platformControl);
             }
 
             // Send PanStarted
@@ -451,11 +465,16 @@ internal class GestureManager : IDisposable
         }
     }
 
-    private void UpdatePanGesture(View view, IList<IGestureRecognizer> recognizers, global::Avalonia.Point currentPoint)
+    private void UpdatePanGesture(View view, IList<IGestureRecognizer> recognizers, AvaloniaPointerEventArgs e)
     {
         var panRecognizers = recognizers.OfType<MauiPanGestureRecognizer>().ToList();
         if (panRecognizers.Count == 0)
             return;
+
+        // Get current point in the same coordinate space as the start point
+        var currentPoint = _panCoordinateSpace != null
+            ? e.GetPosition(_panCoordinateSpace)
+            : e.GetPosition(null);
 
         double totalX = currentPoint.X - _panStartPoint.X;
         double totalY = currentPoint.Y - _panStartPoint.Y;
@@ -490,6 +509,7 @@ internal class GestureManager : IDisposable
 
         _isPanning = false;
         _panHasMoved = false;
+        _panCoordinateSpace = null;
         _panPointer = null;
     }
 
@@ -507,6 +527,7 @@ internal class GestureManager : IDisposable
 
         _isPanning = false;
         _panHasMoved = false;
+        _panCoordinateSpace = null;
         _panPointer = null;
     }
 
