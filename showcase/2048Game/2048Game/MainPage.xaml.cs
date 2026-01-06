@@ -213,9 +213,12 @@ public partial class MainPage : ContentPage
                         if (_attractTileViews.TryGetValue(movement.TileData.Id, out var border))
                         {
                             var pos = GetTilePosition(movement.ToRow, movement.ToColumn);
+                            // Batch the position update to prevent flicker
+                            border.BatchBegin();
+                            AbsoluteLayout.SetLayoutBounds(border, new Rect(pos.X, pos.Y, TileSize, TileSize));
                             border.TranslationX = 0;
                             border.TranslationY = 0;
-                            AbsoluteLayout.SetLayoutBounds(border, new Rect(pos.X, pos.Y, TileSize, TileSize));
+                            border.BatchCommit();
 
                             newActiveTiles.Add(new TileData(
                                 movement.TileData.Id,
@@ -547,6 +550,13 @@ public partial class MainPage : ContentPage
         AbsoluteLayout.SetLayoutBounds(border, new Rect(position.X, position.Y, TileSize, TileSize));
         AbsoluteLayout.SetLayoutFlags(border, AbsoluteLayoutFlags.None);
 
+        // Set initial state BEFORE adding to visual tree to prevent flicker
+        if (animate)
+        {
+            border.Scale = 0;
+            border.Opacity = 0;
+        }
+
         _tileViews[tile.Id] = border;
         TileLayer.Children.Add(border);
 
@@ -586,10 +596,13 @@ public partial class MainPage : ContentPage
         // Animate using translation
         await tileView.TranslateToAsync(deltaX, deltaY, 100, Easing.CubicOut);
 
-        // Reset translation and update actual position
+        // Batch the position update to prevent flicker
+        // Update layout bounds first, then reset translation in the same batch
+        tileView.BatchBegin();
+        AbsoluteLayout.SetLayoutBounds(tileView, new Rect(targetPosition.X, targetPosition.Y, TileSize, TileSize));
         tileView.TranslationX = 0;
         tileView.TranslationY = 0;
-        AbsoluteLayout.SetLayoutBounds(tileView, new Rect(targetPosition.X, targetPosition.Y, TileSize, TileSize));
+        tileView.BatchCommit();
 
         // Update tile's logical position
         tile.Row = targetRow;
