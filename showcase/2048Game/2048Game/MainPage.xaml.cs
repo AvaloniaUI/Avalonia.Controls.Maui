@@ -83,6 +83,13 @@ public partial class MainPage : ContentPage
 
     private void OnTilesInitialized(object? sender, IEnumerable<NumberTile> tiles)
     {
+        // Ensure we're on the UI thread (attract mode restart fires from background thread)
+        if (Dispatcher.IsDispatchRequired)
+        {
+            Dispatcher.Dispatch(() => OnTilesInitialized(sender, tiles));
+            return;
+        }
+
         // Clear existing tile views
         TileLayer.Children.Clear();
         _tileViews.Clear();
@@ -96,10 +103,30 @@ public partial class MainPage : ContentPage
 
     private void OnTileCreated(object? sender, NumberTile tile)
     {
+        // Ensure we're on the UI thread
+        if (Dispatcher.IsDispatchRequired)
+        {
+            Dispatcher.Dispatch(() => OnTileCreated(sender, tile));
+            return;
+        }
+
         CreateTileView(tile, animate: true);
     }
 
-    private async void OnMoveRequested(object? sender, MoveResult moveResult)
+    private void OnMoveRequested(object? sender, MoveResult moveResult)
+    {
+        // Ensure we're on the UI thread (attract mode timer fires from background thread)
+        if (!Dispatcher.IsDispatchRequired)
+        {
+            HandleMoveRequestedAsync(moveResult);
+        }
+        else
+        {
+            Dispatcher.Dispatch(() => HandleMoveRequestedAsync(moveResult));
+        }
+    }
+
+    private async void HandleMoveRequestedAsync(MoveResult moveResult)
     {
         if (_isAnimating || !moveResult.HasMoved) return;
 
