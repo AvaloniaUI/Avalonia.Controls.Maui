@@ -43,7 +43,7 @@
 		<PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
 		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'" Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
 		<PackageReference Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'" Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
-		<PackageReference Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
 		<!--Condition
 		below is needed to remove Avalonia.Diagnostics package from build output in Release

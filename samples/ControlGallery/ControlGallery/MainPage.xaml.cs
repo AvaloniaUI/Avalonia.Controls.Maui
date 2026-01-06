@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using ControlGallery.Pages;
 
 namespace ControlGallery;
@@ -9,59 +8,44 @@ public partial class MainPage : FlyoutPage
     private List<SampleGroup> _allSamples = new List<SampleGroup>();
 
     public ObservableCollection<SampleGroup> FilteredSamples { get; private set; } = new ObservableCollection<SampleGroup>();
-    public ICommand NavigateCommand { get; private set; }
 
     public MainPage()
     {
         InitializeComponent();
 
-        NavigateCommand = new Command<Type>(NavigateToPage);
+        // Set BindingContext on the Flyout's ContentPage so CollectionView binding works
+        BindingContext = this;
 
         InitializeSamples();
         UpdateMenu(string.Empty);
-        
+
         // Navigate to Welcome Page by default
         Detail = new WelcomePage();
     }
 
     private void UpdateMenu(string searchText)
     {
-        var root = new TableRoot();
+        FilteredSamples.Clear();
 
         foreach (var group in _allSamples)
         {
-            var section = new TableSection(group.Name);
-            bool hasItems = false;
+            var filteredItems = new List<SampleItem>();
 
             foreach (var item in group)
             {
-                if (string.IsNullOrWhiteSpace(searchText) || 
-                    item.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
+                if (string.IsNullOrWhiteSpace(searchText) ||
+                    item.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
                     item.Detail.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                 {
-                    var cell = new TextCell
-                    {
-                        Text = item.Title,
-                        Detail = item.Detail,
-                        Command = NavigateCommand,
-                        CommandParameter = item.PageType
-                    };
-
-                    cell.SetAppThemeColor(TextCell.TextColorProperty, Colors.Black, Colors.White);
-                    cell.SetAppThemeColor(TextCell.DetailColorProperty, Colors.Gray, Colors.LightGray);
-
-                    section.Add(cell);
-                    hasItems = true;
+                    filteredItems.Add(item);
                 }
             }
 
-            if (hasItems)
+            if (filteredItems.Count > 0)
             {
-                root.Add(section);
+                FilteredSamples.Add(new SampleGroup(group.Name, filteredItems));
             }
         }
-
-        MenuTableView.Root = root;
     }
 
     private void InitializeSamples()
@@ -165,6 +149,17 @@ public partial class MainPage : FlyoutPage
     {
         var searchBar = (SearchBar)sender;
         UpdateMenu(searchBar.Text ?? string.Empty);
+    }
+
+    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is SampleItem selectedItem)
+        {
+            NavigateToPage(selectedItem.PageType);
+
+            // Clear selection to allow re-selecting the same item
+            ((CollectionView)sender).SelectedItem = null;
+        }
     }
 
     private void NavigateToPage(Type pageType)
