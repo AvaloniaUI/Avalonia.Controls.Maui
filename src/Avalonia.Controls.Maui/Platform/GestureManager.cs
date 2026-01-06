@@ -34,6 +34,7 @@ internal class GestureManager : IDisposable
 
     // Pan gesture tracking
     private bool _isPanning;
+    private bool _panHasMoved;  // Track if any movement occurred during pan
     private global::Avalonia.Point _panStartPoint;
     private int _currentPanGestureId;
     private static int _nextPanGestureId;
@@ -100,6 +101,7 @@ internal class GestureManager : IDisposable
     private void ResetGestureState()
     {
         _isPanning = false;
+        _panHasMoved = false;
         _panPointer = null;
         _isSwipeTracking = false;
         _isPinching = false;
@@ -427,6 +429,7 @@ internal class GestureManager : IDisposable
         if (panRecognizers.Count > 0)
         {
             _isPanning = true;
+            _panHasMoved = false;
             _panPointer = e.Pointer;
             _panPointerId = e.Pointer.Id;
             _currentPanGestureId = ++_nextPanGestureId;
@@ -457,6 +460,9 @@ internal class GestureManager : IDisposable
         double totalX = currentPoint.X - _panStartPoint.X;
         double totalY = currentPoint.Y - _panStartPoint.Y;
 
+        // Mark that movement has occurred
+        _panHasMoved = true;
+
         foreach (var recognizer in panRecognizers)
         {
             if (recognizer is IPanGestureController controller)
@@ -468,17 +474,22 @@ internal class GestureManager : IDisposable
 
     private void EndPanGesture(View view, IList<IGestureRecognizer> recognizers)
     {
-        var panRecognizers = recognizers.OfType<MauiPanGestureRecognizer>().ToList();
-
-        foreach (var recognizer in panRecognizers)
+        // Only send PanCompleted if there was actual movement (matches native MAUI behavior)
+        if (_panHasMoved)
         {
-            if (recognizer is IPanGestureController controller)
+            var panRecognizers = recognizers.OfType<MauiPanGestureRecognizer>().ToList();
+
+            foreach (var recognizer in panRecognizers)
             {
-                controller.SendPanCompleted(view as Element ?? (Element)_view, _currentPanGestureId);
+                if (recognizer is IPanGestureController controller)
+                {
+                    controller.SendPanCompleted(view as Element ?? (Element)_view, _currentPanGestureId);
+                }
             }
         }
 
         _isPanning = false;
+        _panHasMoved = false;
         _panPointer = null;
     }
 
@@ -495,6 +506,7 @@ internal class GestureManager : IDisposable
         }
 
         _isPanning = false;
+        _panHasMoved = false;
         _panPointer = null;
     }
 
