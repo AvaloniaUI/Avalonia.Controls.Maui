@@ -573,6 +573,7 @@ public class CollectionView : TemplatedControl
 
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        UpdateItemsSource();
         UpdateEmptyView();
     }
 
