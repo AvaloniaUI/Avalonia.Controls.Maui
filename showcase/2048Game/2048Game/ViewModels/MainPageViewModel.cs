@@ -30,7 +30,10 @@ namespace _2048Game.ViewModels
         public event EventHandler<IEnumerable<NumberTile>>? TilesInitialized;
         public event EventHandler<NumberTile>? TileCreated;
         public event EventHandler<MoveResult>? MoveRequested;
-        public event EventHandler? AttractModeStarted;
+
+        // Attract mode auto-play
+        private Timer? _attractModeTimer;
+        private bool _isAttractModeAnimating = false;
 
         // Active tiles (entity-based, not fixed grid cells)
         private readonly List<NumberTile> _activeTiles = new();
@@ -97,9 +100,95 @@ namespace _2048Game.ViewModels
 
         public void StartAttractMode()
         {
-            State = LevelState.AttractMode;
+            StopAttractMode();
+
+            // Clear board
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    iBoard[i][j] = 0;
+                }
+            }
+
+            iScore = 0;
+            gameOver = false;
+            TotalMoves = 0;
+            Score = "0";
             _activeTiles.Clear();
-            AttractModeStarted?.Invoke(this, EventArgs.Empty);
+            _stateHistory.Clear();
+
+            // Spawn initial tiles
+            for (int i = 0; i < 2; i++)
+            {
+                SpawnRandomTile(notify: false);
+            }
+
+            State = LevelState.AttractMode;
+            TilesInitialized?.Invoke(this, _activeTiles);
+
+            // Start auto-play timer
+            _attractModeTimer = new Timer(AttractModeAutoPlay, null, 800, 600);
+        }
+
+        public void StopAttractMode()
+        {
+            _attractModeTimer?.Dispose();
+            _attractModeTimer = null;
+            _isAttractModeAnimating = false;
+        }
+
+        private void AttractModeAutoPlay(object? state)
+        {
+            if (State != LevelState.AttractMode || _isAttractModeAnimating)
+                return;
+
+            _isAttractModeAnimating = true;
+
+            // Pick a random direction
+            var directions = new[] { Direction.Left, Direction.Right, Direction.Up, Direction.Down };
+            var direction = directions[oR.Next(directions.Length)];
+
+            var moveResult = CalculateMove(direction);
+
+            // If no movement possible, try other directions
+            if (!moveResult.HasMoved)
+            {
+                foreach (var altDir in directions.Where(d => d != direction))
+                {
+                    moveResult = CalculateMove(altDir);
+                    if (moveResult.HasMoved) break;
+                }
+            }
+
+            if (moveResult.HasMoved)
+            {
+                TotalMoves += 1;
+                MoveRequested?.Invoke(this, moveResult);
+            }
+            else
+            {
+                // No valid moves - game over in attract mode, restart
+                _isAttractModeAnimating = false;
+                RestartAttractMode();
+            }
+        }
+
+        public void AttractModeAnimationComplete()
+        {
+            _isAttractModeAnimating = false;
+        }
+
+        private void RestartAttractMode()
+        {
+            // Delay and restart
+            Task.Delay(1000).ContinueWith(_ =>
+            {
+                if (State == LevelState.AttractMode)
+                {
+                    StartAttractMode();
+                }
+            });
         }
 
         public void SetStateForDebug(LevelState newState)
@@ -168,6 +257,8 @@ namespace _2048Game.ViewModels
         [RelayCommand]
         void NewGame()
         {
+            StopAttractMode();
+
             // Clear board
             for (int i = 0; i < 4; i++)
             {
@@ -322,16 +413,29 @@ namespace _2048Game.ViewModels
             // Spawn new tile
             SpawnRandomTile();
 
-            // Check win condition first
-            if (IsWon())
+            // In attract mode, handle game over/win differently
+            if (State == LevelState.AttractMode)
             {
-                State = LevelState.Complete;
+                AttractModeAnimationComplete();
+
+                if (IsWon() || IsGameOver())
+                {
+                    RestartAttractMode();
+                }
             }
-            // Check game over
-            else if (IsGameOver())
+            else
             {
-                gameOver = true;
-                State = LevelState.GameOver;
+                // Check win condition first
+                if (IsWon())
+                {
+                    State = LevelState.Complete;
+                }
+                // Check game over
+                else if (IsGameOver())
+                {
+                    gameOver = true;
+                    State = LevelState.GameOver;
+                }
             }
         }
 
