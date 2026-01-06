@@ -50,6 +50,18 @@
             "stopAtEntry": false
         },
         {
+            "name": "2048Game Desktop",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_2048game_desktop",
+            "program": "${workspaceFolder}/showcase/2048Game/2048Game.Desktop/bin/Debug/net10.0/2048Game.Desktop.dll",
+            "args": [ 
+            ],
+            "cwd": "${workspaceFolder}/showcase/2048Game/2048Game.Desktop/bin/Debug/net10.0",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"

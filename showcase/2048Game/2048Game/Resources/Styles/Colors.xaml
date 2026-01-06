@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- 2048 Game Theme Colors -->
+    <Color x:Key="Primary">#8f7a66</Color>
+    <Color x:Key="Secondary">#bbada0</Color>
+    <Color x:Key="Tertiary">#776e65</Color>
+    <Color x:Key="White">White</Color>
+    <Color x:Key="Black">Black</Color>
+    <Color x:Key="Gray100">#E1E1E1</Color>
+    <Color x:Key="Gray200">#C8C8C8</Color>
+    <Color x:Key="Gray300">#ACACAC</Color>
+    <Color x:Key="Gray400">#919191</Color>
+    <Color x:Key="Gray500">#6E6E6E</Color>
+    <Color x:Key="Gray600">#404040</Color>
+    <Color x:Key="Gray900">#212121</Color>
+    <Color x:Key="Gray950">#141414</Color>
+
+    <!-- 2048 Game Specific Colors - Light Mode -->
+    <Color x:Key="GameBackgroundLight">#faf8ef</Color>
+    <Color x:Key="BoardBackgroundLight">#bbada0</Color>
+    <Color x:Key="ScoreBoxBackgroundLight">#bbada0</Color>
+    <Color x:Key="GameTextDarkLight">#776e65</Color>
+    <Color x:Key="GameTextLightLight">#f9f6f2</Color>
+    <Color x:Key="LogoGoldLight">#edc22e</Color>
+    <Color x:Key="ButtonColorLight">#8f7a66</Color>
+
+    <!-- 2048 Game Specific Colors - Dark Mode (warm brown/yellow tones) -->
+    <Color x:Key="GameBackgroundDark">#2d2416</Color>
+    <Color x:Key="BoardBackgroundDark">#4a3c2a</Color>
+    <Color x:Key="ScoreBoxBackgroundDark">#5c4a34</Color>
+    <Color x:Key="GameTextDarkDark">#f5e6c8</Color>
+    <Color x:Key="GameTextLightDark">#faf8ef</Color>
+    <Color x:Key="LogoGoldDark">#f2b179</Color>
+    <Color x:Key="ButtonColorDark">#d4a43a</Color>
+
+    <!-- Legacy keys for compatibility -->
+    <Color x:Key="GameBackground">#faf8ef</Color>
+    <Color x:Key="BoardBackground">#bbada0</Color>
+    <Color x:Key="ScoreBoxBackground">#bbada0</Color>
+    <Color x:Key="GameTextDark">#776e65</Color>
+    <Color x:Key="GameTextLight">#f9f6f2</Color>
+    <Color x:Key="LogoGold">#edc22e</Color>
+    <Color x:Key="ButtonOrange">#8f7a66</Color>
+    <Color x:Key="ButtonOrangeHover">#9f8b77</Color>
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}" />
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}" />
+    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}" />
+    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}" />
+    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}" />
+    <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}" />
+    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}" />
+    <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}" />
+    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}" />
+    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}" />
+    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}" />
+    <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}" />
+    <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}" />
+
+    <Color x:Key="Yellow100Accent">#F7B548</Color>
+    <Color x:Key="Yellow200Accent">#FFD590</Color>
+    <Color x:Key="Yellow300Accent">#FFE5B9</Color>
+    <Color x:Key="Cyan100Accent">#28C2D1</Color>
+    <Color x:Key="Cyan200Accent">#7BDDEF</Color>
+    <Color x:Key="Cyan300Accent">#C3F2F4</Color>
+    <Color x:Key="Blue100Accent">#3E8EED</Color>
+    <Color x:Key="Blue200Accent">#72ACF1</Color>
+    <Color x:Key="Blue300Accent">#A7CBF6</Color>
+    <Color x:Key="Orange100Accent">#f65e3d</Color>
+
+</ResourceDictionary>
