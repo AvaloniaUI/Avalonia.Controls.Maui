@@ -127,8 +127,8 @@ namespace _2048Game.ViewModels
             State = LevelState.AttractMode;
             TilesInitialized?.Invoke(this, _activeTiles);
 
-            // Start auto-play timer
-            _attractModeTimer = new Timer(AttractModeAutoPlay, null, 800, 600);
+            // Start auto-play timer (1 second initial delay, 1.2 seconds between moves)
+            _attractModeTimer = new Timer(AttractModeAutoPlay, null, 1000, 1200);
         }
 
         public void StopAttractMode()
