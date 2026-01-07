@@ -1,0 +1,348 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    x:Class="_2048Game.MainPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:behaviors="clr-namespace:_2048Game.Behaviors"
+    xmlns:converters="clr-namespace:_2048Game.Converters"
+    xmlns:models="clr-namespace:_2048Game.Models"
+    xmlns:enums="clr-namespace:_2048Game.Enums"
+    xmlns:viewModels="clr-namespace:_2048Game.ViewModels"
+    x:DataType="viewModels:MainPageViewModel"
+    NavigationPage.HasNavigationBar="False"
+    BackgroundColor="{AppThemeBinding Light={StaticResource GameBackgroundLight}, Dark={StaticResource GameBackgroundDark}}"
+    Padding="0">
+    <ContentPage.BindingContext>
+        <viewModels:MainPageViewModel PropertyChanged="MainPageViewModel_PropertyChanged" />
+    </ContentPage.BindingContext>
+    <ContentPage.Resources>
+        <converters:StringToTileBackgroundColorConverter x:Key="StringToTileBackgroundColorConverter" />
+        <converters:StringToTileTextColorConverter x:Key="StringToTileTextColorConverter" />
+        <converters:EnumToBoolConverter x:Key="IsGameOverConverter" TrueValue="{x:Static enums:LevelState.GameOver}" />
+        <converters:EnumToBoolConverter x:Key="IsAttractModeConverter" TrueValue="{x:Static enums:LevelState.AttractMode}" />
+        <converters:EnumToBoolConverter x:Key="IsWinConverter" TrueValue="{x:Static enums:LevelState.Complete}" />
+        <Style x:Key="NumberTileBorder" TargetType="Border">
+            <Setter Property="HeightRequest" Value="70" />
+            <Setter Property="WidthRequest" Value="70" />
+            <Setter Property="StrokeShape" Value="RoundRectangle 5" />
+            <Setter Property="Stroke" Value="Transparent" />
+        </Style>
+        <Style x:Key="NumberTileGrid" TargetType="Grid">
+            <Setter Property="HeightRequest" Value="75" />
+            <Setter Property="WidthRequest" Value="75" />
+        </Style>
+    </ContentPage.Resources>
+    <Grid x:Name="MainGrid"
+          Margin="{OnPlatform Android='0,30,0,0', iOS=0}" RowDefinitions="Auto,*,Auto">
+            <Grid
+                Padding="20"
+                Grid.Row="0"
+                ColumnDefinitions="*,*,*,Auto"
+                ColumnSpacing="10"
+                RowDefinitions="Auto, Auto, Auto"
+                RowSpacing="10">
+                <Border Grid.Row="0" HorizontalOptions="Fill" VerticalOptions="Fill"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource LogoGoldLight}, Dark={StaticResource LogoGoldDark}}"
+                    Grid.RowSpan="2">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="5" />
+                    </Border.StrokeShape>
+                    <Label
+                        FontSize="32"
+                        HorizontalOptions="Center"
+                        Text="2048"
+                        TextColor="White"
+                        FontFamily="PoppinsBold"
+                        VerticalOptions="Center" />
+                </Border>
+
+                <VerticalStackLayout
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Padding="5"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource ScoreBoxBackgroundLight}, Dark={StaticResource ScoreBoxBackgroundDark}}">
+                    <Label Style="{StaticResource WhiteLabelStyle}" Text="Score" FontSize="12" />
+                    <Grid>
+                        <Label Style="{StaticResource WhiteLabelStyle}" Text="{Binding Score}" FontSize="18" />
+                        <Label x:Name="AddedScoreLabel" IsVisible="False" Style="{StaticResource WhiteLabelStyle}" Text="{Binding AddedScore}" />
+                    </Grid>
+                </VerticalStackLayout>
+                <VerticalStackLayout
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    Padding="5"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource ScoreBoxBackgroundLight}, Dark={StaticResource ScoreBoxBackgroundDark}}">
+                    <Label Style="{StaticResource WhiteLabelStyle}" Text="Best" FontSize="12" />
+                    <Label Style="{StaticResource WhiteLabelStyle}" Text="{Binding BestScore}" FontSize="18" />
+                </VerticalStackLayout>
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource ButtonColorLight}, Dark={StaticResource ButtonColorDark}}"
+                    TextColor="{AppThemeBinding Light={StaticResource GameTextLightLight}, Dark={StaticResource GameTextLightDark}}"
+                    Command="{Binding NewGameCommand}"
+                    CornerRadius="5"
+                    FontFamily="PoppinsBold"
+                    Text="NEW" />
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource ButtonColorLight}, Dark={StaticResource ButtonColorDark}}"
+                    TextColor="{AppThemeBinding Light={StaticResource GameTextLightLight}, Dark={StaticResource GameTextLightDark}}"
+                    CornerRadius="5"
+                    Clicked="UndoButton_Clicked"
+                    FontFamily="PoppinsBold"
+                    Text="UNDO" />
+                <!-- <Button
+                    Grid.Row="1"
+                    Grid.Column="3"
+                    BackgroundColor="#666666"
+                    TextColor="White"
+                    CornerRadius="5"
+                    Clicked="DebugButton_Clicked"
+                    FontFamily="PoppinsBold"
+                    FontSize="10"
+                    Padding="8,0"
+                    Text="DEBUG" /> -->
+                <Label
+                    Grid.Row="2"
+                    Grid.ColumnSpan="4"
+                    FontSize="15"
+                    HorizontalTextAlignment="Center"
+                    Text="Join the numbers and get to the 2048 tile!"
+                    TextColor="{AppThemeBinding Light={StaticResource GameTextDarkLight}, Dark={StaticResource GameTextDarkDark}}" />
+            </Grid>
+            <Grid x:Name="GameContainer"
+                  Grid.Row="1"
+                  VerticalOptions="Fill"
+                  HorizontalOptions="Fill"
+                  Margin="0,10"
+                  SizeChanged="GameContainer_SizeChanged">
+                <Border x:Name="GameBorder"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        HeightRequest="336"
+                        WidthRequest="340">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="5" />
+                    </Border.StrokeShape>
+                    <Grid x:Name="TileContainer"
+                          HeightRequest="336"
+                          WidthRequest="340"
+                          Background="{AppThemeBinding Light=#a49381, Dark={StaticResource BoardBackgroundDark}}"
+                          VerticalOptions="Center"
+                          HorizontalOptions="Center">
+                        <!-- Background grid with empty cell placeholders -->
+                        <Grid x:Name="BackgroundGrid"
+                              RowDefinitions="*,*,*,*"
+                              ColumnDefinitions="*,*,*,*"
+                              RowSpacing="8"
+                              ColumnSpacing="8"
+                              Padding="8">
+                            <!-- Empty cell backgrounds will be created programmatically -->
+                        </Grid>
+
+                        <!-- Tile layer for animated tiles -->
+                        <AbsoluteLayout x:Name="TileLayer" />
+
+                        <Grid.GestureRecognizers>
+                            <PanGestureRecognizer PanUpdated="PanGestureRecognizer_PanUpdated" />
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                </Border>
+                <!-- Attract Mode Overlay (text only - tiles animate in TileLayer) -->
+                <Border x:Name="AttractModeBorder"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        HeightRequest="336"
+                        WidthRequest="340"
+                        IsVisible="{Binding State, Converter={StaticResource IsAttractModeConverter}}"
+                        BackgroundColor="#AA000000"
+                        Stroke="Transparent">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="5" />
+                    </Border.StrokeShape>
+                    <Grid>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                            <Label Text="2048"
+                                   FontFamily="PoppinsBold"
+                                   FontSize="48"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   Opacity="0.9">
+                                <Label.Shadow>
+                                    <Shadow Brush="Black" Offset="2,2" Radius="4" Opacity="0.5" />
+                                </Label.Shadow>
+                            </Label>
+                            <Label Text="Tap to Play"
+                                   FontFamily="PoppinsSemibold"
+                                   FontSize="18"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   Opacity="0.8" />
+                        </VerticalStackLayout>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="AttractMode_Tapped" />
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                </Border>
+                <!-- GameOver Overlay -->
+                <Border x:Name="GameOverBorder"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        HeightRequest="336"
+                        WidthRequest="340"
+                        IsVisible="{Binding State, Converter={StaticResource IsGameOverConverter}}"
+                        BackgroundColor="#AA000000"
+                        Stroke="Transparent">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="5" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="15">
+                        <Label Text="Game Over"
+                               FontFamily="PoppinsBold"
+                               FontSize="42"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               Opacity="0.9">
+                            <Label.Shadow>
+                                <Shadow Brush="Black" Offset="2,2" Radius="4" Opacity="0.5" />
+                            </Label.Shadow>
+                        </Label>
+                        <Label FontFamily="PoppinsSemibold"
+                               FontSize="18"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               Opacity="0.8">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Score: " />
+                                    <Span Text="{Binding Score}" FontFamily="PoppinsBold" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Button
+                            Margin="0,10,0,0"
+                            HeightRequest="44"
+                            WidthRequest="140"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource ButtonColorLight}, Dark={StaticResource ButtonColorDark}}"
+                            TextColor="{AppThemeBinding Light={StaticResource GameTextLightLight}, Dark={StaticResource GameTextLightDark}}"
+                            Command="{Binding NewGameCommand}"
+                            CornerRadius="5"
+                            FontFamily="PoppinsBold"
+                            Text="Play Again" />
+                    </VerticalStackLayout>
+                </Border>
+                <!-- Win Overlay -->
+                <Border x:Name="WinBorder"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        HeightRequest="336"
+                        WidthRequest="340"
+                        IsVisible="{Binding State, Converter={StaticResource IsWinConverter}}"
+                        BackgroundColor="#AA000000"
+                        Stroke="Transparent">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="5" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="15">
+                        <Label Text="You Win!"
+                               FontFamily="PoppinsBold"
+                               FontSize="42"
+                               TextColor="#EDC22E"
+                               HorizontalOptions="Center"
+                               Opacity="0.95">
+                            <Label.Shadow>
+                                <Shadow Brush="Black" Offset="2,2" Radius="4" Opacity="0.5" />
+                            </Label.Shadow>
+                        </Label>
+                        <Label FontFamily="PoppinsSemibold"
+                               FontSize="18"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               Opacity="0.8">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Score: " />
+                                    <Span Text="{Binding Score}" FontFamily="PoppinsBold" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                        <Button
+                            Margin="0,10,0,0"
+                            HeightRequest="44"
+                            WidthRequest="140"
+                            BackgroundColor="#EDC22E"
+                            TextColor="White"
+                            Command="{Binding NewGameCommand}"
+                            CornerRadius="5"
+                            FontFamily="PoppinsBold"
+                            Text="New Game" />
+                    </VerticalStackLayout>
+                </Border>
+                <!-- Debug Menu Overlay -->
+                <Border x:Name="DebugMenuBorder"
+                        VerticalOptions="Center"
+                        HorizontalOptions="Center"
+                        HeightRequest="336"
+                        WidthRequest="340"
+                        IsVisible="False"
+                        BackgroundColor="#DD000000"
+                        Stroke="Transparent">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="5" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="15">
+                        <Label Text="Debug Menu"
+                               FontFamily="PoppinsBold"
+                               FontSize="32"
+                               TextColor="#FF6666"
+                               HorizontalOptions="Center">
+                            <Label.Shadow>
+                                <Shadow Brush="Black" Offset="2,2" Radius="4" Opacity="0.5" />
+                            </Label.Shadow>
+                        </Label>
+                        <Button
+                            HeightRequest="44"
+                            WidthRequest="180"
+                            BackgroundColor="#CC4444"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Clicked="DebugShowGameOver_Clicked"
+                            FontFamily="PoppinsBold"
+                            Text="Show Game Over" />
+                        <Button
+                            HeightRequest="44"
+                            WidthRequest="180"
+                            BackgroundColor="#EDC22E"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Clicked="DebugShowWin_Clicked"
+                            FontFamily="PoppinsBold"
+                            Text="Show Win" />
+                        <Button
+                            Margin="0,20,0,0"
+                            HeightRequest="44"
+                            WidthRequest="180"
+                            BackgroundColor="#666666"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Clicked="DebugMenuClose_Clicked"
+                            FontFamily="PoppinsBold"
+                            Text="Close" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+            <Grid Padding="25,20,25,20" VerticalOptions="Start" Grid.Row="2">
+                <Label Text="Moves:" TextColor="{AppThemeBinding Light={StaticResource GameTextDarkLight}, Dark={StaticResource GameTextDarkDark}}">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span FontFamily="PoppinsRegular" Text="Moves: " FontSize="15" TextColor="{AppThemeBinding Light={StaticResource GameTextDarkLight}, Dark={StaticResource GameTextDarkDark}}"/>
+                            <Span FontFamily="PoppinsSemibold" FontSize="16" Text="{Binding TotalMoves}" TextColor="{AppThemeBinding Light={StaticResource GameTextDarkLight}, Dark={StaticResource GameTextDarkDark}}"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label HorizontalOptions="End" HorizontalTextAlignment="End" Text="{Binding FormattedTime}" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource GameTextDarkLight}, Dark={StaticResource GameTextDarkDark}}"/>
+            </Grid>
+    </Grid>
+</ContentPage>

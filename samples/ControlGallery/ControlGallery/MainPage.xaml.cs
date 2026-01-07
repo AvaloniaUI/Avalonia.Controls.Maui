@@ -107,6 +107,7 @@ public partial class MainPage : FlyoutPage
                 new("CollectionView", "Collection display with templates", typeof(CollectionViewPage)),
                 new("ContentView", "Custom content", typeof(ContentViewPage)),
                 new("DatePicker", "Date picker control", typeof(DatePickerPage)),
+                new("Frame", "Frame control", typeof(FramePage)),
                 new("GraphicsView", "Custom drawing and graphics", typeof(GraphicsViewPage)),
                 new("Image", "Image display with various sources", typeof(ImagePage)),
                 new("ImageButton", "ImageButton control", typeof(ImageButtonPage)),
@@ -140,6 +141,18 @@ public partial class MainPage : FlyoutPage
                 new("Polyline", "Open polyline shapes", typeof(PolylinePage)),
                 new("Path", "Paths with custom geometry", typeof(PathPage)),
                 new("RoundRectangle", "Custom corner radii", typeof(RoundRectanglePage))
+            }),
+
+            new SampleGroup("Core", new List<SampleItem>
+            {
+                new("Animations", "ViewExtensions animations", typeof(AnimationPage)),
+                new("Behaviors", "Validation Behaviors", typeof(BehaviorsPage)),
+                new("Brushes", "Solid and Gradient brushes", typeof(BrushesPage)),
+                new("Gestures", "Tap, Swipe, Pan and more", typeof(GesturesPage)),
+                new("Styles", "Styles and Style Classes", typeof(StylesPage)),
+                new("Tooltips", "Tooltips on various controls", typeof(TooltipsPage)),
+                new("Triggers", "Visual states and actions", typeof(TriggersPage)),
+                new("Visual States", "VisualStateManager examples", typeof(VisualStateManagerPage)),
             }),
 
             new SampleGroup("Settings", new List<SampleItem>

@@ -24,73 +24,33 @@ public static class GraphicsExtensions
 {
     public static AvaloniaSolidColorBrush ToPlatform(this MauiColor color)
     {
-        return new AvaloniaSolidColorBrush(AvaloniaColor.FromArgb(
+        return new AvaloniaSolidColorBrush(color.ToAvaloniaColor());
+    }
+
+    public static AvaloniaColor ToAvaloniaColor(this MauiColor color)
+    {
+        return AvaloniaColor.FromArgb(
             (byte)(color.Alpha * 255),
             (byte)(color.Red * 255),
             (byte)(color.Green * 255),
-            (byte)(color.Blue * 255)));
+            (byte)(color.Blue * 255));
     }
 
     public static AvaloniaIBrush? ToPlatform(this MauiPaint? paint)
     {
         if (paint is MauiSolidPaint solidPaint && solidPaint.Color != null)
         {
-            return new AvaloniaSolidColorBrush(global::Avalonia.Media.Color.FromArgb(
-                (byte)(solidPaint.Color.Alpha * 255),
-                (byte)(solidPaint.Color.Red * 255),
-                (byte)(solidPaint.Color.Green * 255),
-                (byte)(solidPaint.Color.Blue * 255)));
+            return solidPaint.Color.ToPlatform();
         }
         else if (paint is MauiLinearGradientPaint linearGradient)
         {
-            var brush = new AvaloniaLinearGradientBrush();
-
-            if (linearGradient.GradientStops != null)
-            {
-                foreach (var stop in linearGradient.GradientStops)
-                {
-                    brush.GradientStops.Add(new AvaloniaGradientStop
-                    {
-                        Offset = stop.Offset,
-                        Color = AvaloniaColor.FromArgb(
-                            (byte)(stop.Color.Alpha * 255),
-                            (byte)(stop.Color.Red * 255),
-                            (byte)(stop.Color.Green * 255),
-                            (byte)(stop.Color.Blue * 255))
-                    });
-                }
-            }
-
-            brush.StartPoint = new RelativePoint(linearGradient.StartPoint.X, linearGradient.StartPoint.Y, RelativeUnit.Relative);
-            brush.EndPoint = new RelativePoint(linearGradient.EndPoint.X, linearGradient.EndPoint.Y, RelativeUnit.Relative);
-
-            return brush;
+            var stops = linearGradient.GradientStops?.Select(s => (s.Color, s.Offset));
+            return CreateLinearGradientBrush(linearGradient.StartPoint, linearGradient.EndPoint, stops);
         }
         else if (paint is MauiRadialGradientPaint radialGradient)
         {
-            var brush = new AvaloniaRadialGradientBrush();
-
-            if (radialGradient.GradientStops != null)
-            {
-                foreach (var stop in radialGradient.GradientStops)
-                {
-                    brush.GradientStops.Add(new AvaloniaGradientStop
-                    {
-                        Offset = stop.Offset,
-                        Color = global::Avalonia.Media.Color.FromArgb(
-                            (byte)(stop.Color.Alpha * 255),
-                            (byte)(stop.Color.Red * 255),
-                            (byte)(stop.Color.Green * 255),
-                            (byte)(stop.Color.Blue * 255))
-                    });
-                }
-            }
-
-            brush.Center = new RelativePoint(radialGradient.Center.X, radialGradient.Center.Y, RelativeUnit.Relative);
-            brush.RadiusX = new RelativeScalar(radialGradient.Radius * 100, RelativeUnit.Relative);
-            brush.RadiusY = new RelativeScalar(radialGradient.Radius * 100, RelativeUnit.Relative);
-
-            return brush;
+            var stops = radialGradient.GradientStops?.Select(s => (s.Color, s.Offset));
+            return CreateRadialGradientBrush(radialGradient.Center, radialGradient.Radius, stops);
         }
 
         return null;
@@ -125,70 +85,73 @@ public static class GraphicsExtensions
 
         if (brush is MauiControlsSolidColorBrush solidBrush && solidBrush.Color != null)
         {
-            return new AvaloniaSolidColorBrush(AvaloniaColor.FromArgb(
-                (byte)(solidBrush.Color.Alpha * 255),
-                (byte)(solidBrush.Color.Red * 255),
-                (byte)(solidBrush.Color.Green * 255),
-                (byte)(solidBrush.Color.Blue * 255)));
+            return solidBrush.Color.ToPlatform();
         }
         else if (brush is MauiControlsLinearGradientBrush linearBrush)
         {
-            var avaloniaBrush = new AvaloniaLinearGradientBrush();
-
-            if (linearBrush.GradientStops != null)
-            {
-                foreach (var stop in linearBrush.GradientStops)
-                {
-                    if (stop.Color != null)
-                    {
-                        avaloniaBrush.GradientStops.Add(new AvaloniaGradientStop
-                        {
-                            Offset = stop.Offset,
-                            Color = AvaloniaColor.FromArgb(
-                                (byte)(stop.Color.Alpha * 255),
-                                (byte)(stop.Color.Red * 255),
-                                (byte)(stop.Color.Green * 255),
-                                (byte)(stop.Color.Blue * 255))
-                        });
-                    }
-                }
-            }
-
-            avaloniaBrush.StartPoint = new RelativePoint(linearBrush.StartPoint.X, linearBrush.StartPoint.Y, RelativeUnit.Relative);
-            avaloniaBrush.EndPoint = new RelativePoint(linearBrush.EndPoint.X, linearBrush.EndPoint.Y, RelativeUnit.Relative);
-
-            return avaloniaBrush;
+            var stops = linearBrush.GradientStops?.Select(s => (s.Color, s.Offset));
+            return CreateLinearGradientBrush(linearBrush.StartPoint, linearBrush.EndPoint, stops);
         }
         else if (brush is MauiControlsRadialGradientBrush radialBrush)
         {
-            var avaloniaBrush = new AvaloniaRadialGradientBrush();
-
-            if (radialBrush.GradientStops != null)
-            {
-                foreach (var stop in radialBrush.GradientStops)
-                {
-                    if (stop.Color != null)
-                    {
-                        avaloniaBrush.GradientStops.Add(new AvaloniaGradientStop
-                        {
-                            Offset = stop.Offset,
-                            Color = AvaloniaColor.FromArgb(
-                                (byte)(stop.Color.Alpha * 255),
-                                (byte)(stop.Color.Red * 255),
-                                (byte)(stop.Color.Green * 255),
-                                (byte)(stop.Color.Blue * 255))
-                        });
-                    }
-                }
-            }
-
-            avaloniaBrush.Center = new RelativePoint(radialBrush.Center.X, radialBrush.Center.Y, RelativeUnit.Relative);
-            avaloniaBrush.RadiusX = new RelativeScalar(radialBrush.Radius, RelativeUnit.Relative);
-            avaloniaBrush.RadiusY = new RelativeScalar(radialBrush.Radius, RelativeUnit.Relative);
-
-            return avaloniaBrush;
+            var stops = radialBrush.GradientStops?.Select(s => (s.Color, s.Offset));
+            return CreateRadialGradientBrush(radialBrush.Center, radialBrush.Radius, stops);
         }
 
         return null;
+    }
+
+    private static AvaloniaLinearGradientBrush CreateLinearGradientBrush(Microsoft.Maui.Graphics.Point startPoint, Microsoft.Maui.Graphics.Point endPoint, IEnumerable<(MauiColor Color, float Offset)>? stops)
+    {
+        var brush = new AvaloniaLinearGradientBrush();
+
+        if (stops != null)
+        {
+            foreach (var stop in stops)
+            {
+                if (stop.Color != null)
+                {
+                    brush.GradientStops.Add(new AvaloniaGradientStop
+                    {
+                        Offset = stop.Offset,
+                        Color = stop.Color.ToAvaloniaColor()
+                    });
+                }
+            }
+        }
+
+        brush.StartPoint = new RelativePoint(startPoint.X, startPoint.Y, RelativeUnit.Relative);
+        brush.EndPoint = new RelativePoint(endPoint.X, endPoint.Y, RelativeUnit.Relative);
+
+        return brush;
+    }
+
+    private static AvaloniaRadialGradientBrush CreateRadialGradientBrush(Microsoft.Maui.Graphics.Point center, double radius, IEnumerable<(MauiColor Color, float Offset)>? stops)
+    {
+        var avaloniaBrush = new AvaloniaRadialGradientBrush();
+
+        if (stops != null)
+        {
+            foreach (var stop in stops)
+            {
+                if (stop.Color != null)
+                {
+                    avaloniaBrush.GradientStops.Add(new AvaloniaGradientStop
+                    {
+                        Offset = stop.Offset,
+                        Color = stop.Color.ToAvaloniaColor()
+                    });
+                }
+            }
+        }
+
+        avaloniaBrush.Center = new RelativePoint(center.X, center.Y, RelativeUnit.Relative);
+        // Avalonia separates Center (geometry) and GradientOrigin (focal point). MAUI uses Center for both.
+        avaloniaBrush.GradientOrigin = avaloniaBrush.Center;
+        // Fix for radius scaling
+        avaloniaBrush.RadiusX = new RelativeScalar(radius, RelativeUnit.Relative);
+        avaloniaBrush.RadiusY = new RelativeScalar(radius, RelativeUnit.Relative);
+
+        return avaloniaBrush;
     }
 }
