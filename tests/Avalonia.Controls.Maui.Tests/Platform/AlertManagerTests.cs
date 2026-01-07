@@ -5,6 +5,7 @@ using AvaloniaGrid = Avalonia.Controls.Grid;
 using Avalonia.VisualTree;
 using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
+using Avalonia.Controls;
 using MauiWindowHandler = Avalonia.Controls.Maui.Handlers.WindowHandler;
 using MauiWindow = Microsoft.Maui.Controls.Window;
 using AvaloniaDispatcher = Avalonia.Threading.Dispatcher;
@@ -47,16 +48,16 @@ namespace Avalonia.Controls.Maui.Tests.Platform
             Assert.IsType<MauiAlertDialog>(dialogControl);
             
             (dialogControl as TemplatedControl)?.ApplyTemplate();
-            dialogControl.Measure(new Avalonia.Size(800, 600));
-            dialogControl.Arrange(new Avalonia.Rect(0, 0, 800, 600));
+            dialogControl.Measure(new Size(800, 600));
+            dialogControl.Arrange(new Rect(0, 0, 800, 600));
             
             var okButton = dialogControl.GetVisualDescendants()
-                .OfType<Avalonia.Controls.Button>()
+                .OfType<Button>()
                 .FirstOrDefault();
             
             Assert.NotNull(okButton);
             
-            okButton.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+            okButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
             for (int i = 0; i < 5; i++)
             {
                 AvaloniaDispatcher.UIThread.RunJobs();
@@ -101,11 +102,11 @@ namespace Avalonia.Controls.Maui.Tests.Platform
             Assert.IsType<MauiActionSheetDialog>(dialogControl);
             
             (dialogControl as TemplatedControl)?.ApplyTemplate();
-            dialogControl.Measure(new Avalonia.Size(800, 600));
-            dialogControl.Arrange(new Avalonia.Rect(0, 0, 800, 600));
+            dialogControl.Measure(new Size(800, 600));
+            dialogControl.Arrange(new Rect(0, 0, 800, 600));
             
             var button = dialogControl.GetVisualDescendants()
-                .OfType<Avalonia.Controls.Button>()
+                .OfType<Button>()
                 .FirstOrDefault(b => b.Content?.ToString() == "Option 1");
                 
             Assert.NotNull(button);
