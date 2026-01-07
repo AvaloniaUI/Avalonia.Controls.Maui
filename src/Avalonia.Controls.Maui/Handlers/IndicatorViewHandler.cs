@@ -7,8 +7,8 @@ namespace Avalonia.Controls.Maui.Handlers;
 
 public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, PlatformView>, IIndicatorViewHandler
 {
-    public static IPropertyMapper<IIndicatorView, IIndicatorViewHandler> Mapper =
-        new PropertyMapper<IIndicatorView, IIndicatorViewHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IIndicatorView, IndicatorViewHandler> Mapper =
+        new PropertyMapper<IIndicatorView, IndicatorViewHandler>(ViewHandler.ViewMapper)
         {
             [nameof(IIndicatorView.Count)] = MapCount,
             [nameof(IIndicatorView.Position)] = MapPosition,

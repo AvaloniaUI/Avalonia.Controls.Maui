@@ -18,9 +18,9 @@ using PlatformView = Avalonia.Controls.Control;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>, ILabelHandler
+public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>
 {
-    public static IPropertyMapper<ILabel, ILabelHandler> Mapper = new PropertyMapper<ILabel, ILabelHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<ILabel, LabelHandler> Mapper = new PropertyMapper<ILabel, LabelHandler>(ViewHandler.ViewMapper)
     {
         [nameof(ITextStyle.CharacterSpacing)] = MapCharacterSpacing,
         [nameof(ITextStyle.Font)] = MapFont,
@@ -38,7 +38,7 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>, ILabelHandle
         [nameof(MauiLabel.FormattedText)] = MapFormattedText,
     };
 
-    public static CommandMapper<ILabel, ILabelHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<ILabel, LabelHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
@@ -56,10 +56,6 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>, ILabelHandle
     {
     }
 
-    ILabel ILabelHandler.VirtualView => VirtualView;
-
-    System.Object ILabelHandler.PlatformView => PlatformView;
-
     protected override AvaloniaTextBlock CreatePlatformView()
     {
         return new AvaloniaTextBlock();
@@ -67,53 +63,53 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>, ILabelHandle
 
     public override bool NeedsContainer => VirtualView?.Background != null;
 
-    public static void MapBackground(ILabelHandler handler, ILabel label)
+    public static void MapBackground(LabelHandler handler, ILabel label)
     {
         handler.UpdateValue(nameof(IViewHandler.ContainerView));
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateBackground(label);
     }
 
-    public static void MapText(ILabelHandler handler, ILabel label) =>
+    public static void MapText(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateText(label);
 
-    public static void MapTextColor(ILabelHandler handler, ILabel label) =>
+    public static void MapTextColor(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateTextColor(label);
 
-    public static void MapCharacterSpacing(ILabelHandler handler, ILabel label) =>
+    public static void MapCharacterSpacing(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateCharacterSpacing(label);
 
-    public static void MapFont(ILabelHandler handler, ILabel label)
+    public static void MapFont(LabelHandler handler, ILabel label)
     {
         var fontManager = handler.GetRequiredService<IFontManager>();
 
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateFont(label, fontManager);
     }
 
-    public static void MapHorizontalTextAlignment(ILabelHandler handler, ILabel label) =>
+    public static void MapHorizontalTextAlignment(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateHorizontalTextAlignment(label);
 
-    public static void MapVerticalTextAlignment(ILabelHandler handler, ILabel label) =>
+    public static void MapVerticalTextAlignment(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateVerticalTextAlignment(label);
 
-    public static void MapLineBreakMode(ILabelHandler handler, ILabel label) =>
+    public static void MapLineBreakMode(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateLineBreakMode(label);
 
-    public static void MapTextDecorations(ILabelHandler handler, ILabel label) =>
+    public static void MapTextDecorations(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateTextDecorations(label);
 
-    public static void MapMaxLines(ILabelHandler handler, ILabel label) =>
+    public static void MapMaxLines(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateMaxLines(label);
 
-    public static void MapPadding(ILabelHandler handler, ILabel label) =>
+    public static void MapPadding(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdatePadding(label);
 
-    public static void MapLineHeight(ILabelHandler handler, ILabel label) =>
+    public static void MapLineHeight(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateLineHeight(label);
 
-    public static void MapTextTransform(ILabelHandler handler, ILabel label) =>
+    public static void MapTextTransform(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateTextTransform(label);
 
-    public static void MapFormattedText(ILabelHandler handler, ILabel label) =>
+    public static void MapFormattedText(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateFormattedText(label, handler);
 }
 
@@ -334,7 +330,7 @@ public static class LabelTextBlockExtensions
 
     
 
-    public static void UpdateFormattedText(this AvaloniaTextBlock textBlock, ILabel label, ILabelHandler handler)
+    public static void UpdateFormattedText(this AvaloniaTextBlock textBlock, ILabel label, LabelHandler handler)
     {
         if (label is not MauiLabel mauiLabel)
         {

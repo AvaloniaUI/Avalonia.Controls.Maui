@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.BrushesPage"
+             Title="Brushes">
+    <ContentPage.Resources>
+        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+        <Color x:Key="SectionBorderDark">#444444</Color>
+        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+        <Color x:Key="AccentPrimary">#6200EE</Color>
+        <Color x:Key="AccentSecondary">#03DAC5</Color>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            
+            <Label Text="Brushes"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+            
+            <Label Text="Solid Colors and Gradients"
+                   HorizontalOptions="Center"
+                   FontSize="14"
+                   TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}"/>
+
+            <!-- Solid Colors -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="SolidColorBrush" FontAttributes="Bold"/>
+                    <Label Text="Brush.Color property" FontSize="12" FontAttributes="Italic"/>
+
+                    <FlexLayout Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
+                        <Border StrokeThickness="0" HeightRequest="60" WidthRequest="60" Margin="5" BackgroundColor="Red">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Label Text="Red" VerticalOptions="Center" HorizontalOptions="Center" TextColor="White" FontSize="10" FontAttributes="Bold"/>
+                        </Border>
+                        <Border StrokeThickness="0" HeightRequest="60" WidthRequest="60" Margin="5" BackgroundColor="Green">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Label Text="Green" VerticalOptions="Center" HorizontalOptions="Center" TextColor="White" FontSize="10" FontAttributes="Bold"/>
+                        </Border>
+                         <Border StrokeThickness="0" HeightRequest="60" WidthRequest="60" Margin="5" BackgroundColor="Blue">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Label Text="Blue" VerticalOptions="Center" HorizontalOptions="Center" TextColor="White" FontSize="10" FontAttributes="Bold"/>
+                        </Border>
+                        <Border StrokeThickness="0" HeightRequest="60" WidthRequest="60" Margin="5" BackgroundColor="#80FF00FF">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Label Text="Opacity" VerticalOptions="Center" HorizontalOptions="Center" TextColor="Black" FontSize="10" FontAttributes="Bold"/>
+                        </Border>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Linear Gradients -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="LinearGradientBrush" FontAttributes="Bold"/>
+                    <Label Text="StartPoint and EndPoint" FontSize="12" FontAttributes="Italic"/>
+
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" HeightRequest="100">
+                        <Border StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="Blue" Offset="0.1"/>
+                                    <GradientStop Color="Violet" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Label Text="Horizontal" TextColor="White" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+
+                        <Border Grid.Column="1" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                             <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                    <GradientStop Color="Red" Offset="0"/>
+                                    <GradientStop Color="Yellow" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Label Text="Vertical" TextColor="Black" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+
+                        <Border Grid.Column="2" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                             <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="Orange" Offset="0"/>
+                                    <GradientStop Color="Cyan" Offset="1.0"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Label Text="Diagonal" TextColor="Black" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Radial Gradients -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="RadialGradientBrush" FontAttributes="Bold"/>
+                    <Label Text="Center and Radius" FontSize="12" FontAttributes="Italic"/>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10" HeightRequest="120">
+                        <Border StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                            <Border.Background>
+                                <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                                    <GradientStop Color="Blue" Offset="0"/>
+                                    <GradientStop Color="Pink" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                            <Label Text="Centered" TextColor="Red" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+
+                        <Border Grid.Column="1" StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                             <Border.Background>
+                                <RadialGradientBrush Center="0.2,0.2" Radius="0.5">
+                                    <GradientStop Color="Yellow" Offset="0"/>
+                                    <GradientStop Color="Green" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Border.Background>
+                            <Label Text="Offset" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Interactive Gradient -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                     <Label Text="Animated Gradient" FontAttributes="Bold"/>
+                     
+                     <Border x:Name="AnimatedGradientBox" HeightRequest="150" StrokeThickness="0">
+                         <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                         <Border.Background>
+                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                 <GradientStop x:Name="Stop1" Color="#FF0000" Offset="0"/>
+                                 <GradientStop x:Name="Stop2" Color="#0000FF" Offset="1"/>
+                             </LinearGradientBrush>
+                         </Border.Background>
+                         <Label Text="Click Button Below" TextColor="White" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="Center"/>
+                     </Border>
+                     
+                     <Button Text="Animate" Clicked="OnAnimateColorsClicked" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

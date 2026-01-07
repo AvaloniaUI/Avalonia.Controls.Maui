@@ -12,12 +12,12 @@ using MButton = Microsoft.Maui.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
+public class ButtonHandler : ViewHandler<IButton, PlatformView>
 {
     private CancellationTokenSource? _imageSourceCts;
     private ImageSourcePartLoader? _imageSourcePartLoader;
 
-    public static IPropertyMapper<IButton, IButtonHandler> Mapper = new PropertyMapper<IButton, IButtonHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<IButton, ButtonHandler> Mapper = new PropertyMapper<IButton, ButtonHandler>(ViewHandler.ViewMapper)
     {
         // IText properties
         [nameof(IText.Text)] = MapText,
@@ -41,7 +41,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         [nameof(MButton.ImageSource)] = MapImageSource,
     };
 
-    public static CommandMapper<IButton, IButtonHandler> CommandMapper = new(ViewCommandMapper);
+    public static CommandMapper<IButton, ButtonHandler> CommandMapper = new(ViewCommandMapper);
 
     public ButtonHandler()
         : base(Mapper, CommandMapper)
@@ -61,16 +61,12 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
     public ImageSourcePartLoader ImageSourceLoader =>
         _imageSourcePartLoader ??= new ImageSourcePartLoader(new ButtonImageSourcePartSetter(this));
 
-    IButton IButtonHandler.VirtualView => VirtualView;
-
-    System.Object IButtonHandler.PlatformView => PlatformView;
-
     protected override MauiButton CreatePlatformView()
     {
         return new MauiButton();
     }
 
-    public static void MapBackground(IButtonHandler handler, IButton button)
+    public static void MapBackground(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -78,7 +74,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdateButtonBackground(handler.VirtualView);
     }
 
-    public static void MapStrokeColor(IButtonHandler handler, IButton button)
+    public static void MapStrokeColor(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -86,7 +82,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdateStrokeColor(handler.VirtualView);
     }
 
-    public static void MapStrokeThickness(IButtonHandler handler, IButton button)
+    public static void MapStrokeThickness(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -94,7 +90,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdateStrokeThickness(handler.VirtualView);
     }
 
-    public static void MapCornerRadius(IButtonHandler handler, IButton button)
+    public static void MapCornerRadius(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -102,7 +98,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdateCornerRadius(handler.VirtualView);
     }
 
-    public static void MapText(IButtonHandler handler, IButton button)
+    public static void MapText(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -110,7 +106,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdateText(handler.VirtualView);
     }
 
-    public static void MapTextColor(IButtonHandler handler, IButton button)
+    public static void MapTextColor(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -118,7 +114,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdateTextColor(handler.VirtualView);
     }
 
-    public static void MapCharacterSpacing(IButtonHandler handler, IButton button)
+    public static void MapCharacterSpacing(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -126,7 +122,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdateCharacterSpacing(handler.VirtualView);
     }
 
-    public static void MapFont(IButtonHandler handler, IButton button)
+    public static void MapFont(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -135,7 +131,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdateFont(handler.VirtualView, fontManager);
     }
 
-    public static void MapPadding(IButtonHandler handler, IButton button)
+    public static void MapPadding(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -143,7 +139,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         platformView.UpdatePadding(handler.VirtualView);
     }
     
-    public static void MapImageSource(IButtonHandler handler, IButton button)
+    public static void MapImageSource(ButtonHandler handler, IButton button)
     {
         if (handler is not ButtonHandler buttonHandler || handler.VirtualView is null)
             return;
@@ -172,7 +168,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         _ = buttonHandler.LoadImageSourceAsync(imageSource, cts.Token);
     }
 
-    public static void MapContentLayout(IButtonHandler handler, IButton button)
+    public static void MapContentLayout(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
             return;
@@ -263,9 +259,9 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>, IButtonHandler
         }
     }
 
-    partial class ButtonImageSourcePartSetter : ImageSourcePartSetter<IButtonHandler>
+    partial class ButtonImageSourcePartSetter : ImageSourcePartSetter<ButtonHandler>
     {
-        public ButtonImageSourcePartSetter(IButtonHandler handler)
+        public ButtonImageSourcePartSetter(ButtonHandler handler)
             : base(handler)
         {
         }

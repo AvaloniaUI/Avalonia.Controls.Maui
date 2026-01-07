@@ -10,9 +10,9 @@ using PlatformView = Avalonia.Controls.MenuItem;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, PlatformView>, IMenuFlyoutItemHandler
+public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, PlatformView>
 {
-    public static IPropertyMapper<IMenuFlyoutItem, IMenuFlyoutItemHandler> Mapper = new PropertyMapper<IMenuFlyoutItem, IMenuFlyoutItemHandler>(ElementMapper)
+    public static IPropertyMapper<IMenuFlyoutItem, MenuFlyoutItemHandler> Mapper = new PropertyMapper<IMenuFlyoutItem, MenuFlyoutItemHandler>(ElementMapper)
     {
         [nameof(IMenuFlyoutSubItem.Text)] = MapText,
         [nameof(IMenuFlyoutItem.KeyboardAccelerators)] = MapKeyboardAccelerators,
@@ -20,7 +20,7 @@ public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, Pla
         [nameof(IMenuElement.IsEnabled)] = MapIsEnabled
     };
 
-    public static CommandMapper<IMenuFlyoutItem, IMenuFlyoutItemHandler> CommandMapper = new(ElementCommandMapper)
+    public static CommandMapper<IMenuFlyoutItem, MenuFlyoutItemHandler> CommandMapper = new(ElementCommandMapper)
     {
     };
 
@@ -50,16 +50,16 @@ public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, Pla
         VirtualView.Clicked();
     }
 
-    public static void MapText(IMenuFlyoutItemHandler handler, IMenuFlyoutItem view)
+    public static void MapText(MenuFlyoutItemHandler handler, IMenuFlyoutItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.Header = view.Text;
     }
 
-    public static void MapSource(IMenuFlyoutItemHandler handler, IMenuFlyoutItem view) =>
+    public static void MapSource(MenuFlyoutItemHandler handler, IMenuFlyoutItem view) =>
         MapSourceAsync(handler, view).FireAndForget(handler);
 
-    public static async Task MapSourceAsync(IMenuFlyoutItemHandler handler, IMenuFlyoutItem view)
+    public static async Task MapSourceAsync(MenuFlyoutItemHandler handler, IMenuFlyoutItem view)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -108,7 +108,7 @@ public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, Pla
         }
     }
 
-    public static void MapKeyboardAccelerators(IMenuFlyoutItemHandler handler, IMenuFlyoutItem view)
+    public static void MapKeyboardAccelerators(MenuFlyoutItemHandler handler, IMenuFlyoutItem view)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -178,13 +178,9 @@ public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, Pla
         return Avalonia.Input.Key.None;
     }
 
-    public static void MapIsEnabled(IMenuFlyoutItemHandler handler, IMenuFlyoutItem view)
+    public static void MapIsEnabled(MenuFlyoutItemHandler handler, IMenuFlyoutItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.IsEnabled = view.IsEnabled;
     }
-
-    IMenuFlyoutItem IMenuFlyoutItemHandler.VirtualView => VirtualView;
-
-    object IMenuFlyoutItemHandler.PlatformView => PlatformView;
 }

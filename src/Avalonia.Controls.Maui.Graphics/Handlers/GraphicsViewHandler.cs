@@ -6,16 +6,16 @@ using PlatformView = System.Object;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class GraphicsViewHandler : ViewHandler<IGraphicsView, PlatformTouchGraphicsView>, IGraphicsViewHandler
+public partial class GraphicsViewHandler : ViewHandler<IGraphicsView, PlatformTouchGraphicsView>
 {
-    public static IPropertyMapper<IGraphicsView, IGraphicsViewHandler> Mapper = new PropertyMapper<IGraphicsView, IGraphicsViewHandler>(ViewMapper)
+    public static IPropertyMapper<IGraphicsView, GraphicsViewHandler> Mapper = new PropertyMapper<IGraphicsView, GraphicsViewHandler>(ViewMapper)
     {
         [nameof(IView.Background)] = MapBackground,
         [nameof(IGraphicsView.Drawable)] = MapDrawable,
         [nameof(IView.FlowDirection)] = MapFlowDirection
     };
 
-    public static CommandMapper<IGraphicsView, IGraphicsViewHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IGraphicsView, GraphicsViewHandler> CommandMapper = new(ViewCommandMapper)
     {
         [nameof(IGraphicsView.Invalidate)] = MapInvalidate
     };
@@ -34,10 +34,6 @@ public partial class GraphicsViewHandler : ViewHandler<IGraphicsView, PlatformTo
     {
     }
 
-    IGraphicsView IGraphicsViewHandler.VirtualView => VirtualView;
-
-    PlatformView IGraphicsViewHandler.PlatformView => PlatformView;
-
     protected override PlatformTouchGraphicsView CreatePlatformView()
     {
         return new PlatformTouchGraphicsView();
@@ -55,23 +51,23 @@ public partial class GraphicsViewHandler : ViewHandler<IGraphicsView, PlatformTo
         base.DisconnectHandler(platformView);
     }
 
-    public static void MapBackground(IGraphicsViewHandler handler, IGraphicsView graphicsView)
+    public static void MapBackground(GraphicsViewHandler handler, IGraphicsView graphicsView)
     {
         (handler.PlatformView as PlatformTouchGraphicsView)?.UpdateBackground(graphicsView);
     }
 
-    public static void MapDrawable(IGraphicsViewHandler handler, IGraphicsView graphicsView)
+    public static void MapDrawable(GraphicsViewHandler handler, IGraphicsView graphicsView)
     {
         (handler.PlatformView as PlatformTouchGraphicsView)?.UpdateDrawable(graphicsView);
     }
 
-    public static void MapFlowDirection(IGraphicsViewHandler handler, IGraphicsView graphicsView)
+    public static void MapFlowDirection(GraphicsViewHandler handler, IGraphicsView graphicsView)
     {
         (handler.PlatformView as PlatformTouchGraphicsView)?.UpdateFlowDirection(graphicsView);
         (handler.PlatformView as PlatformTouchGraphicsView)?.Invalidate();
     }
 
-    public static void MapInvalidate(IGraphicsViewHandler handler, IGraphicsView graphicsView, object? arg)
+    public static void MapInvalidate(GraphicsViewHandler handler, IGraphicsView graphicsView, object? arg)
     {
         (handler.PlatformView as PlatformTouchGraphicsView)?.Invalidate();
     }

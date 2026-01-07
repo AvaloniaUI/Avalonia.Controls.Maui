@@ -5,8 +5,6 @@
     <Styles.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- Small optimization: -->
-                <!-- MergeResourceInclude instead of ResourceInclude copies resources from inner dictionary to outer one -->
                 <MergeResourceInclude Source="../Controls/DatePicker/DatePicker.axaml" />
                 <MergeResourceInclude Source="../Controls/ProgressRing/ProgressRing.axaml" />
                 <MergeResourceInclude Source="../Controls/MauiComboBox/MauiComboBox.axaml" />
@@ -14,8 +12,12 @@
                 <MergeResourceInclude Source="../Controls/SearchBar/MauiSearchBar.axaml" />
                 <MergeResourceInclude Source="../Controls/Stepper/Stepper.axaml" />
                 <MergeResourceInclude Source="../Controls/MauiIndicatorView.axaml" />
+                <MergeResourceInclude Source="TimePickerResources.axaml" />
+
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Styles.Resources>
+    
+    <StyleInclude Source="avares://Avalonia.Controls.Maui/Controls/TabbedPage/TabbedPage.axaml" />
 
 </Styles>

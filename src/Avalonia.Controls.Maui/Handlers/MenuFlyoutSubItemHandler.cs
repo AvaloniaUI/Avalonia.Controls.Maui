@@ -10,9 +10,9 @@ using PlatformView = Avalonia.Controls.MenuItem;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubItem, PlatformView>, IMenuFlyoutSubItemHandler
+public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubItem, PlatformView>
 {
-    public static IPropertyMapper<IMenuFlyoutSubItem, IMenuFlyoutSubItemHandler> Mapper = new PropertyMapper<IMenuFlyoutSubItem, IMenuFlyoutSubItemHandler>(ElementMapper)
+    public static IPropertyMapper<IMenuFlyoutSubItem, MenuFlyoutSubItemHandler> Mapper = new PropertyMapper<IMenuFlyoutSubItem, MenuFlyoutSubItemHandler>(ElementMapper)
     {
         [nameof(IMenuFlyoutSubItem.Text)] = MapText,
         [nameof(IMenuFlyoutSubItem.KeyboardAccelerators)] = MapKeyboardAccelerators,
@@ -20,12 +20,12 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         [nameof(IMenuFlyoutSubItem.IsEnabled)] = MapIsEnabled,
     };
 
-    public static CommandMapper<IMenuFlyoutSubItem, IMenuFlyoutSubItemHandler> CommandMapper = new(ElementCommandMapper)
+    public static CommandMapper<IMenuFlyoutSubItem, MenuFlyoutSubItemHandler> CommandMapper = new(ElementCommandMapper)
     {
-        [nameof(IMenuFlyoutSubItemHandler.Add)] = MapAdd,
-        [nameof(IMenuFlyoutSubItemHandler.Remove)] = MapRemove,
-        [nameof(IMenuFlyoutSubItemHandler.Clear)] = MapClear,
-        [nameof(IMenuFlyoutSubItemHandler.Insert)] = MapInsert,
+        [nameof(MenuFlyoutSubItemHandler.Add)] = MapAdd,
+        [nameof(MenuFlyoutSubItemHandler.Remove)] = MapRemove,
+        [nameof(MenuFlyoutSubItemHandler.Clear)] = MapClear,
+        [nameof(MenuFlyoutSubItemHandler.Insert)] = MapInsert,
     };
 
     public MenuFlyoutSubItemHandler() : this(Mapper, CommandMapper)
@@ -66,16 +66,16 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         VirtualView.Clicked();
     }
 
-    public static void MapText(IMenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
+    public static void MapText(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.Header = view.Text;
     }
 
-    public static void MapSource(IMenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view) =>
+    public static void MapSource(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view) =>
         MapSourceAsync(handler, view).FireAndForget(handler);
 
-    public static async Task MapSourceAsync(IMenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
+    public static async Task MapSourceAsync(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -124,7 +124,7 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
-    public static void MapKeyboardAccelerators(IMenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
+    public static void MapKeyboardAccelerators(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -194,7 +194,7 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         return Avalonia.Input.Key.None;
     }
 
-    public static void MapIsEnabled(IMenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
+    public static void MapIsEnabled(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.IsEnabled = view.IsEnabled;
@@ -211,7 +211,7 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
-    public static void MapAdd(IMenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
+    public static void MapAdd(MenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
     {
         if (arg is MenuFlyoutSubItemHandlerUpdate args)
         {
@@ -219,7 +219,7 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
-    public static void MapRemove(IMenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
+    public static void MapRemove(MenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
     {
         if (arg is MenuFlyoutSubItemHandlerUpdate args)
         {
@@ -227,7 +227,7 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
-    public static void MapInsert(IMenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
+    public static void MapInsert(MenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
     {
         if (arg is MenuFlyoutSubItemHandlerUpdate args)
         {
@@ -235,7 +235,7 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
-    public static void MapClear(IMenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
+    public static void MapClear(MenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
     {
         handler.Clear();
     }
@@ -270,8 +270,4 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
             PlatformView.Items.Insert(index, platformView);
         }
     }
-
-    IMenuFlyoutSubItem IMenuFlyoutSubItemHandler.VirtualView => VirtualView;
-
-    object IMenuFlyoutSubItemHandler.PlatformView => PlatformView;
 }

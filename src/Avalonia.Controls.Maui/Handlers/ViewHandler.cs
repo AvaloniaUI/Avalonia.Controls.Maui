@@ -25,6 +25,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
             [nameof(IView.FlowDirection)] = MapFlowDirection,
             [nameof(IView.Width)] = MapWidth,
             [nameof(IView.Height)] = MapHeight,
+            [nameof(IView.Margin)] = MapMargin,
             [nameof(IView.MinimumHeight)] = MapMinimumHeight,
             [nameof(IView.MaximumHeight)] = MapMaximumHeight,
             [nameof(IView.MinimumWidth)] = MapMinimumWidth,
@@ -223,6 +224,16 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     public static void MapHeight(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateHeight(view);
+    }
+
+    /// <summary>
+    /// Maps the abstract <see cref="IView.Margin"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
+    public static void MapMargin(IViewHandler handler, IView view)
+    {
+        ((PlatformView?)handler.PlatformView)?.UpdateMargin(view);
     }
 
     /// <summary>
