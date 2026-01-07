@@ -8,339 +8,301 @@ internal class AlertManager
 {
     internal class AlertRequestHelper : Microsoft.Maui.Controls.Platform.AlertManager.IAlertManagerSubscription
     {
-        readonly Dictionary<Window, WindowAlertHelper> _helpers = new();
-        readonly Dictionary<Window, Panel> _busyOverlays = new();
-        int _busyCount;
+        readonly Dictionary<Control, OverlayHelper> _helpers = new();
 
         public void OnAlertRequested(Page sender, AlertArguments arguments)
         {
-            var helper = GetHelper(sender);
-            if (helper is null)
+            var overlayHelper = GetOverlayHelper(sender);
+            if (overlayHelper is null)
             {
                 arguments.SetResult(false);
                 return;
             }
 
-            helper.HandleAlert(sender, arguments);
+            overlayHelper.HandleAlert(arguments);
         }
 
         public void OnActionSheetRequested(Page sender, ActionSheetArguments arguments)
         {
-            var helper = GetHelper(sender);
-            if (helper is null)
+            var overlayHelper = GetOverlayHelper(sender);
+            if (overlayHelper is null)
             {
                 arguments.SetResult(arguments.Cancel ?? string.Empty);
                 return;
             }
 
-            helper.HandleActionSheet(sender, arguments);
+            overlayHelper.HandleActionSheet(arguments);
         }
 
         public void OnPromptRequested(Page sender, PromptArguments arguments)
         {
-            var helper = GetHelper(sender);
-            if (helper is null)
+            var overlayHelper = GetOverlayHelper(sender);
+            if (overlayHelper is null)
             {
                 arguments.SetResult(arguments.Cancel ?? string.Empty);
                 return;
             }
 
-            helper.HandlePrompt(sender, arguments);
+            overlayHelper.HandlePrompt(arguments);
         }
 
         public void OnPageBusy(Page sender, bool enabled)
         {
-            var platformWindow = GetPlatformWindow(sender);
-            if (platformWindow is null)
-                return;
-
-            _busyCount = Math.Max(0, enabled ? _busyCount + 1 : _busyCount - 1);
-
-            Dispatcher.UIThread.InvokeAsync(() => UpdateBusyIndicator(platformWindow, _busyCount > 0));
+            var overlayHelper = GetOverlayHelper(sender);
+            overlayHelper?.SetBusy(enabled);
         }
 
-        void UpdateBusyIndicator(Window window, bool isBusy)
+        OverlayHelper? GetOverlayHelper(Page sender)
         {
-            if (isBusy)
-            {
-                if (_busyOverlays.ContainsKey(window))
-                    return;
-
-                // Create overlay that covers the entire window
-                var overlay = new Grid
-                {
-                    Background = new Avalonia.Media.SolidColorBrush(Media.Color.FromArgb(77, 0, 0, 0)), // 0.3 opacity black
-                };
-
-                var progressRing = new ProgressRing()
-                {
-                    IsIndeterminate = true,
-                    Width = 60,
-                    Height = 60,
-                    HorizontalAlignment = Layout.HorizontalAlignment.Center,
-                    VerticalAlignment = Layout.VerticalAlignment.Center,
-                };
-
-                if (Application.Current?.TryGetResource("ThemeForegroundBrush", Application.Current.ActualThemeVariant, out var foregroundBrush) == true 
-                    && foregroundBrush is Media.IBrush brush)
-                {
-                    progressRing.Foreground = brush;
-                }
-
-                overlay.Children.Add(progressRing);
-
-                // Wrap existing content in a Grid with the overlay on top
-                var existingContent = window.Content;
-                var wrapperGrid = new Grid();
-                
-                window.Content = null;
-                if (existingContent is Control existingControl)
-                {
-                    wrapperGrid.Children.Add(existingControl);
-                }
-                wrapperGrid.Children.Add(overlay);
-                
-                window.Content = wrapperGrid;
-                _busyOverlays[window] = overlay;
-            }
-            else
-            {
-                if (_busyOverlays.TryGetValue(window, out var overlay))
-                {
-                    // Restore original content
-                    if (window.Content is Grid wrapperGrid && wrapperGrid.Children.Count > 0)
-                    {
-                        wrapperGrid.Children.Remove(overlay);
-                        if (wrapperGrid.Children.Count == 1)
-                        {
-                            var originalContent = wrapperGrid.Children[0];
-                            wrapperGrid.Children.Clear();
-                            window.Content = originalContent;
-                        }
-                    }
-                    _busyOverlays.Remove(window);
-                }
-            }
-        }
-
-        WindowAlertHelper? GetHelper(Page sender)
-        {
-            var platformWindow = GetPlatformWindow(sender);
-            var virtualWindow = sender?.Window;
-
-            if (platformWindow is null)
-            {
-                // Fall back to an existing helper when the page has not yet attached to a window
-                return _helpers.Values.FirstOrDefault();
-            }
-
-            if (_helpers.TryGetValue(platformWindow, out var helper))
-            {
-                if (virtualWindow is null || helper.VirtualView == virtualWindow)
-                    return helper;
-
-                RemoveHelper(platformWindow);
-            }
-
-            if (virtualWindow is null)
+            var platformHost = GetPlatformHost(sender);
+            if (platformHost is null)
                 return null;
 
-            helper = new WindowAlertHelper(virtualWindow, platformWindow, () => RemoveHelper(platformWindow));
-            _helpers[platformWindow] = helper;
-            return helper;
-        }
-
-        void RemoveHelper(Window platformWindow)
-        {
-            if (_helpers.TryGetValue(platformWindow, out var helper))
+            if (!_helpers.TryGetValue(platformHost, out var overlayHelper))
             {
-                helper.Dispose();
-                _helpers.Remove(platformWindow);
+                overlayHelper = new OverlayHelper(platformHost, () => _helpers.Remove(platformHost));
+                _helpers[platformHost] = overlayHelper;
             }
+            return overlayHelper;
         }
 
-        static Window? GetPlatformWindow(Page? page)
+        /// <summary>
+        /// Gets the platform host control that can contain overlays.
+        /// For desktop apps, this is a Window.
+        /// For single-view apps (WASM/mobile), this is the MauiAvaloniaContent.
+        /// </summary>
+        static Control? GetPlatformHost(Page? page)
         {
             var platformView = page?.Window?.Handler?.PlatformView;
 
             return platformView switch
             {
+                // Desktop: Standard Avalonia Window
                 Avalonia.Controls.Window window => window,
-                Visual visual => TopLevel.GetTopLevel(visual) as Window,
+                // Single-view: MauiAvaloniaContent or any ContentControl
+                MauiAvaloniaContent content => content,
+                ContentControl cc => cc,
+                // Fallback: Try to get the visual root
+                Visual visual => TopLevel.GetTopLevel(visual) as Control,
                 _ => null
             };
         }
 
-        internal sealed class WindowAlertHelper : IDisposable
+        /// <summary>
+        /// Helper class that manages overlay injection for both Window and ContentControl hosts.
+        /// </summary>
+        internal sealed class OverlayHelper : IDisposable
         {
-            Task? _currentPopup;
-            readonly Action _onDispose;
+            private readonly Control _host;
+            private readonly Action _onDispose;
+            private Grid? _overlayGrid;
+            private Grid? _busyGrid;
+            private Grid? _dialogGrid;
+            private int _busyCount;
 
-            internal WindowAlertHelper(Microsoft.Maui.Controls.Window virtualView, Window platformView, Action onDispose)
+            internal OverlayHelper(Control host, Action onDispose)
             {
-                VirtualView = virtualView;
-                PlatformView = platformView;
+                _host = host;
                 _onDispose = onDispose;
-                PlatformView.Closed += OnClosed;
+                
+                // Subscribe to lifecycle events based on host type
+                if (_host is Window window)
+                {
+                    window.Closed += OnHostClosed;
+                }
+                else
+                {
+                    _host.DetachedFromVisualTree += OnHostDetached;
+                }
             }
-
-            public Microsoft.Maui.Controls.Window VirtualView { get; }
-            public Window PlatformView { get; }
 
             public void Dispose()
             {
-                PlatformView.Closed -= OnClosed;
+                if (_host is Window window)
+                {
+                    window.Closed -= OnHostClosed;
+                }
+                else
+                {
+                    _host.DetachedFromVisualTree -= OnHostDetached;
+                }
             }
 
-            void OnClosed(object? sender, EventArgs e) => _onDispose();
-
-            public async void HandleAlert(Page sender, AlertArguments arguments)
+            private void OnHostClosed(object? sender, EventArgs e)
             {
-                if (!IsPageInWindow(sender))
-                {
-                    arguments.SetResult(false);
+                Dispose();
+                _onDispose();
+            }
+
+            private void OnHostDetached(object? sender, VisualTreeAttachmentEventArgs e)
+            {
+                Dispose();
+                _onDispose();
+            }
+
+            private void EnsureOverlay()
+            {
+                var currentContent = GetHostContent();
+                
+                if (_overlayGrid != null && currentContent is Grid g && g.Children.Contains(_overlayGrid))
                     return;
-                }
 
-                await WaitForCurrentPopup();
-                var task = ShowAlert(arguments);
-                _currentPopup = task;
-                try
+                // Create base overlay implementation
+                _overlayGrid = new Grid
                 {
-                    arguments.SetResult(await task.ConfigureAwait(false));
+                    ZIndex = 9999, // High ZIndex
+                    RowDefinitions = new RowDefinitions("1*")
+                };
+
+                // Busy Indicator Layer (Bottom)
+                _busyGrid = new Grid
+                {
+                    IsVisible = false,
+                    Background = new Avalonia.Media.SolidColorBrush(Media.Color.FromArgb(77, 0, 0, 0))
+                };
+                
+                var progressRing = new ProgressRing
+                {
+                    IsIndeterminate = true,
+                    Width = 60,
+                    Height = 60,
+                    HorizontalAlignment = Layout.HorizontalAlignment.Center,
+                    VerticalAlignment = Layout.VerticalAlignment.Center
+                };
+                
+                if (Application.Current?.TryGetResource("ThemeForegroundBrush", Application.Current.ActualThemeVariant, out var foregroundBrush) == true 
+                    && foregroundBrush is Media.IBrush brush)
+                {
+                    progressRing.Foreground = brush;
                 }
-                catch
+                _busyGrid.Children.Add(progressRing);
+                
+                // Dialog Layer (Top)
+                _dialogGrid = new Grid();
+
+                _overlayGrid.Children.Add(_busyGrid);
+                _overlayGrid.Children.Add(_dialogGrid);
+
+                // Inject into host content
+                var existingContent = currentContent;
+                if (existingContent is Grid wrapper && wrapper.Tag as string == "OverlayWrapper")
                 {
-                    arguments.SetResult(false);
+                    if (!wrapper.Children.Contains(_overlayGrid))
+                        wrapper.Children.Add(_overlayGrid);
                 }
-                finally
+                else
                 {
-                    _currentPopup = null;
+                    // Wrap existing content with overlay
+                    var wrapperGrid = new Grid { Tag = "OverlayWrapper" };
+                    SetHostContent(null);
+                    if (existingContent is Control c) wrapperGrid.Children.Add(c);
+                    wrapperGrid.Children.Add(_overlayGrid);
+                    SetHostContent(wrapperGrid);
                 }
             }
 
-            public async void HandleActionSheet(Page sender, ActionSheetArguments arguments)
+            private object? GetHostContent()
             {
-                if (!IsPageInWindow(sender))
+                return _host switch
                 {
-                    arguments.SetResult(arguments.Cancel);
-                    return;
-                }
-
-                await WaitForCurrentPopup();
-                var task = ShowActionSheet(arguments);
-                _currentPopup = task;
-                try
-                {
-                    arguments.SetResult(await task.ConfigureAwait(false));
-                }
-                catch
-                {
-                    arguments.SetResult(arguments.Cancel);
-                }
-                finally
-                {
-                    _currentPopup = null;
-                }
+                    Window window => window.Content,
+                    ContentControl cc => cc.Content,
+                    _ => null
+                };
             }
 
-            public async void HandlePrompt(Page sender, PromptArguments arguments)
+            private void SetHostContent(object? content)
             {
-                if (!IsPageInWindow(sender))
+                switch (_host)
                 {
-                    arguments.SetResult(null);
-                    return;
-                }
-
-                await WaitForCurrentPopup();
-                var task = ShowPrompt(arguments);
-                _currentPopup = task;
-                try
-                {
-                    arguments.SetResult(await task.ConfigureAwait(false));
-                }
-                catch
-                {
-                    arguments.SetResult(null);
-                }
-                finally
-                {
-                    _currentPopup = null;
+                    case Window window:
+                        window.Content = content;
+                        break;
+                    case ContentControl cc:
+                        cc.Content = content;
+                        break;
                 }
             }
 
-            async Task WaitForCurrentPopup()
+            public void SetBusy(bool busy)
             {
-                var current = _currentPopup;
-                while (current != null)
-                {
-                    await current.ConfigureAwait(false);
-                    current = _currentPopup;
-                }
+                 Dispatcher.UIThread.InvokeAsync(() =>
+                 {
+                     EnsureOverlay();
+                     _busyCount = Math.Max(0, busy ? _busyCount + 1 : _busyCount - 1);
+                     if (_busyGrid != null)
+                        _busyGrid.IsVisible = _busyCount > 0;
+                 });
+            }
+            
+            private async Task<T> ShowDialogOverlay<T>(Control dialog, Task<T> resultTask)
+            {
+                 await Dispatcher.UIThread.InvokeAsync(() =>
+                 {
+                     EnsureOverlay();
+                     
+                     // Wrap dialog in a generic dim-background container
+                     var dialogContainer = new Grid
+                     {
+                         Background = new Avalonia.Media.SolidColorBrush(Media.Color.FromArgb(128, 0, 0, 0)) // Dim background
+                     };
+                     dialogContainer.Children.Add(dialog); // Dialog UserControl should be Centered by itself
+                     
+                     _dialogGrid?.Children.Add(dialogContainer);
+                 });
+                 
+                 try 
+                 {
+                     return await resultTask;
+                 }
+                 finally
+                 {
+                     await Dispatcher.UIThread.InvokeAsync(() =>
+                     {
+                         if (_dialogGrid?.Children.Count > 0)
+                             _dialogGrid.Children.RemoveAt(_dialogGrid.Children.Count - 1); // Remove top-most
+                     });
+                 }
             }
 
-            async Task<bool> ShowAlert(AlertArguments arguments)
+            public async void HandleAlert(AlertArguments arguments)
             {
                 var tcs = new TaskCompletionSource<bool>();
-
-                await Dispatcher.UIThread.InvokeAsync(async () =>
-                {
-                    try
-                    {
-                        var dialog = new MauiAlertDialog(
-                            arguments.Title ?? string.Empty,
-                            arguments.Message ?? string.Empty,
-                            arguments.Accept,
-                            arguments.Cancel);
-
-                        var result = await dialog.ShowDialog<bool?>(PlatformView);
-                        tcs.SetResult(result ?? false);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                });
-
-                return await tcs.Task;
+                
+                var dialog = new MauiAlertDialog(
+                    arguments.Title ?? string.Empty,
+                    arguments.Message ?? string.Empty,
+                    arguments.Accept,
+                    arguments.Cancel);
+                
+                dialog.OnResult += (res) => tcs.TrySetResult(res ?? false);
+                
+                var result = await ShowDialogOverlay(dialog, tcs.Task);
+                arguments.SetResult(result);
             }
 
-            async Task<string?> ShowActionSheet(ActionSheetArguments arguments)
+            public async void HandleActionSheet(ActionSheetArguments arguments)
             {
-                var tcs = new TaskCompletionSource<string?>();
-
-                await Dispatcher.UIThread.InvokeAsync(async () =>
-                {
-                    try
-                    {
-                        var buttons = arguments.Buttons?.ToArray();
-                        var dialog = new MauiActionSheetDialog(
+                 var tcs = new TaskCompletionSource<string?>();
+                 
+                 var buttons = arguments.Buttons?.ToArray();
+                 var dialog = new MauiActionSheetDialog(
                             arguments.Title ?? string.Empty,
                             arguments.Cancel,
                             arguments.Destruction,
                             buttons);
+                 
+                 dialog.OnResult += (res) => tcs.TrySetResult(res ?? arguments.Cancel);
 
-                        var result = await dialog.ShowDialog<string?>(PlatformView);
-                        tcs.SetResult(result ?? arguments.Cancel);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                });
-
-                return await tcs.Task;
+                 var result = await ShowDialogOverlay(dialog, tcs.Task);
+                 arguments.SetResult(result);
             }
 
-            async Task<string?> ShowPrompt(PromptArguments arguments)
+            public async void HandlePrompt(PromptArguments arguments)
             {
-                var tcs = new TaskCompletionSource<string?>();
-
-                await Dispatcher.UIThread.InvokeAsync(async () =>
-                {
-                    try
-                    {
-                        var dialog = new MauiPromptDialog(
+                 var tcs = new TaskCompletionSource<string?>();
+                 
+                 var dialog = new MauiPromptDialog(
                             arguments.Title ?? string.Empty,
                             arguments.Message ?? string.Empty,
                             arguments.Accept,
@@ -349,28 +311,11 @@ internal class AlertManager
                             arguments.MaxLength,
                             arguments.Keyboard,
                             arguments.InitialValue);
+                 
+                 dialog.OnResult += (res) => tcs.TrySetResult(res);
 
-                        var result = await dialog.ShowDialog<string?>(PlatformView);
-                        tcs.SetResult(result);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                });
-
-                return await tcs.Task;
-            }
-
-            bool IsPageInWindow(Page page)
-            {
-                if (page == null)
-                    return false;
-
-                if (page.Window == VirtualView)
-                    return true;
-
-                return page.Window == null;
+                 var result = await ShowDialogOverlay(dialog, tcs.Task);
+                 arguments.SetResult(result);
             }
         }
     }

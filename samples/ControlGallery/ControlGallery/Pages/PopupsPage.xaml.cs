@@ -13,7 +13,7 @@ public partial class PopupsPage : ContentPage
     private async void OnSimpleAlertClicked(object sender, EventArgs e)
     {
         await DisplayAlert("Alert", "This is a simple alert.", "OK");
-        ResultLabel.Text = "Alert closed";
+        ResultLabel.Text = "Result: OK";
     }
 
     private async void OnAlertYesNoClicked(object sender, EventArgs e)

@@ -1,41 +1,52 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:platform="clr-namespace:Avalonia.Controls.Maui.Platform"
-        x:Class="Avalonia.Controls.Maui.Platform.MauiPromptDialog"
-        x:DataType="platform:MauiPromptDialog"
-        Title="{Binding Title}"
-        Width="350"
-        SizeToContent="Height"
-        CanResize="False"
-        WindowStartupLocation="CenterOwner"
-        ShowInTaskbar="False"
-        Background="{DynamicResource ThemeBackgroundBrush}">
-    <StackPanel Margin="20" Spacing="12">
-        <TextBlock Text="{Binding Message}"
-                   Foreground="{DynamicResource ThemeForegroundBrush}"
-                   FontWeight="Medium"
-                   TextWrapping="Wrap"
-                   IsVisible="{Binding HasMessage}"/>
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:platform="clr-namespace:Avalonia.Controls.Maui.Platform"
+             x:Class="Avalonia.Controls.Maui.Platform.MauiPromptDialog"
+             x:DataType="platform:MauiPromptDialog"
+             Width="320"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center">
+    <Border Background="{DynamicResource ThemeBackgroundBrush}"
+            CornerRadius="14"
+            BoxShadow="0 4 15 0 #40000000">
+        <StackPanel Margin="24">
+            <TextBlock Text="{Binding Title}"
+                       FontWeight="Bold"
+                       FontSize="18"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,12"
+                       IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 
-        <TextBox Name="InputTextBox"
-                 Text="{Binding InputValue}"
-                 Watermark="{Binding Placeholder}"
-                 MaxLength="{Binding MaxLength}"
-                 MinWidth="240"
-                 AcceptsReturn="False"
-                 HorizontalAlignment="Stretch"/>
+            <TextBlock Text="{Binding Message}"
+                       Foreground="{DynamicResource ThemeForegroundBrush}"
+                       FontWeight="Medium"
+                       TextWrapping="Wrap"
+                       Margin="0,0,0,16"
+                       IsVisible="{Binding HasMessage}"/>
 
-        <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Right"
-                    Spacing="10">
-            <Button Content="{Binding AcceptText}"
-                    Command="{Binding AcceptCommand}"
-                    IsDefault="True"
-                    MinWidth="80"/>
-            <Button Content="{Binding CancelText}"
-                    Command="{Binding CancelCommand}"
-                    IsCancel="True"
-                    MinWidth="80"/>
+            <TextBox Name="InputTextBox"
+                     Text="{Binding InputValue}"
+                     Watermark="{Binding Placeholder}"
+                     MaxLength="{Binding MaxLength}"
+                     MinWidth="240"
+                     AcceptsReturn="False"
+                     HorizontalAlignment="Stretch"
+                     Margin="0,0,0,24"/>
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+                <Button Content="{Binding CancelText}"
+                        Click="OnCancelClicked"
+                        Classes="DialogButton"
+                        IsCancel="True"
+                        MinWidth="70"/>
+                <Button Content="{Binding AcceptText}"
+                        Click="OnAcceptClicked"
+                        Classes="Accent DialogButton"
+                        IsDefault="True"
+                        MinWidth="70"/>
+            </StackPanel>
         </StackPanel>
-    </StackPanel>
-</Window>
+    </Border>
+</UserControl>

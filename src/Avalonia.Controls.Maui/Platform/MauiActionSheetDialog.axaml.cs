@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public partial class MauiActionSheetDialog : Window
+public partial class MauiActionSheetDialog : UserControl
 {
     public MauiActionSheetDialog()
     {
@@ -14,6 +14,8 @@ public partial class MauiActionSheetDialog : Window
     public string? Result { get; private set; }
 
     public bool HasTitle => !string.IsNullOrEmpty(Title);
+
+    public string? Title { get; set; }
 
     public string? CancelButtonText { get; set; }
     public bool HasCancelButton => !string.IsNullOrEmpty(CancelButtonText);
@@ -25,6 +27,8 @@ public partial class MauiActionSheetDialog : Window
     public ICommand DestructionCommand => new RelayCommand<object>(_ => CloseWithResult(DestructionButtonText));
 
     public ObservableCollection<ActionSheetButtonViewModel>? Buttons { get; private set; }
+    
+    public event Action<string?>? OnResult;
 
     public MauiActionSheetDialog(string title, string cancel, string destruction, string[]? buttons) : this()
     {
@@ -62,7 +66,7 @@ public partial class MauiActionSheetDialog : Window
     private void CloseWithResult(string? result)
     {
         Result = result;
-        Close(result);
+        OnResult?.Invoke(result);
     }
 }
 

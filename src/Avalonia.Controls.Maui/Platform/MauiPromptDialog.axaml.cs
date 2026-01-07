@@ -3,10 +3,11 @@ using Avalonia.Markup.Xaml;
 using System.Windows.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Avalonia.Threading;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-public partial class MauiPromptDialog : Window
+public partial class MauiPromptDialog : UserControl
 {
     public MauiPromptDialog()
     {
@@ -28,24 +29,26 @@ public partial class MauiPromptDialog : Window
         DataContext = null;
         DataContext = this;
     }
+    
+    public string? Title { get; set; }
 
-    protected override void OnOpened(EventArgs e)
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        base.OnOpened(e);
+        base.OnAttachedToVisualTree(e);
         var tb = this.FindControl<TextBox>("InputTextBox");
-        tb?.Focus();
-        if (!string.IsNullOrEmpty(InputValue))
-            tb?.SelectAll();
+        Dispatcher.UIThread.Post(() => 
+        {
+            tb?.Focus();
+            if (!string.IsNullOrEmpty(InputValue))
+                tb?.SelectAll();
+        });
     }
 
     public string? Message { get; set; }
     public bool HasMessage => !string.IsNullOrEmpty(Message);
 
     public string? AcceptText { get; set; }
-    public ICommand AcceptCommand => new RelayCommand<object>(_ => Close(InputValue));
-
     public string? CancelText { get; set; }
-    public ICommand CancelCommand => new RelayCommand<object>(_ => Close(null));
 
     public string? Placeholder { get; set; }
 
@@ -58,6 +61,23 @@ public partial class MauiPromptDialog : Window
         get => GetValue(InputValueProperty);
         set => SetValue(InputValueProperty, value);
     }
+    
+    private void OnAcceptClicked(object? sender, RoutedEventArgs e)
+    {
+        Close(InputValue);
+    }
+
+    private void OnCancelClicked(object? sender, RoutedEventArgs e)
+    {
+        Close(null);
+    }
 
     public int MaxLength { get; set; }
+    
+    public event Action<string?>? OnResult;
+
+    private void Close(string? result)
+    {
+        OnResult?.Invoke(result);
+    }
 }
