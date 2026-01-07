@@ -6,6 +6,7 @@ using Microsoft.Maui.Controls;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Controls;
 using AvaloniaTextBox = Avalonia.Controls.TextBox;
+using Avalonia.Input.TextInput;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers
 {
@@ -456,6 +457,45 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
              
              Assert.Empty(platformView.Text ?? string.Empty);
              Assert.Empty(entry.Text ?? string.Empty); 
+        }
+
+        [AvaloniaTheory(DisplayName = "ReturnType Mapped Correctly")]
+        [InlineData(ReturnType.Default)]
+        [InlineData(ReturnType.Done)]
+        [InlineData(ReturnType.Go)]
+        [InlineData(ReturnType.Next)]
+        [InlineData(ReturnType.Search)]
+        [InlineData(ReturnType.Send)]
+        public async Task ReturnTypeMapped(ReturnType returnType)
+        {
+            var entry = new EntryStub { ReturnType = returnType };
+            var handler = await CreateHandlerAsync(entry);
+            var platformView = handler.PlatformView!;
+            
+            var expected = returnType switch
+            {
+                ReturnType.Go => TextInputReturnKeyType.Go,
+                ReturnType.Next => TextInputReturnKeyType.Next,
+                ReturnType.Search => TextInputReturnKeyType.Search,
+                ReturnType.Send => TextInputReturnKeyType.Send,
+                ReturnType.Done => TextInputReturnKeyType.Done,
+                _ => TextInputReturnKeyType.Default
+            };
+            
+            Assert.Equal(expected, TextInputOptions.GetReturnKeyType(platformView));
+        }
+
+        [AvaloniaFact(DisplayName = "IsSpellCheckEnabled Mapped Correctly (Smoke Test)")]
+        public async Task IsSpellCheckEnabledMapped()
+        {
+            // Currently not implemented on Avalonia TextBox, but ensuring it doesn't crash
+            var entry = new EntryStub { IsSpellCheckEnabled = false };
+            var handler = await CreateHandlerAsync(entry);
+            
+            await InvokeOnMainThreadAsync(() => handler.UpdateValue(nameof(IEntry.IsSpellCheckEnabled)));
+            
+            // Success if no exception thrown
+            Assert.NotNull(handler.PlatformView);
         }
     }
 }

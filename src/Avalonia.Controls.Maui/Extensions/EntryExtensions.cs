@@ -165,6 +165,9 @@ public static class EntryExtensions
     /// <param name="entry">The .NET MAUI Entry.</param>
     public static void UpdateCursorPosition(this AvaloniaTextBox textBox, IEntry entry)
     {
+        if (entry.SelectionLength > 0)
+            return;
+
         if (textBox.CaretIndex != entry.CursorPosition)
             textBox.CaretIndex = entry.CursorPosition;
     }
