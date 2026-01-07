@@ -28,8 +28,10 @@
     <ProjectReference
       Include="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
     <ProjectReference Include="../../src/Avalonia.Controls.Maui.Maps/Avalonia.Controls.Maui.Maps.csproj" />
+    <ProjectReference Include="../../src/Avalonia.Controls.Maui.Maps.Mapsui/Avalonia.Controls.Maui.Maps.Mapsui.csproj" />
     <ProjectReference Include="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
   </ItemGroup>
+
 
   <ItemGroup>
     <Using Include="Xunit" />

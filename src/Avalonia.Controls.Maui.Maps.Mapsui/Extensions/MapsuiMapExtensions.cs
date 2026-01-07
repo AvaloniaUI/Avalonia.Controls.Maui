@@ -3,14 +3,13 @@ using Mapsui.Nts;
 using Mapsui.Projections;
 using Mapsui.Styles;
 using MapsuiMapControl = Mapsui.UI.Avalonia.MapControl;
-using System.IO;
 
-namespace Avalonia.Controls.Maui.Maps.Extensions;
+namespace Avalonia.Controls.Maui.Maps.Mapsui.Extensions;
 
 /// <summary>
 /// Extension methods for <see cref="Mapsui.UI.Avalonia.MapControl"/>.
 /// </summary>
-public static class MapExtensions
+public static class MapsuiMapExtensions
 {
     /// <summary>
     /// The base resolution at zoom level 0 (meters per pixel).
@@ -28,7 +27,7 @@ public static class MapExtensions
         if (mapControl?.Map?.Navigator == null) return;
         
         var (x, y) = SphericalMercator.FromLonLat(longitude, latitude);
-        var point = new Mapsui.MPoint(x, y);
+        var point = new global::Mapsui.MPoint(x, y);
         
         mapControl.Map.Navigator.CenterOn(point);
         mapControl.Refresh();
@@ -61,7 +60,7 @@ public static class MapExtensions
         if (mapControl?.Map?.Navigator == null) return;
         
         var (x, y) = SphericalMercator.FromLonLat(longitude, latitude);
-        var point = new Mapsui.MPoint(x, y);
+        var point = new global::Mapsui.MPoint(x, y);
         
         double resolution = zoomLevel > 0 ? BaseResolution / Math.Pow(2, zoomLevel) : mapControl.Map.Navigator.Viewport.Resolution;
         
@@ -108,20 +107,20 @@ public static class MapExtensions
     /// <param name="mapControl">The Mapsui map control.</param>
     /// <param name="pins">The collection of pins to display.</param>
     /// <param name="pinsLayer">The memory layer to store pin features.</param>
-    public static void UpdatePins(this MapsuiMapControl mapControl, IList<MapPin> pins, Mapsui.Layers.MemoryLayer pinsLayer)
+    public static void UpdatePins(this MapsuiMapControl mapControl, IList<MapPin> pins, global::Mapsui.Layers.MemoryLayer pinsLayer)
     {
         if (mapControl == null || pinsLayer == null) return;
         
-        var features = new List<Mapsui.IFeature>();
+        var features = new List<global::Mapsui.IFeature>();
         
         foreach (var pin in pins)
         {
             if (pin.Location == null) continue;
             
             var (x, y) = SphericalMercator.FromLonLat(pin.Location.Longitude, pin.Location.Latitude);
-            var point = new Mapsui.MPoint(x, y);
+            var point = new global::Mapsui.MPoint(x, y);
             
-            var feature = new Mapsui.Layers.PointFeature(point);
+            var feature = new global::Mapsui.Layers.PointFeature(point);
             
             // Handle Custom Icon
             if (pin.Icon != null)
@@ -141,7 +140,7 @@ public static class MapExtensions
                             
                             feature.Styles.Add(new ImageStyle
                             {
-                                Image = new Mapsui.Styles.Image { Source = fileUri },
+                                Image = new global::Mapsui.Styles.Image { Source = fileUri },
                                 SymbolScale = (float)pin.IconScale
                             });
                         }
@@ -199,10 +198,10 @@ public static class MapExtensions
     /// </summary>
     /// <param name="mapControl">The Mapsui map control.</param>
     /// <param name="pinsLayer">The memory layer containing pin features.</param>
-    public static void ClearPins(this MapsuiMapControl mapControl, Mapsui.Layers.MemoryLayer pinsLayer)
+    public static void ClearPins(this MapsuiMapControl mapControl, global::Mapsui.Layers.MemoryLayer pinsLayer)
     {
         if (pinsLayer == null) return;
-        pinsLayer.Features = new List<Mapsui.IFeature>();
+        pinsLayer.Features = new List<global::Mapsui.IFeature>();
         mapControl?.Refresh();
     }
     
@@ -212,15 +211,15 @@ public static class MapExtensions
     /// <param name="mapControl">The Mapsui map control.</param>
     /// <param name="elements">The collection of map elements to display.</param>
     /// <param name="shapesLayer">The memory layer to store shape features.</param>
-    public static void UpdateShapes(this MapsuiMapControl mapControl, IList<MapElement> elements, Mapsui.Layers.MemoryLayer shapesLayer)
+    public static void UpdateShapes(this MapsuiMapControl mapControl, IList<MapElement> elements, global::Mapsui.Layers.MemoryLayer shapesLayer)
     {
         if (mapControl == null || shapesLayer == null) return;
         
-        var features = new List<Mapsui.IFeature>();
+        var features = new List<global::Mapsui.IFeature>();
         
         foreach (var element in elements)
         {
-            Mapsui.IFeature? feature = element switch
+            global::Mapsui.IFeature? feature = element switch
             {
                 MapPolygon polygon => CreatePolygonFeature(polygon),
                 MapPolyline polyline => CreatePolylineFeature(polyline),
@@ -238,14 +237,14 @@ public static class MapExtensions
         mapControl.Refresh();
     }
     
-    private static Mapsui.IFeature? CreatePolygonFeature(MapPolygon polygon)
+    private static global::Mapsui.IFeature? CreatePolygonFeature(MapPolygon polygon)
     {
         if (polygon.GeoPath.Count < 3) return null;
         
         var points = polygon.GeoPath.Select(loc =>
         {
             var (x, y) = SphericalMercator.FromLonLat(loc.Longitude, loc.Latitude);
-            return new Mapsui.MPoint(x, y);
+            return new global::Mapsui.MPoint(x, y);
         }).ToList();
         
         // Close the polygon
@@ -268,7 +267,7 @@ public static class MapExtensions
         return feature;
     }
     
-    private static Mapsui.IFeature? CreatePolylineFeature(MapPolyline polyline)
+    private static global::Mapsui.IFeature? CreatePolylineFeature(MapPolyline polyline)
     {
         if (polyline.GeoPath.Count < 2) return null;
         
@@ -292,7 +291,7 @@ public static class MapExtensions
         return feature;
     }
     
-    private static Mapsui.IFeature? CreateCircleFeature(MapCircle circle)
+    private static global::Mapsui.IFeature? CreateCircleFeature(MapCircle circle)
     {
         if (circle.Center == null || circle.Radius <= 0) return null;
         
@@ -334,6 +333,7 @@ public static class MapExtensions
             (int)(mauiColor.Blue * 255),
             (int)(mauiColor.Alpha * 255));
     }
+    
     private static SymbolStyle CreateDefaultStyle(MapPin pin)
     {
         // Style based on pin type
@@ -353,4 +353,3 @@ public static class MapExtensions
         };
     }
 }
-

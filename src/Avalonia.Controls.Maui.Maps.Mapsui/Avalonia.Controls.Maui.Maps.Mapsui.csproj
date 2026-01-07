@@ -8,20 +8,22 @@
     <AddMauiInternals>true</AddMauiInternals>
     <LangVersion>preview</LangVersion>
     <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
-    <PackageDescription>Avalonia.Controls.Maui.Maps provides map control abstractions for .NET MAUI apps. Use a provider package like Avalonia.Controls.Maui.Maps.Mapsui for the actual implementation.</PackageDescription>
+    <PackageDescription>Mapsui implementation for Avalonia.Controls.Maui.Maps providing map control support using Mapsui.Avalonia.</PackageDescription>
     <SignAssembly>true</SignAssembly>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
     
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Mapsui.Avalonia" Version="5.0.0" />
+    <PackageReference Include="Mapsui.Nts" Version="5.0.0" />
     <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
     <ProjectReference Include="..\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
+    <ProjectReference Include="..\Avalonia.Controls.Maui.Maps\Avalonia.Controls.Maui.Maps.csproj" />
   </ItemGroup>
 
 </Project>
-

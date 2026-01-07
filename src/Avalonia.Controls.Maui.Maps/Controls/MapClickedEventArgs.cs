@@ -20,12 +20,12 @@ public class MapClickedEventArgs : EventArgs
     public Microsoft.Maui.Devices.Sensors.Location Location { get; }
 
     /// <summary>
-    /// Gets the pin that was clicked, if any.
+    /// Gets or sets the pin that was clicked, if any.
     /// </summary>
-    public MapPin? Pin { get; internal set; }
+    public MapPin? Pin { get; set; }
 
     /// <summary>
-    /// Gets the map element (polygon, polyline, circle) that was clicked, if any.
+    /// Gets or sets the map element (polygon, polyline, circle) that was clicked, if any.
     /// </summary>
-    public MapElement? Element { get; internal set; }
+    public MapElement? Element { get; set; }
 }

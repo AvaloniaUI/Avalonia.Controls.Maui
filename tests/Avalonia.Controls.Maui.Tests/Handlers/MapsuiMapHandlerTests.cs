@@ -3,10 +3,11 @@ using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Maps;
 using Avalonia.Controls.Maui.Maps.Handlers;
 using Avalonia.Controls.Maui.Maps.Controls;
+using Avalonia.Controls.Maui.Maps.Mapsui.Handlers;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
-public class MapHandlerTests : HandlerTestBase<MapHandler, MapStub>
+public class MapsuiMapHandlerTests : HandlerTestBase<MapsuiMapHandler, MapStub>
 {
     [AvaloniaFact(DisplayName = "MapType Initializes Correctly")]
     public async Task MapTypeInitializesCorrectly()
@@ -231,7 +232,7 @@ public class MapHandlerTests : HandlerTestBase<MapHandler, MapStub>
         Assert.True(Math.Abs(lat) <= 90);
     }
 
-    private double GetPlatformCenterLongitude(MapHandler handler)
+    private double GetPlatformCenterLongitude(MapsuiMapHandler handler)
     {
         var viewport = handler.PlatformView?.Map?.Navigator.Viewport;
         if (viewport == null) return 0;
@@ -240,7 +241,7 @@ public class MapHandlerTests : HandlerTestBase<MapHandler, MapStub>
         return Math.Round(lon, 4);
     }
 
-    private double GetPlatformCenterLatitude(MapHandler handler)
+    private double GetPlatformCenterLatitude(MapsuiMapHandler handler)
     {
         var viewport = handler.PlatformView?.Map?.Navigator.Viewport;
         if (viewport == null) return 0;
@@ -249,7 +250,7 @@ public class MapHandlerTests : HandlerTestBase<MapHandler, MapStub>
         return Math.Round(lat, 4);
     }
 
-    private double GetPlatformZoomLevel(MapHandler handler)
+    private double GetPlatformZoomLevel(MapsuiMapHandler handler)
     {
 
         var res = handler.PlatformView?.Map?.Navigator?.Viewport.Resolution ?? 1;
@@ -259,46 +260,46 @@ public class MapHandlerTests : HandlerTestBase<MapHandler, MapStub>
         return Math.Round(Math.Log2(baseRes / res), 1);
     }
 
-    private bool GetPlatformShowAttribution(MapHandler handler)
+    private bool GetPlatformShowAttribution(MapsuiMapHandler handler)
     {
 
         return handler.VirtualView.ShowAttribution;
     }
     
-    private int GetPlatformPinCount(MapHandler handler)
+    private int GetPlatformPinCount(MapsuiMapHandler handler)
     {
         var layer = handler.PlatformView?.Map?.Layers?.FirstOrDefault(l => l.Name == "Pins") as Mapsui.Layers.MemoryLayer;
         return layer?.Features?.Count() ?? 0;
     }
 
-    private int GetPlatformShapeCount(MapHandler handler)
+    private int GetPlatformShapeCount(MapsuiMapHandler handler)
     {
         var layer = handler.PlatformView?.Map?.Layers?.FirstOrDefault(l => l.Name == "Shapes") as Mapsui.Layers.MemoryLayer;
         return layer?.Features?.Count() ?? 0;
     }
 
 
-    private MapType GetPlatformMapType(MapHandler handler)
+    private MapType GetPlatformMapType(MapsuiMapHandler handler)
     {
         return handler.VirtualView.MapType; 
     }
 
-    private bool GetPlatformIsScrollEnabled(MapHandler handler)
+    private bool GetPlatformIsScrollEnabled(MapsuiMapHandler handler)
     {
         return !(handler.PlatformView?.Map?.Navigator?.PanLock ?? true);
     }
 
-    private bool GetPlatformIsZoomEnabled(MapHandler handler)
+    private bool GetPlatformIsZoomEnabled(MapsuiMapHandler handler)
     {
         return !(handler.PlatformView?.Map?.Navigator?.ZoomLock ?? true);
     }
 
-    private bool GetPlatformIsRotationEnabled(MapHandler handler)
+    private bool GetPlatformIsRotationEnabled(MapsuiMapHandler handler)
     {
         return !(handler.PlatformView?.Map?.Navigator?.RotationLock ?? true);
     }
 
-    private bool GetPlatformIsShowingUser(MapHandler handler)
+    private bool GetPlatformIsShowingUser(MapsuiMapHandler handler)
     {
         var layer = handler.PlatformView?.Map?.Layers?.FirstOrDefault(l => l.Name == "MyLocation");
         return layer != null && layer.Enabled;

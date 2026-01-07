@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using Microsoft.Maui;
 using Avalonia.Controls.Maui.Maps.Controls;
 

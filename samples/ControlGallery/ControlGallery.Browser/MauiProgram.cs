@@ -1,5 +1,5 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Controls.Maui.Maps;
+using Avalonia.Controls.Maui.Maps.Mapsui;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
@@ -15,7 +15,7 @@ public static class MauiProgram
             .UseMauiApp<ControlGallery.MauiAppStub>()
             .UseAvaloniaApp(useSingleViewLifetime: true)
             .UseAvaloniaGraphics()
-            .UseAvaloniaMaps()
+            .UseAvaloniaMapsui()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
