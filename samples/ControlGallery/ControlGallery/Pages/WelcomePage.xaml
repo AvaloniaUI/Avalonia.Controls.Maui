@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.WelcomePage"
+             Title="Welcome">
+
+    <ScrollView>
+        <Grid RowDefinitions="Auto,*">
+            <!-- Header Banner -->
+            <Grid
+                BackgroundColor="{AppThemeBinding Light={StaticResource BannerLight}, Dark={StaticResource BannerDark}}">
+                <Image Source="{AppThemeBinding Light='banner_light.png', Dark='banner_dark.png'}"
+                       Aspect="AspectFit"
+                       HorizontalOptions="Fill"
+                       MaximumHeightRequest="300"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource BannerLight}, Dark={StaticResource BannerDark}}"
+                       Margin="0,20,0,0"/>
+            </Grid>
+            <!-- Content -->
+            <VerticalStackLayout Grid.Row="1" 
+                                 Padding="24" 
+                                 Spacing="15">
+
+                <Label Text="Run your .NET MAUI apps on Linux, and Browser with pixel-perfect rendering."
+                       FontSize="16"
+                       HorizontalOptions="Center"
+                       HorizontalTextAlignment="Center"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+
+                <BoxView HeightRequest="1"
+                         Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                         Margin="0,15"/>
+
+                <!-- Features Section -->
+                <Label Text="Key Features"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       Margin="0,0,0,10"
+                       TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="15" RowSpacing="15">
+                    
+                    <Border StrokeShape="RoundRectangle 12" 
+                            StrokeThickness="0"
+                            Padding="16" 
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Cross-Platform" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                            <Label Text="One codebase for Mobile, Desktop and Web scenarios." FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            StrokeShape="RoundRectangle 12" 
+                            StrokeThickness="0"
+                            Padding="16" 
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Pixel Perfect" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                            <Label Text="Consistent look and feel across all platforms." FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Row="1"
+                            StrokeShape="RoundRectangle 12" 
+                            StrokeThickness="0"
+                            Padding="16" 
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="High Performance" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                            <Label Text="Built on top of Avalonia's rendering engine." FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Row="1" Grid.Column="1"
+                            StrokeShape="RoundRectangle 12" 
+                            StrokeThickness="0"
+                            Padding="16" 
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="MAUI Compatible" FontAttributes="Bold" FontSize="16" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                            <Label Text="Use existing .NET MAUI controls and layouts." FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <Label Text="Select a sample from the menu to get started."
+                       FontSize="14"
+                       HorizontalOptions="Center"
+                       Margin="0,30,0,0"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray500}}" />
+
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>

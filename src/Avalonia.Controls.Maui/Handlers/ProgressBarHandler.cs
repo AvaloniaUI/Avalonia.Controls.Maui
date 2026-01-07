@@ -9,15 +9,15 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler for MAUI IProgress to Avalonia ProgressBar mapping
 /// </summary>
-public class ProgressBarHandler : ViewHandler<Microsoft.Maui.IProgress, AvaloniaProgressBar>, IProgressBarHandler
+public class ProgressBarHandler : ViewHandler<Microsoft.Maui.IProgress, AvaloniaProgressBar>
 {
-    public static IPropertyMapper<Microsoft.Maui.IProgress, IProgressBarHandler> Mapper = new PropertyMapper<Microsoft.Maui.IProgress, IProgressBarHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<Microsoft.Maui.IProgress, ProgressBarHandler> Mapper = new PropertyMapper<Microsoft.Maui.IProgress, ProgressBarHandler>(ViewHandler.ViewMapper)
     {
         [nameof(Microsoft.Maui.IProgress.Progress)] = MapProgress,
         [nameof(Microsoft.Maui.IProgress.ProgressColor)] = MapProgressColor
     };
 
-    public static CommandMapper<Microsoft.Maui.IProgress, IProgressBarHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<Microsoft.Maui.IProgress, ProgressBarHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
@@ -35,10 +35,6 @@ public class ProgressBarHandler : ViewHandler<Microsoft.Maui.IProgress, Avalonia
     {
     }
 
-    Microsoft.Maui.IProgress IProgressBarHandler.VirtualView => VirtualView;
-
-    System.Object IProgressBarHandler.PlatformView => PlatformView;
-
     protected override AvaloniaProgressBar CreatePlatformView()
     {
         return new AvaloniaProgressBar
@@ -50,7 +46,7 @@ public class ProgressBarHandler : ViewHandler<Microsoft.Maui.IProgress, Avalonia
 
     public override bool NeedsContainer => false;
 
-    public static void MapProgress(IProgressBarHandler handler, Microsoft.Maui.IProgress progress)
+    public static void MapProgress(ProgressBarHandler handler, Microsoft.Maui.IProgress progress)
     {
         if (handler.PlatformView is AvaloniaProgressBar platformView)
         {
@@ -58,7 +54,7 @@ public class ProgressBarHandler : ViewHandler<Microsoft.Maui.IProgress, Avalonia
         }
     }
 
-    public static void MapProgressColor(IProgressBarHandler handler, Microsoft.Maui.IProgress progress)
+    public static void MapProgressColor(ProgressBarHandler handler, Microsoft.Maui.IProgress progress)
     {
         if (handler.PlatformView is AvaloniaProgressBar platformView)
         {

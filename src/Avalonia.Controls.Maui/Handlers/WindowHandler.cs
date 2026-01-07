@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.VisualTree;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
@@ -9,9 +10,11 @@ using System.Text;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
+public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.Window>
 {
-    static IPropertyMapper<IWindow, IWindowHandler> mapper = new PropertyMapper<IWindow, IWindowHandler>(ElementHandler.ElementMapper)
+    static readonly AlertManager s_alertManager = new();
+
+    static IPropertyMapper<IWindow, WindowHandler> mapper = new PropertyMapper<IWindow, WindowHandler>(ElementHandler.ElementMapper)
     {
         [nameof(IWindow.Title)] = mapTitle,
         [nameof(IWindow.Content)] = mapContent,
@@ -26,17 +29,31 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
         [nameof(IWindow.MinimumHeight)] = mapMinimumHeight,
     };
 
+    static CommandMapper<IWindow, WindowHandler> CommandMapper = new(ElementCommandMapper)
+    {
+        [nameof(IWindow.RequestDisplayDensity)] = MapRequestDisplayDensity,
+    };
+
+    private static void MapRequestDisplayDensity(WindowHandler handler, IWindow window, object? arg3)
+    {
+        if (arg3 is DisplayDensityRequest request)
+        {
+            var toplevel = handler.PlatformView.GetVisualRoot() as Avalonia.Controls.TopLevel;
+            request.SetResult((float)(toplevel?.RenderScaling ?? 1.0));
+        }
+    }
+
     public WindowHandler()
-        : base(mapper)
+        : base(mapper, CommandMapper)
     {
     }
 
-    protected override object CreatePlatformElement()
+    protected override Avalonia.Controls.Window CreatePlatformElement()
     {
         return new MauiAvaloniaWindow();
     }
 
-    protected override void ConnectHandler(object platformView)
+    protected override void ConnectHandler(Avalonia.Controls.Window platformView)
     {
         base.ConnectHandler(platformView);
 
@@ -56,7 +73,7 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
         }
     }
 
-    protected override void DisconnectHandler(object platformView)
+    protected override void DisconnectHandler(Avalonia.Controls.Window platformView)
     {
         var avWindow = (Window)platformView;
 
@@ -80,17 +97,17 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
         DismissModalPage();
     }
 
-    static void mapTitle(IWindowHandler handler, IWindow window) =>
+    static void mapTitle(WindowHandler handler, IWindow window) =>
         ((Window)handler.PlatformView).UpdateTitle(window);
 
-    static void mapContent(IWindowHandler handler, IWindow window)
+    static void mapContent(WindowHandler handler, IWindow window)
     {
         var avWindow = GetMauiWindow(handler);
         var content = window.Content?.ToPlatform(handler.MauiContext!);
         avWindow.SetMainContent(content);
     }
 
-    static void mapTitleBar(IWindowHandler handler, IWindow window)
+    static void mapTitleBar(WindowHandler handler, IWindow window)
     {
         var avWindow = GetMauiWindow(handler);
         // TitleBar is defined on Microsoft.Maui.Controls.Window, not IWindow
@@ -98,19 +115,19 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
         avWindow.SetTitleBar(controlsWindow?.TitleBar, handler.MauiContext);
     }
 
-    static void mapX(IWindowHandler handler, IWindow window)
+    static void mapX(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
         avWindow.Position = new PixelPoint((int)window.X, avWindow.Position.Y);
     }
 
-    static void mapY(IWindowHandler handler, IWindow window)
+    static void mapY(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
         avWindow.Position = new PixelPoint(avWindow.Position.X, (int)window.Y);
     }
 
-    static void mapWidth(IWindowHandler handler, IWindow window)
+    static void mapWidth(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
         if (!double.IsNaN(window.Width))
@@ -119,7 +136,7 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
             avWindow.Width = avWindow.ClientSize.Width;
     }
 
-    static void mapHeight(IWindowHandler handler, IWindow window)
+    static void mapHeight(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
         if (!double.IsNaN(window.Height))
@@ -128,14 +145,14 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
             avWindow.Height = avWindow.ClientSize.Height;
     }
 
-    static Window GetWindow(IWindowHandler handler, IWindow window)
+    static Window GetWindow(WindowHandler handler, IWindow window)
     {
         _ = handler.MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
         var content = window.Content?.ToPlatform(handler.MauiContext);
         return (Window)handler.PlatformView;
     }
 
-    static MauiAvaloniaWindow GetMauiWindow(IWindowHandler handler)
+    static MauiAvaloniaWindow GetMauiWindow(WindowHandler handler)
     {
         _ = handler.MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
         return (MauiAvaloniaWindow)handler.PlatformView;
@@ -164,7 +181,7 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
         mauiWindow.DismissModal();
     }
 
-    static void mapMaximumWidth(IWindowHandler handler, IWindow window)
+    static void mapMaximumWidth(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
         if (double.IsNaN(window.MinimumHeight))
@@ -173,7 +190,7 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
             avWindow.MaxWidth = window.MaximumWidth;
     }
 
-    static void mapMaximumHeight(IWindowHandler handler, IWindow window)
+    static void mapMaximumHeight(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
         if (double.IsNaN(window.MaximumHeight))
@@ -182,7 +199,7 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
             avWindow.MaxHeight = window.MaximumHeight;
     }
 
-    static void mapMinimumWidth(IWindowHandler handler, IWindow window)
+    static void mapMinimumWidth(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
         if (double.IsNaN(window.MinimumWidth))
@@ -191,7 +208,7 @@ public partial class WindowHandler : Microsoft.Maui.Handlers.WindowHandler
             avWindow.MinWidth = window.MinimumWidth;
     }
 
-    static void mapMinimumHeight(IWindowHandler handler, IWindow window)
+    static void mapMinimumHeight(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
         if (double.IsNaN(window.MinimumHeight))

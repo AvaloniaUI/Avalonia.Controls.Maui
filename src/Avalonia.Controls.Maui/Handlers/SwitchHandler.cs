@@ -9,11 +9,11 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>
 /// Handler that maps MAUI <see cref="ISwitch"/> to Avalonia <see cref="ToggleSwitch"/>.
 /// </summary>
-public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>, ISwitchHandler
+public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>
 {
     private bool _isUpdating;
 
-    public static IPropertyMapper<ISwitch, ISwitchHandler> Mapper = new PropertyMapper<ISwitch, ISwitchHandler>(ViewHandler.ViewMapper)
+    public static IPropertyMapper<ISwitch, SwitchHandler> Mapper = new PropertyMapper<ISwitch, SwitchHandler>(ViewHandler.ViewMapper)
     {
         [nameof(ISwitch.IsOn)] = MapIsOn,
         [nameof(Microsoft.Maui.Controls.Switch.IsToggled)] = MapIsOn,
@@ -22,7 +22,7 @@ public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>, ISwitch
         [nameof(Microsoft.Maui.Controls.Switch.OnColor)] = MapTrackColor,
     };
 
-    public static CommandMapper<ISwitch, ISwitchHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
+    public static CommandMapper<ISwitch, SwitchHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 
@@ -61,7 +61,7 @@ public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>, ISwitch
         base.DisconnectHandler(platformView);
     }
 
-    public static void MapIsOn(ISwitchHandler handler, ISwitch view)
+    public static void MapIsOn(SwitchHandler handler, ISwitch view)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
@@ -86,7 +86,7 @@ public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>, ISwitch
         }
     }
 
-    public static void MapTrackColor(ISwitchHandler handler, ISwitch view)
+    public static void MapTrackColor(SwitchHandler handler, ISwitch view)
     {
         if (handler is SwitchHandler switchHandler)
         {
@@ -94,7 +94,7 @@ public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>, ISwitch
         }
     }
 
-    public static void MapThumbColor(ISwitchHandler handler, ISwitch view)
+    public static void MapThumbColor(SwitchHandler handler, ISwitch view)
     {
         if (handler is SwitchHandler switchHandler)
         {
@@ -126,7 +126,4 @@ public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>, ISwitch
         PlatformView.UpdateTrackColor(VirtualView, fallbackColor);
         PlatformView.UpdateThumbColor(VirtualView);
     }
-    
-    ISwitch ISwitchHandler.VirtualView => VirtualView;
-    object ISwitchHandler.PlatformView => PlatformView;
 }

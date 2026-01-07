@@ -1,12 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			xmlns:pages="clr-namespace:ControlGallery.Pages"
-			xmlns:rpnCalculator="clr-namespace:RpnCalculator"
-			xmlns:solitaireEncryption="clr-namespace:SolitaireEncryption"
-			xmlns:tipCalc="clr-namespace:TipCalc"
-			xmlns:weather="clr-namespace:Weather"
-			xmlns:wordPuzzle="clr-namespace:WordPuzzle"
 			xmlns:local="clr-namespace:ControlGallery"
 			x:DataType="local:MainPage"
 			FlyoutLayoutBehavior="Split"
@@ -16,192 +10,21 @@
 			BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
 			x:Name="FlyoutPageMenu"
 			Title="Control Gallery">
-			<TableView Intent="Menu">
-				<TableRoot>
-					<TableSection Title="Apps">
-						<TextCell Text="RpnCalculator"
-								  Detail="A Reverse Polish Notation calc"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type rpnCalculator:MainPage}"/>
-						<TextCell Text="SolitaireEncryption"
-								  Detail="Solitaire encryption algorithm"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type solitaireEncryption:SolitairePage}"/>
-						<TextCell Text="Tip Calc"
-								  Detail="TipCalc application"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type tipCalc:TipCalcPage}"/>
-						<TextCell Text="Weather"
-								  Detail="Retrieves weather data"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type weather:MainPage}"/>
-						<TextCell Text="Word Puzzle"
-								  Detail="A word puzzle game"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type wordPuzzle:MainPage}"/>
-					</TableSection>
-					<TableSection Title="Services">
-						<TextCell Text="Fonts"
-								  Detail="Font integration test"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:FontsPage}"/>
-					</TableSection>
-					<TableSection Title="Pages">
-						<TextCell Text="NavigationPage"
-								  Detail="Navigation stack with animated transitions"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:NavigationDemoPage}"/>
-						<TextCell Text="TitleBar"
-								  Detail="Custom window title bar"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:TitleBarPage}"/>
-						<TextCell Text="Popups"
-								  Detail="Alerts, ActionSheets, and Prompts"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:PopupsPage}"/>
-					</TableSection>
-					<TableSection Title="Views">
-						<TextCell Text="ActivityIndicator"
-								  Detail="ActivityIndicator control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ActivityIndicatorPage}"/>
-						<TextCell Text="BoxView"
-								  Detail="Simple colored rectangles"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:BoxViewPage}"/>
-						<TextCell Text="Border"
-								  Detail="Border with shapes and strokes"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:BorderPage}"/>
-						<TextCell Text="Button"
-								  Detail="Button control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ButtonPage}"/>
-						<TextCell Text="CollectionView"
-								  Detail="Collection display with templates"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:CollectionViewPage}"/>
-						<TextCell Text="ContentView"
-								  Detail="Custom content"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ContentViewPage}"/>
-						<TextCell Text="ImageButton"
-								  Detail="ImageButton control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ImageButtonPage}"/>
-						<TextCell Text="CheckBox"
-								  Detail="CheckBox control for selections"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:CheckBoxPage}"/>
-						<TextCell Text="Picker"
-								  Detail="Picker control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:PickerPage}"/>
-						<TextCell Text="GraphicsView"
-								  Detail="Custom drawing and graphics"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:GraphicsViewPage}"/>
-						<TextCell Text="Image"
-								  Detail="Image display with various sources"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ImagePage}"/>
-						<TextCell Text="ImageButton"
-								  Detail="ImageButton control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ImageButtonPage}"/>
-						<TextCell Text="Picker"
-								  Detail="Picker control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:PickerPage}"/>
-						<TextCell Text="ProgressBar"
-								  Detail="Progress indicator control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ProgressBarPage}"/>
-						<TextCell Text="RadioButton"
-								  Detail="RadioButton control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:RadioButtonPage}"/>
-						<TextCell Text="ScrollView"
-								  Detail="Scroll scenarios and behaviors"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ScrollViewPage}"/>
-						<TextCell Text="SearchBar"
-								  Detail="Search input control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:SearchBarPage}"/>
-						<TextCell Text="Slider"
-								  Detail="Slider control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:SliderPage}"/>
-						<TextCell Text="Stepper"
-								  Detail="Numeric increment/decrement control"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:StepperPage}"/>
-						<TextCell Text="Switch"
-								  Detail="Toggle control with colors"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:SwitchPage}"/>
-						<TextCell Text="SwipeView"
-						          Detail="SwipeView control"
-						          Command="{Binding NavigateCommand}"
-						          CommandParameter="{x:Type pages:SwipeViewPage}"/>
-						<TextCell Text="TableView"
-						          Detail="TableView with cell types"
-						          Command="{Binding NavigateCommand}"
-						          CommandParameter="{x:Type pages:TableViewPage}"/>
-					</TableSection>
-					<TableSection Title="Effects">
-						<TextCell Text="Clip"
-								  Detail="Shape-based clipping samples"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ClipPage}"/>
-						<TextCell Text="Shadow"
-								  Detail="Soft elevation and offsets"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ShadowPage}"/>
-						<TextCell Text="Transformations"
-								  Detail="Play with scale, rotation, translation, anchors"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:TransformationsPage}"/>
-					</TableSection>
-					<TableSection Title="Shapes">
-						<TextCell Text="Rectangle"
-								  Detail="Filled and rounded rectangles"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:RectanglePage}"/>
-						<TextCell Text="Ellipse"
-								  Detail="Ellipses with fills and strokes"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:EllipsePage}"/>
-						<TextCell Text="Line"
-								  Detail="Simple and dashed lines"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:LinePage}"/>
-						<TextCell Text="Polygon"
-								  Detail="Closed polygon shapes"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:PolygonPage}"/>
-						<TextCell Text="Polyline"
-								  Detail="Open polyline shapes"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:PolylinePage}"/>
-						<TextCell Text="Path"
-								  Detail="Paths with custom geometry"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:PathPage}"/>
-						<TextCell Text="RoundRectangle"
-								  Detail="Custom corner radii"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:RoundRectanglePage}"/>
-					</TableSection>
-					<TableSection Title="Settings">
-						<TextCell Text="Theme"
-								  Detail="Theme toggle and AppThemeBinding"
-								  Command="{Binding NavigateCommand}"
-								  CommandParameter="{x:Type pages:ThemePage}"/>
-					</TableSection>
-				</TableRoot>
-			</TableView>
+			<Grid RowDefinitions="Auto,*">
+				<SearchBar Placeholder="Search..."
+						   TextChanged="OnSearchBarTextChanged"
+						   BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+						   Margin="6"/>
+
+				<TableView Grid.Row="1"
+					x:Name="MenuTableView"
+					Intent="Menu"
+					BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}">
+					<TableView.Root>
+						<!-- Items will be populated in code-behind -->
+					</TableView.Root>
+				</TableView>
+			</Grid>
 		</ContentPage>
 	</FlyoutPage.Flyout>
 	<FlyoutPage.Detail>

@@ -1,16 +1,13 @@
 using Avalonia.Controls.Maui.Handlers;
-using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Maui.Tests.Stubs;
-using Avalonia.Headless;
-using Microsoft.Maui;
-using Xunit;
+using Avalonia.Headless.XUnit;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public class ContentPresenterHandlerTests : HandlerTestBase<ContentPresenterHandler, ContentPresenterStub>
 {
-    [Fact]
-    public void MapContent_Updates_Platform_Children()
+    [AvaloniaFact]
+    public async Task MapContent_Updates_Platform_Children()
     {
         var content = new ButtonStub();
         var stub = new ContentPresenterStub
@@ -18,19 +15,22 @@ public class ContentPresenterHandlerTests : HandlerTestBase<ContentPresenterHand
             PresentedContent = content
         };
 
-        var handler = CreateHandler<ContentPresenterHandler>(stub);
+        var handler = await CreateHandlerAsync(stub);
 
         // Simulate mapping
-        ContentPresenterHandler.MapContent(handler, stub);
+        await InvokeOnMainThreadAsync(() =>
+        {
+            ContentPresenterHandler.MapContent(handler, stub);
+        });
         
-        var platformView = (MauiContentPresenter)handler.PlatformView;
+        var platformView = handler.PlatformView;
         
         Assert.Single(platformView.Children);
-        Assert.IsAssignableFrom<global::Avalonia.Controls.Button>(platformView.Children[0]);
+        Assert.IsAssignableFrom<Button>(platformView.Children[0]);
     }
 
-    [Fact]
-    public void MapContent_Null_Clears_Children()
+    [AvaloniaFact]
+    public async Task MapContent_Null_Clears_Children()
     {
         var content = new ButtonStub();
         var stub = new ContentPresenterStub
@@ -38,34 +38,50 @@ public class ContentPresenterHandlerTests : HandlerTestBase<ContentPresenterHand
             PresentedContent = content
         };
 
-        var handler = CreateHandler<ContentPresenterHandler>(stub);
-        ContentPresenterHandler.MapContent(handler, stub);
+        var handler = await CreateHandlerAsync(stub);
+        
+        await InvokeOnMainThreadAsync(() =>
+        {
+            ContentPresenterHandler.MapContent(handler, stub);
+        });
         
         // Clear content
         stub.PresentedContent = null;
-        ContentPresenterHandler.MapContent(handler, stub);
+        
+        await InvokeOnMainThreadAsync(() =>
+        {
+            ContentPresenterHandler.MapContent(handler, stub);
+        });
 
-        var platformView = (MauiContentPresenter)handler.PlatformView;
+        var platformView = handler.PlatformView;
         Assert.Empty(platformView.Children);
     }
 
-    [Fact]
-    public void MapContent_Updates_New_Content()
+    [AvaloniaFact]
+    public async Task MapContent_Updates_New_Content()
     {
         var stub = new ContentPresenterStub
         {
             PresentedContent = new ButtonStub()
         };
 
-        var handler = CreateHandler<ContentPresenterHandler>(stub);
-        ContentPresenterHandler.MapContent(handler, stub);
+        var handler = await CreateHandlerAsync(stub);
+        
+        await InvokeOnMainThreadAsync(() =>
+        {
+            ContentPresenterHandler.MapContent(handler, stub);
+        });
         
         // Update content
         stub.PresentedContent = new LabelStub();
-        ContentPresenterHandler.MapContent(handler, stub);
+        
+        await InvokeOnMainThreadAsync(() =>
+        {
+            ContentPresenterHandler.MapContent(handler, stub);
+        });
 
-        var platformView = (MauiContentPresenter)handler.PlatformView;
+        var platformView = handler.PlatformView;
         Assert.Single(platformView.Children);
-        Assert.IsAssignableFrom<global::Avalonia.Controls.TextBlock>(platformView.Children[0]);
+        Assert.IsAssignableFrom<TextBlock>(platformView.Children[0]);
     }
 }

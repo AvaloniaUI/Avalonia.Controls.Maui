@@ -199,21 +199,21 @@ Enables you to select a date with the platform date picker.
 
 | Property | Status |
 |----------|--------|
-| MinimumDate | ⏳ TODO |
-| MaximumDate | ⏳ TODO |
-| Date | ⏳ TODO |
-| Format | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| CharacterSpacing | ⏳ TODO |
+| MinimumDate | ✅ Implemented |
+| MaximumDate | ✅ Implemented |
+| Date | ✅ Implemented |
+| Format | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| DateSelected | ⏳ TODO |
+| DateSelected | ✅ Implemented |
 
 ---
 
@@ -355,10 +355,13 @@ Used to wrap a view or layout with a border that can be configured with color, s
 | Property | Status |
 |----------|--------|
 | BorderColor | ✅ Implemented |
-| CornerRadius | ⏳ TODO |
-| HasShadow | ⏳ TODO |
-| Content | ⏳ TODO |
-| Padding | ⏳ TODO |
+| CornerRadius | ✅ Implemented |
+| HasShadow | ✅ Implemented |
+| Content | ✅ Implemented |
+| Padding | ✅ Implemented |
+| Background | ✅ Implemented |
+| BackgroundColor | ✅ Implemented |
+| IsClippedToBounds | ✅ Implemented |
 
 ---
 
@@ -642,6 +645,23 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | DisplayPromptAsync      | ✅ Implemented |
 
  ---
+
+## Page
+
+Visual element that occupies the entire screen.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Background | ✅ Implemented |
+| BackgroundImageSource | ✅ Implemented |
+| Content | ✅ Implemented |
+| Title | ⏳ TODO |
+| IconImageSource | ✅ Implemented |
+| Padding | ⏳ TODO |
+
+---
 
 ## Path
 
@@ -1090,6 +1110,25 @@ Displays a switch with a label, for use in a TableView or ListView.
 
 ---
 
+## TabbedPage
+
+A Page that allows navigation between multiple sub-pages using tabs.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| BarBackgroundColor | ✅ Implemented |
+| BarTextColor | ✅ Implemented |
+| CurrentPage | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| SelectedItem | ✅ Implemented |
+| SelectedTabColor | ✅ Implemented |
+| UnselectedTabColor | ✅ Implemented |
+
+---
+
 ## TableView (Deprecated)
 
 Displays a table of scrollable items that can be grouped into sections.
@@ -1169,20 +1208,19 @@ Enables you to select a time with the platform time picker.
 
 | Property | Status |
 |----------|--------|
-| CharacterSpacing | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| Format | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| Time | ⏳ TODO |
+| CharacterSpacing | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| Format | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| Time | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| PropertyChanged | ⏳ TODO |
+| SelectedTimeChanged | ✅ Implemented |
 
 ---
 
@@ -1253,7 +1291,7 @@ All controls inherit these common properties from the View and VisualElement bas
 | AutomationId | string | ✅ Implemented |
 | Background | Brush | ✅ Implemented |
 | BackgroundColor | Color | ✅ Implemented |
-| Behaviors | IList<Behavior> | ⏳ TODO |
+| Behaviors | IList<Behavior> | ✅ Implemented |
 | BindingContext | object | ⏳ TODO |
 | Bounds | Rect | ⏳ TODO |
 | Clip | Geometry | ✅ Implemented |
@@ -1287,9 +1325,10 @@ All controls inherit these common properties from the View and VisualElement bas
 | ScaleY | double | ✅ Implemented |
 | Shadow | Shadow | ✅ Implemented |
 | StyleId | string | ✅ Implemented |
+| ToolTip | string | ✅ Implemented |
 | TranslationX | double | ✅ Implemented |
 | TranslationY | double | ✅ Implemented |
-| Triggers | IList<TriggerBase> | ⏳ TODO |
+| Triggers | IList<TriggerBase> | ✅ Implemented |
 | VerticalOptions | LayoutOptions | ✅ Implemented |
 | Width | double | ✅ Implemented |
 | WidthRequest | double | ✅ Implemented |

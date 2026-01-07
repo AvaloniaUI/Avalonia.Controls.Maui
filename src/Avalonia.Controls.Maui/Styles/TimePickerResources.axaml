@@ -1,0 +1,24 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:ClassModifier="internal">
+    
+    <!-- TimePicker resources for SimpleTheme compatibility -->
+    <!-- These resources are required for TimePicker separators to be visible -->
+    
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="TimePickerSpacerFill" Color="#FFCCCCCC" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="TimePickerSpacerFill" Color="#FF666666" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+    
+    <!-- TimePicker padding for MAUI compatibility -->
+    <!-- Increased vertical padding to prevent text clipping with larger fonts -->
+    <Thickness x:Key="TimePickerHostPadding">0,8,0,8</Thickness>
+    
+    <!-- Minimum height to accommodate larger font sizes -->
+    <x:Double x:Key="TimePickerMinHeight">32</x:Double>
+    
+</ResourceDictionary>

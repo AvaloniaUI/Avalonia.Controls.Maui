@@ -1,0 +1,21 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:ClassModifier="internal">
+    
+    <!-- DatePicker resources for SimpleTheme compatibility -->
+    <!-- These resources are required for DatePicker separators to be visible -->
+    
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="DatePickerSpacerFill" Color="#FFCCCCCC" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="DatePickerSpacerFill" Color="#FF666666" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+    
+    <!-- DatePicker padding for MAUI compatibility -->
+    <Thickness x:Key="DatePickerHostPadding">0,5,0,5</Thickness>
+    <Thickness x:Key="DatePickerHostMonthPadding">9,5,0,5</Thickness>
+    
+</ResourceDictionary>
