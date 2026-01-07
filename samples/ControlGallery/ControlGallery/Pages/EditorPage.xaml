@@ -243,6 +243,48 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Keyboard Options -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Keyboard Options" FontAttributes="Bold" />
+                    
+                    <Label Text="Email Keyboard:" FontSize="12" />
+                    <Editor Placeholder="Enter email..." Keyboard="Email" HeightRequest="60" />
+                    
+                    <Label Text="Numeric Keyboard:" FontSize="12" />
+                    <Editor Placeholder="Enter numbers..." Keyboard="Numeric" HeightRequest="60" />
+                    
+                    <Label Text="Telephone Keyboard:" FontSize="12" />
+                    <Editor Placeholder="Enter phone..." Keyboard="Telephone" HeightRequest="60" />
+                    
+                    <Label Text="Url Keyboard:" FontSize="12" />
+                    <Editor Placeholder="Enter URL..." Keyboard="Url" HeightRequest="60" />
+                    
+                    <Label Text="Chat Keyboard (Auto-Correct + Suggestions):" FontSize="12" />
+                    <Editor Placeholder="Chat text..." Keyboard="Chat" HeightRequest="60" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Prediction -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Prediction" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Label Text="IsTextPredictionEnabled:" VerticalOptions="Center" />
+                        <CheckBox x:Name="PredictionCheckBox" IsChecked="True" />
+                    </HorizontalStackLayout>
+                    <Editor Placeholder="Type to test prediction..." 
+                            IsTextPredictionEnabled="{Binding IsChecked, Source={x:Reference PredictionCheckBox}}" 
+                            HeightRequest="80"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Disabled State -->
             <Border Stroke="Gray" Padding="10">
                 <Border.StrokeShape>

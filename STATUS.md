@@ -233,7 +233,7 @@ Enables you to enter and edit multiple lines of text.
 | FontFamily | ✅ Implemented |
 | FontSize | ✅ Implemented |
 | HorizontalTextAlignment | ✅ Implemented |
-| IsTextPredictionEnabled | ⏳ TODO |
+| IsTextPredictionEnabled | ✅ Implemented |
 | Placeholder | ✅ Implemented |
 | PlaceholderColor | ✅ Implemented |
 | SelectionLength | ✅ Implemented |
@@ -242,7 +242,7 @@ Enables you to enter and edit multiple lines of text.
 | VerticalTextAlignment | ✅ Implemented |
 | IsReadOnly | ✅ Implemented |
 | IsSpellCheckEnabled | ⏳ TODO |
-| Keyboard | ⏳ TODO |
+| Keyboard | ✅ Implemented |
 | MaxLength | ✅ Implemented |
 | TextTransform | ✅ Implemented |
 
@@ -289,10 +289,10 @@ Enables you to enter and edit a single line of text.
 | FontAutoScalingEnabled | ⏳ TODO |
 | FontFamily | ⏳ TODO |
 | FontSize | ⏳ TODO |
-| Keyboard | ⏳ TODO |
+| Keyboard | ✅ Implemented |
 | HorizontalTextAlignment | ⏳ TODO |
 | IsPassword | ⏳ TODO |
-| IsTextPredictionEnabled | ⏳ TODO |
+| IsTextPredictionEnabled | ✅ Implemented |
 | IsReadOnly | ⏳ TODO |
 | IsSpellCheckEnabled | ⏳ TODO |
 | MaxLength | ⏳ TODO |

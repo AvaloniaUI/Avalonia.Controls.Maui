@@ -1,5 +1,6 @@
 using Avalonia.Controls.Maui.Controls;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Input.TextInput;
 using Microsoft.Maui;
 using AvaloniaTextBox = Avalonia.Controls.TextBox;
 using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
@@ -225,10 +226,9 @@ namespace Avalonia.Controls.Maui.Extensions
         /// </summary>
         /// <param name="textBox">The platform text box.</param>
         /// <param name="editor">The virtual view.</param>
-        [NotImplemented("Avalonia TextBox does not currently support disabling text prediction.")]
         public static void UpdateEditorIsTextPredictionEnabled(this AvaloniaTextBox textBox, IEditor editor)
         {
-             // Not supported
+             TextInputOptions.SetShowSuggestions(textBox, editor.IsTextPredictionEnabled);
         }
         
         /// <summary>
@@ -247,10 +247,10 @@ namespace Avalonia.Controls.Maui.Extensions
         /// </summary>
         /// <param name="textBox">The platform text box.</param>
         /// <param name="editor">The virtual view.</param>
-        [NotImplemented("Custom keyboard mapping is not yet implemented for Avalonia Editor.")]
         public static void UpdateEditorKeyboard(this AvaloniaTextBox textBox, IEditor editor)
         {
-             // Not supported
+             textBox.UpdateKeyboard(editor.Keyboard);
+             textBox.UpdateMultiline(true); // Editor is always multiline
         }
 
         /// <summary>

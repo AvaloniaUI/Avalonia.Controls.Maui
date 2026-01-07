@@ -84,8 +84,7 @@ public static class EntryCellExtensions
     /// <param name="cell">The MAUI cell.</param>
     public static void UpdateKeyboard(this MauiEntryCell platformView, EntryCell cell)
     {
-        // Avalonia TextBox does not support InputScope (desktop platform)
-        // This is a no-op but included for API completeness
+        platformView.Input.UpdateKeyboard(cell.Keyboard);
     }
 
     /// <summary>

@@ -100,7 +100,6 @@ namespace Avalonia.Controls.Maui.Handlers
         public static void MapIsReadOnly(EditorHandler handler, IEditor editor) =>
             handler.PlatformView?.UpdateEditorIsReadOnly(editor);
 
-        [NotImplemented("Avalonia TextBox does not currently support disabling text prediction.")]
         public static void MapIsTextPredictionEnabled(EditorHandler handler, IEditor editor) =>
             handler.PlatformView?.UpdateEditorIsTextPredictionEnabled(editor);
 
@@ -108,7 +107,6 @@ namespace Avalonia.Controls.Maui.Handlers
         public static void MapIsSpellCheckEnabled(EditorHandler handler, IEditor editor) =>
             handler.PlatformView?.UpdateEditorIsSpellCheckEnabled(editor);
 
-        [NotImplemented("Custom keyboard mapping is not yet implemented for Avalonia Editor.")]
         public static void MapKeyboard(EditorHandler handler, IEditor editor) =>
             handler.PlatformView?.UpdateEditorKeyboard(editor);
 

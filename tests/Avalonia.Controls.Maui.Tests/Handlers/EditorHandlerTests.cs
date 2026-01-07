@@ -3,6 +3,7 @@ using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Avalonia.Controls.Maui.Tests.Stubs;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers
@@ -375,5 +376,93 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
                 Assert.Equal($"Update {i}", platformView.Text);
             }
         }
+
+        [AvaloniaTheory(DisplayName = "Keyboard ContentType Mapped Correctly")]
+        [InlineData("Email")]
+        [InlineData("Numeric")]
+        [InlineData("Telephone")]
+        [InlineData("Url")]
+        [InlineData("Text")]
+        [InlineData("Plain")]
+        [InlineData("Chat")]
+        public async Task KeyboardContentTypeMapped(string keyboardTypeName)
+        {
+            var keyboard = keyboardTypeName switch
+            {
+                "Email" => Keyboard.Email,
+                "Numeric" => Keyboard.Numeric,
+                "Telephone" => Keyboard.Telephone,
+                "Url" => Keyboard.Url,
+                "Text" => Keyboard.Text,
+                "Plain" => Keyboard.Plain,
+                "Chat" => Keyboard.Chat,
+                _ => Keyboard.Default
+            };
+            
+            var editor = new EditorStub { Keyboard = keyboard };
+            var handler = await CreateHandlerAsync(editor);
+            var platformView = (MauiEditor)handler.PlatformView!;
+            
+            var expectedContentType = keyboardTypeName switch
+            {
+                "Email" => Avalonia.Input.TextInput.TextInputContentType.Email,
+                "Numeric" => Avalonia.Input.TextInput.TextInputContentType.Number,
+                "Telephone" => Avalonia.Input.TextInput.TextInputContentType.Digits,
+                "Url" => Avalonia.Input.TextInput.TextInputContentType.Url,
+                _ => Avalonia.Input.TextInput.TextInputContentType.Normal
+            };
+            
+            Assert.Equal(expectedContentType, Avalonia.Input.TextInput.TextInputOptions.GetContentType(platformView));
+        }
+
+        [AvaloniaFact(DisplayName = "Keyboard AutoCapitalization Disabled for Plain")]
+        public async Task KeyboardAutoCapitalizationDisabledForPlain()
+        {
+            var editor = new EditorStub { Keyboard = Keyboard.Plain };
+            var handler = await CreateHandlerAsync(editor);
+            var platformView = (MauiEditor)handler.PlatformView!;
+            
+            Assert.False(Avalonia.Input.TextInput.TextInputOptions.GetAutoCapitalization(platformView));
+        }
+
+        [AvaloniaFact(DisplayName = "Keyboard ShowSuggestions Enabled for Chat")]
+        public async Task KeyboardShowSuggestionsEnabledForChat()
+        {
+            var editor = new EditorStub { Keyboard = Keyboard.Chat };
+            var handler = await CreateHandlerAsync(editor);
+            var platformView = (MauiEditor)handler.PlatformView!;
+            
+            Assert.True(Avalonia.Input.TextInput.TextInputOptions.GetShowSuggestions(platformView));
+        }
+
+        [AvaloniaFact(DisplayName = "Editor Sets Multiline TextInputOption")]
+        public async Task EditorSetsMultilineTextInputOption()
+        {
+            var editor = new EditorStub();
+            var handler = await CreateHandlerAsync(editor);
+            var platformView = (MauiEditor)handler.PlatformView!;
+            
+            // Editor should always set multiline option
+            Assert.True(Avalonia.Input.TextInput.TextInputOptions.GetMultiline(platformView));
+        }
+        [AvaloniaFact(DisplayName = "IsTextPredictionEnabled Mapped Correctly")]
+        public async Task IsTextPredictionEnabledMappedCorrectly()
+        {
+            var editor = new EditorStub { IsTextPredictionEnabled = false };
+            var handler = await CreateHandlerAsync(editor);
+            var platformView = (MauiEditor)handler.PlatformView!;
+
+            await InvokeOnMainThreadAsync(() => handler.UpdateValue(nameof(IEditor.IsTextPredictionEnabled)));
+            
+            // Should be false when IsTextPredictionEnabled is false
+            Assert.False(Avalonia.Input.TextInput.TextInputOptions.GetShowSuggestions(platformView));
+            
+            editor.IsTextPredictionEnabled = true;
+            await InvokeOnMainThreadAsync(() => handler.UpdateValue(nameof(IEditor.IsTextPredictionEnabled)));
+            
+            // Should be true when IsTextPredictionEnabled is true
+            Assert.True(Avalonia.Input.TextInput.TextInputOptions.GetShowSuggestions(platformView));
+        }
+
     }
 }
