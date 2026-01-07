@@ -96,6 +96,9 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.ContentView, Avalonia.Controls.Maui.Handlers.ContentViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.ContentPresenter, Avalonia.Controls.Maui.Handlers.ContentPresenterHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Border, Avalonia.Controls.Maui.Handlers.BorderHandler>();
+#pragma warning disable CS0618 // Type or member is obsolete
+                handlers.AddHandler<Microsoft.Maui.Controls.Frame, Avalonia.Controls.Maui.Handlers.FrameHandler>();
+#pragma warning restore CS0618 // Type or member is obsolete
                 handlers.AddHandler<Microsoft.Maui.Controls.Image, Avalonia.Controls.Maui.Handlers.ImageHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Page, Avalonia.Controls.Maui.Handlers.PageHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Label, Avalonia.Controls.Maui.Handlers.LabelHandler>();

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ControlGallery.Behaviors"
+             x:Class="ControlGallery.Pages.BehaviorsPage"
+             Title="Behaviors">
+    <ContentPage.Resources>
+        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+        <Color x:Key="SectionBorderDark">#444444</Color>
+        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+    </ContentPage.Resources>
+    
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <Label Text="Behaviors" 
+                   Style="{StaticResource Headline}" />
+
+            <!-- Numeric Validation Behavior -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Numeric Validation Behavior" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="Enter a number (Standard Behavior). Text turns red if invalid." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <Entry Placeholder="Enter a number" Keyboard="Numeric">
+                        <Entry.Behaviors>
+                            <local:NumericValidationBehavior />
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Email Validation Behavior -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Email Validation Behavior" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="Enter an email address. Text turns red if invalid format." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <Entry Placeholder="Enter email address" Keyboard="Email">
+                        <Entry.Behaviors>
+                            <local:EmailValidationBehavior />
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Upper Case Behavior -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Upper Case Behavior" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="Type below. Text will automatically convert to uppercase." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <Entry Placeholder="Type text here" >
+                        <Entry.Behaviors>
+                            <local:UpperCaseBehavior />
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -34,8 +34,11 @@ public static class ViewExtensions
             }
             if (group.Children[0] is global::Avalonia.Media.ScaleTransform scale)
             {
-                scale.ScaleX = view.ScaleX * view.Scale;
-                scale.ScaleY = view.ScaleY * view.Scale;
+                double radX = view.RotationX * (Math.PI / 180.0);
+                double radY = view.RotationY * (Math.PI / 180.0);
+                
+                scale.ScaleX = view.ScaleX * view.Scale * Math.Cos(radY);
+                scale.ScaleY = view.ScaleY * view.Scale * Math.Cos(radX);
             }
             if (group.Children[1] is global::Avalonia.Media.RotateTransform rotate)
             {
@@ -75,6 +78,21 @@ public static class ViewExtensions
             control.Height = view.Height;
         else
             control.ClearValue(PlatformView.HeightProperty);
+    }
+
+    /// <summary>
+    /// Updates the margin of a platform view based on the .NET MAUI view's margin property.
+    /// </summary>
+    /// <param name="platformView">The platform view to update.</param>
+    /// <param name="view">The .NET MAUI view containing the margin property.</param>
+    public static void UpdateMargin(this PlatformView platformView, IView view)
+    {
+        platformView.Margin = new global::Avalonia.Thickness(
+            view.Margin.Left,
+            view.Margin.Top,
+            view.Margin.Right,
+            view.Margin.Bottom);
+        platformView.InvalidateMeasure();
     }
 
     /// <summary>

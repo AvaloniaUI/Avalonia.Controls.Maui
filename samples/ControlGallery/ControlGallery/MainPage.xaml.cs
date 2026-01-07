@@ -100,17 +100,18 @@ public partial class MainPage : FlyoutPage
             new SampleGroup("Views", new List<SampleItem>
             {
                 new("ActivityIndicator", "ActivityIndicator control", typeof(ActivityIndicatorPage)),
-                new("BoxView", "Simple colored rectangles", typeof(BoxViewPage)),
                 new("Border", "Border with shapes and strokes", typeof(BorderPage)),
+                new("BoxView", "Simple colored rectangles", typeof(BoxViewPage)),
                 new("Button", "Button control", typeof(ButtonPage)),
+                new("CheckBox", "CheckBox control for selections", typeof(CheckBoxPage)),
                 new("CollectionView", "Collection display with templates", typeof(CollectionViewPage)),
                 new("ContentView", "Custom content", typeof(ContentViewPage)),
                 new("DatePicker", "Date picker control", typeof(DatePickerPage)),
                 new("Editor", "Editor control", typeof(EditorPage)),
+                new("Frame", "Frame control", typeof(FramePage)),
                 new("GraphicsView", "Custom drawing and graphics", typeof(GraphicsViewPage)),
                 new("Image", "Image display with various sources", typeof(ImagePage)),
                 new("ImageButton", "ImageButton control", typeof(ImageButtonPage)),
-                new("CheckBox", "CheckBox control for selections", typeof(CheckBoxPage)),
                 new("Picker", "Picker control", typeof(PickerPage)),
                 new("ProgressBar", "Progress indicator control", typeof(ProgressBarPage)),
                 new("RadioButton", "RadioButton control", typeof(RadioButtonPage)),
@@ -118,8 +119,8 @@ public partial class MainPage : FlyoutPage
                 new("SearchBar", "Search input control", typeof(SearchBarPage)),
                 new("Slider", "Slider control", typeof(SliderPage)),
                 new("Stepper", "Numeric increment/decrement control", typeof(StepperPage)),
-                new("Switch", "Toggle control with colors", typeof(SwitchPage)),
                 new("SwipeView", "SwipeView control", typeof(SwipeViewPage)),
+                new("Switch", "Toggle control with colors", typeof(SwitchPage)),
                 new("TableView", "TableView with cell types", typeof(TableViewPage)),
                 new("TimePicker", "TimePicker control", typeof(TimePickerPage))
             }),
@@ -140,6 +141,18 @@ public partial class MainPage : FlyoutPage
                 new("Polyline", "Open polyline shapes", typeof(PolylinePage)),
                 new("Path", "Paths with custom geometry", typeof(PathPage)),
                 new("RoundRectangle", "Custom corner radii", typeof(RoundRectanglePage))
+            }),
+
+            new SampleGroup("Core", new List<SampleItem>
+            {
+                new("Animations", "ViewExtensions animations", typeof(AnimationPage)),
+                new("Behaviors", "Validation Behaviors", typeof(BehaviorsPage)),
+                new("Brushes", "Solid and Gradient brushes", typeof(BrushesPage)),
+                new("Gestures", "Tap, Swipe, Pan and more", typeof(GesturesPage)),
+                new("Styles", "Styles and Style Classes", typeof(StylesPage)),
+                new("Tooltips", "Tooltips on various controls", typeof(TooltipsPage)),
+                new("Triggers", "Visual states and actions", typeof(TriggersPage)),
+                new("Visual States", "VisualStateManager examples", typeof(VisualStateManagerPage)),
             }),
 
             new SampleGroup("Settings", new List<SampleItem>
