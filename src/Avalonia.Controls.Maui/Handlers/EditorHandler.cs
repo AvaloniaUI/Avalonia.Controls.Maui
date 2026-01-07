@@ -65,7 +65,11 @@ public class EditorHandler : ViewHandler<IEditor, AvaloniaTextBox>
     public static void MapBackground(EditorHandler handler, IEditor editor)
     {
         handler.UpdateValue(nameof(IViewHandler.ContainerView));
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateBackground(editor);
+        
+        if (handler.PlatformView != null)
+        {
+            Extensions.EntryExtensions.UpdateBackground(handler.PlatformView, editor);
+        }
     }
 
     public static void MapText(EditorHandler handler, IEditor editor) =>
