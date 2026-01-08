@@ -331,7 +331,7 @@ Displays an entry with a label and placeholder, for use in a TableView or ListVi
 | Placeholder | ✅ Implemented |
 | LabelColor | ✅ Implemented |
 | HorizontalTextAlignment | ✅ Implemented |
-| VerticalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ⏳ TODO |
 | Keyboard | ✅ Implemented |
 | IsEnabled | ✅ Implemented |
 | ContextActions | ✅ Implemented |
@@ -489,7 +489,7 @@ Displays single-line and multi-line text.
 | TextDecorations | ✅ Implemented |
 | TextTransform | ✅ Implemented |
 | TextType | ⏳ TODO |
-| VerticalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ⏳ TODO |
 
 ---
 
@@ -704,7 +704,7 @@ Displays a short list of items, from which an item can be selected.
 | TextColor | ✅ Implemented  |
 | Title | ✅ Implemented |
 | TitleColor | ✅ Implemented |
-| VerticalTextAlignment | ✅ Implemented  |
+| VerticalTextAlignment | ⏳ TODO |
 
 ### Events
 
@@ -901,7 +901,7 @@ A user input control used to initiate a search.
 | SelectionLength | ✅ Implemented |
 | Text | ✅ Implemented |
 | TextColor | ✅ Implemented |
-| VerticalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ⏳ TODO |
 
 ### Events
 
