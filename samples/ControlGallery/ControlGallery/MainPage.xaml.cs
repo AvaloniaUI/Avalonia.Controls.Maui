@@ -108,6 +108,7 @@ public partial class MainPage : FlyoutPage
                 new("CollectionView", "Collection display with templates", typeof(CollectionViewPage)),
                 new("ContentView", "Custom content", typeof(ContentViewPage)),
                 new("DatePicker", "Date picker control", typeof(DatePickerPage)),
+                new("Editor", "Editor control", typeof(EditorPage)),
                 new("Frame", "Frame control", typeof(FramePage)),
                 new("GraphicsView", "Custom drawing and graphics", typeof(GraphicsViewPage)),
                 new("Image", "Image display with various sources", typeof(ImagePage)),

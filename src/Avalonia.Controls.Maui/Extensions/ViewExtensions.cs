@@ -225,6 +225,7 @@ public static class ViewExtensions
     public static void Focus(this PlatformView control, FocusRequest request)
     {
         control.Focus();
+        request.TrySetResult(true);
     }
 
     /// <summary>
