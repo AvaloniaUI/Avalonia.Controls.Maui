@@ -51,7 +51,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var flyoutContainer = handler.PlatformView as FlyoutContainer;
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Platform.FlyoutBehavior.Popover, flyoutContainer.FlyoutBehavior);
+        Assert.Equal(Avalonia.Controls.Maui.Platform.FlyoutBehavior.Popover, flyoutContainer.FlyoutBehavior);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutBehavior Disabled Initializes Correctly")]
@@ -64,7 +64,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var flyoutContainer = handler.PlatformView as FlyoutContainer;
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Platform.FlyoutBehavior.Disabled, flyoutContainer.FlyoutBehavior);
+        Assert.Equal(Avalonia.Controls.Maui.Platform.FlyoutBehavior.Disabled, flyoutContainer.FlyoutBehavior);
         Assert.False(flyoutContainer.IsFlyoutOpen);
     }
 
@@ -78,7 +78,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var flyoutContainer = handler.PlatformView as FlyoutContainer;
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Platform.FlyoutBehavior.Locked, flyoutContainer.FlyoutBehavior);
+        Assert.Equal(Avalonia.Controls.Maui.Platform.FlyoutBehavior.Locked, flyoutContainer.FlyoutBehavior);
         // In Locked mode, flyout is always visible (split mode) regardless of IsFlyoutOpen state
         // The visual position is controlled by IsSplitMode(), not IsFlyoutOpen
     }
