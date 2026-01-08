@@ -204,7 +204,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Cursor Position" FontAttributes="Bold" />
                     <Editor x:Name="CursorEditor" Text="Cursor Position Test" HeightRequest="80" />
-                    <Label Text="{Binding CursorPosition, Source={x:Reference CursorEditor}, StringFormat='Current Position: {0}'}" FontSize="12" TextColor="Gray"/>
+                    <Label Text="{Binding CursorPosition, Source={x:Reference CursorEditor}, x:DataType=Editor, StringFormat='Current Position: {0}'}" FontSize="12" TextColor="Gray"/>
                     <HorizontalStackLayout Spacing="10">
                         <Button Text="Start" Clicked="OnSetCursorStart" />
                         <Button Text="Middle" Clicked="OnSetCursorMiddle" />
@@ -221,7 +221,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Selection Range" FontAttributes="Bold" />
                     <Editor x:Name="SelectionEditor" Text="Select some text in this editor to see the length update." HeightRequest="80" />
-                    <Label Text="{Binding SelectionLength, Source={x:Reference SelectionEditor}, StringFormat='Selection Length: {0}'}" FontSize="12" TextColor="Gray"/>
+                    <Label Text="{Binding SelectionLength, Source={x:Reference SelectionEditor}, x:DataType=Editor, StringFormat='Selection Length: {0}'}" FontSize="12" TextColor="Gray"/>
                     <HorizontalStackLayout Spacing="10">
                         <Button Text="First 5" Clicked="OnSelectFirst5" />
                         <Button Text="Select All" Clicked="OnSelectAll" />
@@ -280,7 +280,7 @@
                         <CheckBox x:Name="PredictionCheckBox" IsChecked="True" />
                     </HorizontalStackLayout>
                     <Editor Placeholder="Type to test prediction..." 
-                            IsTextPredictionEnabled="{Binding IsChecked, Source={x:Reference PredictionCheckBox}}" 
+                            IsTextPredictionEnabled="{Binding IsChecked, Source={x:Reference PredictionCheckBox}, x:DataType=CheckBox}" 
                             HeightRequest="80"/>
                 </VerticalStackLayout>
             </Border>
