@@ -286,7 +286,6 @@ Enables you to enter and edit a single line of text.
 | ClearButtonVisibility | ✅ Implemented |
 | CursorPosition | ✅ Implemented |
 | FontAttributes | ✅ Implemented |
-| FontAutoScalingEnabled | ⏳ TODO |
 | FontFamily | ✅ Implemented |
 | FontSize | ✅ Implemented |
 | Keyboard | ✅ Implemented |
