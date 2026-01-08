@@ -117,13 +117,7 @@ public static class SearchBarExtensions
     /// <param name="searchBar">The .NET MAUI SearchBar providing the alignment.</param>
     public static void UpdateVerticalTextAlignment(this MauiSearchBar platformView, ISearchBar searchBar)
     {
-        platformView.VerticalContentAlignment = searchBar.VerticalTextAlignment switch
-        {
-            TextAlignment.Start => Layout.VerticalAlignment.Top,
-            TextAlignment.Center => Layout.VerticalAlignment.Center,
-            TextAlignment.End => Layout.VerticalAlignment.Bottom,
-            _ => Layout.VerticalAlignment.Center,
-        };
+        // TODO: Vertical Text Alignment is not directly supported in Avalonia TextBox yet.
     }
 
     /// <summary>
