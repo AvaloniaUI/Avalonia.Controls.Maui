@@ -84,9 +84,10 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Pages", new List<SampleItem>
             {
-                new("NavigationPage", "Navigation stack", typeof(NavigationDemoPage)),
+                new("NavigationPage", "Navigation stack with animated transitions", typeof(NavigationDemoPage)),
                 new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
-                new("TitleBar", "Custom window title bar", typeof(TitleBarPage))
+                new("TitleBar", "Custom window title bar", typeof(TitleBarPage)),
+                new("Popups", "Alerts, ActionSheets, and Prompts", typeof(PopupsPage))
             }),
 
             new SampleGroup("Layout", new List<SampleItem>
@@ -107,6 +108,7 @@ public partial class MainPage : FlyoutPage
                 new("CollectionView", "Collection display with templates", typeof(CollectionViewPage)),
                 new("ContentView", "Custom content", typeof(ContentViewPage)),
                 new("DatePicker", "Date picker control", typeof(DatePickerPage)),
+                new("Editor", "Editor control", typeof(EditorPage)),
                 new("Frame", "Frame control", typeof(FramePage)),
                 new("GraphicsView", "Custom drawing and graphics", typeof(GraphicsViewPage)),
                 new("Image", "Image display with various sources", typeof(ImagePage)),

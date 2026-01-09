@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:platform="clr-namespace:Avalonia.Controls.Maui.Platform"
+             x:Class="Avalonia.Controls.Maui.Platform.MauiActionSheetDialog"
+             x:DataType="platform:MauiActionSheetDialog"
+             Width="300"
+             HorizontalAlignment="Center"
+             VerticalAlignment="Center">
+    <Border Background="{DynamicResource ThemeBackgroundBrush}"
+            CornerRadius="14"
+            BoxShadow="0 4 15 0 #40000000">
+        <StackPanel Margin="16" Spacing="10">
+            <TextBlock Text="{Binding Title}"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource ThemeForegroundBrush}"
+                       TextWrapping="Wrap"
+                       IsVisible="{Binding HasTitle}"/>
+
+            <ItemsControl ItemsSource="{Binding Buttons}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding Text}" 
+                                Command="{Binding Command}"
+                                CommandParameter="{Binding Text}"
+                                Click="OnButtonClicked"
+                                Classes="DialogButton"
+                                Margin="0,4,0,0"
+                                MinHeight="32"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Center"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Button Content="{Binding DestructionButtonFormatted}"
+                    Command="{Binding DestructionCommand}"
+                    Classes="DialogButton Destruction"
+                    Margin="0,8,0,0"
+                    MinHeight="32"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    IsVisible="{Binding HasDestructionButton}"/>
+
+            <Button Content="{Binding CancelButtonText}"
+                    Command="{Binding CancelCommand}"
+                    Classes="DialogButton"
+                    Margin="0,4,0,0"
+                    MinHeight="32"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    IsVisible="{Binding HasCancelButton}"/>
+        </StackPanel>
+    </Border>
+</UserControl>

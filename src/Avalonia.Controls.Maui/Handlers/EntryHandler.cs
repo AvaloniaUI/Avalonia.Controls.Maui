@@ -1,5 +1,7 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Input.TextInput;
 using Avalonia.Media;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
@@ -116,7 +118,10 @@ public class EntryHandler : ViewHandler<IEntry, AvaloniaTextBox>
 
     public static void MapIsTextPredictionEnabled(EntryHandler handler, IEntry entry)
     {
-        // Avalonia doesn't have direct text prediction support
+        if (handler.PlatformView is AvaloniaTextBox textBox)
+        {
+            TextInputOptions.SetShowSuggestions(textBox, entry.IsTextPredictionEnabled);
+        }
     }
 
     public static void MapIsSpellCheckEnabled(EntryHandler handler, IEntry entry)
@@ -126,7 +131,7 @@ public class EntryHandler : ViewHandler<IEntry, AvaloniaTextBox>
 
     public static void MapKeyboard(EntryHandler handler, IEntry entry)
     {
-        // Keyboard handling is platform-specific and not directly applicable to Avalonia
+        ((AvaloniaTextBox)handler.PlatformView)?.UpdateKeyboard(entry.Keyboard);
     }
 
     public static void MapMaxLength(EntryHandler handler, IEntry entry) =>
@@ -207,20 +212,7 @@ public static class EntryTextBoxExtensions
 
     public static void UpdateVerticalTextAlignment(this AvaloniaTextBox textBox, IEntry entry)
     {
-        switch (entry.VerticalTextAlignment)
-        {
-            case Microsoft.Maui.TextAlignment.Start:
-                textBox.VerticalContentAlignment = AvaloniaVerticalAlignment.Top;
-                break;
-            case Microsoft.Maui.TextAlignment.Center:
-                textBox.VerticalContentAlignment = AvaloniaVerticalAlignment.Center;
-                break;
-            case Microsoft.Maui.TextAlignment.End:
-                textBox.VerticalContentAlignment = AvaloniaVerticalAlignment.Bottom;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        // TODO: Vertical Text Alignment is not directly supported in Avalonia TextBox yet.
     }
 
     public static void UpdateIsPassword(this AvaloniaTextBox textBox, IEntry entry)
