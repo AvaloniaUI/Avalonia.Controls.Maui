@@ -7,10 +7,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="CheckBox Control"
+            <Label Text="CheckBox"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
+
+            <Label Text="The CheckBox control allows the user to select a boolean value."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <!-- Basic CheckBoxes -->
             <Border Stroke="Gray"

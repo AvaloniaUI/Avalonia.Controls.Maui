@@ -52,10 +52,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="Image Control"
+            <Label Text="Image"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
+
+            <Label Text="The Image control displays an image."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <!-- File Image Source -->
             <Border Stroke="Gray"

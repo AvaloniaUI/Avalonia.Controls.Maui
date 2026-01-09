@@ -7,7 +7,7 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="DatePicker Control"
+            <Label Text="DatePicker"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />

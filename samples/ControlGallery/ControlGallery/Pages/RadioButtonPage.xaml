@@ -113,10 +113,16 @@
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="20">
-            <Label Text="RadioButton Control"
+            <Label Text="RadioButton"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
+
+            <Label Text="The RadioButton control allows the user to select one option from a set."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <!-- Basic String Content -->
             <Border Stroke="Gray"

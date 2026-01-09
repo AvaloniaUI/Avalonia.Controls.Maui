@@ -7,10 +7,16 @@
              Title="TableView">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="TableView Control"
+            <Label Text="TableView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
+
+            <Label Text="The TableView control displays a list of rows in a table."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
             
             <!-- Deprecation Notice -->
             <Border BackgroundColor="#FFF3CD" Stroke="#856404" Padding="12">

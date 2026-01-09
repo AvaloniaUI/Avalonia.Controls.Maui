@@ -8,10 +8,16 @@
              Title="ContentView">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="ContentView Control"
+            <Label Text="ContentView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
+
+            <Label Text="The ContentView control provides a container for a single view."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <Border Stroke="Gray" Padding="10">
                 <Border.StrokeShape>

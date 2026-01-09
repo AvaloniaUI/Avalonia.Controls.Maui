@@ -9,10 +9,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="Button Control"
+            <Label Text="Button"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
+
+            <Label Text="The Button control initiates an action when a user clicks it."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <!-- Basic Buttons -->
             <Border Stroke="Gray"

@@ -10,10 +10,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="SearchBar Control"
+            <Label Text="SearchBar"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
+
+            <Label Text="The SearchBar control provides a search box."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <!-- Basic SearchBar -->
             <Border Stroke="Gray"

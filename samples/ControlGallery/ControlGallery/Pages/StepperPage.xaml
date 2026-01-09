@@ -9,10 +9,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="Stepper Control"
+            <Label Text="Stepper"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
+
+            <Label Text="The Stepper control allows the user to select a numeric value from a range."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <Label Text="The Stepper control enables users to increment or decrement a numeric value using plus and minus buttons."
                    HorizontalOptions="Center"

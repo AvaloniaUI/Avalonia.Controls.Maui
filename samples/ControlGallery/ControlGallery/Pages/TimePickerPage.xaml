@@ -7,10 +7,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="TimePicker Control"
+            <Label Text="TimePicker"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
+
+            <Label Text="The TimePicker control allows the user to select a time."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
             
             <!-- Basic TimePicker -->
             <Border Stroke="Gray"

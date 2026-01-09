@@ -10,10 +10,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="SwipeView Control"
+            <Label Text="SwipeView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
+
+            <Label Text="The SwipeView control is a container that provides access to contextual menu items through swipe gestures."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <Label Text="Swipe horizontally or vertically to reveal items."
                    HorizontalOptions="Center"

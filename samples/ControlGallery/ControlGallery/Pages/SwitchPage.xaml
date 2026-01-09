@@ -9,10 +9,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="Switch Control"
+            <Label Text="Switch"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
+
+            <Label Text="The Switch control is a horizontal toggle button that can be manipulated by the user to toggle between on and off states."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <!-- Basic Switches -->
             <Border Stroke="Gray"

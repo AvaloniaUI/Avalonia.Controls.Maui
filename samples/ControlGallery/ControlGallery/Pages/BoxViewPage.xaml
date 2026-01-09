@@ -10,10 +10,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="BoxView Control"
+            <Label Text="BoxView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
+
+            <Label Text="The BoxView control renders a simple rectangle of a specified width, height, and color."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <!-- Basic Colors -->
             <Border Stroke="Gray"

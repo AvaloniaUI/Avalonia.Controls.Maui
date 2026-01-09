@@ -10,10 +10,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="Slider Control"
+            <Label Text="Slider"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
+
+            <Label Text="The Slider control allows the user to select a value from a range."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <!-- Basic Slider -->
             <Border Stroke="Gray"

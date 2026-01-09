@@ -9,10 +9,16 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="ImageButton Control"
+            <Label Text="ImageButton"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
+
+            <Label Text="The ImageButton control displays an image and initiates an action when clicked."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <!-- Basic ImageButtons -->
             <Border Stroke="Gray"

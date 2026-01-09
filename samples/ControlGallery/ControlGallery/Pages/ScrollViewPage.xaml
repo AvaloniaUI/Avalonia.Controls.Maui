@@ -8,10 +8,16 @@
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="16">
-            <Label Text="ScrollView Control"
+            <Label Text="ScrollView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
+
+            <Label Text="The ScrollView control provides a scrollable view area."
+                   FontSize="14"
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,12" />
 
             <!-- Vertical scrolling content with ScrollX/ScrollY -->
             <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
