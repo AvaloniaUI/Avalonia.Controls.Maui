@@ -144,13 +144,13 @@ public partial class ListViewHandlerTests : HandlerTestBase
     [InlineData(MauiScrollBarVisibility.Never, Primitives.ScrollBarVisibility.Hidden)]
     [InlineData(MauiScrollBarVisibility.Default, Primitives.ScrollBarVisibility.Auto)]
     public async Task ScrollBarVisibilityMapsCorrectly(MauiScrollBarVisibility mauiVisibility,
-        global::Avalonia.Controls.Primitives.ScrollBarVisibility expectedAvalonia)
+        Primitives.ScrollBarVisibility expectedAvalonia)
     {
         var listView = CreateListView();
         listView.VerticalScrollBarVisibility = mauiVisibility;
 
         var visibility =
-            await GetValueAsync<global::Avalonia.Controls.Primitives.ScrollBarVisibility, MauiListViewHandler>(
+            await GetValueAsync<Primitives.ScrollBarVisibility, MauiListViewHandler>(
                 listView, handler => handler.PlatformView.VerticalScrollBarVisibility);
 
         Assert.Equal(expectedAvalonia, visibility);
@@ -315,7 +315,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         Assert.NotNull(handler.PlatformView.ListBox.SelectedItem);
 
         listView.SelectionMode = MauiSelectionMode.None;
-        handler.UpdateValue(nameof(Microsoft.Maui.Controls.ListView.SelectionMode));
+        handler.UpdateValue(nameof(ListView.SelectionMode));
 
         var selectedItem = await GetValueAsync<object?, MauiListViewHandler>(
             listView, handler => handler.PlatformView.ListBox.SelectedItem);
@@ -328,7 +328,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
     [InlineData(MauiScrollBarVisibility.Never, Primitives.ScrollBarVisibility.Hidden)]
     [InlineData(MauiScrollBarVisibility.Default, Primitives.ScrollBarVisibility.Disabled)]
     public async Task HorizontalScrollBarVisibilityMapsCorrectly(MauiScrollBarVisibility mauiVisibility,
-        global::Avalonia.Controls.Primitives.ScrollBarVisibility expectedAvalonia)
+        Primitives.ScrollBarVisibility expectedAvalonia)
     {
         var listView = CreateListView();
         listView.HorizontalScrollBarVisibility = mauiVisibility;
@@ -368,9 +368,9 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.GroupHeaderTemplate = new MauiDataTemplate(() => new MauiLabel { Text = "Group Header" });
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
-        var template = await GetValueAsync<Avalonia.Controls.Templates.IDataTemplate?, MauiListViewHandler>(
+        var template = await GetValueAsync<Templates.IDataTemplate?, MauiListViewHandler>(
             listView, handler => handler.PlatformView.GroupHeaderTemplate);
 
         Assert.NotNull(template);
@@ -382,7 +382,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.RefreshControlColor = Microsoft.Maui.Graphics.Colors.Green;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         var color = await GetValueAsync<Media.IBrush?, MauiListViewHandler>(
             listView, handler => handler.PlatformView.RefreshControlColor);
@@ -396,7 +396,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.IsPullToRefreshEnabled = false;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         var isEnabled = await GetValueAsync<bool, MauiListViewHandler>(
             listView, handler => handler.PlatformView.IsPullToRefreshEnabled);
@@ -410,7 +410,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.IsRefreshing = true;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         var isRefreshing = await GetValueAsync<bool, MauiListViewHandler>(
             listView, handler => handler.PlatformView.IsRefreshing);
@@ -425,7 +425,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         listView.Header = "String Header";
         listView.HeaderTemplate = new MauiDataTemplate(() => new MauiLabel { Text = "Template Header" });
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         var header = await GetValueAsync<object?, MauiListViewHandler>(
             listView, handler => handler.PlatformView.Header);
@@ -440,7 +440,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         listView.Footer = "String Footer";
         listView.FooterTemplate = new MauiDataTemplate(() => new MauiLabel { Text = "Template Footer" });
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         var footer = await GetValueAsync<object?, MauiListViewHandler>(
             listView, handler => handler.PlatformView.Footer);
@@ -455,7 +455,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.ItemsSource = items;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         items.Add("C");
 
@@ -475,7 +475,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.ItemsSource = initialItems;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         var updatedItems = new List<string> { "X", "Y", "Z" };
         listView.ItemsSource = updatedItems;
@@ -495,7 +495,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         listView.ItemsSource = items;
         listView.SelectedItem = "Item 1";
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         listView.SelectedItem = "Item 3";
 
@@ -511,7 +511,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.SelectionMode = MauiSelectionMode.Single;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         listView.SelectionMode = MauiSelectionMode.None;
 
@@ -527,7 +527,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.SeparatorVisibility = SeparatorVisibility.Default;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         listView.SeparatorVisibility = SeparatorVisibility.None;
 
@@ -543,7 +543,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.SeparatorColor = Microsoft.Maui.Graphics.Colors.Blue;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         listView.SeparatorColor = Microsoft.Maui.Graphics.Colors.Red;
 
@@ -634,9 +634,9 @@ public partial class ListViewHandlerTests : HandlerTestBase
 
         listView.ItemTemplate = new MauiDataTemplate(() =>
         {
-            var stackLayout = new Microsoft.Maui.Controls.StackLayout
+            var stackLayout = new StackLayout
             {
-                Orientation = Microsoft.Maui.Controls.StackOrientation.Vertical
+                Orientation = StackOrientation.Vertical
             };
 
             var titleLabel = new MauiLabel { Text = "Title" };
@@ -662,7 +662,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.IsGroupingEnabled = false;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         listView.IsGroupingEnabled = true;
 
@@ -676,14 +676,14 @@ public partial class ListViewHandlerTests : HandlerTestBase
     public async Task ScrollBarVisibilityCanBeUpdated()
     {
         var listView = CreateListView();
-        listView.VerticalScrollBarVisibility = ScrollBarVisibility.Always;
+        listView.VerticalScrollBarVisibility = MauiScrollBarVisibility.Always;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
-        listView.VerticalScrollBarVisibility = ScrollBarVisibility.Never;
+        listView.VerticalScrollBarVisibility = MauiScrollBarVisibility.Never;
 
         var visibility =
-            await GetValueAsync<global::Avalonia.Controls.Primitives.ScrollBarVisibility, MauiListViewHandler>(
+            await GetValueAsync<Primitives.ScrollBarVisibility, MauiListViewHandler>(
                 listView, handler => handler.PlatformView.VerticalScrollBarVisibility);
 
         Assert.Equal(Primitives.ScrollBarVisibility.Hidden, visibility);
@@ -695,7 +695,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.IsPullToRefreshEnabled = false;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         listView.IsPullToRefreshEnabled = true;
 
@@ -712,7 +712,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         listView.IsPullToRefreshEnabled = true;
         listView.IsRefreshing = false;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         listView.IsRefreshing = true;
 
@@ -728,7 +728,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var listView = CreateListView();
         listView.RefreshControlColor = Microsoft.Maui.Graphics.Colors.Blue;
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         listView.RefreshControlColor = Microsoft.Maui.Graphics.Colors.Purple;
 
@@ -783,7 +783,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
             var listView = CreateListView();
             listView.SeparatorColor = color;
 
-            var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+            await CreateHandlerAsync<MauiListViewHandler>(listView);
 
             var brush = await GetValueAsync<Media.IBrush?, MauiListViewHandler>(
                 listView, handler => handler.PlatformView.SeparatorColor);
@@ -802,7 +802,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
             TemplateB = new MauiDataTemplate(() => new MauiLabel { Text = "Group B" })
         };
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         var template = await GetValueAsync<Avalonia.Controls.Templates.IDataTemplate?, MauiListViewHandler>(
             listView, handler => handler.PlatformView.GroupHeaderTemplate);
@@ -830,7 +830,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
             return label;
         });
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         var platformItems = await GetValueAsync<System.Collections.IEnumerable?, MauiListViewHandler>(
             listView, handler => handler.PlatformView.ListBox.ItemsSource);
@@ -847,7 +847,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         listView.ItemsSource = items;
         listView.SelectedItem = "Item 1";
 
-        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+        await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         listView.SelectedItem = null;
 
