@@ -85,7 +85,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
             
-            <Label Text="ListView Control" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"/>
+            <Label Text="ListView" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"/>
             
             <!-- Deprecation Notice -->
             <Border BackgroundColor="#FFF3CD" Stroke="#856404" Padding="12">
@@ -329,45 +329,6 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Performance -->
-            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Performance Test" FontAttributes="Bold"/>
-                    <Label Text="Load large datasets." FontSize="12" FontAttributes="Italic"/>
-                    <HorizontalStackLayout Spacing="5">
-                        <Button Text="1k" Command="{Binding LoadPerformanceCommand}" CommandParameter="1000"/>
-                        <Button Text="10k" Command="{Binding LoadPerformanceCommand}" CommandParameter="10000"/>
-                        <Button Text="100k" Command="{Binding LoadPerformanceCommand}" CommandParameter="100000"/>
-                    </HorizontalStackLayout>
-                    <ListView ItemsSource="{Binding PerformanceItems}" HeightRequest="200" CachingStrategy="RecycleElement">
-                         <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <TextCell Text="{Binding .}"/>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
-                </VerticalStackLayout>
-            </Border>
-
-
-            <!-- Events ListView -->
-            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Events ListView" FontAttributes="Bold"/>
-                    <Label Text="Logs events: ItemSelected, ItemTapped, Appearing, Disappearing, Scrolled." FontSize="12" FontAttributes="Italic"/>
-                    <ListView x:Name="EventsListView"
-                              ItemsSource="{Binding BasicItems}"
-                              ItemSelected="OnItemSelected"
-                              ItemTapped="OnItemTapped"
-                              ItemAppearing="OnItemAppearing"
-                              ItemDisappearing="OnItemDisappearing"
-                              Scrolled="OnScrolled"
-                              HeightRequest="150"/>
-                    <Label Text="Event Logs:" FontAttributes="Bold" Margin="0,10,0,0" />
-                    <Label x:Name="EventLogLabel" Text="No events yet" HeightRequest="80" LineBreakMode="WordWrap" />
-                </VerticalStackLayout>
-            </Border>
-
             <!-- Row Height ListView -->
             <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
                 <VerticalStackLayout Spacing="10">
@@ -400,6 +361,7 @@
                     </ListView>
                 </VerticalStackLayout>
             </Border>
+            
             <!-- ScrollBar Visibility -->
             <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
                 <VerticalStackLayout Spacing="10">
@@ -416,14 +378,14 @@
                               VerticalScrollBarVisibility="Always" />
                 </VerticalStackLayout>
             </Border>
-
+            
             <!-- Context Actions -->
             <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Context Actions" FontAttributes="Bold"/>
                     <Label Text="Right click (or long press) items to see context menu." FontSize="12" FontAttributes="Italic"/>
                     <ListView ItemsSource="{Binding BasicItems}"
-                               HeightRequest="150">
+                              HeightRequest="150">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <ViewCell>
@@ -441,6 +403,45 @@
                     <Label Text="{Binding ContextActionStatus}" TextColor="Green" FontAttributes="Italic" />
                 </VerticalStackLayout>
             </Border>
+            
+            <!-- Performance -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Performance Test" FontAttributes="Bold"/>
+                    <Label Text="Load large datasets." FontSize="12" FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="1k" Command="{Binding LoadPerformanceCommand}" CommandParameter="1000"/>
+                        <Button Text="10k" Command="{Binding LoadPerformanceCommand}" CommandParameter="10000"/>
+                        <Button Text="100k" Command="{Binding LoadPerformanceCommand}" CommandParameter="100000"/>
+                    </HorizontalStackLayout>
+                    <ListView ItemsSource="{Binding PerformanceItems}" HeightRequest="200" CachingStrategy="RecycleElement">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextCell Text="{Binding .}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Events ListView -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Events ListView" FontAttributes="Bold"/>
+                    <Label Text="Logs events: ItemSelected, ItemTapped, Appearing, Disappearing, Scrolled." FontSize="12" FontAttributes="Italic"/>
+                    <ListView x:Name="EventsListView"
+                              ItemsSource="{Binding BasicItems}"
+                              ItemSelected="OnItemSelected"
+                              ItemTapped="OnItemTapped"
+                              ItemAppearing="OnItemAppearing"
+                              ItemDisappearing="OnItemDisappearing"
+                              Scrolled="OnScrolled"
+                              HeightRequest="150"/>
+                    <Label Text="Event Logs:" FontAttributes="Bold" Margin="0,10,0,0" />
+                    <Label x:Name="EventLogLabel" Text="No events yet" HeightRequest="80" LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
+            </Border>
+            
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
