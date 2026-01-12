@@ -1,13 +1,6 @@
-using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using Avalonia.Media;
 using Avalonia.Layout;
-using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Platform;
-using System;
-using System.Collections;
-using System.Linq;
 using Avalonia.Controls.Maui.Handlers;
 
 namespace Avalonia.Controls.Maui.Platform;
@@ -22,7 +15,7 @@ public static class ListViewExtensions
     /// </summary>
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
-    public static void UpdateItemsSource(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView)
+    public static void UpdateItemsSource(this MauiListView platformView, ListView listView)
     {
         platformView.ListBox.ItemsSource = listView.ItemsSource;
         platformView.OnItemsSourceChanged();
@@ -34,7 +27,7 @@ public static class ListViewExtensions
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
     /// <param name="handler">The list view handler for context.</param>
-    public static void UpdateItemTemplate(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView, ListViewHandler handler)
+    public static void UpdateItemTemplate(this MauiListView platformView, ListView listView, ListViewHandler handler)
     {
         platformView.ListBox.ItemTemplate = new FuncDataTemplate<object>((item, _) =>
         {
@@ -52,7 +45,7 @@ public static class ListViewExtensions
                 return new TextBlock 
                 { 
                     Text = groupHeader.Data?.ToString() ?? string.Empty,
-                    FontWeight = global::Avalonia.Media.FontWeight.Bold,
+                    FontWeight = Media.FontWeight.Bold,
                     Padding = new Thickness(10, 5)
                 };
             }
@@ -70,7 +63,7 @@ public static class ListViewExtensions
             {
                 var templateContent = actualTemplate.CreateContent();
                 
-                if (templateContent is Microsoft.Maui.Controls.ViewCell viewCell)
+                if (templateContent is ViewCell viewCell)
                 {
                     if (viewCell.View != null)
                     {
@@ -85,7 +78,7 @@ public static class ListViewExtensions
                             var contextMenu = new ContextMenu();
                             foreach (var action in viewCell.ContextActions)
                             {
-                                var menuItem = new Avalonia.Controls.MenuItem
+                                var menuItem = new MenuItem
                                 {
                                     Header = action.Text,
                                 };
@@ -117,7 +110,7 @@ public static class ListViewExtensions
                     }
                 }
 
-                if (content == null && templateContent is Microsoft.Maui.Controls.View mauiView)
+                if (content == null && templateContent is View mauiView)
                 {
                     mauiView.BindingContext = item;
                     mauiView.Parent = listView;
@@ -143,7 +136,7 @@ public static class ListViewExtensions
                 };
                 grid.Children.Add(content);
                 
-                var separator = new Avalonia.Controls.Shapes.Rectangle
+                var separator = new Shapes.Rectangle
                 {
                     Height = 1,
                     Fill = platformView.SeparatorColor,
@@ -163,7 +156,7 @@ public static class ListViewExtensions
     /// </summary>
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
-    public static void UpdateSelectedItem(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView)
+    public static void UpdateSelectedItem(this MauiListView platformView, ListView listView)
     {
         if (!Equals(platformView.ListBox.SelectedItem, listView.SelectedItem))
         {
@@ -176,7 +169,7 @@ public static class ListViewExtensions
     /// </summary>
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
-    public static void UpdateSelectionMode(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView)
+    public static void UpdateSelectionMode(this MauiListView platformView, ListView listView)
     {
         platformView.ListBox.SelectionMode = listView.SelectionMode switch
         {
@@ -185,7 +178,7 @@ public static class ListViewExtensions
             _ => global::Avalonia.Controls.SelectionMode.Single
         };
 
-        if (listView.SelectionMode == Microsoft.Maui.Controls.ListViewSelectionMode.None)
+        if (listView.SelectionMode == ListViewSelectionMode.None)
         {
             platformView.ListBox.SelectedItems?.Clear();
             platformView.ListBox.SelectedItem = null;
@@ -198,9 +191,9 @@ public static class ListViewExtensions
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
     /// <param name="handler">The list view handler for context.</param>
-    public static void UpdateHeader(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView, ListViewHandler handler)
+    public static void UpdateHeader(this MauiListView platformView, ListView listView, ListViewHandler handler)
     {
-        if (listView.Header is Microsoft.Maui.Controls.View headerView)
+        if (listView.Header is View headerView)
         {
             _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
             platformView.Header = headerView.ToPlatform(handler.MauiContext);
@@ -217,19 +210,28 @@ public static class ListViewExtensions
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
     /// <param name="handler">The list view handler for context.</param>
-    public static void UpdateHeaderTemplate(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView, ListViewHandler handler)
+    public static void UpdateHeaderTemplate(this MauiListView platformView, ListView listView, ListViewHandler handler)
     {
         if (listView.HeaderTemplate != null)
         {
             platformView.HeaderTemplate = new FuncDataTemplate<object>((item, _) =>
             {
                 if (handler.MauiContext == null) return new TextBlock { Text = "Header" };
-                var mauiView = listView.HeaderTemplate.CreateContent() as Microsoft.Maui.Controls.View;
-                if (mauiView == null) return new TextBlock { Text = "Header" };
+                var mauiView = listView.HeaderTemplate.CreateContent() as View;
+                
+                if (mauiView == null)
+                    return new TextBlock { Text = "Header" };
+                
                 mauiView.BindingContext = item;
                 return (Control)mauiView.ToPlatform(handler.MauiContext);
             });
         }
+        else
+        {
+            platformView.HeaderTemplate = null;
+        }
+        
+        platformView.Header = listView.Header ?? string.Empty;
     }
 
     /// <summary>
@@ -238,9 +240,9 @@ public static class ListViewExtensions
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
     /// <param name="handler">The list view handler for context.</param>
-    public static void UpdateFooter(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView, ListViewHandler handler)
+    public static void UpdateFooter(this MauiListView platformView, ListView listView, ListViewHandler handler)
     {
-        if (listView.Footer is Microsoft.Maui.Controls.View footerView)
+        if (listView.Footer is View footerView)
         {
             _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
             platformView.Footer = footerView.ToPlatform(handler.MauiContext);
@@ -257,19 +259,28 @@ public static class ListViewExtensions
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
     /// <param name="handler">The list view handler for context.</param>
-    public static void UpdateFooterTemplate(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView, ListViewHandler handler)
+    public static void UpdateFooterTemplate(this MauiListView platformView, ListView listView, ListViewHandler handler)
     {
         if (listView.FooterTemplate != null)
         {
             platformView.FooterTemplate = new FuncDataTemplate<object>((item, _) =>
             {
                 if (handler.MauiContext == null) return new TextBlock { Text = "Footer" };
-                var mauiView = listView.FooterTemplate.CreateContent() as Microsoft.Maui.Controls.View;
-                if (mauiView == null) return new TextBlock { Text = "Footer" };
+                var mauiView = listView.FooterTemplate.CreateContent() as View;
+             
+                if (mauiView == null) 
+                    return new TextBlock { Text = "Footer" };
+                
                 mauiView.BindingContext = item;
                 return (Control)mauiView.ToPlatform(handler.MauiContext);
             });
         }
+        else
+        {
+            platformView.FooterTemplate = null;
+        }
+        
+        platformView.Footer = listView.Footer ?? string.Empty;
     }
 
     /// <summary>
@@ -278,9 +289,9 @@ public static class ListViewExtensions
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
     /// <param name="handler">The list view handler for context.</param>
-    public static void UpdateSeparators(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView, ListViewHandler handler)
+    public static void UpdateSeparators(this MauiListView platformView, ListView listView, ListViewHandler handler)
     {
-        platformView.SeparatorVisibility = listView.SeparatorVisibility == Microsoft.Maui.Controls.SeparatorVisibility.Default;
+        platformView.SeparatorVisibility = listView.SeparatorVisibility == SeparatorVisibility.Default;
         if (listView.SeparatorColor != null)
         {
             platformView.SeparatorColor = listView.SeparatorColor.ToPlatform();
@@ -295,7 +306,7 @@ public static class ListViewExtensions
     /// </summary>
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
-    public static void UpdateRowHeight(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView)
+    public static void UpdateRowHeight(this MauiListView platformView, ListView listView)
     {
         // Placeholder for future optimizations
     }
@@ -305,7 +316,7 @@ public static class ListViewExtensions
     /// </summary>
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
-    public static void UpdateIsGroupingEnabled(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView)
+    public static void UpdateIsGroupingEnabled(this MauiListView platformView, ListView listView)
     {
         platformView.IsGroupingEnabled = listView.IsGroupingEnabled;
     }
@@ -316,15 +327,14 @@ public static class ListViewExtensions
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
     /// <param name="handler">The list view handler for context.</param>
-    public static void UpdateGroupHeaderTemplate(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView, ListViewHandler handler)
+    public static void UpdateGroupHeaderTemplate(this MauiListView platformView, ListView listView, ListViewHandler handler)
     {
         if (listView.GroupHeaderTemplate != null)
         {
             platformView.GroupHeaderTemplate = new FuncDataTemplate<object>((item, _) =>
             {
-                if (handler.MauiContext == null) return new TextBlock { Text = item?.ToString() ?? string.Empty };
-                
-                // item is the Group object from MauiListView.GroupHeader.Data
+                if (handler.MauiContext == null) 
+                    return new TextBlock { Text = item?.ToString() ?? string.Empty };
                 
                 DataTemplate? actualTemplate = listView.GroupHeaderTemplate;
                 if (actualTemplate is DataTemplateSelector selector)
@@ -335,7 +345,7 @@ public static class ListViewExtensions
                 if (actualTemplate != null)
                 {
                      var templateContent = actualTemplate.CreateContent();
-                     if (templateContent is Microsoft.Maui.Controls.ViewCell viewCell)
+                     if (templateContent is ViewCell viewCell)
                      {
                          if (viewCell.View != null)
                          {
@@ -353,7 +363,7 @@ public static class ListViewExtensions
                          var cellHandler = cell.ToHandler(handler.MauiContext);
                          return cellHandler?.PlatformView as Control ?? new TextBlock { Text = "Cell Error" };
                      }
-                     if (templateContent is Microsoft.Maui.Controls.View mauiView)
+                     if (templateContent is View mauiView)
                      {
                          mauiView.BindingContext = item;
                          mauiView.Parent = listView;
@@ -379,9 +389,9 @@ public static class ListViewExtensions
     {
         platformView.HorizontalScrollBarVisibility = listView.HorizontalScrollBarVisibility switch
         {
-            Microsoft.Maui.ScrollBarVisibility.Always => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Visible,
-            Microsoft.Maui.ScrollBarVisibility.Never => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Hidden,
-            _ => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled
+            Microsoft.Maui.ScrollBarVisibility.Always => Primitives.ScrollBarVisibility.Visible,
+            Microsoft.Maui.ScrollBarVisibility.Never => Primitives.ScrollBarVisibility.Hidden,
+            _ => Primitives.ScrollBarVisibility.Disabled
         };
     }
 
@@ -390,12 +400,12 @@ public static class ListViewExtensions
     /// </summary>
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
-    public static void UpdateVerticalScrollBarVisibility(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView)
+    public static void UpdateVerticalScrollBarVisibility(this MauiListView platformView, ListView listView)
     {
         platformView.VerticalScrollBarVisibility = listView.VerticalScrollBarVisibility switch
         {
-            Microsoft.Maui.ScrollBarVisibility.Always => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Visible,
-            Microsoft.Maui.ScrollBarVisibility.Never => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Hidden,
+            Microsoft.Maui.ScrollBarVisibility.Always => Primitives.ScrollBarVisibility.Visible,
+            Microsoft.Maui.ScrollBarVisibility.Never => Primitives.ScrollBarVisibility.Hidden,
             _ => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
         };
     }
@@ -405,7 +415,7 @@ public static class ListViewExtensions
     /// </summary>
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
-    public static void UpdatePullToRefreshEnabled(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView)
+    public static void UpdatePullToRefreshEnabled(this MauiListView platformView, ListView listView)
     {
         platformView.IsPullToRefreshEnabled = listView.IsPullToRefreshEnabled;
     }
@@ -415,7 +425,7 @@ public static class ListViewExtensions
     /// </summary>
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
-    public static void UpdateIsRefreshing(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView)
+    public static void UpdateIsRefreshing(this MauiListView platformView, ListView listView)
     {
         platformView.IsRefreshing = listView.IsRefreshing;
     }
@@ -425,7 +435,7 @@ public static class ListViewExtensions
     /// </summary>
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
-    public static void UpdateRefreshControlColor(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView)
+    public static void UpdateRefreshControlColor(this MauiListView platformView, ListView listView)
     {
         if (listView.RefreshControlColor != null)
         {

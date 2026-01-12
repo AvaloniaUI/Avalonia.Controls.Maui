@@ -189,11 +189,33 @@ public partial class ListViewHandlerTests : HandlerTestBase
 
         var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
 
+        Assert.NotNull(handler.PlatformView.HeaderTemplate);
+    }
+
+    [AvaloniaFact(DisplayName = "Header View Maps Correctly")]
+    public async Task HeaderViewMapsCorrectly()
+    {
+        var listView = CreateListView();
+        listView.HeaderTemplate = new MCDataTemplate(() => new MCLabel { Text = "Header" });
+
+        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+
         Assert.NotNull(handler.PlatformView.Header);
     }
 
     [AvaloniaFact(DisplayName = "FooterTemplate Maps Correctly")]
     public async Task FooterTemplateMapsCorrectly()
+    {
+        var listView = CreateListView();
+        listView.FooterTemplate = new MCDataTemplate(() => new MCLabel { Text = "Footer" });
+
+        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+
+        Assert.NotNull(handler.PlatformView.FooterTemplate);
+    }
+
+    [AvaloniaFact(DisplayName = "Footer View Maps Correctly")]
+    public async Task FooterViewMapsCorrectly()
     {
         var listView = CreateListView();
         listView.FooterTemplate = new MCDataTemplate(() => new MCLabel { Text = "Footer" });
