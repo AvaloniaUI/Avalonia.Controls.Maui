@@ -522,7 +522,7 @@ Displays a scrollable list of selectable data items.
 
 | Property | Status |
 |----------|--------|
-| CachingStrategy | ⏳ TODO |
+| CachingStrategy | ✅ Implemented  |
 | Footer | ✅ Implemented |
 | FooterTemplate | ✅ Implemented |
 | GroupHeaderTemplate | ✅ Implemented |

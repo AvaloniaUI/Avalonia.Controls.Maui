@@ -11,8 +11,35 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
     {
         // Basic
         BasicItems = new ObservableCollection<string>();
-        for (int i = 1; i <= 50; i++)
-            BasicItems.Add($"Item {i}");
+        for (int i = 1; i <= 20; i++) BasicItems.Add($"Basic Item {i}");
+
+        // Refresh
+        RefreshItems = new ObservableCollection<string>();
+        for (int i = 1; i <= 20; i++) RefreshItems.Add($"Refresh Item {i}");
+
+        // Events
+        EventItems = new ObservableCollection<string>();
+        for (int i = 1; i <= 20; i++) EventItems.Add($"Event Item {i}");
+
+        // Context
+        ContextItems = new ObservableCollection<string>();
+        for (int i = 1; i <= 20; i++) ContextItems.Add($"Context Item {i}");
+
+        // Separator
+        SeparatorItems = new ObservableCollection<string>();
+        for (int i = 1; i <= 10; i++) SeparatorItems.Add($"Separator Item {i}");
+
+        // Runtime
+        RuntimeItems = new ObservableCollection<string>();
+        for (int i = 1; i <= 10; i++) RuntimeItems.Add($"Runtime Item {i}");
+
+        // HeaderFooter (Templated)
+        TemplatedHeaderFooterItems = new ObservableCollection<string>();
+        for (int i = 1; i <= 10; i++) TemplatedHeaderFooterItems.Add($"Templated Item {i}");
+
+        // Performance
+        PerformanceItems = new ObservableCollection<string>();
+        for (int i = 1; i <= 1000; i++) PerformanceItems.Add($"Item {i}");
 
         // Cell Types
         CellTypeItems = new ObservableCollection<CellTypeItem>
@@ -55,8 +82,6 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
         // Runtime Template
         RuntimeTemplateItems = new ObservableCollection<string> { "Template A", "Template B", "Template C" };
 
-        // Performance
-        PerformanceItems = new ObservableCollection<string>();
 
         // Uneven Rows
         UnevenItems = new ObservableCollection<string>
@@ -84,12 +109,39 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
         });
         RefreshCommand = new Command(async () =>
         {
+            if (IsRefreshing) return;
+            
             IsRefreshing = true;
-            LogEvent("Refresh started");
+            LogEvent("Refresh started...");
+            
             await Task.Delay(2000);
+            
+            if (RefreshItems.Count > 0)
+            {
+                RefreshItems[0] = $"Refresh Item 1 (Refreshed {DateTime.Now:T})";
+            }
+            
             IsRefreshing = false;
             LogEvent("Refresh completed");
             ContextActionStatus = "Refreshed at " + DateTime.Now.ToLongTimeString();
+        });
+
+        EventsRefreshCommand = new Command(async () =>
+        {
+            if (IsEventsRefreshing) return;
+            
+            IsEventsRefreshing = true;
+            LogEvent("Events Refresh started...");
+            
+            await Task.Delay(1500);
+            
+            if (EventItems.Count > 0)
+            {
+                EventItems[0] = $"Event Item 1 (Refreshed {DateTime.Now:T})";
+            }
+            
+            IsEventsRefreshing = false;
+            LogEvent("Events Refresh completed");
         });
 
         InitializeComponent();
@@ -97,6 +149,13 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
     }
 
     public ObservableCollection<string> BasicItems { get; }
+    public ObservableCollection<string> RefreshItems { get; }
+    public ObservableCollection<string> EventItems { get; }
+    public ObservableCollection<string> ContextItems { get; }
+    public ObservableCollection<string> SeparatorItems { get; }
+    public ObservableCollection<string> RuntimeItems { get; }
+    public ObservableCollection<string> TemplatedHeaderFooterItems { get; }
+    public ObservableCollection<string> PerformanceItems { get; }
     public ObservableCollection<CellTypeItem> CellTypeItems { get; }
     public ObservableCollection<string> SelectionItems { get; }
     public ObservableCollection<string> ScrollItems { get; }
@@ -104,7 +163,6 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
     public ObservableCollection<string> HeaderFooterItems { get; }
     public ObservableCollection<PersonItem> RoleItems { get; }
     public ObservableCollection<string> RuntimeTemplateItems { get; }
-    public ObservableCollection<string> PerformanceItems { get; }
     public ObservableCollection<string> UnevenItems { get; }
 
     private string _selectionStatus = "No selection";
@@ -174,9 +232,11 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
     public ICommand FavoriteCommand { get; }
     public ICommand DeleteCommand { get; }
     public ICommand RefreshCommand { get; }
+    public ICommand EventsRefreshCommand { get; }
 
     private string _contextActionStatus = "Context Action Status";
     private bool _isRefreshing;
+    private bool _isEventsRefreshing;
 
     public string ContextActionStatus
     {
@@ -194,6 +254,16 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
         set
         {
             _isRefreshing = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IsEventsRefreshing
+    {
+        get => _isEventsRefreshing;
+        set
+        {
+            _isEventsRefreshing = value;
             OnPropertyChanged();
         }
     }

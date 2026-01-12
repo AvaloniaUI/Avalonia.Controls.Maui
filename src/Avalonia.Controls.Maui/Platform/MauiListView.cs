@@ -15,6 +15,7 @@ using Avalonia.Controls.Maui.Platform;
 using Avalonia.Media;
 using Avalonia.VisualTree;
 using Avalonia.Data;
+using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui;
 
@@ -25,62 +26,69 @@ namespace Avalonia.Controls.Maui;
 public class MauiListView : MauiView
 {
     private readonly ListBox _listBox;
-    private readonly ScrollViewer _scrollViewer;
     private readonly RefreshContainer _refreshContainer;
-    private readonly StackPanel _mainContainer;
-    private Control? _headerView;
-    private Control? _footerView;
+
+    private ListViewCachingStrategy _cachingStrategy;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MauiListView"/> class.
     /// </summary>
-    public MauiListView()
+    public MauiListView() : this(ListViewCachingStrategy.RetainElement)
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MauiListView"/> class with a specific caching strategy.
+    /// </summary>
+    /// <param name="cachingStrategy">The caching strategy to use.</param>
+    public MauiListView(ListViewCachingStrategy cachingStrategy)
+    {
+        _cachingStrategy = cachingStrategy;
+
         _listBox = new ListBox
         {
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
-            Padding = new Thickness(0),
-            ItemsPanel = new FuncTemplate<Panel?>(() => new StackPanel())
+            Padding = new Thickness(0)
         };
 
-        // Custom template for ListBox to remove its internal ScrollViewer
-        _listBox.Template = new FuncControlTemplate<ListBox>((parent, scope) =>
-        {
-            return new ItemsPresenter
-            {
-                Name = "PART_ItemsPresenter",
-                [~ItemsPresenter.ItemsPanelProperty] = parent[~ItemsControl.ItemsPanelProperty]
-            }.RegisterInNameScope(scope);
-        });
+        UpdateItemsPanel();
 
-        _mainContainer = new StackPanel
-        {
-            Orientation = Orientation.Vertical,
-            HorizontalAlignment = HorizontalAlignment.Stretch
-        };
-
-        _mainContainer.Children.Add(_listBox);
-
-        _scrollViewer = new ScrollViewer
-        {
-            Content = _mainContainer,
-            HorizontalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-            VerticalScrollBarVisibility = global::Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
-        };
 
         _refreshContainer = new RefreshContainer
         {
-            Content = _scrollViewer
+            Content = _listBox
         };
 
-        _scrollViewer.ScrollChanged += OnScrollChanged;
         _listBox.PointerPressed += OnListBoxPointerPressed;
         _listBox.ContainerPrepared += OnContainerPrepared;
         _listBox.ContainerClearing += OnContainerClearing;
         _refreshContainer.RefreshRequested += OnRefreshRequested;
 
+        _listBox.AddHandler(ScrollViewer.ScrollChangedEvent, (s, e) =>
+        {
+             if (s is ScrollViewer sv)
+             {
+                 OnScrollChanged(sv);
+             }
+        }, global::Avalonia.Interactivity.RoutingStrategies.Bubble);
+
         Children.Add(_refreshContainer);
+    }
+
+    private void UpdateItemsPanel()
+    {
+        if (_cachingStrategy == ListViewCachingStrategy.RetainElement)
+        {
+            _listBox.ItemsPanel = new FuncTemplate<Panel?>(() => new StackPanel());
+        }
+        else
+        {
+            _listBox.ItemsPanel = new FuncTemplate<Panel?>(() => new VirtualizingStackPanel());
+            
+            // Ensure visualization is enabled in the listbox itself? 
+            // ListBox defaults to VirtualizingStackPanel, but explicit setting is safer.
+        }
     }
 
     /// <summary>
@@ -193,11 +201,9 @@ public class MauiListView : MauiView
     {
         HorizontalScrollBarVisibilityProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.UpdateHorizontalScrollBarVisibility());
         VerticalScrollBarVisibilityProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.UpdateVerticalScrollBarVisibility());
-        HeaderProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.UpdateHeader());
-        HeaderTemplateProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.UpdateHeader());
-        FooterProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.UpdateFooter());
-        FooterTemplateProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.UpdateFooter());
-        IsGroupingEnabledProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.OnItemsSourceChanged());
+        HeaderProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.JobRebuildItemsSource());
+        FooterProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.JobRebuildItemsSource());
+        IsGroupingEnabledProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.JobRebuildItemsSource());
         IsPullToRefreshEnabledProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.UpdatePullToRefresh());
         IsRefreshingProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.UpdateIsRefreshing());
         RefreshControlColorProperty.Changed.AddClassHandler<MauiListView>((x, e) => x.UpdateRefreshControlColor());
@@ -205,12 +211,12 @@ public class MauiListView : MauiView
 
     private void UpdateHorizontalScrollBarVisibility()
     {
-        _scrollViewer.HorizontalScrollBarVisibility = HorizontalScrollBarVisibility;
+        ScrollViewer.SetHorizontalScrollBarVisibility(_listBox, HorizontalScrollBarVisibility);
     }
 
     private void UpdateVerticalScrollBarVisibility()
     {
-        _scrollViewer.VerticalScrollBarVisibility = VerticalScrollBarVisibility;
+        ScrollViewer.SetVerticalScrollBarVisibility(_listBox, VerticalScrollBarVisibility);
     }
 
     /// <summary>
@@ -345,11 +351,13 @@ public class MauiListView : MauiView
     private void OnRefreshRequested(object? sender, global::Avalonia.Controls.RefreshRequestedEventArgs e)
     {
         var deferral = e.GetDeferral();
+        _currentRefreshDeferral = deferral;
+
+        if (_isSettingRefreshingFromCode)
+            return;
+
         IsRefreshing = true;
         RefreshRequested?.Invoke(this, EventArgs.Empty);
-        
-        // We need to keep a reference to the deferral to complete it when IsRefreshing becomes false
-        _currentRefreshDeferral = deferral;
     }
 
     private global::Avalonia.Controls.RefreshCompletionDeferral? _currentRefreshDeferral;
@@ -361,12 +369,26 @@ public class MauiListView : MauiView
         _refreshContainer.IsEnabled = IsPullToRefreshEnabled;
     }
 
+    private bool _isSettingRefreshingFromCode;
+
     private void UpdateIsRefreshing()
     {
-        if (!IsRefreshing && _currentRefreshDeferral != null)
+        if (IsRefreshing)
         {
-            _currentRefreshDeferral.Complete();
-            _currentRefreshDeferral = null;
+            if (_currentRefreshDeferral == null)
+            {
+                _isSettingRefreshingFromCode = true;
+                _refreshContainer.RequestRefresh();
+                _isSettingRefreshingFromCode = false;
+            }
+        }
+        else
+        {
+            if (_currentRefreshDeferral != null)
+            {
+                _currentRefreshDeferral.Complete();
+                _currentRefreshDeferral = null;
+            }
         }
     }
 
@@ -378,12 +400,48 @@ public class MauiListView : MauiView
         }
     }
 
-    public void OnItemsSourceChanged()
+    private IEnumerable? _originalItemsSource;
+
+    /// <summary>
+    /// Updates the internal ItemsSource of the ListBox, injecting Header and Footer if necessary.
+    /// </summary>
+    public void RebuildItemsSource()
     {
-        if (IsGroupingEnabled && _listBox.ItemsSource is IEnumerable groups && !(groups is ObservableCollection<object>))
+        if (_originalItemsSource == null)
         {
-            var flattened = new ObservableCollection<object>();
-            foreach (var group in groups)
+             if (Header != null || Footer != null)
+             {
+                 var collection = new ObservableCollection<object>();
+                 if (Header != null) collection.Add(new ListViewHeader { Data = Header });
+                 if (Footer != null) collection.Add(new ListViewFooter { Data = Footer });
+                 _listBox.ItemsSource = collection;
+             }
+             else
+             {
+                 _listBox.ItemsSource = null;
+             }
+             return;
+        }
+
+        // Optimization: If no headers/footers/grouping, use original source directly
+        if (Header == null && Footer == null && !IsGroupingEnabled)
+        {
+            _listBox.ItemsSource = _originalItemsSource;
+            return;
+        }
+
+        var flattened = new ObservableCollection<object>();
+        
+        // Add Header
+        if (Header != null)
+        {
+            flattened.Add(new ListViewHeader { Data = Header });
+        }
+
+        // Add Items (Flattened or Direct)
+        if (IsGroupingEnabled)
+        {
+            foreach (var group in _originalItemsSource)
             {
                 flattened.Add(new GroupHeader { Data = group });
                 if (group is IEnumerable items)
@@ -394,8 +452,28 @@ public class MauiListView : MauiView
                     }
                 }
             }
-            _listBox.ItemsSource = flattened;
         }
+        else
+        {
+            foreach (var item in _originalItemsSource)
+            {
+                flattened.Add(item);
+            }
+        }
+
+        // Add Footer
+        if (Footer != null)
+        {
+            flattened.Add(new ListViewFooter { Data = Footer });
+        }
+
+        _listBox.ItemsSource = flattened;
+    }
+
+    public void SetItemsSource(IEnumerable? items)
+    {
+        _originalItemsSource = items;
+        RebuildItemsSource();
     }
 
     public class GroupHeader
@@ -403,40 +481,19 @@ public class MauiListView : MauiView
         public object? Data { get; init; }
     }
 
-    private void UpdateHeader()
+    public class ListViewHeader
     {
-        if (_headerView != null)
-        {
-            _mainContainer.Children.Remove(_headerView);
-            _headerView = null;
-        }
-
-        if (Header == null && HeaderTemplate == null)
-            return;
-
-        _headerView = CreateView(Header, HeaderTemplate);
-        if (_headerView != null)
-        {
-            _mainContainer.Children.Insert(0, _headerView);
-        }
+        public object? Data { get; init; }
     }
 
-    private void UpdateFooter()
+    public class ListViewFooter
     {
-        if (_footerView != null)
-        {
-            _mainContainer.Children.Remove(_footerView);
-            _footerView = null;
-        }
+        public object? Data { get; init; }
+    }
 
-        if (Footer == null && FooterTemplate == null)
-            return;
-
-        _footerView = CreateView(Footer, FooterTemplate);
-        if (_footerView != null)
-        {
-            _mainContainer.Children.Add(_footerView);
-        }
+    private void JobRebuildItemsSource()
+    {
+        RebuildItemsSource();
     }
 
     private Control? CreateView(object? item, IDataTemplate? template)
@@ -447,15 +504,20 @@ public class MauiListView : MauiView
         return null;
     }
 
+    private ScrollViewer? GetScrollViewer()
+    {
+        return _listBox.GetVisualDescendants().OfType<ScrollViewer>().FirstOrDefault();
+    }
+
     public void ScrollTo(object item, Microsoft.Maui.Controls.ScrollToPosition position, bool animated)
     {
+        var scrollViewer = GetScrollViewer();
+        if (scrollViewer == null) return;
+
         var container = _listBox.ContainerFromItem(item) as Control;
         if (container == null)
         {
             _listBox.ScrollIntoView(item);
-            // After ScrollIntoView, we still might not have the container immediately 
-            // but for simple cases like \"MakeVisible\", this already helps.
-            // For Start/Center/End, we\'ll try to get it again.
             container = _listBox.ContainerFromItem(item) as Control;
         }
 
@@ -463,15 +525,15 @@ public class MauiListView : MauiView
             return;
 
         var bounds = container.Bounds;
-        var point = container.TranslatePoint(new Point(0, 0), _mainContainer);
+        var point = container.TranslatePoint(new Point(0, 0), scrollViewer.Presenter?.Child ?? scrollViewer);
         if (point == null) return;
 
         var itemTop = point.Value.Y;
         var itemHeight = bounds.Height;
         var itemBottom = itemTop + itemHeight;
         
-        var viewportHeight = _scrollViewer.Viewport.Height;
-        var currentOffset = _scrollViewer.Offset.Y;
+        var viewportHeight = scrollViewer.Viewport.Height;
+        var currentOffset = scrollViewer.Offset.Y;
 
         double finalOffset = position switch
         {
@@ -484,17 +546,11 @@ public class MauiListView : MauiView
             _ => itemTop
         };
 
-        _scrollViewer.Offset = new Vector(_scrollViewer.Offset.X, finalOffset);
+        scrollViewer.Offset = new Vector(scrollViewer.Offset.X, finalOffset);
     }
 
-    private void OnScrollChanged(object? sender, ScrollChangedEventArgs e)
+    private void OnScrollChanged(ScrollViewer sv)
     {
-        // Convert Avalonia ScrollChangedEventArgs to MAUI ScrolledEventArgs
-        // Avalonia ScrollViewer Offset is a Vector.
-        // We need current Scroll X and Y.
-        if (sender is ScrollViewer sv)
-        {
-             Scrolled?.Invoke(this, new Microsoft.Maui.Controls.ScrolledEventArgs(sv.Offset.X, sv.Offset.Y));
-        }
+        Scrolled?.Invoke(this, new Microsoft.Maui.Controls.ScrolledEventArgs(sv.Offset.X, sv.Offset.Y));
     }
 }

@@ -17,8 +17,7 @@ public static class ListViewExtensions
     /// <param name="listView">The cross-platform list view.</param>
     public static void UpdateItemsSource(this MauiListView platformView, ListView listView)
     {
-        platformView.ListBox.ItemsSource = listView.ItemsSource;
-        platformView.OnItemsSourceChanged();
+        platformView.SetItemsSource(listView.ItemsSource);
     }
 
     /// <summary>
@@ -48,6 +47,42 @@ public static class ListViewExtensions
                     FontWeight = Media.FontWeight.Bold,
                     Padding = new Thickness(10, 5)
                 };
+            }
+
+            // Handle ListView Header
+            if (item is MauiListView.ListViewHeader listHeader)
+            {
+                if (platformView.HeaderTemplate != null)
+                {
+                    return platformView.HeaderTemplate.Build(listHeader.Data);
+                }
+                if (platformView.Header is Control headerControl)
+                {
+                    return headerControl;
+                }
+                if (listHeader.Data is Control headerDataControl)
+                {
+                    return headerDataControl;
+                }
+                // If it is a MAUI View converted to Platform View?
+                // The RebuildItemsSource puts whatever is in Header property into Data.
+                // If ListView.Header was a View, UpdateHeader mapped it to a Platform Control in 'platformView.Header'.
+                
+                return new TextBlock { Text = listHeader.Data?.ToString() ?? "Header" };
+            }
+
+            // Handle ListView Footer
+            if (item is MauiListView.ListViewFooter listFooter)
+            {
+                if (platformView.FooterTemplate != null)
+                {
+                     return platformView.FooterTemplate.Build(listFooter.Data);
+                }
+                if (platformView.Footer is Control footerControl)
+                {
+                    return footerControl;
+                }
+                return new TextBlock { Text = listFooter.Data?.ToString() ?? "Footer" };
             }
 
             // Handle regular items
@@ -230,8 +265,11 @@ public static class ListViewExtensions
         {
             platformView.HeaderTemplate = null;
         }
-        
-        platformView.Header = listView.Header ?? string.Empty;
+
+        if (listView.HeaderTemplate != null && platformView.Header == null)
+        {
+            platformView.Header = string.Empty;
+        }
     }
 
     /// <summary>
@@ -279,8 +317,11 @@ public static class ListViewExtensions
         {
             platformView.FooterTemplate = null;
         }
-        
-        platformView.Footer = listView.Footer ?? string.Empty;
+
+        if (listView.FooterTemplate != null && platformView.Footer == null)
+        {
+            platformView.Footer = string.Empty;
+        }
     }
 
     /// <summary>

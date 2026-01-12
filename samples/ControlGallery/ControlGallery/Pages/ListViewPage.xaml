@@ -215,12 +215,12 @@
                 <VerticalStackLayout Spacing="10">
                     <Grid ColumnDefinitions="*, Auto">
                         <Label Text="Pull to Refresh" FontAttributes="Bold" VerticalOptions="Center"/>
-                        <Button Grid.Column="1" Text="Manual Refresh" Command="{Binding RefreshCommand}" 
+                        <Button Grid.Column="1" Text="Refresh" Command="{Binding RefreshCommand}" 
                                 FontSize="10" Padding="5" HeightRequest="30"/>
                     </Grid>
                     <Label Text="Pull down to refresh (touch/trackpad) or use button. Status updates below." 
                            FontSize="12" FontAttributes="Italic"/>
-                    <ListView ItemsSource="{Binding BasicItems}"
+                    <ListView ItemsSource="{Binding RefreshItems}"
                               IsPullToRefreshEnabled="True"
                               IsRefreshing="{Binding IsRefreshing}"
                               RefreshCommand="{Binding RefreshCommand}"
@@ -271,7 +271,7 @@
                     <Label Text="Separator Visibility" FontAttributes="Bold"/>
                     <Label Text="Toggle visibility of separators." FontSize="12" FontAttributes="Italic"/>
                     <Button Text="Toggle Separator" Clicked="OnToggleSeparatorClicked"/>
-                    <ListView x:Name="SeparatorVisibilityListView" ItemsSource="{Binding BasicItems}" HeightRequest="150" />
+                    <ListView x:Name="SeparatorVisibilityListView" ItemsSource="{Binding SeparatorItems}" HeightRequest="150" />
                 </VerticalStackLayout>
             </Border>
 
@@ -284,7 +284,7 @@
                         <Button Text="Green" Clicked="OnSeparatorColorGreenClicked" BackgroundColor="Green" TextColor="White" WidthRequest="80"/>
                         <Button Text="Blue" Clicked="OnSeparatorColorBlueClicked" BackgroundColor="Blue" TextColor="White" WidthRequest="80"/>
                     </HorizontalStackLayout>
-                    <ListView x:Name="SeparatorColorListView" ItemsSource="{Binding BasicItems}" HeightRequest="150" SeparatorVisibility="Default" SeparatorColor="Red"/>
+                    <ListView x:Name="SeparatorColorListView" ItemsSource="{Binding SeparatorItems}" HeightRequest="150" SeparatorVisibility="Default" SeparatorColor="Red"/>
                 </VerticalStackLayout>
             </Border>
 
@@ -373,7 +373,7 @@
                         <Button Text="Default" Clicked="OnScrollDefaultClicked" />
                     </HorizontalStackLayout>
                     <ListView x:Name="ScrollBarVisibilityListView"
-                              ItemsSource="{Binding BasicItems}"
+                              ItemsSource="{Binding ScrollItems}"
                               HeightRequest="150"
                               VerticalScrollBarVisibility="Always" />
                 </VerticalStackLayout>
@@ -384,7 +384,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Context Actions" FontAttributes="Bold"/>
                     <Label Text="Right click (or long press) items to see context menu." FontSize="12" FontAttributes="Italic"/>
-                    <ListView ItemsSource="{Binding BasicItems}"
+                    <ListView ItemsSource="{Binding ContextItems}"
                               HeightRequest="150">
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -424,13 +424,39 @@
                 </VerticalStackLayout>
             </Border>
             
+            <!-- Caching Strategy -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Caching Strategy" FontAttributes="Bold"/>
+                    <Label Text="RetainElement (No recycling) vs RecycleElement (Virtualization)." FontSize="12" FontAttributes="Italic"/>
+                    
+                    <Label Text="RetainElement (Default)" FontSize="10" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <ListView ItemsSource="{Binding BasicItems}" 
+                              CachingStrategy="RetainElement"
+                              HeightRequest="150" />
+
+                    <Label Text="RecycleElement (Virtualizing)" FontSize="10" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <ListView ItemsSource="{Binding PerformanceItems}" 
+                              CachingStrategy="RecycleElement"
+                              HeightRequest="150" />
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Events ListView -->
             <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Events ListView" FontAttributes="Bold"/>
-                    <Label Text="Logs events: ItemSelected, ItemTapped, Appearing, Disappearing, Scrolled." FontSize="12" FontAttributes="Italic"/>
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="Events ListView" FontAttributes="Bold" VerticalOptions="Center"/>
+                        <Button Grid.Column="1" Text="Refresh" Command="{Binding EventsRefreshCommand}" 
+                                FontSize="10" Padding="5" HeightRequest="30"/>
+                    </Grid>
+                    <Label Text="Logs events: ItemSelected, ItemTapped, Appearing, Disappearing, Scrolled. Also tests programmatic refresh." 
+                           FontSize="12" FontAttributes="Italic"/>
                     <ListView x:Name="EventsListView"
-                              ItemsSource="{Binding BasicItems}"
+                              ItemsSource="{Binding EventItems}"
+                              IsPullToRefreshEnabled="True"
+                              IsRefreshing="{Binding IsEventsRefreshing}"
+                              RefreshCommand="{Binding EventsRefreshCommand}"
                               ItemSelected="OnItemSelected"
                               ItemTapped="OnItemTapped"
                               ItemAppearing="OnItemAppearing"

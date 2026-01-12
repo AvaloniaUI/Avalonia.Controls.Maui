@@ -288,6 +288,21 @@ public partial class ListViewHandlerTests : HandlerTestBase
         Assert.NotNull(handler.PlatformView.RefreshControlColor);
     }
 
+    [AvaloniaTheory(DisplayName = "CachingStrategy Maps Correctly")]
+    [InlineData(ListViewCachingStrategy.RetainElement, typeof(global::Avalonia.Controls.StackPanel))]
+    [InlineData(ListViewCachingStrategy.RecycleElement, typeof(global::Avalonia.Controls.VirtualizingStackPanel))]
+    public async Task CachingStrategyMapsCorrectly(ListViewCachingStrategy strategy, System.Type expectedPanelType)
+    {
+        var listView = new ListView(strategy);
+
+        var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
+
+        var itemsPanel = handler.PlatformView.ListBox.ItemsPanel;
+        var panel = itemsPanel.Build();
+        
+        Assert.IsType(expectedPanelType, panel);
+    }
+
     [AvaloniaTheory(DisplayName = "Selection Mode All Modes Map Correctly")]
     [InlineData(MauiSelectionMode.None, AvaloniaSelectionMode.Single)]
     [InlineData(MauiSelectionMode.Single, AvaloniaSelectionMode.Single)]

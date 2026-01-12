@@ -58,7 +58,7 @@ public class ListViewHandler : ViewHandler<Microsoft.Maui.Controls.ListView, Mau
 
     protected override MauiListView CreatePlatformView()
     {
-        return new MauiListView
+        return new MauiListView(VirtualView.CachingStrategy)
         {
             MauiContext = MauiContext
         };
