@@ -404,6 +404,24 @@
                 </VerticalStackLayout>
             </Border>
             
+            <!-- Caching Strategy -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Caching Strategy" FontAttributes="Bold"/>
+                    <Label Text="RetainElement (No recycling) vs RecycleElement (Virtualization)." FontSize="12" FontAttributes="Italic"/>
+                    
+                    <Label Text="RetainElement (Default)" FontSize="10" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <ListView ItemsSource="{Binding BasicItems}" 
+                              CachingStrategy="RetainElement"
+                              HeightRequest="150" />
+
+                    <Label Text="RecycleElement (Virtualizing)" FontSize="10" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <ListView ItemsSource="{Binding PerformanceItems}" 
+                              CachingStrategy="RecycleElement"
+                              HeightRequest="150" />
+                </VerticalStackLayout>
+            </Border>
+            
             <!-- Performance -->
             <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
                 <VerticalStackLayout Spacing="10">
@@ -421,24 +439,6 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
-                </VerticalStackLayout>
-            </Border>
-            
-            <!-- Caching Strategy -->
-            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Caching Strategy" FontAttributes="Bold"/>
-                    <Label Text="RetainElement (No recycling) vs RecycleElement (Virtualization)." FontSize="12" FontAttributes="Italic"/>
-                    
-                    <Label Text="RetainElement (Default)" FontSize="10" FontAttributes="Bold" Margin="0,5,0,0"/>
-                    <ListView ItemsSource="{Binding BasicItems}" 
-                              CachingStrategy="RetainElement"
-                              HeightRequest="150" />
-
-                    <Label Text="RecycleElement (Virtualizing)" FontSize="10" FontAttributes="Bold" Margin="0,5,0,0"/>
-                    <ListView ItemsSource="{Binding PerformanceItems}" 
-                              CachingStrategy="RecycleElement"
-                              HeightRequest="150" />
                 </VerticalStackLayout>
             </Border>
 
