@@ -1,15 +1,15 @@
 using Avalonia.VisualTree;
 using Avalonia.Headless.XUnit;
-using Microsoft.Maui.Controls;
-using System.Collections.ObjectModel;
-using MauiCollectionViewHandler = Avalonia.Controls.Maui.Handlers.CollectionViewHandler;
-using AvaloniaCollectionView = Avalonia.Controls.Maui.MauiCollectionView;
-using MauiScrollBarVisibility = Microsoft.Maui.ScrollBarVisibility;
-using AvaloniaScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility;
-using MauiSelectionMode = Microsoft.Maui.Controls.SelectionMode;
-using AvaloniaSelectionMode = Avalonia.Controls.SelectionMode;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
+using Microsoft.Maui.Controls;
+using System.Collections.ObjectModel;
+using AvaloniaCollectionView = Avalonia.Controls.Maui.MauiCollectionView;
+using AvaloniaSelectionMode = Avalonia.Controls.SelectionMode;
+using AvaloniaScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility;
+using MauiCollectionViewHandler = Avalonia.Controls.Maui.Handlers.CollectionViewHandler;
+using MauiScrollBarVisibility = Microsoft.Maui.ScrollBarVisibility;
+using MauiSelectionMode = Microsoft.Maui.Controls.SelectionMode;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
