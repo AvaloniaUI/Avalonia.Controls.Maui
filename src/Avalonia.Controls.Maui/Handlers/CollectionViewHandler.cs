@@ -37,6 +37,8 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
 
         };
 
+    private bool _isUpdatingSelection;
+
     public CollectionViewHandler() : base(Mapper, CommandMapper)
     {
     }
@@ -105,28 +107,66 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
 
     private void OnSelectionChanged(object? sender, EventArgs e)
     {
-        if (VirtualView == null || PlatformView == null)
+        if (VirtualView == null || PlatformView == null || _isUpdatingSelection)
             return;
 
         if (VirtualView is not SelectableItemsView selectableItemsView)
             return;
 
-        var selectedItem = PlatformView.SelectedItem;
+        if (selectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.None)
+            return;
 
-        if (selectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Single)
+        // Capture current state
+        var selectedItem = PlatformView.SelectedItem;
+        var selectedItems = PlatformView.SelectedItems?.Cast<object>().ToList(); // Create a copy
+
+        Dispatcher.UIThread.Post(() =>
         {
-            if (!Equals(selectableItemsView.SelectedItem, selectedItem))
+            if (VirtualView == null || PlatformView == null || _isUpdatingSelection)
+                return;
+
+            _isUpdatingSelection = true;
+            try
             {
-                Dispatcher.UIThread.Post(() =>
+                if (selectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Single)
                 {
+                    if (!Equals(selectableItemsView.SelectedItem, selectedItem))
+                    {
+                        selectableItemsView.SelectedItem = selectedItem;
+                    }
+
+                    // Execute command for Single selection
                     var parameter = selectableItemsView.SelectionChangedCommandParameter ?? selectedItem;
                     if (selectableItemsView.SelectionChangedCommand?.CanExecute(parameter) == true)
                     {
                         selectableItemsView.SelectionChangedCommand.Execute(parameter);
                     }
-                });
+                }
+                else if (selectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Multiple)
+                {
+                    var virtualSelectedItems = selectableItemsView.SelectedItems;
+                    if (selectedItems != null && virtualSelectedItems != null)
+                    {
+                        virtualSelectedItems.Clear();
+                        foreach (var item in selectedItems)
+                        {
+                            virtualSelectedItems.Add(item);
+                        }
+                    }
+
+                    // Execute command for Multiple selection (pass the list of items)
+                    var parameter = selectableItemsView.SelectionChangedCommandParameter ?? virtualSelectedItems;
+                    if (selectableItemsView.SelectionChangedCommand?.CanExecute(parameter) == true)
+                    {
+                        selectableItemsView.SelectionChangedCommand.Execute(parameter);
+                    }
+                }
             }
-        }
+            finally
+            {
+                _isUpdatingSelection = false;
+            }
+        });
     }
 
     private void OnRemainingItemsThresholdReached(object? sender, EventArgs e)
