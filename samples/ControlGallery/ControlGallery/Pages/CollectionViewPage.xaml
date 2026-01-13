@@ -810,6 +810,7 @@
                            FontSize="12"
                            FontAttributes="Italic"/>
                     <CollectionView ItemsSource="{Binding InventoryItems}"
+                                    Footer="{Binding .}"
                                     HeightRequest="300">
                         <CollectionView.HeaderTemplate>
                             <DataTemplate>
@@ -843,7 +844,7 @@
                                         <Label Text="Total Inventory Value: " 
                                                TextColor="White" 
                                                FontAttributes="Bold"/>
-                                        <Label Text="{Binding InventoryItems.Count, Source={RelativeSource AncestorType={x:Type pages:CollectionViewPage}}, StringFormat='{0} items'}"
+                                        <Label Text="{Binding TotalInventoryValue, StringFormat='{0:C}'}"
                                                TextColor="White"/>
                                     </HorizontalStackLayout>
                                 </Border>

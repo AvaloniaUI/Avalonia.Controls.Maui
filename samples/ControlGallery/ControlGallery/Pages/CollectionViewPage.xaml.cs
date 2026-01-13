@@ -131,6 +131,8 @@ public partial class CollectionViewPage : ContentPage
         new InventoryItem("Printer", 3, 200)
     };
 
+    public double TotalInventoryValue => InventoryItems.Sum(i => i.TotalValue);
+
     public CollectionViewPage()
     {
         InitializeComponent();
