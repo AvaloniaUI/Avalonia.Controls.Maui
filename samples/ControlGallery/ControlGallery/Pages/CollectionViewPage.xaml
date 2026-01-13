@@ -902,6 +902,79 @@
                 </VerticalStackLayout>
             </Border>
 
+
+            <!-- Context Menus (SwipeView) -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Context Menus (SwipeView)"
+                           FontAttributes="Bold"/>
+                    <Label Text="Swipe items left or right for actions"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding People}"
+                                    HeightRequest="300">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:Person">
+                                <SwipeView>
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Favorite"
+                                                       IconImageSource="favorite.png"
+                                                       BackgroundColor="Gold"
+                                                       Invoked="OnFavorite" />
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Delete"
+                                                       IconImageSource="delete.png"
+                                                       BackgroundColor="Red"
+                                                       Invoked="OnDelete" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border Margin="5"
+                                            Padding="10"
+                                            BackgroundColor="{AppThemeBinding Light=White, Dark=#212121}"
+                                            Stroke="{AppThemeBinding Light=LightGray, Dark=#424242}"
+                                            StrokeThickness="1">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8"/>
+                                        </Border.StrokeShape>
+                                        <Grid ColumnDefinitions="Auto, *">
+                                            <Border WidthRequest="40" HeightRequest="40" 
+                                                    BackgroundColor="{Binding Color}" 
+                                                    VerticalOptions="Center"
+                                                    Margin="0,0,10,0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="20"/>
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding Initials}" 
+                                                       TextColor="White" 
+                                                       HorizontalOptions="Center" 
+                                                       VerticalOptions="Center"
+                                                       FontAttributes="Bold"/>
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Name}"
+                                                       FontAttributes="Bold"
+                                                       FontSize="16"/>
+                                                <Label Text="{Binding Role}"
+                                                       TextColor="Gray"
+                                                       FontSize="12"/>
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -402,6 +402,24 @@ public partial class CollectionViewPage : ContentPage
     {
         SelectionCommandLabel.Text = $"Command executed for: {parameter}";
     }
+    
+    private void OnFavorite(object? sender, EventArgs e)
+    {
+        var item = (sender as SwipeItem)?.BindingContext as Person;
+        if (item != null)
+        {
+            DisplayAlert("Favorite", $"{item.Name} added to favorites", "OK");
+        }
+    }
+
+    private void OnDelete(object? sender, EventArgs e)
+    {
+        var item = (sender as SwipeItem)?.BindingContext as Person;
+        if (item != null)
+        {
+            DisplayAlert("Delete", $"{item.Name} deleted", "OK");
+        }
+    }
 }
 
 // Animal model for grouping
