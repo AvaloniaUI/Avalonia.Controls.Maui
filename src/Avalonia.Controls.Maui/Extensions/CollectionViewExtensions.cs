@@ -20,7 +20,7 @@ public static class CollectionViewExtensions
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
-    public static void UpdateItemsSource(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    public static void UpdateItemsSource(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         platformView.ItemsSource = itemsView.ItemsSource;
     }
@@ -31,7 +31,7 @@ public static class CollectionViewExtensions
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
     /// <param name="handler">The collection view handler for context.</param>
-    public static void UpdateItemTemplate(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
+    public static void UpdateItemTemplate(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
     {
         if (itemsView.ItemTemplate != null)
         {
@@ -65,7 +65,7 @@ public static class CollectionViewExtensions
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
     /// <param name="handler">The collection view handler for context.</param>
-    public static void UpdateEmptyView(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
+    public static void UpdateEmptyView(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
     {
         if (itemsView.EmptyView is Microsoft.Maui.Controls.View emptyView)
         {
@@ -89,7 +89,7 @@ public static class CollectionViewExtensions
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
     /// <param name="handler">The collection view handler for context.</param>
-    public static void UpdateEmptyViewTemplate(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
+    public static void UpdateEmptyViewTemplate(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
     {
         if (itemsView.EmptyViewTemplate != null)
         {
@@ -116,7 +116,7 @@ public static class CollectionViewExtensions
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
-    public static void UpdateHorizontalScrollBarVisibility(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    public static void UpdateHorizontalScrollBarVisibility(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         platformView.HorizontalScrollBarVisibility = itemsView.HorizontalScrollBarVisibility switch
         {
@@ -132,7 +132,7 @@ public static class CollectionViewExtensions
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
-    public static void UpdateVerticalScrollBarVisibility(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    public static void UpdateVerticalScrollBarVisibility(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         platformView.VerticalScrollBarVisibility = itemsView.VerticalScrollBarVisibility switch
         {
@@ -148,7 +148,7 @@ public static class CollectionViewExtensions
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
-    public static void UpdateItemsLayout(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    public static void UpdateItemsLayout(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView)
         {
@@ -161,7 +161,7 @@ public static class CollectionViewExtensions
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
-    public static void UpdateIsGrouped(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    public static void UpdateIsGrouped(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         if (itemsView is Microsoft.Maui.Controls.GroupableItemsView groupableItemsView)
         {
@@ -175,7 +175,7 @@ public static class CollectionViewExtensions
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
     /// <param name="handler">The collection view handler for context.</param>
-    public static void UpdateGroupHeaderTemplate(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
+    public static void UpdateGroupHeaderTemplate(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
     {
         if (itemsView is Microsoft.Maui.Controls.GroupableItemsView groupableItemsView &&
             groupableItemsView.GroupHeaderTemplate != null)
@@ -204,7 +204,7 @@ public static class CollectionViewExtensions
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
     /// <param name="handler">The collection view handler for context.</param>
-    public static void UpdateGroupFooterTemplate(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
+    public static void UpdateGroupFooterTemplate(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
     {
         if (itemsView is Microsoft.Maui.Controls.GroupableItemsView groupableItemsView &&
             groupableItemsView.GroupFooterTemplate != null)
@@ -232,7 +232,7 @@ public static class CollectionViewExtensions
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
-    public static void UpdateSelectedItem(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    public static void UpdateSelectedItem(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         if (itemsView is Microsoft.Maui.Controls.SelectableItemsView selectableItemsView)
         {
@@ -248,7 +248,7 @@ public static class CollectionViewExtensions
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
-    public static void UpdateSelectionMode(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    public static void UpdateSelectionMode(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         if (itemsView is Microsoft.Maui.Controls.SelectableItemsView selectableItemsView)
         {
@@ -273,7 +273,7 @@ public static class CollectionViewExtensions
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
     /// <param name="handler">The collection view handler for context.</param>
-    public static void UpdateHeader(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
+    public static void UpdateHeader(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
     {
         if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView)
         {
@@ -300,7 +300,7 @@ public static class CollectionViewExtensions
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
     /// <param name="handler">The collection view handler for context.</param>
-    public static void UpdateHeaderTemplate(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
+    public static void UpdateHeaderTemplate(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
     {
         if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView &&
             structuredItemsView.HeaderTemplate != null)
@@ -329,7 +329,7 @@ public static class CollectionViewExtensions
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
     /// <param name="handler">The collection view handler for context.</param>
-    public static void UpdateFooter(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
+    public static void UpdateFooter(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
     {
         if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView)
         {
@@ -356,7 +356,7 @@ public static class CollectionViewExtensions
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
     /// <param name="handler">The collection view handler for context.</param>
-    public static void UpdateFooterTemplate(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
+    public static void UpdateFooterTemplate(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView, CollectionViewHandler handler)
     {
         if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView &&
             structuredItemsView.FooterTemplate != null)
@@ -384,7 +384,7 @@ public static class CollectionViewExtensions
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
-    public static void UpdateSelectedItems(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    public static void UpdateSelectedItems(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         if (itemsView is Microsoft.Maui.Controls.SelectableItemsView selectableItemsView)
         {
@@ -397,7 +397,7 @@ public static class CollectionViewExtensions
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
-    public static void UpdateItemsUpdatingScrollMode(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    public static void UpdateItemsUpdatingScrollMode(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         platformView.ItemsUpdatingScrollMode = itemsView.ItemsUpdatingScrollMode;
     }
@@ -407,7 +407,7 @@ public static class CollectionViewExtensions
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
     /// <param name="itemsView">The cross-platform items view.</param>
-    public static void UpdateRemainingItemsThreshold(this CollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    public static void UpdateRemainingItemsThreshold(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         platformView.RemainingItemsThreshold = itemsView.RemainingItemsThreshold;
     }

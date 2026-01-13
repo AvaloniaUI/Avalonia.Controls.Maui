@@ -159,12 +159,6 @@ Displays a scrollable list of selectable data items, using different layout spec
 | RemainingItemsThresholdReached | ✅ Implemented |
 | SelectionChanged | ✅ Implemented |
 
-### Notes
-
-- Supports LinearItemsLayout (Vertical/Horizontal) and GridItemsLayout
-- Grouping supported via IsGrouped, GroupHeaderTemplate, GroupFooterTemplate
-- Custom CollectionViewStackPanel ensures items fill cross-axis in horizontal layouts
-
 ---
 
 ## ContentPresenter
