@@ -355,13 +355,15 @@ public partial class CollectionViewPage : ContentPage
 
     private void OnScrollToIndex(object? sender, EventArgs e)
     {
-        if (int.TryParse(ScrollIndexEntry.Text, out int index) && index >= 0 && index < LargeList.Count)
+        // Treat input as 1-based for user intuitiveness (Item 1 = index 0)
+        if (int.TryParse(ScrollIndexEntry.Text, out int itemNumber) && itemNumber >= 1 && itemNumber <= LargeList.Count)
         {
-            ScrollingCollection.ScrollTo(index, position: ScrollToPosition.MakeVisible);
+            var index = itemNumber - 1;
+            ScrollingCollection.ScrollTo(index, position: ScrollToPosition.Start);
         }
         else
         {
-            DisplayAlert("Invalid Index", "Please enter a valid index between 0 and 49", "OK");
+            DisplayAlert("Invalid Number", $"Please enter a number between 1 and {LargeList.Count}", "OK");
         }
     }
 
