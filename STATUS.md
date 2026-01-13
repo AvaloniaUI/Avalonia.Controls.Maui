@@ -147,7 +147,9 @@ Displays a scrollable list of selectable data items, using different layout spec
 | ItemTemplate | ✅ Implemented |
 | ItemsUpdatingScrollMode | ✅ Implemented |
 | RemainingItemsThreshold | ✅ Implemented |
-| RemainingItemsThresholdReachedCommand | ⏳ TODO |
+| RemainingItemsThresholdReachedCommand | ✅ Implemented |
+| SelectionChangedCommand | ✅ Implemented |
+| SelectionChangedCommandParameter | ✅ Implemented |
 | SelectedItem | ✅ Implemented |
 | SelectedItems | ✅ Implemented |
 | SelectionMode | ✅ Implemented |
@@ -157,6 +159,7 @@ Displays a scrollable list of selectable data items, using different layout spec
 | Event | Status |
 |-------|--------|
 | RemainingItemsThresholdReached | ✅ Implemented |
+| Scrolled | ✅ Implemented |
 | SelectionChanged | ✅ Implemented |
 
 ---

@@ -131,8 +131,11 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
 
     private void OnRemainingItemsThresholdReached(object? sender, EventArgs e)
     {
-        // Use MAUI's built-in method which fires both the event and command
-        VirtualView?.SendRemainingItemsThresholdReached();
+        Dispatcher.UIThread.Post(() =>
+        {
+            // Use MAUI's built-in method which fires both the event and command
+            VirtualView?.SendRemainingItemsThresholdReached();
+        });
     }
 
     public override bool NeedsContainer => false;

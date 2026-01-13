@@ -154,11 +154,13 @@ public partial class CollectionViewPage : ContentPage
         UpdateHGridLayout();
 
         SelectionCommand = new Command<string>(OnSelectionCommandExecuted);
+        LoadMoreCommand = new Command(OnLoadMoreItemsCommandExecuted);
 
         BindingContext = this;
     }
 
     public Command<string> SelectionCommand { get; }
+    public Command LoadMoreCommand { get; }
 
     private void LoadInitialInfiniteScrollItems()
     {
@@ -401,6 +403,13 @@ public partial class CollectionViewPage : ContentPage
     private void OnSelectionCommandExecuted(string parameter)
     {
         SelectionCommandLabel.Text = $"Command executed for: {parameter}";
+    }
+
+    private int _loadMoreCount = 0;
+    private void OnLoadMoreItemsCommandExecuted()
+    {
+        _loadMoreCount++;
+        LoadMoreCommandLabel.Text = $"LoadMoreCommand executed: {_loadMoreCount} times";
     }
     
     private void OnFavorite(object? sender, EventArgs e)

@@ -902,6 +902,38 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Infinite Scrolling (Command) -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Infinite Scrolling (Command)"
+                           FontAttributes="Bold"/>
+                    <Label Text="Test RemainingItemsThresholdReachedCommand"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding LargeList}"
+                                    RemainingItemsThreshold="5"
+                                    RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
+                                    HeightRequest="200">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label x:Name="LoadMoreCommandLabel"
+                           Text="LoadMoreCommand not executed yet"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
 
             <!-- Context Menus (SwipeView) -->
             <Border Stroke="Gray"
