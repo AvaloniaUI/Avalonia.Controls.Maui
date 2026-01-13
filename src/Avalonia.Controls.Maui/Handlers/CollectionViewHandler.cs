@@ -7,6 +7,7 @@ using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using System;
 using System.Collections;
+using Avalonia.Controls.Maui.Extensions;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -106,352 +107,96 @@ public class CollectionViewHandler : ViewHandler<Microsoft.Maui.Controls.Collect
 
     public static void MapItemsSource(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        handler.PlatformView.ItemsSource = itemsView.ItemsSource;
+        handler.PlatformView.UpdateItemsSource(itemsView);
     }
 
     public static void MapItemTemplate(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView.ItemTemplate != null)
-        {
-            // Create an Avalonia DataTemplate from the MAUI DataTemplate
-            var avaloniaTemplate = new FuncDataTemplate<object>((item, _) =>
-            {
-                if (handler.MauiContext == null)
-                    return new TextBlock { Text = item?.ToString() ?? string.Empty };
-
-                // Create MAUI view from template
-                var mauiView = itemsView.ItemTemplate.CreateContent() as Microsoft.Maui.Controls.View;
-                if (mauiView == null)
-                    return new TextBlock { Text = item?.ToString() ?? string.Empty };
-
-                // Set the binding context
-                mauiView.BindingContext = item;
-
-                // Convert to platform control
-                var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
-                return platformControl ?? new TextBlock { Text = item?.ToString() ?? string.Empty };
-            });
-
-            handler.PlatformView.ItemTemplate = avaloniaTemplate;
-        }
-        else
-        {
-            // Default template - just show ToString()
-            handler.PlatformView.ItemTemplate = new FuncDataTemplate<object>((item, _) =>
-                new TextBlock { Text = item?.ToString() ?? string.Empty });
-        }
+        handler.PlatformView.UpdateItemTemplate(itemsView, handler);
     }
 
     public static void MapEmptyView(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView.EmptyView is Microsoft.Maui.Controls.View emptyView)
-        {
-            _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
-            var platformControl = (Control)emptyView.ToPlatform(handler.MauiContext);
-            handler.PlatformView.EmptyView = platformControl;
-        }
-        else if (itemsView.EmptyView is string emptyText)
-        {
-            handler.PlatformView.EmptyView = emptyText;
-        }
-        else
-        {
-            handler.PlatformView.EmptyView = itemsView.EmptyView;
-        }
+        handler.PlatformView.UpdateEmptyView(itemsView, handler);
     }
 
     public static void MapEmptyViewTemplate(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView.EmptyViewTemplate != null)
-        {
-            var avaloniaTemplate = new FuncDataTemplate<object>((item, _) =>
-            {
-                if (handler.MauiContext == null)
-                    return new TextBlock { Text = "No items" };
-
-                var mauiView = itemsView.EmptyViewTemplate.CreateContent() as Microsoft.Maui.Controls.View;
-                if (mauiView == null)
-                    return new TextBlock { Text = "No items" };
-
-                mauiView.BindingContext = item;
-                var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
-                return platformControl ?? new TextBlock { Text = "No items" };
-            });
-
-            handler.PlatformView.EmptyViewTemplate = avaloniaTemplate;
-        }
+        handler.PlatformView.UpdateEmptyViewTemplate(itemsView, handler);
     }
 
     public static void MapHorizontalScrollBarVisibility(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        handler.PlatformView.HorizontalScrollBarVisibility = itemsView.HorizontalScrollBarVisibility switch
-        {
-            Microsoft.Maui.ScrollBarVisibility.Always => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Visible,
-            Microsoft.Maui.ScrollBarVisibility.Never => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Hidden,
-            Microsoft.Maui.ScrollBarVisibility.Default => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            _ => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
-        };
+        handler.PlatformView.UpdateHorizontalScrollBarVisibility(itemsView);
     }
 
     public static void MapVerticalScrollBarVisibility(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        handler.PlatformView.VerticalScrollBarVisibility = itemsView.VerticalScrollBarVisibility switch
-        {
-            Microsoft.Maui.ScrollBarVisibility.Always => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Visible,
-            Microsoft.Maui.ScrollBarVisibility.Never => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Hidden,
-            Microsoft.Maui.ScrollBarVisibility.Default => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            _ => global::Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
-        };
+        handler.PlatformView.UpdateVerticalScrollBarVisibility(itemsView);
     }
 
     public static void MapItemsLayout(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView)
-        {
-            handler.PlatformView.ItemsLayout = structuredItemsView.ItemsLayout;
-        }
+        handler.PlatformView.UpdateItemsLayout(itemsView);
     }
 
     public static void MapIsGrouped(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.GroupableItemsView groupableItemsView)
-        {
-            handler.PlatformView.IsGrouped = groupableItemsView.IsGrouped;
-        }
+        handler.PlatformView.UpdateIsGrouped(itemsView);
     }
 
     public static void MapGroupHeaderTemplate(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.GroupableItemsView groupableItemsView &&
-            groupableItemsView.GroupHeaderTemplate != null)
-        {
-            var avaloniaTemplate = new FuncDataTemplate<object>((item, _) =>
-            {
-                if (handler.MauiContext == null)
-                    return new TextBlock { Text = "Group Header" };
-
-                var mauiView = groupableItemsView.GroupHeaderTemplate.CreateContent() as Microsoft.Maui.Controls.View;
-                if (mauiView == null)
-                    return new TextBlock { Text = "Group Header" };
-
-                mauiView.BindingContext = item;
-                var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
-                return platformControl ?? new TextBlock { Text = "Group Header" };
-            });
-
-            handler.PlatformView.GroupHeaderTemplate = avaloniaTemplate;
-        }
+        handler.PlatformView.UpdateGroupHeaderTemplate(itemsView, handler);
     }
 
     public static void MapGroupFooterTemplate(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.GroupableItemsView groupableItemsView &&
-            groupableItemsView.GroupFooterTemplate != null)
-        {
-            var avaloniaTemplate = new FuncDataTemplate<object>((item, _) =>
-            {
-                if (handler.MauiContext == null)
-                    return new TextBlock { Text = "Group Footer" };
-
-                var mauiView = groupableItemsView.GroupFooterTemplate.CreateContent() as Microsoft.Maui.Controls.View;
-                if (mauiView == null)
-                    return new TextBlock { Text = "Group Footer" };
-
-                mauiView.BindingContext = item;
-                var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
-                return platformControl ?? new TextBlock { Text = "Group Footer" };
-            });
-
-            handler.PlatformView.GroupFooterTemplate = avaloniaTemplate;
-        }
+        handler.PlatformView.UpdateGroupFooterTemplate(itemsView, handler);
     }
 
     public static void MapSelectedItem(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.SelectableItemsView selectableItemsView)
-        {
-            // Only update if different to prevent feedback loops
-            if (!Equals(handler.PlatformView.SelectedItem, selectableItemsView.SelectedItem))
-            {
-                handler.PlatformView.SelectedItem = selectableItemsView.SelectedItem;
-            }
-        }
+        handler.PlatformView.UpdateSelectedItem(itemsView);
     }
 
     public static void MapSelectionMode(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.SelectableItemsView selectableItemsView)
-        {
-            handler.PlatformView.SelectionMode = selectableItemsView.SelectionMode switch
-            {
-                Microsoft.Maui.Controls.SelectionMode.None => global::Avalonia.Controls.SelectionMode.Single,
-                Microsoft.Maui.Controls.SelectionMode.Single => global::Avalonia.Controls.SelectionMode.Single,
-                Microsoft.Maui.Controls.SelectionMode.Multiple => global::Avalonia.Controls.SelectionMode.Multiple,
-                _ => global::Avalonia.Controls.SelectionMode.Single
-            };
-        }
+        handler.PlatformView.UpdateSelectionMode(itemsView);
     }
 
     public static void MapHeader(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView)
-        {
-            if (structuredItemsView.Header is Microsoft.Maui.Controls.View headerView)
-            {
-                _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
-                var platformControl = (Control)headerView.ToPlatform(handler.MauiContext);
-                handler.PlatformView.Header = platformControl;
-            }
-            else if (structuredItemsView.Header is string headerText)
-            {
-                handler.PlatformView.Header = headerText;
-            }
-            else
-            {
-                handler.PlatformView.Header = structuredItemsView.Header;
-            }
-        }
+        handler.PlatformView.UpdateHeader(itemsView, handler);
     }
 
     public static void MapHeaderTemplate(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView &&
-            structuredItemsView.HeaderTemplate != null)
-        {
-            var avaloniaTemplate = new FuncDataTemplate<object>((item, _) =>
-            {
-                if (handler.MauiContext == null)
-                    return new TextBlock { Text = "Header" };
-
-                var mauiView = structuredItemsView.HeaderTemplate.CreateContent() as Microsoft.Maui.Controls.View;
-                if (mauiView == null)
-                    return new TextBlock { Text = "Header" };
-
-                mauiView.BindingContext = item;
-                var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
-                return platformControl ?? new TextBlock { Text = "Header" };
-            });
-
-            handler.PlatformView.HeaderTemplate = avaloniaTemplate;
-        }
+        handler.PlatformView.UpdateHeaderTemplate(itemsView, handler);
     }
 
     public static void MapFooter(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView)
-        {
-            if (structuredItemsView.Footer is Microsoft.Maui.Controls.View footerView)
-            {
-                _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
-                var platformControl = (Control)footerView.ToPlatform(handler.MauiContext);
-                handler.PlatformView.Footer = platformControl;
-            }
-            else if (structuredItemsView.Footer is string footerText)
-            {
-                handler.PlatformView.Footer = footerText;
-            }
-            else
-            {
-                handler.PlatformView.Footer = structuredItemsView.Footer;
-            }
-        }
+        handler.PlatformView.UpdateFooter(itemsView, handler);
     }
 
     public static void MapFooterTemplate(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView &&
-            structuredItemsView.FooterTemplate != null)
-        {
-            var avaloniaTemplate = new FuncDataTemplate<object>((item, _) =>
-            {
-                if (handler.MauiContext == null)
-                    return new TextBlock { Text = "Footer" };
-
-                var mauiView = structuredItemsView.FooterTemplate.CreateContent() as Microsoft.Maui.Controls.View;
-                if (mauiView == null)
-                    return new TextBlock { Text = "Footer" };
-
-                mauiView.BindingContext = item;
-                var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
-                return platformControl ?? new TextBlock { Text = "Footer" };
-            });
-
-            handler.PlatformView.FooterTemplate = avaloniaTemplate;
-        }
+        handler.PlatformView.UpdateFooterTemplate(itemsView, handler);
     }
 
     public static void MapSelectedItems(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        if (itemsView is Microsoft.Maui.Controls.SelectableItemsView selectableItemsView)
-        {
-            handler.PlatformView.SelectedItems = selectableItemsView.SelectedItems;
-        }
+        handler.PlatformView.UpdateSelectedItems(itemsView);
     }
 
     public static void MapItemsUpdatingScrollMode(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        handler.PlatformView.ItemsUpdatingScrollMode = itemsView.ItemsUpdatingScrollMode;
+        handler.PlatformView.UpdateItemsUpdatingScrollMode(itemsView);
     }
 
     public static void MapRemainingItemsThreshold(CollectionViewHandler handler, Microsoft.Maui.Controls.ItemsView itemsView)
     {
-        if (handler.PlatformView is null || handler.VirtualView is null)
-            return;
-
-        handler.PlatformView.RemainingItemsThreshold = itemsView.RemainingItemsThreshold;
+        handler.PlatformView.UpdateRemainingItemsThreshold(itemsView);
     }
 }
