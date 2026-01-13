@@ -401,76 +401,56 @@ public class MauiCollectionView : TemplatedControl
 
     private Control WrapItemForSelection(Control content, object? dataContext)
     {
-        // Wrap the content in a button-like container to handle clicks
-        var border = new Border
+        return new SelectionContainer(this)
         {
             Child = content,
             Background = Brushes.Transparent,
             Cursor = new Cursor(StandardCursorType.Hand)
         };
+    }
 
-        border.PointerPressed += (sender, e) =>
+    private void HandleSelection(object? dataContext)
+    {
+        if (SelectionMode != SelectionMode.Single &&
+            SelectionMode != SelectionMode.Multiple)
+            return;
+
+        var actualData = dataContext is GroupItem groupItem ? groupItem.Data : dataContext;
+
+        if (SelectionMode == SelectionMode.Multiple)
         {
-            if (SelectionMode != SelectionMode.Single &&
-                SelectionMode != SelectionMode.Multiple)
-                return;
-
-            var actualData = dataContext is GroupItem groupItem ? groupItem.Data : dataContext;
-
-            if (SelectionMode == SelectionMode.Multiple)
+            var selectedItems = SelectedItems;
+            if (selectedItems == null)
             {
-                var selectedItems = SelectedItems;
-                if (selectedItems == null)
-                {
-                    selectedItems = new System.Collections.ObjectModel.ObservableCollection<object>();
-                    SelectedItems = selectedItems;
-                }
-
-                if (actualData != null)
-                {
-                    if (selectedItems.Contains(actualData))
-                    {
-                        selectedItems.Remove(actualData);
-                        if (SelectedItem == actualData)
-                        {
-                            SelectedItem = selectedItems.Count > 0 ? selectedItems[selectedItems.Count - 1] : null;
-                        }
-                    }
-                    else
-                    {
-                        selectedItems.Add(actualData);
-                        SelectedItem = actualData;
-                    }
-                }
-                // Fire event for SelectedItems changes
-                SelectionChanged?.Invoke(this, EventArgs.Empty);
-                UpdateSelectionVisuals();
-            }
-            else
-            {
-                // Single selection, just set SelectedItem, event fires via OnSelectedItemChanged
-                SelectedItem = actualData;
+                selectedItems = new System.Collections.ObjectModel.ObservableCollection<object>();
+                SelectedItems = selectedItems;
             }
 
-            e.Handled = true;
-        };
-
-        // Set initial visual state when attached to visual tree
-        border.AttachedToVisualTree += (s, e) =>
+            if (actualData != null)
+            {
+                if (selectedItems.Contains(actualData))
+                {
+                    selectedItems.Remove(actualData);
+                    if (SelectedItem == actualData)
+                    {
+                        SelectedItem = selectedItems.Count > 0 ? selectedItems[selectedItems.Count - 1] : null;
+                    }
+                }
+                else
+                {
+                    selectedItems.Add(actualData);
+                    SelectedItem = actualData;
+                }
+            }
+            // Fire event for SelectedItems changes
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
+            UpdateSelectionVisuals();
+        }
+        else
         {
-            RegisterItemContainer(border, content, dataContext);
-            var isSelected = IsItemSelected(dataContext);
-            UpdateVisualState(content, isSelected);
-        };
-
-        // Also update state on DataContextChanged (in case of recycling, though GridLayoutPanel doesn't recycle yet)
-        border.DataContextChanged += (s, e) =>
-        {
-            var isSelected = IsItemSelected(border.DataContext);
-            UpdateVisualState(content, isSelected);
-        };
-
-        return border;
+            // Single selection, just set SelectedItem, event fires via OnSelectedItemChanged
+            SelectedItem = actualData;
+        }
     }
 
     private void OnSelectedItemChanged(AvaloniaPropertyChangedEventArgs e)
@@ -484,6 +464,58 @@ public class MauiCollectionView : TemplatedControl
     }
 
     // Track all item containers for reliable visual state updates
+    private class SelectionContainer : Border
+    {
+        private readonly MauiCollectionView _owner;
+
+        public SelectionContainer(MauiCollectionView owner)
+        {
+            _owner = owner;
+        }
+
+        protected override void OnPointerPressed(PointerPressedEventArgs e)
+        {
+            base.OnPointerPressed(e);
+            _owner.HandleSelection(DataContext);
+            e.Handled = true;
+        }
+
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            if (Child is Control content)
+            {
+                _owner.RegisterItemContainer(this, content, DataContext);
+                var isSelected = _owner.IsItemSelected(DataContext);
+                _owner.UpdateVisualState(content, isSelected);
+            }
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnDetachedFromVisualTree(e);
+            _owner.UnregisterItemContainer(this);
+        }
+
+        protected override void OnDataContextChanged(EventArgs e)
+        {
+            base.OnDataContextChanged(e);
+            
+            if (Child is Control content)
+            {
+                // Verify if we need to update the binding context registration
+                if (this.GetVisualRoot() != null)
+                {
+                    _owner.UnregisterItemContainer(this);
+                    _owner.RegisterItemContainer(this, content, DataContext);
+                }
+
+                var isSelected = _owner.IsItemSelected(DataContext);
+                _owner.UpdateVisualState(content, isSelected);
+            }
+        }
+    }
+
     private class ItemContainerInfo
     {
         public WeakReference<Border> Border { get; }
@@ -503,6 +535,18 @@ public class MauiCollectionView : TemplatedControl
     private void RegisterItemContainer(Border border, Control content, object? dataContext)
     {
         _itemContainers.Add(new ItemContainerInfo(border, content, dataContext));
+    }
+
+    private void UnregisterItemContainer(Border border)
+    {
+        for (int i = 0; i < _itemContainers.Count; i++)
+        {
+            if (_itemContainers[i].Border.TryGetTarget(out var target) && target == border)
+            {
+                _itemContainers.RemoveAt(i);
+                break;
+            }
+        }
     }
 
     private void UpdateSelectionVisuals()
