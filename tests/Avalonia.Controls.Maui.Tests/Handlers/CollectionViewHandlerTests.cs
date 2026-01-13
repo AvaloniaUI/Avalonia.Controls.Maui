@@ -9,6 +9,7 @@ using AvaloniaScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibi
 using MauiSelectionMode = Microsoft.Maui.Controls.SelectionMode;
 using AvaloniaSelectionMode = Avalonia.Controls.SelectionMode;
 using Avalonia.Controls.Maui.Extensions;
+using Avalonia.Controls.Maui.Tests.TestUtilities;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -685,7 +686,7 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         var platformView = handler.PlatformView;
 
         // Force layout pass
-        Assert.Single(platformView.GetVisualDescendants().Where(c => c is TextBlock tb && tb.Text == "Empty"));
+        Assert.Single(platformView.GetVisualDescendants().OfType<TextBlock>(), tb => tb.Text == "Empty");
     }
 
     [AvaloniaFact(DisplayName = "EmptyView Disappears From VisualTree")]
@@ -700,7 +701,7 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         var platformView = handler.PlatformView;
 
         // Initially empty
-        Assert.True(platformView.GetVisualDescendants().Any(c => c is TextBlock tb && tb.Text == "Empty"));
+        Assert.Contains(platformView.GetVisualDescendants().OfType<TextBlock>(), tb => tb.Text == "Empty");
 
         // Add item
         items.Add("Item 1");
@@ -709,7 +710,7 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         await Task.Yield();
         
         // Should be gone
-        Assert.False(platformView.GetVisualDescendants().Any(c => c is TextBlock tb && tb.Text == "Empty"));
+        Assert.DoesNotContain(platformView.GetVisualDescendants().OfType<TextBlock>(), tb => tb.Text == "Empty");
     }
 
     [AvaloniaFact(DisplayName = "EmptyViewTemplate Appears In VisualTree")]
@@ -722,7 +723,7 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
         var platformView = (AvaloniaCollectionView)handler.PlatformView;
 
-        Assert.True(platformView.GetVisualDescendants().Any(c => c is TextBlock tb && tb.Text == "Template Empty"));
+        Assert.Contains(platformView.GetVisualDescendants().OfType<TextBlock>(), tb => tb.Text == "Template Empty");
     }
 
     [AvaloniaFact(DisplayName = "EmptyView Updates On Collection Change")]
@@ -737,13 +738,13 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         var platformView = handler.PlatformView;
 
         // Initially has items, so no empty view
-        Assert.False(platformView.GetVisualDescendants().Any(c => c is TextBlock tb && tb.Text == "Empty"));
+        Assert.DoesNotContain(platformView.GetVisualDescendants().OfType<TextBlock>(), tb => tb.Text == "Empty");
 
         // Clear items
         items.Clear();
         await Task.Yield();
         // Empty view should appear
-        Assert.True(platformView.GetVisualDescendants().Any(c => c is TextBlock tb && tb.Text == "Empty"));
+        Assert.Contains(platformView.GetVisualDescendants().OfType<TextBlock>(), tb => tb.Text == "Empty");
     }
 
     [AvaloniaFact(DisplayName = "ScrollTo Index Updates Offset")]
@@ -811,6 +812,146 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         Threading.Dispatcher.UIThread.RunJobs();
         
         Assert.True(scrollViewer.Offset.Y > 0, $"ScrollViewer offset {scrollViewer.Offset.Y} should be greater than 0 after scrolling to item");
+    }
+
+    [AvaloniaFact(DisplayName = "SelectionChangedCommand Executes")]
+    public async Task SelectionChangedCommandExecutes()
+    {
+        var items = new List<string> { "Item 1", "Item 2" };
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = items;
+        collectionView.SelectionMode = MauiSelectionMode.Single;
+
+        var targetItem = items[1];
+        var commandExecutedCount = 0;
+        object? lastParameter = null;
+        var command = new TestCommand<string>(
+            (p) => { commandExecutedCount++; lastParameter = p; },
+            (p) => true
+        );
+        collectionView.SelectionChangedCommand = command;
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+
+        // Simulate selection change on platform
+        handler.PlatformView.SelectedItem = targetItem;
+
+        // Wait for Dispatcher.Post in handler
+        await Task.Delay(150);
+
+        Assert.Equal(1, commandExecutedCount);
+        Assert.Equal(targetItem, lastParameter);
+    }
+
+    [AvaloniaFact(DisplayName = "SelectionChangedCommandParameter Passed")]
+    public async Task SelectionChangedCommandParameterPassed()
+    {
+        var items = new List<string> { "Item 1", "Item 2" };
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = items;
+        collectionView.SelectionMode = MauiSelectionMode.Single;
+
+        var commandExecutedCount = 0;
+        object? lastParameter = null;
+        var command = new TestCommand<string>(
+            (p) => { commandExecutedCount++; lastParameter = p; },
+            (p) => true
+        );
+        collectionView.SelectionChangedCommand = command;
+        collectionView.SelectionChangedCommandParameter = "Special Parameter";
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+
+        // Simulate selection change on platform
+        handler.PlatformView.SelectedItem = "Item 2";
+
+        // Wait for Dispatcher.Post in handler
+        await Task.Delay(150);
+
+        Assert.Equal(1, commandExecutedCount);
+        Assert.Equal("Special Parameter", lastParameter);
+    }
+
+    [AvaloniaFact(DisplayName = "RemainingItemsThresholdReachedCommand Executes")]
+    public async Task RemainingItemsThresholdReachedCommandExecutes()
+    {
+        var items = Enumerable.Range(0, 50).Select(i => $"Item {i}").ToList();
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = items;
+        collectionView.RemainingItemsThreshold = 5;
+
+        var commandExecutedCount = 0;
+        var command = new TestCommand(() => commandExecutedCount++);
+        collectionView.RemainingItemsThresholdReachedCommand = command;
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+        var platformView = handler.PlatformView;
+
+        var window = new Window { Content = platformView, Width = 200, Height = 200 };
+        window.Show();
+
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        // Scroll near the end to trigger threshold
+        collectionView.ScrollTo(48, -1, ScrollToPosition.MakeVisible, false);
+
+        // Run jobs and wait for potential async operations
+        Threading.Dispatcher.UIThread.RunJobs();
+        await Task.Delay(100);
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        Assert.True(commandExecutedCount > 0, "RemainingItemsThresholdReachedCommand should have executed");
+    }
+
+    [AvaloniaFact(DisplayName = "ScrolledEventFires")]
+    public async Task ScrolledEventFires()
+    {
+        var items = Enumerable.Range(0, 100).Select(i => $"Item {i}").ToList();
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = items;
+        collectionView.HeightRequest = 200;
+
+        bool scrolledFired = false;
+        collectionView.Scrolled += (s, e) => scrolledFired = true;
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+        var platformView = handler.PlatformView;
+
+        var window = new Window { Content = platformView, Width = 200, Height = 200 };
+        window.Show();
+
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        // Perform scroll
+        collectionView.ScrollTo(50, -1, ScrollToPosition.MakeVisible, false);
+
+        Threading.Dispatcher.UIThread.RunJobs();
+        await Task.Delay(100);
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        Assert.True(scrolledFired, "Scrolled event should have fired");
+    }
+
+    [AvaloniaFact(DisplayName = "SelectionMode None Does Not Execute Command")]
+    public async Task SelectionModeNoneDoesNotExecuteCommand()
+    {
+        var items = new List<string> { "Item 1", "Item 2" };
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = items;
+        collectionView.SelectionMode = MauiSelectionMode.None;
+
+        var commandExecutedCount = 0;
+        var command = new TestCommand(() => commandExecutedCount++);
+        collectionView.SelectionChangedCommand = command;
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+
+        // Simulate selection change on platform (even though mode is None)
+        handler.PlatformView.SelectedItem = "Item 2";
+
+        await Task.Delay(150);
+
+        Assert.Equal(0, commandExecutedCount);
     }
     
     System.Collections.IEnumerable? GetPlatformItemsSource(MauiCollectionViewHandler handler) =>
