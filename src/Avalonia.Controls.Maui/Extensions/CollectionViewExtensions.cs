@@ -47,6 +47,13 @@ public static class CollectionViewExtensions
                 mauiView.BindingContext = item;
 
                 var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
+                
+                // Store the MAUI view in the Tag so we can access it for Visual State updates
+                if (platformControl != null)
+                {
+                    platformControl.Tag = mauiView;
+                }
+
                 return platformControl ?? new TextBlock { Text = item?.ToString() ?? string.Empty };
             });
 

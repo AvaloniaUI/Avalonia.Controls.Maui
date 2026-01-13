@@ -1,5 +1,6 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Avalonia.Threading;
 using Avalonia.Controls.Maui.Extensions;
 
 namespace Avalonia.Controls.Maui.Handlers;
@@ -94,7 +95,14 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
         {
             if (!Equals(selectableItemsView.SelectedItem, selectedItem))
             {
-                selectableItemsView.SelectedItem = selectedItem;
+                Dispatcher.UIThread.Post(() =>
+                {
+                    var parameter = selectableItemsView.SelectionChangedCommandParameter ?? selectedItem;
+                    if (selectableItemsView.SelectionChangedCommand?.CanExecute(parameter) == true)
+                    {
+                        selectableItemsView.SelectionChangedCommand.Execute(parameter);
+                    }
+                });
             }
         }
     }

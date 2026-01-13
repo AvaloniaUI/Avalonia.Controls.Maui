@@ -223,7 +223,7 @@
                 </VerticalStackLayout>
             </Border>
             
-            <!-- Selection Mode -->
+            <!-- Single Selection -->
             <Border Stroke="Gray"
                     Padding="10">
                 <Border.StrokeShape>
@@ -269,7 +269,103 @@
                            HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
+      
+            <!-- Multiple Selection -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Multiple Selection"
+                           FontAttributes="Bold"/>
+                    <Label Text="Select multiple items from the list"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding MultiSelectItems}"
+                                    SelectionMode="Multiple"
+                                    SelectionChanged="OnMultiSelectionChanged"
+                                    HeightRequest="200">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="Transparent"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightGreen, Dark=#1B5E20}"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label x:Name="MultiSelectionLabel"
+                           Text="No items selected"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
 
+            <!-- Selection Command -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Selection Command"
+                           FontAttributes="Bold"/>
+                    <Label Text="Demonstrating SelectionChangedCommand"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding SimpleItems}"
+                                    SelectionMode="Single"
+                                    SelectionChangedCommand="{Binding SelectionCommand}"
+                                    SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}"
+                                    HeightRequest="150">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="Transparent"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightSkyBlue, Dark=#01579B}"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <Label Text="{Binding}" 
+                                           TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label x:Name="SelectionCommandLabel"
+                           Text="No command executed yet"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=DarkBlue, Dark=LightSkyBlue}"
+                           HorizontalOptions="Center"
+                           Margin="0,5"/>
+                </VerticalStackLayout>
+            </Border>
+            
             <!-- Empty View (Property) -->
             <Border Stroke="Gray"
                     Padding="10">
@@ -731,52 +827,6 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Multiple Selection -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Multiple Selection"
-                           FontAttributes="Bold"/>
-                    <Label Text="Select multiple items from the list"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <CollectionView ItemsSource="{Binding MultiSelectItems}"
-                                    SelectionMode="Multiple"
-                                    SelectionChanged="OnMultiSelectionChanged"
-                                    HeightRequest="200">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="sys:String">
-                                <Grid Padding="10" HeightRequest="40">
-                                    <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup Name="CommonStates">
-                                            <VisualState Name="Normal">
-                                                <VisualState.Setters>
-                                                    <Setter Property="BackgroundColor" Value="Transparent"/>
-                                                </VisualState.Setters>
-                                            </VisualState>
-                                            <VisualState Name="Selected">
-                                                <VisualState.Setters>
-                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightGreen, Dark=#1B5E20}"/>
-                                                </VisualState.Setters>
-                                            </VisualState>
-                                        </VisualStateGroup>
-                                    </VisualStateManager.VisualStateGroups>
-                                    <Label Text="{Binding}"
-                                           VerticalOptions="Center"/>
-                                </Grid>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                    <Label x:Name="MultiSelectionLabel"
-                           Text="No items selected"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
 

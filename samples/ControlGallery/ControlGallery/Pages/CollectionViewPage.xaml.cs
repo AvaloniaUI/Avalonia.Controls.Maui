@@ -134,7 +134,6 @@ public partial class CollectionViewPage : ContentPage
     public CollectionViewPage()
     {
         InitializeComponent();
-        BindingContext = this;
 
         // Initialize with some items for empty view demo
         EmptyViewItems.Add("Initial Item 1");
@@ -153,7 +152,13 @@ public partial class CollectionViewPage : ContentPage
         UpdateListLayout();
         UpdateGridLayout();
         UpdateHGridLayout();
+
+        SelectionCommand = new Command<string>(OnSelectionCommandExecuted);
+
+        BindingContext = this;
     }
+
+    public Command<string> SelectionCommand { get; }
 
     private void LoadInitialInfiniteScrollItems()
     {
@@ -386,6 +391,11 @@ public partial class CollectionViewPage : ContentPage
     private void UpdateInfiniteScrollCount()
     {
         InfiniteScrollCountLabel.Text = $"Items loaded: {InfiniteScrollItems.Count}";
+    }
+
+    private void OnSelectionCommandExecuted(string parameter)
+    {
+        SelectionCommandLabel.Text = $"Command executed for: {parameter}";
     }
 }
 

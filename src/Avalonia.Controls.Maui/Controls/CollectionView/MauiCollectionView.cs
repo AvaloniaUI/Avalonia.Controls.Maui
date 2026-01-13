@@ -8,6 +8,8 @@ using Avalonia.Threading;
 using Microsoft.Maui.Controls;
 using System.Collections;
 using System.Collections.Specialized;
+using Avalonia.Controls.Maui.Extensions;
+using Avalonia.VisualTree;
 
 namespace Avalonia.Controls.Maui;
 
@@ -442,6 +444,7 @@ public class MauiCollectionView : TemplatedControl
                 }
                 // Fire event for SelectedItems changes
                 SelectionChanged?.Invoke(this, EventArgs.Empty);
+                UpdateSelectionVisuals();
             }
             else
             {
@@ -450,6 +453,21 @@ public class MauiCollectionView : TemplatedControl
             }
 
             e.Handled = true;
+        };
+
+        // Set initial visual state when attached to visual tree
+        border.AttachedToVisualTree += (s, e) =>
+        {
+            RegisterItemContainer(border, content, dataContext);
+            var isSelected = IsItemSelected(dataContext);
+            UpdateVisualState(content, isSelected);
+        };
+
+        // Also update state on DataContextChanged (in case of recycling, though GridLayoutPanel doesn't recycle yet)
+        border.DataContextChanged += (s, e) =>
+        {
+            var isSelected = IsItemSelected(border.DataContext);
+            UpdateVisualState(content, isSelected);
         };
 
         return border;
@@ -462,6 +480,117 @@ public class MauiCollectionView : TemplatedControl
             return;
 
         SelectionChanged?.Invoke(this, EventArgs.Empty);
+        UpdateSelectionVisuals();
+    }
+
+    // Track all item containers for reliable visual state updates
+    private class ItemContainerInfo
+    {
+        public WeakReference<Border> Border { get; }
+        public WeakReference<Control> Content { get; }
+        public WeakReference<object?> DataContext { get; }
+
+        public ItemContainerInfo(Border border, Control content, object? dataContext)
+        {
+            Border = new WeakReference<Border>(border);
+            Content = new WeakReference<Control>(content);
+            DataContext = new WeakReference<object?>(dataContext);
+        }
+    }
+
+    private readonly List<ItemContainerInfo> _itemContainers = new();
+
+    private void RegisterItemContainer(Border border, Control content, object? dataContext)
+    {
+        _itemContainers.Add(new ItemContainerInfo(border, content, dataContext));
+    }
+
+    private void UpdateSelectionVisuals()
+    {
+        // Clean up dead references and update all live containers
+        for (int i = _itemContainers.Count - 1; i >= 0; i--)
+        {
+            var info = _itemContainers[i];
+            if (info.Border.TryGetTarget(out var border) && 
+                info.Content.TryGetTarget(out var content) &&
+                info.DataContext.TryGetTarget(out var dataContext))
+            {
+                if (border.IsVisible && border.GetVisualRoot() != null)
+                {
+                    bool isSelected = IsItemSelected(dataContext);
+                    UpdateVisualState(content, isSelected);
+                }
+            }
+            else
+            {
+                // If any part of the container is dead, remove the entry
+                _itemContainers.RemoveAt(i);
+            }
+        }
+    }
+
+    private bool IsItemSelected(object? item)
+    {
+        if (item == null) return false;
+
+        // Handle GroupItem wrapper
+        if (item is GroupItem groupItem)
+            item = groupItem.Data;
+
+        if (SelectionMode == SelectionMode.Single)
+        {
+            return Equals(SelectedItem, item);
+        }
+        else if (SelectionMode == SelectionMode.Multiple)
+        {
+            return SelectedItems != null && SelectedItems.Contains(item!);
+        }
+
+        return false;
+    }
+
+    private void UpdateVisualState(Control content, bool isSelected)
+    {
+        // Try to get the underlying MAUI view to trigger its VisualStateManager
+        if (content.Tag is VisualElement mauiView)
+        {
+            VisualStateManager.GoToState(mauiView, isSelected ? "Selected" : "Normal");
+
+            // Manually sync background property to ensure visual update
+            // This covers cases where the handler might not automatically propagate the VSM change
+            IBrush? brush = null;
+
+            if (mauiView.Background is Microsoft.Maui.Controls.SolidColorBrush solidBrush)
+            {
+                brush = solidBrush.Color.ToAvaloniaBrush();
+            }
+            else if (mauiView.BackgroundColor != null)
+            {
+                brush = mauiView.BackgroundColor.ToAvaloniaBrush();
+            }
+
+            if (brush != null)
+            {
+                if (content is Panel panel)
+                {
+                    panel.Background = brush;
+                }
+                else if (content is Border border)
+                {
+                    border.Background = brush;
+                }
+                else if (content is TemplatedControl templatedControl)
+                {
+                    templatedControl.Background = brush;
+                }
+            }
+        }
+        else
+        {
+            // Fallback for native Avalonia controls or if Tag is missing
+            // Use pseudo class :selected for Avalonia styling
+            ((IPseudoClasses)content.Classes).Set(":selected", isSelected);
+        }
     }
 
     private void OnScrollBarVisibilityChanged()
@@ -794,7 +923,7 @@ public class MauiCollectionView : TemplatedControl
         if (_itemsControl == null || _scrollViewer == null)
             return;
 
-        Threading.Dispatcher.UIThread.Post(() =>
+        Dispatcher.UIThread.Post(() =>
         {
             if (index >= 0 && _itemsControl.ItemCount > index)
             {
@@ -810,7 +939,7 @@ public class MauiCollectionView : TemplatedControl
                     ScrollToContainer(container, position, animate);
                 }
             }
-        }, Threading.DispatcherPriority.Background);
+        }, DispatcherPriority.Background);
     }
 
     private void ScrollToContainer(Control container, ScrollToPosition position, bool animate)
