@@ -560,6 +560,38 @@
                     </CollectionView>
                 </VerticalStackLayout>
             </Border>
+
+            <!-- Scroll Events -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Scroll Events"
+                           FontAttributes="Bold"/>
+                    <Label Text="Demonstrating the Scrolled event"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <Label x:Name="ScrollInfoLabel"
+                           Text="Scroll the list below..."
+                           TextColor="{AppThemeBinding Light=DarkBlue, Dark=LightSkyBlue}"
+                           HorizontalOptions="Center"
+                           FontAttributes="Bold"/>
+                    <CollectionView ItemsSource="{Binding LargeList}"
+                                    HeightRequest="200"
+                                    Scrolled="OnCollectionViewScrolled">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
             
             <!-- Grouping -->
             <Border Stroke="Gray"

@@ -924,28 +924,31 @@ public class MauiCollectionView : TemplatedControl
 
     private void OnScrollViewerScrollChanged(object? sender, ScrollChangedEventArgs e)
     {
-        if (_scrollViewer == null || RemainingItemsThreshold < 0)
+        if (_scrollViewer == null)
             return;
 
-        // Calculate how close we are to the bottom
-        var verticalOffset = _scrollViewer.Offset.Y;
-        var viewportHeight = _scrollViewer.Viewport.Height;
-        var extentHeight = _scrollViewer.Extent.Height;
+        ScrollChanged?.Invoke(this, e);
 
-        if (extentHeight <= 0)
-            return;
-
-        // Calculate remaining items (approximate based on position)
-        var remainingDistance = extentHeight - (verticalOffset + viewportHeight);
-
-        // Calculate threshold distance
-        var thresholdDistance = viewportHeight * (RemainingItemsThreshold + 1) / 10.0;
-
-        if (remainingDistance <= thresholdDistance)
+        if (RemainingItemsThreshold >= 0)
         {
-            RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
+            var verticalOffset = _scrollViewer.Offset.Y;
+            var viewportHeight = _scrollViewer.Viewport.Height;
+            var extentHeight = _scrollViewer.Extent.Height;
+
+            if (extentHeight > 0)
+            {
+                var remainingDistance = extentHeight - (verticalOffset + viewportHeight);
+                var thresholdDistance = viewportHeight * (RemainingItemsThreshold + 1) / 10.0;
+
+                if (remainingDistance <= thresholdDistance)
+                {
+                    RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
+                }
+            }
         }
     }
+
+    public event EventHandler<ScrollChangedEventArgs>? ScrollChanged;
 
     public void ScrollTo(object item, object group, ScrollToPosition position = ScrollToPosition.MakeVisible, bool animate = true)
     {

@@ -372,6 +372,11 @@ public partial class CollectionViewPage : ContentPage
         }
     }
     
+    private void OnCollectionViewScrolled(object? sender, ItemsViewScrolledEventArgs e)
+    {
+        ScrollInfoLabel.Text = $"Scrolled: H:{e.HorizontalOffset:F2}, V:{e.VerticalOffset:F2}";
+    }
+
     private void OnVisibilitySampleChanged(object? sender, EventArgs e)
     {
         if (VisibilityCollection == null || VisibilitySampleVerticalPicker == null || VisibilitySampleHorizontalPicker == null)

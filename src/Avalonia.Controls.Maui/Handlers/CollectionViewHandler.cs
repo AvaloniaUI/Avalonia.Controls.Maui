@@ -61,6 +61,7 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
         base.ConnectHandler(platformView);
         platformView.SelectionChanged += OnSelectionChanged;
         platformView.RemainingItemsThresholdReached += OnRemainingItemsThresholdReached;
+        platformView.ScrollChanged += OnScrollChanged;
 
         if (VirtualView is ItemsView itemsView)
         {
@@ -72,6 +73,7 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
     {
         platformView.SelectionChanged -= OnSelectionChanged;
         platformView.RemainingItemsThresholdReached -= OnRemainingItemsThresholdReached;
+        platformView.ScrollChanged -= OnScrollChanged;
 
         if (VirtualView is ItemsView itemsView)
         {
@@ -79,6 +81,26 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
         }
 
         base.DisconnectHandler(platformView);
+    }
+
+    private void OnScrollChanged(object? sender, ScrollChangedEventArgs e)
+    {
+        if (VirtualView is ItemsView itemsView && sender is MauiCollectionView platformView)
+        {
+            var offset = platformView.GetScrollViewer()?.Offset ?? default;
+            var args = new ItemsViewScrolledEventArgs
+            {
+                HorizontalDelta = e.OffsetDelta.X,
+                VerticalDelta = e.OffsetDelta.Y,
+                HorizontalOffset = offset.X,
+                VerticalOffset = offset.Y,
+                FirstVisibleItemIndex = -1,
+                CenterItemIndex = -1,
+                LastVisibleItemIndex = -1
+            };
+
+            itemsView.SendScrolled(args);
+        }
     }
 
     private void OnSelectionChanged(object? sender, EventArgs e)
