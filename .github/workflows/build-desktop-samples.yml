@@ -65,7 +65,7 @@ jobs:
           dotnet publish ${{ matrix.app.project }} \
             -c Release \
             -o ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }} \
-            /p:PublishAot=false
+            /p:PublishAOT=false
 
       - name: Publish (AOT)
         if: matrix.build-type.publish-aot
@@ -74,7 +74,7 @@ jobs:
             -c Release \
             -r ${{ matrix.build-type.rid }} \
             -o ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }} \
-            /p:PublishAot=true
+            /p:PublishAOT=true
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
