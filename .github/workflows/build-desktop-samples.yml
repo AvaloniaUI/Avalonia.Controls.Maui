@@ -131,6 +131,9 @@ jobs:
           # Build the AppImage
           ARCH=x86_64 ./squashfs-root/AppRun "$APP_DIR" "./artifacts/$APP_NAME-x86_64.AppImage"
 
+          # Make the AppImage executable
+          chmod +x "./artifacts/$APP_NAME-x86_64.AppImage"
+
       - name: Upload AppImage
         if: matrix.build-type.publish-aot
         uses: actions/upload-artifact@v4
