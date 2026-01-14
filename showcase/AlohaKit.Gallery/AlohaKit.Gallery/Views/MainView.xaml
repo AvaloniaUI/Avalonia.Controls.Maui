@@ -87,8 +87,8 @@
                     BackgroundColor="Transparent"
                     ItemsSource="{Binding Items}"
                     SelectionMode="Single"
-                    SelectedItem="{Binding SelectedItem, Source={x:RelativeSource AncestorType={x:Type views:BasePage}}, Mode=TwoWay}"
-                    SelectionChangedCommand="{Binding NavigateCommand, Source={x:RelativeSource AncestorType={x:Type views:BasePage}}}"
+                    SelectedItem="{Binding SelectedItem, Source={x:Reference MainPage}, Mode=TwoWay, x:DataType=views:BasePage}"
+                    SelectionChangedCommand="{Binding NavigateCommand, Source={x:Reference MainPage}, x:DataType=views:BasePage}"
                     Margin="6, 12, 6, 0">
                     <CollectionView.ItemsLayout>
                         <GridItemsLayout
