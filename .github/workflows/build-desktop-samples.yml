@@ -9,30 +9,8 @@ on:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        app:
-          - name: ControlGallery.Desktop
-            project: samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj
-          - name: MauiPlanets.Desktop
-            project: showcase/MauiPlanets/MauiPlanets.Desktop/MauiPlanets.Desktop.csproj
-          - name: AlohaKit.Gallery.Desktop
-            project: showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/AlohaKit.Gallery.Desktop.csproj
-          - name: 2048Game.Desktop
-            project: showcase/2048Game/2048Game.Desktop/2048Game.Desktop.csproj
-        build-type:
-          - name: Release
-            publish-aot: false
-            rid: ''
-            os: ubuntu-latest
-          - name: Release-AOT
-            publish-aot: true
-            rid: linux-x64
-            os: ubuntu-latest
-
-    runs-on: ${{ matrix.build-type.os }}
-    name: ${{ matrix.app.name }} (${{ matrix.build-type.name }})
+    runs-on: ubuntu-latest
+    name: Build All Desktop Samples
 
     steps:
       - name: Checkout
@@ -47,34 +25,123 @@ jobs:
           dotnet-quality: 'preview'
 
       - name: Install AOT dependencies
-        if: matrix.build-type.publish-aot
         run: |
           sudo apt-get update
           sudo apt-get install -y clang zlib1g-dev
 
-      - name: Restore
-        run: dotnet restore ${{ matrix.app.project }}
-
-      - name: Publish (Non-AOT)
-        if: ${{ !matrix.build-type.publish-aot }}
+      - name: Install maui-tizen workload
         run: |
-          dotnet publish ${{ matrix.app.project }} \
+          dotnet workload install maui-tizen
+
+      # ControlGallery.Desktop
+      - name: Publish ControlGallery.Desktop (Release)
+        run: |
+          dotnet publish samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj \
             -c Release \
-            -o ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }} \
+            -o ./artifacts/ControlGallery.Desktop-Release \
             /p:PublishAot=false
 
-      - name: Publish (AOT)
-        if: matrix.build-type.publish-aot
+      - name: Publish ControlGallery.Desktop (Release-AOT)
         run: |
-          dotnet publish ${{ matrix.app.project }} \
+          dotnet publish samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj \
             -c Release \
-            -r ${{ matrix.build-type.rid }} \
-            -o ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }} \
+            -r linux-x64 \
+            -o ./artifacts/ControlGallery.Desktop-Release-AOT \
             /p:PublishAot=true
 
-      - name: Upload Artifact
+      # MauiPlanets.Desktop
+      - name: Publish MauiPlanets.Desktop (Release)
+        run: |
+          dotnet publish showcase/MauiPlanets/MauiPlanets.Desktop/MauiPlanets.Desktop.csproj \
+            -c Release \
+            -o ./artifacts/MauiPlanets.Desktop-Release \
+            /p:PublishAot=false
+
+      - name: Publish MauiPlanets.Desktop (Release-AOT)
+        run: |
+          dotnet publish showcase/MauiPlanets/MauiPlanets.Desktop/MauiPlanets.Desktop.csproj \
+            -c Release \
+            -r linux-x64 \
+            -o ./artifacts/MauiPlanets.Desktop-Release-AOT \
+            /p:PublishAot=true
+
+      # AlohaKit.Gallery.Desktop
+      - name: Publish AlohaKit.Gallery.Desktop (Release)
+        run: |
+          dotnet publish showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/AlohaKit.Gallery.Desktop.csproj \
+            -c Release \
+            -o ./artifacts/AlohaKit.Gallery.Desktop-Release \
+            /p:PublishAot=false
+
+      - name: Publish AlohaKit.Gallery.Desktop (Release-AOT)
+        run: |
+          dotnet publish showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/AlohaKit.Gallery.Desktop.csproj \
+            -c Release \
+            -r linux-x64 \
+            -o ./artifacts/AlohaKit.Gallery.Desktop-Release-AOT \
+            /p:PublishAot=true
+
+      # 2048Game.Desktop
+      - name: Publish 2048Game.Desktop (Release)
+        run: |
+          dotnet publish showcase/2048Game/2048Game.Desktop/2048Game.Desktop.csproj \
+            -c Release \
+            -o ./artifacts/2048Game.Desktop-Release \
+            /p:PublishAot=false
+
+      - name: Publish 2048Game.Desktop (Release-AOT)
+        run: |
+          dotnet publish showcase/2048Game/2048Game.Desktop/2048Game.Desktop.csproj \
+            -c Release \
+            -r linux-x64 \
+            -o ./artifacts/2048Game.Desktop-Release-AOT \
+            /p:PublishAot=true
+
+      # Upload all artifacts
+      - name: Upload ControlGallery.Desktop-Release
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.app.name }}-${{ matrix.build-type.name }}
-          path: ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }}
-          retention-days: 14
+          name: ControlGallery.Desktop-Release
+          path: ./artifacts/ControlGallery.Desktop-Release
+
+      - name: Upload ControlGallery.Desktop-Release-AOT
+        uses: actions/upload-artifact@v4
+        with:
+          name: ControlGallery.Desktop-Release-AOT
+          path: ./artifacts/ControlGallery.Desktop-Release-AOT
+
+      - name: Upload MauiPlanets.Desktop-Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: MauiPlanets.Desktop-Release
+          path: ./artifacts/MauiPlanets.Desktop-Release
+
+      - name: Upload MauiPlanets.Desktop-Release-AOT
+        uses: actions/upload-artifact@v4
+        with:
+          name: MauiPlanets.Desktop-Release-AOT
+          path: ./artifacts/MauiPlanets.Desktop-Release-AOT
+
+      - name: Upload AlohaKit.Gallery.Desktop-Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: AlohaKit.Gallery.Desktop-Release
+          path: ./artifacts/AlohaKit.Gallery.Desktop-Release
+
+      - name: Upload AlohaKit.Gallery.Desktop-Release-AOT
+        uses: actions/upload-artifact@v4
+        with:
+          name: AlohaKit.Gallery.Desktop-Release-AOT
+          path: ./artifacts/AlohaKit.Gallery.Desktop-Release-AOT
+
+      - name: Upload 2048Game.Desktop-Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: 2048Game.Desktop-Release
+          path: ./artifacts/2048Game.Desktop-Release
+
+      - name: Upload 2048Game.Desktop-Release-AOT
+        uses: actions/upload-artifact@v4
+        with:
+          name: 2048Game.Desktop-Release-AOT
+          path: ./artifacts/2048Game.Desktop-Release-AOT
