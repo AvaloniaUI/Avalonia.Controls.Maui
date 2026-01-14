@@ -104,6 +104,7 @@
                         <Label
                             Grid.Column="1"
                             VerticalOptions="Center"
+                            x:DataType="Slider"
                             Text="{Binding Source={x:Reference ValueSlider}, Path=Value, StringFormat='{0:F2}'}"/>
                     </Grid>
                 </Grid>
@@ -111,7 +112,8 @@
         </StackLayout>
         <controls:LinearGauge
             x:Name="LinearGauge"
-            Grid.Row="3" 
+            x:DataType="Slider"
+            Grid.Row="3"
             RangeStart="0"
             RangeEnd="100"
             Value="{Binding Source={x:Reference ValueSlider}, Path=Value}"

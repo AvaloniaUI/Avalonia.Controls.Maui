@@ -73,8 +73,9 @@
             Grid.Row="3"
             HorizontalOptions="Center"
             VerticalOptions="Center">
-			<controls:PieChart 
+			<controls:PieChart
 				x:Name="PieChart"
+				x:DataType="CheckBox"
 				ItemsSource="{Binding Items}"
 				ShowLabels="{Binding Source={x:Reference HasShowLabels}, Path=IsChecked}"/>
 		</Grid>

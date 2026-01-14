@@ -1027,8 +1027,8 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
 
 public class TestTemplateSelector : DataTemplateSelector
 {
-    public DataTemplate TemplateA { get; set; }
-    public DataTemplate TemplateB { get; set; }
+    public DataTemplate TemplateA { get; set; } = null!;
+    public DataTemplate TemplateB { get; set; } = null!;
 
     protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
     {

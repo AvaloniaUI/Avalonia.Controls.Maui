@@ -38,7 +38,7 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
         [AvaloniaFact(DisplayName = "Null Text Mapped As Empty")]
         public async Task NullTextMappedAsEmpty()
         {
-            var editor = new EditorStub { Text = null };
+            var editor = new EditorStub { Text = null! };
             var handler = await CreateHandlerAsync(editor);
             var platformView = (MauiEditor)handler.PlatformView!;
             
