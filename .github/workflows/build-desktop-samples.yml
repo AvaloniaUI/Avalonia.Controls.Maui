@@ -21,18 +21,9 @@ jobs:
             project: showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/AlohaKit.Gallery.Desktop.csproj
           - name: 2048Game.Desktop
             project: showcase/2048Game/2048Game.Desktop/2048Game.Desktop.csproj
-        build-type:
-          - name: Release
-            publish-aot: false
-            rid: ''
-            os: ubuntu-latest
-          - name: Release-AOT
-            publish-aot: true
-            rid: linux-x64
-            os: ubuntu-latest
 
-    runs-on: ${{ matrix.build-type.os }}
-    name: ${{ matrix.app.name }} (${{ matrix.build-type.name }})
+    runs-on: ubuntu-latest
+    name: ${{ matrix.app.name }} (NativeAOT)
 
     steps:
       - name: Checkout
@@ -47,7 +38,6 @@ jobs:
           dotnet-quality: 'preview'
 
       - name: Install AOT dependencies
-        if: matrix.build-type.publish-aot
         run: |
           sudo apt-get update
           sudo apt-get install -y clang zlib1g-dev
@@ -59,25 +49,15 @@ jobs:
       - name: Restore
         run: dotnet restore ${{ matrix.app.project }}
 
-      - name: Publish (Non-AOT)
-        if: ${{ !matrix.build-type.publish-aot }}
+      - name: Publish (NativeAOT)
         run: |
           dotnet publish ${{ matrix.app.project }} \
             -c Release \
-            -o ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }} \
-            /p:PublishAOT=false
-
-      - name: Publish (AOT)
-        if: matrix.build-type.publish-aot
-        run: |
-          dotnet publish ${{ matrix.app.project }} \
-            -c Release \
-            -r ${{ matrix.build-type.rid }} \
-            -o ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }} \
+            -r linux-x64 \
+            -o ./artifacts/${{ matrix.app.name }} \
             /p:PublishAOT=true
 
-      - name: Create AppImage (AOT)
-        if: matrix.build-type.publish-aot
+      - name: Create AppImage
         run: |
           # Download appimagetool
           wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
@@ -88,7 +68,7 @@ jobs:
 
           APP_NAME="${{ matrix.app.name }}"
           APP_DIR="./AppDir"
-          PUBLISH_DIR="./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }}"
+          PUBLISH_DIR="./artifacts/${{ matrix.app.name }}"
 
           # Find the main executable (assumes it matches the app name pattern)
           EXECUTABLE=$(find "$PUBLISH_DIR" -maxdepth 1 -type f -executable -name "*.Desktop" | head -1)
@@ -135,16 +115,8 @@ jobs:
           chmod +x "./artifacts/$APP_NAME-x86_64.AppImage"
 
       - name: Upload AppImage
-        if: matrix.build-type.publish-aot
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.app.name }}-AppImage
           path: ./artifacts/${{ matrix.app.name }}-x86_64.AppImage
-          retention-days: 14
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.app.name }}-${{ matrix.build-type.name }}
-          path: ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }}
           retention-days: 14
