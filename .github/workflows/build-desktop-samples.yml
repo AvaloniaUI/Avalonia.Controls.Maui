@@ -1,0 +1,80 @@
+name: Build Desktop Samples
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - name: ControlGallery.Desktop
+            project: samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj
+          - name: MauiPlanets.Desktop
+            project: showcase/MauiPlanets/MauiPlanets.Desktop/MauiPlanets.Desktop.csproj
+          - name: AlohaKit.Gallery.Desktop
+            project: showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/AlohaKit.Gallery.Desktop.csproj
+          - name: 2048Game.Desktop
+            project: showcase/2048Game/2048Game.Desktop/2048Game.Desktop.csproj
+        build-type:
+          - name: Release
+            publish-aot: false
+            rid: ''
+            os: ubuntu-latest
+          - name: Release-AOT
+            publish-aot: true
+            rid: linux-x64
+            os: ubuntu-latest
+
+    runs-on: ${{ matrix.build-type.os }}
+    name: ${{ matrix.app.name }} (${{ matrix.build-type.name }})
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'preview'
+
+      - name: Install AOT dependencies
+        if: matrix.build-type.publish-aot
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang zlib1g-dev
+
+      - name: Restore
+        run: dotnet restore ${{ matrix.app.project }}
+
+      - name: Publish (Non-AOT)
+        if: ${{ !matrix.build-type.publish-aot }}
+        run: |
+          dotnet publish ${{ matrix.app.project }} \
+            -c Release \
+            -o ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }} \
+            /p:PublishAot=false
+
+      - name: Publish (AOT)
+        if: matrix.build-type.publish-aot
+        run: |
+          dotnet publish ${{ matrix.app.project }} \
+            -c Release \
+            -r ${{ matrix.build-type.rid }} \
+            -o ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }} \
+            /p:PublishAot=true
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app.name }}-${{ matrix.build-type.name }}
+          path: ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }}
+          retention-days: 14
