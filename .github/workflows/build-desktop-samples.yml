@@ -76,6 +76,69 @@ jobs:
             -o ./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }} \
             /p:PublishAOT=true
 
+      - name: Create AppImage (AOT)
+        if: matrix.build-type.publish-aot
+        run: |
+          # Download appimagetool
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+          chmod +x appimagetool
+
+          # Extract appimagetool (needed for running in containers/CI without FUSE)
+          ./appimagetool --appimage-extract
+
+          APP_NAME="${{ matrix.app.name }}"
+          APP_DIR="./AppDir"
+          PUBLISH_DIR="./artifacts/${{ matrix.app.name }}-${{ matrix.build-type.name }}"
+
+          # Find the main executable (assumes it matches the app name pattern)
+          EXECUTABLE=$(find "$PUBLISH_DIR" -maxdepth 1 -type f -executable -name "*.Desktop" | head -1)
+          if [ -z "$EXECUTABLE" ]; then
+            EXECUTABLE=$(find "$PUBLISH_DIR" -maxdepth 1 -type f -executable ! -name "*.so" ! -name "*.dll" | head -1)
+          fi
+          EXECUTABLE_NAME=$(basename "$EXECUTABLE")
+
+          # Create AppDir structure
+          mkdir -p "$APP_DIR/usr/bin"
+          mkdir -p "$APP_DIR/usr/lib"
+
+          # Copy all published files to AppDir
+          cp -r "$PUBLISH_DIR"/* "$APP_DIR/usr/bin/"
+
+          # Create .desktop file
+          cat > "$APP_DIR/$APP_NAME.desktop" << EOF
+          [Desktop Entry]
+          Name=$APP_NAME
+          Exec=$EXECUTABLE_NAME
+          Icon=$APP_NAME
+          Type=Application
+          Categories=Development;
+          EOF
+
+          # Create AppRun script
+          cat > "$APP_DIR/AppRun" << EOF
+          #!/bin/bash
+          SELF=\$(readlink -f "\$0")
+          HERE=\${SELF%/*}
+          export PATH="\${HERE}/usr/bin:\${PATH}"
+          export LD_LIBRARY_PATH="\${HERE}/usr/lib:\${HERE}/usr/bin:\${LD_LIBRARY_PATH}"
+          exec "\${HERE}/usr/bin/$EXECUTABLE_NAME" "\$@"
+          EOF
+          chmod +x "$APP_DIR/AppRun"
+
+          # Copy the app icon
+          cp build/Assets/Icon.png "$APP_DIR/$APP_NAME.png"
+
+          # Build the AppImage
+          ARCH=x86_64 ./squashfs-root/AppRun "$APP_DIR" "./artifacts/$APP_NAME-x86_64.AppImage"
+
+      - name: Upload AppImage
+        if: matrix.build-type.publish-aot
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app.name }}-AppImage
+          path: ./artifacts/${{ matrix.app.name }}-x86_64.AppImage
+          retention-days: 14
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
