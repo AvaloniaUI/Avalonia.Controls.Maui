@@ -835,7 +835,7 @@
                             </DataTemplate>
                         </CollectionView.HeaderTemplate>
                         <CollectionView.FooterTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="pages:CollectionViewPage">
                                 <Border BackgroundColor="ForestGreen" Padding="15" Margin="0,10,0,0">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="10"/>
