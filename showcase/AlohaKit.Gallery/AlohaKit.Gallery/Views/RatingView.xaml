@@ -83,6 +83,7 @@
                         <Label
                             Grid.Column="1"
                             VerticalOptions="Center"
+                            x:DataType="Slider"
                             Text="{Binding Source={x:Reference ValueSlider}, Path=Value, StringFormat='{0:F2}'}"/>
                     </Grid>
                 </Grid>
@@ -139,6 +140,7 @@
         <controls:Rating
             Grid.Row="3"
             x:Name="Rating"
+            x:DataType="Slider"
             Value="{Binding Source={x:Reference ValueSlider}, Path=Value}"/>
     </Grid>
 </ContentPage>

@@ -6,6 +6,8 @@
     x:Class="AlohaKit.Gallery.MainView"
     xmlns:views="clr-namespace:AlohaKit.Gallery.Views.Base"
     xmlns:viewmodels="clr-namespace:AlohaKit.Gallery.ViewModels"
+    xmlns:models="clr-namespace:AlohaKit.Gallery.Models"
+    x:DataType="viewmodels:MainViewModel"
     Title="AlohaKit Gallery">
     <views:BasePage.Resources>
         <ResourceDictionary>
@@ -79,13 +81,14 @@
             <Grid
                 Grid.Row="1"
                 Margin="12">
-                <CollectionView 
+                <CollectionView
                     x:Name="HomeSections"
+                    x:DataType="viewmodels:MainViewModel"
                     BackgroundColor="Transparent"
                     ItemsSource="{Binding Items}"
-                    SelectionMode="Single"    
-                    SelectedItem="{Binding SelectedItem, Source={x:RelativeSource AncestorType={x:Type ContentPage}}, Mode=TwoWay}"
-                    SelectionChangedCommand="{Binding NavigateCommand, Source={x:Reference MainPage}}"
+                    SelectionMode="Single"
+                    SelectedItem="{Binding SelectedItem, Source={x:Reference MainPage}, Mode=TwoWay, x:DataType=views:BasePage}"
+                    SelectionChangedCommand="{Binding NavigateCommand, Source={x:Reference MainPage}, x:DataType=views:BasePage}"
                     Margin="6, 12, 6, 0">
                     <CollectionView.ItemsLayout>
                         <GridItemsLayout
@@ -95,7 +98,7 @@
                             VerticalItemSpacing="6"/>
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate x:DataType="models:SectionModel">
                             <Border
                                Style="{StaticResource SectionItemContainerStyle}">
                                 <Border.StrokeShape>
