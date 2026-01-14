@@ -30,30 +30,45 @@ internal class GridLayoutPanel : Panel
     public static readonly StyledProperty<Orientation> OrientationProperty =
         AvaloniaProperty.Register<GridLayoutPanel, Orientation>(nameof(Orientation), Orientation.Vertical);
 
+    /// <summary>
+    /// Gets or sets the number of columns in the grid.
+    /// </summary>
     public int Columns
     {
         get => GetValue(ColumnsProperty);
         set => SetValue(ColumnsProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the number of rows in the grid.
+    /// </summary>
     public int Rows
     {
         get => GetValue(RowsProperty);
         set => SetValue(RowsProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the horizontal spacing between items.
+    /// </summary>
     public double HorizontalSpacing
     {
         get => GetValue(HorizontalSpacingProperty);
         set => SetValue(HorizontalSpacingProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the vertical spacing between items.
+    /// </summary>
     public double VerticalSpacing
     {
         get => GetValue(VerticalSpacingProperty);
         set => SetValue(VerticalSpacingProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the orientation of the panel.
+    /// </summary>
     public Orientation Orientation
     {
         get => GetValue(OrientationProperty);
@@ -66,14 +81,14 @@ internal class GridLayoutPanel : Panel
     }
 
     /// <summary>
-    /// Gets the width constraint from the CollectionView or ScrollViewer ancestor.
+    /// Gets the width constraint from the MauiCollectionView or ScrollViewer ancestor.
     /// This is necessary because when inside a ScrollViewer, the available width can be infinite,
     /// but we need to constrain cells to the actual viewport width.
     /// </summary>
     private double GetWidthConstraint()
     {
-        // First, try to find the CollectionView ancestor
-        var collectionView = this.FindAncestorOfType<CollectionView>();
+        // First, try to find the MauiCollectionView ancestor
+        var collectionView = this.FindAncestorOfType<MauiCollectionView>();
         if (collectionView != null)
         {
             var width = collectionView.Width;
@@ -108,12 +123,12 @@ internal class GridLayoutPanel : Panel
     }
 
     /// <summary>
-    /// Gets the height constraint from the CollectionView or ScrollViewer ancestor.
+    /// Gets the height constraint from the MauiCollectionView or ScrollViewer ancestor.
     /// </summary>
     private double GetHeightConstraint()
     {
-        // First, try to find the CollectionView ancestor
-        var collectionView = this.FindAncestorOfType<CollectionView>();
+        // First, try to find the MauiCollectionView ancestor
+        var collectionView = this.FindAncestorOfType<MauiCollectionView>();
         if (collectionView != null)
         {
             var height = collectionView.Height;
