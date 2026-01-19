@@ -24,6 +24,7 @@ public partial class MainPage : FlyoutPage
         [typeof(ControlGallery.Pages.TabbedPage)] = () => new ControlGallery.Pages.TabbedPage(),
         [typeof(TitleBarPage)] = () => new TitleBarPage(),
         [typeof(PopupsPage)] = () => new PopupsPage(),
+        [typeof(ToolbarItemPage)] = () => new NavigationPage(new ToolbarItemPage()),
         // Layout
         [typeof(StackLayoutPage)] = () => new StackLayoutPage(),
         [typeof(GridPage)] = () => new GridPage(),
@@ -158,6 +159,7 @@ public partial class MainPage : FlyoutPage
                 new("NavigationPage", "Navigation stack with animated transitions", typeof(NavigationDemoPage)),
                 new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
                 new("TitleBar", "Custom window title bar", typeof(TitleBarPage)),
+                new("ToolbarItems", "Toolbar items and interactions", typeof(ToolbarItemPage)),
                 new("Popups", "Alerts, ActionSheets, and Prompts", typeof(PopupsPage))
             }),
 
