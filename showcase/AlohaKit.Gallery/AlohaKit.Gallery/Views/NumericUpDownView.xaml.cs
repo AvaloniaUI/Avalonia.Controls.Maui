@@ -96,7 +96,7 @@ public partial class NumericUpDownView : ContentPage
         }
     }
 
-    Color GetColorFromString(string value)
+    Color? GetColorFromString(string value)
     {
         if (string.IsNullOrEmpty(value))
             return null;

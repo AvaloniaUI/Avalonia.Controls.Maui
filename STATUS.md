@@ -147,7 +147,9 @@ Displays a scrollable list of selectable data items, using different layout spec
 | ItemTemplate | ✅ Implemented |
 | ItemsUpdatingScrollMode | ✅ Implemented |
 | RemainingItemsThreshold | ✅ Implemented |
-| RemainingItemsThresholdReachedCommand | ⏳ TODO |
+| RemainingItemsThresholdReachedCommand | ✅ Implemented |
+| SelectionChangedCommand | ✅ Implemented |
+| SelectionChangedCommandParameter | ✅ Implemented |
 | SelectedItem | ✅ Implemented |
 | SelectedItems | ✅ Implemented |
 | SelectionMode | ✅ Implemented |
@@ -157,13 +159,8 @@ Displays a scrollable list of selectable data items, using different layout spec
 | Event | Status |
 |-------|--------|
 | RemainingItemsThresholdReached | ✅ Implemented |
+| Scrolled | ✅ Implemented |
 | SelectionChanged | ✅ Implemented |
-
-### Notes
-
-- Supports LinearItemsLayout (Vertical/Horizontal) and GridItemsLayout
-- Grouping supported via IsGrouped, GroupHeaderTemplate, GroupFooterTemplate
-- Custom CollectionViewStackPanel ensures items fill cross-axis in horizontal layouts
 
 ---
 
@@ -225,33 +222,33 @@ Enables you to enter and edit multiple lines of text.
 
 | Property | Status |
 |----------|--------|
-| AutoSize | ⏳ TODO |
-| CharacterSpacing | ⏳ TODO |
-| CursorPosition | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| HorizontalTextAlignment | ⏳ TODO |
-| IsTextPredictionEnabled | ⏳ TODO |
-| Placeholder | ⏳ TODO |
-| PlaceholderColor | ⏳ TODO |
-| SelectionLength | ⏳ TODO |
-| Text | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| VerticalTextAlignment | ⏳ TODO |
-| IsReadOnly | ⏳ TODO |
+| AutoSize | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
+| CursorPosition | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontAutoScalingEnabled | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| HorizontalTextAlignment | ✅ Implemented |
+| IsTextPredictionEnabled | ✅ Implemented |
+| Placeholder | ✅ Implemented |
+| PlaceholderColor | ✅ Implemented |
+| SelectionLength | ✅ Implemented |
+| Text | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| VerticalTextAlignment | ✅ Implemented |
+| IsReadOnly | ✅ Implemented |
 | IsSpellCheckEnabled | ⏳ TODO |
-| Keyboard | ⏳ TODO |
-| MaxLength | ⏳ TODO |
-| TextTransform | ⏳ TODO |
+| Keyboard | ✅ Implemented |
+| MaxLength | ✅ Implemented |
+| TextTransform | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| TextChanged | ⏳ TODO |
-| Completed | ⏳ TODO |
+| TextChanged | ✅ Implemented |
+| Completed | ✅ Implemented |
 
 ---
 
@@ -289,10 +286,10 @@ Enables you to enter and edit a single line of text.
 | FontAutoScalingEnabled | ⏳ TODO |
 | FontFamily | ⏳ TODO |
 | FontSize | ⏳ TODO |
-| Keyboard | ⏳ TODO |
+| Keyboard | ✅ Implemented |
 | HorizontalTextAlignment | ⏳ TODO |
 | IsPassword | ⏳ TODO |
-| IsTextPredictionEnabled | ⏳ TODO |
+| IsTextPredictionEnabled | ✅ Implemented |
 | IsReadOnly | ⏳ TODO |
 | IsSpellCheckEnabled | ⏳ TODO |
 | MaxLength | ⏳ TODO |
@@ -331,7 +328,7 @@ Displays an entry with a label and placeholder, for use in a TableView or ListVi
 | Placeholder | ✅ Implemented |
 | LabelColor | ✅ Implemented |
 | HorizontalTextAlignment | ✅ Implemented |
-| VerticalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ⏳ TODO |
 | Keyboard | ✅ Implemented |
 | IsEnabled | ✅ Implemented |
 | ContextActions | ✅ Implemented |
@@ -355,10 +352,13 @@ Used to wrap a view or layout with a border that can be configured with color, s
 | Property | Status |
 |----------|--------|
 | BorderColor | ✅ Implemented |
-| CornerRadius | ⏳ TODO |
-| HasShadow | ⏳ TODO |
-| Content | ⏳ TODO |
-| Padding | ⏳ TODO |
+| CornerRadius | ✅ Implemented |
+| HasShadow | ✅ Implemented |
+| Content | ✅ Implemented |
+| Padding | ✅ Implemented |
+| Background | ✅ Implemented |
+| BackgroundColor | ✅ Implemented |
+| IsClippedToBounds | ✅ Implemented |
 
 ---
 
@@ -486,7 +486,7 @@ Displays single-line and multi-line text.
 | TextDecorations | ✅ Implemented |
 | TextTransform | ✅ Implemented |
 | TextType | ⏳ TODO |
-| VerticalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ⏳ TODO |
 
 ---
 
@@ -616,6 +616,32 @@ A Page that manages the navigation and user-experience of a stack of other pages
 | PushAsync(bool) | ✅ Done |
 
 ---
+ 
+ ## Page
+ 
+ Visual element that occupies the entire screen.
+ 
+ ### Properties
+ 
+ | Property | Status |
+ |----------|--------|
+ | Background | ✅ Implemented |
+ | BackgroundImageSource | ✅ Implemented |
+ | Content | ✅ Implemented |
+ | IsBusy | ✅ Implemented |
+ | Padding | ⏳ TODO |
+ | Title | ⏳ TODO |
+ | IconImageSource | ⏳ TODO |
+ 
+ ### Methods
+ 
+ | Method                  | Status |
+ |-------------------------|--------|
+ | DisplayAlertAsync       | ✅ Implemented |
+ | DisplayActionSheetAsync | ✅ Implemented |
+ | DisplayPromptAsync      | ✅ Implemented |
+
+ ---
 
 ## Page
 
@@ -675,7 +701,7 @@ Displays a short list of items, from which an item can be selected.
 | TextColor | ✅ Implemented  |
 | Title | ✅ Implemented |
 | TitleColor | ✅ Implemented |
-| VerticalTextAlignment | ✅ Implemented  |
+| VerticalTextAlignment | ⏳ TODO |
 
 ### Events
 
@@ -872,7 +898,7 @@ A user input control used to initiate a search.
 | SelectionLength | ✅ Implemented |
 | Text | ✅ Implemented |
 | TextColor | ✅ Implemented |
-| VerticalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ⏳ TODO |
 
 ### Events
 
@@ -1262,7 +1288,7 @@ All controls inherit these common properties from the View and VisualElement bas
 | AutomationId | string | ✅ Implemented |
 | Background | Brush | ✅ Implemented |
 | BackgroundColor | Color | ✅ Implemented |
-| Behaviors | IList<Behavior> | ⏳ TODO |
+| Behaviors | IList<Behavior> | ✅ Implemented |
 | BindingContext | object | ⏳ TODO |
 | Bounds | Rect | ⏳ TODO |
 | Clip | Geometry | ✅ Implemented |
@@ -1296,9 +1322,10 @@ All controls inherit these common properties from the View and VisualElement bas
 | ScaleY | double | ✅ Implemented |
 | Shadow | Shadow | ✅ Implemented |
 | StyleId | string | ✅ Implemented |
+| ToolTip | string | ✅ Implemented |
 | TranslationX | double | ✅ Implemented |
 | TranslationY | double | ✅ Implemented |
-| Triggers | IList<TriggerBase> | ⏳ TODO |
+| Triggers | IList<TriggerBase> | ✅ Implemented |
 | VerticalOptions | LayoutOptions | ✅ Implemented |
 | Width | double | ✅ Implemented |
 | WidthRequest | double | ✅ Implemented |

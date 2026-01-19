@@ -75,6 +75,7 @@
                                 Value="0.5" />
                             <Label
                                 Grid.Column="1"
+                                x:DataType="Slider"
                                 Text="{Binding Source={x:Reference ValueSlider}, Path=Value, StringFormat='{0:F2}'}"
                                 VerticalOptions="Center" />
                         </Grid>
@@ -164,6 +165,7 @@
                     WidthRequest="120"
                     HeightRequest="18"
                     x:Name="HorizontalProgressBar"
+                    x:DataType="Slider"
                     Margin="12"
                     HorizontalOptions="Center"
                     Progress="{Binding Source={x:Reference ValueSlider}, Path=Value}"
@@ -173,6 +175,7 @@
                     HeightRequest="120"
                     IsVertical="True"
                     x:Name="VerticalProgressBar"
+                    x:DataType="Slider"
                     Grid.Column="1"
                     Margin="12"
                     HorizontalOptions="Center"

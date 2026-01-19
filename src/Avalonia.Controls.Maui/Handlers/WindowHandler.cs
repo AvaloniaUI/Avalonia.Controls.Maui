@@ -67,7 +67,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            s_alertManager.Subscribe(window);
+            window.AlertManager.Subscribe();
             window.ModalPushed += OnModalPushed;
             window.ModalPopped += OnModalPopped;
         }
@@ -79,7 +79,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            s_alertManager.Unsubscribe(window);
+            window.AlertManager.Unsubscribe();
             window.ModalPushed -= OnModalPushed;
             window.ModalPopped -= OnModalPopped;
         }

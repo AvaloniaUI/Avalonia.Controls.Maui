@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.StylesPage"
+             Title="Styles">
+    <ContentPage.Resources>
+        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+        <Color x:Key="SectionBorderDark">#444444</Color>
+        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+
+        <!-- Implicit Style for Entry (Applied automatically) -->
+        <Style TargetType="Entry">
+            <Setter Property="TextColor" Value="Purple" />
+            <Setter Property="PlaceholderColor" Value="#E0B0FF" />
+        </Style>
+
+        <!-- Explicit Style -->
+        <Style x:Key="ExplicitButtonStyle" TargetType="Button">
+            <Setter Property="BackgroundColor" Value="Orange" />
+            <Setter Property="TextColor" Value="White" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+
+        <!-- Inherited Style (BasedOn) -->
+        <Style x:Key="BaseLabelStyle" TargetType="Label">
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="TextColor" Value="Gray" />
+        </Style>
+        
+        <Style x:Key="DerivedLabelStyle" TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}">
+            <Setter Property="FontAttributes" Value="Italic" />
+            <Setter Property="TextColor" Value="Blue" /> <!-- Overrides base -->
+        </Style>
+
+        <!-- Style Classes -->
+        <Style TargetType="Button" Class="Warning">
+            <Setter Property="BackgroundColor" Value="#FFCC00" />
+            <Setter Property="TextColor" Value="Black" />
+        </Style>
+        
+        <Style TargetType="Button" Class="Danger">
+            <Setter Property="BackgroundColor" Value="#FF0000" />
+            <Setter Property="TextColor" Value="White" />
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <Label Text="Styles" 
+                   Style="{StaticResource Headline}" />
+
+            <!-- Implicit Styles -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Implicit Styles" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="This Entry has no Style property set, but picks up the implicit style defined in the page resources (Purple text)." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <Entry Placeholder="I am implicitly styled!" Text="Purple Text" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Explicit Styles -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Explicit Styles" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="This Button uses a specific style key." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <Button Text="Explicit Style" Style="{StaticResource ExplicitButtonStyle}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Style Inheritance -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Style Inheritance" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="The second label inherits from the first but changes color and adds italics." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <Label Text="Base Style (Gray, 16)" Style="{StaticResource BaseLabelStyle}" />
+                    <Label Text="Derived Style (Blue, 16, Italic)" Style="{StaticResource DerivedLabelStyle}" />
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Style Classes -->
+             <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="15">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Style Classes" FontAttributes="Bold" FontSize="16"
+                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                    <Label Text="Apply styles by class name, allowing multiple controls to share styling logic independently of their key." FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"/>
+                    
+                    <Button Text="Warning Class" StyleClass="Warning" />
+                    <Button Text="Danger Class" StyleClass="Danger" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

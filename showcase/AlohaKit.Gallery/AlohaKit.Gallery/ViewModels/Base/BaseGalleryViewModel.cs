@@ -8,8 +8,7 @@ namespace AlohaKit.Gallery.ViewModels.Base
         {
             var items = CreateItems();
 
-            if (items != null)
-                Items = items.ToList();
+            Items = items?.ToList() ?? [];
         }
 
         public IReadOnlyList<SectionModel> Items { get; }

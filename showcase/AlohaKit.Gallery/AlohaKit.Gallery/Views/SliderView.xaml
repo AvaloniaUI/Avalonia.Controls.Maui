@@ -125,7 +125,7 @@
             </StackLayout>
         </StackLayout>
         <VerticalStackLayout Grid.Row="3">
-            <Label HorizontalOptions="Center" Text="{Binding Source={x:Reference Slider}, Path=Value}" />
+            <Label HorizontalOptions="Center" x:DataType="controls:Slider" Text="{Binding Source={x:Reference Slider}, Path=Value}" />
             <controls:Slider x:Name="Slider" />
         </VerticalStackLayout>
     </Grid>

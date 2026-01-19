@@ -80,8 +80,7 @@ public static class EntryCellExtensions
     /// <param name="cell">The MAUI cell.</param>
     public static void UpdateKeyboard(this MauiEntryCell platformView, EntryCell cell)
     {
-        // Avalonia TextBox does not support InputScope (desktop platform)
-        // This is a no-op but included for API completeness
+        platformView.Input.UpdateKeyboard(cell.Keyboard);
     }
 
     /// <summary>
@@ -91,13 +90,7 @@ public static class EntryCellExtensions
     /// <param name="cell">The MAUI cell.</param>
     public static void UpdateVerticalTextAlignment(this MauiEntryCell platformView, EntryCell cell)
     {
-        platformView.Input.VerticalContentAlignment = cell.VerticalTextAlignment switch
-        {
-            Microsoft.Maui.TextAlignment.Start => Avalonia.Layout.VerticalAlignment.Top,
-            Microsoft.Maui.TextAlignment.Center => Avalonia.Layout.VerticalAlignment.Center,
-            Microsoft.Maui.TextAlignment.End => Avalonia.Layout.VerticalAlignment.Bottom,
-            _ => Avalonia.Layout.VerticalAlignment.Center
-        };
+        // TODO: Vertical Text Alignment is not directly supported in Avalonia TextBox yet.
     }
 
     /// <summary>

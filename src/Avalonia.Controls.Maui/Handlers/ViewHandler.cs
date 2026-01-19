@@ -25,6 +25,7 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
             [nameof(IView.FlowDirection)] = MapFlowDirection,
             [nameof(IView.Width)] = MapWidth,
             [nameof(IView.Height)] = MapHeight,
+            [nameof(IView.Margin)] = MapMargin,
             [nameof(IView.MinimumHeight)] = MapMinimumHeight,
             [nameof(IView.MaximumHeight)] = MapMaximumHeight,
             [nameof(IView.MinimumWidth)] = MapMinimumWidth,
@@ -159,7 +160,11 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
         {
             // Already on UI thread, execute directly
-            platformView.Measure(new global::Avalonia.Size(widthConstraint, heightConstraint));
+            var avaloniaConstraint = new global::Avalonia.Size(
+                double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
+                double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
+
+            platformView.Measure(avaloniaConstraint);
             var avaloniaSize = platformView.DesiredSize;
             return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
         }
@@ -168,7 +173,11 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
             // Not on UI thread, invoke synchronously on UI thread
             return Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                platformView.Measure(new global::Avalonia.Size(widthConstraint, heightConstraint));
+                var avaloniaConstraint = new global::Avalonia.Size(
+                    double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
+                    double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
+
+                platformView.Measure(avaloniaConstraint);
                 var avaloniaSize = platformView.DesiredSize;
                 return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
             }).GetAwaiter().GetResult();
@@ -223,6 +232,16 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     public static void MapHeight(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateHeight(view);
+    }
+
+    /// <summary>
+    /// Maps the abstract <see cref="IView.Margin"/> property to the platform-specific implementations.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
+    public static void MapMargin(IViewHandler handler, IView view)
+    {
+        ((PlatformView?)handler.PlatformView)?.UpdateMargin(view);
     }
 
     /// <summary>

@@ -50,6 +50,7 @@ public static class PaintExtensions
             var brush = new global::Avalonia.Media.RadialGradientBrush
             {
                 Center = new global::Avalonia.RelativePoint(radialGradient.Center.X, radialGradient.Center.Y, global::Avalonia.RelativeUnit.Relative),
+                GradientOrigin = new global::Avalonia.RelativePoint(radialGradient.Center.X, radialGradient.Center.Y, global::Avalonia.RelativeUnit.Relative),
                 RadiusX = new global::Avalonia.RelativeScalar(radialGradient.Radius, global::Avalonia.RelativeUnit.Relative),
                 RadiusY = new global::Avalonia.RelativeScalar(radialGradient.Radius, global::Avalonia.RelativeUnit.Relative)
             };

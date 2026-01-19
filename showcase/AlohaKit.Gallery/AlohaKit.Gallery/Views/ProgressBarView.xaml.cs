@@ -73,7 +73,7 @@ public partial class ProgressBarView : ContentPage
 		}
 	}
 
-	Color GetColorFromString(string value)
+	Color? GetColorFromString(string value)
     {
         if (string.IsNullOrEmpty(value))
             return null;
@@ -90,14 +90,14 @@ public partial class ProgressBarView : ContentPage
 
     private void stylePicker_SelectedIndexChanged(object sender, EventArgs e)
     {
-        var selectedItem = (sender as Picker).SelectedItem as string;
-		HorizontalProgressBar.RoundCorners = selectedItem == "Rounded" ? true : false;
-		VerticalProgressBar.RoundCorners = selectedItem == "Rounded" ? true : false;
+        var selectedItem = (sender as Picker)?.SelectedItem as string;
+		HorizontalProgressBar.RoundCorners = selectedItem == "Rounded";
+		VerticalProgressBar.RoundCorners = selectedItem == "Rounded";
 	}
 
     private void CheckAnimate_CheckedChanged(object sender, CheckedChangedEventArgs e)
     {
-        var isChecked = (sender as CheckBox).IsChecked;
+        var isChecked = (sender as CheckBox)?.IsChecked ?? false;
 		HorizontalProgressBar.EnableAnimations = isChecked;
 		VerticalProgressBar.EnableAnimations = isChecked;
 	}
