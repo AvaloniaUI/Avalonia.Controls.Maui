@@ -66,6 +66,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Restore dotnet workloads
+      run: |
+        dotnet workload restore ${{github.workspace}}/Avalonia.Controls.Maui.slnx --source https://api.nuget.org/v3/index.json
+
     - name: Run Tests
       run: dotnet run --project ${{github.workspace}}/build/_build.csproj -- --target RunTests --configuration Release
       continue-on-error: false

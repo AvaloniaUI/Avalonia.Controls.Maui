@@ -42,9 +42,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y clang zlib1g-dev
 
-      - name: Install maui-tizen workload
+      - name: Restore dotnet workloads
         run: |
-          dotnet workload install maui-tizen --source https://api.nuget.org/v3/index.json
+          dotnet workload restore ${{github.workspace}}/Avalonia.Controls.Maui.slnx --source https://api.nuget.org/v3/index.json
 
       - name: Restore
         run: dotnet restore ${{ matrix.app.project }}
