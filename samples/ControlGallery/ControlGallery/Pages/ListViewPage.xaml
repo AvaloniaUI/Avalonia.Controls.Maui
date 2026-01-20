@@ -388,7 +388,7 @@
                     <ListView ItemsSource="{Binding ContextItems}"
                               HeightRequest="150">
                         <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="x:String">
+                            <DataTemplate>
                                 <ViewCell>
                                     <ViewCell.ContextActions>
                                         <MenuItem Text="Add to Favorites" Command="{Binding Source={x:Reference listViewPage}, Path=BindingContext.FavoriteCommand}" CommandParameter="{Binding .}" />
