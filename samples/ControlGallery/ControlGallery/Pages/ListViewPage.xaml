@@ -4,24 +4,25 @@
              xmlns:local="clr-namespace:ControlGallery.Pages"
              x:Class="ControlGallery.Pages.ListViewPage"
              x:Name="listViewPage"
+             x:DataType="local:ListViewPage"
              Title="ListView">
 
     <ContentPage.Resources>
         <ResourceDictionary>
             <!-- Cell Type Templates -->
-            <DataTemplate x:Key="TextTemplate">
+            <DataTemplate x:Key="TextTemplate" x:DataType="local:CellTypeItem">
                 <TextCell Text="{Binding Name}" Detail="{Binding Detail}" />
             </DataTemplate>
-            <DataTemplate x:Key="ImageTemplate">
+            <DataTemplate x:Key="ImageTemplate" x:DataType="local:CellTypeItem">
                 <ImageCell Text="{Binding Name}" Detail="{Binding Detail}" ImageSource="dotnet_logo.png" />
             </DataTemplate>
-            <DataTemplate x:Key="SwitchTemplate">
+            <DataTemplate x:Key="SwitchTemplate" x:DataType="local:CellTypeItem">
                 <SwitchCell Text="{Binding Name}" On="{Binding IsToggled}" />
             </DataTemplate>
-            <DataTemplate x:Key="EntryTemplate">
+            <DataTemplate x:Key="EntryTemplate" x:DataType="local:CellTypeItem">
                 <EntryCell Label="{Binding Name}" Placeholder="{Binding Placeholder}" />
             </DataTemplate>
-            <DataTemplate x:Key="ViewTemplate">
+            <DataTemplate x:Key="ViewTemplate" x:DataType="local:CellTypeItem">
                 <ViewCell>
                     <Grid Padding="10" ColumnDefinitions="Auto,*">
                         <BoxView Color="Blue" WidthRequest="20" HeightRequest="20" VerticalOptions="Center" CornerRadius="4"/>
@@ -38,21 +39,21 @@
                                             ViewTemplate="{StaticResource ViewTemplate}"/>
 
             <!-- Role Templates -->
-            <DataTemplate x:Key="AdminTemplate">
+            <DataTemplate x:Key="AdminTemplate" x:DataType="local:PersonItem">
                 <ViewCell>
                     <Grid Padding="10">
                         <Label Text="{Binding Name, StringFormat='{0} (Admin)'}" TextColor="Red" FontAttributes="Bold"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>
-            <DataTemplate x:Key="UserTemplate">
+            <DataTemplate x:Key="UserTemplate" x:DataType="local:PersonItem">
                 <ViewCell>
                     <Grid Padding="10">
                         <Label Text="{Binding Name, StringFormat='{0} (User)'}" TextColor="Black"/>
                     </Grid>
                 </ViewCell>
             </DataTemplate>
-             <DataTemplate x:Key="GuestTemplate">
+             <DataTemplate x:Key="GuestTemplate" x:DataType="local:PersonItem">
                 <ViewCell>
                     <Grid Padding="10">
                         <Label Text="{Binding Name, StringFormat='{0} (Guest)'}" TextColor="Gray" FontAttributes="Italic"/>
@@ -66,12 +67,12 @@
                                         GuestTemplate="{StaticResource GuestTemplate}"/>
             
             <!-- Runtime Templates -->
-            <DataTemplate x:Key="SimpleTemplate">
+            <DataTemplate x:Key="SimpleTemplate" x:DataType="x:String">
                 <ViewCell>
                     <Label Text="{Binding .}" Padding="10"/>
                 </ViewCell>
             </DataTemplate>
-            <DataTemplate x:Key="DetailedTemplate">
+            <DataTemplate x:Key="DetailedTemplate" x:DataType="x:String">
                 <ViewCell>
                     <Border Stroke="Blue" StrokeThickness="1" Margin="5" Padding="5">
                         <Label Text="{Binding ., StringFormat='Detailed: {0}'}" FontAttributes="Bold" TextColor="Blue"/>
@@ -156,7 +157,7 @@
                             </StackLayout>
                         </ListView.Footer>
                         <ListView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="x:String">
                                 <ViewCell>
                                     <Grid HeightRequest="50" Padding="10,0">
                                         <Label Text="{Binding .}" VerticalOptions="Center" FontSize="16"/>
@@ -178,7 +179,7 @@
                               Footer="{Binding .}"
                               HeightRequest="200">
                         <ListView.HeaderTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="local:ListViewPage">
                                 <Grid BackgroundColor="LightGray" Padding="10">
                                     <Label Text="Templated Header"
                                            FontSize="12"
@@ -188,7 +189,7 @@
                             </DataTemplate>
                         </ListView.HeaderTemplate>
                         <ListView.FooterTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="local:ListViewPage">
                                 <Grid BackgroundColor="LightGray" Padding="10">
                                     <Label Text="Templated Footer"
                                            FontSize="12"
@@ -198,7 +199,7 @@
                             </DataTemplate>
                         </ListView.FooterTemplate>
                         <ListView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="x:String">
                                 <ViewCell>
                                     <Grid HeightRequest="50" Padding="10,0">
                                         <Label Text="{Binding .}" VerticalOptions="Center" FontSize="16"/>
@@ -227,7 +228,7 @@
                               RefreshControlColor="Blue"
                               HeightRequest="200">
                         <ListView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="x:String">
                                 <ViewCell>
                                     <Grid HeightRequest="50" Padding="10,0">
                                         <Label Text="{Binding .}" VerticalOptions="Center" FontSize="16"/>
@@ -250,14 +251,14 @@
                               Header="Grouped ListView Header"
                               Footer="Grouped ListView Footer">
                         <ListView.GroupHeaderTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="local:ListViewGroup">
                                 <ViewCell>
                                     <Label Text="{Binding Name}" BackgroundColor="LightBlue" FontAttributes="Bold" Padding="5"/>
                                 </ViewCell>
                             </DataTemplate>
                         </ListView.GroupHeaderTemplate>
                         <ListView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="local:ItemModel">
                                 <TextCell Text="{Binding Name}"/>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -350,7 +351,7 @@
                               HasUnevenRows="True"
                               HeightRequest="250">
                         <ListView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="x:String">
                                 <ViewCell>
                                     <Grid Padding="10">
                                         <Label Text="{Binding .}" FontSize="16" LineBreakMode="WordWrap" />
@@ -387,11 +388,11 @@
                     <ListView ItemsSource="{Binding ContextItems}"
                               HeightRequest="150">
                         <ListView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="x:String">
                                 <ViewCell>
                                     <ViewCell.ContextActions>
-                                        <MenuItem Text="Add to Favorites" Command="{Binding Source={x:Reference listViewPage}, Path=FavoriteCommand}" CommandParameter="{Binding .}" />
-                                        <MenuItem Text="Delete" IsDestructive="True" Command="{Binding Source={x:Reference listViewPage}, Path=DeleteCommand}" CommandParameter="{Binding .}" />
+                                        <MenuItem Text="Add to Favorites" Command="{Binding Source={x:Reference listViewPage}, Path=BindingContext.FavoriteCommand}" CommandParameter="{Binding .}" />
+                                        <MenuItem Text="Delete" IsDestructive="True" Command="{Binding Source={x:Reference listViewPage}, Path=BindingContext.DeleteCommand}" CommandParameter="{Binding .}" />
                                     </ViewCell.ContextActions>
                                     <Grid Padding="10">
                                         <Label Text="{Binding .}" />
@@ -434,7 +435,7 @@
                     </HorizontalStackLayout>
                     <ListView ItemsSource="{Binding PerformanceItems}" HeightRequest="200" CachingStrategy="RecycleElement">
                         <ListView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="x:String">
                                 <TextCell Text="{Binding .}"/>
                             </DataTemplate>
                         </ListView.ItemTemplate>

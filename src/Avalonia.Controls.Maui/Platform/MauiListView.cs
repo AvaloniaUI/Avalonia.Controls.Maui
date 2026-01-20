@@ -60,7 +60,7 @@ public class MauiListView : MauiView
             Content = _listBox
         };
 
-        _listBox.PointerPressed += OnListBoxPointerPressed;
+        _listBox.AddHandler(global::Avalonia.Input.InputElement.TappedEvent, OnListBoxTapped, global::Avalonia.Interactivity.RoutingStrategies.Bubble, true);
         _listBox.ContainerPrepared += OnContainerPrepared;
         _listBox.ContainerClearing += OnContainerClearing;
         _refreshContainer.RefreshRequested += OnRefreshRequested;
@@ -326,9 +326,9 @@ public class MauiListView : MauiView
     public event EventHandler<object?>? ItemDisappearing;
 
 
-    private void OnListBoxPointerPressed(object? sender, global::Avalonia.Input.PointerPressedEventArgs e)
+    private void OnListBoxTapped(object? sender, global::Avalonia.Input.TappedEventArgs e)
     {
-        if (e.ClickCount == 1 && e.Source is Visual visual)
+        if (e.Source is Visual visual)
         {
              var listBoxItem = visual.FindAncestorOfType<ListBoxItem>();
              if (listBoxItem != null)

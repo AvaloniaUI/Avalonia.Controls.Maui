@@ -44,6 +44,7 @@ public partial class MainPage : FlyoutPage
         [typeof(GraphicsViewPage)] = () => new GraphicsViewPage(),
         [typeof(ImagePage)] = () => new ImagePage(),
         [typeof(ImageButtonPage)] = () => new ImageButtonPage(),
+        [typeof(ListViewPage)] = () => new ListViewPage(),
         [typeof(PickerPage)] = () => new PickerPage(),
         [typeof(ProgressBarPage)] = () => new ProgressBarPage(),
         [typeof(RadioButtonPage)] = () => new RadioButtonPage(),
