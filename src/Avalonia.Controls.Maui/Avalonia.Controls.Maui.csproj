@@ -1,7 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>$(DotNetTfm);$(DotNetTfm)-ios;$(DotNetTfm)-maccatalyst;$(DotNetTfm)-android;$(DotNetTfm)-windows10.0.19041.0</TargetFrameworks>
+    <!-- Base target framework (always included) -->
+    <TargetFrameworks>$(DotNetTfm)</TargetFrameworks>
+    <!-- iOS and Mac Catalyst available on macOS and Windows (not Linux) -->
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);$(DotNetTfm)-ios;$(DotNetTfm)-maccatalyst</TargetFrameworks>
+    <!-- Android available on all platforms -->
+    <TargetFrameworks>$(TargetFrameworks);$(DotNetTfm)-android</TargetFrameworks>
+    <!-- Windows available on Windows -->
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);$(DotNetTfm)-windows10.0.19041.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
     <IsAotCompatible>true</IsAotCompatible>
