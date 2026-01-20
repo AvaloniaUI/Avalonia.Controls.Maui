@@ -1,20 +1,10 @@
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Presenters;
-using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
-using Avalonia.Layout;
 using Microsoft.Maui;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Media;
 using Avalonia.VisualTree;
-using Avalonia.Data;
 using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui;
@@ -60,7 +50,7 @@ public class MauiListView : MauiView
             Content = _listBox
         };
 
-        _listBox.AddHandler(global::Avalonia.Input.InputElement.TappedEvent, OnListBoxTapped, global::Avalonia.Interactivity.RoutingStrategies.Bubble, true);
+        _listBox.AddHandler(TappedEvent, OnListBoxTapped, Interactivity.RoutingStrategies.Bubble, true);
         _listBox.ContainerPrepared += OnContainerPrepared;
         _listBox.ContainerClearing += OnContainerClearing;
         _refreshContainer.RefreshRequested += OnRefreshRequested;
@@ -71,7 +61,7 @@ public class MauiListView : MauiView
              {
                  OnScrollChanged(sv);
              }
-        }, global::Avalonia.Interactivity.RoutingStrategies.Bubble);
+        }, Interactivity.RoutingStrategies.Bubble);
 
         Children.Add(_refreshContainer);
     }
@@ -320,12 +310,11 @@ public class MauiListView : MauiView
 
     public event EventHandler? RefreshRequested;
 
-    public event EventHandler<Microsoft.Maui.Controls.ScrolledEventArgs>? Scrolled;
+    public event EventHandler<ScrolledEventArgs>? Scrolled;
     public event EventHandler<object?>? ItemTapped;
     public event EventHandler<object?>? ItemAppearing;
     public event EventHandler<object?>? ItemDisappearing;
-
-
+    
     private void OnListBoxTapped(object? sender, global::Avalonia.Input.TappedEventArgs e)
     {
         if (e.Source is Visual visual)
@@ -348,7 +337,7 @@ public class MauiListView : MauiView
         ItemDisappearing?.Invoke(this, e.Container.DataContext);
     }
 
-    private void OnRefreshRequested(object? sender, global::Avalonia.Controls.RefreshRequestedEventArgs e)
+    private void OnRefreshRequested(object? sender, RefreshRequestedEventArgs e)
     {
         var deferral = e.GetDeferral();
         _currentRefreshDeferral = deferral;
@@ -360,7 +349,7 @@ public class MauiListView : MauiView
         RefreshRequested?.Invoke(this, EventArgs.Empty);
     }
 
-    private global::Avalonia.Controls.RefreshCompletionDeferral? _currentRefreshDeferral;
+    private RefreshCompletionDeferral? _currentRefreshDeferral;
 
     private void UpdatePullToRefresh()
     {
@@ -509,7 +498,7 @@ public class MauiListView : MauiView
         return _listBox.GetVisualDescendants().OfType<ScrollViewer>().FirstOrDefault();
     }
 
-    public void ScrollTo(object item, Microsoft.Maui.Controls.ScrollToPosition position, bool animated)
+    public void ScrollTo(object item, ScrollToPosition position, bool animated)
     {
         var scrollViewer = GetScrollViewer();
         if (scrollViewer == null) return;
@@ -537,12 +526,12 @@ public class MauiListView : MauiView
 
         double finalOffset = position switch
         {
-            Microsoft.Maui.Controls.ScrollToPosition.MakeVisible => 
+            ScrollToPosition.MakeVisible => 
                 itemTop < currentOffset ? itemTop : 
                 (itemBottom > currentOffset + viewportHeight ? itemBottom - viewportHeight : currentOffset),
-            Microsoft.Maui.Controls.ScrollToPosition.Start => itemTop,
-            Microsoft.Maui.Controls.ScrollToPosition.Center => itemTop + (itemHeight / 2) - (viewportHeight / 2),
-            Microsoft.Maui.Controls.ScrollToPosition.End => itemBottom - viewportHeight,
+            ScrollToPosition.Start => itemTop,
+            ScrollToPosition.Center => itemTop + (itemHeight / 2) - (viewportHeight / 2),
+            ScrollToPosition.End => itemBottom - viewportHeight,
             _ => itemTop
         };
 
@@ -551,6 +540,6 @@ public class MauiListView : MauiView
 
     private void OnScrollChanged(ScrollViewer sv)
     {
-        Scrolled?.Invoke(this, new Microsoft.Maui.Controls.ScrolledEventArgs(sv.Offset.X, sv.Offset.Y));
+        Scrolled?.Invoke(this, new ScrolledEventArgs(sv.Offset.X, sv.Offset.Y));
     }
 }
