@@ -50,7 +50,7 @@ public static class ControlExtensions
         control.FontSize = fontManager.GetFontSizeAsDouble(font);
 
         // Set font family using FontManager (handles custom fonts via IFontRegistrar)
-        control.FontFamily = fontManager.GetFontFamily(font);
+        control.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
 
         // Set font style (italic/oblique)
         control.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);

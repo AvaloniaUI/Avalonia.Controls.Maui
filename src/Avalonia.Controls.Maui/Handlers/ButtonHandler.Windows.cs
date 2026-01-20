@@ -8,9 +8,8 @@ public partial class ButtonHandler
         /// Platform-specific stub implementation for Windows.
         /// Avalonia handles image rendering directly via MapImageSource/LoadImageSourceAsync.
         /// </summary>
-        public override void SetImageSource(object? platformImage)
+        public override void SetImageSource(Microsoft.UI.Xaml.Media.ImageSource? platformImage)
         {
-            // Stub: Avalonia handles image rendering via LoadImageSourceAsync in ButtonHandler
         }
     }
 }

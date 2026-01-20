@@ -1,3 +1,5 @@
+using Microsoft.Maui;
+
 namespace Avalonia.Controls.Maui.Services;
 
 /// <summary>
@@ -6,6 +8,8 @@ namespace Avalonia.Controls.Maui.Services;
 /// </summary>
 public partial class AvaloniaStreamImageSourceService
 {
-    // Windows stub: Avalonia handles image rendering via GetImageAsync (IAvaloniaImageSourceService)
-    // No native WinUI image source types are needed.
+    public Task<IImageSourceServiceResult<Microsoft.UI.Xaml.Media.ImageSource>?> GetImageSourceAsync(IImageSource imageSource, float scale = 1, CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult<IImageSourceServiceResult<Microsoft.UI.Xaml.Media.ImageSource>?>(null);
+    }
 }

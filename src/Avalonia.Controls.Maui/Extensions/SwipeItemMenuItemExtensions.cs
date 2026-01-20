@@ -106,7 +106,7 @@ public static class SwipeItemMenuItemExtensions
             return;
 
         platformView.FontSize = fontManager.GetFontSizeAsDouble(font);
-        platformView.FontFamily = fontManager.GetFontFamily(font);
+        platformView.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
         platformView.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
         platformView.FontWeight = FontManager.ToAvaloniaFontWeight(font.Weight);
     }

@@ -1,3 +1,5 @@
+using Microsoft.UI.Xaml.Media;
+
 namespace Avalonia.Controls.Maui.Handlers;
 
 public partial class ImageButtonHandler
@@ -8,9 +10,8 @@ public partial class ImageButtonHandler
         /// Platform-specific stub implementation for Windows.
         /// Avalonia handles image rendering directly via MapImageSource/LoadImageSourceAsync.
         /// </summary>
-        public override void SetImageSource(object? platformImage)
+        public override void SetImageSource(ImageSource? platformImage)
         {
-            // Stub: Avalonia handles image rendering via LoadImageSourceAsync in ImageButtonHandler
         }
     }
 }

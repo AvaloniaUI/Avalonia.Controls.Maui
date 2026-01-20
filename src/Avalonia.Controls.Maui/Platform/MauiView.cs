@@ -103,7 +103,7 @@ public abstract partial class MauiView : Panel, ICrossPlatformLayoutBacking, IVi
 
     public IVisualTreeElement? GetElement()
     {
-#if IOS || MACCATALYST || ANDROID
+#if IOS || MACCATALYST || ANDROID || WINDOWS
         // On platform builds, we can't use IsThisMyPlatformView because it expects native views.
         // Instead, we check if the handler's platform view matches this MauiView.
         if (View is IVisualTreeElement viewElement)
@@ -140,7 +140,7 @@ public abstract partial class MauiView : Panel, ICrossPlatformLayoutBacking, IVi
 #endif
     }
 
-#if IOS || MACCATALYST || ANDROID
+#if IOS || MACCATALYST || ANDROID || WINDOWS
     /// <summary>
     /// Checks if this MauiView is the platform view for the given visual tree element.
     /// </summary>

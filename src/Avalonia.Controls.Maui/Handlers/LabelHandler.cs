@@ -376,7 +376,7 @@ public static class LabelTextBlockExtensions
         if (!font.IsDefault)
         {
             run.FontSize = fontManager.GetFontSizeAsDouble(font);
-            run.FontFamily = fontManager.GetFontFamily(font);
+            run.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
             run.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
             run.FontWeight = FontManager.ToAvaloniaFontWeight(font.Weight);
         }
