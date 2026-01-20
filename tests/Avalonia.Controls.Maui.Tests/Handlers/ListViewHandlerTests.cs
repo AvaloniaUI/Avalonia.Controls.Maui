@@ -174,12 +174,8 @@ public partial class ListViewHandlerTests : HandlerTestBase
         });
 
         var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
-
-        // This triggers layout and realization of items
+        
         handler.PlatformView.UpdateItemTemplate(listView, handler);
-
-        // In a real test we'd need to find the container for the item
-        // But we can check if the internal logic for building the template works
     }
 
     [AvaloniaFact(DisplayName = "HeaderTemplate Maps Correctly")]
@@ -261,7 +257,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var templateA = new MauiDataTemplate(() => new MauiLabel { Text = "A" });
         var templateB = new MauiDataTemplate(() => new MauiLabel { Text = "B" });
 
-        listView.ItemTemplate = new TestTemplateSelector
+        listView.ItemTemplate = new ListViewTestTemplateSelector
         {
             TemplateA = templateA,
             TemplateB = templateB
@@ -615,6 +611,9 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var handler = await CreateHandlerAsync<MauiListViewHandler>(listView);
 
         handler.PlatformView.UpdateItemTemplate(listView, handler);
+
+        // Suppress unused variable warning, test verifies command binding doesn't crash
+        _ = commandExecuted;
     }
 
     [AvaloniaFact(DisplayName = "Item Template With BoxView Works")]
@@ -811,7 +810,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
     public async Task GroupHeaderTemplateWithDataTemplateSelectorWorks()
     {
         var listView = CreateListView();
-        listView.GroupHeaderTemplate = new TestTemplateSelector
+        listView.GroupHeaderTemplate = new ListViewTestTemplateSelector
         {
             TemplateA = new MauiDataTemplate(() => new MauiLabel { Text = "Group A" }),
             TemplateB = new MauiDataTemplate(() => new MauiLabel { Text = "Group B" })
@@ -915,7 +914,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
         var templateA = new MauiDataTemplate(() => new MauiLabel { Text = "A" });
         var templateB = new MauiDataTemplate(() => new MauiLabel { Text = "B" });
 
-        listView.ItemTemplate = new TestTemplateSelector
+        listView.ItemTemplate = new ListViewTestTemplateSelector
         {
             TemplateA = templateA,
             TemplateB = templateB
@@ -929,7 +928,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "Items Source With Null Items Works")]
     public async Task ItemsSourceWithNullItemsWorks()
     {
-        var items = new List<string> { "A", null, "C", null, "E" };
+        var items = new List<string?> { "A", null, "C", null, "E" };
         var listView = CreateListView();
         listView.ItemsSource = items;
 
@@ -957,7 +956,7 @@ public partial class ListViewHandlerTests : HandlerTestBase
     }
 }
 
-public class TestTemplateSelector : DataTemplateSelector
+public class ListViewTestTemplateSelector : DataTemplateSelector
 {
     public DataTemplate? TemplateA { get; set; }
     public DataTemplate? TemplateB { get; set; }
@@ -970,6 +969,6 @@ public class TestTemplateSelector : DataTemplateSelector
 
 public class TestItem
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public int Value { get; set; }
 }
