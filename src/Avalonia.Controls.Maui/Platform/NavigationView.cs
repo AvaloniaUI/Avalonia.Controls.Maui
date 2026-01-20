@@ -15,7 +15,10 @@ public class NavigationView : DockPanel
     private readonly DockPanel _navigationBar;
     private readonly Image _titleIconImage;
     private readonly StackPanel _titleStack;
-
+    private readonly StackPanel _toolbarItemsContainer;
+    private readonly Button _toolbarOverflowButton;
+    private readonly ContextMenu _toolbarOverflowMenu;
+    
     /// <summary>
     /// Gets or sets the current page being displayed in the navigation view.
     /// </summary>
@@ -45,6 +48,21 @@ public class NavigationView : DockPanel
     /// Gets the title icon image control.
     /// </summary>
     public Image TitleIconImage => _titleIconImage;
+    
+    /// <summary>
+    /// Gets the container for toolbar items.
+    /// </summary>
+    public StackPanel ToolbarItemsContainer => _toolbarItemsContainer;
+
+    /// <summary>
+    /// Gets the toolbar overflow button.
+    /// </summary>
+    public Button ToolbarOverflowButton => _toolbarOverflowButton;
+    
+    /// <summary>
+    /// Gets the toolbar overflow menu.
+    /// </summary>
+    public ContextMenu ToolbarOverflowMenu => _toolbarOverflowMenu;
 
     /// <summary>
     /// Gets or sets the navigation bar visibility.
@@ -112,10 +130,10 @@ public class NavigationView : DockPanel
         _titleTextBlock = new TextBlock
         {
             FontSize = 16,
-            FontWeight = Avalonia.Media.FontWeight.SemiBold,
+            FontWeight = Media.FontWeight.SemiBold,
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
-            TextAlignment = Avalonia.Media.TextAlignment.Center
+            TextAlignment = Media.TextAlignment.Center
         };
 
         // Stack for title icon and text
@@ -132,6 +150,34 @@ public class NavigationView : DockPanel
         var centerStack = new Panel();
         centerStack.Children.Add(_titleStack);
         centerStack.Children.Add(_titleViewContainer);
+
+        _toolbarItemsContainer = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            Spacing = 8,
+            Margin = new Thickness(0, 0, 8, 0)
+        };
+        DockPanel.SetDock(_toolbarItemsContainer, Dock.Right);
+        _navigationBar.Children.Add(_toolbarItemsContainer);
+
+        _toolbarOverflowMenu = new ContextMenu();
+        
+        _toolbarOverflowButton = new Button
+        {
+            Content = "...",
+            Width = 30,
+            Height = 30,
+            VerticalAlignment = VerticalAlignment.Center,
+            Background = Brushes.Transparent,
+            BorderThickness = new Thickness(0),
+            IsVisible = false // Hidden by default
+        };
+        
+        _toolbarOverflowButton.Click += (s, e) => _toolbarOverflowMenu.Open(_toolbarOverflowButton);
+        
+        // Add overflow button to the container (at the end)
+        _toolbarItemsContainer.Children.Add(_toolbarOverflowButton);
 
         _navigationBar.Children.Add(centerStack);
 
