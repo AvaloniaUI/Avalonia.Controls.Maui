@@ -1,11 +1,10 @@
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
 
 namespace ControlGallery.Pages;
 
-public partial class ListViewPage : ContentPage, INotifyPropertyChanged
+internal partial class ListViewPage : ContentPage
 {
     public ListViewPage()
     {
@@ -21,21 +20,9 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
         EventItems = new ObservableCollection<string>();
         for (int i = 1; i <= 20; i++) EventItems.Add($"Event Item {i}");
 
-        // Context
-        ContextItems = new ObservableCollection<string>();
-        for (int i = 1; i <= 20; i++) ContextItems.Add($"Context Item {i}");
-
         // Separator
         SeparatorItems = new ObservableCollection<string>();
         for (int i = 1; i <= 10; i++) SeparatorItems.Add($"Separator Item {i}");
-
-        // Runtime
-        RuntimeItems = new ObservableCollection<string>();
-        for (int i = 1; i <= 10; i++) RuntimeItems.Add($"Runtime Item {i}");
-
-        // HeaderFooter (Templated)
-        TemplatedHeaderFooterItems = new ObservableCollection<string>();
-        for (int i = 1; i <= 10; i++) TemplatedHeaderFooterItems.Add($"Templated Item {i}");
 
         // Performance
         PerformanceItems = new ObservableCollection<string>();
@@ -95,7 +82,7 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
 
         ScrollToCommand = new Command<string>(OnScrollTo);
         LoadPerformanceCommand = new Command<string>(OnLoadPerformanceItems);
-        ToggleSeparatorCommand = new Command(OnToggleSeparator);
+
         ChangeTemplateCommand = new Command(OnChangeTemplate);
         FavoriteCommand = new Command<object>(s =>
         {
@@ -110,17 +97,17 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
         RefreshCommand = new Command(async () =>
         {
             if (IsRefreshing) return;
-            
+
             IsRefreshing = true;
             LogEvent("Refresh started...");
-            
+
             await Task.Delay(2000);
-            
+
             if (RefreshItems.Count > 0)
             {
                 RefreshItems[0] = $"Refresh Item 1 (Refreshed {DateTime.Now:T})";
             }
-            
+
             IsRefreshing = false;
             LogEvent("Refresh completed");
             ContextActionStatus = "Refreshed at " + DateTime.Now.ToLongTimeString();
@@ -129,20 +116,32 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
         EventsRefreshCommand = new Command(async () =>
         {
             if (IsEventsRefreshing) return;
-            
+
             IsEventsRefreshing = true;
             LogEvent("Events Refresh started...");
-            
+
             await Task.Delay(1500);
-            
+
             if (EventItems.Count > 0)
             {
                 EventItems[0] = $"Event Item 1 (Refreshed {DateTime.Now:T})";
             }
-            
+
             IsEventsRefreshing = false;
             LogEvent("Events Refresh completed");
         });
+
+        ContextItems = new ObservableCollection<ContextItemViewModel>();
+
+        for (int i = 1; i <= 20; i++)
+        {
+            ContextItems.Add(new ContextItemViewModel
+            {
+                Text = $"Context Item {i}",
+                FavoriteCommand = FavoriteCommand,
+                DeleteCommand = DeleteCommand
+            });
+        }
 
         InitializeComponent();
         BindingContext = this;
@@ -151,10 +150,10 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
     public ObservableCollection<string> BasicItems { get; }
     public ObservableCollection<string> RefreshItems { get; }
     public ObservableCollection<string> EventItems { get; }
-    public ObservableCollection<string> ContextItems { get; }
+    public ObservableCollection<ContextItemViewModel> ContextItems { get; }
     public ObservableCollection<string> SeparatorItems { get; }
-    public ObservableCollection<string> RuntimeItems { get; }
-    public ObservableCollection<string> TemplatedHeaderFooterItems { get; }
+
+
     public ObservableCollection<string> PerformanceItems { get; }
     public ObservableCollection<CellTypeItem> CellTypeItems { get; }
     public ObservableCollection<string> SelectionItems { get; }
@@ -189,30 +188,6 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
         }
     }
 
-    private SeparatorVisibility _separatorVisibility = SeparatorVisibility.Default;
-
-    public SeparatorVisibility SeparatorVisibility
-    {
-        get => _separatorVisibility;
-        set
-        {
-            _separatorVisibility = value;
-            OnPropertyChanged();
-        }
-    }
-
-    private Color _separatorColor = Colors.LightGray;
-
-    public Color SeparatorColor
-    {
-        get => _separatorColor;
-        set
-        {
-            _separatorColor = value;
-            OnPropertyChanged();
-        }
-    }
-
     private DataTemplate? _currentRuntimeTemplate;
 
     public DataTemplate? CurrentRuntimeTemplate
@@ -224,10 +199,10 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-    
+
     public ICommand ScrollToCommand { get; }
     public ICommand LoadPerformanceCommand { get; }
-    public ICommand ToggleSeparatorCommand { get; }
+
     public ICommand ChangeTemplateCommand { get; }
     public ICommand FavoriteCommand { get; }
     public ICommand DeleteCommand { get; }
@@ -267,7 +242,7 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
             OnPropertyChanged();
         }
     }
-    
+
     private void OnSelectionChanged(object sender, SelectedItemChangedEventArgs e)
     {
         if (e.SelectedItem == null)
@@ -310,20 +285,6 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
         }
     }
 
-    private void OnToggleSeparator()
-    {
-        if (SeparatorVisibility == SeparatorVisibility.Default)
-        {
-            SeparatorVisibility = SeparatorVisibility.None;
-            SeparatorColor = Colors.Transparent;
-        }
-        else
-        {
-            SeparatorVisibility = SeparatorVisibility.Default;
-            SeparatorColor = Colors.Red; // Visible change
-        }
-    }
-
     private void OnChangeTemplate()
     {
         if (Resources.TryGetValue("SimpleTemplate", out object t1) &&
@@ -331,12 +292,6 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
         {
             CurrentRuntimeTemplate = (CurrentRuntimeTemplate == (DataTemplate)t1) ? (DataTemplate)t2 : (DataTemplate)t1;
         }
-    }
-
-    private void OnSelectionModeChanged(object sender, EventArgs e)
-    {
-        // Toggle Logic handled by Buttons in XAML passing command or clicked handler? 
-        // We will just expose property setter
     }
 
     public void SetSelectionSingle(object sender, EventArgs e) => CurrentSelectionMode = ListViewSelectionMode.Single;
@@ -347,7 +302,6 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
         SelectionStatus = "None";
     }
 
-    // New Event Handlers
     private void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
         LogEvent($"Selected: {e.SelectedItem}");
@@ -396,7 +350,7 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
 
     private void OnSeparatorColorRedClicked(object sender, EventArgs e)
     {
-        SeparatorColorListView.SeparatorColor = Microsoft.Maui.Graphics.Colors.Red;
+        SeparatorColorListView.SeparatorColor = Colors.Red;
     }
 
     private void OnSeparatorColorGreenClicked(object sender, EventArgs e)
@@ -406,7 +360,7 @@ public partial class ListViewPage : ContentPage, INotifyPropertyChanged
 
     private void OnSeparatorColorBlueClicked(object sender, EventArgs e)
     {
-        SeparatorColorListView.SeparatorColor = Microsoft.Maui.Graphics.Colors.Blue;
+        SeparatorColorListView.SeparatorColor = Colors.Blue;
     }
 
     private void OnScrollNeverClicked(object sender, EventArgs e) =>
@@ -431,6 +385,7 @@ public class CellTypeItem
 public class ListViewGroup : ObservableCollection<ItemModel>
 {
     public string Name { get; private set; }
+
     public ListViewGroup(string name, List<ItemModel> items) : base(items)
     {
         Name = name;
@@ -441,41 +396,54 @@ public class ItemModel
 {
     public string Name { get; set; }
     public string Description { get; set; }
-    public ItemModel(string name) { Name = name; Description = $"Detail for {name}"; }
+
+    public ItemModel(string name)
+    {
+        Name = name;
+        Description = $"Detail for {name}";
+    }
 }
 
 public class PersonItem
 {
-public string Name { get; }
-public string Role { get; }
-public PersonItem(string name, string role)
-{
-    Name = name;
-    Role = role;
-}
+    public string Name { get; }
+    public string Role { get; }
+
+    public PersonItem(string name, string role)
+    {
+        Name = name;
+        Role = role;
+    }
 }
 
 public class CellTypeTemplateSelector : DataTemplateSelector
 {
-public DataTemplate? TextTemplate { get; set; }
-public DataTemplate? ImageTemplate { get; set; }
-public DataTemplate? SwitchTemplate { get; set; }
-public DataTemplate? EntryTemplate { get; set; }
-public DataTemplate? ViewTemplate { get; set; }
+    public DataTemplate? TextTemplate { get; set; }
+    public DataTemplate? ImageTemplate { get; set; }
+    public DataTemplate? SwitchTemplate { get; set; }
+    public DataTemplate? EntryTemplate { get; set; }
+    public DataTemplate? ViewTemplate { get; set; }
 
-protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
-{
-    var cellItem = item as CellTypeItem;
-    return cellItem?.Type switch
+    protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
     {
-        "Text" => TextTemplate ?? new DataTemplate(),
-        "Image" => ImageTemplate ?? new DataTemplate(),
-        "Switch" => SwitchTemplate ?? new DataTemplate(),
-        "Entry" => EntryTemplate ?? new DataTemplate(),
-        "View" => ViewTemplate ?? new DataTemplate(),
-        _ => TextTemplate ?? new DataTemplate()
-    };
+        var cellItem = item as CellTypeItem;
+        return cellItem?.Type switch
+        {
+            "Text" => TextTemplate ?? new DataTemplate(),
+            "Image" => ImageTemplate ?? new DataTemplate(),
+            "Switch" => SwitchTemplate ?? new DataTemplate(),
+            "Entry" => EntryTemplate ?? new DataTemplate(),
+            "View" => ViewTemplate ?? new DataTemplate(),
+            _ => TextTemplate ?? new DataTemplate()
+        };
+    }
 }
+
+public class ContextItemViewModel
+{
+    public string? Text { get; set; }
+    public ICommand? FavoriteCommand { get; set; }
+    public ICommand? DeleteCommand { get; set; }
 }
 
 public class RoleTemplateSelector : DataTemplateSelector

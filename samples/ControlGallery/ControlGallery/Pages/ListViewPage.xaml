@@ -5,7 +5,7 @@
              x:Class="ControlGallery.Pages.ListViewPage"
              x:Name="listViewPage"
              x:DataType="local:ListViewPage"
-             Title="ListView">
+             Title="ListView" x:ClassModifier="internal">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -388,14 +388,14 @@
                     <ListView ItemsSource="{Binding ContextItems}"
                               HeightRequest="150">
                         <ListView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="local:ContextItemViewModel">
                                 <ViewCell>
                                     <ViewCell.ContextActions>
-                                        <MenuItem Text="Add to Favorites" Command="{Binding Source={x:Reference listViewPage}, Path=BindingContext.FavoriteCommand}" CommandParameter="{Binding .}" />
-                                        <MenuItem Text="Delete" IsDestructive="True" Command="{Binding Source={x:Reference listViewPage}, Path=BindingContext.DeleteCommand}" CommandParameter="{Binding .}" />
+                                        <MenuItem Text="Add to Favorites" Command="{Binding FavoriteCommand}" CommandParameter="{Binding Text}" />
+                                        <MenuItem Text="Delete" IsDestructive="True" Command="{Binding DeleteCommand}" CommandParameter="{Binding Text}" />
                                     </ViewCell.ContextActions>
                                     <Grid Padding="10">
-                                        <Label Text="{Binding .}" />
+                                        <Label Text="{Binding Text}" />
                                     </Grid>
                                 </ViewCell>
                             </DataTemplate>
