@@ -406,8 +406,8 @@ public partial class TabbedPage : ContentPage
         tabbedPage.ItemTemplate = new DataTemplate(() =>
         {
             var page = new ContentPage();
-            page.SetBinding(ContentPage.TitleProperty, "Title");
-            
+            page.SetBinding(ContentPage.TitleProperty, static (TabInfo t) => t.Title);
+
             var content = new VerticalStackLayout
             {
                 Spacing = 15,
@@ -427,11 +427,11 @@ public partial class TabbedPage : ContentPage
             };
 
             var titleLabel = new Label { FontSize = 28, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Center };
-            titleLabel.SetBinding(Label.TextProperty, "Title");
+            titleLabel.SetBinding(Label.TextProperty, static (TabInfo t) => t.Title);
             content.Children.Add(titleLabel);
 
             var descLabel = new Label { FontSize = 16, HorizontalOptions = LayoutOptions.Center };
-            descLabel.SetBinding(Label.TextProperty, "Description");
+            descLabel.SetBinding(Label.TextProperty, static (TabInfo t) => t.Description);
             content.Children.Add(descLabel);
 
             page.Content = content;
@@ -470,8 +470,8 @@ public partial class TabbedPage : ContentPage
         tabbedPage.ItemTemplate = new DataTemplate(() =>
         {
             var page = new ContentPage();
-            page.SetBinding(ContentPage.TitleProperty, "Title");
-            
+            page.SetBinding(ContentPage.TitleProperty, static (TabInfo t) => t.Title);
+
             var content = new VerticalStackLayout
             {
                 Spacing = 15,
@@ -491,11 +491,11 @@ public partial class TabbedPage : ContentPage
             };
 
             var titleLabel = new Label { FontSize = 28, FontAttributes = FontAttributes.Bold, HorizontalOptions = LayoutOptions.Center };
-            titleLabel.SetBinding(Label.TextProperty, "Title");
+            titleLabel.SetBinding(Label.TextProperty, static (TabInfo t) => t.Title);
             content.Children.Add(titleLabel);
 
             var descLabel = new Label { FontSize = 16, HorizontalOptions = LayoutOptions.Center };
-            descLabel.SetBinding(Label.TextProperty, "Description");
+            descLabel.SetBinding(Label.TextProperty, static (TabInfo t) => t.Description);
             content.Children.Add(descLabel);
 
             page.Content = content;

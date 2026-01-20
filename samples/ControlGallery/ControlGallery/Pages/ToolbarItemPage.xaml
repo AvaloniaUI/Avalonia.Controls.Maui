@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ToolbarItemPage"
+             Title="ToolbarItems">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Edit" 
+                     IconImageSource="slider_thumb.png"
+                     Clicked="OnEditClicked" 
+                     Order="Primary"
+                     Priority="0" />
+        <ToolbarItem Text="Delete" 
+                     IconImageSource="redbug.png"
+                     Clicked="OnDeleteClicked" 
+                     Order="Primary"
+                     Priority="1" />
+        <ToolbarItem Text="TextOnly" 
+                     Clicked="OnTextOnlyClicked" 
+                     Order="Primary" 
+                     Priority="2"/>
+         <ToolbarItem Text="Secondary" 
+                     Clicked="OnSecondaryClicked"
+                     Order="Secondary" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Label Text="ToolbarItems"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Basic Actions (Primary) -->
+            <Border Stroke="Gray" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Primary Items" FontAttributes="Bold" FontSize="18"/>
+                    <Label x:Name="PrimaryLogLabel" 
+                           Text="Waiting..." 
+                           FontSize="11"
+                           TextColor="{AppThemeBinding Light=DarkBlue, Dark=LightSkyBlue}"/>
+                    <Label Text="Control primary items programmatically."
+                           FontSize="14" FontAttributes="Italic" TextColor="Gray"/>
+                    <Button Text="Execute 'Edit' Command" 
+                            Clicked="OnExecuteEditClicked"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Secondary Actions -->
+            <Border Stroke="Gray" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Secondary Items" FontAttributes="Bold" FontSize="18"/>
+                    <Label x:Name="SecondaryLogLabel" 
+                           Text="Waiting..." 
+                           FontSize="11"
+                           TextColor="{AppThemeBinding Light=DarkGreen, Dark=LightGreen}"/>
+                    <Label Text="Start with one static secondary item."
+                           FontSize="14" FontAttributes="Italic" TextColor="Gray"/>
+                    <Button Text="Execute 'Secondary' Command" 
+                            Clicked="OnExecuteSecondaryClicked"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Dynamic Items Management -->
+            <Border Stroke="Gray" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Items Management" FontAttributes="Bold" FontSize="18"/>
+                    <Label Text="Add/Remove items dynamically."
+                           FontSize="14" FontAttributes="Italic" TextColor="Gray"/>
+                    
+                    <Label Text="Primary Items:" FontAttributes="Bold" FontSize="12"/>
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <Button Text="Add Primary" 
+                                Clicked="OnAddPrimaryItemClicked" />
+                        <Button Grid.Column="1" 
+                                Text="Remove Primary" 
+                                Clicked="OnRemovePrimaryItemClicked"/>
+                    </Grid>
+
+                    <Label Text="Secondary Items:" FontAttributes="Bold" FontSize="12" Margin="0,5,0,0"/>
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <Button Text="Add Secondary" 
+                                Clicked="OnAddSecondaryItemClicked" />
+                        <Button Grid.Column="1" 
+                                Text="Remove Secondary" 
+                                Clicked="OnRemoveSecondaryItemClicked"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Visibility & State -->
+            <Border Stroke="Gray" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Visibility &amp; State" FontAttributes="Bold" FontSize="18"/>
+                    <Label Text="Toggle state. Note: ToolbarItem has no IsVisible, so we simulate it by adding/removing."
+                           FontSize="14" FontAttributes="Italic" TextColor="Gray"/>
+                    
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <Button Text="Toggle IsEnabled" 
+                                Clicked="OnToggleEditClicked"/>
+                        <Button Grid.Column="1" 
+                                Text="Toggle Visibility" 
+                                Clicked="OnToggleEditVisibilityClicked"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Item Modifications -->
+            <Border Stroke="Gray" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Item Modifications" FontAttributes="Bold" FontSize="18"/>
+                    <Label Text="Modify properties like Text and Icon."
+                           FontSize="14" FontAttributes="Italic" TextColor="Gray"/>
+                    
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                         <Button Text="Toggle Icon" 
+                                 Clicked="OnToggleIconClicked"/>
+                         <Button Grid.Column="1"
+                                 Text="Rename 'TextOnly'" 
+                                 Clicked="OnUpdateTextOnlyClicked"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Priority & Order -->
+            <Border Stroke="Gray" Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Priority &amp; Order" FontAttributes="Bold" FontSize="18"/>
+                    <Label Text="Modify Priority (sorting) and Order (Primary/Secondary)."
+                           FontSize="14" FontAttributes="Italic" TextColor="Gray"/>
+                    
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <Button Text="Swap Priorities" 
+                                Clicked="OnSwapPrioritiesClicked"/>
+                        <Button Grid.Column="1" 
+                                Text="Toggle 'Edit' Order" 
+                                Clicked="OnToggleEditOrderClicked"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

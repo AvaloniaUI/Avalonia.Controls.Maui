@@ -1,4 +1,3 @@
-using System;
 using Avalonia.Layout;
 using Avalonia.VisualTree;
 
@@ -10,29 +9,35 @@ namespace Avalonia.Controls.Maui;
 /// In a vertical orientation, children are constrained to the panel's width.
 /// This matches MAUI's CollectionView behavior where items fill the cross-axis.
 /// </summary>
-internal class CollectionViewStackPanel : Panel
+internal class MauiCollectionViewStackPanel : Panel
 {
     public static readonly StyledProperty<Orientation> OrientationProperty =
-        AvaloniaProperty.Register<CollectionViewStackPanel, Orientation>(nameof(Orientation), Orientation.Vertical);
+        AvaloniaProperty.Register<MauiCollectionViewStackPanel, Orientation>(nameof(Orientation), Orientation.Vertical);
 
     public static readonly StyledProperty<double> SpacingProperty =
-        AvaloniaProperty.Register<CollectionViewStackPanel, double>(nameof(Spacing), 0.0);
+        AvaloniaProperty.Register<MauiCollectionViewStackPanel, double>(nameof(Spacing), 0.0);
 
+    /// <summary>
+    /// Gets or sets the orientation of the panel.
+    /// </summary>
     public Orientation Orientation
     {
         get => GetValue(OrientationProperty);
         set => SetValue(OrientationProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the spacing between items.
+    /// </summary>
     public double Spacing
     {
         get => GetValue(SpacingProperty);
         set => SetValue(SpacingProperty, value);
     }
 
-    static CollectionViewStackPanel()
+    static MauiCollectionViewStackPanel()
     {
-        AffectsMeasure<CollectionViewStackPanel>(OrientationProperty, SpacingProperty);
+        AffectsMeasure<MauiCollectionViewStackPanel>(OrientationProperty, SpacingProperty);
     }
 
     /// <summary>
@@ -42,7 +47,7 @@ internal class CollectionViewStackPanel : Panel
     private double GetCrossAxisConstraint(bool isHorizontal)
     {
         // First, try to find the CollectionView ancestor (our custom Avalonia control)
-        var collectionView = this.FindAncestorOfType<CollectionView>();
+        var collectionView = this.FindAncestorOfType<MauiCollectionView>();
         if (collectionView != null)
         {
             if (isHorizontal)
@@ -140,6 +145,7 @@ internal class CollectionViewStackPanel : Panel
             // Measure child with the cross-axis constrained to the available size
             // but main-axis unconstrained (or constrained to remaining space)
             Size childConstraint;
+            
             if (isHorizontal)
             {
                 // Horizontal: constrain height to available, width unconstrained

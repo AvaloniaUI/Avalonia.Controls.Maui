@@ -1,0 +1,122 @@
+name: Build Desktop Samples
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        app:
+          - name: ControlGallery.Desktop
+            project: samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj
+          - name: MauiPlanets.Desktop
+            project: showcase/MauiPlanets/MauiPlanets.Desktop/MauiPlanets.Desktop.csproj
+          - name: AlohaKit.Gallery.Desktop
+            project: showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/AlohaKit.Gallery.Desktop.csproj
+          - name: 2048Game.Desktop
+            project: showcase/2048Game/2048Game.Desktop/2048Game.Desktop.csproj
+
+    runs-on: ubuntu-latest
+    name: ${{ matrix.app.name }} (NativeAOT)
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'preview'
+
+      - name: Install AOT dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang zlib1g-dev
+
+      - name: Install maui-tizen workload
+        run: |
+          dotnet workload install maui-tizen --source https://api.nuget.org/v3/index.json
+
+      - name: Restore
+        run: dotnet restore ${{ matrix.app.project }}
+
+      - name: Publish (NativeAOT)
+        run: |
+          dotnet publish ${{ matrix.app.project }} \
+            -c Release \
+            -r linux-x64 \
+            -o ./artifacts/${{ matrix.app.name }} \
+            /p:PublishAOT=true
+
+      - name: Create AppImage
+        run: |
+          # Download appimagetool
+          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+          chmod +x appimagetool
+
+          # Extract appimagetool (needed for running in containers/CI without FUSE)
+          ./appimagetool --appimage-extract
+
+          APP_NAME="${{ matrix.app.name }}"
+          APP_DIR="./AppDir"
+          PUBLISH_DIR="./artifacts/${{ matrix.app.name }}"
+
+          # Find the main executable (assumes it matches the app name pattern)
+          EXECUTABLE=$(find "$PUBLISH_DIR" -maxdepth 1 -type f -executable -name "*.Desktop" | head -1)
+          if [ -z "$EXECUTABLE" ]; then
+            EXECUTABLE=$(find "$PUBLISH_DIR" -maxdepth 1 -type f -executable ! -name "*.so" ! -name "*.dll" | head -1)
+          fi
+          EXECUTABLE_NAME=$(basename "$EXECUTABLE")
+
+          # Create AppDir structure
+          mkdir -p "$APP_DIR/usr/bin"
+          mkdir -p "$APP_DIR/usr/lib"
+
+          # Copy all published files to AppDir
+          cp -r "$PUBLISH_DIR"/* "$APP_DIR/usr/bin/"
+
+          # Create .desktop file
+          cat > "$APP_DIR/$APP_NAME.desktop" << EOF
+          [Desktop Entry]
+          Name=$APP_NAME
+          Exec=$EXECUTABLE_NAME
+          Icon=$APP_NAME
+          Type=Application
+          Categories=Development;
+          EOF
+
+          # Create AppRun script
+          cat > "$APP_DIR/AppRun" << EOF
+          #!/bin/bash
+          SELF=\$(readlink -f "\$0")
+          HERE=\${SELF%/*}
+          export PATH="\${HERE}/usr/bin:\${PATH}"
+          export LD_LIBRARY_PATH="\${HERE}/usr/lib:\${HERE}/usr/bin:\${LD_LIBRARY_PATH}"
+          exec "\${HERE}/usr/bin/$EXECUTABLE_NAME" "\$@"
+          EOF
+          chmod +x "$APP_DIR/AppRun"
+
+          # Copy the app icon
+          cp build/Assets/Icon.png "$APP_DIR/$APP_NAME.png"
+
+          # Build the AppImage
+          ARCH=x86_64 ./squashfs-root/AppRun "$APP_DIR" "./artifacts/$APP_NAME-x86_64.AppImage"
+
+          # Make the AppImage executable
+          chmod +x "./artifacts/$APP_NAME-x86_64.AppImage"
+
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.app.name }}-AppImage
+          path: ./artifacts/${{ matrix.app.name }}-x86_64.AppImage
+          retention-days: 14

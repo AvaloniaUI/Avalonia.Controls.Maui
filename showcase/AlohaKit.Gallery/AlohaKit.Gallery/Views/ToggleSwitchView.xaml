@@ -126,6 +126,7 @@
         <controls:ToggleSwitch
             Grid.Row="3"
             x:Name="ToggleSwitch"
+            x:DataType="CheckBox"
             HorizontalOptions="Center"
             HasShadow="{Binding Source={x:Reference HasShadowCheckBox}, Path=IsChecked}"/>
     </Grid>
