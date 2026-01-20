@@ -632,6 +632,7 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | Padding | ⏳ TODO |
  | Title | ⏳ TODO |
  | IconImageSource | ⏳ TODO |
+ | ToolbarItems | ✅ Implemented |
  
  ### Methods
  
@@ -642,23 +643,6 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | DisplayPromptAsync      | ✅ Implemented |
 
  ---
-
-## Page
-
-Visual element that occupies the entire screen.
-
-### Properties
-
-| Property | Status |
-|----------|--------|
-| Background | ✅ Implemented |
-| BackgroundImageSource | ✅ Implemented |
-| Content | ✅ Implemented |
-| Title | ⏳ TODO |
-| IconImageSource | ✅ Implemented |
-| Padding | ⏳ TODO |
-
----
 
 ## Path
 
