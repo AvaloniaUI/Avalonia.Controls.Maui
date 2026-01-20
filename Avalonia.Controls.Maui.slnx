@@ -16,6 +16,8 @@
     <Project Path="src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
   </Folder>
   <Folder Name="/Tests/">
+    <Project Path="tests/Avalonia.Controls.Maui.RenderTests/Avalonia.Controls.Maui.RenderTests.csproj" />
     <Project Path="tests/Avalonia.Controls.Maui.Tests/Avalonia.Controls.Maui.Tests.csproj" />
   </Folder>
+
 </Solution>
