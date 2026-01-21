@@ -519,41 +519,41 @@ Displays a scrollable list of selectable data items.
 
 | Property | Status |
 |----------|--------|
-| CachingStrategy | ⏳ TODO |
-| Footer | ⏳ TODO |
-| FooterTemplate | ⏳ TODO |
-| GroupHeaderTemplate | ⏳ TODO |
-| HasUnevenRows | ⏳ TODO |
-| Header | ⏳ TODO |
-| HeaderTemplate | ⏳ TODO |
-| HorizontalScrollBarVisibility | ⏳ TODO |
-| IsPullToRefreshEnabled | ⏳ TODO |
-| IsRefreshing | ⏳ TODO |
-| ItemsSource | ⏳ TODO |
-| ItemTemplate | ⏳ TODO |
-| RefreshCommand | ⏳ TODO |
-| RowHeight | ⏳ TODO |
-| SelectedItem | ⏳ TODO |
-| SelectionMode | ⏳ TODO |
-| SeparatorColor | ⏳ TODO |
-| SeparatorVisibility | ⏳ TODO |
-| VerticalScrollBarVisibility | ⏳ TODO |
-| GroupDisplayBinding | ⏳ TODO |
-| GroupShortNameBinding | ⏳ TODO |
-| RefreshControlColor | ⏳ TODO |
-| IsGroupingEnabled | ⏳ TODO |
+| CachingStrategy | ✅ Implemented  |
+| Footer | ✅ Implemented |
+| FooterTemplate | ✅ Implemented |
+| GroupHeaderTemplate | ✅ Implemented |
+| HasUnevenRows | ✅ Implemented |
+| Header | ✅ Implemented |
+| HeaderTemplate | ✅ Implemented |
+| HorizontalScrollBarVisibility | ✅ Implemented |
+| IsPullToRefreshEnabled | ✅ Implemented |
+| IsRefreshing | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| RefreshCommand | ✅ Implemented |
+| RowHeight | ✅ Implemented |
+| SelectedItem | ✅ Implemented |
+| SelectionMode | ✅ Implemented |
+| SeparatorColor | ✅ Implemented |
+| SeparatorVisibility | ✅ Implemented |
+| VerticalScrollBarVisibility | ✅ Implemented |
+| GroupDisplayBinding | ✅ Implemented |
+| GroupShortNameBinding | ✅ Implemented |
+| RefreshControlColor | ✅ Implemented |
+| IsGroupingEnabled | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| ItemAppearing | ⏳ TODO |
-| ItemDisappearing | ⏳ TODO |
-| ItemSelected | ⏳ TODO |
-| ItemTapped | ⏳ TODO |
-| Refreshing | ⏳ TODO |
-| Scrolled | ⏳ TODO |
-| ScrollToRequested | ⏳ TODO |
+| ItemAppearing | ✅ Implemented |
+| ItemDisappearing | ✅ Implemented |
+| ItemSelected | ✅ Implemented |
+| ItemTapped | ✅ Implemented |
+| Refreshing | ✅ Implemented |
+| Scrolled | ✅ Implemented |
+| ScrollToRequested | ✅ Implemented |
 
 ---
 
