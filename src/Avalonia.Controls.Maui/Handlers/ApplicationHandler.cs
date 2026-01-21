@@ -1,3 +1,4 @@
+using Microsoft.Maui.Handlers;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
@@ -5,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 
 namespace Avalonia.Controls.Maui.Handlers;

@@ -1,5 +1,4 @@
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using System.Reflection;
 using GraphicsSize = Microsoft.Maui.Graphics.Size;
 

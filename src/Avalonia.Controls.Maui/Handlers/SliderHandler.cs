@@ -2,7 +2,6 @@ using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using PlatformView = Avalonia.Controls.Slider;
 using System.Threading;
 using System.Threading.Tasks;

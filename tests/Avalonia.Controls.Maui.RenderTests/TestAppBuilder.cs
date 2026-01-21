@@ -1,4 +1,6 @@
+using Avalonia;
 using Avalonia.Headless;
+using Avalonia.Media;
 using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Controls.Maui.Handlers.Shapes;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +17,8 @@ public class TestAppBuilder
         {
             UseHeadlessDrawing = false
         })
-        .UseSkia();
+        .UseSkia()
+        .WithInterFont();
 }
 
 public static class MauiTestAppBuilderExtensions
@@ -62,7 +65,6 @@ public static class MauiTestAppBuilderExtensions
             handlers.AddHandler<Microsoft.Maui.Controls.Shapes.RoundRectangle, RoundRectangleHandler>();
 
         });
-
 
         return builder;
     }

@@ -83,7 +83,12 @@ public class RenderTestBase : IAsyncDisposable
             window.Show();
 
             // Give layout system time to run
-            await Task.Delay(100);
+            for (int i = 0; i < 5; i++)
+            {
+                Dispatcher.UIThread.RunJobs(DispatcherPriority.Normal);
+                Dispatcher.UIThread.RunJobs(DispatcherPriority.Render);
+                await Task.Delay(20);
+            }
 
             // Render
             var pixelSize = new PixelSize((int)width + 40, (int)height + 40);
@@ -99,8 +104,6 @@ public class RenderTestBase : IAsyncDisposable
             window.Close();
         });
     }
-
-
 
     protected void CompareImages([CallerMemberName] string testName = "")
     {

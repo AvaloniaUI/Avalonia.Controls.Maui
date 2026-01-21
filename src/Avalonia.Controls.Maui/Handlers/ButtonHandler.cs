@@ -3,7 +3,6 @@ using Avalonia.Controls.Maui.Platform;
 using Avalonia.Input;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using System.Threading;
 using System.Threading.Tasks;
