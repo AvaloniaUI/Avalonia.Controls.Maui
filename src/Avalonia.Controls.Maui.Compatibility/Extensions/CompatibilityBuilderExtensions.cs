@@ -29,11 +29,11 @@ public static class CompatibilityBuilderExtensions
 #pragma warning restore CS0618
             handlers.AddHandler<Microsoft.Maui.Controls.ListView, Handlers.ListViewHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.TableView, Handlers.TableViewHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.TextCell, Handlers.Cells.TextCellHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.ImageCell, Handlers.Cells.ImageCellHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.ViewCell, Handlers.Cells.ViewCellHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.SwitchCell, Handlers.Cells.SwitchCellHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.EntryCell, Handlers.Cells.EntryCellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.TextCell, TextCellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.ImageCell, ImageCellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.ViewCell, ViewCellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.SwitchCell, SwitchCellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.EntryCell, EntryCellHandler>();
         });
     }
 }

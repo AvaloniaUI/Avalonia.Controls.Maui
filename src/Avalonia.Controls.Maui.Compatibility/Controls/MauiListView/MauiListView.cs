@@ -7,7 +7,7 @@ using Avalonia.Media;
 using Avalonia.VisualTree;
 using Microsoft.Maui.Controls;
 
-namespace Avalonia.Controls.Maui;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 /// <summary>
 /// Avalonia platform control for MAUI ListView.

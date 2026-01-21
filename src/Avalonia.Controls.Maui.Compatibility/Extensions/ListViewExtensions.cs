@@ -1,9 +1,9 @@
+using Avalonia.Controls.Maui.Compatibility.Handlers;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Microsoft.Maui.Controls;
-using Avalonia.Controls.Maui.Handlers;
 
-namespace Avalonia.Controls.Maui.Platform;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 /// <summary>
 /// Extension methods for mapping MAUI ListView properties to Avalonia MauiListView.

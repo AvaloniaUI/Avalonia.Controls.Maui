@@ -1,9 +1,9 @@
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui.Handlers;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using PlatformView = Avalonia.Controls.Border;
 
-namespace Avalonia.Controls.Maui.Handlers;
+namespace Avalonia.Controls.Maui.Compatibility.Handlers;
 
 public class FrameHandler : ViewHandler<Microsoft.Maui.Controls.Frame, PlatformView>
 {

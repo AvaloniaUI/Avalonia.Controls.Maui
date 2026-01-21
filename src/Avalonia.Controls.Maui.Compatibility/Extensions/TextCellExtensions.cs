@@ -1,6 +1,7 @@
+using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Maui.Controls;
 
-namespace Avalonia.Controls.Maui.Extensions;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 /// <summary>
 /// Extension methods for <see cref="MauiTextCell"/>.

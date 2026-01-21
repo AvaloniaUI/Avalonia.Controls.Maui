@@ -6,7 +6,7 @@ using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Media;
 using Microsoft.Maui;
 
-namespace Avalonia.Controls.Maui;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 /// <summary>
 /// Avalonia platform control for MAUI TableView.

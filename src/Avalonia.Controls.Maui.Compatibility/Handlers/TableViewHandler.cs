@@ -1,8 +1,8 @@
-using Avalonia.Controls.Maui.Extensions;
+using Avalonia.Controls.Maui.Handlers;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 
-namespace Avalonia.Controls.Maui.Handlers;
+namespace Avalonia.Controls.Maui.Compatibility.Handlers;
 
 public class TableViewHandler : ViewHandler<TableView, MauiTableView>
 {

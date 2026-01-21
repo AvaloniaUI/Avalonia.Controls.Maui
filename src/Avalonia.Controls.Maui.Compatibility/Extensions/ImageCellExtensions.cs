@@ -2,9 +2,9 @@ using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using System.Threading.Tasks;
+using Avalonia.Controls.Maui.Extensions;
 
-namespace Avalonia.Controls.Maui.Extensions;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 /// <summary>
 /// Extension methods for <see cref="MauiImageCell"/>.

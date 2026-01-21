@@ -1,6 +1,6 @@
 using Microsoft.Maui.Controls;
 
-namespace Avalonia.Controls.Maui.Extensions;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 /// <summary>
 /// Shared extension methods for all cell types.

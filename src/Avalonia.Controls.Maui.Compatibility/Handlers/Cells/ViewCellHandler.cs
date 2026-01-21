@@ -3,7 +3,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Handlers;
 
-namespace Avalonia.Controls.Maui.Handlers.Cells;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 public class ViewCellHandler : ElementHandler<ViewCell, MauiViewCell>
 {

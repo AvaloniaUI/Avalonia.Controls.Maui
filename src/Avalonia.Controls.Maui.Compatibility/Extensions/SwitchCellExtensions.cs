@@ -1,7 +1,8 @@
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Styling;
 using Microsoft.Maui.Controls;
 
-namespace Avalonia.Controls.Maui.Extensions;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 /// <summary>
 /// Extension methods for <see cref="MauiSwitchCell"/>.
