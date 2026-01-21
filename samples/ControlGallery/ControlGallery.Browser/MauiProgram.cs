@@ -1,7 +1,4 @@
-﻿using Avalonia.Controls;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui.Controls.Hosting;
-using Microsoft.Maui.Hosting;
+﻿using Avalonia.Controls.Maui.Compatibility;
 
 namespace ControlGallery;
 
@@ -13,6 +10,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<ControlGallery.MauiAppStub>()
             .UseAvaloniaApp(useSingleViewLifetime: true)
+            .UseAvaloniaCompatibility()
             .UseAvaloniaGraphics()
             .ConfigureFonts(fonts =>
             {

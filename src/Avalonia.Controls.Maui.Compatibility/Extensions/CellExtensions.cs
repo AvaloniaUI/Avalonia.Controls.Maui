@@ -12,19 +12,19 @@ public static class CellExtensions
     /// </summary>
     /// <param name="cell">The MAUI cell.</param>
     /// <returns>A configured ContextMenu, or null if no context actions exist.</returns>
-    public static Avalonia.Controls.ContextMenu? BuildContextMenu(Cell cell)
+    public static ContextMenu? BuildContextMenu(Cell cell)
     {
         if (!cell.HasContextActions)
         {
             return null;
         }
 
-        var contextMenu = new Avalonia.Controls.ContextMenu();
-        var menuItems = new List<Avalonia.Controls.MenuItem>();
+        var contextMenu = new ContextMenu();
+        var menuItems = new List<MenuItem>();
 
         foreach (var action in cell.ContextActions)
         {
-            var menuItem = new Avalonia.Controls.MenuItem
+            var menuItem = new MenuItem
             {
                 Header = action.Text,
             };
@@ -42,7 +42,7 @@ public static class CellExtensions
             // Apply destructive styling if marked
             if (action.IsDestructive)
             {
-                menuItem.Foreground = Avalonia.Media.Brushes.Red;
+                menuItem.Foreground = Media.Brushes.Red;
             }
 
             menuItems.Add(menuItem);

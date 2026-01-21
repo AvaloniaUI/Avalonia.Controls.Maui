@@ -426,7 +426,7 @@ public static class ListViewExtensions
     /// </summary>
     /// <param name="platformView">The platform list view control.</param>
     /// <param name="listView">The cross-platform list view.</param>
-    public static void UpdateHorizontalScrollBarVisibility(this MauiListView platformView, Microsoft.Maui.Controls.ListView listView)
+    public static void UpdateHorizontalScrollBarVisibility(this MauiListView platformView, ListView listView)
     {
         platformView.HorizontalScrollBarVisibility = listView.HorizontalScrollBarVisibility switch
         {

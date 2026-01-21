@@ -53,7 +53,7 @@ public static class EntryCellExtensions
         }
         else
         {
-            platformView.Label.ClearValue(Avalonia.Controls.TextBlock.ForegroundProperty);
+            platformView.Label.ClearValue(TextBlock.ForegroundProperty);
         }
     }
 
@@ -66,10 +66,10 @@ public static class EntryCellExtensions
     {
         platformView.Input.TextAlignment = cell.HorizontalTextAlignment switch
         {
-            Microsoft.Maui.TextAlignment.Start => Avalonia.Media.TextAlignment.Left,
-            Microsoft.Maui.TextAlignment.Center => Avalonia.Media.TextAlignment.Center,
-            Microsoft.Maui.TextAlignment.End => Avalonia.Media.TextAlignment.Right,
-            _ => Avalonia.Media.TextAlignment.Left
+            Microsoft.Maui.TextAlignment.Start => Media.TextAlignment.Left,
+            Microsoft.Maui.TextAlignment.Center => Media.TextAlignment.Center,
+            Microsoft.Maui.TextAlignment.End => Media.TextAlignment.Right,
+            _ => Media.TextAlignment.Left
         };
     }
     /// <summary>

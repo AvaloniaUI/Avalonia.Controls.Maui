@@ -53,7 +53,7 @@ public static class SwitchCellExtensions
         // Remove existing styles
         for (int i = toggleSwitch.Styles.Count - 1; i >= 0; i--)
         {
-            if (toggleSwitch.Styles[i] is global::Avalonia.Styling.Style style &&
+            if (toggleSwitch.Styles[i] is Styling.Style style &&
                 style.Resources != null &&
                 style.Resources.ContainsKey(TrackStyleTag))
             {

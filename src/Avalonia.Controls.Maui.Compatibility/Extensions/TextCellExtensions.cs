@@ -42,7 +42,7 @@ public static class TextCellExtensions
         }
         else
         {
-            platformView.PrimaryLabel.ClearValue(Avalonia.Controls.TextBlock.ForegroundProperty);
+            platformView.PrimaryLabel.ClearValue(TextBlock.ForegroundProperty);
         }
     }
 
@@ -59,7 +59,7 @@ public static class TextCellExtensions
         }
         else
         {
-            platformView.SecondaryLabel.ClearValue(Avalonia.Controls.TextBlock.ForegroundProperty);
+            platformView.SecondaryLabel.ClearValue(TextBlock.ForegroundProperty);
         }
     }
 
