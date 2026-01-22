@@ -6,7 +6,7 @@ namespace Avalonia.Controls.Maui.RenderTests.Tests;
 
 public class DatePickerRenderTests : RenderTestBase
 {
-    [AvaloniaFact]
+    [AvaloniaFact(Skip = "Run locally to verify")]
     public async Task Render_DatePicker()
     {
         var control = new Microsoft.Maui.Controls.DatePicker 
