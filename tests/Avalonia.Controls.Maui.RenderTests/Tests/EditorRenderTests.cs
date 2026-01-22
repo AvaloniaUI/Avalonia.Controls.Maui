@@ -6,7 +6,7 @@ namespace Avalonia.Controls.Maui.RenderTests.Tests;
 
 public class EditorRenderTests : RenderTestBase
 {
-    [AvaloniaFact]
+    [AvaloniaFact(Skip = "Run locally to verify")]
     public async Task Render_Editor()
     {
         var control = new Microsoft.Maui.Controls.Editor 

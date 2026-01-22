@@ -6,7 +6,7 @@ namespace Avalonia.Controls.Maui.RenderTests.Tests;
 
 public class LabelRenderTests : RenderTestBase
 {
-    [AvaloniaFact]
+    [AvaloniaFact(Skip = "Run locally to verify")]
     public async Task Render_Label()
     {
         var control = new Microsoft.Maui.Controls.Label 

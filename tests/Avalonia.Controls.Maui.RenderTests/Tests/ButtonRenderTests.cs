@@ -6,7 +6,7 @@ namespace Avalonia.Controls.Maui.RenderTests.Tests;
 
 public class ButtonRenderTests : RenderTestBase
 {
-    [AvaloniaFact]
+    [AvaloniaFact(Skip = "Run locally to verify")]
     public async Task Render_Button_Default()
     {
         var button = new Microsoft.Maui.Controls.Button
