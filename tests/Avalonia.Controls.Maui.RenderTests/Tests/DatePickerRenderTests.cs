@@ -12,8 +12,9 @@ public class DatePickerRenderTests : RenderTestBase
         var control = new Microsoft.Maui.Controls.DatePicker 
         { 
             Date = new DateTime(2023, 10, 15),
+            Format = "yyyy-MM-dd",
             TextColor = Colors.Green,
-            WidthRequest = 200
+            WidthRequest = 300
         };
         await RenderToFile(control);
         CompareImages();

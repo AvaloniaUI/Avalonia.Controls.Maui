@@ -12,8 +12,9 @@ public class TimePickerRenderTests : RenderTestBase
         var control = new Microsoft.Maui.Controls.TimePicker 
         { 
             Time = new TimeSpan(14, 30, 0),
+            Format = "HH:mm",
             TextColor = Colors.Purple,
-            WidthRequest = 200
+            WidthRequest = 300
         };
         await RenderToFile(control);
         CompareImages();

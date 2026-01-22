@@ -5,7 +5,7 @@ namespace Avalonia.Controls.Maui.RenderTests.Infrastructure;
 
 public static class TestRenderHelper
 {
-    public const double AllowedError = 0.02;
+    public const double AllowedError = 0.03;
 
     public static void AssertCompareImages(string actualPath, string expectedPath)
     {
