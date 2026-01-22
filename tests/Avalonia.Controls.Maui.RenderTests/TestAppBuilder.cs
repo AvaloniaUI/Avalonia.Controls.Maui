@@ -23,8 +23,12 @@ public class TestAppBuilder
         .WithInterFont()
         .With(new FontManagerOptions
         {
-            // Use Inter font as default for consistent cross-platform rendering
             DefaultFamilyName = "fonts:Inter#Inter"
+        })
+        .AfterSetup(_ =>
+        {
+            // Replace system font collection with Inter for consistent cross-platform rendering
+            Avalonia.Media.FontManager.Current.AddFontCollection(new InterFontCollection());
         });
 }
 
