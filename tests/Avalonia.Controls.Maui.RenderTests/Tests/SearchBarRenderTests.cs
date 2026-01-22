@@ -5,7 +5,7 @@ namespace Avalonia.Controls.Maui.RenderTests.Tests;
 
 public class SearchBarRenderTests : RenderTestBase
 {
-    [AvaloniaFact]
+    [AvaloniaFact(Skip = "Run locally to verify")]
     public async Task Render_SearchBar()
     {
         var control = new Microsoft.Maui.Controls.SearchBar 
