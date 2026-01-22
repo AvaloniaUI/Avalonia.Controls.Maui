@@ -1,6 +1,8 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.Fonts;
 
 namespace Avalonia.Controls.Maui.RenderTests.Infrastructure;
 
@@ -34,8 +36,9 @@ public static class TestRenderHelper
         var maxHeight = Math.Max(actual.Height, expected.Height);
         
         // Create side-by-side comparison: Expected | Actual | Diff
+        var labelHeight = 24;
         var comparisonWidth = maxWidth * 3 + 4; // 2px border between images
-        var comparisonHeight = maxHeight + 20; // Space for labels
+        var comparisonHeight = maxHeight + labelHeight;
         
         using var comparison = new Image<Rgba32>(comparisonWidth, comparisonHeight);
         
@@ -47,7 +50,7 @@ public static class TestRenderHelper
         {
             for (int x = 0; x < expected.Width; x++)
             {
-                comparison[x, y + 20] = expected[x, y];
+                comparison[x, y + labelHeight] = expected[x, y];
             }
         }
         
@@ -57,7 +60,7 @@ public static class TestRenderHelper
         {
             for (int x = 0; x < actual.Width; x++)
             {
-                comparison[actualOffsetX + x, y + 20] = actual[x, y];
+                comparison[actualOffsetX + x, y + labelHeight] = actual[x, y];
             }
         }
         
@@ -81,29 +84,26 @@ public static class TestRenderHelper
                     {
                         // Highlight differences: amplify and show in red channel
                         var intensity = (byte)Math.Min(255, maxDiff * 4);
-                        comparison[diffOffsetX + x, y + 20] = new Rgba32(intensity, 0, 0, 255);
+                        comparison[diffOffsetX + x, y + labelHeight] = new Rgba32(intensity, 0, 0, 255);
                     }
                     else
                     {
                         // No difference: show grayscale of original
                         var gray = (byte)((p1.R + p1.G + p1.B) / 3);
-                        comparison[diffOffsetX + x, y + 20] = new Rgba32(gray, gray, gray, 255);
+                        comparison[diffOffsetX + x, y + labelHeight] = new Rgba32(gray, gray, gray, 255);
                     }
                 }
             }
         }
         
-        // Draw labels (simple pixel text would be complex, so we use colored bars)
-        // Green bar for Expected, Blue bar for Actual, Red bar for Diff
-        for (int x = 0; x < maxWidth; x++)
+        // Draw text labels
+        var font = SystemFonts.CreateFont("Arial", 14, FontStyle.Bold);
+        comparison.Mutate(ctx =>
         {
-            for (int y = 0; y < 16; y++)
-            {
-                comparison[x, y + 2] = new Rgba32(0, 180, 0, 255); // Green for Expected
-                comparison[actualOffsetX + x, y + 2] = new Rgba32(0, 120, 215, 255); // Blue for Actual
-                comparison[diffOffsetX + x, y + 2] = new Rgba32(215, 0, 0, 255); // Red for Diff
-            }
-        }
+            ctx.DrawText("Expected", font, Color.White, new PointF(4, 4));
+            ctx.DrawText("Actual", font, Color.White, new PointF(actualOffsetX + 4, 4));
+            ctx.DrawText("Diff", font, Color.White, new PointF(diffOffsetX + 4, 4));
+        });
         
         var comparisonPath = actualPath.Replace(".out.png", ".diff.png");
         comparison.Save(comparisonPath);
