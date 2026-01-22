@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -20,6 +21,10 @@ public class RenderTestBase : IAsyncDisposable
     {
         if (_isCreated) return;
         _isCreated = true;
+
+        // Use invariant culture for consistent rendering across locales
+        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 
         var appBuilder = MauiApp.CreateBuilder();
         appBuilder.ConfigureTestBuilder();
