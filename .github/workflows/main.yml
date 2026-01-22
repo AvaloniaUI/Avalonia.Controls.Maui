@@ -77,3 +77,13 @@ jobs:
         name: test-results
         path: ${{github.workspace}}/artifacts/test-results/**/*.trx
         retention-days: 7
+
+    - name: Upload Render Test Images
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: render-test-images
+        path: |
+          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net10.0/*.out.png
+          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net10.0/*.diff.png
+        retention-days: 7
