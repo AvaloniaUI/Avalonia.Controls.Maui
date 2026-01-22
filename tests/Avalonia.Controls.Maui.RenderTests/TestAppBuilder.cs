@@ -1,6 +1,8 @@
 using Avalonia;
 using Avalonia.Headless;
 using Avalonia.Media;
+using Avalonia.Media.Fonts;
+using Avalonia.Fonts.Inter;
 using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Controls.Maui.Handlers.Shapes;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +20,12 @@ public class TestAppBuilder
             UseHeadlessDrawing = false
         })
         .UseSkia()
-        .WithInterFont();
+        .WithInterFont()
+        .With(new FontManagerOptions
+        {
+            // Use Inter font as default for consistent cross-platform rendering
+            DefaultFamilyName = "fonts:Inter#Inter"
+        });
 }
 
 public static class MauiTestAppBuilderExtensions

@@ -30,7 +30,7 @@ public class FontManager : IFontManager
     /// Gets the default font family for the application.
     /// </summary>
     public global::Avalonia.Media.FontFamily DefaultFontFamily =>
-        _defaultFontFamily ??= new global::Avalonia.Media.FontFamily("Inter");
+        _defaultFontFamily ??= global::Avalonia.Media.FontFamily.Default;
 
     /// <summary>
     /// Retrieves the Avalonia <see cref="global::Avalonia.Media.FontFamily"/> for the given MAUI font.
