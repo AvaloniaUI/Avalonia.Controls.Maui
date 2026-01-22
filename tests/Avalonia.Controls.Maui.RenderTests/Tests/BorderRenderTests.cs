@@ -6,7 +6,7 @@ namespace Avalonia.Controls.Maui.RenderTests.Tests;
 
 public class BorderRenderTests : RenderTestBase
 {
-    [AvaloniaFact(Skip = "Run locally to verify")]
+    [AvaloniaFact]
     public async Task Render_Border()
     {
         var control = new Microsoft.Maui.Controls.Border 

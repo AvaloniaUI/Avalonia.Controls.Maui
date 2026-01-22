@@ -6,7 +6,7 @@ namespace Avalonia.Controls.Maui.RenderTests.Tests;
 
 public class ScrollViewRenderTests : RenderTestBase
 {
-    [AvaloniaFact(Skip = "Run locally to verify")]
+    [AvaloniaFact]
     public async Task Render_ScrollView()
     {
         var stack = new Microsoft.Maui.Controls.VerticalStackLayout();

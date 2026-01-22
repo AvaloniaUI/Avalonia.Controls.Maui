@@ -6,7 +6,7 @@ namespace Avalonia.Controls.Maui.RenderTests.Tests;
 
 public class SwipeViewRenderTests : RenderTestBase
 {
-    [AvaloniaFact(Skip = "Run locally to verify")]
+    [AvaloniaFact]
     public async Task Render_SwipeView()
     {
         var control = new Microsoft.Maui.Controls.SwipeView
