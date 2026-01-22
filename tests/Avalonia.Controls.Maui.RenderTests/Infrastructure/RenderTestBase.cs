@@ -105,7 +105,7 @@ public class RenderTestBase : IAsyncDisposable
         });
     }
 
-    protected void CompareImages([CallerMemberName] string testName = "")
+    protected void CompareImages(double? tolerance = null, [CallerMemberName] string testName = "")
     {
         var className = GetType().Name;
         var actualParams = $"{className}_{testName}.out.png";
@@ -127,7 +127,7 @@ public class RenderTestBase : IAsyncDisposable
             Assert.Fail($"Expected image not found: {expectedPath}. Actual image saved to: {actualPath}");
         }
 
-        TestRenderHelper.AssertCompareImages(actualPath, expectedPath);
+        TestRenderHelper.AssertCompareImages(actualPath, expectedPath, tolerance);
     }
 
     public virtual ValueTask DisposeAsync()

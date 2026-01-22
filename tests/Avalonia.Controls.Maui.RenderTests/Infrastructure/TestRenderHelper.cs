@@ -6,10 +6,12 @@ namespace Avalonia.Controls.Maui.RenderTests.Infrastructure;
 
 public static class TestRenderHelper
 {
-    public const double AllowedError = 0.025;
+    public const double DefaultAllowedError = 0.02;
 
-    public static void AssertCompareImages(string actualPath, string expectedPath)
+    public static void AssertCompareImages(string actualPath, string expectedPath, double? tolerance = null)
     {
+        var allowedError = tolerance ?? DefaultAllowedError;
+        
         using var actual = SixLabors.ImageSharp.Image.Load<Rgba32>(actualPath);
         using var expected = SixLabors.ImageSharp.Image.Load<Rgba32>(expectedPath);
 
@@ -21,10 +23,10 @@ public static class TestRenderHelper
 
         var error = CalculateRmse(actual, expected);
         
-        if (error > AllowedError)
+        if (error > allowedError)
         {
             GenerateComparisonImage(actual, expected, actualPath, sizeMismatch: false);
-            Assert.Fail($"Images differ. RMSE: {error}. Tolerance: {AllowedError}. See comparison image.");
+            Assert.Fail($"Images differ. RMSE: {error}. Tolerance: {allowedError}. See comparison image.");
         }
     }
 

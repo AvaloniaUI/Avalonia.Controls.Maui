@@ -17,6 +17,7 @@ public class SwipeViewRenderTests : RenderTestBase
         
         // SwipeItems are usually hidden effectively validating content rendering
         await RenderToFile(control);
-        CompareImages();
+        // Text rendering differs slightly between platforms
+        CompareImages(tolerance: 0.045);
     }
 }

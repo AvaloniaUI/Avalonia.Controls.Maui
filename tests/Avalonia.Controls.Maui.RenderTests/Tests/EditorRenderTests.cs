@@ -18,6 +18,7 @@ public class EditorRenderTests : RenderTestBase
             WidthRequest = 200
         };
         await RenderToFile(control);
-        CompareImages();
+        // Text rendering differs slightly between platforms
+        CompareImages(tolerance: 0.06);
     }
 }

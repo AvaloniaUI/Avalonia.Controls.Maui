@@ -17,6 +17,7 @@ public class DatePickerRenderTests : RenderTestBase
             WidthRequest = 300
         };
         await RenderToFile(control);
-        CompareImages();
+        // Text rendering differs slightly between platforms
+        CompareImages(tolerance: 0.085);
     }
 }

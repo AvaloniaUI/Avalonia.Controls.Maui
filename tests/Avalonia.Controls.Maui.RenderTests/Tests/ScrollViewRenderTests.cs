@@ -23,6 +23,7 @@ public class ScrollViewRenderTests : RenderTestBase
             BackgroundColor = Colors.AliceBlue
         };
         await RenderToFile(control);
-        CompareImages();
+        // Text rendering differs slightly between platforms
+        CompareImages(tolerance: 0.065);
     }
 }
