@@ -4,6 +4,7 @@
              xmlns:maps="clr-namespace:Avalonia.Controls.Maui.Maps.Controls;assembly=Avalonia.Controls.Maui.Maps"
              xmlns:pages="clr-namespace:ControlGallery.Pages"
              x:Class="ControlGallery.Pages.MapPage"
+             x:DataType="pages:MapPage"
              Title="Map">
     <ScrollView>
         <VerticalStackLayout Padding="20"
