@@ -16,7 +16,7 @@ public class LayoutStub : StubBase, ILayout, ICrossPlatformLayout
 
     public bool IgnoreSafeArea { get; set; }
     
-    public new Microsoft.Maui.Thickness Padding { get; set; }
+    public Microsoft.Maui.Thickness Padding { get; set; }
 
     public IReadOnlyList<IView> this[Range range] => _children.ToArray()[range];
 

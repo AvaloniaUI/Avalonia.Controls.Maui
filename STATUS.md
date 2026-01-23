@@ -147,7 +147,9 @@ Displays a scrollable list of selectable data items, using different layout spec
 | ItemTemplate | ✅ Implemented |
 | ItemsUpdatingScrollMode | ✅ Implemented |
 | RemainingItemsThreshold | ✅ Implemented |
-| RemainingItemsThresholdReachedCommand | ⏳ TODO |
+| RemainingItemsThresholdReachedCommand | ✅ Implemented |
+| SelectionChangedCommand | ✅ Implemented |
+| SelectionChangedCommandParameter | ✅ Implemented |
 | SelectedItem | ✅ Implemented |
 | SelectedItems | ✅ Implemented |
 | SelectionMode | ✅ Implemented |
@@ -157,13 +159,8 @@ Displays a scrollable list of selectable data items, using different layout spec
 | Event | Status |
 |-------|--------|
 | RemainingItemsThresholdReached | ✅ Implemented |
+| Scrolled | ✅ Implemented |
 | SelectionChanged | ✅ Implemented |
-
-### Notes
-
-- Supports LinearItemsLayout (Vertical/Horizontal) and GridItemsLayout
-- Grouping supported via IsGrouped, GroupHeaderTemplate, GroupFooterTemplate
-- Custom CollectionViewStackPanel ensures items fill cross-axis in horizontal layouts
 
 ---
 
@@ -522,41 +519,41 @@ Displays a scrollable list of selectable data items.
 
 | Property | Status |
 |----------|--------|
-| CachingStrategy | ⏳ TODO |
-| Footer | ⏳ TODO |
-| FooterTemplate | ⏳ TODO |
-| GroupHeaderTemplate | ⏳ TODO |
-| HasUnevenRows | ⏳ TODO |
-| Header | ⏳ TODO |
-| HeaderTemplate | ⏳ TODO |
-| HorizontalScrollBarVisibility | ⏳ TODO |
-| IsPullToRefreshEnabled | ⏳ TODO |
-| IsRefreshing | ⏳ TODO |
-| ItemsSource | ⏳ TODO |
-| ItemTemplate | ⏳ TODO |
-| RefreshCommand | ⏳ TODO |
-| RowHeight | ⏳ TODO |
-| SelectedItem | ⏳ TODO |
-| SelectionMode | ⏳ TODO |
-| SeparatorColor | ⏳ TODO |
-| SeparatorVisibility | ⏳ TODO |
-| VerticalScrollBarVisibility | ⏳ TODO |
-| GroupDisplayBinding | ⏳ TODO |
-| GroupShortNameBinding | ⏳ TODO |
-| RefreshControlColor | ⏳ TODO |
-| IsGroupingEnabled | ⏳ TODO |
+| CachingStrategy | ✅ Implemented  |
+| Footer | ✅ Implemented |
+| FooterTemplate | ✅ Implemented |
+| GroupHeaderTemplate | ✅ Implemented |
+| HasUnevenRows | ✅ Implemented |
+| Header | ✅ Implemented |
+| HeaderTemplate | ✅ Implemented |
+| HorizontalScrollBarVisibility | ✅ Implemented |
+| IsPullToRefreshEnabled | ✅ Implemented |
+| IsRefreshing | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| RefreshCommand | ✅ Implemented |
+| RowHeight | ✅ Implemented |
+| SelectedItem | ✅ Implemented |
+| SelectionMode | ✅ Implemented |
+| SeparatorColor | ✅ Implemented |
+| SeparatorVisibility | ✅ Implemented |
+| VerticalScrollBarVisibility | ✅ Implemented |
+| GroupDisplayBinding | ✅ Implemented |
+| GroupShortNameBinding | ✅ Implemented |
+| RefreshControlColor | ✅ Implemented |
+| IsGroupingEnabled | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| ItemAppearing | ⏳ TODO |
-| ItemDisappearing | ⏳ TODO |
-| ItemSelected | ⏳ TODO |
-| ItemTapped | ⏳ TODO |
-| Refreshing | ⏳ TODO |
-| Scrolled | ⏳ TODO |
-| ScrollToRequested | ⏳ TODO |
+| ItemAppearing | ✅ Implemented |
+| ItemDisappearing | ✅ Implemented |
+| ItemSelected | ✅ Implemented |
+| ItemTapped | ✅ Implemented |
+| Refreshing | ✅ Implemented |
+| Scrolled | ✅ Implemented |
+| ScrollToRequested | ✅ Implemented |
 
 ---
 
@@ -650,6 +647,7 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | Padding | ⏳ TODO |
  | Title | ⏳ TODO |
  | IconImageSource | ⏳ TODO |
+ | ToolbarItems | ✅ Implemented |
  
  ### Methods
  
@@ -660,23 +658,6 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | DisplayPromptAsync      | ✅ Implemented |
 
  ---
-
-## Page
-
-Visual element that occupies the entire screen.
-
-### Properties
-
-| Property | Status |
-|----------|--------|
-| Background | ✅ Implemented |
-| BackgroundImageSource | ✅ Implemented |
-| Content | ✅ Implemented |
-| Title | ⏳ TODO |
-| IconImageSource | ✅ Implemented |
-| Padding | ⏳ TODO |
-
----
 
 ## Path
 

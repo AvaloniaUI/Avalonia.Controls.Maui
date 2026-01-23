@@ -441,7 +441,7 @@ public partial class DatePickerHandlerTests : HandlerTestBase<AvaloniaDatePicker
         var handler = await CreateHandlerAsync(datePicker);
 
         // Now set to null
-        datePicker.TextColor = null;
+        datePicker.TextColor = null!;
         await InvokeOnMainThreadAsync(() =>
         {
             handler.UpdateValue(nameof(IDatePicker.TextColor));

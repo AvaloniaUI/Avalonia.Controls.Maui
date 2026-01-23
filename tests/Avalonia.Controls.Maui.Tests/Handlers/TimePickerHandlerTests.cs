@@ -260,7 +260,7 @@ public partial class TimePickerHandlerTests : HandlerTestBase<AvaloniaTimePicker
         var handler = await CreateHandlerAsync(picker);
 
         // Now set to null
-        picker.TextColor = null;
+        picker.TextColor = null!;
         await InvokeOnMainThreadAsync(() =>
         {
             handler.UpdateValue(nameof(ITimePicker.TextColor));

@@ -7,7 +7,7 @@ namespace AlohaKit.Gallery.ViewModels
 	{
 		protected bool SetProperty<T>(ref T backingStore, T value,
 		[CallerMemberName] string propertyName = "",
-		Action onChanged = null)
+		Action? onChanged = null)
 		{
 			if (EqualityComparer<T>.Default.Equals(backingStore, value))
 				return false;
@@ -20,7 +20,7 @@ namespace AlohaKit.Gallery.ViewModels
 
 		#region INotifyPropertyChanged
 
-		public event PropertyChangedEventHandler PropertyChanged;
+		public event PropertyChangedEventHandler? PropertyChanged;
 		protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

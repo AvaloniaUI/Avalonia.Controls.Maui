@@ -94,11 +94,11 @@ namespace Avalonia.Controls.Maui.Tests.Platform
             var avaloniaWindow = windowHandler.PlatformView as Window;
             var wrapper = avaloniaWindow.Content as AvaloniaGrid;
             
-            var overlayGrid = wrapper.Children.OfType<AvaloniaGrid>().LastOrDefault();
-            var dialogGrid = overlayGrid.Children.OfType<AvaloniaGrid>().LastOrDefault();
-            
-            var dialogContainer = dialogGrid.Children.Last() as AvaloniaGrid;
-            var dialogControl = dialogContainer.Children.FirstOrDefault();
+            var overlayGrid = wrapper!.Children.OfType<AvaloniaGrid>().LastOrDefault();
+            var dialogGrid = overlayGrid!.Children.OfType<AvaloniaGrid>().LastOrDefault();
+
+            var dialogContainer = dialogGrid!.Children.Last() as AvaloniaGrid;
+            var dialogControl = dialogContainer!.Children.FirstOrDefault();
             Assert.IsType<MauiActionSheetDialog>(dialogControl);
             
             (dialogControl as TemplatedControl)?.ApplyTemplate();
@@ -149,11 +149,11 @@ namespace Avalonia.Controls.Maui.Tests.Platform
             var avaloniaWindow = windowHandler.PlatformView as Window;
             var wrapper = avaloniaWindow.Content as AvaloniaGrid;
             
-            var overlayGrid = wrapper.Children.OfType<AvaloniaGrid>().LastOrDefault();
-            var dialogGrid = overlayGrid.Children.OfType<AvaloniaGrid>().LastOrDefault();
-            
-            var dialogContainer = dialogGrid.Children.Last() as AvaloniaGrid;
-            var dialogControl = dialogContainer.Children.FirstOrDefault();
+            var overlayGrid = wrapper!.Children.OfType<AvaloniaGrid>().LastOrDefault();
+            var dialogGrid = overlayGrid!.Children.OfType<AvaloniaGrid>().LastOrDefault();
+
+            var dialogContainer = dialogGrid!.Children.Last() as AvaloniaGrid;
+            var dialogControl = dialogContainer!.Children.FirstOrDefault();
             Assert.IsType<MauiPromptDialog>(dialogControl);
             
             (dialogControl as TemplatedControl)?.ApplyTemplate();

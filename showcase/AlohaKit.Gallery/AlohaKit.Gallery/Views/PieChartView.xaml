@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage 
+<ContentPage
 	xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     x:Class="AlohaKit.Gallery.PieChartView"
     xmlns:controls="clr-namespace:AlohaKit.Controls;assembly=AlohaKit"
+    xmlns:viewmodels="clr-namespace:AlohaKit.Gallery.ViewModels"
+    x:DataType="viewmodels:ChartViewModel"
     Title="PieChart">
 	<ContentPage.Resources>
 		<ResourceDictionary>
@@ -73,10 +75,10 @@
             Grid.Row="3"
             HorizontalOptions="Center"
             VerticalOptions="Center">
-			<controls:PieChart 
+			<controls:PieChart
 				x:Name="PieChart"
 				ItemsSource="{Binding Items}"
-				ShowLabels="{Binding Source={x:Reference HasShowLabels}, Path=IsChecked}"/>
+				ShowLabels="{Binding Source={x:Reference HasShowLabels}, Path=IsChecked, x:DataType=CheckBox}"/>
 		</Grid>
 	</Grid>
 </ContentPage>

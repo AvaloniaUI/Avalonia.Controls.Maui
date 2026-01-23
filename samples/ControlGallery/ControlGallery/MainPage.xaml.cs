@@ -8,6 +8,79 @@ public partial class MainPage : FlyoutPage
 {
     private List<SampleGroup> _allSamples = new List<SampleGroup>();
 
+    // Static page factory for AOT compatibility - no reflection
+    private static readonly Dictionary<Type, Func<Page>> PageFactory = new()
+    {
+        // Apps
+        [typeof(RpnCalculator.MainPage)] = () => new RpnCalculator.MainPage(),
+        [typeof(SolitaireEncryption.SolitairePage)] = () => new SolitaireEncryption.SolitairePage(),
+        [typeof(TipCalc.TipCalcPage)] = () => new TipCalc.TipCalcPage(),
+        [typeof(Weather.MainPage)] = () => new Weather.MainPage(),
+        [typeof(WordPuzzle.MainPage)] = () => new WordPuzzle.MainPage(),
+        // Services
+        [typeof(FontsPage)] = () => new FontsPage(),
+        // Pages
+        [typeof(NavigationDemoPage)] = () => new NavigationPage(new NavigationDemoPage()),
+        [typeof(ControlGallery.Pages.TabbedPage)] = () => new ControlGallery.Pages.TabbedPage(),
+        [typeof(TitleBarPage)] = () => new TitleBarPage(),
+        [typeof(PopupsPage)] = () => new PopupsPage(),
+        [typeof(ToolbarItemPage)] = () => new NavigationPage(new ToolbarItemPage()),
+        // Layout
+        [typeof(StackLayoutPage)] = () => new StackLayoutPage(),
+        [typeof(GridPage)] = () => new GridPage(),
+        [typeof(FlexLayoutPage)] = () => new FlexLayoutPage(),
+        [typeof(AbsoluteLayoutPage)] = () => new AbsoluteLayoutPage(),
+        // Views
+        [typeof(ActivityIndicatorPage)] = () => new ActivityIndicatorPage(),
+        [typeof(BorderPage)] = () => new BorderPage(),
+        [typeof(BoxViewPage)] = () => new BoxViewPage(),
+        [typeof(ButtonPage)] = () => new ButtonPage(),
+        [typeof(CheckBoxPage)] = () => new CheckBoxPage(),
+        [typeof(CollectionViewPage)] = () => new CollectionViewPage(),
+        [typeof(ContentViewPage)] = () => new ContentViewPage(),
+        [typeof(DatePickerPage)] = () => new DatePickerPage(),
+        [typeof(EditorPage)] = () => new EditorPage(),
+        [typeof(FramePage)] = () => new FramePage(),
+        [typeof(GraphicsViewPage)] = () => new GraphicsViewPage(),
+        [typeof(ImagePage)] = () => new ImagePage(),
+        [typeof(ImageButtonPage)] = () => new ImageButtonPage(),
+        [typeof(ListViewPage)] = () => new ListViewPage(),
+        [typeof(PickerPage)] = () => new PickerPage(),
+        [typeof(ProgressBarPage)] = () => new ProgressBarPage(),
+        [typeof(RadioButtonPage)] = () => new RadioButtonPage(),
+        [typeof(ScrollViewPage)] = () => new ScrollViewPage(),
+        [typeof(SearchBarPage)] = () => new SearchBarPage(),
+        [typeof(SliderPage)] = () => new SliderPage(),
+        [typeof(StepperPage)] = () => new StepperPage(),
+        [typeof(SwipeViewPage)] = () => new SwipeViewPage(),
+        [typeof(SwitchPage)] = () => new SwitchPage(),
+        [typeof(TableViewPage)] = () => new TableViewPage(),
+        [typeof(TimePickerPage)] = () => new TimePickerPage(),
+        // Effects
+        [typeof(ClipPage)] = () => new ClipPage(),
+        [typeof(ShadowPage)] = () => new ShadowPage(),
+        [typeof(TransformationsPage)] = () => new TransformationsPage(),
+        // Shapes
+        [typeof(RectanglePage)] = () => new RectanglePage(),
+        [typeof(EllipsePage)] = () => new EllipsePage(),
+        [typeof(LinePage)] = () => new LinePage(),
+        [typeof(PolygonPage)] = () => new PolygonPage(),
+        [typeof(PolylinePage)] = () => new PolylinePage(),
+        [typeof(PathPage)] = () => new PathPage(),
+        [typeof(RoundRectanglePage)] = () => new RoundRectanglePage(),
+        // Core
+        [typeof(AnimationPage)] = () => new AnimationPage(),
+        [typeof(BehaviorsPage)] = () => new BehaviorsPage(),
+        [typeof(BrushesPage)] = () => new BrushesPage(),
+        [typeof(GesturesPage)] = () => new GesturesPage(),
+        [typeof(StylesPage)] = () => new StylesPage(),
+        [typeof(TooltipsPage)] = () => new TooltipsPage(),
+        [typeof(TriggersPage)] = () => new TriggersPage(),
+        [typeof(VisualStateManagerPage)] = () => new VisualStateManagerPage(),
+        // Settings
+        [typeof(ThemePage)] = () => new ThemePage(),
+    };
+
     public ObservableCollection<SampleGroup> FilteredSamples { get; private set; } = new ObservableCollection<SampleGroup>();
     public ICommand NavigateCommand { get; private set; }
 
@@ -19,7 +92,7 @@ public partial class MainPage : FlyoutPage
 
         InitializeSamples();
         UpdateMenu(string.Empty);
-        
+
         // Navigate to Welcome Page by default
         Detail = new WelcomePage();
     }
@@ -87,6 +160,7 @@ public partial class MainPage : FlyoutPage
                 new("NavigationPage", "Navigation stack with animated transitions", typeof(NavigationDemoPage)),
                 new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
                 new("TitleBar", "Custom window title bar", typeof(TitleBarPage)),
+                new("ToolbarItems", "Toolbar items and interactions", typeof(ToolbarItemPage)),
                 new("Popups", "Alerts, ActionSheets, and Prompts", typeof(PopupsPage))
             }),
 
@@ -113,6 +187,7 @@ public partial class MainPage : FlyoutPage
                 new("GraphicsView", "Custom drawing and graphics", typeof(GraphicsViewPage)),
                 new("Image", "Image display with various sources", typeof(ImagePage)),
                 new("ImageButton", "ImageButton control", typeof(ImageButtonPage)),
+                new("ListView", "ListView with Header/Footer and Grouping", typeof(ListViewPage)),
                 new("Map", "Map with pins and elements", typeof(MapPage)),
                 new("Picker", "Picker control", typeof(PickerPage)),
                 new("ProgressBar", "Progress indicator control", typeof(ProgressBarPage)),
@@ -172,19 +247,10 @@ public partial class MainPage : FlyoutPage
 
     private void NavigateToPage(Type pageType)
     {
-        Page? page = null;
-
-        // Custom instantiation logic for specific pages if needed
-        if (pageType == typeof(NavigationDemoPage))
+        if (PageFactory.TryGetValue(pageType, out var factory))
         {
-            page = new NavigationPage(new NavigationDemoPage());
+            Detail = factory();
         }
-        else
-        {
-            page = (Page)Activator.CreateInstance(pageType)!;
-        }
-
-        Detail = page;
     }
 }
 
