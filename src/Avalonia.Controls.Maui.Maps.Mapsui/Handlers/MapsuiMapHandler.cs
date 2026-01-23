@@ -24,6 +24,7 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
 {
     private MapsuiLayers.MemoryLayer? _pinsLayer;
     private MapsuiLayers.MemoryLayer? _shapesLayer;
+    private CancellationTokenSource? _locationCts;
     
     private bool _isInitialSyncPerformed;
 
@@ -117,6 +118,10 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
         platformView.Map.Info -= OnMapInfo;
         platformView.LayoutUpdated -= OnLayoutUpdated;
 
+        _locationCts?.Cancel();
+        _locationCts?.Dispose();
+        _locationCts = null;
+
         base.DisconnectHandler(platformView);
     }
     
@@ -192,6 +197,11 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
         if (handler.PlatformView?.Map == null) return;
         var mapControl = handler.PlatformView;
         
+        // Cancel any pending location request
+        handler._locationCts?.Cancel();
+        handler._locationCts?.Dispose();
+        handler._locationCts = null;
+
         // Find existing location layer
         var locationLayer = mapControl.Map.Layers.OfType<MapsuiLayers.MemoryLayer>().FirstOrDefault(l => l.Name == "MyLocation");
         
@@ -206,23 +216,38 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
  
             try 
             {
-                Microsoft.Maui.Devices.Sensors.Location? location = null;
+                handler._locationCts = new CancellationTokenSource();
+                var token = handler._locationCts.Token;
 
-                // Use IP-based geolocation on Desktop
-                if (OperatingSystem.IsMacOS() || OperatingSystem.IsWindows())
+                // Run geolocation on a background thread to avoid blocking the UI thread
+                await Task.Run(async () =>
                 {
-                    location = await GetLocationFromIpAsync();
-                }
-                else
-                {
-                    var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
-                    location = await Geolocation.Default.GetLocationAsync(request);
-                }
-                
-                if (location != null)
-                {
-                     UpdateUserLocation(handler, mapControl, locationLayer, location);
-                }
+                    Microsoft.Maui.Devices.Sensors.Location? location = null;
+
+                    // Use IP-based geolocation on Desktop
+                    if (OperatingSystem.IsMacOS() || OperatingSystem.IsWindows())
+                    {
+                        location = await GetLocationFromIpAsync(token).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
+                        location = await Geolocation.Default.GetLocationAsync(request, token).ConfigureAwait(false);
+                    }
+                    
+                    if (location != null && !token.IsCancellationRequested)
+                    {
+                        // Dispatch the UI update back to the UI thread
+                        Avalonia.Threading.Dispatcher.UIThread.Post(() => 
+                        {
+                            UpdateUserLocation(handler, mapControl, locationLayer, location);
+                        });
+                    }
+                }, token).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                // Request was canceled, ignore
             }
             catch (Exception ex)
             {
@@ -291,14 +316,14 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
         }
     }
     
-    private static async Task<Microsoft.Maui.Devices.Sensors.Location?> GetLocationFromIpAsync()
+    private static async Task<Microsoft.Maui.Devices.Sensors.Location?> GetLocationFromIpAsync(CancellationToken cancellationToken)
     {
         try
         {
             using var httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromSeconds(5);
             
-            var response = await httpClient.GetStringAsync("http://ip-api.com/json/?fields=lat,lon,status");
+            var response = await httpClient.GetStringAsync("http://ip-api.com/json/?fields=lat,lon,status", cancellationToken).ConfigureAwait(false);
             
             if (response.Contains("\"status\":\"success\""))
             {
