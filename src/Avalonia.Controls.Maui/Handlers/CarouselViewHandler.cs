@@ -6,7 +6,6 @@ using Avalonia.Controls.Templates;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using PlatformView = Avalonia.Controls.Maui.Platform.MauiCarouselView;
 

@@ -4,7 +4,9 @@
     "projects": [
             "src\\Avalonia.Controls.Maui.Graphics\\Avalonia.Controls.Maui.Graphics.csproj",
             "src\\Avalonia.Controls.Maui\\Avalonia.Controls.Maui.csproj",
-            "tests\\Avalonia.Controls.Maui.Tests\\Avalonia.Controls.Maui.Tests.csproj"
+            "tests\\Avalonia.Controls.Maui.Tests\\Avalonia.Controls.Maui.Tests.csproj",
+            "tests\\Avalonia.Controls.Maui.RenderTests\\Avalonia.Controls.Maui.RenderTests.csproj"
         ]
+
     }
 }

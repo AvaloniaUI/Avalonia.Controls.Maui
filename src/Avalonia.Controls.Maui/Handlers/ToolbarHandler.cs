@@ -1,5 +1,5 @@
-using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
+using Microsoft.Maui;
 using PlatformView = Avalonia.Controls.Menu;
 
 namespace Avalonia.Controls.Maui.Handlers;

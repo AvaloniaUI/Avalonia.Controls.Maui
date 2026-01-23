@@ -10,7 +10,6 @@ using Avalonia.Controls.Maui.Services;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using AvaloniaControl = Avalonia.Controls.Control;
 using AvaloniaGrid = Avalonia.Controls.Grid;
