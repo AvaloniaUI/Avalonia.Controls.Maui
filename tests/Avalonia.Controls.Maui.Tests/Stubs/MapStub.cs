@@ -28,9 +28,9 @@ public class MapStub : StubBase, IMapView
 
     public double ZoomLevel { get; set; } = 1;
 
-    public IList<MapPin>? Pins { get; set; } = new ObservableCollection<MapPin>();
+    public IList<MapPin> Pins { get; set; } = new ObservableCollection<MapPin>();
 
-    public IList<MapElement>? MapElements { get; set; } = new ObservableCollection<MapElement>();
+    public IList<MapElement> MapElements { get; set; } = new ObservableCollection<MapElement>();
 
     public event EventHandler<MapClickedEventArgs>? MapClicked;
 
