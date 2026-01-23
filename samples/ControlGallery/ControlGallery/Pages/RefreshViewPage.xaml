@@ -157,6 +157,59 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Interactivity and Commands -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactivity and Commands"
+                           FontAttributes="Bold"/>
+                    <Label Text="Test Command, CommandParameter, CanExecute, and Refreshing event."
+                           FontSize="12"/>
+                    <RefreshView IsRefreshing="{Binding InteractiveRefreshing}"
+                                 IsEnabled="{Binding CanRefreshInteractive}"
+                                 Command="{Binding InteractiveRefreshCommand}"
+                                 CommandParameter="TestParameter"
+                                 Refreshing="OnRefreshing"
+                                 RefreshColor="Orange"
+                                 HeightRequest="100">
+                        <ScrollView>
+                            <VerticalStackLayout Padding="20"
+                                                 HorizontalOptions="Center">
+                                <Label Text="Pull to trigger Command and Event"
+                                       HorizontalOptions="Center"/>
+                                <ActivityIndicator IsRunning="{Binding InteractiveRefreshing}"
+                                                   HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </RefreshView>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="5">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Command Executed:" FontSize="12"/>
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding InteractiveRefreshCount}" FontAttributes="Bold" FontSize="12"/>
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Event Triggered:" FontSize="12"/>
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding EventHandlerCount}" FontAttributes="Bold" FontSize="12"/>
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Last Parameter:" FontSize="12"/>
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding LastCommandParameter}" FontAttributes="Bold" FontSize="12"/>
+                    </Grid>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Button Text="Refresh Manually"
+                                Command="{Binding ManualRefreshCommand}"/>
+                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                            <CheckBox IsChecked="{Binding CanRefreshInteractive}"/>
+                            <Label Text="Can Execute" VerticalOptions="Center" FontSize="12"/>
+                        </HorizontalStackLayout>
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding CanRefreshInteractive, StringFormat='CanExecute: {0}'}"
+                           HorizontalOptions="Center" FontSize="11"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Disabled RefreshView -->
             <Border Stroke="Gray"
                     Padding="10">

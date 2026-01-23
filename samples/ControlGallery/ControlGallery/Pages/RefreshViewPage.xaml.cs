@@ -16,10 +16,15 @@ public partial class RefreshViewPage : ContentPage
     private bool _refreshEnabled = true;
     private bool _colorDemoRefreshing;
     private bool _listRefreshing;
+    private bool _interactiveRefreshing;
+    private bool _canRefreshInteractive = true;
     private Color _refreshColor = Colors.Blue;
     private int _refreshCount;
     private int _basicItemCounter;
     private int _itemCounter;
+    private int _interactiveRefreshCount;
+    private int _eventHandlerCount;
+    private string _lastCommandParameter = "None";
 
     /// <summary>
     /// Initializes a new instance of the RefreshViewPage class.
@@ -42,6 +47,14 @@ public partial class RefreshViewPage : ContentPage
             _itemCounter = 0;
             OnPropertyChanged(nameof(Items));
         });
+
+        InteractiveRefreshCommand = new Command<string>(
+            async (param) => await ExecuteInteractiveRefreshAsync(param),
+            (param) => CanRefreshInteractive);
+
+        ManualRefreshCommand = new Command(
+            () => { InteractiveRefreshing = true; },
+            () => CanRefreshInteractive);
 
         BindingContext = this;
     }
@@ -146,6 +159,79 @@ public partial class RefreshViewPage : ContentPage
         }
     }
 
+    public bool InteractiveRefreshing
+    {
+        get => _interactiveRefreshing;
+        set
+        {
+            if (_interactiveRefreshing != value)
+            {
+                _interactiveRefreshing = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public bool CanRefreshInteractive
+    {
+        get => _canRefreshInteractive;
+        set
+        {
+            if (_canRefreshInteractive != value)
+            {
+                _canRefreshInteractive = value;
+                OnPropertyChanged();
+                if (InteractiveRefreshCommand is Command interactiveCmd)
+                {
+                    interactiveCmd.ChangeCanExecute();
+                }
+                if (ManualRefreshCommand is Command manualCmd)
+                {
+                    manualCmd.ChangeCanExecute();
+                }
+            }
+        }
+    }
+
+    public int InteractiveRefreshCount
+    {
+        get => _interactiveRefreshCount;
+        set
+        {
+            if (_interactiveRefreshCount != value)
+            {
+                _interactiveRefreshCount = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public int EventHandlerCount
+    {
+        get => _eventHandlerCount;
+        set
+        {
+            if (_eventHandlerCount != value)
+            {
+                _eventHandlerCount = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
+    public string LastCommandParameter
+    {
+        get => _lastCommandParameter;
+        set
+        {
+            if (_lastCommandParameter != value)
+            {
+                _lastCommandParameter = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+
     /// <summary>
     /// Gets the collection of items for the basic refresh demo.
     /// </summary>
@@ -180,6 +266,10 @@ public partial class RefreshViewPage : ContentPage
     /// Gets the command to clear the list.
     /// </summary>
     public ICommand ClearListCommand { get; }
+
+    public ICommand InteractiveRefreshCommand { get; }
+
+    public ICommand ManualRefreshCommand { get; }
 
 
     private void LoadInitialItems()
@@ -234,5 +324,21 @@ public partial class RefreshViewPage : ContentPage
         }
 
         ListRefreshing = false;
+    }
+
+    private async Task ExecuteInteractiveRefreshAsync(string parameter)
+    {
+        InteractiveRefreshing = true;
+        LastCommandParameter = parameter ?? "Null";
+        InteractiveRefreshCount++;
+
+        await Task.Delay(1500);
+
+        InteractiveRefreshing = false;
+    }
+
+    private void OnRefreshing(object sender, EventArgs e)
+    {
+        EventHandlerCount++;
     }
 }
