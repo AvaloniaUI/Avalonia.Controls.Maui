@@ -35,6 +35,7 @@ public partial class RefreshViewPage : ContentPage
 
         BasicItems = new ObservableCollection<string>();
         Items = new ObservableCollection<string>();
+        InteractiveItems = new ObservableCollection<string>();
         LoadInitialItems();
 
         RefreshCommand = new Command(async () => await ExecuteRefreshAsync());
@@ -242,6 +243,8 @@ public partial class RefreshViewPage : ContentPage
     /// </summary>
     public ObservableCollection<string> Items { get; }
 
+    public ObservableCollection<string> InteractiveItems { get; }
+
     /// <summary>
     /// Gets the command to trigger a refresh.
     /// </summary>
@@ -284,6 +287,7 @@ public partial class RefreshViewPage : ContentPage
         {
             _itemCounter++;
             Items.Add($"Item {_itemCounter}");
+            InteractiveItems.Add($"Interactive Item {_itemCounter}");
         }
     }
 
@@ -328,11 +332,15 @@ public partial class RefreshViewPage : ContentPage
 
     private async Task ExecuteInteractiveRefreshAsync(string parameter)
     {
+        if (InteractiveRefreshing) return;
         InteractiveRefreshing = true;
         LastCommandParameter = parameter ?? "Null";
         InteractiveRefreshCount++;
 
         await Task.Delay(1500);
+
+        _itemCounter++;
+        InteractiveItems.Insert(0, $"Refreshed Item {_itemCounter}");
 
         InteractiveRefreshing = false;
     }

@@ -29,6 +29,7 @@
                     <RefreshView x:Name="BasicRefreshView"
                                  IsRefreshing="{Binding IsRefreshing}"
                                  IsEnabled="{Binding RefreshEnabled}"
+                                 Command="{Binding RefreshCommand}"
                                  RefreshColor="{Binding RefreshColor}"
                                  HeightRequest="200">
                         <ListView ItemsSource="{Binding BasicItems}">
@@ -174,16 +175,16 @@
                                  CommandParameter="TestParameter"
                                  Refreshing="OnRefreshing"
                                  RefreshColor="Orange"
-                                 HeightRequest="100">
-                        <ScrollView>
-                            <VerticalStackLayout Padding="20"
-                                                 HorizontalOptions="Center">
-                                <Label Text="Pull to trigger Command and Event"
-                                       HorizontalOptions="Center"/>
-                                <ActivityIndicator IsRunning="{Binding InteractiveRefreshing}"
-                                                   HorizontalOptions="Center"/>
-                            </VerticalStackLayout>
-                        </ScrollView>
+                                 HeightRequest="200">
+                        <ListView ItemsSource="{Binding InteractiveItems}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <ViewCell>
+                                        <Label Text="{Binding .}" Padding="10,5"/>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
                     </RefreshView>
 
                     <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="5">
