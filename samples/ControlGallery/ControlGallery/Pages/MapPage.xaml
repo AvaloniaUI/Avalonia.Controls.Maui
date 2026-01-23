@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="clr-namespace:Avalonia.Controls.Maui.Maps.Controls;assembly=Avalonia.Controls.Maui.Maps"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
              x:Class="ControlGallery.Pages.MapPage"
              Title="Map">
     <ScrollView>
@@ -200,7 +201,7 @@
                                ZoomLevel="5"
                                ItemsSource="{Binding PlaceData}">
                         <maps:MapView.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="pages:PlaceItem">
                                 <maps:MapPin Label="{Binding Name}"
                                              Location="{Binding Position}"
                                              Address="{Binding Description}"
