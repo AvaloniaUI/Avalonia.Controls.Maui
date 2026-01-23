@@ -1,7 +1,6 @@
 #nullable disable
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
 using Avalonia.Controls.Maui.Extensions;
 using PlatformView = global::Avalonia.Controls.Shapes.Polygon;
 using Polygon = Microsoft.Maui.Controls.Shapes.Polygon;

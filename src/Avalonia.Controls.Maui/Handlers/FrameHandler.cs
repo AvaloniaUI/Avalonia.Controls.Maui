@@ -1,6 +1,5 @@
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using PlatformView = Avalonia.Controls.Border;
 
 namespace Avalonia.Controls.Maui.Handlers;

@@ -2,7 +2,6 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
 using Avalonia.Controls.Maui.Extensions;
 using PlatformView = global::Avalonia.Controls.Shapes.Path;
 using Path = Microsoft.Maui.Controls.Shapes.Path;
