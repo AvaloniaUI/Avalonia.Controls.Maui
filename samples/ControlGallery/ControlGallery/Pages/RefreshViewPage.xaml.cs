@@ -54,7 +54,7 @@ public partial class RefreshViewPage : ContentPage
             (param) => CanRefreshInteractive);
 
         ManualRefreshCommand = new Command(
-            () => { InteractiveRefreshing = true; },
+            async () => await ExecuteInteractiveRefreshAsync("Manual"),
             () => CanRefreshInteractive);
 
         BindingContext = this;
