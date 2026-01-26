@@ -1,3 +1,4 @@
+using Microsoft.Maui.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -5,7 +6,6 @@ using System.Linq;
 using Avalonia.Controls;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using AvaloniaControl = Avalonia.Controls.Control;
 

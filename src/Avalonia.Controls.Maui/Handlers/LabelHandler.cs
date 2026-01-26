@@ -5,7 +5,6 @@ using Avalonia.Media;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
 using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
 using AvaloniaThickness = Avalonia.Thickness;
 using MauiLabel = Microsoft.Maui.Controls.Label;
