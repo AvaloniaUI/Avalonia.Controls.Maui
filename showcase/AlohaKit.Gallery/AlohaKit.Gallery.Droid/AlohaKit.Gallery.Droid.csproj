@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>$(DotNetTfm)-android</TargetFramework>
-		<SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion>$(MinAndroidVersion)</SupportedOSPlatformVersion>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>AlohaKit.Gallery</RootNamespace>
 		<Nullable>enable</Nullable>
