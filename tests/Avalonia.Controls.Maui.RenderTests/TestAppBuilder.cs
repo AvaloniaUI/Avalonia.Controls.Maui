@@ -20,6 +20,7 @@ public class TestAppBuilder
             UseHeadlessDrawing = false
         })
         .UseSkia()
+        .UseHarfBuzz()
         .WithInterFont()
         .With(new FontManagerOptions
         {
