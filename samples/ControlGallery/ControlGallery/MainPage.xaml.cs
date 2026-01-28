@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using ControlGallery.Pages;
+using ControlGallery.Pages.ShellSamples;
+using ControlGallery.Pages.ShellSamples.ShellPlayground;
 
 namespace ControlGallery;
 
@@ -25,40 +27,13 @@ public partial class MainPage : FlyoutPage
         [typeof(TitleBarPage)] = () => new TitleBarPage(),
         [typeof(PopupsPage)] = () => new PopupsPage(),
         [typeof(ToolbarItemPage)] = () => new NavigationPage(new ToolbarItemPage()),
+        [typeof(ShellPage)] = () => new ShellPage(),
+        [typeof(ShellPlaygroundPage)] = () => new ShellPlaygroundPage(),
         // Layout
         [typeof(StackLayoutPage)] = () => new StackLayoutPage(),
         [typeof(GridPage)] = () => new GridPage(),
         [typeof(FlexLayoutPage)] = () => new FlexLayoutPage(),
         [typeof(AbsoluteLayoutPage)] = () => new AbsoluteLayoutPage(),
-        // Views
-        [typeof(ActivityIndicatorPage)] = () => new ActivityIndicatorPage(),
-        [typeof(BorderPage)] = () => new BorderPage(),
-        [typeof(BoxViewPage)] = () => new BoxViewPage(),
-        [typeof(ButtonPage)] = () => new ButtonPage(),
-        [typeof(CheckBoxPage)] = () => new CheckBoxPage(),
-        [typeof(CollectionViewPage)] = () => new CollectionViewPage(),
-        [typeof(ContentViewPage)] = () => new ContentViewPage(),
-        [typeof(DatePickerPage)] = () => new DatePickerPage(),
-        [typeof(EditorPage)] = () => new EditorPage(),
-        [typeof(FramePage)] = () => new FramePage(),
-        [typeof(GraphicsViewPage)] = () => new GraphicsViewPage(),
-        [typeof(ImagePage)] = () => new ImagePage(),
-        [typeof(ImageButtonPage)] = () => new ImageButtonPage(),
-        [typeof(ListViewPage)] = () => new ListViewPage(),
-        [typeof(PickerPage)] = () => new PickerPage(),
-        [typeof(ProgressBarPage)] = () => new ProgressBarPage(),
-        [typeof(RadioButtonPage)] = () => new RadioButtonPage(),
-        [typeof(ScrollViewPage)] = () => new ScrollViewPage(),
-        [typeof(SearchBarPage)] = () => new SearchBarPage(),
-        [typeof(SliderPage)] = () => new SliderPage(),
-        [typeof(StepperPage)] = () => new StepperPage(),
-        [typeof(SwipeViewPage)] = () => new SwipeViewPage(),
-        [typeof(SwitchPage)] = () => new SwitchPage(),
-        [typeof(TableViewPage)] = () => new TableViewPage(),
-        [typeof(TimePickerPage)] = () => new TimePickerPage(),
-        // Effects
-        [typeof(ClipPage)] = () => new ClipPage(),
-        [typeof(ShadowPage)] = () => new ShadowPage(),
         [typeof(TransformationsPage)] = () => new TransformationsPage(),
         // Shapes
         [typeof(RectanglePage)] = () => new RectanglePage(),
@@ -96,7 +71,7 @@ public partial class MainPage : FlyoutPage
         // Navigate to Welcome Page by default
         Detail = new WelcomePage();
     }
-
+// ...
     private void UpdateMenu(string searchText)
     {
         var root = new TableRoot();
@@ -229,6 +204,12 @@ public partial class MainPage : FlyoutPage
                 new("Tooltips", "Tooltips on various controls", typeof(TooltipsPage)),
                 new("Triggers", "Visual states and actions", typeof(TriggersPage)),
                 new("Visual States", "VisualStateManager examples", typeof(VisualStateManagerPage)),
+            }),
+
+            new SampleGroup("Shell", new List<SampleItem>
+            {
+                new("Shell", "Shell samples", typeof(ShellPlaygroundPage)),
+                new("Xaminals", "Shell with navigation and search", typeof(ShellPage)),
             }),
 
             new SampleGroup("Settings", new List<SampleItem>

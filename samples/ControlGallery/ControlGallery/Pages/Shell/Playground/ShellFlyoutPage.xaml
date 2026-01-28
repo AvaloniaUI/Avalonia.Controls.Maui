@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ShellSamples.ShellPlayground.ShellFlyoutPage"
+             Title="Shell Flyout">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Flyout Behavior" FontSize="Title" FontAttributes="Bold" />
+                    
+                    <Label Text="Shell.FlyoutBehavior" FontAttributes="Bold" />
+                    <Picker x:Name="BehaviorPicker" SelectedIndexChanged="OnBehaviorChanged">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Disabled</x:String>
+                                <x:String>Flyout (Popover)</x:String>
+                                <x:String>Locked</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+
+                    <Label Text="Programmatic Control" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button x:Name="OpenFlyoutButton" Text="Open Flyout" Clicked="OnOpenFlyout" />
+                        <Button x:Name="CloseFlyoutButton" Text="Close Flyout" Clicked="OnCloseFlyout" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Flyout Items &amp; Menus" FontSize="Title" FontAttributes="Bold" />
+                    
+                    <Label Text="Dynamic Items" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Add Item" Clicked="OnAddFlyoutItem" />
+                        <Button Text="Remove Item" Clicked="OnRemoveFlyoutItem" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Dynamic Menu Items" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Add Menu Item" Clicked="OnAddMenuItem" />
+                        <Button Text="Remove Menu Item" Clicked="OnRemoveMenuItem" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Flyout Item Visibility" FontAttributes="Bold" />
+                    <Button Text="Toggle Visibility (Last Item)" Clicked="OnToggleItemVisibility" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Appearance" FontSize="Title" FontAttributes="Bold" />
+                    
+                    <Label Text="Dynamic Width" FontAttributes="Bold" />
+                    <Slider x:Name="WidthSlider" Minimum="200" Maximum="500" Value="300" 
+                            ValueChanged="OnWidthChanged" />
+                    <Label Text="{Binding Source={x:Reference WidthSlider}, Path=Value, StringFormat='Width: {0:F0}'}" />
+
+                    <Label Text="Customization" FontAttributes="Bold" />
+                    <Button Text="Use custom FlyoutIcon" Clicked="OnToggleFlyoutIcon" />
+                    
+                    <Label Text="Background" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Default" Clicked="OnSetDefaultBackground" />
+                        <Button Text="LightBlue" Clicked="OnSetBlueBackground" />
+                        <Button Text="Linear Gradient" Clicked="OnSetGradientBackground" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Backdrop (Scrim)" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Default" Clicked="OnSetDefaultBackdrop" />
+                        <Button Text="Red (Semi-transparent)" Clicked="OnSetRedBackdrop" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Header Configuration" FontSize="Title" FontAttributes="Bold" />
+                    
+                    <Label Text="Header Behavior" FontAttributes="Bold" />
+                    <Picker x:Name="HeaderBehaviorPicker" SelectedIndexChanged="OnHeaderBehaviorChanged">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Fixed</x:String>
+                                <x:String>Scroll</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Templates" FontSize="Title" FontAttributes="Bold" />
+                    <Button Text="Toggle Header Template" Clicked="OnToggleHeaderTemplate" />
+                    <Button Text="Toggle Footer Template" Clicked="OnToggleFooterTemplate" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Vertical Scroll Mode" FontSize="Title" FontAttributes="Bold" />
+                    <Picker x:Name="ScrollModePicker" SelectedIndexChanged="OnScrollModeChanged">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Auto</x:String>
+                                <x:String>Enabled</x:String>
+                                <x:String>Disabled</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

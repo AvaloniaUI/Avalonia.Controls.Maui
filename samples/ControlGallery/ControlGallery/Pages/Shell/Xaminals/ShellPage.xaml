@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:ControlGallery.Pages.ShellSamples"
+       x:Class="ControlGallery.Pages.ShellSamples.ShellPage"
+       Title="Xaminals"
+       FlyoutBehavior="Flyout">
+
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Style x:Key="BaseStyle" TargetType="Element">
+                <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Light=#512BD4, Dark=#212121}" />
+                <Setter Property="Shell.ForegroundColor" Value="White" />
+                <Setter Property="Shell.TitleColor" Value="White" />
+                <Setter Property="Shell.DisabledColor" Value="#B4FFFFFF" />
+                <Setter Property="Shell.UnselectedColor" Value="#95FFFFFF" />
+                <!-- Tab Bar Appearance Colors -->
+                <Setter Property="Shell.TabBarBackgroundColor" Value="{AppThemeBinding Light=#512BD4, Dark=#212121}" />
+                <Setter Property="Shell.TabBarForegroundColor" Value="Yellow" />
+                <Setter Property="Shell.TabBarTitleColor" Value="Lime" />
+                <Setter Property="Shell.TabBarUnselectedColor" Value="Orange" />
+            </Style>
+            <Style TargetType="ShellItem" BasedOn="{StaticResource BaseStyle}" />
+        </ResourceDictionary>
+    </Shell.Resources>
+
+    <Shell.FlyoutHeader>
+        <Grid BackgroundColor="{AppThemeBinding Light=#512BD4, Dark=#212121}" HeightRequest="200">
+            <Label Text="Xaminals" 
+                   TextColor="White" 
+                   FontAttributes="Bold" 
+                   FontSize="24" 
+                   VerticalOptions="Center" 
+                   HorizontalOptions="Center" />
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <Shell.SearchHandler>
+        <local:AnimalSearchHandler Placeholder="Search animals..."
+                                   ShowsResults="true"
+                                   DisplayMemberName="Name" />
+    </Shell.SearchHandler>
+
+    <!-- Monkeys Flyout Item -->
+    <FlyoutItem Title="Monkeys" Icon="monkey.png">
+        <ShellContent ContentTemplate="{DataTemplate local:MonkeysPage}" />
+    </FlyoutItem>
+
+    <!-- Bears Flyout Item -->
+    <FlyoutItem Title="Bears" Icon="bear.png">
+        <ShellContent ContentTemplate="{DataTemplate local:BearsPage}" />
+    </FlyoutItem>
+
+    <!-- Elephants Flyout Item -->
+    <FlyoutItem Title="Elephants" Icon="elephant.png">
+        <ShellContent ContentTemplate="{DataTemplate local:ElephantsPage}" />
+    </FlyoutItem>
+
+    <!-- Cats and Dogs Tabs -->
+    <FlyoutItem Title="Domestic Animals" Icon="paw.png">
+        <Tab Title="Cats" Icon="cat.png">
+            <ShellContent ContentTemplate="{DataTemplate local:CatsPage}" />
+        </Tab>
+        <Tab Title="Dogs" Icon="dog.png">
+            <ShellContent ContentTemplate="{DataTemplate local:DogsPage}" />
+        </Tab>
+    </FlyoutItem>
+
+    <Shell.FlyoutFooter>
+        <StackLayout Padding="20">
+            <Label Text="Avalonia .NET MAUI Shell" HorizontalOptions="Center" />
+        </StackLayout>
+    </Shell.FlyoutFooter>
+
+</Shell>

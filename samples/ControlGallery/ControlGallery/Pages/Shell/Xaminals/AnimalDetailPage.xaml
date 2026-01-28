@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ControlGallery.Pages.ShellSamples"
+             x:Class="ControlGallery.Pages.ShellSamples.AnimalDetailPage"
+             Title="Details">
+    <Shell.SearchHandler>
+        <SearchHandler SearchBoxVisibility="Hidden" />
+    </Shell.SearchHandler>
+    <ScrollView>
+        <StackLayout Padding="20" Spacing="20">
+            <Image x:Name="AnimalImage" 
+                   Aspect="AspectFill" 
+                   HeightRequest="250" 
+                   WidthRequest="400" 
+                   HorizontalOptions="Center" />
+            
+            <Label x:Name="AnimalName" 
+                   FontSize="24" 
+                   FontAttributes="Bold" 
+                   HorizontalOptions="Center" />
+            
+            <Label x:Name="AnimalLocation" 
+                   FontSize="18" 
+                   TextColor="Gray" 
+                   HorizontalOptions="Center" />
+            
+            <Label x:Name="AnimalDetails" 
+                   FontSize="16" />
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
