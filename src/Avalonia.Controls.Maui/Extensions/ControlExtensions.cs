@@ -5,6 +5,26 @@ using Microsoft.Maui;
 namespace Avalonia.Controls.Maui.Platform;
 
 /// <summary>
+/// Extension methods for IFontManager to provide consistent double return for font size.
+/// </summary>
+public static class FontManagerExtensions
+{
+    /// <summary>
+    /// Gets the font size as a double value, consistent across all platforms.
+    /// On Android, IFontManager.GetFontSize returns FontSize struct, but Avalonia needs double.
+    /// </summary>
+    public static double GetFontSizeAsDouble(this IFontManager fontManager, Font font, double defaultFontSize = 0)
+    {
+#if ANDROID
+        var fontSize = fontManager.GetFontSize(font, (float)defaultFontSize);
+        return fontSize.Value;
+#else
+        return fontManager.GetFontSize(font, defaultFontSize);
+#endif
+    }
+}
+
+/// <summary>
 /// Extension methods for Avalonia TemplatedControl to support MAUI font handling.
 /// </summary>
 public static class ControlExtensions
@@ -27,10 +47,10 @@ public static class ControlExtensions
             return;
 
         // Set font size using FontManager's size resolution logic
-        control.FontSize = fontManager.GetFontSize(font);
+        control.FontSize = fontManager.GetFontSizeAsDouble(font);
 
         // Set font family using FontManager (handles custom fonts via IFontRegistrar)
-        control.FontFamily = fontManager.GetFontFamily(font);
+        control.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
 
         // Set font style (italic/oblique)
         control.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);

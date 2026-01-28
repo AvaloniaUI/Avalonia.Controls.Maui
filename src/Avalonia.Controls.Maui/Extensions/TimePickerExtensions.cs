@@ -7,7 +7,7 @@ namespace Avalonia.Controls.Maui.Platform;
 
 /// <summary>
 /// Provides extension methods to map <see cref="ITimePicker"/> properties onto the
-/// <see cref="AvaloniaTimePicker"/> platform control.
+/// Avalonia TimePicker platform control.
 /// </summary>
 public static class TimePickerExtensions
 {
