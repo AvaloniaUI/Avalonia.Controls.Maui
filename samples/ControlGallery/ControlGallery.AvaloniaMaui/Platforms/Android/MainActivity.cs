@@ -1,10 +1,15 @@
 ﻿using Android.App;
 using Android.Content.PM;
-using Android.OS;
+using Avalonia;
 
 namespace ControlGallery.AvaloniaMaui;
 
-[Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, LaunchMode = LaunchMode.SingleTop, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
-public class MainActivity : MauiAppCompatActivity
+[Activity(Name = "com.Avalonia.ControlCatalog.MainActivity", Label = "ControlCatalog.AvaloniaMaui", MainLauncher = true, Exported = true, ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.ScreenSize | ConfigChanges.UiMode)]
+public class MainActivity : Avalonia.Android.AvaloniaMainActivity
 {
+    protected override AppBuilder CustomizeAppBuilder(AppBuilder builder)
+    {
+        return base.CustomizeAppBuilder(builder)
+            .WithInterFont();
+    }
 }

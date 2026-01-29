@@ -5,7 +5,6 @@ using Avalonia.Input.TextInput;
 using Avalonia.Media;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
 using System;
 using AvaloniaTextBox = Avalonia.Controls.TextBox;
 using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;

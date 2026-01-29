@@ -1,5 +1,7 @@
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
+using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Platform;
 using PlatformView = Avalonia.Controls.RefreshContainer;
 
 namespace Avalonia.Controls.Maui.Handlers;
