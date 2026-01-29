@@ -22,23 +22,37 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Search Handler" FontSize="18" FontAttributes="Bold" />
-                    <Label Text="The search bar is located in the Navigation Bar above." />
-                    
-                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light=LightGray, Dark=DarkGray}" Margin="0,5" />
-
-                    <Label Text="Customization" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="Search Handler Customization" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="The search bar is located in the Navigation Bar above." FontSize="12" />
                     
                     <Button Text="Toggle Search Visibility" 
                             Clicked="OnToggleSearchVisibility" />
                     
                     <Button Text="Clear Searchbox" 
                             Clicked="OnClearSearch" />
+                    
+                    <Label x:Name="SearchResultLabel" Text="Search for: Navigation, Structure, Styling, Colors" 
+                           HorizontalOptions="Center" Margin="0,20" FontAttributes="Italic" />
                 </VerticalStackLayout>
             </Border>
 
-            <Label x:Name="SearchResultLabel" Text="Search for: Navigation, Structure, Styling, Colors" 
-                   HorizontalOptions="Center" Margin="0,20" FontAttributes="Italic" />
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ItemTemplate Customization" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="Customize the appearance of search result items at runtime." FontSize="12" />
+                    
+                    <Button Text="Use Custom ItemTemplate" 
+                            Clicked="OnSetCustomItemTemplate" />
+                    
+                    <Button Text="Reset to Default (DisplayMemberName)" 
+                            Clicked="OnResetItemTemplate" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
