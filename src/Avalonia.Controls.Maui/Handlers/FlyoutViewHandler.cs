@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Microsoft.Maui.Platform;
-using PlatformView = Avalonia.Controls.Maui.Platform.FlyoutContainer;
+using PlatformView = Avalonia.Controls.Maui.Controls.Shell.FlyoutContainer;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -136,7 +136,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
         if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        platformView.FlyoutBehavior = (Platform.FlyoutBehavior)(int)flyoutView.FlyoutBehavior;
+        platformView.FlyoutBehavior = (Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior)(int)flyoutView.FlyoutBehavior;
     }
 
     public static void MapFlyoutWidth(FlyoutViewHandler handler, IFlyoutView flyoutView)
@@ -151,7 +151,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
         else if (flyoutView.FlyoutWidth == -1)
         {
             // -1 means auto/match parent, use a reasonable default
-            platformView.FlyoutWidth = 320;
+            platformView.FlyoutWidth = PlatformView.DefaultFlyoutWidth;
         }
     }
 
