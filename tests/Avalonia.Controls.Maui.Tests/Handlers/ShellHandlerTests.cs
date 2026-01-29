@@ -1,4 +1,5 @@
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui.Controls.Shell;
 using Avalonia.Headless.XUnit;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -45,7 +46,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var flyoutContainer = handler.PlatformView as FlyoutContainer;
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Avalonia.Controls.Maui.Platform.FlyoutBehavior.Popover, flyoutContainer.FlyoutBehavior);
+        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Popover, flyoutContainer.FlyoutBehavior);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutBehavior Disabled Initializes Correctly")]
@@ -58,7 +59,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var flyoutContainer = handler.PlatformView as FlyoutContainer;
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Avalonia.Controls.Maui.Platform.FlyoutBehavior.Disabled, flyoutContainer.FlyoutBehavior);
+        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Disabled, flyoutContainer.FlyoutBehavior);
         Assert.False(flyoutContainer.IsFlyoutOpen);
     }
 
@@ -72,7 +73,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var flyoutContainer = handler.PlatformView as FlyoutContainer;
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Avalonia.Controls.Maui.Platform.FlyoutBehavior.Locked, flyoutContainer.FlyoutBehavior);
+        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Locked, flyoutContainer.FlyoutBehavior);
         // In Locked mode, flyout is always visible (split mode) regardless of IsFlyoutOpen state
         // The visual position is controlled by IsSplitMode(), not IsFlyoutOpen
     }
@@ -665,9 +666,9 @@ public partial class ShellHandlerTests : HandlerTestBase
     {
         var container = new FlyoutContainer
         {
-            FlyoutBehavior = Avalonia.Controls.Maui.Platform.FlyoutBehavior.Locked
+            FlyoutBehavior = Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Locked
         };
-        Assert.Equal(Avalonia.Controls.Maui.Platform.FlyoutBehavior.Locked, container.FlyoutBehavior);
+        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Locked, container.FlyoutBehavior);
     }
 
     [AvaloniaFact(DisplayName = "ShellSearchControl Initializes with SearchHandler Query")]
