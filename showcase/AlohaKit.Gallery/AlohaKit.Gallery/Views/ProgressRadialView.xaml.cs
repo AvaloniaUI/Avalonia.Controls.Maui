@@ -12,7 +12,7 @@ public partial class ProgressRadialView : ContentPage
         checkBox.IsChecked = ProgressRadial.Direction == ProgressRadialDirection.LeftToRight ? true : false;
     }
 
-    private void CheckBox_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    private void CheckBox_CheckedChanged(object? sender, CheckedChangedEventArgs e)
     {
         ProgressRadial.Direction = e.Value ? ProgressRadialDirection.LeftToRight : ProgressRadialDirection.RightToLeft;
     }
@@ -56,7 +56,7 @@ public partial class ProgressRadialView : ContentPage
         }
     }
 
-    Color GetColorFromString(string value)
+    Color? GetColorFromString(string value)
     {
         if (string.IsNullOrEmpty(value))
             return null;

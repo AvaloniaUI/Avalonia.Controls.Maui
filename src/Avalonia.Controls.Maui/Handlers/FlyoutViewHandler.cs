@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;

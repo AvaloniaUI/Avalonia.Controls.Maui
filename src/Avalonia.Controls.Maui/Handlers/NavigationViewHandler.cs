@@ -3,7 +3,6 @@ using Avalonia.Controls.Maui.Platform;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 
 namespace Avalonia.Controls.Maui.Handlers;
 

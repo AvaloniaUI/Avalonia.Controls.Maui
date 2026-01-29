@@ -1,8 +1,8 @@
+using Microsoft.Maui.Handlers;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Handlers;
 
 namespace Avalonia.Controls.Maui.Handlers.Cells;
 
@@ -40,7 +40,7 @@ public class ImageCellHandler : ElementHandler<ImageCell, MauiImageCell>
     protected override MauiImageCell CreatePlatformElement()
     {
         var cell = new MauiImageCell();
-        cell.PointerReleased += OnCellPointerReleased;
+        cell.AddHandler(global::Avalonia.Input.InputElement.TappedEvent, OnCellTapped, global::Avalonia.Interactivity.RoutingStrategies.Bubble, true);
         cell.AttachedToVisualTree += OnCellAttachedToVisualTree;
         cell.DetachedFromVisualTree += OnCellDetachedFromVisualTree;
         return cell;
@@ -48,7 +48,7 @@ public class ImageCellHandler : ElementHandler<ImageCell, MauiImageCell>
 
     protected override void DisconnectHandler(MauiImageCell platformView)
     {
-        platformView.PointerReleased -= OnCellPointerReleased;
+        platformView.RemoveHandler(global::Avalonia.Input.InputElement.TappedEvent, OnCellTapped);
         platformView.AttachedToVisualTree -= OnCellAttachedToVisualTree;
         platformView.DetachedFromVisualTree -= OnCellDetachedFromVisualTree;
         base.DisconnectHandler(platformView);
@@ -64,11 +64,14 @@ public class ImageCellHandler : ElementHandler<ImageCell, MauiImageCell>
         VirtualView?.SendDisappearing();
     }
 
-    private void OnCellPointerReleased(object? sender, PointerReleasedEventArgs e)
+    private void OnCellTapped(object? sender, global::Avalonia.Input.TappedEventArgs e)
     {
-        if (VirtualView?.Command?.CanExecute(VirtualView.CommandParameter) == true)
+        var cell = VirtualView;
+        if (cell == null) return;
+
+        if (cell.Command?.CanExecute(cell.CommandParameter) == true)
         {
-            VirtualView.Command.Execute(VirtualView.CommandParameter);
+            cell.Command.Execute(cell.CommandParameter);
         }
     }
 

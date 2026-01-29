@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace _2048Game.Converters
@@ -14,6 +15,8 @@ namespace _2048Game.Converters
             return value.Equals(TrueValue);
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode",
+            Justification = "Binding.DoNothing is a static sentinel value, safe for AOT")]
         public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is bool boolValue && boolValue)

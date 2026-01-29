@@ -1,7 +1,7 @@
+using Microsoft.Maui.Handlers;
 using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Handlers;
 
 namespace Avalonia.Controls.Maui.Handlers.Cells;
 

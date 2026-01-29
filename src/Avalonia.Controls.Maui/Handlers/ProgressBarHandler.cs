@@ -1,7 +1,6 @@
 using Avalonia.Media;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using AvaloniaProgressBar = global::Avalonia.Controls.ProgressBar;
 
 namespace Avalonia.Controls.Maui.Handlers;

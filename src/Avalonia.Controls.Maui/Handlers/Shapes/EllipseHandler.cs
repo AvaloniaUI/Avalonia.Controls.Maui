@@ -1,7 +1,6 @@
 #nullable disable
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
 using PlatformView = global::Avalonia.Controls.Shapes.Ellipse;
 using Ellipse = Microsoft.Maui.Controls.Shapes.Ellipse;
 

@@ -120,6 +120,7 @@
 						<Label
                             Grid.Column="1"
                             VerticalOptions="Center"
+                            x:DataType="Slider"
                             Text="{Binding Source={x:Reference StrokeThicknessSlider}, Path=Value, StringFormat='{0:F2}'}"/>
 					</Grid>
 				</Grid>
@@ -216,9 +217,10 @@
 					Style="{StaticResource SettingsEntryStyle}"/>
 			</StackLayout>
 		</StackLayout>
-		<controls:Button 
+		<controls:Button
             Grid.Row="3"
             x:Name="Button"
+            x:DataType="Slider"
             Text="Button"
             TextColor="White"
             StrokeThickness="{Binding Source={x:Reference StrokeThicknessSlider}, Path=Value}"

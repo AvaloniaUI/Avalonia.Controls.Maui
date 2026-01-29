@@ -1,4 +1,5 @@
 using Avalonia.Controls.Maui.Controls;
+using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui.Extensions;
@@ -88,8 +89,8 @@ public static class SearchBarExtensions
         if (font.IsDefault)
             return;
 
-        platformView.FontSize = fontManager.GetFontSize(font);
-        platformView.FontFamily = fontManager.GetFontFamily(font);
+        platformView.FontSize = fontManager.GetFontSizeAsDouble(font);
+        platformView.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
         platformView.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
         platformView.FontWeight = FontManager.ToAvaloniaFontWeight(font.Weight);
     }
@@ -117,13 +118,7 @@ public static class SearchBarExtensions
     /// <param name="searchBar">The .NET MAUI SearchBar providing the alignment.</param>
     public static void UpdateVerticalTextAlignment(this MauiSearchBar platformView, ISearchBar searchBar)
     {
-        platformView.VerticalContentAlignment = searchBar.VerticalTextAlignment switch
-        {
-            TextAlignment.Start => Layout.VerticalAlignment.Top,
-            TextAlignment.Center => Layout.VerticalAlignment.Center,
-            TextAlignment.End => Layout.VerticalAlignment.Bottom,
-            _ => Layout.VerticalAlignment.Center,
-        };
+        // TODO: Vertical Text Alignment is not directly supported in Avalonia TextBox yet.
     }
 
     /// <summary>

@@ -10,19 +10,19 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="CollectionView Control"
+            <Label Text="CollectionView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
 
-            <!-- Basic Vertical List -->
+            <!-- Vertical List -->
             <Border Stroke="Gray"
                     Padding="10">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Basic Vertical List"
+                    <Label Text="Vertical List"
                            FontAttributes="Bold"/>
                     <Label Text="A simple vertical list with item template"
                            FontSize="12"
@@ -41,6 +41,37 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Interactive vertical list -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive Vertical List"
+                           FontAttributes="Bold"/>
+                    <Label Text="Adjust item spacing at runtime"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <Grid ColumnDefinitions="Auto, *, Auto">
+                        <Label Text="Spacing:" VerticalOptions="Center"/>
+                        <Slider Grid.Column="1" Minimum="0" Maximum="50" Value="{Binding ListSpacing, Mode=TwoWay}" Margin="10,0"/>
+                        <Label Grid.Column="2" Text="{Binding ListSpacing, StringFormat='{0:F0}'}" VerticalOptions="Center" WidthRequest="30"/>
+                    </Grid>
+                    <CollectionView x:Name="VerticalListCollection"
+                                    ItemsSource="{Binding LayoutItems}"
+                                    HeightRequest="200">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:ColorItem">
+                                <Border BackgroundColor="{Binding Color}" Padding="10" HeightRequest="50">
+                                    <Label Text="{Binding Name}" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes="Bold"/>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+            
             <!-- Grid Layout -->
             <Border Stroke="Gray"
                     Padding="10">
@@ -63,9 +94,9 @@
                         </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="sys:String">
-                                <Border BackgroundColor="LightBlue"
+                                <Border BackgroundColor="{AppThemeBinding Light=#E1F5FE, Dark=#01579B}"
                                         Padding="15"
-                                        Stroke="DarkBlue"
+                                        Stroke="{AppThemeBinding Light=Navy, Dark=AliceBlue}"
                                         StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="8"/>
@@ -73,6 +104,7 @@
                                     <Label Text="{Binding}"
                                            HorizontalOptions="Center"
                                            VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light=Black, Dark=White}"
                                            FontAttributes="Bold"/>
                                 </Border>
                             </DataTemplate>
@@ -80,7 +112,46 @@
                     </CollectionView>
                 </VerticalStackLayout>
             </Border>
+    
+            <!-- Interactive vertical grid -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive Vertical Grid"
+                           FontAttributes="Bold"/>
+                    <Label Text="Adjust span and spacing at runtime"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, *, Auto" RowSpacing="5">
+                        <Label Text="Span:" VerticalOptions="Center"/>
+                        <Slider Grid.Column="1" Minimum="1" Maximum="5" Value="{Binding GridSpan, Mode=TwoWay}" Margin="10,0"/>
+                        <Label Grid.Column="2" Text="{Binding GridSpan}" VerticalOptions="Center" WidthRequest="30"/>
 
+                        <Label Grid.Row="1" Text="V Spacing:" VerticalOptions="Center"/>
+                        <Slider Grid.Row="1" Grid.Column="1" Minimum="0" Maximum="50" Value="{Binding GridVerticalSpacing, Mode=TwoWay}" Margin="10,0"/>
+                        <Label Grid.Row="1" Grid.Column="2" Text="{Binding GridVerticalSpacing, StringFormat='{0:F0}'}" VerticalOptions="Center" WidthRequest="30"/>
+
+                        <Label Grid.Row="2" Text="H Spacing:" VerticalOptions="Center"/>
+                        <Slider Grid.Row="2" Grid.Column="1" Minimum="0" Maximum="50" Value="{Binding GridHorizontalSpacing, Mode=TwoWay}" Margin="10,0"/>
+                        <Label Grid.Row="2" Grid.Column="2" Text="{Binding GridHorizontalSpacing, StringFormat='{0:F0}'}" VerticalOptions="Center" WidthRequest="30"/>
+                    </Grid>
+                    <CollectionView x:Name="VerticalGridCollection"
+                                    ItemsSource="{Binding LayoutItems}"
+                                    HeightRequest="250">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:ColorItem">
+                                <Border BackgroundColor="{Binding Color}" Padding="5" HeightRequest="80" WidthRequest="80">
+                                    <Label Text="{Binding Name}" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" FontSize="10"/>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+            
             <!-- Horizontal List -->
             <Border Stroke="Gray"
                     Padding="10">
@@ -101,10 +172,10 @@
                         </CollectionView.ItemsLayout>
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="sys:String">
-                                <Border BackgroundColor="LightCoral"
+                                <Border BackgroundColor="{AppThemeBinding Light=#FFEBEE, Dark=#B71C1C}"
                                         Padding="20"
                                         WidthRequest="100"
-                                        Stroke="DarkRed"
+                                        Stroke="{AppThemeBinding Light=DarkRed, Dark=MistyRose}"
                                         StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="8"/>
@@ -112,7 +183,7 @@
                                     <Label Text="{Binding}"
                                            HorizontalOptions="Center"
                                            VerticalOptions="Center"
-                                           TextColor="White"
+                                           TextColor="{AppThemeBinding Light=Black, Dark=White}"
                                            FontAttributes="Bold"/>
                                 </Border>
                             </DataTemplate>
@@ -120,8 +191,39 @@
                     </CollectionView>
                 </VerticalStackLayout>
             </Border>
-
-            <!-- Selection Mode -->
+            
+            <!-- Interactive horizontal grid -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactive Horizontal Grid"
+                           FontAttributes="Bold"/>
+                    <Label Text="Adjust rows at runtime (Orientation=Horizontal)"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <Grid ColumnDefinitions="Auto, *, Auto">
+                        <Label Text="Rows:" VerticalOptions="Center"/>
+                        <Slider Grid.Column="1" Minimum="1" Maximum="4" Value="{Binding HGridSpan, Mode=TwoWay}" Margin="10,0"/>
+                        <Label Grid.Column="2" Text="{Binding HGridSpan}" VerticalOptions="Center" WidthRequest="30"/>
+                    </Grid>
+                    <CollectionView x:Name="HorizontalGridCollection"
+                                    ItemsSource="{Binding LayoutItems}"
+                                    HeightRequest="300">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:ColorItem">
+                                <Border BackgroundColor="{Binding Color}" Margin="2" Padding="5" HeightRequest="100" WidthRequest="100">
+                                    <Label Text="{Binding Name}" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" FontSize="10"/>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Single Selection -->
             <Border Stroke="Gray"
                     Padding="10">
                 <Border.StrokeShape>
@@ -150,7 +252,7 @@
                                             </VisualState>
                                             <VisualState Name="Selected">
                                                 <VisualState.Setters>
-                                                    <Setter Property="BackgroundColor" Value="LightSkyBlue"/>
+                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightSkyBlue, Dark=#2C3E50}"/>
                                                 </VisualState.Setters>
                                             </VisualState>
                                         </VisualStateGroup>
@@ -167,8 +269,104 @@
                            HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
+      
+            <!-- Multiple Selection -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Multiple Selection"
+                           FontAttributes="Bold"/>
+                    <Label Text="Select multiple items from the list"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding MultiSelectItems}"
+                                    SelectionMode="Multiple"
+                                    SelectionChanged="OnMultiSelectionChanged"
+                                    HeightRequest="200">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="Transparent"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightGreen, Dark=#1B5E20}"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label x:Name="MultiSelectionLabel"
+                           Text="No items selected"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
 
-            <!-- Empty View -->
+            <!-- Selection Command -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Selection Command"
+                           FontAttributes="Bold"/>
+                    <Label Text="Demonstrating SelectionChangedCommand"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding SimpleItems}"
+                                    SelectionMode="Single"
+                                    SelectionChangedCommand="{Binding SelectionCommand}"
+                                    SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}"
+                                    HeightRequest="150">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10">
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup Name="CommonStates">
+                                            <VisualState Name="Normal">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="Transparent"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState Name="Selected">
+                                                <VisualState.Setters>
+                                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=LightSkyBlue, Dark=#01579B}"/>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                    <Label Text="{Binding}" 
+                                           TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label x:Name="SelectionCommandLabel"
+                           Text="No command executed yet"
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light=DarkBlue, Dark=LightSkyBlue}"
+                           HorizontalOptions="Center"
+                           Margin="0,5"/>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Empty View (Property) -->
             <Border Stroke="Gray"
                     Padding="10">
                 <Border.StrokeShape>
@@ -177,7 +375,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Empty View"
                            FontAttributes="Bold"/>
-                    <Label Text="Shows a message when the collection is empty"
+                    <Label Text="Shows a message when the collection is empty using EmptyView property"
                            FontSize="12"
                            FontAttributes="Italic"/>
                     <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
@@ -214,6 +412,187 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Empty View (Template) -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Empty View (Template)"
+                           FontAttributes="Bold"/>
+                    <Label Text="Shows a message using EmptyViewTemplate"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Button Text="Clear Items"
+                                Clicked="OnClearTemplateItems"/>
+                        <Button Text="Add Items"
+                                Clicked="OnAddTemplateItems"/>
+                    </HorizontalStackLayout>
+                    <CollectionView x:Name="EmptyViewTemplateCollection"
+                                    ItemsSource="{Binding EmptyViewTemplateItems}"
+                                    HeightRequest="150">
+                        <CollectionView.EmptyViewTemplate>
+                            <DataTemplate>
+                                <VerticalStackLayout HorizontalOptions="Center"
+                                                     VerticalOptions="Center">
+                                    <Label Text="Template No items!"
+                                           FontSize="18"
+                                           FontAttributes="Bold"
+                                           TextColor="{AppThemeBinding Light=Red, Dark=#FF5252}"
+                                           HorizontalOptions="Center"/>
+                                    <Label Text="This is defined in a DataTemplate"
+                                           FontSize="12"
+                                           TextColor="Gray"
+                                           HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </CollectionView.EmptyViewTemplate>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Scrolling -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Scrolling"
+                           FontAttributes="Bold"/>
+                    <Label Text="Test ScrollTo and ScrollBar visibility"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                        <Entry x:Name="ScrollIndexEntry"
+                               Placeholder="Enter index (0-49)"
+                               Keyboard="Numeric"/>
+                        <Button Text="Scroll To Index"
+                                Clicked="OnScrollToIndex"
+                                Grid.Column="1"/>
+                    </Grid>
+
+                    <Button Text="Scroll To Item 25 (Middle)"
+                            Clicked="OnScrollToItem"/>
+
+                    <CollectionView x:Name="ScrollingCollection"
+                                    ItemsSource="{Binding LargeList}"
+                                    HeightRequest="200"
+                                    SelectionMode="Single">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Scrollbar Visibility -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Scrollbar Visibility"
+                           FontAttributes="Bold"/>
+                    <Label Text="CollectionView with hidden vertical scrollbar"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="20">
+                         <VerticalStackLayout>
+                            <Label Text="Vertical ScrollBar"/>
+                            <Picker x:Name="VisibilitySampleVerticalPicker"
+                                    SelectedIndexChanged="OnVisibilitySampleChanged">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type ScrollBarVisibility}">
+                                        <ScrollBarVisibility>Default</ScrollBarVisibility>
+                                        <ScrollBarVisibility>Always</ScrollBarVisibility>
+                                        <ScrollBarVisibility>Never</ScrollBarVisibility>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                                <Picker.SelectedIndex>2</Picker.SelectedIndex>
+                            </Picker>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout>
+                            <Label Text="Horizontal ScrollBar"/>
+                            <Picker x:Name="VisibilitySampleHorizontalPicker"
+                                    SelectedIndexChanged="OnVisibilitySampleChanged">
+                                <Picker.ItemsSource>
+                                    <x:Array Type="{x:Type ScrollBarVisibility}">
+                                        <ScrollBarVisibility>Default</ScrollBarVisibility>
+                                        <ScrollBarVisibility>Always</ScrollBarVisibility>
+                                        <ScrollBarVisibility>Never</ScrollBarVisibility>
+                                    </x:Array>
+                                </Picker.ItemsSource>
+                                <Picker.SelectedIndex>0</Picker.SelectedIndex>
+                            </Picker>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <CollectionView x:Name="VisibilityCollection"
+                                    ItemsSource="{Binding LargeList}"
+                                    VerticalScrollBarVisibility="Never"
+                                    HeightRequest="200">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Scroll Events -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Scroll Events"
+                           FontAttributes="Bold"/>
+                    <Label Text="Demonstrating the Scrolled event"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <Label x:Name="ScrollInfoLabel"
+                           Text="Scroll the list below..."
+                           TextColor="{AppThemeBinding Light=DarkBlue, Dark=LightSkyBlue}"
+                           HorizontalOptions="Center"
+                           FontAttributes="Bold"/>
+                    <CollectionView ItemsSource="{Binding LargeList}"
+                                    HeightRequest="200"
+                                    Scrolled="OnCollectionViewScrolled">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+            
             <!-- Grouping -->
             <Border Stroke="Gray"
                     Padding="10">
@@ -232,7 +611,8 @@
                         <CollectionView.GroupHeaderTemplate>
                             <DataTemplate x:DataType="pages:AnimalGroup">
                                 <Label Text="{Binding Name}"
-                                       BackgroundColor="LightGreen"
+                                       BackgroundColor="{AppThemeBinding Light=#E8F5E9, Dark=#1B5E20}"
+                                       TextColor="{AppThemeBinding Light=Black, Dark=White}"
                                        FontSize="16"
                                        FontAttributes="Bold"
                                        Padding="10,5"/>
@@ -241,7 +621,8 @@
                         <CollectionView.GroupFooterTemplate>
                             <DataTemplate x:DataType="pages:AnimalGroup">
                                 <Label Text="{Binding Count, StringFormat='Total: {0} animals'}"
-                                       BackgroundColor="Orange"
+                                       BackgroundColor="{AppThemeBinding Light=#FFF3E0, Dark=#E65100}"
+                                       TextColor="{AppThemeBinding Light=Black, Dark=White}"
                                        FontSize="12"
                                        Padding="10,5"/>
                             </DataTemplate>
@@ -252,6 +633,69 @@
                                     <Label Text="{Binding Name}"
                                            VerticalOptions="Center"/>
                                 </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Customized Grouping -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Customized Grouping"
+                           FontAttributes="Bold"/>
+                    <Label Text="Advanced grouping with custom colors, fonts and border-based headers"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding GroupedVegetables}"
+                                    IsGrouped="True"
+                                    HeightRequest="350">
+                        <CollectionView.GroupHeaderTemplate>
+                            <DataTemplate x:DataType="pages:VegetableGroup">
+                                <Border Margin="0,5" Padding="15,8" BackgroundColor="{AppThemeBinding Light=DarkSlateGray, Dark=#121212}">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="5"/>
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <Label Text="{Binding Name}"
+                                               TextColor="{AppThemeBinding Light=White, Dark=#E0E0E0}"
+                                               FontSize="18"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center"/>
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Count, StringFormat='({0})'}"
+                                               TextColor="{AppThemeBinding Light=LightGray, Dark=#B0B0B0}"
+                                               FontSize="14"
+                                               VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.GroupHeaderTemplate>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:Vegetable">
+                                <Border Margin="10,2" Padding="10" 
+                                        BackgroundColor="{AppThemeBinding Light=White, Dark=#333333}"
+                                        Stroke="LightGray"
+                                        StrokeThickness="1">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8"/>
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="*">
+                                        <VerticalStackLayout Padding="10,0" 
+                                                             VerticalOptions="Center">
+                                            <Label Text="{Binding Name}" 
+                                                   FontAttributes="Bold" 
+                                                   FontSize="16"/>
+                                            <Label Text="{Binding Description}" 
+                                                   FontSize="12" 
+                                                   TextColor="Gray"/>
+                                        </VerticalStackLayout>
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
@@ -276,28 +720,14 @@
                             <DataTemplate x:DataType="pages:Person">
                                 <Border Margin="5"
                                         Padding="10"
-                                        BackgroundColor="White"
-                                        Stroke="LightGray"
+                                        BackgroundColor="{AppThemeBinding Light=White, Dark=#212121}"
+                                        Stroke="{AppThemeBinding Light=LightGray, Dark=#424242}"
                                         StrokeThickness="1">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="8"/>
                                     </Border.StrokeShape>
-                                    <Grid ColumnDefinitions="50,*" ColumnSpacing="10">
-                                        <Border BackgroundColor="{Binding Color}"
-                                                WidthRequest="50"
-                                                HeightRequest="50">
-                                            <Border.StrokeShape>
-                                                <RoundRectangle CornerRadius="25"/>
-                                            </Border.StrokeShape>
-                                            <Label Text="{Binding Initials}"
-                                                   TextColor="White"
-                                                   FontAttributes="Bold"
-                                                   FontSize="18"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center"/>
-                                        </Border>
-                                        <VerticalStackLayout Grid.Column="1"
-                                                             VerticalOptions="Center">
+                                    <Grid ColumnDefinitions="*">
+                                        <VerticalStackLayout VerticalOptions="Center">
                                             <Label Text="{Binding Name}"
                                                    FontAttributes="Bold"
                                                    FontSize="16"/>
@@ -310,33 +740,6 @@
                                         </VerticalStackLayout>
                                     </Grid>
                                 </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Scrollbar Visibility -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Scrollbar Visibility"
-                           FontAttributes="Bold"/>
-                    <Label Text="CollectionView with hidden vertical scrollbar"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <CollectionView ItemsSource="{Binding LargeList}"
-                                    VerticalScrollBarVisibility="Never "
-                                    HeightRequest="200">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="sys:String">
-                                <Grid Padding="10" HeightRequest="40">
-                                    <Label Text="{Binding}"
-                                           VerticalOptions="Center"/>
-                                </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
@@ -358,25 +761,27 @@
                     <CollectionView ItemsSource="{Binding HeaderFooterItems}"
                                     HeightRequest="250">
                         <CollectionView.Header>
-                            <VerticalStackLayout BackgroundColor="LightBlue" Padding="10">
-                                <Label Text="📋 Shopping List"
+                            <VerticalStackLayout BackgroundColor="{AppThemeBinding Light=LightBlue, Dark=#01579B}" Padding="10">
+                                <Label Text="Shopping List"
                                        FontSize="18"
                                        FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=Black, Dark=White}"
                                        HorizontalOptions="Center"/>
                                 <Label Text="Items to buy this week"
                                        FontSize="12"
-                                       TextColor="DarkBlue"
+                                       TextColor="{AppThemeBinding Light=DarkBlue, Dark=LightSkyBlue}"
                                        HorizontalOptions="Center"/>
                             </VerticalStackLayout>
                         </CollectionView.Header>
                         <CollectionView.Footer>
-                            <VerticalStackLayout BackgroundColor="LightGreen" Padding="10">
+                            <VerticalStackLayout BackgroundColor="{AppThemeBinding Light=LightGreen, Dark=#1B5E20}" Padding="10">
                                 <Label Text="{Binding HeaderFooterItems.Count, StringFormat='Total items: {0}'}"
                                        FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light=Black, Dark=White}"
                                        HorizontalOptions="Center"/>
-                                <Label Text="Happy shopping! 🛒"
+                                <Label Text="Happy shopping!"
                                        FontSize="12"
-                                       TextColor="DarkGreen"
+                                       TextColor="{AppThemeBinding Light=DarkGreen, Dark=LightGreen}"
                                        HorizontalOptions="Center"/>
                             </VerticalStackLayout>
                         </CollectionView.Footer>
@@ -392,49 +797,69 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Multiple Selection -->
+            <!-- Customized Header and Footer -->
             <Border Stroke="Gray"
                     Padding="10">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Multiple Selection"
+                    <Label Text="Customized Header and Footer"
                            FontAttributes="Bold"/>
-                    <Label Text="Select multiple items from the list"
+                    <Label Text="Advanced header and footer with complex layouts and bindings"
                            FontSize="12"
                            FontAttributes="Italic"/>
-                    <CollectionView ItemsSource="{Binding MultiSelectItems}"
-                                    SelectionMode="Multiple"
-                                    SelectionChanged="OnMultiSelectionChanged"
-                                    HeightRequest="200">
+                    <CollectionView ItemsSource="{Binding InventoryItems}"
+                                    Footer="{Binding .}"
+                                    HeightRequest="300">
+                        <CollectionView.HeaderTemplate>
+                            <DataTemplate>
+                                <Border BackgroundColor="Navy" Padding="15" Margin="0,0,0,10">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10"/>
+                                    </Border.StrokeShape>
+                                    <VerticalStackLayout>
+                                        <Label Text="INVENTORY REPORT" 
+                                               TextColor="White" 
+                                               FontSize="20" 
+                                               FontAttributes="Bold" 
+                                               HorizontalOptions="Center"/>
+                                        <BoxView HeightRequest="1" Color="White" Margin="0,5"/>
+                                        <Grid ColumnDefinitions="*, *, *">
+                                            <Label Text="Item Name" FontAttributes="Bold" TextColor="White"/>
+                                            <Label Grid.Column="1" Text="Qty" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
+                                            <Label Grid.Column="2" Text="Price" FontAttributes="Bold" TextColor="White" HorizontalOptions="End"/>
+                                        </Grid>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.HeaderTemplate>
+                        <CollectionView.FooterTemplate>
+                            <DataTemplate x:DataType="pages:CollectionViewPage">
+                                <Border BackgroundColor="ForestGreen" Padding="15" Margin="0,10,0,0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="10"/>
+                                    </Border.StrokeShape>
+                                    <HorizontalStackLayout HorizontalOptions="End">
+                                        <Label Text="Total Inventory Value: " 
+                                               TextColor="White" 
+                                               FontAttributes="Bold"/>
+                                        <Label Text="{Binding TotalInventoryValue, StringFormat='{0:C}'}"
+                                               TextColor="White"/>
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.FooterTemplate>
                         <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="sys:String">
-                                <Grid Padding="10" HeightRequest="40">
-                                    <VisualStateManager.VisualStateGroups>
-                                        <VisualStateGroup Name="CommonStates">
-                                            <VisualState Name="Normal">
-                                                <VisualState.Setters>
-                                                    <Setter Property="BackgroundColor" Value="Transparent"/>
-                                                </VisualState.Setters>
-                                            </VisualState>
-                                            <VisualState Name="Selected">
-                                                <VisualState.Setters>
-                                                    <Setter Property="BackgroundColor" Value="LightGreen"/>
-                                                </VisualState.Setters>
-                                            </VisualState>
-                                        </VisualStateGroup>
-                                    </VisualStateManager.VisualStateGroups>
-                                    <Label Text="{Binding}"
-                                           VerticalOptions="Center"/>
+                            <DataTemplate x:DataType="pages:InventoryItem">
+                                <Grid ColumnDefinitions="*, *, *" Padding="10,5">
+                                    <Label Text="{Binding Name}" VerticalOptions="Center"/>
+                                    <Label Grid.Column="1" Text="{Binding Quantity}" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    <Label Grid.Column="2" Text="{Binding Price, StringFormat='${0:F2}'}" HorizontalOptions="End" VerticalOptions="Center"/>
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                    <Label x:Name="MultiSelectionLabel"
-                           Text="No items selected"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Border>
 
@@ -456,7 +881,7 @@
                         <Label x:Name="LoadingLabel"
                                Text=""
                                VerticalOptions="Center"
-                               TextColor="Blue"/>
+                               TextColor="{AppThemeBinding Light=Blue, Dark=LightSkyBlue}"/>
                     </HorizontalStackLayout>
                     <CollectionView ItemsSource="{Binding InfiniteScrollItems}"
                                     RemainingItemsThreshold="5"
@@ -475,6 +900,111 @@
                            Text="Items loaded: 0"
                            FontAttributes="Bold"
                            HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Infinite Scrolling (Command) -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Infinite Scrolling (Command)"
+                           FontAttributes="Bold"/>
+                    <Label Text="Test RemainingItemsThresholdReachedCommand"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding LargeList}"
+                                    RemainingItemsThreshold="5"
+                                    RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
+                                    HeightRequest="200">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Grid Padding="10" HeightRequest="40">
+                                    <Label Text="{Binding}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                    <Label x:Name="LoadMoreCommandLabel"
+                           Text="LoadMoreCommand not executed yet"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+
+            <!-- Context Menus (SwipeView) -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Context Menus (SwipeView)"
+                           FontAttributes="Bold"/>
+                    <Label Text="Swipe items left or right for actions"
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <CollectionView ItemsSource="{Binding People}"
+                                    HeightRequest="300">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:Person">
+                                <SwipeView>
+                                    <SwipeView.LeftItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Favorite"
+                                                       IconImageSource="favorite.png"
+                                                       BackgroundColor="Gold"
+                                                       Invoked="OnFavorite" />
+                                        </SwipeItems>
+                                    </SwipeView.LeftItems>
+                                    <SwipeView.RightItems>
+                                        <SwipeItems>
+                                            <SwipeItem Text="Delete"
+                                                       IconImageSource="delete.png"
+                                                       BackgroundColor="Red"
+                                                       Invoked="OnDelete" />
+                                        </SwipeItems>
+                                    </SwipeView.RightItems>
+                                    <Border Margin="5"
+                                            Padding="10"
+                                            BackgroundColor="{AppThemeBinding Light=White, Dark=#212121}"
+                                            Stroke="{AppThemeBinding Light=LightGray, Dark=#424242}"
+                                            StrokeThickness="1">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="8"/>
+                                        </Border.StrokeShape>
+                                        <Grid ColumnDefinitions="Auto, *">
+                                            <Border WidthRequest="40" HeightRequest="40" 
+                                                    BackgroundColor="{Binding Color}" 
+                                                    VerticalOptions="Center"
+                                                    Margin="0,0,10,0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="20"/>
+                                                </Border.StrokeShape>
+                                                <Label Text="{Binding Initials}" 
+                                                       TextColor="White" 
+                                                       HorizontalOptions="Center" 
+                                                       VerticalOptions="Center"
+                                                       FontAttributes="Bold"/>
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Name}"
+                                                       FontAttributes="Bold"
+                                                       FontSize="16"/>
+                                                <Label Text="{Binding Role}"
+                                                       TextColor="Gray"
+                                                       FontSize="12"/>
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </Border>
+                                </SwipeView>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </VerticalStackLayout>
             </Border>
 

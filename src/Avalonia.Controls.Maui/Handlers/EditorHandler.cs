@@ -1,229 +1,169 @@
-using Avalonia.Controls;
+using Avalonia.Controls.Maui.Controls;
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
-using Avalonia.Media;
 using Microsoft.Maui;
-using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
-using System;
-using AvaloniaTextBox = Avalonia.Controls.TextBox;
-using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
-using AvaloniaVerticalAlignment = Avalonia.Layout.VerticalAlignment;
 
-namespace Avalonia.Controls.Maui.Handlers;
-
-public class EditorHandler : ViewHandler<IEditor, AvaloniaTextBox>
+namespace Avalonia.Controls.Maui.Handlers
 {
-    public static IPropertyMapper<IEditor, EditorHandler> Mapper = new PropertyMapper<IEditor, EditorHandler>(ViewHandler.ViewMapper)
+    public class EditorHandler : ViewHandler<IEditor, MauiEditor>
     {
-        [nameof(IEditor.Background)] = MapBackground,
-        [nameof(IEditor.CharacterSpacing)] = MapCharacterSpacing,
-        [nameof(IEditor.Font)] = MapFont,
-        [nameof(IEditor.IsReadOnly)] = MapIsReadOnly,
-        [nameof(IEditor.IsTextPredictionEnabled)] = MapIsTextPredictionEnabled,
-        [nameof(IEditor.IsSpellCheckEnabled)] = MapIsSpellCheckEnabled,
-        [nameof(IEditor.MaxLength)] = MapMaxLength,
-        [nameof(IEditor.Placeholder)] = MapPlaceholder,
-        [nameof(IEditor.PlaceholderColor)] = MapPlaceholderColor,
-        [nameof(IEditor.Text)] = MapText,
-        [nameof(IEditor.TextColor)] = MapTextColor,
-        [nameof(IEditor.HorizontalTextAlignment)] = MapHorizontalTextAlignment,
-        [nameof(IEditor.VerticalTextAlignment)] = MapVerticalTextAlignment,
-        [nameof(IEditor.Keyboard)] = MapKeyboard,
-        [nameof(IEditor.CursorPosition)] = MapCursorPosition,
-        [nameof(IEditor.SelectionLength)] = MapSelectionLength
-    };
-
-    public static CommandMapper<IEditor, EditorHandler> CommandMapper = new(ViewCommandMapper)
-    {
-    };
-
-    public EditorHandler() : base(Mapper, CommandMapper)
-    {
-    }
-
-    public EditorHandler(IPropertyMapper? mapper)
-        : base(mapper ?? Mapper, CommandMapper)
-    {
-    }
-
-    public EditorHandler(IPropertyMapper mapper, CommandMapper? commandMapper = null)
-        : base(mapper, commandMapper)
-    {
-    }
-    
-    protected override AvaloniaTextBox CreatePlatformView()
-    {
-        return new AvaloniaTextBox
+        public static IPropertyMapper<IEditor, EditorHandler> Mapper = new PropertyMapper<IEditor, EditorHandler>(ViewHandler.ViewMapper)
         {
-            AcceptsReturn = true,
-            TextWrapping = TextWrapping.Wrap
+            [nameof(IEditor.Background)] = MapBackground,
+            [nameof(IEditor.CharacterSpacing)] = MapCharacterSpacing,
+            [nameof(IEditor.Font)] = MapFont,
+            [nameof(IEditor.IsReadOnly)] = MapIsReadOnly,
+            [nameof(IEditor.IsTextPredictionEnabled)] = MapIsTextPredictionEnabled,
+            [nameof(IEditor.IsSpellCheckEnabled)] = MapIsSpellCheckEnabled,
+            [nameof(IEditor.MaxLength)] = MapMaxLength,
+            [nameof(IEditor.Placeholder)] = MapPlaceholder,
+            [nameof(IEditor.PlaceholderColor)] = MapPlaceholderColor,
+            [nameof(IEditor.Text)] = MapText,
+            [nameof(IEditor.TextColor)] = MapTextColor,
+            [nameof(IEditor.HorizontalTextAlignment)] = MapHorizontalTextAlignment,
+            [nameof(IEditor.VerticalTextAlignment)] = MapVerticalTextAlignment,
+            [nameof(IEditor.Keyboard)] = MapKeyboard,
+            [nameof(IEditor.CursorPosition)] = MapCursorPosition,
+            [nameof(IEditor.SelectionLength)] = MapSelectionLength,
+            [nameof(Microsoft.Maui.Controls.Editor.TextTransform)] = MapTextTransform,
+            [nameof(Microsoft.Maui.Controls.Editor.AutoSize)] = MapAutoSize,
         };
-    }
 
-    public override bool NeedsContainer => false;
+        public static CommandMapper<IEditor, EditorHandler> CommandMapper = new(ViewCommandMapper)
+        {
+        };
 
-    public static void MapBackground(EditorHandler handler, IEditor editor)
-    {
-        handler.UpdateValue(nameof(IViewHandler.ContainerView));
+        public EditorHandler() : base(Mapper, CommandMapper)
+        {
+        }
+
+        public EditorHandler(IPropertyMapper? mapper)
+            : base(mapper ?? Mapper, CommandMapper)
+        {
+        }
+
+        public EditorHandler(IPropertyMapper mapper, CommandMapper? commandMapper = null)
+            : base(mapper, commandMapper)
+        {
+        }
         
-        if (handler.PlatformView != null)
+        protected override MauiEditor CreatePlatformView()
         {
-            Extensions.EntryExtensions.UpdateBackground(handler.PlatformView, editor);
+            return new MauiEditor();
         }
-    }
 
-    public static void MapText(EditorHandler handler, IEditor editor) =>
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorText(editor);
-
-    public static void MapTextColor(EditorHandler handler, IEditor editor) =>
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorTextColor(editor);
-
-    public static void MapCharacterSpacing(EditorHandler handler, IEditor editor) =>
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorCharacterSpacing(editor);
-
-    public static void MapFont(EditorHandler handler, IEditor editor)
-    {
-        var fontManager = handler.GetRequiredService<IFontManager>();
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateFont(editor, fontManager);
-    }
-
-    public static void MapHorizontalTextAlignment(EditorHandler handler, IEditor editor) =>
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorHorizontalTextAlignment(editor);
-
-    public static void MapVerticalTextAlignment(EditorHandler handler, IEditor editor) =>
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorVerticalTextAlignment(editor);
-
-    public static void MapIsReadOnly(EditorHandler handler, IEditor editor) =>
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorIsReadOnly(editor);
-
-    public static void MapIsTextPredictionEnabled(EditorHandler handler, IEditor editor)
-    {
-        // Avalonia doesn't have direct text prediction support
-    }
-
-    public static void MapIsSpellCheckEnabled(EditorHandler handler, IEditor editor)
-    {
-        // Avalonia doesn't have direct spell check support
-    }
-
-    public static void MapKeyboard(EditorHandler handler, IEditor editor)
-    {
-        // Keyboard handling is platform-specific and not directly applicable to Avalonia
-    }
-
-    public static void MapMaxLength(EditorHandler handler, IEditor editor) =>
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorMaxLength(editor);
-
-    public static void MapPlaceholder(EditorHandler handler, IEditor editor) =>
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorPlaceholder(editor);
-
-    public static void MapPlaceholderColor(EditorHandler handler, IEditor editor)
-    {
-        // Avalonia TextBox doesn't directly support placeholder color customization
-    }
-
-    public static void MapCursorPosition(EditorHandler handler, IEditor editor) =>
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorCursorPosition(editor);
-
-    public static void MapSelectionLength(EditorHandler handler, IEditor editor) =>
-        ((AvaloniaTextBox)handler.PlatformView)?.UpdateEditorSelectionLength(editor);
-}
-
-public static class EditorTextBoxExtensions
-{
-    public static void UpdateEditorText(this AvaloniaTextBox textBox, IEditor editor)
-    {
-        if (textBox.Text != editor.Text)
-            textBox.Text = editor.Text;
-    }
-
-    public static void UpdateEditorTextColor(this AvaloniaTextBox textBox, IEditor editor)
-    {
-        if (editor.TextColor != null)
+        public static void MapBackground(EditorHandler handler, IEditor editor)
         {
-            textBox.Foreground = editor.TextColor.ToPlatform();
+            handler.UpdateValue(nameof(IViewHandler.ContainerView));
+
+            if (handler.PlatformView != null)
+            {
+                Extensions.EntryExtensions.UpdateBackground(handler.PlatformView, editor);
+            }
         }
-        else
+        
+        protected override void ConnectHandler(MauiEditor platformView)
         {
-            textBox.ClearValue(AvaloniaTextBox.ForegroundProperty);
+            base.ConnectHandler(platformView);
+            platformView.TextChanged += OnTextChanged;
+            platformView.SelectionChanged += OnSelectionChanged;
+            platformView.LostFocus += OnLostFocus;
         }
-    }
 
-    public static void UpdateEditorCharacterSpacing(this AvaloniaTextBox textBox, IEditor editor)
-    {
-        if (editor.CharacterSpacing != 0)
+        protected override void DisconnectHandler(MauiEditor platformView)
         {
-            textBox.LetterSpacing = (int)(editor.CharacterSpacing * textBox.FontSize / 1000);
+            platformView.TextChanged -= OnTextChanged;
+            platformView.SelectionChanged -= OnSelectionChanged;
+            platformView.LostFocus -= OnLostFocus;
+            base.DisconnectHandler(platformView);
         }
-        else
+
+        public override bool NeedsContainer => false;
+
+        public static void MapBackground(EditorHandler handler, IEditor editor)
         {
-            textBox.LetterSpacing = 0;
+            handler.UpdateValue(nameof(IViewHandler.ContainerView));
+            handler.PlatformView?.UpdateBackground(editor);
         }
-    }
 
-    public static void UpdateEditorHorizontalTextAlignment(this AvaloniaTextBox textBox, IEditor editor)
-    {
-        switch (editor.HorizontalTextAlignment)
+        public static void MapText(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorText(editor);
+
+        public static void MapTextColor(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorTextColor(editor);
+
+        public static void MapCharacterSpacing(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorCharacterSpacing(editor);
+
+        public static void MapFont(EditorHandler handler, IEditor editor)
         {
-            case Microsoft.Maui.TextAlignment.Start:
-                textBox.TextAlignment = AvaloniaTextAlignment.Left;
-                break;
-            case Microsoft.Maui.TextAlignment.Center:
-                textBox.TextAlignment = AvaloniaTextAlignment.Center;
-                break;
-            case Microsoft.Maui.TextAlignment.End:
-                textBox.TextAlignment = AvaloniaTextAlignment.Right;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+            var fontManager = handler.GetRequiredService<IFontManager>();
+            handler.PlatformView?.UpdateEditorFont(editor, fontManager);
         }
-    }
 
-    public static void UpdateEditorVerticalTextAlignment(this AvaloniaTextBox textBox, IEditor editor)
-    {
-        switch (editor.VerticalTextAlignment)
+        public static void MapHorizontalTextAlignment(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorHorizontalTextAlignment(editor);
+
+        public static void MapVerticalTextAlignment(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorVerticalTextAlignment(editor);
+
+        public static void MapIsReadOnly(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorIsReadOnly(editor);
+
+        public static void MapIsTextPredictionEnabled(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorIsTextPredictionEnabled(editor);
+
+        [Avalonia.Controls.Maui.Platform.NotImplementedAttribute("Avalonia TextBox does not currently support disabling spell check.")]
+        public static void MapIsSpellCheckEnabled(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorIsSpellCheckEnabled(editor);
+
+        public static void MapKeyboard(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorKeyboard(editor);
+
+        public static void MapMaxLength(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorMaxLength(editor);
+
+        public static void MapPlaceholder(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorPlaceholder(editor);
+
+        public static void MapPlaceholderColor(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorPlaceholderColor(editor);
+
+        public static void MapCursorPosition(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorCursorPosition(editor);
+
+        public static void MapSelectionLength(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorSelectionLength(editor);
+
+        public static void MapTextTransform(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorTextTransform(editor);
+
+        public static void MapAutoSize(EditorHandler handler, IEditor editor) =>
+            handler.PlatformView?.UpdateEditorAutoSize(editor);
+        
+        private void OnTextChanged(object? sender, TextChangedEventArgs e)
         {
-            case Microsoft.Maui.TextAlignment.Start:
-                textBox.VerticalContentAlignment = AvaloniaVerticalAlignment.Top;
-                break;
-            case Microsoft.Maui.TextAlignment.Center:
-                textBox.VerticalContentAlignment = AvaloniaVerticalAlignment.Center;
-                break;
-            case Microsoft.Maui.TextAlignment.End:
-                textBox.VerticalContentAlignment = AvaloniaVerticalAlignment.Bottom;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
+            if (VirtualView == null || PlatformView == null)
+                return;
+
+            VirtualView.Text = PlatformView.Text ?? string.Empty;
         }
-    }
 
-    public static void UpdateEditorIsReadOnly(this AvaloniaTextBox textBox, IEditor editor)
-    {
-        textBox.IsReadOnly = editor.IsReadOnly;
-    }
-
-    public static void UpdateEditorMaxLength(this AvaloniaTextBox textBox, IEditor editor)
-    {
-        textBox.MaxLength = editor.MaxLength;
-    }
-
-    public static void UpdateEditorPlaceholder(this AvaloniaTextBox textBox, IEditor editor)
-    {
-        textBox.Watermark = editor.Placeholder;
-    }
-
-    public static void UpdateEditorCursorPosition(this AvaloniaTextBox textBox, IEditor editor)
-    {
-        if (textBox.CaretIndex != editor.CursorPosition)
-            textBox.CaretIndex = editor.CursorPosition;
-    }
-
-    public static void UpdateEditorSelectionLength(this AvaloniaTextBox textBox, IEditor editor)
-    {
-        if (textBox.SelectionStart != editor.CursorPosition || textBox.SelectionEnd != editor.CursorPosition + editor.SelectionLength)
+        private void OnLostFocus(object? sender, Interactivity.RoutedEventArgs e)
         {
-            textBox.SelectionStart = editor.CursorPosition;
-            textBox.SelectionEnd = editor.CursorPosition + editor.SelectionLength;
+            if (VirtualView is Microsoft.Maui.Controls.Editor editor)
+            {
+                editor.SendCompleted();
+            }
+        }
+
+        private void OnSelectionChanged(object? sender, Interactivity.RoutedEventArgs e)
+        {
+            if (VirtualView is null || PlatformView is null)
+                return;
+
+            VirtualView.CursorPosition = PlatformView.SelectionStart;
+            VirtualView.SelectionLength = PlatformView.SelectionEnd - PlatformView.SelectionStart;
         }
     }
 }

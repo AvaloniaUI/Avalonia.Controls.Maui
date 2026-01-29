@@ -3,7 +3,6 @@ using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using System;
 using System.Collections.Generic;

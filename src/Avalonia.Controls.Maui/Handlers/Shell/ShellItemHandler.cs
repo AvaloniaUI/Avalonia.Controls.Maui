@@ -1,3 +1,4 @@
+using Microsoft.Maui.Handlers;
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -6,7 +7,6 @@ using Avalonia.Controls.Maui.Platform;
 using Avalonia.Layout;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using AvaloniaControl = Avalonia.Controls.Control;
 using AvaloniaGrid = Avalonia.Controls.Grid;

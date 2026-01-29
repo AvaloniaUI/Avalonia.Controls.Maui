@@ -46,9 +46,13 @@ jobs:
   build:
     needs: check-changes
     if: needs.check-changes.outputs.test-changes == 'true' || needs.check-changes.outputs.maui-changes == 'true' || needs.check-changes.outputs.build-changes == 'true'
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
+
+    - name: Restore dotnet workloads
+      run: |
+        dotnet workload restore ${{github.workspace}}/Avalonia.Controls.Maui.slnx --source https://api.nuget.org/v3/index.json
 
     - name: Create NuGet Packages
       run: dotnet run --project ${{github.workspace}}/build/_build.csproj -- --target CreateNugetPackages --configuration Release --output ${{github.workspace}}/artifacts/packages/
@@ -66,6 +70,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Restore dotnet workloads
+      run: |
+        dotnet workload restore ${{github.workspace}}/Avalonia.Controls.Maui.slnx --source https://api.nuget.org/v3/index.json
+
     - name: Run Tests
       run: dotnet run --project ${{github.workspace}}/build/_build.csproj -- --target RunTests --configuration Release
       continue-on-error: false
@@ -76,4 +84,15 @@ jobs:
       with:
         name: test-results
         path: ${{github.workspace}}/artifacts/test-results/**/*.trx
+        retention-days: 7
+
+    - name: Upload Render Test Images
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: render-test-images
+        path: |
+          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net10.0/*.out.png
+          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net10.0/*.diff.png
+        if-no-files-found: ignore
         retention-days: 7

@@ -13,7 +13,7 @@ using AvaloniaFontManager = Avalonia.Controls.Maui.FontManager;
 
 namespace Avalonia.Controls.Maui.Services;
 
-public class AvaloniaFontImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IFontImageSource>
+public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IFontImageSource>
 {
     private readonly ILogger<AvaloniaFontImageSourceService>? _logger;
     private readonly IFontManager? _fontManager;
