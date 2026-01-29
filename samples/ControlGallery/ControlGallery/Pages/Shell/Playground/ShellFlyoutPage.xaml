@@ -83,6 +83,30 @@
                         <Button Text="Linear Gradient" Clicked="OnSetGradientBackground" />
                     </HorizontalStackLayout>
 
+                    <Label Text="Background Image" FontAttributes="Bold" />
+                    <Picker x:Name="BackgroundImagePicker" SelectedIndex="0" SelectedIndexChanged="OnBackgroundImageChanged">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>None</x:String>
+                                <x:String>Banner (Light)</x:String>
+                                <x:String>Banner (Dark)</x:String>
+                                <x:String>DotNet Bot</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+
+                    <Label Text="Background Image Aspect" FontAttributes="Bold" />
+                    <Picker x:Name="AspectPicker" SelectedIndex="0" SelectedIndexChanged="OnBackgroundImageAspectChanged">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>AspectFit</x:String>
+                                <x:String>AspectFill</x:String>
+                                <x:String>Fill</x:String>
+                                <x:String>Center</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+
                     <Label Text="Backdrop (Scrim)" FontAttributes="Bold" />
                     <HorizontalStackLayout Spacing="10">
                         <Button Text="Default" Clicked="OnSetDefaultBackdrop" />

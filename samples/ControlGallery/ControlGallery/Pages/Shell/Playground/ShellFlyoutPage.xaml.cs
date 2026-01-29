@@ -16,6 +16,8 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
             BehaviorPicker.SelectedIndex = 1; // Flyout
             HeaderBehaviorPicker.SelectedIndex = 0; // Fixed
             ScrollModePicker.SelectedIndex = 0; // Auto
+            BackgroundImagePicker.SelectedIndex = 0; // None
+            AspectPicker.SelectedIndex = 0; // AspectFit
         }
 
         private void OnWidthChanged(object sender, ValueChangedEventArgs e)
@@ -75,6 +77,36 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
                 shell.FlyoutBackgroundColor = null;
                 shell.FlyoutBackground = null;
             }
+        }
+
+        private void OnBackgroundImageChanged(object sender, EventArgs e)
+        {
+            var shell = this.GetShell();
+            if (shell == null || BackgroundImagePicker.SelectedIndex == -1) return;
+
+            shell.FlyoutBackgroundImage = BackgroundImagePicker.SelectedIndex switch
+            {
+                0 => null,
+                1 => ImageSource.FromFile("banner_light.png"),
+                2 => ImageSource.FromFile("banner_dark.png"),
+                3 => ImageSource.FromFile("dotnet_bot.png"),
+                _ => null
+            };
+        }
+
+        private void OnBackgroundImageAspectChanged(object sender, EventArgs e)
+        {
+            var shell = this.GetShell();
+            if (shell == null || AspectPicker.SelectedIndex == -1) return;
+
+            shell.FlyoutBackgroundImageAspect = AspectPicker.SelectedIndex switch
+            {
+                0 => Aspect.AspectFit,
+                1 => Aspect.AspectFill,
+                2 => Aspect.Fill,
+                3 => Aspect.Center,
+                _ => Aspect.AspectFit
+            };
         }
 
         private void OnSetRedBackdrop(object sender, EventArgs e)
