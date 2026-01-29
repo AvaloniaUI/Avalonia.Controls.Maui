@@ -622,7 +622,7 @@ public static class ShellExtensions
 
         handler.UpdateTitle(shell);
         handler.UpdateSearchHandler(shell);
-        handler.UpdateBackButtonVisibility(shell);
+        handler.UpdateBackButtonBehavior(shell);
 
         handler.UpdateItemCheckedStates(shell);
         handler.UpdateFlyoutItemsAppearance(shell);
@@ -677,7 +677,49 @@ public static class ShellExtensions
     }
 
     /// <summary>
-    /// Updates the visibility of the back button based on the navigation stack.
+    /// Updates the back button based on BackButtonBehavior attached property.
+    /// </summary>
+    /// <param name="handler">The <see cref="ShellHandler"/> instance.</param>
+    /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
+    public static void UpdateBackButtonBehavior(this ShellHandler handler, MauiShell shell)
+    {
+        if (handler._backButton == null || shell == null)
+            return;
+
+        var behavior = shell.CurrentPage != null
+            ? MauiShell.GetBackButtonBehavior(shell.CurrentPage)
+            : null;
+
+        // Update IsEnabled
+        handler._backButton.IsEnabled = behavior?.IsEnabled ?? true;
+
+        // Update content (IconOverride or TextOverride)
+        if (behavior?.IconOverride != null)
+        {
+            var imageControl = new Image
+            {
+                Width = 24,
+                Height = 24
+            };
+            handler._backButton.Content = imageControl;
+            handler.LoadIconAsync(imageControl, behavior.IconOverride).ConfigureAwait(false);
+        }
+        else if (!string.IsNullOrEmpty(behavior?.TextOverride))
+        {
+            handler._backButton.Content = behavior.TextOverride;
+        }
+        else
+        {
+            // Reset to default back arrow
+            handler._backButton.Content = "←";
+        }
+
+        // Update visibility - consider both navigation stack and behavior.IsVisible
+        handler.UpdateBackButtonVisibility(shell);
+    }
+
+    /// <summary>
+    /// Updates the visibility of the back button based on the navigation stack and BackButtonBehavior.
     /// </summary>
     /// <param name="handler">The <see cref="ShellHandler"/> instance.</param>
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
@@ -693,7 +735,14 @@ public static class ShellExtensions
             canGoBack = section.Navigation?.NavigationStack?.Count > 1;
         }
 
-        handler._backButton.IsVisible = canGoBack;
+        // Check BackButtonBehavior.IsVisible
+        var behavior = shell.CurrentPage != null
+            ? MauiShell.GetBackButtonBehavior(shell.CurrentPage)
+            : null;
+
+        bool behaviorIsVisible = behavior?.IsVisible ?? true;
+
+        handler._backButton.IsVisible = canGoBack && behaviorIsVisible;
     }
 
     /// <summary>

@@ -693,13 +693,13 @@ public partial class ShellHandlerTests : HandlerTestBase
         var shellSearchControl = control;
         var grid = shellSearchControl.Content as Grid;
         var popup = grid!.Children.OfType<Primitives.Popup>().FirstOrDefault();
-        
+
         Assert.NotNull(popup);
         await InvokeOnMainThreadAsync(() => popup.IsOpen = true); // Ensure popup is open to see children if needed
-        
+
         var border = popup.Child as Border;
         var listBox = border!.Child as ListBox;
-        
+
         Assert.NotNull(listBox);
         Assert.Single(listBox.Items.Cast<object>() ?? Enumerable.Empty<object>());
         await InvokeOnMainThreadAsync(() =>
@@ -708,5 +708,177 @@ public partial class ShellHandlerTests : HandlerTestBase
         });
 
         Assert.Equal(2, listBox.Items.Count);
+    }
+
+    [AvaloniaFact(DisplayName = "BackButtonBehavior IsEnabled False Disables Back Button")]
+    public async Task BackButtonBehaviorIsEnabledFalseDisablesBackButton()
+    {
+        var shell = CreateShellWithNavigationStack();
+        var page = shell.CurrentPage!;
+
+        var behavior = new BackButtonBehavior { IsEnabled = false };
+        Shell.SetBackButtonBehavior(page, behavior);
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler._backButton);
+        Assert.False(handler._backButton.IsEnabled);
+    }
+
+    [AvaloniaFact(DisplayName = "BackButtonBehavior IsVisible False Hides Back Button")]
+    public async Task BackButtonBehaviorIsVisibleFalseHidesBackButton()
+    {
+        var shell = CreateShellWithNavigationStack();
+        var page = shell.CurrentPage!;
+
+        var behavior = new BackButtonBehavior { IsVisible = false };
+        Shell.SetBackButtonBehavior(page, behavior);
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler._backButton);
+        Assert.False(handler._backButton.IsVisible);
+    }
+
+    [AvaloniaFact(DisplayName = "BackButtonBehavior TextOverride Changes Button Content")]
+    public async Task BackButtonBehaviorTextOverrideChangesButtonContent()
+    {
+        var shell = CreateShellWithNavigationStack();
+        var page = shell.CurrentPage!;
+
+        var behavior = new BackButtonBehavior { TextOverride = "Go Back" };
+        Shell.SetBackButtonBehavior(page, behavior);
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler._backButton);
+        Assert.Equal("Go Back", handler._backButton.Content);
+    }
+
+    [AvaloniaFact(DisplayName = "BackButtonBehavior Default Shows Arrow")]
+    public async Task BackButtonBehaviorDefaultShowsArrow()
+    {
+        var shell = CreateShellWithNavigationStack();
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler._backButton);
+        Assert.Equal("←", handler._backButton.Content);
+    }
+
+    [AvaloniaFact(DisplayName = "BackButtonBehavior Command Executes When Clicked")]
+    public async Task BackButtonBehaviorCommandExecutesWhenClicked()
+    {
+        var shell = CreateShellWithNavigationStack();
+        var page = shell.CurrentPage!;
+
+        bool commandExecuted = false;
+        var behavior = new BackButtonBehavior
+        {
+            Command = new Command(() => commandExecuted = true)
+        };
+        Shell.SetBackButtonBehavior(page, behavior);
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler._backButton);
+
+        // Simulate click
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var clickMethod = typeof(MauiShellHandler).GetMethod("OnBackButtonClick",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            clickMethod?.Invoke(handler, new object?[] { null, null });
+        });
+
+        Assert.True(commandExecuted);
+    }
+
+    [AvaloniaFact(DisplayName = "BackButtonBehavior CommandParameter Is Passed To Command")]
+    public async Task BackButtonBehaviorCommandParameterIsPassedToCommand()
+    {
+        var shell = CreateShellWithNavigationStack();
+        var page = shell.CurrentPage!;
+
+        object? receivedParameter = null;
+        var behavior = new BackButtonBehavior
+        {
+            Command = new Command<string>(param => receivedParameter = param),
+            CommandParameter = "TestParameter"
+        };
+        Shell.SetBackButtonBehavior(page, behavior);
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        // Simulate click
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var clickMethod = typeof(MauiShellHandler).GetMethod("OnBackButtonClick",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            clickMethod?.Invoke(handler, new object?[] { null, null });
+        });
+
+        Assert.Equal("TestParameter", receivedParameter);
+    }
+
+    [AvaloniaFact(DisplayName = "BackButtonBehavior Null Restores Default Behavior")]
+    public async Task BackButtonBehaviorNullRestoresDefaultBehavior()
+    {
+        var shell = CreateShellWithNavigationStack();
+        var page = shell.CurrentPage!;
+
+        // First set a behavior
+        var behavior = new BackButtonBehavior { TextOverride = "Custom" };
+        Shell.SetBackButtonBehavior(page, behavior);
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+        Assert.Equal("Custom", handler._backButton!.Content);
+
+        // Now clear the behavior
+        await InvokeOnMainThreadAsync(() =>
+        {
+            Shell.SetBackButtonBehavior(page, null);
+            handler.UpdateValue(Shell.BackButtonBehaviorProperty.PropertyName);
+        });
+
+        Assert.Equal("←", handler._backButton.Content);
+        Assert.True(handler._backButton.IsEnabled);
+    }
+
+    private Shell CreateShellWithNavigationStack()
+    {
+        var page1 = new ContentPage { Title = "Page 1" };
+        var page2 = new ContentPage { Title = "Page 2" };
+
+        var shellSection = new ShellSection
+        {
+            Items =
+            {
+                new ShellContent
+                {
+                    Title = "Content 1",
+                    Content = page1
+                }
+            }
+        };
+
+        var shell = new Shell
+        {
+            WidthRequest = 800,
+            HeightRequest = 600,
+            Items =
+            {
+                new FlyoutItem
+                {
+                    Title = "Item 1",
+                    Items = { shellSection }
+                }
+            }
+        };
+
+        // Simulate navigation to create a stack
+        shellSection.Navigation.PushAsync(page2);
+
+        return shell;
     }
 }

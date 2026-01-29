@@ -33,8 +33,8 @@
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Back Button Behavior" FontSize="18" FontAttributes="Bold" />
-                    <Label Text="Control the behavior of the back button." FontSize="12" />
-                    
+                    <Label Text="Select a behavior, then navigate to test the back button." FontSize="12" />
+
                     <HorizontalStackLayout Spacing="10">
                         <Label Text="Behavior:" VerticalOptions="Center" />
                         <Picker x:Name="BackButtonBehaviorPicker" SelectedIndex="0" SelectedIndexChanged="OnBackButtonBehaviorChanged">
@@ -42,11 +42,22 @@
                                 <x:Array Type="{x:Type x:String}">
                                     <x:String>Default</x:String>
                                     <x:String>Disabled</x:String>
+                                    <x:String>Hidden</x:String>
+                                    <x:String>Text Override</x:String>
                                     <x:String>Command (Show Alert)</x:String>
+                                    <x:String>Command with Parameter</x:String>
                                 </x:Array>
                             </Picker.ItemsSource>
                         </Picker>
                     </HorizontalStackLayout>
+
+                    <Label x:Name="BackButtonBehaviorDescription"
+                           Text="Default: Standard back button behavior"
+                           FontSize="11"
+                           TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
+
+                    <Button Text="Navigate to Test Back Button"
+                            Clicked="OnTestBackButtonBehavior" />
                 </VerticalStackLayout>
             </Border>
 

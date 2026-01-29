@@ -56,6 +56,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [MauiShell.UnselectedColorProperty.PropertyName] = MapUnselectedColor,
             [MauiShell.NavBarIsVisibleProperty.PropertyName] = MapNavBarIsVisible,
             [MauiShell.NavBarHasShadowProperty.PropertyName] = MapNavBarHasShadow,
+            [MauiShell.BackButtonBehaviorProperty.PropertyName] = MapBackButtonBehavior,
             [MauiShell.TabBarIsVisibleProperty.PropertyName] = MapTabBarIsVisible,
             [MauiShell.TabBarBackgroundColorProperty.PropertyName] = MapTabBarBackgroundColor,
             [MauiShell.TabBarForegroundColorProperty.PropertyName] = MapTabBarForegroundColor,
@@ -370,7 +371,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             {
                 this.UpdateTitle(VirtualView);
                 this.UpdateSearchHandler(VirtualView);
-                this.UpdateBackButtonVisibility(VirtualView);
+                this.UpdateBackButtonBehavior(VirtualView);
                 this.UpdateFlyoutItemsAppearance(VirtualView);
             }
 
@@ -459,6 +460,8 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             this.UpdateNavBarHasShadow(VirtualView);
         else if (e.PropertyName == nameof(MauiShell.TitleView))
             this.UpdateTitleView(VirtualView);
+        else if (e.PropertyName == MauiShell.BackButtonBehaviorProperty.PropertyName)
+            this.UpdateBackButtonBehavior(VirtualView);
     }
 
     public static void MapCurrentItem(ShellHandler handler, MauiShell shell)
@@ -596,6 +599,11 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         handler.UpdateNavBarHasShadow(shell);
     }
 
+    public static void MapBackButtonBehavior(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateBackButtonBehavior(shell);
+    }
+
     public static void MapTitleView(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateTitleView(shell);
@@ -656,7 +664,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             {
                 this.UpdateTitle(VirtualView);
                 this.UpdateSearchHandler(VirtualView);
-                this.UpdateBackButtonVisibility(VirtualView);
+                this.UpdateBackButtonBehavior(VirtualView);
             }
         }
     }
@@ -669,7 +677,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             {
                 this.UpdateTitle(VirtualView);
                 this.UpdateSearchHandler(VirtualView);
-                this.UpdateBackButtonVisibility(VirtualView);
+                this.UpdateBackButtonBehavior(VirtualView);
             }
         }
     }
@@ -769,7 +777,22 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
     private async void OnBackButtonClick(object? sender, Interactivity.RoutedEventArgs e)
     {
-        if (VirtualView?.CurrentItem?.CurrentItem is ShellSection section
+        if (VirtualView == null)
+            return;
+
+        // Check for BackButtonBehavior with custom Command
+        var behavior = VirtualView.CurrentPage != null
+            ? MauiShell.GetBackButtonBehavior(VirtualView.CurrentPage)
+            : null;
+
+        if (behavior?.Command != null && behavior.Command.CanExecute(behavior.CommandParameter))
+        {
+            behavior.Command.Execute(behavior.CommandParameter);
+            return;
+        }
+
+        // Default behavior: navigate back
+        if (VirtualView.CurrentItem?.CurrentItem is ShellSection section
             && section.Navigation?.NavigationStack?.Count > 1)
         {
             await section.Navigation.PopAsync();

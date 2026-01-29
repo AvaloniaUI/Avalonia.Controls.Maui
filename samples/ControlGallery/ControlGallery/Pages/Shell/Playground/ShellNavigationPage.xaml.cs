@@ -2,6 +2,8 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
 {
     public partial class ShellNavigationPage : ContentPage
     {
+        private BackButtonBehavior? _currentBehavior;
+
         public ShellNavigationPage()
         {
             InitializeComponent();
@@ -89,32 +91,70 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
             await Navigation.PushAsync(page);
         }
 
+        private async void OnTestBackButtonBehavior(object sender, EventArgs e)
+        {
+            var page = new ShellCommonDetailPage { Title = "Back Button Test" };
+
+            // Apply the selected behavior to the destination page
+            if (_currentBehavior != null)
+            {
+                Shell.SetBackButtonBehavior(page, _currentBehavior);
+            }
+
+            await Navigation.PushAsync(page);
+        }
+
         private void OnBackButtonBehaviorChanged(object sender, EventArgs e)
         {
             if (BackButtonBehaviorPicker.SelectedIndex == -1) return;
 
-            var behavior = new BackButtonBehavior();
             string selected = (string)BackButtonBehaviorPicker.SelectedItem;
+            string description = string.Empty;
 
             switch (selected)
             {
                 case "Disabled":
-                    behavior.IsEnabled = false;
+                    _currentBehavior = new BackButtonBehavior { IsEnabled = false };
+                    description = "Back button is disabled (grayed out, not clickable)";
+                    break;
+                case "Hidden":
+                    _currentBehavior = new BackButtonBehavior { IsVisible = false };
+                    description = "Back button is hidden from view";
+                    break;
+                case "Text Override":
+                    _currentBehavior = new BackButtonBehavior { TextOverride = "Back" };
+                    description = "Back button shows custom text instead of arrow";
                     break;
                 case "Command (Show Alert)":
-                    behavior.IsEnabled = true;
-                    behavior.Command = new Command(async () => 
+                    _currentBehavior = new BackButtonBehavior
                     {
-                        await DisplayAlert("Back Button Pressed", "Custom behavior executed", "OK");
-                        await Navigation.PopAsync();
-                    });
+                        Command = new Command(async () =>
+                        {
+                            await Application.Current!.Windows[0].Page!.DisplayAlert("Back Button Pressed", "Custom command executed!", "OK");
+                            await Shell.Current.GoToAsync("..");
+                        })
+                    };
+                    description = "Custom command shows alert before navigating back";
+                    break;
+                case "Command with Parameter":
+                    _currentBehavior = new BackButtonBehavior
+                    {
+                        Command = new Command<string>(async (param) =>
+                        {
+                            await Application.Current!.Windows[0].Page!.DisplayAlert("Back Button Pressed", $"Parameter: {param}", "OK");
+                            await Shell.Current.GoToAsync("..");
+                        }),
+                        CommandParameter = "Hello from BackButtonBehavior!"
+                    };
+                    description = "Custom command with parameter passed to it";
                     break;
                 default: // Default
-                    behavior = null;
+                    _currentBehavior = null;
+                    description = "Default: Standard back button behavior";
                     break;
             }
 
-            Shell.SetBackButtonBehavior(this, behavior);
+            BackButtonBehaviorDescription.Text = description;
         }
     }
 }
