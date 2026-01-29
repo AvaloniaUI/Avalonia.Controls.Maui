@@ -208,7 +208,7 @@ public static class EntryExtensions
     /// </summary>
     /// <param name="textBox">The platform text box.</param>
     /// <param name="entry">The virtual view.</param>
-    [NotImplemented("Avalonia TextBox does not currently support disabling spell check.")]
+    [Avalonia.Controls.Maui.Platform.NotImplemented("Avalonia TextBox does not currently support disabling spell check.")]
     public static void UpdateIsSpellCheckEnabled(this AvaloniaTextBox textBox, IEntry entry)
     {
         // Not supported

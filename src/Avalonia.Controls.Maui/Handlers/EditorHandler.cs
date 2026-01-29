@@ -80,12 +80,6 @@ namespace Avalonia.Controls.Maui.Handlers
 
         public override bool NeedsContainer => false;
 
-        public static void MapBackground(EditorHandler handler, IEditor editor)
-        {
-            handler.UpdateValue(nameof(IViewHandler.ContainerView));
-            handler.PlatformView?.UpdateBackground(editor);
-        }
-
         public static void MapText(EditorHandler handler, IEditor editor) =>
             handler.PlatformView?.UpdateEditorText(editor);
 

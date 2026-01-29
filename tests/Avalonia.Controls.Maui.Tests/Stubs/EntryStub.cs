@@ -7,15 +7,15 @@ namespace Avalonia.Controls.Maui.Tests.Stubs
     public class EntryStub : StubBase, IEntry
     {
         public string Text { get; set; } = string.Empty;
-        public Color TextColor { get; set; }
+        public Color TextColor { get; set; } = null!;
         public double CharacterSpacing { get; set; }
         public bool IsReadOnly { get; set; }
         public bool IsTextPredictionEnabled { get; set; } = true;
         public bool IsSpellCheckEnabled { get; set; } = true;
         public int MaxLength { get; set; } = int.MaxValue;
-        public Keyboard Keyboard { get; set; }
-        public string Placeholder { get; set; }
-        public Color PlaceholderColor { get; set; }
+        public Keyboard Keyboard { get; set; } = Keyboard.Default;
+        public string Placeholder { get; set; } = string.Empty;
+        public Color PlaceholderColor { get; set; } = null!;
         public TextAlignment HorizontalTextAlignment { get; set; }
         public TextAlignment VerticalTextAlignment { get; set; }
         public int CursorPosition { get; set; }

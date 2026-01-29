@@ -45,4 +45,14 @@ public static class KeyboardExtensions
         // Set the content type hint
         TextInputOptions.SetContentType(textBox, contentType);
     }
+
+    /// <summary>
+    /// Updates the multiline text input option based on whether the control accepts returns.
+    /// </summary>
+    /// <param name="textBox">The Avalonia TextBox.</param>
+    /// <param name="multiline">Whether the input is multiline.</param>
+    public static void UpdateMultiline(this AvaloniaTextBox textBox, bool multiline)
+    {
+        TextInputOptions.SetMultiline(textBox, multiline);
+    }
 }
