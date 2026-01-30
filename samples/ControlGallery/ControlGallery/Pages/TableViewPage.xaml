@@ -41,7 +41,7 @@
                                           Detail="Learn about .NET MAUI and what it provides."/>
                                 <TextCell Text="2. Anatomy of an app"
                                           Detail="Learn about the visual elements in .NET MAUI"/>
-                                <StatusTextCell Text="3. Text display"
+                                <TextCell Text="3. Text display"
                                           Detail="Learn about the .NET MAUI elements that display text."/>
                             </TableSection>
                         </TableRoot>
