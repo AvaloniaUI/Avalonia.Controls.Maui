@@ -9,7 +9,6 @@
             Placeholder="Search features..."
             ShowsResults="True"
             DisplayMemberName="Name"
-            BackgroundColor="LightBlue"
             TextColor="DarkBlue" />
     </Shell.SearchHandler>
 
