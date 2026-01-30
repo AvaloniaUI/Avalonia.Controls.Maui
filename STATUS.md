@@ -893,6 +893,53 @@ A user input control used to initiate a search.
 
 ---
 
+## SearchHandler
+
+A user input control that provides search functionality integrated with the Shell.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| BackgroundColor | ✅ Implemented |
+| CancelButtonColor | ⏳ TODO |
+| ClearIcon | ⏳ TODO |
+| ClearIconHelpText | ⏳ TODO |
+| ClearPlaceholderCommand | ⏳ TODO |
+| ClearPlaceholderCommandParameter | ⏳ TODO |
+| ClearPlaceholderEnabled | ⏳ TODO |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
+| DisplayMemberName | ✅ Implemented |
+| FontAttributes | ⏳ TODO |
+| FontAutoScalingEnabled | ⏳ TODO |
+| FontFamily | ⏳ TODO |
+| FontSize | ⏳ TODO |
+| HorizontalTextAlignment | ⏳ TODO |
+| IsSearchEnabled | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| Keyboard | ✅ Implemented |
+| Placeholder | ✅ Implemented |
+| PlaceholderColor | ⏳ TODO |
+| Query | ✅ Implemented |
+| QueryIcon | ⏳ TODO |
+| QueryIconHelpText | ⏳ TODO |
+| SearchIcon | ⏳ TODO |
+| SelectedItem | ✅ Implemented |
+| ShowsResults | ✅ Implemented |
+| TextColor | ⏳ TODO |
+| VerticalTextAlignment | ⏳ TODO |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| Focused | ✅ Implemented |
+| Unfocused | ✅ Implemented |
+
+---
+
 ## Shell
 
 A Page that provides fundamental UI features that most applications require, including flyout navigation, tabbed navigation, and search.
@@ -933,7 +980,7 @@ A Page that provides fundamental UI features that most applications require, inc
 | NavBarIsVisible | ✅ Implemented |
 | NavBarVisibilityAnimationEnabled | ⏳ TODO |
 | PresentationMode | ⏳ TODO |
-| SearchHandler | ⏳ TODO |
+| SearchHandler | ✅ Implemented |
 | TabBarBackgroundColor | ✅ Implemented |
 | TabBarDisabledColor | ✅ Implemented (placeholder) |
 | TabBarForegroundColor | ✅ Implemented |
@@ -943,6 +990,8 @@ A Page that provides fundamental UI features that most applications require, inc
 | TitleColor | ✅ Implemented |
 | TitleView | ✅ Implemented |
 | UnselectedColor | ✅ Implemented |
+| PresentationMode | ⏳ TODO |
+| FlyoutDisplayOptions | ✅ Implemented (AsSingleItem/AsMultipleItems) |
 
 ### Events
 
@@ -955,9 +1004,10 @@ A Page that provides fundamental UI features that most applications require, inc
 
 | Method | Status |
 |--------|--------|
-| GoToAsync | ⏳ TODO |
-| GoToAsync(bool) | ⏳ TODO |
-| GoToAsync(ShellNavigationState) | ⏳ TODO |
+| GoToAsync | ✅ Implemented (Absolute/Relative, ".." support) |
+| GoToAsync(bool) | ✅ Implemented |
+| GoToAsync(ShellNavigationState) | ✅ Implemented |
+| GoToAsync(ShellNavigationState, bool) | ✅ Implemented |
 
 ### Notes
 
@@ -975,6 +1025,55 @@ Shell provides comprehensive flyout and tabbed navigation functionality with a c
 - Navigation stack support (push/pop pages)
 - Dynamic title updates based on current page
 - Shell appearance colors (Background, Foreground, Title, Disabled, Unselected)
+
+---
+
+## ShellItem
+
+A single item in the Shell, which can contain multiple ShellSections (Tabs).
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Title | ✅ Implemented |
+| Icon | ✅ Implemented |
+| FlyoutIcon | ✅ Implemented |
+| IsVisible | ✅ Implemented |
+| FlyoutItemIsVisible | ✅ Implemented |
+
+---
+
+## ShellSection
+
+A group of ShellContent items, typically represented as a tab.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Title | ✅ Implemented |
+| Icon | ✅ Implemented |
+| FlyoutIcon | ✅ Implemented |
+| IsVisible | ✅ Implemented |
+| FlyoutItemIsVisible | ✅ Implemented |
+
+---
+
+## ShellContent
+
+The actual page content within a ShellSection.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Title | ✅ Implemented |
+| Icon | ✅ Implemented |
+| FlyoutIcon | ✅ Implemented |
+| IsVisible | ✅ Implemented |
+| FlyoutItemIsVisible | ✅ Implemented |
+| Content | ✅ Implemented |
 
 ---
 
