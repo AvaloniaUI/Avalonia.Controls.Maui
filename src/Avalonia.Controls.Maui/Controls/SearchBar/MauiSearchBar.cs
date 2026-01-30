@@ -55,79 +55,184 @@ public partial class MauiSearchBar : TemplatedControl
     public static readonly StyledProperty<IBrush?> SearchIconColorProperty =
         AvaloniaProperty.Register<MauiSearchBar, IBrush?>(nameof(SearchIconColor));
 
+    public static readonly StyledProperty<object?> SearchIconProperty =
+        AvaloniaProperty.Register<MauiSearchBar, object?>(nameof(SearchIcon));
+
+    public static readonly StyledProperty<object?> ClearIconProperty =
+        AvaloniaProperty.Register<MauiSearchBar, object?>(nameof(ClearIcon));
+
+    public static readonly StyledProperty<System.Windows.Input.ICommand?> ClearCommandProperty =
+        AvaloniaProperty.Register<MauiSearchBar, System.Windows.Input.ICommand?>(nameof(ClearCommand));
+
+    public static readonly StyledProperty<object?> ClearCommandParameterProperty =
+        AvaloniaProperty.Register<MauiSearchBar, object?>(nameof(ClearCommandParameter));
+
+    public static readonly StyledProperty<bool> IsClearEnabledProperty =
+        AvaloniaProperty.Register<MauiSearchBar, bool>(nameof(IsClearEnabled), defaultValue: true);
+
+    /// <summary>
+    /// Gets or sets the text content of the search bar.
+    /// </summary>
     public string Text
     {
         get => GetValue(TextProperty);
         set => SetValue(TextProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the placeholder text displayed when the search bar is empty.
+    /// </summary>
     public string Placeholder
     {
         get => GetValue(PlaceholderProperty);
         set => SetValue(PlaceholderProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the foreground brush for the placeholder text.
+    /// </summary>
     public IBrush? PlaceholderForeground
     {
         get => GetValue(PlaceholderForegroundProperty);
         set => SetValue(PlaceholderForegroundProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the color of the cancel/clear button.
+    /// </summary>
     public IBrush? CancelButtonColor
     {
         get => GetValue(CancelButtonColorProperty);
         set => SetValue(CancelButtonColorProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the search bar is read-only.
+    /// </summary>
     public bool IsReadOnly
     {
         get => GetValue(IsReadOnlyProperty);
         set => SetValue(IsReadOnlyProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the maximum number of characters allowed in the search bar.
+    /// </summary>
     public int MaxLength
     {
         get => GetValue(MaxLengthProperty);
         set => SetValue(MaxLengthProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the spacing between characters in the search bar.
+    /// </summary>
     public double CharacterSpacing
     {
         get => GetValue(CharacterSpacingProperty);
         set => SetValue(CharacterSpacingProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the current cursor position in the search bar.
+    /// </summary>
     public int CursorPosition
     {
         get => GetValue(CursorPositionProperty);
         set => SetValue(CursorPositionProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the length of the current selection in the search bar.
+    /// </summary>
     public int SelectionLength
     {
         get => GetValue(SelectionLengthProperty);
         set => SetValue(SelectionLengthProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the horizontal alignment of the text content.
+    /// </summary>
     public TextAlignment HorizontalTextAlignment
     {
         get => GetValue(HorizontalTextAlignmentProperty);
         set => SetValue(HorizontalTextAlignmentProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the vertical alignment of the content.
+    /// </summary>
     public VerticalAlignment VerticalContentAlignment
     {
         get => GetValue(VerticalContentAlignmentProperty);
         set => SetValue(VerticalContentAlignmentProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the color of the search icon.
+    /// </summary>
     public IBrush? SearchIconColor
     {
         get => GetValue(SearchIconColorProperty);
         set => SetValue(SearchIconColorProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the content to display as the search icon.
+    /// Can be a string (path data), an image, or any other Avalonia control.
+    /// </summary>
+    public object? SearchIcon
+    {
+        get => GetValue(SearchIconProperty);
+        set => SetValue(SearchIconProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the content to display as the clear icon.
+    /// Can be a string (path data), an image, or any other Avalonia control.
+    /// </summary>
+    public object? ClearIcon
+    {
+        get => GetValue(ClearIconProperty);
+        set => SetValue(ClearIconProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the command to execute when the clear button is clicked.
+    /// </summary>
+    public System.Windows.Input.ICommand? ClearCommand
+    {
+        get => GetValue(ClearCommandProperty);
+        set => SetValue(ClearCommandProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the parameter to pass to the <see cref="ClearCommand"/>.
+    /// </summary>
+    public object? ClearCommandParameter
+    {
+        get => GetValue(ClearCommandParameterProperty);
+        set => SetValue(ClearCommandParameterProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the clear button is enabled.
+    /// </summary>
+    public bool IsClearEnabled
+    {
+        get => GetValue(IsClearEnabledProperty);
+        set => SetValue(IsClearEnabledProperty, value);
+    }
+
+    /// <summary>
+    /// Occurs when the search button is pressed or the Enter key is hit.
+    /// </summary>
     public event EventHandler<RoutedEventArgs>? SearchButtonPressed;
+
+    /// <summary>
+    /// Occurs when the text content of the search bar changes.
+    /// </summary>
     public event EventHandler<TextChangedEventArgs>? TextChanged;
 
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
@@ -301,6 +406,9 @@ public partial class MauiSearchBar : TemplatedControl
         SearchButtonPressed?.Invoke(this, e);
     }
 
+    /// <summary>
+    /// Sets focus to the search bar's input field.
+    /// </summary>
     public void Focus()
     {
         _textBox?.Focus();

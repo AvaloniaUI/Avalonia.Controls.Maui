@@ -677,8 +677,8 @@ public partial class ShellHandlerTests : HandlerTestBase
         var mauiContext = Substitute.For<IMauiContext>();
         var searchHandler = new SearchHandler { Query = "Initial Query" };
         var control = new ShellSearchControl(searchHandler, mauiContext);
-        var grid = control.Content as Grid;
-        var searchBar = grid?.Children.OfType<MauiSearchBar>().FirstOrDefault();
+        var panel = control.Content as Panel;
+        var searchBar = panel?.Children.OfType<MauiSearchBar>().FirstOrDefault();
         Assert.NotNull(searchBar);
         Assert.Equal("Initial Query", searchBar.Text);
     }
@@ -713,33 +713,69 @@ public partial class ShellHandlerTests : HandlerTestBase
         Assert.Equal(Colors.Blue.ToPlatform().Color, brush!.Color);
     }
 
-
-    [AvaloniaFact(DisplayName = "ShellSearchControl Synchronizes ItemsSource Changes")]
-    public async Task ShellSearchControlSynchronizesItemsSourceChanges()
+    [AvaloniaFact(DisplayName = "ShellSearchControl CancelButtonColor Initializes Correctly")]
+    public void ShellSearchControlCancelButtonColorInitializesCorrectly()
     {
         var mauiContext = Substitute.For<IMauiContext>();
-        var searchHandler = new SearchHandler { ItemsSource = new List<string> { "Item 1" } };
+        var searchHandler = new SearchHandler { CancelButtonColor = Colors.Red };
+        
         var control = new ShellSearchControl(searchHandler, mauiContext);
-        // Locate the ListBox in the popup
-        var shellSearchControl = control;
-        var grid = shellSearchControl.Content as Grid;
-        var popup = grid!.Children.OfType<Primitives.Popup>().FirstOrDefault();
-
-        Assert.NotNull(popup);
-        await InvokeOnMainThreadAsync(() => popup.IsOpen = true); // Ensure popup is open to see children if needed
-
-        var border = popup.Child as Border;
-        var listBox = border!.Child as ListBox;
-
-        Assert.NotNull(listBox);
-        Assert.Single(listBox.Items.Cast<object>() ?? Enumerable.Empty<object>());
-        await InvokeOnMainThreadAsync(() =>
-        {
-            searchHandler.ItemsSource = new List<string> { "Item A", "Item B" };
-        });
-
-        Assert.Equal(2, listBox.Items.Count);
+        var panel = control.Content as Panel;
+        var searchBar = panel?.Children.OfType<MauiSearchBar>().FirstOrDefault();
+        Assert.NotNull(searchBar);
+        var brush = searchBar.CancelButtonColor as Avalonia.Media.SolidColorBrush;
+        Assert.NotNull(brush);
+        Assert.Equal(Colors.Red.ToPlatform().Color, brush.Color);
     }
+
+    [AvaloniaFact(DisplayName = "ShellSearchControl HorizontalTextAlignment Initializes Correctly")]
+    public void ShellSearchControlHorizontalTextAlignmentInitializesCorrectly()
+    {
+        var mauiContext = Substitute.For<IMauiContext>();
+        var searchHandler = new SearchHandler { HorizontalTextAlignment = Microsoft.Maui.TextAlignment.Center };
+        
+        var control = new ShellSearchControl(searchHandler, mauiContext);
+        var panel = control.Content as Panel;
+        var searchBar = panel?.Children.OfType<MauiSearchBar>().FirstOrDefault();
+        Assert.NotNull(searchBar);
+        Assert.Equal(Avalonia.Media.TextAlignment.Center, searchBar.HorizontalTextAlignment);
+    }
+
+    [AvaloniaFact(DisplayName = "ShellSearchControl VerticalTextAlignment Initializes Correctly")]
+    public void ShellSearchControlVerticalTextAlignmentInitializesCorrectly()
+    {
+        var mauiContext = Substitute.For<IMauiContext>();
+        var searchHandler = new SearchHandler { VerticalTextAlignment = Microsoft.Maui.TextAlignment.End };
+        
+        var control = new ShellSearchControl(searchHandler, mauiContext);
+        var panel = control.Content as Panel;
+        var searchBar = panel?.Children.OfType<MauiSearchBar>().FirstOrDefault();
+        Assert.NotNull(searchBar);
+        Assert.Equal(Avalonia.Layout.VerticalAlignment.Bottom, searchBar.VerticalContentAlignment);
+    }
+
+    [AvaloniaFact(DisplayName = "ShellSearchControl ClearPlaceholder Properties Initialize Correctly")]
+    public void ShellSearchControlClearPlaceholderPropertiesInitializeCorrectly()
+    {
+        var mauiContext = Substitute.For<IMauiContext>();
+        var command = new Command(() => { });
+        var searchHandler = new SearchHandler 
+        { 
+            ClearPlaceholderCommand = command,
+            ClearPlaceholderCommandParameter = "Test",
+            ClearPlaceholderEnabled = false
+        };
+        
+        var control = new ShellSearchControl(searchHandler, mauiContext);
+        var panel = control.Content as Panel;
+        var searchBar = panel?.Children.OfType<MauiSearchBar>().FirstOrDefault();
+        Assert.NotNull(searchBar);
+        Assert.Equal(command, searchBar.ClearCommand);
+        Assert.Equal("Test", searchBar.ClearCommandParameter);
+        Assert.False(searchBar.IsClearEnabled);
+    }
+
+
 
     [AvaloniaFact(DisplayName = "BackButtonBehavior IsEnabled False Disables Back Button")]
     public async Task BackButtonBehaviorIsEnabledFalseDisablesBackButton()

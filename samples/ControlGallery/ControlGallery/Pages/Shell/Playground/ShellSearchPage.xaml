@@ -80,6 +80,38 @@
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Icon and Alignment" FontSize="18" FontAttributes="Bold" />
+                    
+                    <Label Text="Icons" FontSize="14" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <FlexLayout Wrap="Wrap" JustifyContent="Start">
+                        <Button Text="Animals" Clicked="OnSetCustomIcons" Margin="0,0,5,5" />
+                        <Button Text="Emoji" Clicked="OnSetEmojiIcon" Margin="0,0,5,5" />
+                        <Button Text="Reset" Clicked="OnResetIcons" Margin="0,0,5,5" />
+                    </FlexLayout>
+
+                    <Label Text="Text Alignment" FontSize="14" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <FlexLayout Wrap="Wrap" JustifyContent="Start">
+                        <Button Text="Start" Clicked="OnAlignStart" Margin="0,0,5,5" />
+                        <Button Text="Center" Clicked="OnAlignCenter" Margin="0,0,5,5" />
+                        <Button Text="End" Clicked="OnAlignEnd" Margin="0,0,5,5" />
+                    </FlexLayout>
+
+                    <Label Text="Clear Button &amp; Command" FontSize="14" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <FlexLayout Wrap="Wrap" JustifyContent="Start">
+                        <Button Text="Red Color" Clicked="OnSetRedCancel" Margin="0,0,5,5" />
+                        <Button Text="Clear Cmd" Clicked="OnSetClearCommand" Margin="0,0,5,5" />
+                        <Button Text="Reset" Clicked="OnResetCancel" Margin="0,0,5,5" />
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

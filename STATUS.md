@@ -902,12 +902,12 @@ A user input control that provides search functionality integrated with the Shel
 | Property | Status |
 |----------|--------|
 | BackgroundColor | ✅ Implemented |
-| CancelButtonColor | ⏳ TODO |
-| ClearIcon | ⏳ TODO |
+| CancelButtonColor | ✅ Implemented |
+| ClearIcon | ✅ Implemented |
 | ClearIconHelpText | ⏳ TODO |
-| ClearPlaceholderCommand | ⏳ TODO |
-| ClearPlaceholderCommandParameter | ⏳ TODO |
-| ClearPlaceholderEnabled | ⏳ TODO |
+| ClearPlaceholderCommand | ✅ Implemented |
+| ClearPlaceholderCommandParameter | ✅ Implemented |
+| ClearPlaceholderEnabled | ✅ Implemented |
 | Command | ✅ Implemented |
 | CommandParameter | ✅ Implemented |
 | DisplayMemberName | ✅ Implemented |
@@ -915,7 +915,7 @@ A user input control that provides search functionality integrated with the Shel
 | FontAutoScalingEnabled | ⏳ TODO |
 | FontFamily | ✅ Implemented |
 | FontSize | ✅ Implemented |
-| HorizontalTextAlignment | ⏳ TODO |
+| HorizontalTextAlignment | ✅ Implemented |
 | IsSearchEnabled | ✅ Implemented |
 | ItemsSource | ✅ Implemented |
 | ItemTemplate | ✅ Implemented |
@@ -923,13 +923,17 @@ A user input control that provides search functionality integrated with the Shel
 | Placeholder | ✅ Implemented |
 | PlaceholderColor | ✅ Implemented |
 | Query | ✅ Implemented |
-| QueryIcon | ⏳ TODO |
+| QueryIcon | ✅ Implemented |
 | QueryIconHelpText | ⏳ TODO |
-| SearchIcon | ⏳ TODO |
 | SelectedItem | ✅ Implemented |
 | ShowsResults | ✅ Implemented |
 | TextColor | ✅ Implemented |
-| VerticalTextAlignment | ⏳ TODO |
+| VerticalTextAlignment | ✅ Implemented |
+| HorizontalTextAlignment | ✅ Implemented |
+| CancelButtonColor | ✅ Implemented |
+| ClearPlaceholderCommand | ✅ Implemented |
+| ClearPlaceholderCommandParameter | ✅ Implemented |
+| ClearPlaceholderEnabled | ✅ Implemented |
 
 ### Events
 

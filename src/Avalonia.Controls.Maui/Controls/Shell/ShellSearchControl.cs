@@ -11,6 +11,8 @@ using AvaloniaControl = Avalonia.Controls.Control;
 using MauiSearchHandler = Microsoft.Maui.Controls.SearchHandler;
 using Avalonia.VisualTree;
 using Avalonia.Controls.Maui.Extensions;
+using Avalonia.Controls.Maui.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell
 {
@@ -106,6 +108,10 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             UpdateTextColor();
             UpdatePlaceholderColor();
             UpdateFont();
+            UpdateCancelButtonColor();
+            UpdateIcons();
+            UpdateClearPlaceholder();
+            UpdateAlignment();
         }
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -203,6 +209,26 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             {
                 UpdateFont();
             }
+            else if (e.PropertyName == MauiSearchHandler.CancelButtonColorProperty.PropertyName)
+            {
+                UpdateCancelButtonColor();
+            }
+            else if (e.PropertyName == MauiSearchHandler.QueryIconProperty.PropertyName ||
+                     e.PropertyName == MauiSearchHandler.ClearIconProperty.PropertyName)
+            {
+                UpdateIcons();
+            }
+            else if (e.PropertyName == MauiSearchHandler.ClearPlaceholderCommandProperty.PropertyName ||
+                     e.PropertyName == MauiSearchHandler.ClearPlaceholderCommandParameterProperty.PropertyName ||
+                     e.PropertyName == MauiSearchHandler.ClearPlaceholderEnabledProperty.PropertyName)
+            {
+                UpdateClearPlaceholder();
+            }
+            else if (e.PropertyName == MauiSearchHandler.HorizontalTextAlignmentProperty.PropertyName ||
+                     e.PropertyName == MauiSearchHandler.VerticalTextAlignmentProperty.PropertyName)
+            {
+                UpdateAlignment();
+            }
         }
         
         private void UpdateTextColor()
@@ -256,6 +282,99 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                     _searchBar.ClearValue(Avalonia.Controls.Primitives.TemplatedControl.FontFamilyProperty);
             }
         }
+
+        private void UpdateCancelButtonColor()
+        {
+            if (_searchBar == null) return;
+
+            var color = _mauiSearchHandler.CancelButtonColor;
+            if (color != null)
+                _searchBar.CancelButtonColor = color.ToPlatform();
+            else
+                _searchBar.ClearValue(MauiSearchBar.CancelButtonColorProperty);
+        }
+
+        private void UpdateClearPlaceholder()
+        {
+            if (_searchBar == null) return;
+
+            _searchBar.ClearCommand = _mauiSearchHandler.ClearPlaceholderCommand;
+            _searchBar.ClearCommandParameter = _mauiSearchHandler.ClearPlaceholderCommandParameter;
+            _searchBar.IsClearEnabled = _mauiSearchHandler.ClearPlaceholderEnabled;
+        }
+
+        private void UpdateAlignment()
+        {
+            if (_searchBar == null) return;
+
+            _searchBar.HorizontalTextAlignment = _mauiSearchHandler.HorizontalTextAlignment switch
+            {
+                Microsoft.Maui.TextAlignment.Start => Avalonia.Media.TextAlignment.Left,
+                Microsoft.Maui.TextAlignment.Center => Avalonia.Media.TextAlignment.Center,
+                Microsoft.Maui.TextAlignment.End => Avalonia.Media.TextAlignment.Right,
+                _ => Avalonia.Media.TextAlignment.Left
+            };
+
+            _searchBar.VerticalContentAlignment = _mauiSearchHandler.VerticalTextAlignment switch
+            {
+                Microsoft.Maui.TextAlignment.Start => Avalonia.Layout.VerticalAlignment.Top,
+                Microsoft.Maui.TextAlignment.Center => Avalonia.Layout.VerticalAlignment.Center,
+                Microsoft.Maui.TextAlignment.End => Avalonia.Layout.VerticalAlignment.Bottom,
+                _ => Avalonia.Layout.VerticalAlignment.Center
+            };
+        }
+
+        private async void UpdateIcons()
+        {
+            if (_searchBar == null) return;
+
+            if (_mauiSearchHandler.QueryIcon != null)
+            {
+                var image = new Avalonia.Controls.Image { Width = 16, Height = 16 };
+                await LoadIconAsync(image, _mauiSearchHandler.QueryIcon);
+                _searchBar.SearchIcon = image;
+            }
+            else
+            {
+                _searchBar.ClearValue(MauiSearchBar.SearchIconProperty);
+            }
+
+            if (_mauiSearchHandler.ClearIcon != null)
+            {
+                var image = new Avalonia.Controls.Image { Width = 16, Height = 16 };
+                await LoadIconAsync(image, _mauiSearchHandler.ClearIcon);
+                _searchBar.ClearIcon = image;
+            }
+            else
+            {
+                _searchBar.ClearValue(MauiSearchBar.ClearIconProperty);
+            }
+        }
+
+        private async Task LoadIconAsync(Avalonia.Controls.Image image, ImageSource imageSource)
+        {
+            if (_mauiContext == null || imageSource == null || image == null)
+                return;
+
+            try
+            {
+                var imageSourceServiceProvider = _mauiContext.Services.GetRequiredService<IImageSourceServiceProvider>();
+                var serviceSource = imageSourceServiceProvider.GetImageSourceService(imageSource.GetType());
+
+                if (serviceSource is IAvaloniaImageSourceService avaloniaService)
+                {
+                    var result = await avaloniaService.GetImageAsync(imageSource, 1.0f);
+                    if (result?.Value is Media.Imaging.Bitmap bitmap)
+                    {
+                        image.Source = bitmap;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading search icon: {ex}");
+            }
+        }
         
         private void UpdateBackground()
         {
@@ -302,8 +421,12 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
 
         private void OnSearchButtonPressed(object? sender, RoutedEventArgs e)
         {
-            // The search query is synchronized via OnSearchBarTextChanged. 
-            // Any additional search action can be triggered here if needed.
+            if (_mauiSearchHandler.Command != null && _mauiSearchHandler.Command.CanExecute(_mauiSearchHandler.CommandParameter))
+            {
+                _mauiSearchHandler.Command.Execute(_mauiSearchHandler.CommandParameter);
+            }
+            
+            SetPopupOpen(false);
         }
         
         private void OnSearchBarKeyDown(object? sender, KeyEventArgs e)

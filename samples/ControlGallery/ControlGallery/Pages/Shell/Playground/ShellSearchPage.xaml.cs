@@ -113,5 +113,102 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
             var handler = Shell.GetSearchHandler(this);
             if (handler != null) handler.FontSize = -1; // Default
         }
+
+        private void OnSetCustomIcons(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.QueryIcon = "bear.png";
+                handler.ClearIcon = "paw.png";
+            }
+        }
+
+        private void OnSetEmojiIcon(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.QueryIcon = new FontImageSource
+                {
+                    Glyph = "🔍",
+                    Color = Colors.Blue,
+                    Size = 16
+                };
+                handler.ClearIcon = new FontImageSource
+                {
+                    Glyph = "❌",
+                    Color = Colors.Red,
+                    Size = 16
+                };
+            }
+        }
+
+        private void OnResetIcons(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.QueryIcon = null;
+                handler.ClearIcon = null;
+            }
+        }
+
+        private void OnAlignCenter(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.HorizontalTextAlignment = TextAlignment.Center;
+                handler.VerticalTextAlignment = TextAlignment.Center;
+            }
+        }
+
+        private void OnAlignStart(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.HorizontalTextAlignment = TextAlignment.Start;
+                handler.VerticalTextAlignment = TextAlignment.Start;
+            }
+        }
+
+        private void OnAlignEnd(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.HorizontalTextAlignment = TextAlignment.End;
+                handler.VerticalTextAlignment = TextAlignment.End;
+            }
+        }
+
+        private void OnSetRedCancel(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.CancelButtonColor = Colors.Red;
+        }
+
+        private void OnSetClearCommand(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.ClearPlaceholderCommand = new Command(() => DisplayAlert("Clear", "Clear command executed", "OK"));
+                handler.ClearPlaceholderEnabled = true;
+            }
+        }
+
+        private void OnResetCancel(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.CancelButtonColor = null;
+                handler.ClearPlaceholderCommand = null;
+                handler.ClearPlaceholderEnabled = true; // Default
+            }
+        }
     }
 }
