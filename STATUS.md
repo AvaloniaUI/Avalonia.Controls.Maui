@@ -893,7 +893,7 @@ A user input control used to initiate a search.
 
 ---
 
-## SearchHandler
+## ShellSearchHandler
 
 A user input control that provides search functionality integrated with the Shell.
 
