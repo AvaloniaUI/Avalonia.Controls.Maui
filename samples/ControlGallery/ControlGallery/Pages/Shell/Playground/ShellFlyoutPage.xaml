@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ControlGallery.Pages.ShellSamples.ShellPlayground"
              x:Class="ControlGallery.Pages.ShellSamples.ShellPlayground.ShellFlyoutPage"
+             x:DataType="local:ShellFlyoutPage"
              Title="Shell Flyout">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
@@ -63,7 +65,7 @@
                     <Label Text="Dynamic Width" FontAttributes="Bold" />
                     <Slider x:Name="WidthSlider" Minimum="200" Maximum="500" Value="300" 
                             ValueChanged="OnWidthChanged" />
-                    <Label Text="{Binding Source={x:Reference WidthSlider}, Path=Value, StringFormat='Width: {0:F0}'}" />
+                    <Label x:Name="WidthLabel" />
 
                     <Label Text="Customization" FontAttributes="Bold" />
                     <Button Text="Use custom FlyoutIcon" Clicked="OnToggleFlyoutIcon" />

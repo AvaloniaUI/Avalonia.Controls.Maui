@@ -25,6 +25,8 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
             ScrollModePicker.SelectedIndex = 0; // Auto
             BackgroundImagePicker.SelectedIndex = 0; // None
             AspectPicker.SelectedIndex = 0; // AspectFit
+            
+            WidthLabel.Text = $"Width: {WidthSlider.Value:F0}";
         }
 
         private void OnWidthChanged(object sender, ValueChangedEventArgs e)
@@ -32,6 +34,9 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
             var shell = this.GetShell();
             if (shell != null)
                 shell.FlyoutWidth = e.NewValue;
+
+            if (WidthLabel != null)
+                WidthLabel.Text = $"Width: {e.NewValue:F0}";
         }
 
         private void OnToggleFlyoutIcon(object sender, EventArgs e)
