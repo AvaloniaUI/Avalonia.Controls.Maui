@@ -6,7 +6,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <Label Text="TitleBar Control"
+            <Label Text="TitleBar"
                    FontSize="24"
                    FontAttributes="Bold" />
 

@@ -7,8 +7,9 @@ namespace ControlGallery;
 public partial class MainPage : FlyoutPage
 {
     private List<SampleGroup> _allSamples = new List<SampleGroup>();
+    private Type? _selectedPageType;
+    private string _lastSearchText = string.Empty;
 
-    // Static page factory for AOT compatibility - no reflection
     private static readonly Dictionary<Type, Func<Page>> PageFactory = new()
     {
         // Apps
@@ -113,16 +114,40 @@ public partial class MainPage : FlyoutPage
                     item.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
                     item.Detail.Contains(searchText, StringComparison.OrdinalIgnoreCase))
                 {
-                    var cell = new TextCell
+                    bool isSelected = item.PageType == _selectedPageType;
+                    
+                    var cell = new ViewCell();
+                    var grid = new Grid
                     {
-                        Text = item.Title,
-                        Detail = item.Detail,
-                        Command = NavigateCommand,
-                        CommandParameter = item.PageType
+                        Padding = new Thickness(16, 8),
+                        BackgroundColor = isSelected ? Color.FromRgba(128, 128, 128, 40) : Colors.Transparent
                     };
 
-                    cell.SetAppThemeColor(TextCell.TextColorProperty, Colors.Black, Colors.White);
-                    cell.SetAppThemeColor(TextCell.DetailColorProperty, Colors.Gray, Colors.LightGray);
+                    var stack = new StackLayout { Spacing = 2 };
+                    var titleLabel = new Label 
+                    { 
+                        Text = item.Title, 
+                        FontSize = 16,
+                        FontAttributes = isSelected ? FontAttributes.Bold : FontAttributes.None
+                    };
+                    titleLabel.SetAppThemeColor(Label.TextColorProperty, Colors.Black, Colors.White);
+                    
+                    var detailLabel = new Label 
+                    { 
+                        Text = item.Detail, 
+                        FontSize = 13, 
+                        Opacity = 0.7 
+                    };
+                    detailLabel.SetAppThemeColor(Label.TextColorProperty, Colors.Gray, Colors.LightGray);
+                    
+                    stack.Children.Add(titleLabel);
+                    stack.Children.Add(detailLabel);
+                    grid.Children.Add(stack);
+                    cell.View = grid;
+
+                    var tap = new TapGestureRecognizer();
+                    tap.Tapped += (s, e) => NavigateToPage(item.PageType);
+                    grid.GestureRecognizers.Add(tap);
 
                     section.Add(cell);
                     hasItems = true;
@@ -175,32 +200,32 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Views", new List<SampleItem>
             {
-                new("ActivityIndicator", "ActivityIndicator control", typeof(ActivityIndicatorPage)),
-                new("Border", "Border with shapes and strokes", typeof(BorderPage)),
-                new("BoxView", "Simple colored rectangles", typeof(BoxViewPage)),
-                new("Button", "Button control", typeof(ButtonPage)),
-                new("CheckBox", "CheckBox control for selections", typeof(CheckBoxPage)),
-                new("CollectionView", "Collection display with templates", typeof(CollectionViewPage)),
-                new("ContentView", "Custom content", typeof(ContentViewPage)),
-                new("DatePicker", "Date picker control", typeof(DatePickerPage)),
-                new("Editor", "Editor control", typeof(EditorPage)),
-                new("Frame", "Frame control", typeof(FramePage)),
-                new("GraphicsView", "Custom drawing and graphics", typeof(GraphicsViewPage)),
-                new("Image", "Image display with various sources", typeof(ImagePage)),
-                new("ImageButton", "ImageButton control", typeof(ImageButtonPage)),
-                new("ListView", "ListView with Header/Footer and Grouping", typeof(ListViewPage)),
-                new("Picker", "Picker control", typeof(PickerPage)),
-                new("ProgressBar", "Progress indicator control", typeof(ProgressBarPage)),
-                new("RadioButton", "RadioButton control", typeof(RadioButtonPage)),
-                new("RefreshView", "Pull to refresh control", typeof(RefreshViewPage)),
-                new("ScrollView", "Scroll scenarios and behaviors", typeof(ScrollViewPage)),
-                new("SearchBar", "Search input control", typeof(SearchBarPage)),
-                new("Slider", "Slider control", typeof(SliderPage)),
-                new("Stepper", "Numeric increment/decrement control", typeof(StepperPage)),
-                new("SwipeView", "SwipeView control", typeof(SwipeViewPage)),
-                new("Switch", "Toggle control with colors", typeof(SwitchPage)),
-                new("TableView", "TableView with cell types", typeof(TableViewPage)),
-                new("TimePicker", "TimePicker control", typeof(TimePickerPage))
+                new("ActivityIndicator", "Animated busy indicator", typeof(ActivityIndicatorPage)),
+                new("Border", "Custom strikes and shapes", typeof(BorderPage)),
+                new("BoxView", "Decorative colored rectangles", typeof(BoxViewPage)),
+                new("Button", "Standard clickable button", typeof(ButtonPage)),
+                new("CheckBox", "Toggle selection control", typeof(CheckBoxPage)),
+                new("CollectionView", "Modern templated list", typeof(CollectionViewPage)),
+                new("ContentView", "Reusable custom content", typeof(ContentViewPage)),
+                new("DatePicker", "Date selection picker", typeof(DatePickerPage)),
+                new("Editor", "Multi-line text editor", typeof(EditorPage)),
+                new("Frame", "Bordered layout container", typeof(FramePage)),
+                new("GraphicsView", "Custom 2D drawing canvas", typeof(GraphicsViewPage)),
+                new("Image", "Visual content display", typeof(ImagePage)),
+                new("ImageButton", "Interactive image button", typeof(ImageButtonPage)),
+                new("ListView", "Scrolling data items", typeof(ListViewPage)),
+                new("Picker", "Item selection dropdown", typeof(PickerPage)),
+                new("ProgressBar", "Visual progress status", typeof(ProgressBarPage)),
+                new("RadioButton", "Single-select option list", typeof(RadioButtonPage)),
+                new("RefreshView", "Pull-to-refresh container", typeof(RefreshViewPage)),
+                new("ScrollView", "Scrollable layout container", typeof(ScrollViewPage)),
+                new("SearchBar", "Search text input", typeof(SearchBarPage)),
+                new("Slider", "Range value selection", typeof(SliderPage)),
+                new("Stepper", "Discrete incremental changes", typeof(StepperPage)),
+                new("SwipeView", "Swipe action container", typeof(SwipeViewPage)),
+                new("Switch", "Binary toggle switch", typeof(SwitchPage)),
+                new("TableView", "Form-based data table", typeof(TableViewPage)),
+                new("TimePicker", "Time selection picker", typeof(TimePickerPage))
             }),
 
             new SampleGroup("Effects", new List<SampleItem>
@@ -228,7 +253,7 @@ public partial class MainPage : FlyoutPage
                 new("Brushes", "Solid and Gradient brushes", typeof(BrushesPage)),
                 new("Gestures", "Tap, Swipe, Pan and more", typeof(GesturesPage)),
                 new("Styles", "Styles and Style Classes", typeof(StylesPage)),
-                new("Tooltips", "Tooltips on various controls", typeof(TooltipsPage)),
+                new("Tooltips", "Tooltips on various elements", typeof(TooltipsPage)),
                 new("Triggers", "Visual states and actions", typeof(TriggersPage)),
                 new("Visual States", "VisualStateManager examples", typeof(VisualStateManagerPage)),
             }),
@@ -242,12 +267,15 @@ public partial class MainPage : FlyoutPage
 
     private void OnSearchBarTextChanged(object sender, TextChangedEventArgs e)
     {
-        var searchBar = (SearchBar)sender;
-        UpdateMenu(searchBar.Text ?? string.Empty);
+        _lastSearchText = e.NewTextValue ?? string.Empty;
+        UpdateMenu(_lastSearchText);
     }
 
     private void NavigateToPage(Type pageType)
     {
+        _selectedPageType = pageType;
+        UpdateMenu(_lastSearchText);
+
         if (PageFactory.TryGetValue(pageType, out var factory))
         {
             Detail = factory();

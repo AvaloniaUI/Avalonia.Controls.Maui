@@ -52,7 +52,7 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="Image Control"
+            <Label Text="Image"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
@@ -189,7 +189,7 @@
                     <RoundRectangle CornerRadius="10" />
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Opacity Control"
+                    <Label Text="Opacity"
                            FontAttributes="Bold" />
                     <Label x:Name="OpacityLabel"
                            Text="Opacity: 1.0"

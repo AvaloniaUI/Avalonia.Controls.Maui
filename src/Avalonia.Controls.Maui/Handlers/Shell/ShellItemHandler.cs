@@ -43,7 +43,7 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
 
     protected override AvaloniaControl CreatePlatformElement()
     {
-        // Determine if we should show tabs
+        // Determine tab visibility
         _showTabs = ShouldShowTabs();
 
         if (_showTabs)
@@ -60,7 +60,7 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
         }
         else
         {
-            // Single section - just show content directly without wrapper grid
+            // Single section displays content directly without a wrapper grid
             _contentControl = new ContentControl
             {
                 HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
@@ -154,7 +154,7 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
 
         if (!_showTabs)
         {
-            // Single section or no tabs - show content directly
+            // Single section or no tabs display content directly
             UpdateCurrentItem();
             return;
         }

@@ -9,7 +9,7 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="Stepper Control"
+            <Label Text="Stepper"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
@@ -101,7 +101,7 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Temperature Control"
+                    <Label Text="Temperature"
                            FontAttributes="Bold"/>
                     <Label Text="Thermostat-style control (15-30°C)"
                            FontSize="12"
@@ -130,7 +130,7 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Volume Control"
+                    <Label Text="Volume"
                            FontAttributes="Bold"/>
                     <Label Text="Volume level (0-100)"
                            FontSize="12"

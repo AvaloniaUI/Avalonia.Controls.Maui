@@ -9,7 +9,7 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="ProgressBar Control"
+            <Label Text="ProgressBar"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
@@ -77,7 +77,7 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Progress Control"
+                    <Label Text="Progress"
                            FontAttributes="Bold"/>
                     <Slider x:Name="ProgressSlider"
                             Minimum="0"

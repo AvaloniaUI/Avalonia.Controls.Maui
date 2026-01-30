@@ -7,12 +7,12 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="DatePicker Control"
+            <Label Text="DatePicker"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
 
-            <Label Text="The DatePicker invokes the platform's date-picker control and allows the user to select a date."
+            <Label Text="The DatePicker invokes the platform's selection interface and allows the user to select a date."
                    FontSize="14"
                    TextColor="Gray"
                    HorizontalOptions="Center"
@@ -190,14 +190,14 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Programmatic Control -->
+            <!-- Programmatic Selection -->
             <Border Stroke="Gray"
                     Padding="12">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="10" />
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Programmatic Control"
+                    <Label Text="Programmatic Selection"
                            FontAttributes="Bold" />
                     <Label Text="Set the date programmatically using buttons."
                            FontSize="12"

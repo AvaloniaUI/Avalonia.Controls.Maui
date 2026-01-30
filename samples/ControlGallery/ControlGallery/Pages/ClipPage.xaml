@@ -84,7 +84,7 @@
                             <Label Text="Rounded corners via clip"
                                    FontAttributes="Bold"
                                    TextColor="White" />
-                            <Label Text="The clip follows the control's bounds"
+                            <Label Text="The clip follows the element's bounds"
                                    FontAttributes="Italic"
                                    TextColor="#FFF7ED" />
                         </VerticalStackLayout>
