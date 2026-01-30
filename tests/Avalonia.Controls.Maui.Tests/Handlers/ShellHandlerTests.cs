@@ -868,7 +868,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         {
             var clickMethod = typeof(MauiShellHandler).GetMethod("OnBackButtonClick",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            clickMethod?.Invoke(handler, new object?[] { null, null });
+            clickMethod?.Invoke(handler, new object?[] { null, new Avalonia.Interactivity.RoutedEventArgs() });
         });
 
         Assert.True(commandExecuted);
@@ -895,7 +895,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         {
             var clickMethod = typeof(MauiShellHandler).GetMethod("OnBackButtonClick",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            clickMethod?.Invoke(handler, new object?[] { null, null });
+            clickMethod?.Invoke(handler, new object?[] { null, new Avalonia.Interactivity.RoutedEventArgs() });
         });
 
         Assert.Equal("TestParameter", receivedParameter);
