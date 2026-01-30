@@ -12,7 +12,7 @@ using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui.Services;
 
-public class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IUriImageSource>
+public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IUriImageSource>
 {
     private readonly ILogger<AvaloniaUriImageSourceService>? _logger;
     private readonly HttpClient _httpClient;

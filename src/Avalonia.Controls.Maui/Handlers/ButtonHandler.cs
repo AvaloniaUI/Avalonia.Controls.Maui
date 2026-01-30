@@ -11,7 +11,7 @@ using MButton = Microsoft.Maui.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class ButtonHandler : ViewHandler<IButton, PlatformView>
+public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
 {
     private CancellationTokenSource? _imageSourceCts;
     private ImageSourcePartLoader? _imageSourcePartLoader;
@@ -265,6 +265,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>
         {
         }
 
+#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
         public override void SetImageSource(object? platformImage)
         {
             if (Handler?.PlatformView is PlatformView button)
@@ -272,5 +273,6 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>
                 button.ImageSource = platformImage as Avalonia.Media.IImage;
             }
         }
+#endif
     }
 }

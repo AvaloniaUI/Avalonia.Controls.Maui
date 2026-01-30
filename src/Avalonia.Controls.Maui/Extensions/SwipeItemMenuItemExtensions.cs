@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Controls.Maui.Platform;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Microsoft.Extensions.DependencyInjection;
@@ -104,8 +105,8 @@ public static class SwipeItemMenuItemExtensions
         if (font.IsDefault)
             return;
 
-        platformView.FontSize = fontManager.GetFontSize(font);
-        platformView.FontFamily = fontManager.GetFontFamily(font);
+        platformView.FontSize = fontManager.GetFontSizeAsDouble(font);
+        platformView.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
         platformView.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
         platformView.FontWeight = FontManager.ToAvaloniaFontWeight(font.Weight);
     }

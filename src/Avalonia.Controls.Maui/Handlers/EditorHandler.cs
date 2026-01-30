@@ -103,7 +103,7 @@ namespace Avalonia.Controls.Maui.Handlers
         public static void MapIsTextPredictionEnabled(EditorHandler handler, IEditor editor) =>
             handler.PlatformView?.UpdateEditorIsTextPredictionEnabled(editor);
 
-        [NotImplemented("Avalonia TextBox does not currently support disabling spell check.")]
+        [Avalonia.Controls.Maui.Platform.NotImplementedAttribute("Avalonia TextBox does not currently support disabling spell check.")]
         public static void MapIsSpellCheckEnabled(EditorHandler handler, IEditor editor) =>
             handler.PlatformView?.UpdateEditorIsSpellCheckEnabled(editor);
 

@@ -46,9 +46,13 @@ jobs:
   build:
     needs: check-changes
     if: needs.check-changes.outputs.test-changes == 'true' || needs.check-changes.outputs.maui-changes == 'true' || needs.check-changes.outputs.build-changes == 'true'
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
+
+    - name: Restore dotnet workloads
+      run: |
+        dotnet workload restore ${{github.workspace}}/Avalonia.Controls.Maui.slnx --source https://api.nuget.org/v3/index.json
 
     - name: Create NuGet Packages
       run: dotnet run --project ${{github.workspace}}/build/_build.csproj -- --target CreateNugetPackages --configuration Release --output ${{github.workspace}}/artifacts/packages/
@@ -65,6 +69,10 @@ jobs:
     needs: build
     steps:
     - uses: actions/checkout@v4
+
+    - name: Restore dotnet workloads
+      run: |
+        dotnet workload restore ${{github.workspace}}/Avalonia.Controls.Maui.slnx --source https://api.nuget.org/v3/index.json
 
     - name: Run Tests
       run: dotnet run --project ${{github.workspace}}/build/_build.csproj -- --target RunTests --configuration Release
