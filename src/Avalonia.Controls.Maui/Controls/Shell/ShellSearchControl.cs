@@ -103,6 +103,9 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             UpdateItemsSource();
             UpdateItemTemplate();
             UpdateShowsResults();
+            UpdateTextColor();
+            UpdatePlaceholderColor();
+            UpdateFont();
         }
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -185,6 +188,72 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             else if (e.PropertyName == MauiSearchHandler.BackgroundColorProperty.PropertyName)
             {
                 UpdateBackground();
+            }
+            else if (e.PropertyName == MauiSearchHandler.TextColorProperty.PropertyName)
+            {
+                UpdateTextColor();
+            }
+            else if (e.PropertyName == MauiSearchHandler.PlaceholderColorProperty.PropertyName)
+            {
+                UpdatePlaceholderColor();
+            }
+            else if (e.PropertyName == MauiSearchHandler.FontAttributesProperty.PropertyName ||
+                     e.PropertyName == MauiSearchHandler.FontFamilyProperty.PropertyName ||
+                     e.PropertyName == MauiSearchHandler.FontSizeProperty.PropertyName)
+            {
+                UpdateFont();
+            }
+        }
+        
+        private void UpdateTextColor()
+        {
+            if (_searchBar == null) return;
+            
+            var color = _mauiSearchHandler.TextColor;
+            if (color != null)
+                _searchBar.Foreground = color.ToPlatform();
+            else
+                _searchBar.ClearValue(Avalonia.Controls.Primitives.TemplatedControl.ForegroundProperty);
+        }
+
+        private void UpdatePlaceholderColor()
+        {
+            if (_searchBar == null) return;
+            
+            var color = _mauiSearchHandler.PlaceholderColor;
+            if (color != null)
+                _searchBar.PlaceholderForeground = color.ToPlatform();
+            else
+                _searchBar.ClearValue(MauiSearchBar.PlaceholderForegroundProperty);
+        }
+
+        private void UpdateFont()
+        {
+            if (_searchBar == null) return;
+            
+            if (_mauiSearchHandler.IsSet(MauiSearchHandler.FontAttributesProperty))
+            {
+                var attributes = _mauiSearchHandler.FontAttributes;
+                _searchBar.FontWeight = attributes.HasFlag(Microsoft.Maui.Controls.FontAttributes.Bold) ? Avalonia.Media.FontWeight.Bold : Avalonia.Media.FontWeight.Normal;
+                _searchBar.FontStyle = attributes.HasFlag(Microsoft.Maui.Controls.FontAttributes.Italic) ? Avalonia.Media.FontStyle.Italic : Avalonia.Media.FontStyle.Normal;
+            }
+
+            if (_mauiSearchHandler.IsSet(MauiSearchHandler.FontSizeProperty))
+            {
+                var fontSize = _mauiSearchHandler.FontSize;
+                if (fontSize > 0)
+                    _searchBar.FontSize = fontSize;
+                else
+                    _searchBar.ClearValue(Avalonia.Controls.Primitives.TemplatedControl.FontSizeProperty);
+            }
+
+            if (_mauiSearchHandler.IsSet(MauiSearchHandler.FontFamilyProperty))
+            {
+                var fontFamily = _mauiSearchHandler.FontFamily;
+                if (!string.IsNullOrEmpty(fontFamily))
+                    _searchBar.FontFamily = fontFamily;
+                else
+                    _searchBar.ClearValue(Avalonia.Controls.Primitives.TemplatedControl.FontFamilyProperty);
             }
         }
         

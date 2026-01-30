@@ -77,5 +77,41 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
                 handler.ItemTemplate = null;
             }
         }
+
+        private void OnSetRedText(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.TextColor = Colors.Red;
+        }
+
+        private void OnResetText(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.TextColor = null;
+        }
+
+        private void OnSetGreenPlaceholder(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.PlaceholderColor = Colors.Green;
+        }
+
+        private void OnResetPlaceholder(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.PlaceholderColor = null;
+        }
+
+        private void OnSetLargeFont(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.FontSize = 24;
+        }
+
+        private void OnResetFont(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.FontSize = -1; // Default
+        }
     }
 }

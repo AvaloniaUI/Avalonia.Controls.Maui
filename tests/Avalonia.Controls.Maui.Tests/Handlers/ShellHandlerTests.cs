@@ -683,6 +683,37 @@ public partial class ShellHandlerTests : HandlerTestBase
         Assert.Equal("Initial Query", searchBar.Text);
     }
 
+    [AvaloniaFact(DisplayName = "ShellSearchControl TextColor Initializes Correctly")]
+    public void ShellSearchControlTextColorInitializesCorrectly()
+    {
+        var mauiContext = Substitute.For<IMauiContext>();
+        var searchHandler = new SearchHandler { TextColor = Colors.Red };
+        
+        var control = new ShellSearchControl(searchHandler, mauiContext);
+        var panel = control.Content as Panel;
+        var searchBar = panel?.Children.OfType<MauiSearchBar>().FirstOrDefault();
+        Assert.NotNull(searchBar);
+        Assert.NotNull(searchBar.Foreground);
+        var brush = searchBar.Foreground as Avalonia.Media.SolidColorBrush;
+        Assert.Equal(Colors.Red.ToPlatform().Color, brush!.Color);
+    }
+
+    [AvaloniaFact(DisplayName = "ShellSearchControl PlaceholderColor Initializes Correctly")]
+    public void ShellSearchControlPlaceholderColorInitializesCorrectly()
+    {
+        var mauiContext = Substitute.For<IMauiContext>();
+        var searchHandler = new SearchHandler { PlaceholderColor = Colors.Blue };
+        
+        var control = new ShellSearchControl(searchHandler, mauiContext);
+        var panel = control.Content as Panel;
+        var searchBar = panel?.Children.OfType<MauiSearchBar>().FirstOrDefault();
+        Assert.NotNull(searchBar);
+        Assert.NotNull(searchBar.PlaceholderForeground);
+        var brush = searchBar.PlaceholderForeground as Avalonia.Media.SolidColorBrush;
+        Assert.Equal(Colors.Blue.ToPlatform().Color, brush!.Color);
+    }
+
+
     [AvaloniaFact(DisplayName = "ShellSearchControl Synchronizes ItemsSource Changes")]
     public async Task ShellSearchControlSynchronizesItemsSourceChanges()
     {

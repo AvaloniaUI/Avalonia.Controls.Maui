@@ -53,6 +53,33 @@
                             Clicked="OnResetItemTemplate" />
                 </VerticalStackLayout>
             </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Styling Customization" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="Change the appearance of the search bar at runtime." FontSize="12" />
+                    
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="Red Text" Clicked="OnSetRedText" FontSize="12" />
+                        <Button Text="Reset Text" Clicked="OnResetText" FontSize="12" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="Green Placeholder" Clicked="OnSetGreenPlaceholder" FontSize="12" />
+                        <Button Text="Reset Placeholder" Clicked="OnResetPlaceholder" FontSize="12" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="Large Font" Clicked="OnSetLargeFont" FontSize="12" />
+                        <Button Text="Reset Font" Clicked="OnResetFont" FontSize="12" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

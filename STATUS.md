@@ -911,24 +911,24 @@ A user input control that provides search functionality integrated with the Shel
 | Command | ✅ Implemented |
 | CommandParameter | ✅ Implemented |
 | DisplayMemberName | ✅ Implemented |
-| FontAttributes | ⏳ TODO |
+| FontAttributes | ✅ Implemented |
 | FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
 | HorizontalTextAlignment | ⏳ TODO |
 | IsSearchEnabled | ✅ Implemented |
 | ItemsSource | ✅ Implemented |
 | ItemTemplate | ✅ Implemented |
 | Keyboard | ✅ Implemented |
 | Placeholder | ✅ Implemented |
-| PlaceholderColor | ⏳ TODO |
+| PlaceholderColor | ✅ Implemented |
 | Query | ✅ Implemented |
 | QueryIcon | ⏳ TODO |
 | QueryIconHelpText | ⏳ TODO |
 | SearchIcon | ⏳ TODO |
 | SelectedItem | ✅ Implemented |
 | ShowsResults | ✅ Implemented |
-| TextColor | ⏳ TODO |
+| TextColor | ✅ Implemented |
 | VerticalTextAlignment | ⏳ TODO |
 
 ### Events
