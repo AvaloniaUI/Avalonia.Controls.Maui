@@ -8,9 +8,16 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
         private List<FlyoutItem> _dynamicFlyoutItems = new();
         private List<MenuItem> _dynamicMenuItems = new();
 
+        public List<string> BehaviorItems { get; } = new() { "Disabled", "Flyout (Popover)", "Locked" };
+        public List<string> BackgroundImageItems { get; } = new() { "None", "Banner (Light)", "Banner (Dark)", "DotNet Bot" };
+        public List<string> AspectItems { get; } = new() { "AspectFit", "AspectFill", "Fill", "Center" };
+        public List<string> HeaderBehaviorItems { get; } = new() { "Fixed", "Scroll" };
+        public List<string> ScrollModeItems { get; } = new() { "Auto", "Enabled", "Disabled" };
+
         public ShellFlyoutPage()
         {
             InitializeComponent();
+            BindingContext = this;
             
             // Initialize pickers
             BehaviorPicker.SelectedIndex = 1; // Flyout

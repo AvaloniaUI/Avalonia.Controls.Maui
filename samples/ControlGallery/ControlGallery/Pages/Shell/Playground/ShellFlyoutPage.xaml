@@ -15,15 +15,7 @@
                     <Label Text="Flyout Behavior" FontSize="Title" FontAttributes="Bold" />
                     
                     <Label Text="Shell.FlyoutBehavior" FontAttributes="Bold" />
-                    <Picker x:Name="BehaviorPicker" SelectedIndexChanged="OnBehaviorChanged">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String>Disabled</x:String>
-                                <x:String>Flyout (Popover)</x:String>
-                                <x:String>Locked</x:String>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
+                    <Picker x:Name="BehaviorPicker" SelectedIndexChanged="OnBehaviorChanged" ItemsSource="{Binding BehaviorItems}" />
 
                     <Label Text="Programmatic Control" FontAttributes="Bold" />
                     <HorizontalStackLayout Spacing="10">
@@ -84,28 +76,10 @@
                     </HorizontalStackLayout>
 
                     <Label Text="Background Image" FontAttributes="Bold" />
-                    <Picker x:Name="BackgroundImagePicker" SelectedIndex="0" SelectedIndexChanged="OnBackgroundImageChanged">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String>None</x:String>
-                                <x:String>Banner (Light)</x:String>
-                                <x:String>Banner (Dark)</x:String>
-                                <x:String>DotNet Bot</x:String>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
+                    <Picker x:Name="BackgroundImagePicker" SelectedIndex="0" SelectedIndexChanged="OnBackgroundImageChanged" ItemsSource="{Binding BackgroundImageItems}" />
 
                     <Label Text="Background Image Aspect" FontAttributes="Bold" />
-                    <Picker x:Name="AspectPicker" SelectedIndex="0" SelectedIndexChanged="OnBackgroundImageAspectChanged">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String>AspectFit</x:String>
-                                <x:String>AspectFill</x:String>
-                                <x:String>Fill</x:String>
-                                <x:String>Center</x:String>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
+                    <Picker x:Name="AspectPicker" SelectedIndex="0" SelectedIndexChanged="OnBackgroundImageAspectChanged" ItemsSource="{Binding AspectItems}" />
 
                     <Label Text="Backdrop (Scrim)" FontAttributes="Bold" />
                     <HorizontalStackLayout Spacing="10">
@@ -125,14 +99,7 @@
                     <Label Text="Header Configuration" FontSize="Title" FontAttributes="Bold" />
                     
                     <Label Text="Header Behavior" FontAttributes="Bold" />
-                    <Picker x:Name="HeaderBehaviorPicker" SelectedIndexChanged="OnHeaderBehaviorChanged">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String>Fixed</x:String>
-                                <x:String>Scroll</x:String>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
+                    <Picker x:Name="HeaderBehaviorPicker" SelectedIndexChanged="OnHeaderBehaviorChanged" ItemsSource="{Binding HeaderBehaviorItems}" />
                 </VerticalStackLayout>
             </Border>
 
@@ -157,15 +124,7 @@
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Vertical Scroll Mode" FontSize="Title" FontAttributes="Bold" />
-                    <Picker x:Name="ScrollModePicker" SelectedIndexChanged="OnScrollModeChanged">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String>Auto</x:String>
-                                <x:String>Enabled</x:String>
-                                <x:String>Disabled</x:String>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
+                    <Picker x:Name="ScrollModePicker" SelectedIndexChanged="OnScrollModeChanged" ItemsSource="{Binding ScrollModeItems}" />
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>
