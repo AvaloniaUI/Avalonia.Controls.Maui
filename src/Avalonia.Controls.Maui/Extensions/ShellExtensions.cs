@@ -953,8 +953,8 @@ public static class ShellExtensions
         {
             if (handler._searchControl != null)
             {
-                handler._topBar.Children.Remove(handler._searchControl);
                 handler._searchControl.CleanUp();
+                handler._topBar.Children.Remove(handler._searchControl);
                 handler._searchControl = null;
             }
                 handler.UpdateTitleView(shell);
@@ -968,8 +968,8 @@ public static class ShellExtensions
 
         if (handler._searchControl != null)
         {
-            handler._topBar.Children.Remove(handler._searchControl);
             handler._searchControl.CleanUp();
+            handler._topBar.Children.Remove(handler._searchControl);
             handler._searchControl = null;
         }
 

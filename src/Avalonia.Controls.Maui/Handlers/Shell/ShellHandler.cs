@@ -9,6 +9,7 @@ using AvaloniaGrid = Avalonia.Controls.Grid;
 using MauiShell = Microsoft.Maui.Controls.Shell;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Controls.Shell;
+using Avalonia.VisualTree;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell;
 
@@ -177,7 +178,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             }
         };
 
-        // Create main container
+
         _mainContainer = new DockPanel
         {
             LastChildFill = true
@@ -185,11 +186,11 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         _topBar = new DockPanel
         {
+            Height = DefaultBarHeight,
             [DockPanel.DockProperty] = Dock.Top,
-            Height = DefaultBarHeight
+            ZIndex = 1
         };
-
-        _topBar.Background = null;
+        _topBar.Bind(Avalonia.Controls.Panel.BackgroundProperty, new Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("SystemRegionBrush"));
 
         _topBarShadow = new Border
         {
@@ -212,7 +213,9 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [DockPanel.DockProperty] = Dock.Left
         };
         _backButton.Click += OnBackButtonClick;
+        
         _topBar.Children.Add(_backButton);
+
 
         _hamburgerButton = new Button
         {
@@ -242,21 +245,24 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             FontWeight = Media.FontWeight.SemiBold,
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
-            Margin = new Thickness(8, 0)
+            Margin = new Thickness(8, 0),
+            ZIndex = 0
         };
         _topBar.Children.Add(_titleTextBlock);
 
-        _mainContainer.Children.Add(_topBar);
-        _mainContainer.Children.Add(_topBarShadow);
-
         _mainContentControl = new TransitioningContentControl
         {
+            PageTransition = new Avalonia.Animation.CrossFade(ShellHandler.DefaultTransitionDuration),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch,
             HorizontalContentAlignment = HorizontalAlignment.Stretch,
             VerticalContentAlignment = VerticalAlignment.Stretch
         };
+
+        _mainContainer.Children.Add(_topBar);
+        _mainContainer.Children.Add(_topBarShadow);
         _mainContainer.Children.Add(_mainContentControl);
+
 
         _flyoutContainer.SetDetailContent(_mainContainer);
 
@@ -286,7 +292,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             this.UpdateFlyoutItemsAppearance(VirtualView);
             TrackCurrentPage();
 
-            // Ensure selection is applied after visual tree is fully loaded
+
             Threading.Dispatcher.UIThread.Post(() =>
             {
                 if (VirtualView != null)
@@ -378,6 +384,13 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             TrackCurrentPage();
             if (VirtualView?.CurrentItem != null)
                 _currentItemHandler?.UpdateTabBarVisibility(VirtualView.CurrentItem);
+
+            // Force focus clear on page change to ensure navigation settles cleanly
+            Threading.Dispatcher.UIThread.Post(() => 
+            {
+                var topLevel = _mainContainer != null ? TopLevel.GetTopLevel(_mainContainer) : null;
+                topLevel?.FocusManager?.ClearFocus();
+            });
         }
         else if (e.PropertyName == nameof(VisualElement.BackgroundColor))
         {
@@ -777,6 +790,13 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
     private async void OnBackButtonClick(object? sender, Interactivity.RoutedEventArgs e)
     {
+        var topLevel = _topBar != null ? TopLevel.GetTopLevel(_topBar) : null;
+        
+        if (topLevel != null)
+        {
+            topLevel.FocusManager?.ClearFocus();
+        }
+
         if (VirtualView == null)
             return;
 
@@ -788,14 +808,18 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (behavior?.Command != null && behavior.Command.CanExecute(behavior.CommandParameter))
         {
             behavior.Command.Execute(behavior.CommandParameter);
+            e.Handled = true;
             return;
         }
 
-        // Default behavior: navigate back
-        if (VirtualView.CurrentItem?.CurrentItem is ShellSection section
-            && section.Navigation?.NavigationStack?.Count > 1)
+        // Navigate back
+        if (VirtualView.CurrentItem?.CurrentItem is ShellSection section)
         {
-            await section.Navigation.PopAsync();
+            if (section.Navigation?.NavigationStack?.Count > 1)
+            {
+                await VirtualView.GoToAsync("..");
+                e.Handled = true;
+            }
         }
     }
 

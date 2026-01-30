@@ -9,6 +9,8 @@ using Microsoft.Maui.Controls;
 using Microsoft.Maui;
 using AvaloniaControl = Avalonia.Controls.Control;
 using MauiSearchHandler = Microsoft.Maui.Controls.SearchHandler;
+using Avalonia.VisualTree;
+using Avalonia.Controls.Maui.Extensions;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell
 {
@@ -20,8 +22,10 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
         public MauiSearchHandler SearchHandler => _mauiSearchHandler;
 
         private MauiSearchBar? _searchBar;
-        private Popup? _resultsPopup;
+        private Control? _resultsOverlay;
         private ListBox? _resultsList;
+        private bool _isNavigating;
+        private IDisposable? _clickObserver;
 
         public ShellSearchControl(MauiSearchHandler mauiSearchHandler, IMauiContext mauiContext)
         {
@@ -46,66 +50,75 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                 Margin = new Thickness(10, 5)
             };
             
-            // Apply colors if set
-            if (_mauiSearchHandler.BackgroundColor != Microsoft.Maui.Graphics.Colors.Transparent) // Check default
-            {
-                 // _searchBar.Background = ... (MauiSearchBar might need property mapping for this)
-            }
-
-            if (_mauiSearchHandler.TextColor != null)
-            {
-                // _searchBar.Foreground = ...
-            }
-
             _searchBar.PropertyChanged += OnSearchBarPropertyChanged;
             _searchBar.SearchButtonPressed += OnSearchButtonPressed;
             _searchBar.KeyDown += OnSearchBarKeyDown;
 
-            // Container for SearchBar and Popup
-            var container = new Grid();
-            container.Children.Add(_searchBar);
-
-            _resultsPopup = new Popup
+            var container = new StackPanel
             {
-                PlacementTarget = _searchBar,
-                Placement = PlacementMode.Bottom,
-                IsLightDismissEnabled = true,
-                OverlayInputPassThroughElement = _searchBar
+                ClipToBounds = false
             };
+            container.Children.Add(_searchBar);
 
             _resultsList = new ListBox
             {
                 MaxHeight = 300,
-                [ScrollViewer.HorizontalScrollBarVisibilityProperty] = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled
+                [ScrollViewer.HorizontalScrollBarVisibilityProperty] = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
+                Focusable = false,
+                Padding = new Thickness(0)
             };
+            
+            UpdateBackground();
             
             _resultsList.SelectionChanged += OnResultsListSelectionChanged;
 
             var border = new Border
             {
-                Background = Brushes.White, 
                 BorderBrush = Brushes.LightGray,
                 BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(4),
+                CornerRadius = new CornerRadius(0, 0, 4, 4),
                 Child = _resultsList,
-                MinWidth = 200
+                IsVisible = false
             };
             
-            _resultsPopup.Child = border;
-            container.Children.Add(_resultsPopup);
+            border.Bind(Avalonia.Controls.Border.BackgroundProperty, _resultsList.GetObservable(Avalonia.Controls.Primitives.TemplatedControl.BackgroundProperty));
+            border.Width = Bounds.Width;
+
+            var overlayCanvas = new Canvas
+            {
+                Height = 0,
+                ClipToBounds = false,
+                IsHitTestVisible = true,
+                ZIndex = 999
+            };
+            
+            overlayCanvas.Children.Add(border);
+            container.Children.Add(overlayCanvas);
+
+            _resultsOverlay = border;
 
             Content = container;
+            this.ClipToBounds = false;
 
             UpdateItemsSource();
             UpdateItemTemplate();
             UpdateShowsResults();
         }
 
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+        {
+            base.OnPropertyChanged(change);
+
+            if (change.Property == BoundsProperty && _resultsOverlay != null)
+            {
+                _resultsOverlay.Width = Bounds.Width;
+            }
+        }
+
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
             
-            // Re-evaluate results when attached (e.g. after navigation back)
             UpdateShowsResults();
         }
 
@@ -129,10 +142,13 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                  _resultsList.SelectionChanged -= OnResultsListSelectionChanged;
              }
 
-             if (_resultsPopup != null)
+             if (_resultsOverlay != null)
              {
-                 _resultsPopup.IsOpen = false;
+                 SetPopupOpen(false);
              }
+             
+             _clickObserver?.Dispose();
+             _clickObserver = null;
         }
 
         private void OnMauiSearchHandlerPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -166,6 +182,27 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             {
                 UpdateItemTemplate();
             }
+            else if (e.PropertyName == MauiSearchHandler.BackgroundColorProperty.PropertyName)
+            {
+                UpdateBackground();
+            }
+        }
+        
+        private void UpdateBackground()
+        {
+            if (_resultsList == null) return;
+
+            var mauiColor = _mauiSearchHandler.BackgroundColor;
+            if (mauiColor != null && mauiColor != Microsoft.Maui.Graphics.Colors.Transparent)
+            {
+                _resultsList.Background = mauiColor.ToPlatform();
+            }
+            else
+            {
+                // Fallback to theme-aware brush
+                _resultsList.Bind(Avalonia.Controls.Primitives.TemplatedControl.BackgroundProperty, 
+                    new Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("SystemRegionBrush"));
+            }
         }
 
         private void OnFocusChangeRequested(object? sender, VisualElement.FocusRequestArgs e)
@@ -179,6 +216,9 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
 
         private void OnSearchBarPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
         {
+            // Skip if we're navigating away to prevent query restoration
+            if (_isNavigating) return;
+
             if (e.Property == MauiSearchBar.TextProperty && _mauiSearchHandler != null && _searchBar != null)
             {
                 // Update MAUI property
@@ -206,50 +246,27 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                     _mauiSearchHandler.Command.Execute(_mauiSearchHandler.CommandParameter);
                 }
                 
-                if (_resultsPopup != null)
-                {
-                    _resultsPopup.IsOpen = false;
-                }
+                SetPopupOpen(false);
             }
         }
 
         private void UpdateShowsResults()
         {
-            if (_resultsPopup != null)
+            if (_isNavigating) return;
+
+            if (_resultsOverlay != null)
             {
                 bool hasItems = false;
                 if (_resultsList?.ItemsSource is IEnumerable list)
                 {
-                    // More reliable than ItemCount which might be 0 during synchronization
                     if (list is ICollection collection)
                         hasItems = collection.Count > 0;
                     else
                         hasItems = list.Cast<object>().Any();
                 }
 
-                bool show = _mauiSearchHandler.ShowsResults && hasItems;
-                _resultsPopup.IsOpen = show;
-
-                if (show)
-                {
-                    // Ensure width matches or is reasonable
-                    if (_searchBar != null && _searchBar.IsVisible)
-                    {
-                        if (_resultsPopup.Child is Control child)
-                        {
-                            double width = _searchBar.Bounds.Width;
-                            if (width > 0)
-                            {
-                                child.MinWidth = width;
-                            }
-                            else
-                            {
-                                // Fallback if bounds not ready
-                                child.MinWidth = 200;
-                            }
-                        }
-                    }
-                }
+                bool show = _mauiSearchHandler.ShowsResults && hasItems && !string.IsNullOrWhiteSpace(_mauiSearchHandler.Query);
+                SetPopupOpen(show);
             }
         }
 
@@ -270,7 +287,6 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             var template = _mauiSearchHandler.ItemTemplate;
             if (template != null)
             {
-                 // We need to wrap the MAUI DataTemplate into an Avalonia IDataTemplate
                  _resultsList.ItemTemplate = new MauiDataTemplateWrapper(template, _mauiContext);
             }
             else
@@ -299,35 +315,104 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                      }
                      
                      return textBlock;
-                 });
+                  });
             }
         }
 
         private void OnResultsListSelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
-            if (_resultsList?.SelectedItem != null)
+            if (e.AddedItems.Count > 0)
             {
-                var selectedItem = _resultsList.SelectedItem;
+                var selectedItem = e.AddedItems[0];
+                if (selectedItem == null) return;
+
+                _isNavigating = true;
+
+                SetPopupOpen(false);
+
+                if (_searchBar != null)
+                {
+                    _searchBar.Text = string.Empty;
+                    _searchBar.IsEnabled = false;
+                    _searchBar.Focusable = false;
+                    _searchBar.IsHitTestVisible = false;
+                }
+
+                var topLevel = TopLevel.GetTopLevel(this);
+                topLevel?.FocusManager?.ClearFocus();
+
+                if (_mauiSearchHandler != null)
+                {
+                    _mauiSearchHandler.SetValue(MauiSearchHandler.QueryProperty, string.Empty);
+                }
+
+                _mauiSearchHandler?.SetValue(MauiSearchHandler.SelectedItemProperty, selectedItem);
                 
-                // Update MAUI handler property
-                _mauiSearchHandler.SetValue(MauiSearchHandler.SelectedItemProperty, selectedItem);
+                var controller = (ISearchHandlerController?)_mauiSearchHandler;
+                controller?.ItemSelected(selectedItem);
+
+                Avalonia.Threading.Dispatcher.UIThread.Post(() => 
+                {
+                    if (_resultsList != null) _resultsList.SelectedItem = null;
+                    if (_resultsList != null) _resultsList.SelectedItem = null;
+                    if (_searchBar != null)
+                    {
+                        _searchBar.IsEnabled = true;
+                        _searchBar.Focusable = true;
+                        _searchBar.IsHitTestVisible = true;
+                    }
+                    _isNavigating = false;
+                }, Avalonia.Threading.DispatcherPriority.Background);
+            }
+        }
+
+        private void SetPopupOpen(bool open)
+        {
+            if (_resultsOverlay == null) return;
+            
+            if (open != _resultsOverlay.IsVisible)
+            {
+                _resultsOverlay.IsVisible = open;
                 
-                // Trigger the OnItemSelected method on the handler
-                var controller = (ISearchHandlerController)_mauiSearchHandler;
-                controller.ItemSelected(selectedItem);
+                if (open)
+                {
+                     var topLevel = TopLevel.GetTopLevel(this);
+                     if (topLevel != null)
+                     {
+                         _clickObserver = topLevel.AddDisposableHandler(
+                             Avalonia.Input.InputElement.PointerPressedEvent, 
+                             OnTopLevelPointerPressed, 
+                             Avalonia.Interactivity.RoutingStrategies.Tunnel); 
+                     }
+                }
+                else
+                {
+                     _clickObserver?.Dispose();
+                     _clickObserver = null;
+                     if (_resultsList != null) _resultsList.SelectedItem = null;
+                }
+            }
+        }
+
+        private void OnTopLevelPointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (_resultsOverlay?.IsVisible == true)
+            {
+                var source = e.Source as Visual;
+                if (source != null)
+                {
+                    if (this.IsVisualAncestorOf(source) || _resultsOverlay.IsVisualAncestorOf(source))
+                    {
+                        return;
+                    }
+                }
                 
-                // Clear query after selection to prevent "filling the text and filtering"
-                _mauiSearchHandler.Query = string.Empty;
-                
-                if (_resultsPopup != null) _resultsPopup.IsOpen = false;
-                
-                
-                _resultsList.SelectedItem = null; // Reset selection
+                // Click was outside, close overlay
+                SetPopupOpen(false);
             }
         }
     }
     
-    // Simple wrapper for MAUI DataTemplate
     public class MauiDataTemplateWrapper : IDataTemplate
     {
         private readonly DataTemplate _mauiTemplate;

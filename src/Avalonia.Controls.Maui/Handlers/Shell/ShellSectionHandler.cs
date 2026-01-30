@@ -101,14 +101,15 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
     
     private void HandleNavigationRequest(NavigationRequest request)
     {
-        if (request.NavigationStack == null || request.NavigationStack.Count == 0)
+        var stack = request.NavigationStack;
+        if (stack == null || stack.Count == 0)
             return;
 
         _isNavigating = true;
         try
         {
             int oldCount = _navigationStack.Count;
-            int newCount = request.NavigationStack.Count;
+            int newCount = stack.Count;
             bool isPush = newCount > oldCount;
             bool isPop = newCount < oldCount;
 
@@ -217,6 +218,7 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
 
         _currentPage = page;
 
+
         // Read PresentationMode from the relevant page (incoming for push, outgoing for pop)
         var relevantPage = (isPop && poppedPage != null) ? poppedPage : page;
         var mode = MauiShell.GetPresentationMode(relevantPage);
@@ -255,6 +257,10 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
         }
 
         _sectionContainer.PageTransition = transition;
+        
+        // Ensure focus is cleared before transition to avoid stale focus capturing input
+        var topLevel = TopLevel.GetTopLevel(PlatformView);
+        topLevel?.FocusManager?.ClearFocus();
 
         var pageHandler = page.ToHandler(MauiContext);
         if (pageHandler?.PlatformView is AvaloniaControl control)
