@@ -110,6 +110,12 @@
                         <Button Text="Clear Cmd" Clicked="OnSetClearCommand" Margin="0,0,5,5" />
                         <Button Text="Reset" Clicked="OnResetCancel" Margin="0,0,5,5" />
                     </FlexLayout>
+
+                    <Label Text="Spacing" FontSize="14" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <FlexLayout Wrap="Wrap" JustifyContent="Start">
+                        <Button Text="Spacing 10" Clicked="OnSetSpacing" Margin="0,0,5,5" />
+                        <Button Text="Reset" Clicked="OnResetSpacing" Margin="0,0,5,5" />
+                    </FlexLayout>
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>

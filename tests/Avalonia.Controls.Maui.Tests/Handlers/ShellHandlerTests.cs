@@ -775,6 +775,19 @@ public partial class ShellHandlerTests : HandlerTestBase
         Assert.False(searchBar.IsClearEnabled);
     }
 
+    [AvaloniaFact(DisplayName = "ShellSearchControl CharacterSpacing Initializes Correctly")]
+    public void ShellSearchControlCharacterSpacingInitializesCorrectly()
+    {
+        var mauiContext = Substitute.For<IMauiContext>();
+        var searchHandler = new SearchHandler { CharacterSpacing = 5.0 };
+        
+        var control = new ShellSearchControl(searchHandler, mauiContext);
+        var panel = control.Content as Panel;
+        var searchBar = panel?.Children.OfType<MauiSearchBar>().FirstOrDefault();
+        Assert.NotNull(searchBar);
+        Assert.Equal(5.0, searchBar.CharacterSpacing);
+    }
+
 
 
     [AvaloniaFact(DisplayName = "BackButtonBehavior IsEnabled False Disables Back Button")]

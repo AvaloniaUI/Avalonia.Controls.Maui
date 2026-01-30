@@ -323,6 +323,10 @@ public partial class MauiSearchBar : TemplatedControl
             if (_textBox != null)
                 _textBox.TextAlignment = HorizontalTextAlignment;
         }
+        else if (change.Property == CharacterSpacingProperty || change.Property == LetterSpacingProperty)
+        {
+            UpdateCharacterSpacing();
+        }
         else if (change.Property == CursorPositionProperty)
         {
             if (_textBox != null && CursorPosition >= 0 && CursorPosition <= (Text?.Length ?? 0))
@@ -356,10 +360,26 @@ public partial class MauiSearchBar : TemplatedControl
         _textBox.IsReadOnly = IsReadOnly;
         _textBox.MaxLength = MaxLength;
         _textBox.TextAlignment = HorizontalTextAlignment;
+        UpdateCharacterSpacing();
 
         if (CursorPosition >= 0 && CursorPosition <= (Text?.Length ?? 0))
         {
             _textBox.CaretIndex = CursorPosition;
+        }
+    }
+
+    private void UpdateCharacterSpacing()
+    {
+        if (_textBox == null)
+            return;
+
+        if (CharacterSpacing != 0)
+        {
+            _textBox.LetterSpacing = CharacterSpacing * FontSize / 1000;
+        }
+        else
+        {
+            _textBox.LetterSpacing = LetterSpacing;
         }
     }
 

@@ -919,21 +919,23 @@ A user input control that provides search functionality integrated with the Shel
 | IsSearchEnabled | ✅ Implemented |
 | ItemsSource | ✅ Implemented |
 | ItemTemplate | ✅ Implemented |
-| Keyboard | ✅ Implemented |
+| Keyboard | ⏳ TODO |
 | Placeholder | ✅ Implemented |
 | PlaceholderColor | ✅ Implemented |
 | Query | ✅ Implemented |
 | QueryIcon | ✅ Implemented |
 | QueryIconHelpText | ⏳ TODO |
+| SearchBoxVisibility | ⚠️ Partial |
 | SelectedItem | ✅ Implemented |
 | ShowsResults | ✅ Implemented |
 | TextColor | ✅ Implemented |
 | VerticalTextAlignment | ✅ Implemented |
-| HorizontalTextAlignment | ✅ Implemented |
 | CancelButtonColor | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
 | ClearPlaceholderCommand | ✅ Implemented |
 | ClearPlaceholderCommandParameter | ✅ Implemented |
 | ClearPlaceholderEnabled | ✅ Implemented |
+| ClearPlaceholderHelpText | ⏳ TODO |
 
 ### Events
 

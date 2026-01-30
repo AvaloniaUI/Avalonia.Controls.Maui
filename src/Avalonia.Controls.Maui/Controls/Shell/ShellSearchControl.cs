@@ -112,6 +112,7 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             UpdateIcons();
             UpdateClearPlaceholder();
             UpdateAlignment();
+            UpdateCharacterSpacing();
         }
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -229,6 +230,10 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             {
                 UpdateAlignment();
             }
+            else if (e.PropertyName == MauiSearchHandler.CharacterSpacingProperty.PropertyName)
+            {
+                UpdateCharacterSpacing();
+            }
         }
         
         private void UpdateTextColor()
@@ -322,6 +327,12 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                 Microsoft.Maui.TextAlignment.End => Avalonia.Layout.VerticalAlignment.Bottom,
                 _ => Avalonia.Layout.VerticalAlignment.Center
             };
+        }
+
+        private void UpdateCharacterSpacing()
+        {
+            if (_searchBar == null) return;
+            _searchBar.CharacterSpacing = _mauiSearchHandler.CharacterSpacing;
         }
 
         private async void UpdateIcons()

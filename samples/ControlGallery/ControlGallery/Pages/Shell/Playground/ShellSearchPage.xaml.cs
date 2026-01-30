@@ -210,5 +210,23 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
                 handler.ClearPlaceholderEnabled = true; // Default
             }
         }
+
+        private void OnSetSpacing(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.CharacterSpacing = 10;
+            }
+        }
+
+        private void OnResetSpacing(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.CharacterSpacing = 0;
+            }
+        }
     }
 }
