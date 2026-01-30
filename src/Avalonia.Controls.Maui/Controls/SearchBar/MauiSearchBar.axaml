@@ -72,7 +72,7 @@
                             FontFamily="{TemplateBinding FontFamily}"
                             FontWeight="{TemplateBinding FontWeight}"
                             FontStyle="{TemplateBinding FontStyle}"
-                            LetterSpacing="{TemplateBinding CharacterSpacing}"
+                            LetterSpacing="{TemplateBinding LetterSpacing}"
                             VerticalAlignment="Stretch"
                             VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
 
@@ -85,7 +85,7 @@
                             FontFamily="{TemplateBinding FontFamily}"
                             FontWeight="{TemplateBinding FontWeight}"
                             FontStyle="{TemplateBinding FontStyle}"
-                            LetterSpacing="{TemplateBinding CharacterSpacing}"
+                            LetterSpacing="{TemplateBinding LetterSpacing}"
                             VerticalAlignment="Center"
                             TextAlignment="{TemplateBinding HorizontalTextAlignment}"
                             IsHitTestVisible="False"

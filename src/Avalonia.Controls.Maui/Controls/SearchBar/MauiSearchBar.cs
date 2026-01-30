@@ -13,6 +13,7 @@ namespace Avalonia.Controls.Maui.Controls;
 public partial class MauiSearchBar : TemplatedControl
 {
     internal TextBox? _textBox;
+    private TextBlock? _placeholder;
     private Button? _clearButton;
     private Button? _searchButton;
     private Button? _searchIconButton;
@@ -261,6 +262,7 @@ public partial class MauiSearchBar : TemplatedControl
         }
 
         _textBox = e.NameScope.Find<TextBox>("PART_TextBox");
+        _placeholder = e.NameScope.Find<TextBlock>("PART_Placeholder");
         _clearButton = e.NameScope.Find<Button>("PART_ClearButton");
         _searchButton = e.NameScope.Find<Button>("PART_SearchButton");
         _searchIconButton = e.NameScope.Find<Button>("PART_SearchIconButton");
@@ -323,7 +325,7 @@ public partial class MauiSearchBar : TemplatedControl
             if (_textBox != null)
                 _textBox.TextAlignment = HorizontalTextAlignment;
         }
-        else if (change.Property == CharacterSpacingProperty || change.Property == LetterSpacingProperty)
+        else if (change.Property == CharacterSpacingProperty || change.Property == FontSizeProperty)
         {
             UpdateCharacterSpacing();
         }
@@ -370,16 +372,13 @@ public partial class MauiSearchBar : TemplatedControl
 
     private void UpdateCharacterSpacing()
     {
-        if (_textBox == null)
-            return;
-
         if (CharacterSpacing != 0)
         {
-            _textBox.LetterSpacing = CharacterSpacing * FontSize / 1000;
+            LetterSpacing = CharacterSpacing;
         }
         else
         {
-            _textBox.LetterSpacing = LetterSpacing;
+            ClearValue(LetterSpacingProperty);
         }
     }
 
