@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace ControlGallery.Pages.ShellSamples.ShellPlayground
 {
     public partial class ShellSearchPage : ContentPage
@@ -27,6 +29,7 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
             }
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Sample code with known properties")]
         private void OnSetCustomItemTemplate(object sender, EventArgs e)
         {
             var handler = Shell.GetSearchHandler(this);
