@@ -26,10 +26,10 @@ public static class TextBoxExtensions
             return;
 
         // Set font size using FontManager's size resolution logic
-        textBox.FontSize = fontManager.GetFontSize(font);
+        textBox.FontSize = fontManager.GetFontSizeAsDouble(font);
 
         // Set font family using FontManager (handles custom fonts via IFontRegistrar)
-        textBox.FontFamily = fontManager.GetFontFamily(font);
+        textBox.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
 
         // Set font style (italic/oblique)
         textBox.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);

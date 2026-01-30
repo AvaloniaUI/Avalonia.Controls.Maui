@@ -8,7 +8,7 @@ using Avalonia.Labs.Gif;
 namespace Avalonia.Controls.Maui.Platform;
 
 /// <summary>
-/// Provides extension methods to map <see cref="IImage"/> properties onto the Avalonia
+/// Provides extension methods to map <see cref="Microsoft.Maui.IImage"/> properties onto the Avalonia
 /// <see cref="Image"/> platform control.
 /// </summary>
 public static class ImageExtensions

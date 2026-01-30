@@ -10,7 +10,7 @@ using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui.Services;
 
-public class AvaloniaFileImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IFileImageSource>
+public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IFileImageSource>
 {
     private readonly ILogger<AvaloniaFileImageSourceService>? _logger;
 

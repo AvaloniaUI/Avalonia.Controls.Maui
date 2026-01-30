@@ -1,4 +1,3 @@
-using Avalonia.Themes.Fluent;
 using Avalonia.Styling;
 
 namespace Avalonia.Controls.Maui.RenderTests;

@@ -1,4 +1,4 @@
-using System;
+using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Platform;
@@ -8,6 +8,9 @@ namespace Avalonia.Controls.Maui.Handlers;
 
 public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView>
 {
+    private RefreshCompletionDeferral? _currentRefreshDeferral;
+    private bool _isSettingRefreshingFromCode;
+
     public static IPropertyMapper<IRefreshView, RefreshViewHandler> Mapper = new PropertyMapper<IRefreshView, RefreshViewHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IRefreshView.IsRefreshing)] = MapIsRefreshing,
@@ -29,7 +32,7 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
-
+    
     public RefreshViewHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
@@ -44,73 +47,113 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
     {
         base.ConnectHandler(platformView);
         platformView.RefreshRequested += OnRefreshRequested;
-    }
+        platformView.PropertyChanged += OnPlatformViewPropertyChanged;
 
+        if (platformView.Visualizer != null)
+        {
+            platformView.Visualizer.TemplateApplied += OnVisualizerTemplateApplied;
+        }
+    }
+    
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.RefreshRequested -= OnRefreshRequested;
+        platformView.PropertyChanged -= OnPlatformViewPropertyChanged;
+
+        if (platformView.Visualizer != null)
+        {
+            platformView.Visualizer.TemplateApplied -= OnVisualizerTemplateApplied;
+        }
+
+        if (_currentRefreshDeferral != null)
+        {
+            _currentRefreshDeferral.Complete();
+            _currentRefreshDeferral = null;
+        }
+
         base.DisconnectHandler(platformView);
     }
 
-    private void OnRefreshRequested(object? sender, global::Avalonia.Controls.RefreshRequestedEventArgs e)
+    private void OnVisualizerTemplateApplied(object? sender, global::Avalonia.Controls.Primitives.TemplateAppliedEventArgs e)
     {
-        if (VirtualView != null)
+        UpdateValue(nameof(IRefreshView.RefreshColor));
+    }
+
+    private void OnPlatformViewPropertyChanged(object? sender, global::Avalonia.AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property.Name == "Visualizer")
         {
-            VirtualView.IsRefreshing = true;
+            if (e.OldValue is global::Avalonia.Controls.Primitives.TemplatedControl oldTemplated)
+            {
+                oldTemplated.TemplateApplied -= OnVisualizerTemplateApplied;
+            }
+            if (e.NewValue is global::Avalonia.Controls.Primitives.TemplatedControl newTemplated)
+            {
+                newTemplated.TemplateApplied += OnVisualizerTemplateApplied;
+            }
+
+            UpdateValue(nameof(IRefreshView.RefreshColor));
+        }
+    }
+
+    private void OnRefreshRequested(object? sender, RefreshRequestedEventArgs e)
+    {
+        if (VirtualView == null)
+            return;
+
+        _currentRefreshDeferral = e.GetDeferral();
+
+        if (_isSettingRefreshingFromCode)
+            return;
+
+        VirtualView.IsRefreshing = true;
+    }
+    
+    internal void UpdateIsRefreshingState()
+    {
+        if (PlatformView == null || VirtualView == null)
+            return;
+
+        if (VirtualView.IsRefreshing)
+        {
+            if (_currentRefreshDeferral == null)
+            {
+                _isSettingRefreshingFromCode = true;
+                PlatformView.RequestRefresh();
+                _isSettingRefreshingFromCode = false;
+            }
+
+            PlatformView.UpdateRefreshColor(VirtualView);
+        }
+        else
+        {
+            if (_currentRefreshDeferral != null)
+            {
+                _currentRefreshDeferral.Complete();
+                _currentRefreshDeferral = null;
+            }
         }
     }
 
     public static void MapIsRefreshing(RefreshViewHandler handler, IRefreshView refreshView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        // Avalonia's RefreshContainer doesn't have a direct IsRefreshing property
-        // The refresh state is managed through the RefreshRequested event and deferral
-        // When IsRefreshing is set to false, we complete the refresh
-        if (!refreshView.IsRefreshing && platformView.Visualizer != null)
-        {
-            // Reset the visualizer state by requesting a new refresh operation to complete
-            // This is a workaround since Avalonia doesn't expose a direct way to stop refreshing
-        }
+        handler.UpdateIsRefreshingState();
     }
-
+    
     public static void MapContent(RefreshViewHandler handler, IRefreshView refreshView)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        if (refreshView.Content == null)
-        {
-            platformView.Content = null;
-            return;
-        }
-
-        platformView.Content = refreshView.Content.ToPlatform(handler.MauiContext!);
+        platformView.UpdateContent(refreshView, handler.MauiContext);
     }
-
+    
     public static void MapRefreshColor(RefreshViewHandler handler, IRefreshView refreshView)
     {
         if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        if (platformView.Visualizer == null)
-            return;
-
-        if (refreshView.RefreshColor != null)
-        {
-            var color = refreshView.RefreshColor.ToColor();
-            if (color != null)
-            {
-                var avaloniaColor = global::Avalonia.Media.Color.FromArgb(
-                    (byte)(color.Alpha * 255),
-                    (byte)(color.Red * 255),
-                    (byte)(color.Green * 255),
-                    (byte)(color.Blue * 255));
-
-                platformView.Visualizer.Foreground = new global::Avalonia.Media.SolidColorBrush(avaloniaColor);
-            }
-        }
+        platformView.UpdateRefreshColor(refreshView);
     }
 
     public static void MapBackground(RefreshViewHandler handler, IRefreshView refreshView)
@@ -118,8 +161,7 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
         if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        // Map the background using standard view mapping
-        ViewHandler.MapBackground(handler, refreshView);
+        platformView.UpdateBackground(refreshView);
     }
 
     public static void MapIsEnabled(RefreshViewHandler handler, IRefreshView refreshView)
@@ -127,6 +169,6 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
         if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        platformView.IsEnabled = refreshView.IsEnabled;
+        platformView.UpdateIsEnabled(refreshView);
     }
 }

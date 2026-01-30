@@ -39,7 +39,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
 
     protected override Panel CreatePlatformView()
     {
-        return new LayoutPanel()
+        return new Avalonia.Controls.Maui.Platform.LayoutPanel()
         {
             CrossPlatformMeasure = VirtualView.CrossPlatformMeasure,
             CrossPlatformArrange = VirtualView.CrossPlatformArrange,
@@ -174,8 +174,8 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         _ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
         _ = MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
 
-        ((LayoutPanel)PlatformView).CrossPlatformMeasure = VirtualView.CrossPlatformMeasure;
-        ((LayoutPanel)PlatformView).CrossPlatformArrange = VirtualView.CrossPlatformArrange;
+        ((Avalonia.Controls.Maui.Platform.LayoutPanel)PlatformView).CrossPlatformMeasure = VirtualView.CrossPlatformMeasure;
+        ((Avalonia.Controls.Maui.Platform.LayoutPanel)PlatformView).CrossPlatformArrange = VirtualView.CrossPlatformArrange;
 
         PlatformView.Children.Clear();
         foreach (var child in VirtualView)
