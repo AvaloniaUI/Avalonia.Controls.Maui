@@ -13,6 +13,7 @@ using Avalonia.VisualTree;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell
 {
@@ -483,6 +484,9 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             UpdateShowsResults();
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "DisplayMemberName requires reflection.")]
+        [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "DisplayMemberName requires reflection.")]
+        [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "DisplayMemberName requires reflection.")]
         private void UpdateItemTemplate()
         {
             if (_resultsList == null) return;
@@ -504,22 +508,44 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                          VerticalAlignment = Layout.VerticalAlignment.Center
                      };
 
-                     if (!string.IsNullOrEmpty(_mauiSearchHandler.DisplayMemberName))
+                     if (!string.IsNullOrEmpty(_mauiSearchHandler.DisplayMemberName) && item != null)
                      {
-                         // Use Avalonia Binding to avoid reflection
-#pragma warning disable IL2026, IL3050
-                         textBlock.Bind(TextBlock.TextProperty, new Avalonia.Data.Binding(_mauiSearchHandler.DisplayMemberName));
-#pragma warning restore IL2026, IL3050
+                         try 
+                         {
+                             var value = GetPropertyValue(item, _mauiSearchHandler.DisplayMemberName);
+                             textBlock.Text = value?.ToString() ?? string.Empty;
+                         }
+                         catch
+                         {
+                             textBlock.Text = item.ToString() ?? string.Empty;
+                         }
                      }
                      else
                      {
                          // Use simple string conversion
-                         textBlock.Text = item?.ToString() ?? "";
+                         textBlock.Text = item?.ToString() ?? string.Empty;
                      }
                      
                      return textBlock;
                   });
             }
+        }
+
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Reflection is required for DisplayMemberName support.")]
+        [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Reflection is required for DisplayMemberName support.")]
+        private static object? GetPropertyValue(object target, string path)
+        {
+            var parts = path.Split('.');
+            var current = target;
+            foreach (var part in parts)
+            {
+                if (current == null) return null;
+                var type = current.GetType();
+                var prop = type.GetProperty(part);
+                if (prop == null) return null;
+                current = prop.GetValue(current);
+            }
+            return current;
         }
 
         private void OnResultsListSelectionChanged(object? sender, SelectionChangedEventArgs e)
