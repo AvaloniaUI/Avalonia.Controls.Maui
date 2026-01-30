@@ -56,6 +56,8 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             _searchBar.PropertyChanged += OnSearchBarPropertyChanged;
             _searchBar.SearchButtonPressed += OnSearchButtonPressed;
             _searchBar.KeyDown += OnSearchBarKeyDown;
+            _searchBar.GotFocus += OnSearchBarGotFocus;
+            _searchBar.LostFocus += OnSearchBarLostFocus;
 
             var container = new StackPanel
             {
@@ -114,6 +116,10 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             UpdateClearPlaceholder();
             UpdateAlignment();
             UpdateCharacterSpacing();
+            UpdateKeyboard();
+            UpdateSearchBoxVisibility();
+            UpdateAutomationId();
+            UpdateHelpText();
         }
 
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -146,6 +152,8 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                  _searchBar.PropertyChanged -= OnSearchBarPropertyChanged;
                  _searchBar.SearchButtonPressed -= OnSearchButtonPressed;
                  _searchBar.KeyDown -= OnSearchBarKeyDown;
+                 _searchBar.GotFocus -= OnSearchBarGotFocus;
+                 _searchBar.LostFocus -= OnSearchBarLostFocus;
              }
 
              if (_resultsList != null)
@@ -235,8 +243,53 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             {
                 UpdateCharacterSpacing();
             }
+            else if (e.PropertyName == MauiSearchHandler.KeyboardProperty.PropertyName)
+            {
+                UpdateKeyboard();
+            }
+            else if (e.PropertyName == MauiSearchHandler.SearchBoxVisibilityProperty.PropertyName)
+            {
+                UpdateSearchBoxVisibility();
+            }
+            else if (e.PropertyName == "AutomationId")
+            {
+                UpdateAutomationId();
+            }
+            else if (e.PropertyName == MauiSearchHandler.ClearIconHelpTextProperty.PropertyName ||
+                     e.PropertyName == MauiSearchHandler.QueryIconHelpTextProperty.PropertyName ||
+                     e.PropertyName == MauiSearchHandler.ClearPlaceholderHelpTextProperty.PropertyName)
+            {
+                UpdateHelpText();
+            }
         }
         
+        private void UpdateKeyboard()
+        {
+            if (_searchBar == null) return;
+            _searchBar.Keyboard = _mauiSearchHandler.Keyboard;
+        }
+
+        private void UpdateSearchBoxVisibility()
+        {
+            if (_searchBar == null) return;
+            _searchBar.SearchBoxVisibility = _mauiSearchHandler.SearchBoxVisibility;
+        }
+
+        private void UpdateAutomationId()
+        {
+            if (_searchBar == null) return;
+            // AutomationProperties is in Avalonia.Automation namespace
+            Avalonia.Automation.AutomationProperties.SetAutomationId(_searchBar, _mauiSearchHandler.AutomationId);
+        }
+
+        private void UpdateHelpText()
+        {
+            if (_searchBar == null) return;
+            _searchBar.ClearIconHelpText = _mauiSearchHandler.ClearIconHelpText;
+            _searchBar.QueryIconHelpText = _mauiSearchHandler.QueryIconHelpText;
+            _searchBar.ClearPlaceholderHelpText = _mauiSearchHandler.ClearPlaceholderHelpText;
+        }
+
         private void UpdateTextColor()
         {
             if (_searchBar == null) return;
@@ -412,6 +465,33 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                 _searchBar?.Focus();
                 e.Result = true;
             }
+            else if (_searchBar != null)
+            {
+                var topLevel = TopLevel.GetTopLevel(_searchBar);
+                topLevel?.FocusManager?.ClearFocus();
+                e.Result = true;
+            }
+        }
+
+        private void OnSearchBarGotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+        {
+            InvokeSearchHandlerMethod("OnFocused");
+        }
+
+        private void OnSearchBarLostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            InvokeSearchHandlerMethod("OnUnfocused");
+        }
+
+        private void InvokeSearchHandlerMethod(string methodName)
+        {
+            try
+            {
+                var method = typeof(MauiSearchHandler).GetMethod(methodName, 
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                method?.Invoke(_mauiSearchHandler, null);
+            }
+            catch { }
         }
 
         private void OnSearchBarPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)

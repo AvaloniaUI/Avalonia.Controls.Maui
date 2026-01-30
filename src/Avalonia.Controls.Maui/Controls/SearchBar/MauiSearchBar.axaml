@@ -47,7 +47,8 @@
                             Background="Transparent"
                             BorderThickness="0"
                             Padding="4"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center"
+                            AutomationProperties.Name="{TemplateBinding QueryIconHelpText}">
                             <Panel>
                                 <PathIcon
                                     Name="PART_SearchIcon"
@@ -105,7 +106,8 @@
                             IsEnabled="{TemplateBinding IsClearEnabled}"
                             Command="{TemplateBinding ClearCommand}"
                             CommandParameter="{TemplateBinding ClearCommandParameter}"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center"
+                            AutomationProperties.Name="{TemplateBinding ClearIconHelpText}">
                             <Panel>
                                 <PathIcon
                                     Name="PART_ClearIcon"

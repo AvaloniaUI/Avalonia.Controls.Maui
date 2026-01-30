@@ -3,6 +3,10 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+using Avalonia.Controls.Maui.Extensions;
+using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
 
 namespace Avalonia.Controls.Maui.Controls;
 
@@ -47,8 +51,8 @@ public partial class MauiSearchBar : TemplatedControl
     public static readonly StyledProperty<int> SelectionLengthProperty =
         AvaloniaProperty.Register<MauiSearchBar, int>(nameof(SelectionLength), defaultValue: 0);
 
-    public static readonly StyledProperty<TextAlignment> HorizontalTextAlignmentProperty =
-        AvaloniaProperty.Register<MauiSearchBar, TextAlignment>(nameof(HorizontalTextAlignment), defaultValue: TextAlignment.Left);
+    public static readonly StyledProperty<AvaloniaTextAlignment> HorizontalTextAlignmentProperty =
+        AvaloniaProperty.Register<MauiSearchBar, AvaloniaTextAlignment>(nameof(HorizontalTextAlignment), defaultValue: AvaloniaTextAlignment.Left);
 
     public static readonly StyledProperty<VerticalAlignment> VerticalContentAlignmentProperty =
         AvaloniaProperty.Register<MauiSearchBar, VerticalAlignment>(nameof(VerticalContentAlignment), defaultValue: VerticalAlignment.Center);
@@ -70,6 +74,24 @@ public partial class MauiSearchBar : TemplatedControl
 
     public static readonly StyledProperty<bool> IsClearEnabledProperty =
         AvaloniaProperty.Register<MauiSearchBar, bool>(nameof(IsClearEnabled), defaultValue: true);
+
+    public static readonly StyledProperty<Keyboard?> KeyboardProperty =
+        AvaloniaProperty.Register<MauiSearchBar, Keyboard?>(nameof(Keyboard));
+
+    public static readonly StyledProperty<SearchBoxVisibility> SearchBoxVisibilityProperty =
+        AvaloniaProperty.Register<MauiSearchBar, SearchBoxVisibility>(nameof(SearchBoxVisibility), defaultValue: SearchBoxVisibility.Expanded);
+
+    public static readonly StyledProperty<bool> IsExpandedProperty =
+        AvaloniaProperty.Register<MauiSearchBar, bool>(nameof(IsExpanded), defaultValue: true);
+
+    public static readonly StyledProperty<string?> QueryIconHelpTextProperty =
+        AvaloniaProperty.Register<MauiSearchBar, string?>(nameof(QueryIconHelpText));
+
+    public static readonly StyledProperty<string?> ClearIconHelpTextProperty =
+        AvaloniaProperty.Register<MauiSearchBar, string?>(nameof(ClearIconHelpText));
+
+    public static readonly StyledProperty<string?> ClearPlaceholderHelpTextProperty =
+        AvaloniaProperty.Register<MauiSearchBar, string?>(nameof(ClearPlaceholderHelpText));
 
     /// <summary>
     /// Gets or sets the text content of the search bar.
@@ -155,7 +177,7 @@ public partial class MauiSearchBar : TemplatedControl
     /// <summary>
     /// Gets or sets the horizontal alignment of the text content.
     /// </summary>
-    public TextAlignment HorizontalTextAlignment
+    public AvaloniaTextAlignment HorizontalTextAlignment
     {
         get => GetValue(HorizontalTextAlignmentProperty);
         set => SetValue(HorizontalTextAlignmentProperty, value);
@@ -224,6 +246,60 @@ public partial class MauiSearchBar : TemplatedControl
     {
         get => GetValue(IsClearEnabledProperty);
         set => SetValue(IsClearEnabledProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the keyboard type for the search bar.
+    /// </summary>
+    public Keyboard? Keyboard
+    {
+        get => GetValue(KeyboardProperty);
+        set => SetValue(KeyboardProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the search box visibility behavior.
+    /// </summary>
+    public SearchBoxVisibility SearchBoxVisibility
+    {
+        get => GetValue(SearchBoxVisibilityProperty);
+        set => SetValue(SearchBoxVisibilityProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the search box is currently expanded (relevant for Collapsible mode).
+    /// </summary>
+    public bool IsExpanded
+    {
+        get => GetValue(IsExpandedProperty);
+        set => SetValue(IsExpandedProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the help text for the query icon.
+    /// </summary>
+    public string? QueryIconHelpText
+    {
+        get => GetValue(QueryIconHelpTextProperty);
+        set => SetValue(QueryIconHelpTextProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the help text for the clear icon.
+    /// </summary>
+    public string? ClearIconHelpText
+    {
+        get => GetValue(ClearIconHelpTextProperty);
+        set => SetValue(ClearIconHelpTextProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the help text for the clear placeholder button.
+    /// </summary>
+    public string? ClearPlaceholderHelpText
+    {
+        get => GetValue(ClearPlaceholderHelpTextProperty);
+        set => SetValue(ClearPlaceholderHelpTextProperty, value);
     }
 
     /// <summary>
@@ -344,9 +420,34 @@ public partial class MauiSearchBar : TemplatedControl
                 _textBox.SelectionEnd = CursorPosition + SelectionLength;
             }
         }
-
+        else if (change.Property == KeyboardProperty)
+        {
+            if (_textBox != null)
+                _textBox.UpdateKeyboard(Keyboard);
+        }
+        else if (change.Property == SearchBoxVisibilityProperty)
+        {
+            UpdateSearchBoxVisibility();
+        }
+        else if (change.Property == IsExpandedProperty)
+        {
+            UpdateSearchBoxVisibility();
+        }
         // SearchIconColor and CancelButtonColor are handled via TemplateBinding
         // No code-behind needed, TemplateBinding automatically syncs on property changes
+    }
+
+    private void UpdateSearchBoxVisibility()
+    {
+        bool shouldExpand = SearchBoxVisibility == SearchBoxVisibility.Expanded || 
+                           (SearchBoxVisibility == SearchBoxVisibility.Collapsible && IsExpanded);
+
+        if (_textBox != null) _textBox.IsVisible = shouldExpand;
+        if (_placeholder != null) _placeholder.IsVisible = shouldExpand && string.IsNullOrEmpty(Text);
+        UpdateClearButtonVisibility();
+
+        // If we are in search bar, we might want to adjust external margins or size
+        // But for now, we just hide internal components.
     }
 
     private void UpdateTextBoxProperties()
@@ -362,7 +463,9 @@ public partial class MauiSearchBar : TemplatedControl
         _textBox.IsReadOnly = IsReadOnly;
         _textBox.MaxLength = MaxLength;
         _textBox.TextAlignment = HorizontalTextAlignment;
+        _textBox.UpdateKeyboard(Keyboard);
         UpdateCharacterSpacing();
+        UpdateSearchBoxVisibility();
 
         if (CursorPosition >= 0 && CursorPosition <= (Text?.Length ?? 0))
         {
@@ -396,7 +499,9 @@ public partial class MauiSearchBar : TemplatedControl
     {
         if (_clearButton != null)
         {
-            _clearButton.IsVisible = !string.IsNullOrEmpty(Text);
+            bool shouldExpand = SearchBoxVisibility == SearchBoxVisibility.Expanded || 
+                               (SearchBoxVisibility == SearchBoxVisibility.Collapsible && IsExpanded);
+            _clearButton.IsVisible = shouldExpand && !string.IsNullOrEmpty(Text);
         }
     }
 
@@ -422,7 +527,18 @@ public partial class MauiSearchBar : TemplatedControl
 
     private void OnSearchIconButtonClick(object? sender, RoutedEventArgs e)
     {
-        SearchButtonPressed?.Invoke(this, e);
+        if (SearchBoxVisibility == SearchBoxVisibility.Collapsible)
+        {
+            IsExpanded = !IsExpanded;
+            if (IsExpanded)
+            {
+                _textBox?.Focus();
+            }
+        }
+        else
+        {
+            SearchButtonPressed?.Invoke(this, e);
+        }
     }
 
     /// <summary>

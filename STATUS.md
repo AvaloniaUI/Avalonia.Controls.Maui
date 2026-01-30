@@ -881,6 +881,7 @@ A user input control used to initiate a search.
 | FontFamily | ✅ Implemented |
 | FontSize | ✅ Implemented |
 | HorizontalTextAlignment | ✅ Implemented |
+| Keyboard | ✅ Implemented |
 | Placeholder | ✅ Implemented |
 | PlaceholderColor | ✅ Implemented |
 | SearchCommand | ✅ Implemented |
@@ -888,7 +889,7 @@ A user input control used to initiate a search.
 | SelectionLength | ✅ Implemented |
 | Text | ✅ Implemented |
 | TextColor | ✅ Implemented |
-| VerticalTextAlignment | ⏳ TODO |
+| VerticalTextAlignment | ✅ Implemented |
 
 ### Events
 
@@ -909,39 +910,34 @@ A user input control that provides search functionality integrated with the Shel
 |----------|--------|
 | BackgroundColor | ✅ Implemented |
 | CancelButtonColor | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
 | ClearIcon | ✅ Implemented |
-| ClearIconHelpText | ⏳ TODO |
+| ClearIconHelpText | ✅ Implemented |
 | ClearPlaceholderCommand | ✅ Implemented |
 | ClearPlaceholderCommandParameter | ✅ Implemented |
 | ClearPlaceholderEnabled | ✅ Implemented |
+| ClearPlaceholderHelpText | ✅ Implemented |
 | Command | ✅ Implemented |
 | CommandParameter | ✅ Implemented |
 | DisplayMemberName | ✅ Implemented |
 | FontAttributes | ✅ Implemented |
-| FontAutoScalingEnabled | ⏳ TODO |
 | FontFamily | ✅ Implemented |
 | FontSize | ✅ Implemented |
 | HorizontalTextAlignment | ✅ Implemented |
 | IsSearchEnabled | ✅ Implemented |
 | ItemsSource | ✅ Implemented |
 | ItemTemplate | ✅ Implemented |
-| Keyboard | ⏳ TODO |
+| Keyboard | ✅ Implemented |
 | Placeholder | ✅ Implemented |
 | PlaceholderColor | ✅ Implemented |
 | Query | ✅ Implemented |
 | QueryIcon | ✅ Implemented |
-| QueryIconHelpText | ⏳ TODO |
-| SearchBoxVisibility | ⚠️ Partial |
+| QueryIconHelpText | ✅ Implemented |
+| SearchBoxVisibility | ✅ Implemented |
 | SelectedItem | ✅ Implemented |
 | ShowsResults | ✅ Implemented |
 | TextColor | ✅ Implemented |
 | VerticalTextAlignment | ✅ Implemented |
-| CancelButtonColor | ✅ Implemented |
-| CharacterSpacing | ✅ Implemented |
-| ClearPlaceholderCommand | ✅ Implemented |
-| ClearPlaceholderCommandParameter | ✅ Implemented |
-| ClearPlaceholderEnabled | ✅ Implemented |
-| ClearPlaceholderHelpText | ⏳ TODO |
 
 ### Events
 
@@ -1002,7 +998,7 @@ A Page that provides fundamental UI features that most applications require, inc
 | TitleColor | ✅ Implemented |
 | TitleView | ✅ Implemented |
 | UnselectedColor | ✅ Implemented |
-| PresentationMode | ⏳ TODO |
+| PresentationMode | ✅ Implemented |
 | FlyoutDisplayOptions | ✅ Implemented (AsSingleItem/AsMultipleItems) |
 
 ### Events
@@ -1020,23 +1016,6 @@ A Page that provides fundamental UI features that most applications require, inc
 | GoToAsync(bool) | ✅ Implemented |
 | GoToAsync(ShellNavigationState) | ✅ Implemented |
 | GoToAsync(ShellNavigationState, bool) | ✅ Implemented |
-
-### Notes
-
-Shell provides comprehensive flyout and tabbed navigation functionality with a custom FlyoutContainer that supports:
-- Sliding flyout panel with gesture support and configurable height
-- Flyout backdrop overlay with customizable brush
-- Flyout background image with aspect ratio support
-- Flyout header with Fixed/Scroll/CollapseOnScroll behavior options
-- Flyout vertical scroll mode (Auto/Enabled/Disabled)
-- Hamburger menu and back button in the navigation bar
-- NavBar visibility control with optional shadow
-- Custom TitleView support for navigation bar
-- Tab-based navigation for ShellItems with multiple sections
-- TabBar styling (background, foreground, visibility)
-- Navigation stack support (push/pop pages)
-- Dynamic title updates based on current page
-- Shell appearance colors (Background, Foreground, Title, Disabled, Unselected)
 
 ---
 
