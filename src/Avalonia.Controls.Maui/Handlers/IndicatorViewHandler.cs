@@ -1,12 +1,10 @@
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Graphics;
-using PlatformView = Avalonia.Controls.Maui.Controls.MauiIndicatorView;
+using MIndicatorView = Avalonia.Controls.Maui.Controls.MauiIndicatorView;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, PlatformView>, IIndicatorViewHandler
+public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, MIndicatorView>
 {
     public static IPropertyMapper<IIndicatorView, IndicatorViewHandler> Mapper =
         new PropertyMapper<IIndicatorView, IndicatorViewHandler>(ViewHandler.ViewMapper)
@@ -23,7 +21,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
             [nameof(Microsoft.Maui.Controls.IndicatorView.IndicatorTemplate)] = MapIndicatorTemplate,
         };
     
-    public static CommandMapper<IIndicatorView, IIndicatorViewHandler> CommandMapper =
+    public static CommandMapper<IIndicatorView, IndicatorViewHandler> CommandMapper =
         new(ViewCommandMapper)
         {
         };
@@ -41,115 +39,75 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
-    
-    IIndicatorView IIndicatorViewHandler.VirtualView => VirtualView;
-    
-    object IIndicatorViewHandler.PlatformView => PlatformView;
 
-    protected override PlatformView CreatePlatformView() => new PlatformView();
-
-    /// <summary>
-    /// Connects the handler to the platform view and subscribes to property changes.
-    /// </summary>
-    protected override void ConnectHandler(PlatformView platformView)
+    protected override MIndicatorView CreatePlatformView() => new MIndicatorView();
+    
+    protected override void ConnectHandler(MIndicatorView platformView)
     {
         base.ConnectHandler(platformView);
         platformView.PropertyChanged += OnPlatformPropertyChanged;
     }
 
-    /// <summary>
-    /// Disconnects the handler from the platform view and unsubscribes from property changes.
-    /// </summary>
-    protected override void DisconnectHandler(PlatformView platformView)
+    protected override void DisconnectHandler(MIndicatorView platformView)
     {
         platformView.PropertyChanged -= OnPlatformPropertyChanged;
         base.DisconnectHandler(platformView);
     }
     
-    public static void MapCount(IIndicatorViewHandler handler, IIndicatorView indicatorView)
+    public static void MapCount(IndicatorViewHandler handler, IIndicatorView indicatorView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.UpdateCount(indicatorView);
+        handler.PlatformView?.UpdateCount(indicatorView);
     }
 
-    public static void MapPosition(IIndicatorViewHandler handler, IIndicatorView indicatorView)
+    public static void MapPosition(IndicatorViewHandler handler, IIndicatorView indicatorView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.UpdatePosition(indicatorView);
+        handler.PlatformView?.UpdatePosition(indicatorView);
     }
 
-    public static void MapHideSingle(IIndicatorViewHandler handler, IIndicatorView indicatorView)
+    public static void MapHideSingle(IndicatorViewHandler handler, IIndicatorView indicatorView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.UpdateHideSingle(indicatorView);
+        handler.PlatformView?.UpdateHideSingle(indicatorView);
     }
 
-    public static void MapMaximumVisible(IIndicatorViewHandler handler, IIndicatorView indicatorView)
+    public static void MapMaximumVisible(IndicatorViewHandler handler, IIndicatorView indicatorView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.UpdateMaximumVisible(indicatorView);
+        handler.PlatformView?.UpdateMaximumVisible(indicatorView);
     }
     
-    public static void MapIndicatorSize(IIndicatorViewHandler handler, IIndicatorView indicatorView)
+    public static void MapIndicatorSize(IndicatorViewHandler handler, IIndicatorView indicatorView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.UpdateIndicatorSize(indicatorView);
+        handler.PlatformView?.UpdateIndicatorSize(indicatorView);
     }
     
-    public static void MapIndicatorColor(IIndicatorViewHandler handler, IIndicatorView indicatorView)
+    public static void MapIndicatorColor(IndicatorViewHandler handler, IIndicatorView indicatorView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.UpdateIndicatorColor(indicatorView);
+        handler.PlatformView?.UpdateIndicatorColor(indicatorView);
     }
 
-    public static void MapSelectedIndicatorColor(IIndicatorViewHandler handler, IIndicatorView indicatorView)
+    public static void MapSelectedIndicatorColor(IndicatorViewHandler handler, IIndicatorView indicatorView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.UpdateSelectedIndicatorColor(indicatorView);
+        handler.PlatformView?.UpdateSelectedIndicatorColor(indicatorView);
     }
     
-    public static void MapIndicatorShape(IIndicatorViewHandler handler, IIndicatorView indicatorView)
+    public static void MapIndicatorShape(IndicatorViewHandler handler, IIndicatorView indicatorView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.UpdateIndicatorsShape(indicatorView);
+        handler.PlatformView?.UpdateIndicatorsShape(indicatorView);
     }
     
-    public static void MapItemsSource(IIndicatorViewHandler handler, IIndicatorView indicatorView)
+    public static void MapItemsSource(IndicatorViewHandler handler, IIndicatorView indicatorView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.UpdateItemsSource(indicatorView);
+        handler.PlatformView?.UpdateItemsSource(indicatorView);
     }
     
-    public static void MapIndicatorTemplate(IIndicatorViewHandler handler, IIndicatorView indicatorView)
+    public static void MapIndicatorTemplate(IndicatorViewHandler handler, IIndicatorView indicatorView)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        var mauiContext = (handler as IndicatorViewHandler)?.MauiContext;
-        platformView.UpdateIndicatorTemplate(indicatorView, mauiContext);
+        var mauiContext = (handler as IElementHandler)?.MauiContext;
+        handler.PlatformView?.UpdateIndicatorTemplate(indicatorView, mauiContext);
     }
     
     private void OnPlatformPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
-        if (e.Property == PlatformView.PositionProperty && VirtualView != null && PlatformView != null)
+        if (e.Property == MIndicatorView.PositionProperty && VirtualView != null && PlatformView != null)
         {
             // Update the .NET MAUI virtual view when user taps an indicator
             VirtualView.Position = PlatformView.Position;
