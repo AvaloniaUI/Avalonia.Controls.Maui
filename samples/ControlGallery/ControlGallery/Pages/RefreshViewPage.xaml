@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.RefreshViewPage"
+             x:DataType="pages:RefreshViewPage"
+             Title="RefreshView">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="RefreshView"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- RefreshView State Control -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="RefreshView State"
+                           FontAttributes="Bold"/>
+                    <Label Text="Pull down to refresh or use the controls below (desktop friendly)."
+                           FontSize="12"/>
+                    <RefreshView x:Name="BasicRefreshView"
+                                 IsRefreshing="{Binding IsRefreshing}"
+                                 IsEnabled="{Binding RefreshEnabled}"
+                                 Command="{Binding RefreshCommand}"
+                                 RefreshColor="{Binding RefreshColor}"
+                                 HeightRequest="200">
+                        <ListView ItemsSource="{Binding BasicItems}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <ViewCell>
+                                        <Label Text="{Binding .}"
+                                               Padding="10,5"/>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </RefreshView>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Refresh"
+                                Command="{Binding RefreshCommand}"/>
+                        <Button Text="Stop"
+                                Command="{Binding StopRefreshCommand}"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <CheckBox x:Name="IsRefreshingCheckBox"
+                                  IsChecked="{Binding IsRefreshing, Mode=TwoWay}"/>
+                        <Label Text="IsRefreshing"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <CheckBox x:Name="IsEnabledCheckBox"
+                                  IsChecked="{Binding RefreshEnabled, Mode=TwoWay}"/>
+                        <Label Text="IsEnabled"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding RefreshCount, StringFormat='Refresh count: {0}'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- RefreshColor Customization -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="RefreshColor Customization"
+                           FontAttributes="Bold"/>
+                    <RefreshView IsRefreshing="{Binding ColorDemoRefreshing}"
+                                 RefreshColor="{Binding RefreshColor}"
+                                 HeightRequest="100">
+                        <ScrollView>
+                            <Label Text="Pull to refresh or toggle the checkbox above"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Padding="20"/>
+                        </ScrollView>
+                    </RefreshView>
+                    <Label Text="{Binding RefreshColor, StringFormat='Color: {0}'}"
+                           HorizontalOptions="Center"/>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Red"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Red"
+                                BackgroundColor="Red"
+                                TextColor="White"/>
+                        <Button Text="Green"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Green"
+                                BackgroundColor="Green"
+                                TextColor="White"/>
+                        <Button Text="Blue"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Blue"
+                                BackgroundColor="Blue"
+                                TextColor="White"/>
+                        <Button Text="Teal"
+                                Command="{Binding SetColorCommand}"
+                                CommandParameter="Teal"
+                                BackgroundColor="Teal"
+                                TextColor="White"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <CheckBox IsChecked="{Binding ColorDemoRefreshing, Mode=TwoWay}"/>
+                        <Label Text="Show Refresh Indicator"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- RefreshView with List -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="RefreshView with List"
+                           FontAttributes="Bold"/>
+                    <RefreshView IsRefreshing="{Binding ListRefreshing}"
+                                 Command="{Binding RefreshListCommand}"
+                                 RefreshColor="Purple"
+                                 HeightRequest="200">
+                        <ListView ItemsSource="{Binding Items}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <ViewCell>
+                                        <Label Text="{Binding .}"
+                                               Padding="10,5"/>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </RefreshView>
+                    <HorizontalStackLayout Spacing="10"
+                                           HorizontalOptions="Center">
+                        <Button Text="Refresh List"
+                                Command="{Binding RefreshListCommand}"/>
+                        <Button Text="Clear List"
+                                Command="{Binding ClearListCommand}"/>
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding Items.Count, StringFormat='Items: {0}'}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Interactivity and Commands -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Interactivity and Commands"
+                           FontAttributes="Bold"/>
+                    <Label Text="Test Command, CommandParameter, CanExecute, and Refreshing event."
+                           FontSize="12"/>
+                    <RefreshView IsRefreshing="{Binding InteractiveRefreshing}"
+                                 IsEnabled="{Binding CanRefreshInteractive}"
+                                 Command="{Binding InteractiveRefreshCommand}"
+                                 CommandParameter="TestParameter"
+                                 Refreshing="OnRefreshing"
+                                 RefreshColor="Orange"
+                                 HeightRequest="200">
+                        <ListView ItemsSource="{Binding InteractiveItems}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <ViewCell>
+                                        <Label Text="{Binding .}" Padding="10,5"/>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </RefreshView>
+
+                    <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="5">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Command Executed:" FontSize="12"/>
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding InteractiveRefreshCount}" FontAttributes="Bold" FontSize="12"/>
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Event Triggered:" FontSize="12"/>
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding EventHandlerCount}" FontAttributes="Bold" FontSize="12"/>
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Last Parameter:" FontSize="12"/>
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding LastCommandParameter}" FontAttributes="Bold" FontSize="12"/>
+                    </Grid>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Button Text="Refresh"
+                                Command="{Binding ManualRefreshCommand}"/>
+                        <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                            <CheckBox IsChecked="{Binding CanRefreshInteractive}"/>
+                            <Label Text="Can Execute" VerticalOptions="Center" FontSize="12"/>
+                        </HorizontalStackLayout>
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding CanRefreshInteractive, StringFormat='CanExecute: {0}'}"
+                           HorizontalOptions="Center" FontSize="11"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Disabled RefreshView -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Disabled RefreshView"
+                           FontAttributes="Bold"/>
+                    <Label Text="Pull to refresh is disabled but content remains scrollable."
+                           FontSize="12"/>
+                    <RefreshView IsEnabled="False"
+                                 RefreshColor="Gray"
+                                 HeightRequest="120">
+                        <ScrollView>
+                            <VerticalStackLayout Padding="10"
+                                                 Spacing="5">
+                                <Label Text="This RefreshView is disabled"/>
+                                <Label Text="Scroll works but pull to refresh does not"/>
+                                <Label Text="Content line 1"/>
+                                <Label Text="Content line 2"/>
+                                <Label Text="Content line 3"/>
+                                <Label Text="Content line 4"/>
+                            </VerticalStackLayout>
+                        </ScrollView>
+                    </RefreshView>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

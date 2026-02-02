@@ -7,7 +7,7 @@ namespace Avalonia.Controls.Maui.Platform;
 
 /// <summary>
 /// Provides extension methods to map <see cref="ITimePicker"/> properties onto the
-/// <see cref="AvaloniaTimePicker"/> platform control.
+/// Avalonia TimePicker platform control.
 /// </summary>
 public static class TimePickerExtensions
 {
@@ -28,9 +28,9 @@ public static class TimePickerExtensions
     /// <param name="timePicker">The .NET MAUI view providing the format string.</param>
     /// <remarks>
     /// Avalonia TimePicker uses ClockIdentifier property for 12/24 hour format.
-    /// MAUI uses a format string. Common patterns are detected:
-    /// - "t" or formats with "h" = 12 hour clock
-    /// - "T" or formats with "H" = 24 hour clock
+    /// MAUI uses a format string. Patterns detected:
+    /// "t" or formats with "h" specify a 12 hour clock.
+    /// "T" or formats with "H" specify a 24 hour clock.
     /// </remarks>
     public static void UpdateFormat(this PlatformView platformView, ITimePicker timePicker)
     {

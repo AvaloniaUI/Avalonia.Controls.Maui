@@ -27,7 +27,7 @@
                Margin="0,0,0,20" />
 
         <Label Grid.Row="1" 
-               Text="Experiment with scale, rotation, translation, and anchor transformations using the controls below" 
+               Text="Experiment with scale, rotation, translation, and anchor transformations using the options below" 
                HorizontalOptions="Center"
                HorizontalTextAlignment="Center"
                Margin="0,0,0,30" />
@@ -69,11 +69,11 @@
             </VerticalStackLayout>
         </Border>
 
-        <!-- Transformation Controls -->
+        <!-- Transformation Options -->
         <ScrollView Grid.Row="3">
             <VerticalStackLayout Padding="10" Spacing="14">
 
-                <!-- Scale Controls -->
+                <!-- Scale Options -->
                 <Label Text="Scale Transformations"
                        FontSize="16"
                        FontAttributes="Bold" />
@@ -117,7 +117,7 @@
                        HorizontalOptions="Center"
                        FontSize="12" />
 
-                <!-- Rotation Controls -->
+                <!-- Rotation Options -->
                 <Label Text="Rotation Transformations"
                        FontSize="16"
                        FontAttributes="Bold"
@@ -162,7 +162,7 @@
                        HorizontalOptions="Center"
                        FontSize="12" />
 
-                <!-- Translation Controls -->
+                <!-- Translation Options -->
                 <Label Text="Translation Transformations"
                        FontSize="16"
                        FontAttributes="Bold"
@@ -194,7 +194,7 @@
                        HorizontalOptions="Center"
                        FontSize="12" />
 
-                <!-- Anchor Point Controls -->
+                <!-- Anchor Point Options -->
                 <Label Text="Anchor Point Transformations"
                        FontSize="16"
                        FontAttributes="Bold"

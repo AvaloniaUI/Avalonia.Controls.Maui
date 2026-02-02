@@ -10,7 +10,7 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="SwipeView Control"
+            <Label Text="SwipeView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
@@ -218,14 +218,14 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Programmatic Control -->
+            <!-- Programmatic State -->
             <Border Stroke="{AppThemeBinding Light=#E0E0E0, Dark=#404040}"
                     Padding="0">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10" Padding="10">
-                    <Label Text="Programmatic Control"
+                    <Label Text="Programmatic State"
                            FontAttributes="Bold"/>
 
                     <SwipeView x:Name="ProgrammaticSwipeView"
@@ -252,7 +252,7 @@
                             </SwipeItems>
                         </SwipeView.BottomItems>
                         <Grid Padding="20" BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2C2C2C}">
-                            <Label Text="Control Me with Buttons Below"
+                            <Label Text="Interact with Buttons Below"
                                    HorizontalOptions="Center"/>
                         </Grid>
                     </SwipeView>

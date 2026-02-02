@@ -824,10 +824,16 @@ A container control that provides pull-to-refresh functionality for scrollable c
 
 | Property | Status |
 |----------|--------|
-| Command | ⏳ TODO |
-| CommandParameter | ⏳ TODO |
-| IsRefreshing | ⏳ TODO |
-| RefreshColor | ⏳ TODO |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
+| IsRefreshing | ✅ Implemented |
+| RefreshColor | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| Refreshing | ✅ Implemented |
 
 ---
 

@@ -237,12 +237,12 @@ public class MauiTableView : MauiView
                         grid.Children.Add(separator);
 
                         // Height logic following MAUI TableView behavior:
-                        // - Cell.Height defaults to -1 (auto-size)
-                        // - RowHeight defaults to -1 (auto-size)
-                        // - HasUnevenRows defaults to false
-                        // - DefaultCellHeight = 40 (per MAUI source)
-                        // When HasUnevenRows=true: use Cell.Height if > 0, otherwise auto-size
-                        // When HasUnevenRows=false: use RowHeight if > 0, otherwise auto-size (cells have MinHeight)
+                        // Cell.Height defaults to -1 (auto-size)
+                        // RowHeight defaults to -1 (auto-size)
+                        // HasUnevenRows defaults to false
+                        // DefaultCellHeight = 40 (per MAUI source)
+                        // If HasUnevenRows is true, Cell.Height is used when greater than zero; otherwise, auto-sizing applies.
+                        // If HasUnevenRows is false, RowHeight is used when greater than zero; otherwise, auto-sizing applies (cells have MinHeight).
                         var capturedCell = cell; // Capture for closure
                         var tableView = this; // Capture for closure
 

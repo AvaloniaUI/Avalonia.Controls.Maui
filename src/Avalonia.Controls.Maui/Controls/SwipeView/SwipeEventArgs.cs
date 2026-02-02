@@ -13,7 +13,7 @@ public class OpenRequestedEventArgs : RoutedEventArgs
     public OpenSwipeItem OpenSwipeItem { get; }
 
     /// <summary>
-    /// Gets or sets whether the open request should be cancelled
+    /// Gets or sets whether the open request is cancelled.
     /// </summary>
     public bool Cancel { get; set; }
 
@@ -34,7 +34,7 @@ public class OpenRequestedEventArgs : RoutedEventArgs
 public class CloseRequestedEventArgs : RoutedEventArgs
 {
     /// <summary>
-    /// Gets or sets whether the close request should be cancelled
+    /// Gets or sets whether the close request is cancelled.
     /// </summary>
     public bool Cancel { get; set; }
 

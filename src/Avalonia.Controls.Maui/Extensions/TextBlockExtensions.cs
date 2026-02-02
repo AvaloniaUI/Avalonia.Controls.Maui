@@ -28,10 +28,10 @@ public static class TextBlockExtensions
 
         // Cast to our FontManager implementation to access Avalonia-specific methods
         // Set font size using FontManager's size resolution logic
-        textBlock.FontSize = fontManager.GetFontSize(font);
+        textBlock.FontSize = fontManager.GetFontSizeAsDouble(font);
 
         // Set font family using FontManager (handles custom fonts via IFontRegistrar)
-        textBlock.FontFamily = fontManager.GetFontFamily(font);
+        textBlock.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
 
         // Set font style (italic/oblique)
         textBlock.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
@@ -86,7 +86,7 @@ public static class TextBlockExtensions
         textBlock.FontSize = fontManager.GetFontSize(font, defaultFontSize);
 
         // Set font family
-        textBlock.FontFamily = fontManager.GetFontFamily(font);
+        textBlock.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
 
         // Set font style and weight
         textBlock.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
