@@ -31,7 +31,7 @@ public class IndicatorViewStub : StubBase, IIndicatorView
     public Paint? SelectedIndicatorColor { get; set; }
 
     /// <inheritdoc/>
-    public IShape? IndicatorsShape { get; set; }
+    public IShape IndicatorsShape { get; set; } = null!;
 
     /// <inheritdoc/>
     public IEnumerable? ItemsSource { get; set; }
