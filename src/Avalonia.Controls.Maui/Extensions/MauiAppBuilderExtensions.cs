@@ -1,5 +1,6 @@
 using System.Collections;
 using Avalonia.Controls.Maui.Animations;
+using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -69,6 +70,9 @@ public static class MauiAppBuilderExtensions
             return new Avalonia.Controls.Maui.Dispatching.AvaloniaDispatcher(avaloniaDispatcher);
         });
 
+        // Register MAUI FontManager for native fallbacks.
+        builder.Services.AddSingleton<Microsoft.Maui.FontManager>(svcs => new Microsoft.Maui.FontManager(svcs.GetRequiredService<IFontRegistrar>(), svcs));
+
         // Register Avalonia-specific font services
         // Replace existing registrations to ensure our Avalonia implementations are used
         var fontRegistrar = new Avalonia.Controls.Maui.AvaloniaMauiFontRegistrar();
@@ -77,6 +81,8 @@ public static class MauiAppBuilderExtensions
 
         // Register Avalonia-specific animation manager
         builder.Services.AddSingleton<IAnimationManager>(svcs => new AvaloniaAnimationManager());
+
+        builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.AlertManager.IAlertManagerSubscription, AlertManager.AlertRequestHelper>();
 
         return builder
             .ConfigureMauiHandlers(handlers =>

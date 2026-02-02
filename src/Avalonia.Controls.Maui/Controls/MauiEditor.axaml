@@ -1,0 +1,98 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:Avalonia.Controls.Maui.Controls">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="EditorBackground" Color="#FFFFFFFF" />
+            <SolidColorBrush x:Key="EditorBorderBrush" Color="#FF8A8A8A" />
+            <SolidColorBrush x:Key="EditorForeground" Color="#FF000000" />
+            <SolidColorBrush x:Key="EditorPlaceholderForeground" Color="#FF8A8A8A" />
+            <SolidColorBrush x:Key="EditorBorderBrushPointerOver" Color="#FF5A5A5A" />
+            <SolidColorBrush x:Key="EditorBorderBrushFocused" Color="#FF0078D4" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="EditorBackground" Color="#FF2B2B2B" />
+            <SolidColorBrush x:Key="EditorBorderBrush" Color="#FF5A5A5A" />
+            <SolidColorBrush x:Key="EditorForeground" Color="#FFFFFFFF" />
+            <SolidColorBrush x:Key="EditorPlaceholderForeground" Color="#FFB0B0B0" />
+            <SolidColorBrush x:Key="EditorBorderBrushPointerOver" Color="#FF7A7A7A" />
+            <SolidColorBrush x:Key="EditorBorderBrushFocused" Color="#FF0078D4" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <ControlTheme x:Key="{x:Type controls:MauiEditor}"
+                  TargetType="controls:MauiEditor">
+        <Setter Property="Background" Value="{DynamicResource EditorBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource EditorBorderBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource EditorForeground}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource EditorPlaceholderForeground}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource EditorForeground}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource TextControlSelectionHighlightColor}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="FocusAdorner" Value="{x:Null}" />
+        <Setter Property="AcceptsReturn" Value="True" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    Name="PART_BorderElement"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    Padding="{TemplateBinding Padding}">
+                    <ScrollViewer Name="PART_ScrollViewer"
+                                  HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+                                  VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}">
+                        <Panel>
+                            <TextBlock Name="PART_Watermark"
+                                       Text="{TemplateBinding Watermark}"
+                                       Foreground="{TemplateBinding PlaceholderForeground}"
+                                       TextAlignment="{TemplateBinding TextAlignment}"
+                                       TextWrapping="{TemplateBinding TextWrapping}"
+                                       HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                       VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                       IsHitTestVisible="False"
+                                       IsVisible="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+                            <TextPresenter Name="PART_TextPresenter"
+                                           Text="{TemplateBinding Text, Mode=TwoWay}"
+                                           CaretBlinkInterval="{TemplateBinding CaretBlinkInterval}"
+                                           CaretIndex="{TemplateBinding CaretIndex}"
+                                           SelectionStart="{TemplateBinding SelectionStart}"
+                                           SelectionEnd="{TemplateBinding SelectionEnd}"
+                                           TextAlignment="{TemplateBinding TextAlignment}"
+                                           TextWrapping="{TemplateBinding TextWrapping}"
+                                           LineHeight="{TemplateBinding LineHeight}"
+                                           LetterSpacing="{TemplateBinding LetterSpacing}"
+                                           SelectionBrush="{TemplateBinding SelectionBrush}"
+                                           SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+                                           CaretBrush="{TemplateBinding CaretBrush}"
+                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Panel>
+                    </ScrollViewer>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- PointerOver State -->
+        <Style Selector="^:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="{DynamicResource EditorBorderBrushPointerOver}" />
+        </Style>
+
+        <!-- Focused State -->
+        <Style Selector="^:focus /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="{DynamicResource EditorBorderBrushFocused}" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+
+        <!-- Disabled State -->
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

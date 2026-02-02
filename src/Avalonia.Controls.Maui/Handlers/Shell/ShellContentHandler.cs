@@ -1,8 +1,8 @@
+using Microsoft.Maui.Handlers;
 using System;
 using Avalonia.Controls;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using AvaloniaControl = Avalonia.Controls.Control;
 

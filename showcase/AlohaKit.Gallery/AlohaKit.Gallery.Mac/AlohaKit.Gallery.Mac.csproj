@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0-maccatalyst</TargetFramework>
+		<TargetFramework>$(DotNetTfm)-maccatalyst</TargetFramework>
 		<SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>AlohaKit.Gallery</RootNamespace>

@@ -33,7 +33,7 @@
         </Style>
     </ContentPage.Resources>
     <Grid x:Name="MainGrid"
-          Margin="{OnPlatform Android='0,30,0,0', iOS=0}" RowDefinitions="Auto,*,Auto">
+          Margin="0" RowDefinitions="Auto,*,Auto">
             <Grid
                 Padding="20"
                 Grid.Row="0"

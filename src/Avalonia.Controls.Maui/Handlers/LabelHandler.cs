@@ -5,7 +5,6 @@ using Avalonia.Media;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
 using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
 using AvaloniaThickness = Avalonia.Thickness;
 using MauiLabel = Microsoft.Maui.Controls.Label;
@@ -232,20 +231,7 @@ public static class LabelTextBlockExtensions
 
     public static void UpdateVerticalTextAlignment(this TextBlock textBlock, ILabel label)
     {
-        switch (label.VerticalTextAlignment)
-        {
-            case Microsoft.Maui.TextAlignment.Start:
-                textBlock.VerticalAlignment = AvaloniaVerticalAlignment.Top;
-                break;
-            case Microsoft.Maui.TextAlignment.Center:
-                textBlock.VerticalAlignment = AvaloniaVerticalAlignment.Center;
-                break;
-            case Microsoft.Maui.TextAlignment.End:
-                textBlock.VerticalAlignment = AvaloniaVerticalAlignment.Bottom;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        // TODO: Vertical Text Alignment is not directly supported in Avalonia TextBox yet.
     }
 
     public static void UpdateLineBreakMode(this AvaloniaTextBlock textBlock, ILabel label)
@@ -388,8 +374,8 @@ public static class LabelTextBlockExtensions
         var font = span.ToFont();
         if (!font.IsDefault)
         {
-            run.FontSize = fontManager.GetFontSize(font);
-            run.FontFamily = fontManager.GetFontFamily(font);
+            run.FontSize = fontManager.GetFontSizeAsDouble(font);
+            run.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
             run.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
             run.FontWeight = FontManager.ToAvaloniaFontWeight(font.Weight);
         }

@@ -3,7 +3,6 @@ using Avalonia.Controls.Maui.Platform;
 using Avalonia.Input;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +11,7 @@ using MButton = Microsoft.Maui.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-public class ButtonHandler : ViewHandler<IButton, PlatformView>
+public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
 {
     private CancellationTokenSource? _imageSourceCts;
     private ImageSourcePartLoader? _imageSourcePartLoader;
@@ -266,6 +265,7 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>
         {
         }
 
+#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
         public override void SetImageSource(object? platformImage)
         {
             if (Handler?.PlatformView is PlatformView button)
@@ -273,5 +273,6 @@ public class ButtonHandler : ViewHandler<IButton, PlatformView>
                 button.ImageSource = platformImage as Avalonia.Media.IImage;
             }
         }
+#endif
     }
 }

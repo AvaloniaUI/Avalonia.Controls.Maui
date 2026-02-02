@@ -113,7 +113,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="20">
-            <Label Text="RadioButton Control"
+            <Label Text="RadioButton"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>

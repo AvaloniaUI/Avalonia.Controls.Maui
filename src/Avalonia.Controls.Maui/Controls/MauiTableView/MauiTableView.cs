@@ -2,10 +2,9 @@ using Avalonia.Controls.Presenters;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Avalonia.Controls.Maui.Platform;
-using Microsoft.Maui;
-using Avalonia.Data.Converters;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Media;
+using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui;
 
@@ -238,73 +237,51 @@ public class MauiTableView : MauiView
                         grid.Children.Add(separator);
 
                         // Height logic following MAUI TableView behavior:
-                        // - Cell.Height defaults to -1 (auto-size)
-                        // - RowHeight defaults to -1 (auto-size) 
-                        // - HasUnevenRows defaults to false
-                        // - DefaultCellHeight = 40 (per MAUI source)
-                        // When HasUnevenRows=true: use Cell.Height if > 0, otherwise auto-size
-                        // When HasUnevenRows=false: use RowHeight if > 0, otherwise auto-size (cells have MinHeight)
+                        // Cell.Height defaults to -1 (auto-size)
+                        // RowHeight defaults to -1 (auto-size)
+                        // HasUnevenRows defaults to false
+                        // DefaultCellHeight = 40 (per MAUI source)
+                        // If HasUnevenRows is true, Cell.Height is used when greater than zero; otherwise, auto-sizing applies.
+                        // If HasUnevenRows is false, RowHeight is used when greater than zero; otherwise, auto-sizing applies (cells have MinHeight).
                         var capturedCell = cell; // Capture for closure
-                        
-#pragma warning disable IL2026, IL3050
-                        var heightBinding = new Data.MultiBinding
+                        var tableView = this; // Capture for closure
+
+                        void UpdateGridHeight()
                         {
-                            Converter = new FuncMultiValueConverter<object, double>(values =>
+                            int rowHeight = tableView.RowHeight;
+                            bool hasUnevenRows = tableView.HasUnevenRows;
+                            double cellHeight = capturedCell.Height;
+
+                            if (hasUnevenRows)
                             {
-                                var valueList = values?.ToList();
-                                if (valueList == null || valueList.Count < 2)
-                                    return double.NaN;
-
-                                // Parse RowHeight (defaults to -1 in MAUI)
-                                int rowHeight = -1;
-                                if (valueList[0] is int rh)
-                                    rowHeight = rh;
-                                else if (valueList[0] is double rhd)
-                                    rowHeight = (int)rhd;
-
-                                // Parse HasUnevenRows (defaults to false in MAUI)
-                                bool hasUnevenRows = false;
-                                if (valueList[1] is bool hur)
-                                    hasUnevenRows = hur;
-
-                                // Get Cell.Height from captured cell (defaults to -1)
-                                double cellHeight = capturedCell.Height;
-
-                                if (hasUnevenRows)
-                                {
-                                    // When uneven rows allowed, prefer explicit Cell.Height if set
-                                    if (cellHeight > 0)
-                                        return cellHeight;
-                                    // Otherwise auto-size based on content
-                                    return double.NaN;
-                                }
-                                else
-                                {
-                                    // When uniform rows required
-                                    // Use RowHeight if explicitly set
-                                    if (rowHeight > 0)
-                                        return rowHeight;
-                                    // Otherwise auto-size (cells have their own MinHeight)
-                                    return double.NaN;
-                                }
-                            }),
-                            Bindings =
-                            {
-                                new Data.Binding
-                                {
-                                    Path = nameof(RowHeight),
-                                    Source = this
-                                },
-                                new Data.Binding
-                                {
-                                    Path = nameof(HasUnevenRows),
-                                    Source = this
-                                }
+                                // When uneven rows allowed, prefer explicit Cell.Height if set
+                                grid.Height = cellHeight > 0 ? cellHeight : double.NaN;
                             }
+                            else
+                            {
+                                // When uniform rows required, use RowHeight if explicitly set
+                                grid.Height = rowHeight > 0 ? rowHeight : double.NaN;
+                            }
+                        }
+
+                        // Set initial height
+                        UpdateGridHeight();
+
+                        void OnPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+                        {
+                            if (e.Property == RowHeightProperty || e.Property == HasUnevenRowsProperty)
+                            {
+                                UpdateGridHeight();
+                            }
+                        }
+
+                        tableView.PropertyChanged += OnPropertyChanged;
+
+                        // Clean up subscription when grid is detached
+                        grid.DetachedFromVisualTree += (_, _) =>
+                        {
+                            tableView.PropertyChanged -= OnPropertyChanged;
                         };
-                        
-                        grid.Bind(HeightProperty, heightBinding);
-#pragma warning restore IL2026, IL3050
                         
                         return grid;
                     }

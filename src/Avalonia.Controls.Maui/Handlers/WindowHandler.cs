@@ -1,8 +1,8 @@
+using Microsoft.Maui.Handlers;
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.VisualTree;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using System;
 using System.Collections.Generic;
@@ -67,7 +67,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            s_alertManager.Subscribe(window);
+            window.AlertManager.Subscribe();
             window.ModalPushed += OnModalPushed;
             window.ModalPopped += OnModalPopped;
         }
@@ -79,7 +79,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            s_alertManager.Unsubscribe(window);
+            window.AlertManager.Unsubscribe();
             window.ModalPushed -= OnModalPushed;
             window.ModalPopped -= OnModalPopped;
         }

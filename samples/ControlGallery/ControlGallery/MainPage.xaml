@@ -9,7 +9,7 @@
 		<ContentPage
 			BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
 			x:Name="FlyoutPageMenu"
-			Title="Control Gallery">
+			Title="Gallery">
 			<Grid RowDefinitions="Auto,*">
 				<SearchBar Placeholder="Search..."
 						   TextChanged="OnSearchBarTextChanged"

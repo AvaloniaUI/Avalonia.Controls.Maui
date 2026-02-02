@@ -291,7 +291,7 @@ public partial class SearchBarHandlerTests : HandlerTestBase<MauiSearchBarHandle
         Assert.Equal(expectedAvalonia, platformView.HorizontalTextAlignment);
     }
 
-    [AvaloniaTheory(DisplayName = "VerticalTextAlignment Initializes Correctly")]
+    [AvaloniaTheory(DisplayName = "VerticalTextAlignment Initializes Correctly", Skip = "https://github.com/AvaloniaUI/Avalonia/issues/10658")]
     [InlineData(TextAlignment.Start)]
     [InlineData(TextAlignment.Center)]
     [InlineData(TextAlignment.End)]
@@ -318,7 +318,7 @@ public partial class SearchBarHandlerTests : HandlerTestBase<MauiSearchBarHandle
         Assert.Equal(expectedAvalonia, platformView.VerticalContentAlignment);
     }
 
-    [AvaloniaFact(DisplayName = "SearchIconColor Initializes Correctly")]
+    [AvaloniaFact(DisplayName = "SearchIconColor Initializes Correctly", Skip = "https://github.com/AvaloniaUI/Avalonia/issues/10658")]
     public async Task SearchIconColorInitializesCorrectly()
     {
         var searchBar = new SearchBarStub

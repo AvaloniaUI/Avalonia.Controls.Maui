@@ -10,7 +10,6 @@ using Avalonia.Controls.Maui.Services;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using AvaloniaControl = Avalonia.Controls.Control;
 using AvaloniaGrid = Avalonia.Controls.Grid;
@@ -45,7 +44,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [nameof(MauiShell.Items)] = MapItems,
             [nameof(MauiShell.ItemTemplate)] = MapItemTemplate,
             [nameof(MauiShell.MenuItemTemplate)] = MapMenuItemTemplate,
-            // These are attached properties - use string literals for property names
+            // Attached properties use string literals for property names
             ["BackgroundColor"] = MapBackgroundColor,
             ["ForegroundColor"] = MapForegroundColor,
             ["TitleColor"] = MapTitleColor,
@@ -122,21 +121,21 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         flyoutPaneContainer.Background = null; // Inherit from theme
 
-        // Flyout header - docked to top
+        // Flyout header docked to top
         _flyoutHeaderControl = new ContentControl
         {
             [DockPanel.DockProperty] = Dock.Top
         };
         flyoutPaneContainer.Children.Add(_flyoutHeaderControl);
 
-        // Flyout footer - docked to bottom
+        // Flyout footer docked to bottom
         _flyoutFooterControl = new ContentControl
         {
             [DockPanel.DockProperty] = Dock.Bottom
         };
         flyoutPaneContainer.Children.Add(_flyoutFooterControl);
 
-        // Flyout items panel - fills remaining space
+        // Flyout items panel fills remaining space
         _flyoutPanel = new StackPanel
         {
             Spacing = 4

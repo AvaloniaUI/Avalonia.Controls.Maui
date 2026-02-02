@@ -1,5 +1,4 @@
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using Avalonia.Interactivity;
 using Avalonia.Controls.Maui.Extensions;
 using PlatformView = Avalonia.Controls.Maui.Controls.MauiSearchBar;

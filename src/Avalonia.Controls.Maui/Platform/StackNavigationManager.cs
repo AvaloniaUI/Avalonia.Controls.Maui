@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Extensions;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
@@ -145,6 +147,11 @@ public class StackNavigationManager
             oldPageNotify.PropertyChanged -= OnCurrentPagePropertyChanged;
         }
 
+        if (_currentMauiPage != null && _currentMauiPage.ToolbarItems is INotifyCollectionChanged oldToolbarItemsNotify)
+        {
+            oldToolbarItemsNotify.CollectionChanged -= OnToolbarItemsCollectionChanged;
+        }
+
         // Get the target page (top of the new stack)
         _currentPage = newPageStack[newPageStack.Count - 1];
         if (_currentPage == null)
@@ -157,6 +164,11 @@ public class StackNavigationManager
         if (_currentMauiPage is INotifyPropertyChanged newPageNotify)
         {
             newPageNotify.PropertyChanged += OnCurrentPagePropertyChanged;
+        }
+
+        if (_currentMauiPage != null && _currentMauiPage.ToolbarItems is INotifyCollectionChanged newToolbarItemsNotify)
+        {
+            newToolbarItemsNotify.CollectionChanged += OnToolbarItemsCollectionChanged;
         }
 
         // Convert the MAUI IView to an Avalonia Control
@@ -177,6 +189,9 @@ public class StackNavigationManager
 
             // Update TitleView for the current page
             UpdateTitleView();
+
+            // Update ToolbarItems for the current page
+            UpdateToolbarItems();
 
             // Fire navigation finished after the transition
             // In Avalonia, we can listen to TransitionCompleted event
@@ -406,6 +421,212 @@ public class StackNavigationManager
         // Note: If iconColor is null, the color will be set by UpdateNavigationBarColors based on BarTextColor
 
         _logger?.LogDebug("Back button visible: {IsVisible}, title: {Title}, iconColor: {IconColor}", showBackButton, backButtonTitle, iconColor);
+    }
+
+    private void OnToolbarItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateToolbarItems();
+    }
+
+    private void UpdateToolbarItems()
+    {
+        if (_navigationView == null || _currentMauiPage == null)
+            return;
+
+        // Unsubscribe from previous items
+        if (_navigationView.ToolbarItemsContainer.Children.Count > 0)
+        {
+             foreach (var child in _navigationView.ToolbarItemsContainer.Children)
+             {
+                 if (child is Button btn && btn.DataContext is ToolbarItem item)
+                 {
+                     btn.Click -= OnToolbarItemClicked;
+                     item.PropertyChanged -= OnToolbarItemPropertyChanged;
+                 }
+             }
+        }
+        
+        if (_navigationView.ToolbarOverflowMenu.Items.Count > 0)
+        {
+             foreach (var child in _navigationView.ToolbarOverflowMenu.Items)
+             {
+                 if (child is MenuItem menuItem && menuItem.DataContext is ToolbarItem item)
+                 {
+                     menuItem.Click -= OnToolbarItemClicked;
+                     item.PropertyChanged -= OnToolbarItemPropertyChanged;
+                 }
+             }
+        }
+
+        // Clear items but keep the overflow button
+        var overflowButton = _navigationView.ToolbarOverflowButton;
+        _navigationView.ToolbarItemsContainer.Children.Clear();
+        _navigationView.ToolbarItemsContainer.Children.Add(overflowButton);
+        _navigationView.ToolbarOverflowMenu.Items.Clear();
+
+        // Sort items by Priority
+        var sortedItems = _currentMauiPage.ToolbarItems.OrderBy(i => i.Priority).ToList();
+
+        foreach (var item in sortedItems)
+        {
+            if (item.Order == ToolbarItemOrder.Secondary)
+            {
+                var menuItem = new MenuItem
+                {
+                    Header = item.Text,
+                    IsEnabled = item.IsEnabled,
+                    DataContext = item
+                };
+                
+                menuItem.Click += OnToolbarItemClicked;
+                
+                // Subscribe to property changes
+                item.PropertyChanged += OnToolbarItemPropertyChanged;
+                
+                _navigationView.ToolbarOverflowMenu.Items.Add(menuItem);
+            }
+            else
+            {
+                var button = new Button
+                {
+                    Content = item.Text,
+                    IsEnabled = item.IsEnabled,
+                    Background = Avalonia.Media.Brushes.Transparent,
+                    BorderThickness = new Thickness(0),
+                    Padding = new Thickness(8, 0),
+                    DataContext = item
+                };
+                
+                button.Click += OnToolbarItemClicked;
+
+                // Subscribe to property changes
+                item.PropertyChanged += OnToolbarItemPropertyChanged;
+
+                if (item.IconImageSource != null)
+                {
+                    UpdateToolbarItemIcon(button, item);
+                }
+
+                // Add before the overflow button
+                _navigationView.ToolbarItemsContainer.Children.Insert(_navigationView.ToolbarItemsContainer.Children.Count - 1, button);
+            }
+        }
+
+        _navigationView.ToolbarOverflowButton.IsVisible = _navigationView.ToolbarOverflowMenu.Items.Count > 0;
+    }
+
+    private void OnToolbarItemClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is Control control && control.DataContext is ToolbarItem item && item is IMenuItemController controller)
+        {
+            controller.Activate();
+        }
+    }
+
+    private void OnToolbarItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is ToolbarItem item && _navigationView != null)
+        {
+            // If Order or Priority changes, we need to rebuild the toolbar to ensure correct sorting/placement
+            if (e.PropertyName == nameof(ToolbarItem.Order) ||
+                e.PropertyName == nameof(ToolbarItem.Priority))
+            {
+                UpdateToolbarItems();
+                return;
+            }
+
+            // Find the button associated with this item
+            Button? button = null;
+            foreach (var child in _navigationView.ToolbarItemsContainer.Children)
+            {
+                if (child is Button btn && btn.DataContext == item)
+                {
+                    button = btn;
+                    break;
+                }
+            }
+
+            if (button != null)
+            {
+                if (e.PropertyName == ToolbarItem.TextProperty.PropertyName)
+                {
+                    button.Content = item.Text;
+                }
+                else if (e.PropertyName == ToolbarItem.IsEnabledProperty.PropertyName)
+                {
+                    button.IsEnabled = item.IsEnabled;
+                }
+                else if (e.PropertyName == ToolbarItem.IconImageSourceProperty.PropertyName)
+                {
+                    UpdateToolbarItemIcon(button, item);
+                }
+            }
+            // For secondary items (MenuItems), they might be in the overflow menu
+            // We could find them and update them similarly, but basic properties are bound.
+            // Text updates for MenuItems need handling if not bound directly (Avalonia MenuItem Header is distinct)
+             else
+            {
+                 foreach (var child in _navigationView.ToolbarOverflowMenu.Items)
+                 {
+                     if (child is MenuItem menuItem && menuItem.DataContext == item)
+                     {
+                        if (e.PropertyName == ToolbarItem.TextProperty.PropertyName)
+                        {
+                            menuItem.Header = item.Text;
+                        }
+                        else if (e.PropertyName == ToolbarItem.IsEnabledProperty.PropertyName)
+                        {
+                            menuItem.IsEnabled = item.IsEnabled;
+                        }
+                        break;
+                     }
+                 }
+            }
+        }
+    }
+
+    private async void UpdateToolbarItemIcon(Button button, ToolbarItem item)
+    {
+        if (item.IconImageSource == null)
+        {
+            button.Content = item.Text;
+            return;
+        }
+
+        try
+        {
+            var imageSourceServiceProvider = MauiContext.Services.GetService<IImageSourceServiceProvider>();
+            var service = imageSourceServiceProvider?.GetImageSourceService(item.IconImageSource.GetType());
+
+            if (service is Avalonia.Controls.Maui.Services.IAvaloniaImageSourceService avaloniaService)
+            {
+                var result = await avaloniaService.GetImageAsync(item.IconImageSource, 1.0f);
+                if (result?.Value is Avalonia.Media.Imaging.Bitmap bitmap)
+                {
+                    var image = new Image
+                    {
+                        Source = bitmap,
+                        Width = 20,
+                        Height = 20
+                    };
+                    button.Content = image;
+                    ToolTip.SetTip(button, item.Text);
+                }
+                else
+                {
+                     button.Content = item.Text;
+                }
+            }
+            else
+            {
+                 button.Content = item.Text;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogError(ex, "Error loading ToolbarItem Icon");
+            button.Content = item.Text;
+        }
     }
 
     private void FireNavigationFinished()

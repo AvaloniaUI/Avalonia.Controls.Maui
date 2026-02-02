@@ -279,7 +279,7 @@ public class TitleBarView : MauiView
     }
 
     /// <summary>
-    /// Checks if a control is a passthrough element (should not trigger window drag).
+    /// Checks if a control is a passthrough element that avoids triggering window drag.
     /// </summary>
     private bool IsPassthroughElement(Control control)
     {

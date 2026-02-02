@@ -1,6 +1,7 @@
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Graphics;
 using PlatformView = Avalonia.Controls.Maui.Controls.MauiIndicatorView;
 
 namespace Avalonia.Controls.Maui.Handlers;

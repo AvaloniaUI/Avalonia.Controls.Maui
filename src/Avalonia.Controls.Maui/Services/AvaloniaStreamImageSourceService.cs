@@ -8,7 +8,7 @@ using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui.Services;
 
-public class AvaloniaStreamImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IStreamImageSource>
+public partial class AvaloniaStreamImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IStreamImageSource>
 {
     private readonly ILogger<AvaloniaStreamImageSourceService>? _logger;
 

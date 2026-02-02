@@ -7,7 +7,7 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="TimePicker Control"
+            <Label Text="TimePicker"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
@@ -189,7 +189,7 @@
                     <RoundRectangle CornerRadius="10" />
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="Programmatic Control"
+                    <Label Text="Programmatic Selection"
                            FontAttributes="Bold" />
                     <Label Text="Set the time programmatically using buttons."
                            FontSize="12"

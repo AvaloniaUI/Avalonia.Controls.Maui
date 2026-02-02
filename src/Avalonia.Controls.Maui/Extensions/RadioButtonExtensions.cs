@@ -25,7 +25,7 @@ public static class RadioButtonExtensions
 
     /// <summary>
     /// Updates the content of the platform radio button, including support for MAUI view content
-    /// via <see cref="IRadioButton.PresentedContent"/> and basic text transformations.
+    /// and basic text transformations.
     /// </summary>
     /// <param name="platformView">The Avalonia radio button.</param>
     /// <param name="handler">The handler providing access to <see cref="IMauiContext"/>.</param>

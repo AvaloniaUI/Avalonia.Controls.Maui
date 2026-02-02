@@ -147,7 +147,9 @@ Displays a scrollable list of selectable data items, using different layout spec
 | ItemTemplate | ✅ Implemented |
 | ItemsUpdatingScrollMode | ✅ Implemented |
 | RemainingItemsThreshold | ✅ Implemented |
-| RemainingItemsThresholdReachedCommand | ⏳ TODO |
+| RemainingItemsThresholdReachedCommand | ✅ Implemented |
+| SelectionChangedCommand | ✅ Implemented |
+| SelectionChangedCommandParameter | ✅ Implemented |
 | SelectedItem | ✅ Implemented |
 | SelectedItems | ✅ Implemented |
 | SelectionMode | ✅ Implemented |
@@ -157,13 +159,8 @@ Displays a scrollable list of selectable data items, using different layout spec
 | Event | Status |
 |-------|--------|
 | RemainingItemsThresholdReached | ✅ Implemented |
+| Scrolled | ✅ Implemented |
 | SelectionChanged | ✅ Implemented |
-
-### Notes
-
-- Supports LinearItemsLayout (Vertical/Horizontal) and GridItemsLayout
-- Grouping supported via IsGrouped, GroupHeaderTemplate, GroupFooterTemplate
-- Custom CollectionViewStackPanel ensures items fill cross-axis in horizontal layouts
 
 ---
 
@@ -225,33 +222,33 @@ Enables you to enter and edit multiple lines of text.
 
 | Property | Status |
 |----------|--------|
-| AutoSize | ⏳ TODO |
-| CharacterSpacing | ⏳ TODO |
-| CursorPosition | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
-| HorizontalTextAlignment | ⏳ TODO |
-| IsTextPredictionEnabled | ⏳ TODO |
-| Placeholder | ⏳ TODO |
-| PlaceholderColor | ⏳ TODO |
-| SelectionLength | ⏳ TODO |
-| Text | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| VerticalTextAlignment | ⏳ TODO |
-| IsReadOnly | ⏳ TODO |
+| AutoSize | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
+| CursorPosition | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontAutoScalingEnabled | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| HorizontalTextAlignment | ✅ Implemented |
+| IsTextPredictionEnabled | ✅ Implemented |
+| Placeholder | ✅ Implemented |
+| PlaceholderColor | ✅ Implemented |
+| SelectionLength | ✅ Implemented |
+| Text | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| VerticalTextAlignment | ✅ Implemented |
+| IsReadOnly | ✅ Implemented |
 | IsSpellCheckEnabled | ⏳ TODO |
-| Keyboard | ⏳ TODO |
-| MaxLength | ⏳ TODO |
-| TextTransform | ⏳ TODO |
+| Keyboard | ✅ Implemented |
+| MaxLength | ✅ Implemented |
+| TextTransform | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| TextChanged | ⏳ TODO |
-| Completed | ⏳ TODO |
+| TextChanged | ✅ Implemented |
+| Completed | ✅ Implemented |
 
 ---
 
@@ -289,10 +286,10 @@ Enables you to enter and edit a single line of text.
 | FontAutoScalingEnabled | ⏳ TODO |
 | FontFamily | ⏳ TODO |
 | FontSize | ⏳ TODO |
-| Keyboard | ⏳ TODO |
+| Keyboard | ✅ Implemented |
 | HorizontalTextAlignment | ⏳ TODO |
 | IsPassword | ⏳ TODO |
-| IsTextPredictionEnabled | ⏳ TODO |
+| IsTextPredictionEnabled | ✅ Implemented |
 | IsReadOnly | ⏳ TODO |
 | IsSpellCheckEnabled | ⏳ TODO |
 | MaxLength | ⏳ TODO |
@@ -331,7 +328,7 @@ Displays an entry with a label and placeholder, for use in a TableView or ListVi
 | Placeholder | ✅ Implemented |
 | LabelColor | ✅ Implemented |
 | HorizontalTextAlignment | ✅ Implemented |
-| VerticalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ⏳ TODO |
 | Keyboard | ✅ Implemented |
 | IsEnabled | ✅ Implemented |
 | ContextActions | ✅ Implemented |
@@ -490,7 +487,7 @@ Displays single-line and multi-line text.
 | TextDecorations | ✅ Implemented |
 | TextTransform | ✅ Implemented |
 | TextType | ⏳ TODO |
-| VerticalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ⏳ TODO |
 
 ---
 
@@ -523,41 +520,41 @@ Displays a scrollable list of selectable data items.
 
 | Property | Status |
 |----------|--------|
-| CachingStrategy | ⏳ TODO |
-| Footer | ⏳ TODO |
-| FooterTemplate | ⏳ TODO |
-| GroupHeaderTemplate | ⏳ TODO |
-| HasUnevenRows | ⏳ TODO |
-| Header | ⏳ TODO |
-| HeaderTemplate | ⏳ TODO |
-| HorizontalScrollBarVisibility | ⏳ TODO |
-| IsPullToRefreshEnabled | ⏳ TODO |
-| IsRefreshing | ⏳ TODO |
-| ItemsSource | ⏳ TODO |
-| ItemTemplate | ⏳ TODO |
-| RefreshCommand | ⏳ TODO |
-| RowHeight | ⏳ TODO |
-| SelectedItem | ⏳ TODO |
-| SelectionMode | ⏳ TODO |
-| SeparatorColor | ⏳ TODO |
-| SeparatorVisibility | ⏳ TODO |
-| VerticalScrollBarVisibility | ⏳ TODO |
-| GroupDisplayBinding | ⏳ TODO |
-| GroupShortNameBinding | ⏳ TODO |
-| RefreshControlColor | ⏳ TODO |
-| IsGroupingEnabled | ⏳ TODO |
+| CachingStrategy | ✅ Implemented  |
+| Footer | ✅ Implemented |
+| FooterTemplate | ✅ Implemented |
+| GroupHeaderTemplate | ✅ Implemented |
+| HasUnevenRows | ✅ Implemented |
+| Header | ✅ Implemented |
+| HeaderTemplate | ✅ Implemented |
+| HorizontalScrollBarVisibility | ✅ Implemented |
+| IsPullToRefreshEnabled | ✅ Implemented |
+| IsRefreshing | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| RefreshCommand | ✅ Implemented |
+| RowHeight | ✅ Implemented |
+| SelectedItem | ✅ Implemented |
+| SelectionMode | ✅ Implemented |
+| SeparatorColor | ✅ Implemented |
+| SeparatorVisibility | ✅ Implemented |
+| VerticalScrollBarVisibility | ✅ Implemented |
+| GroupDisplayBinding | ✅ Implemented |
+| GroupShortNameBinding | ✅ Implemented |
+| RefreshControlColor | ✅ Implemented |
+| IsGroupingEnabled | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| ItemAppearing | ⏳ TODO |
-| ItemDisappearing | ⏳ TODO |
-| ItemSelected | ⏳ TODO |
-| ItemTapped | ⏳ TODO |
-| Refreshing | ⏳ TODO |
-| Scrolled | ⏳ TODO |
-| ScrollToRequested | ⏳ TODO |
+| ItemAppearing | ✅ Implemented |
+| ItemDisappearing | ✅ Implemented |
+| ItemSelected | ✅ Implemented |
+| ItemTapped | ✅ Implemented |
+| Refreshing | ✅ Implemented |
+| Scrolled | ✅ Implemented |
+| ScrollToRequested | ✅ Implemented |
 
 ---
 
@@ -620,23 +617,33 @@ A Page that manages the navigation and user-experience of a stack of other pages
 | PushAsync(bool) | ✅ Done |
 
 ---
+ 
+ ## Page
+ 
+ Visual element that occupies the entire screen.
+ 
+ ### Properties
+ 
+ | Property | Status |
+ |----------|--------|
+ | Background | ✅ Implemented |
+ | BackgroundImageSource | ✅ Implemented |
+ | Content | ✅ Implemented |
+ | IsBusy | ✅ Implemented |
+ | Padding | ⏳ TODO |
+ | Title | ⏳ TODO |
+ | IconImageSource | ⏳ TODO |
+ | ToolbarItems | ✅ Implemented |
+ 
+ ### Methods
+ 
+ | Method                  | Status |
+ |-------------------------|--------|
+ | DisplayAlertAsync       | ✅ Implemented |
+ | DisplayActionSheetAsync | ✅ Implemented |
+ | DisplayPromptAsync      | ✅ Implemented |
 
-## Page
-
-Visual element that occupies the entire screen.
-
-### Properties
-
-| Property | Status |
-|----------|--------|
-| Background | ✅ Implemented |
-| BackgroundImageSource | ✅ Implemented |
-| Content | ✅ Implemented |
-| Title | ⏳ TODO |
-| IconImageSource | ✅ Implemented |
-| Padding | ⏳ TODO |
-
----
+ ---
 
 ## Path
 
@@ -679,7 +686,7 @@ Displays a short list of items, from which an item can be selected.
 | TextColor | ✅ Implemented  |
 | Title | ✅ Implemented |
 | TitleColor | ✅ Implemented |
-| VerticalTextAlignment | ✅ Implemented  |
+| VerticalTextAlignment | ⏳ TODO |
 
 ### Events
 
@@ -803,10 +810,16 @@ A container control that provides pull-to-refresh functionality for scrollable c
 
 | Property | Status |
 |----------|--------|
-| Command | ⏳ TODO |
-| CommandParameter | ⏳ TODO |
-| IsRefreshing | ⏳ TODO |
-| RefreshColor | ⏳ TODO |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
+| IsRefreshing | ✅ Implemented |
+| RefreshColor | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| Refreshing | ✅ Implemented |
 
 ---
 
@@ -876,7 +889,7 @@ A user input control used to initiate a search.
 | SelectionLength | ✅ Implemented |
 | Text | ✅ Implemented |
 | TextColor | ✅ Implemented |
-| VerticalTextAlignment | ✅ Implemented |
+| VerticalTextAlignment | ⏳ TODO |
 
 ### Events
 

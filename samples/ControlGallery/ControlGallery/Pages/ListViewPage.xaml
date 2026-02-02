@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ControlGallery.Pages"
+             x:Class="ControlGallery.Pages.ListViewPage"
+             x:Name="listViewPage"
+             x:DataType="local:ListViewPage"
+             Title="ListView" x:ClassModifier="internal">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Cell Type Templates -->
+            <DataTemplate x:Key="TextTemplate" x:DataType="local:CellTypeItem">
+                <TextCell Text="{Binding Name}" Detail="{Binding Detail}" />
+            </DataTemplate>
+            <DataTemplate x:Key="ImageTemplate" x:DataType="local:CellTypeItem">
+                <ImageCell Text="{Binding Name}" Detail="{Binding Detail}" ImageSource="dotnet_logo.png" />
+            </DataTemplate>
+            <DataTemplate x:Key="SwitchTemplate" x:DataType="local:CellTypeItem">
+                <SwitchCell Text="{Binding Name}" On="{Binding IsToggled}" />
+            </DataTemplate>
+            <DataTemplate x:Key="EntryTemplate" x:DataType="local:CellTypeItem">
+                <EntryCell Label="{Binding Name}" Placeholder="{Binding Placeholder}" />
+            </DataTemplate>
+            <DataTemplate x:Key="ViewTemplate" x:DataType="local:CellTypeItem">
+                <ViewCell>
+                    <Grid Padding="10" ColumnDefinitions="Auto,*">
+                        <BoxView Color="Blue" WidthRequest="20" HeightRequest="20" VerticalOptions="Center" CornerRadius="4"/>
+                        <Label Grid.Column="1" Text="{Binding Name}" VerticalOptions="Center" Margin="10,0,0,0" FontAttributes="Bold"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+
+            <local:CellTypeTemplateSelector x:Key="CellTypeSelector"
+                                            TextTemplate="{StaticResource TextTemplate}"
+                                            ImageTemplate="{StaticResource ImageTemplate}"
+                                            SwitchTemplate="{StaticResource SwitchTemplate}"
+                                            EntryTemplate="{StaticResource EntryTemplate}"
+                                            ViewTemplate="{StaticResource ViewTemplate}"/>
+
+            <!-- Role Templates -->
+            <DataTemplate x:Key="AdminTemplate" x:DataType="local:PersonItem">
+                <ViewCell>
+                    <Grid Padding="10">
+                        <Label Text="{Binding Name, StringFormat='{0} (Admin)'}" TextColor="Red" FontAttributes="Bold"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            <DataTemplate x:Key="UserTemplate" x:DataType="local:PersonItem">
+                <ViewCell>
+                    <Grid Padding="10">
+                        <Label Text="{Binding Name, StringFormat='{0} (User)'}" TextColor="Black"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+             <DataTemplate x:Key="GuestTemplate" x:DataType="local:PersonItem">
+                <ViewCell>
+                    <Grid Padding="10">
+                        <Label Text="{Binding Name, StringFormat='{0} (Guest)'}" TextColor="Gray" FontAttributes="Italic"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+            
+            <local:RoleTemplateSelector x:Key="RoleSelector"
+                                        AdminTemplate="{StaticResource AdminTemplate}"
+                                        UserTemplate="{StaticResource UserTemplate}"
+                                        GuestTemplate="{StaticResource GuestTemplate}"/>
+            
+            <!-- Runtime Templates -->
+            <DataTemplate x:Key="SimpleTemplate" x:DataType="x:String">
+                <ViewCell>
+                    <Label Text="{Binding .}" Padding="10"/>
+                </ViewCell>
+            </DataTemplate>
+            <DataTemplate x:Key="DetailedTemplate" x:DataType="x:String">
+                <ViewCell>
+                    <Border Stroke="Blue" StrokeThickness="1" Margin="5" Padding="5">
+                        <Label Text="{Binding ., StringFormat='Detailed: {0}'}" FontAttributes="Bold" TextColor="Blue"/>
+                    </Border>
+                </ViewCell>
+            </DataTemplate>
+
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            
+            <Label Text="ListView" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center"/>
+            
+            <!-- Deprecation Notice -->
+            <Border BackgroundColor="#FFF3CD" Stroke="#856404" Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="Deprecated" 
+                           FontAttributes="Bold" 
+                           TextColor="#856404"/>
+                    <Label Text="ListView is deprecated in .NET MAUI 9+. Use CollectionView instead for new development."
+                           TextColor="#856404"
+                           FontSize="12"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Basic ListView -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic ListView" FontAttributes="Bold"/>
+                    <Label Text="Simple string items." FontSize="12" FontAttributes="Italic"/>
+                    <ListView ItemsSource="{Binding BasicItems}" HeightRequest="200" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Cell Types Gallery -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cell Types Gallery" FontAttributes="Bold"/>
+                    <Label Text="Demonstrating TextCell, ImageCell, SwitchCell, EntryCell, ViewCell using TemplateSelector." FontSize="12" FontAttributes="Italic"/>
+                    <ListView ItemsSource="{Binding CellTypeItems}" 
+                              ItemTemplate="{StaticResource CellTypeSelector}"
+                              HeightRequest="250" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Selection Mode -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Selection Mode" FontAttributes="Bold"/>
+                    <Label Text="Toggle between None and Single selection." FontSize="12" FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Single" Clicked="SetSelectionSingle"/>
+                        <Button Text="None" Clicked="SetSelectionNone"/>
+                    </HorizontalStackLayout>
+                    <Label Text="{Binding SelectionStatus}" TextColor="Blue"/>
+                    <ListView ItemsSource="{Binding SelectionItems}" 
+                              SelectionMode="{Binding CurrentSelectionMode}"
+                              ItemSelected="OnSelectionChanged"
+                              HeightRequest="150" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Header & Footer -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Header &amp; Footer" FontAttributes="Bold"/>
+                    <Label Text="ListView with content in Header and Footer." FontSize="12" FontAttributes="Italic"/>
+                    <ListView ItemsSource="{Binding HeaderFooterItems}" HeightRequest="200">
+                        <ListView.Header>
+                            <StackLayout BackgroundColor="LightGray" Padding="10">
+                                <Label Text="Header Content" FontAttributes="Bold" HorizontalOptions="Center"/>
+                            </StackLayout>
+                        </ListView.Header>
+                        <ListView.Footer>
+                            <StackLayout BackgroundColor="LightGray" Padding="10">
+                                <Label Text="Footer Content" FontAttributes="Bold" HorizontalOptions="Center"/>
+                            </StackLayout>
+                        </ListView.Footer>
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <ViewCell>
+                                    <Grid HeightRequest="50" Padding="10,0">
+                                        <Label Text="{Binding .}" VerticalOptions="Center" FontSize="16"/>
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Templated Header & Footer -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Templated Header &amp; Footer" FontAttributes="Bold"/>
+                    <Label Text="ListView with DataTemplate for Header and Footer." FontSize="12" FontAttributes="Italic"/>
+                    <ListView ItemsSource="{Binding BasicItems}"
+                              Header="{Binding .}"
+                              Footer="{Binding .}"
+                              HeightRequest="200">
+                        <ListView.HeaderTemplate>
+                            <DataTemplate x:DataType="local:ListViewPage">
+                                <Grid BackgroundColor="LightGray" Padding="10">
+                                    <Label Text="Templated Header"
+                                           FontSize="12"
+                                           HorizontalOptions="Center"
+                                           FontAttributes="Bold" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.HeaderTemplate>
+                        <ListView.FooterTemplate>
+                            <DataTemplate x:DataType="local:ListViewPage">
+                                <Grid BackgroundColor="LightGray" Padding="10">
+                                    <Label Text="Templated Footer"
+                                           FontSize="12"
+                                           HorizontalOptions="Center"
+                                           FontAttributes="Bold" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.FooterTemplate>
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <ViewCell>
+                                    <Grid HeightRequest="50" Padding="10,0">
+                                        <Label Text="{Binding .}" VerticalOptions="Center" FontSize="16"/>
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Pull to Refresh -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="Pull to Refresh" FontAttributes="Bold" VerticalOptions="Center"/>
+                        <Button Grid.Column="1" Text="Refresh" Command="{Binding RefreshCommand}" 
+                                FontSize="10" Padding="5" HeightRequest="30"/>
+                    </Grid>
+                    <Label Text="Pull down to refresh (touch/trackpad) or use button. Status updates below." 
+                           FontSize="12" FontAttributes="Italic"/>
+                    <ListView ItemsSource="{Binding RefreshItems}"
+                              IsPullToRefreshEnabled="True"
+                              IsRefreshing="{Binding IsRefreshing}"
+                              RefreshCommand="{Binding RefreshCommand}"
+                              RefreshControlColor="Blue"
+                              HeightRequest="200">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <ViewCell>
+                                    <Grid HeightRequest="50" Padding="10,0">
+                                        <Label Text="{Binding .}" VerticalOptions="Center" FontSize="16"/>
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Grouping -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Grouping" FontAttributes="Bold"/>
+                    <Label Text="Items grouped by category with sticky headers (if platform supports)." FontSize="12" FontAttributes="Italic"/>
+                    <ListView ItemsSource="{Binding GroupedItems}"
+                              IsGroupingEnabled="True"
+                              HeightRequest="250"
+                              Header="Grouped ListView Header"
+                              Footer="Grouped ListView Footer">
+                        <ListView.GroupHeaderTemplate>
+                            <DataTemplate x:DataType="local:ListViewGroup">
+                                <ViewCell>
+                                    <Label Text="{Binding Name}" BackgroundColor="LightBlue" FontAttributes="Bold" Padding="5"/>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.GroupHeaderTemplate>
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="local:ItemModel">
+                                <TextCell Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Separator Visibility -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Separator Visibility" FontAttributes="Bold"/>
+                    <Label Text="Toggle visibility of separators." FontSize="12" FontAttributes="Italic"/>
+                    <Button Text="Toggle Separator" Clicked="OnToggleSeparatorClicked"/>
+                    <ListView x:Name="SeparatorVisibilityListView" ItemsSource="{Binding SeparatorItems}" HeightRequest="150" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Separator Color" FontAttributes="Bold"/>
+                    <Label Text="Change color of separators." FontSize="12" FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Red" Clicked="OnSeparatorColorRedClicked" BackgroundColor="Red" TextColor="White" WidthRequest="80"/>
+                        <Button Text="Green" Clicked="OnSeparatorColorGreenClicked" BackgroundColor="Green" TextColor="White" WidthRequest="80"/>
+                        <Button Text="Blue" Clicked="OnSeparatorColorBlueClicked" BackgroundColor="Blue" TextColor="White" WidthRequest="80"/>
+                    </HorizontalStackLayout>
+                    <ListView x:Name="SeparatorColorListView" ItemsSource="{Binding SeparatorItems}" HeightRequest="150" SeparatorVisibility="Default" SeparatorColor="Red"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Scrolling APIs -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Scrolling API" FontAttributes="Bold"/>
+                    <Label Text="Programmatic scrolling." FontSize="12" FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="Start" Command="{Binding ScrollToCommand}" CommandParameter="Start"/>
+                        <Button Text="Center (25)" Command="{Binding ScrollToCommand}" CommandParameter="Index25"/>
+                        <Button Text="End" Command="{Binding ScrollToCommand}" CommandParameter="End"/>
+                    </HorizontalStackLayout>
+                    <ListView x:Name="ScrollListView" ItemsSource="{Binding ScrollItems}" HeightRequest="150" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Template Selector -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Item Template Selector" FontAttributes="Bold"/>
+                    <Label Text="Different templates based on data 'Role'." FontSize="12" FontAttributes="Italic"/>
+                    <ListView ItemsSource="{Binding RoleItems}" 
+                              ItemTemplate="{StaticResource RoleSelector}"
+                              HeightRequest="180" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Runtime Template Change -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Runtime Template Change" FontAttributes="Bold"/>
+                    <Label Text="Swap ItemTemplate at runtime." FontSize="12" FontAttributes="Italic"/>
+                    <Button Text="Change Template" Command="{Binding ChangeTemplateCommand}"/>
+                    <ListView ItemsSource="{Binding RuntimeTemplateItems}" 
+                              ItemTemplate="{Binding CurrentRuntimeTemplate}"
+                              HeightRequest="150">
+                        <ListView.Triggers>
+                            <!-- Initial Template set via backend or trigger hack if needed, likely code behind sets it first -->
+                        </ListView.Triggers>
+                    </ListView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Row Height ListView -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Custom Row Height" FontAttributes="Bold"/>
+                    <Label Text="Uniform row height set to 60." FontSize="12" FontAttributes="Italic"/>
+                    <ListView ItemsSource="{Binding BasicItems}"
+                              RowHeight="60"
+                              SeparatorColor="Red"
+                              HeightRequest="150" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Uneven Rows ListView -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Uneven Rows" FontAttributes="Bold"/>
+                    <Label Text="Rows resize based on content (HasUnevenRows=True)." FontSize="12" FontAttributes="Italic"/>
+                    <ListView ItemsSource="{Binding UnevenItems}"
+                              HasUnevenRows="True"
+                              HeightRequest="250">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <ViewCell>
+                                    <Grid Padding="10">
+                                        <Label Text="{Binding .}" FontSize="16" LineBreakMode="WordWrap" />
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- ScrollBar Visibility -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ScrollBar Visibility" FontAttributes="Bold"/>
+                    <Label Text="Scroll bar behavior: Never, Always, or Default." FontSize="12" FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="Never" Clicked="OnScrollNeverClicked" />
+                        <Button Text="Always" Clicked="OnScrollAlwaysClicked" />
+                        <Button Text="Default" Clicked="OnScrollDefaultClicked" />
+                    </HorizontalStackLayout>
+                    <ListView x:Name="ScrollBarVisibilityListView"
+                              ItemsSource="{Binding ScrollItems}"
+                              HeightRequest="150"
+                              VerticalScrollBarVisibility="Always" />
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Context Actions -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Context Actions" FontAttributes="Bold"/>
+                    <Label Text="Right click (or long press) items to see context menu." FontSize="12" FontAttributes="Italic"/>
+                    <ListView ItemsSource="{Binding ContextItems}"
+                              HeightRequest="150">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="local:ContextItemViewModel">
+                                <ViewCell>
+                                    <ViewCell.ContextActions>
+                                        <MenuItem Text="Add to Favorites" Command="{Binding FavoriteCommand}" CommandParameter="{Binding Text}" />
+                                        <MenuItem Text="Delete" IsDestructive="True" Command="{Binding DeleteCommand}" CommandParameter="{Binding Text}" />
+                                    </ViewCell.ContextActions>
+                                    <Grid Padding="10">
+                                        <Label Text="{Binding Text}" />
+                                    </Grid>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <Label Text="{Binding ContextActionStatus}" TextColor="Green" FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Caching Strategy -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Caching Strategy" FontAttributes="Bold"/>
+                    <Label Text="RetainElement (No recycling) vs RecycleElement (Virtualization)." FontSize="12" FontAttributes="Italic"/>
+                    
+                    <Label Text="RetainElement (Default)" FontSize="10" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <ListView ItemsSource="{Binding BasicItems}" 
+                              CachingStrategy="RetainElement"
+                              HeightRequest="150" />
+
+                    <Label Text="RecycleElement (Virtualizing)" FontSize="10" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <ListView ItemsSource="{Binding PerformanceItems}" 
+                              CachingStrategy="RecycleElement"
+                              HeightRequest="150" />
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Performance -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Performance Test" FontAttributes="Bold"/>
+                    <Label Text="Load large datasets." FontSize="12" FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="1k" Command="{Binding LoadPerformanceCommand}" CommandParameter="1000"/>
+                        <Button Text="10k" Command="{Binding LoadPerformanceCommand}" CommandParameter="10000"/>
+                        <Button Text="100k" Command="{Binding LoadPerformanceCommand}" CommandParameter="100000"/>
+                    </HorizontalStackLayout>
+                    <ListView ItemsSource="{Binding PerformanceItems}" HeightRequest="200" CachingStrategy="RecycleElement">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <TextCell Text="{Binding .}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Events ListView -->
+            <Border Stroke="Gray" Padding="10" StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Text="Events ListView" FontAttributes="Bold" VerticalOptions="Center"/>
+                        <Button Grid.Column="1" Text="Refresh" Command="{Binding EventsRefreshCommand}" 
+                                FontSize="10" Padding="5" HeightRequest="30"/>
+                    </Grid>
+                    <Label Text="Logs events: ItemSelected, ItemTapped, Appearing, Disappearing, Scrolled. Also tests programmatic refresh." 
+                           FontSize="12" FontAttributes="Italic"/>
+                    <ListView x:Name="EventsListView"
+                              ItemsSource="{Binding EventItems}"
+                              IsPullToRefreshEnabled="True"
+                              IsRefreshing="{Binding IsEventsRefreshing}"
+                              RefreshCommand="{Binding EventsRefreshCommand}"
+                              ItemSelected="OnItemSelected"
+                              ItemTapped="OnItemTapped"
+                              ItemAppearing="OnItemAppearing"
+                              ItemDisappearing="OnItemDisappearing"
+                              Scrolled="OnScrolled"
+                              HeightRequest="150"/>
+                    <Label Text="Event Logs:" FontAttributes="Bold" Margin="0,10,0,0" />
+                    <Label x:Name="EventLogLabel" Text="No events yet" HeightRequest="80" LineBreakMode="WordWrap" />
+                </VerticalStackLayout>
+            </Border>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

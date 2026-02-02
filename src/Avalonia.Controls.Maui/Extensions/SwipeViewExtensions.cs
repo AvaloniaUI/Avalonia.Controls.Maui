@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Microsoft.Maui;
@@ -200,6 +201,13 @@ public static class SwipeViewExtensions
 
                     // Tag used for auto-close behavior
                     avaloniaControl.Tag = (swipeItems.SwipeBehaviorOnInvoked, owner);
+
+                    // Ensure the control is not already parented before adding it to a new panel
+                    // This can happen when the SwipeView is recycled or re-materialized
+                    if (avaloniaControl.Parent is Panel oldPanel)
+                    {
+                        oldPanel.Children.Remove(avaloniaControl);
+                    }
 
                     if (panel is Grid grid)
                     {
