@@ -1,5 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace ControlGallery.Pages
 {
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "MAUI XAML loader usage is unavoidable here.")]
+    [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "MAUI XAML loader usage is unavoidable here.")]
     public partial class EntryPage : ContentPage
     {
         public System.Windows.Input.ICommand ReturnCommand { get; }

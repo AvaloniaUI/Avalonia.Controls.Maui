@@ -1,6 +1,7 @@
 using Avalonia.Controls.Maui.Controls;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
+using System.Diagnostics.CodeAnalysis;
 using AvaloniaTextBox = Avalonia.Controls.TextBox;
 using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
 using AvaloniaVerticalAlignment = Avalonia.Layout.VerticalAlignment;
@@ -18,6 +19,7 @@ public static class EntryExtensions
     /// </summary>
     /// <param name="textBox">The Avalonia TextBox.</param>
     /// <param name="entry">The .NET MAUI Entry.</param>
+    [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Reflection-based access to TextTransform is used for non-standard MAUI Entry types.")]
     public static void UpdateText(this AvaloniaTextBox textBox, IEntry entry)
     {
         var text = entry.Text;
