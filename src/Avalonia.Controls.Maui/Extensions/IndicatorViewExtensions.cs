@@ -180,8 +180,8 @@ public static class IndicatorViewExtensions
                 if (mauiView == null)
                     return CreateDefaultIndicator(platformView, isSelected);
 
-                // Set the binding context
-                mauiView.BindingContext = new IndicatorTemplateContext { Index = index, IsSelected = isSelected };
+                // Set the binding context with KeyValuePair (Key=Index, Value=IsSelected) to support AOT without custom types
+                mauiView.BindingContext = new KeyValuePair<int, bool>(index, isSelected);
 
                 // Convert to platform control
                 var platformControl = (Control)mauiView.ToPlatform(mauiContext);

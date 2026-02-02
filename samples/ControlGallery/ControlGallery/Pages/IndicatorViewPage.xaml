@@ -1,6 +1,5 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:platform="clr-namespace:Avalonia.Controls.Maui.Platform;assembly=Avalonia.Controls.Maui"
              x:Class="ControlGallery.Pages.IndicatorViewPage"
              Title="IndicatorView">
     <ScrollView>
@@ -300,19 +299,19 @@
                                        Position="2"
                                        HorizontalOptions="Center">
                             <IndicatorView.IndicatorTemplate>
-                                <DataTemplate x:DataType="platform:IndicatorTemplateContext">
+                                <DataTemplate x:DataType="KeyValuePair(x:Int32, x:Boolean)">
                                     <Frame CornerRadius="12"
                                            Padding="10,6"
                                            HasShadow="False"
                                            BorderColor="Transparent">
                                         <Frame.Triggers>
                                             <DataTrigger TargetType="Frame"
-                                                         Binding="{Binding IsSelected}"
+                                                         Binding="{Binding Value}"
                                                          Value="True">
                                                 <Setter Property="BackgroundColor" Value="#4CAF50" />
                                             </DataTrigger>
                                             <DataTrigger TargetType="Frame"
-                                                         Binding="{Binding IsSelected}"
+                                                         Binding="{Binding Value}"
                                                          Value="False">
                                                 <Setter Property="BackgroundColor" Value="#E0E0E0" />
                                             </DataTrigger>
@@ -323,15 +322,15 @@
                                                VerticalOptions="Center">
                                             <Label.Triggers>
                                                 <DataTrigger TargetType="Label"
-                                                             Binding="{Binding IsSelected}"
+                                                             Binding="{Binding Value}"
                                                              Value="True">
-                                                    <Setter Property="Text" Value="{Binding Index}" />
+                                                    <Setter Property="Text" Value="{Binding Key}" />
                                                     <Setter Property="TextColor" Value="White" />
                                                 </DataTrigger>
                                                 <DataTrigger TargetType="Label"
-                                                             Binding="{Binding IsSelected}"
+                                                             Binding="{Binding Value}"
                                                              Value="False">
-                                                    <Setter Property="Text" Value="{Binding Index}" />
+                                                    <Setter Property="Text" Value="{Binding Key}" />
                                                     <Setter Property="TextColor" Value="#666666" />
                                                 </DataTrigger>
                                             </Label.Triggers>
