@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Avalonia.Platform;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
 using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Maui.Platform;
@@ -412,6 +411,8 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     partial class ImageImageSourcePartSetter : ImageSourcePartSetter<ImageHandler>
     {
         public ImageImageSourcePartSetter(ImageHandler handler) : base(handler) { }
+#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
         public override void SetImageSource(object? platformImage) { /* Handled by manual loaders */ }
+#endif
     }
 }

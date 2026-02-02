@@ -32,7 +32,7 @@ public class AvaloniaDispatcherTimer : IDispatcherTimer
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the timer should repeat after each tick.
+    /// Gets or sets a value indicating whether the timer repeats after each tick.
     /// </summary>
     public bool IsRepeating { get; set; } = true;
 

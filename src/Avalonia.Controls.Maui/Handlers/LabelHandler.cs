@@ -5,7 +5,6 @@ using Avalonia.Media;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Handlers;
 using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
 using AvaloniaThickness = Avalonia.Thickness;
 using MauiLabel = Microsoft.Maui.Controls.Label;
@@ -375,8 +374,8 @@ public static class LabelTextBlockExtensions
         var font = span.ToFont();
         if (!font.IsDefault)
         {
-            run.FontSize = fontManager.GetFontSize(font);
-            run.FontFamily = fontManager.GetFontFamily(font);
+            run.FontSize = fontManager.GetFontSizeAsDouble(font);
+            run.FontFamily = Avalonia.Controls.Maui.FontManagerExtensions.GetFontFamily(fontManager, font);
             run.FontStyle = FontManager.ToAvaloniaFontStyle(font.Slant);
             run.FontWeight = FontManager.ToAvaloniaFontWeight(font.Weight);
         }

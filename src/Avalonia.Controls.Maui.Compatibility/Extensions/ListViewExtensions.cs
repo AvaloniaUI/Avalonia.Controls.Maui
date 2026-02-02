@@ -2,6 +2,8 @@ using Avalonia.Controls.Maui.Compatibility.Handlers;
 using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Microsoft.Maui.Controls;
+using Avalonia.Controls.Maui.Handlers;
+using ListView = Microsoft.Maui.Controls.ListView;
 
 namespace Avalonia.Controls.Maui.Compatibility;
 

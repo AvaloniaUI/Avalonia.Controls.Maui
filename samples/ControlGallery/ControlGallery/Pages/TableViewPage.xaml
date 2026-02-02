@@ -7,7 +7,7 @@
              Title="TableView">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="TableView Control"
+            <Label Text="TableView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
@@ -18,7 +18,7 @@
                     <RoundRectangle CornerRadius="8"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="4">
-                    <Label Text="Deprecated Control" 
+                    <Label Text="Deprecated" 
                            FontAttributes="Bold" 
                            TextColor="#856404"/>
                     <Label Text="TableView and its cells (TextCell, SwitchCell, EntryCell, ImageCell, ViewCell) are deprecated in .NET MAUI 9+. Use CollectionView instead for new development."
@@ -41,8 +41,8 @@
                                           Detail="Learn about .NET MAUI and what it provides."/>
                                 <TextCell Text="2. Anatomy of an app"
                                           Detail="Learn about the visual elements in .NET MAUI"/>
-                                <TextCell Text="3. Text controls"
-                                          Detail="Learn about the .NET MAUI controls that display text."/>
+                                <TextCell Text="3. Text display"
+                                          Detail="Learn about the .NET MAUI elements that display text."/>
                             </TableSection>
                         </TableRoot>
                     </TableView>

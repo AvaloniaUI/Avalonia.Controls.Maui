@@ -1,6 +1,5 @@
 using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using PlatformView = Avalonia.Controls.Maui.ProgressRing;
 
 namespace Avalonia.Controls.Maui.Handlers;

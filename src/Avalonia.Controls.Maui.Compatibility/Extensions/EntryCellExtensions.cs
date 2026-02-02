@@ -73,11 +73,7 @@ public static class EntryCellExtensions
             _ => Media.TextAlignment.Left
         };
     }
-    /// <summary>
-    /// Updates the keyboard input scope from the <see cref="EntryCell"/>.
-    /// </summary>
-    /// <param name="platformView">The platform view.</param>
-    /// <param name="cell">The MAUI cell.</param>
+
     /// <summary>
     /// Updates the keyboard input scope from the <see cref="EntryCell"/>.
     /// </summary>

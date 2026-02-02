@@ -1,4 +1,5 @@
 using Microsoft.Maui;
+using Microsoft.Maui.Handlers;
 using System;
 using PlatformView = Avalonia.Controls.Control;
 

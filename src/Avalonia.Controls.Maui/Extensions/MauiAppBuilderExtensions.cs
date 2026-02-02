@@ -70,6 +70,9 @@ public static class MauiAppBuilderExtensions
             return new Avalonia.Controls.Maui.Dispatching.AvaloniaDispatcher(avaloniaDispatcher);
         });
 
+        // Register MAUI FontManager for native fallbacks.
+        builder.Services.AddSingleton<Microsoft.Maui.FontManager>(svcs => new Microsoft.Maui.FontManager(svcs.GetRequiredService<IFontRegistrar>(), svcs));
+
         // Register Avalonia-specific font services
         // Replace existing registrations to ensure our Avalonia implementations are used
         var fontRegistrar = new Avalonia.Controls.Maui.AvaloniaMauiFontRegistrar();

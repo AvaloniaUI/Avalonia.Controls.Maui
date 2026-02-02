@@ -3,7 +3,7 @@
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <Version Condition="'$(Version)' == ''">12.0.0</Version>
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0060555-alpha</AvaloniaVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0061513-alpha</AvaloniaVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net10.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
         <BuildDirectory>$(MSBuildThisFileDirectory)/build/</BuildDirectory>
@@ -16,6 +16,14 @@
         <AddMauiInternals>false</AddMauiInternals>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
+    </PropertyGroup>
+
+    <!-- Min Versions -->
+    <PropertyGroup>
+        <MinAndroidVersion>24.0</MinAndroidVersion>
+        <MinIOSVersion>15.0</MinIOSVersion>
+        <MinCatalystVersion>15.0</MinCatalystVersion>
+        <MinWindowsVersion>10.0.17763.0</MinWindowsVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net10.0'">

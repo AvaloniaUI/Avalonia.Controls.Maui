@@ -1,6 +1,5 @@
 using System;
 using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
 using PlatformView = Avalonia.Controls.Maui.Stepper;
 
 namespace Avalonia.Controls.Maui.Handlers;

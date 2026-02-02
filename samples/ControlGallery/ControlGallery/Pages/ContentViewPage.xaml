@@ -8,7 +8,7 @@
              Title="ContentView">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="ContentView Control"
+            <Label Text="ContentView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />

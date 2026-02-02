@@ -157,7 +157,7 @@ public static class ShapeViewExtensions
     /// </summary>
     /// <param name="platformView">Avalonia shape instance.</param>
     /// <param name="shapeView">The virtual shape view.</param>
-    [NotImplemented("Avalonia Shape doesn't expose StrokeMiterLimit property.")]
+    [Avalonia.Controls.Maui.Platform.NotImplemented("Avalonia Shape doesn't expose StrokeMiterLimit property.")]
     public static void UpdateStrokeMiterLimit(this PlatformShape platformView, IShapeView shapeView)
     {
         

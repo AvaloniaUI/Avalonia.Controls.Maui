@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0-android</TargetFramework>
-		<SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
+		<TargetFramework>$(DotNetTfm)-android</TargetFramework>
+		<SupportedOSPlatformVersion>$(MinAndroidVersion)</SupportedOSPlatformVersion>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>AlohaKit.Gallery</RootNamespace>
 		<Nullable>enable</Nullable>

@@ -166,7 +166,7 @@ public class FlyoutContainer : Panel
     }
 
     /// <summary>
-    /// Determines if the current behavior and orientation should use split mode
+    /// Determines if the current behavior and orientation use split mode
     /// </summary>
     private bool IsSplitMode()
     {

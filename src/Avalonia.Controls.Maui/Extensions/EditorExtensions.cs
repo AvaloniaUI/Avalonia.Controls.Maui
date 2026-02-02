@@ -236,7 +236,7 @@ namespace Avalonia.Controls.Maui.Extensions
         /// </summary>
         /// <param name="textBox">The platform text box.</param>
         /// <param name="editor">The virtual view.</param>
-        [NotImplemented("Avalonia TextBox does not currently support disabling spell check.")]
+        [Avalonia.Controls.Maui.Platform.NotImplementedAttribute("Avalonia TextBox does not currently support disabling spell check.")]
         public static void UpdateEditorIsSpellCheckEnabled(this AvaloniaTextBox textBox, IEditor editor)
         {
              // Not supported
