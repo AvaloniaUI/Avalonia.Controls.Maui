@@ -40,6 +40,7 @@ public partial class MainPage : FlyoutPage
         [typeof(CollectionViewPage)] = () => new CollectionViewPage(),
         [typeof(ContentViewPage)] = () => new ContentViewPage(),
         [typeof(DatePickerPage)] = () => new DatePickerPage(),
+        [typeof(EntryPage)] = () => new EntryPage(),
         [typeof(EditorPage)] = () => new EditorPage(),
         [typeof(FramePage)] = () => new FramePage(),
         [typeof(GraphicsViewPage)] = () => new GraphicsViewPage(),
