@@ -43,10 +43,10 @@ public partial class CollectionViewPage : ContentPage
         }
     }
 
-    // Empty view items - observable for dynamic add/remove
+    // Empty view items using observable collection for dynamic updates
     public ObservableCollection<string> EmptyViewItems { get; } = new();
 
-    // Empty view template items - observable for dynamic add/remove
+    // Empty view template items using observable collection for dynamic updates
     public ObservableCollection<string> EmptyViewTemplateItems { get; } = new();
 
     // Grouped animals
@@ -94,7 +94,7 @@ public partial class CollectionViewPage : ContentPage
         "Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"
     };
 
-    // Infinite scroll items - observable for dynamic loading
+    // Infinite scroll items using observable collection for dynamic loading
     public ObservableCollection<string> InfiniteScrollItems { get; } = new();
     private bool _isLoadingMore = false;
     private int _infiniteScrollBatch = 0;
@@ -334,7 +334,7 @@ public partial class CollectionViewPage : ContentPage
 
     private async void OnLoadMoreItems(object? sender, EventArgs e)
     {
-        if (_isLoadingMore || _infiniteScrollBatch >= 5) // Limit to 5 batches (100 items total)
+        if (_isLoadingMore || _infiniteScrollBatch >= 5) // Limit to 5 batches or 100 items total
             return;
 
         _isLoadingMore = true;
@@ -357,7 +357,7 @@ public partial class CollectionViewPage : ContentPage
 
     private void OnScrollToIndex(object? sender, EventArgs e)
     {
-        // Treat input as 1-based for user intuitiveness (Item 1 = index 0)
+        // Use 1-based input for user intuitiveness where Item 1 corresponds to index 0
         if (int.TryParse(ScrollIndexEntry.Text, out int itemNumber) && itemNumber >= 1 && itemNumber <= LargeList.Count)
         {
             var index = itemNumber - 1;

@@ -18,7 +18,7 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="Frame Control"
+            <Label Text="Frame"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
@@ -29,7 +29,7 @@
                     <RoundRectangle CornerRadius="8"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="4">
-                    <Label Text="Deprecated Control" 
+                    <Label Text="Deprecated" 
                            FontAttributes="Bold" 
                            TextColor="#856404"/>
                     <Label Text="Frame is deprecated in .NET MAUI 9+. Use Border instead for new development."

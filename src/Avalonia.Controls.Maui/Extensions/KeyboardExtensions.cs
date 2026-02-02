@@ -29,7 +29,7 @@ public static class KeyboardExtensions
         {
             contentType = TextInputContentType.Url;
         }
-         if (keyboard == Microsoft.Maui.Keyboard.Telephone)
+        else if (keyboard == Microsoft.Maui.Keyboard.Telephone)
         {
             contentType = TextInputContentType.Digits;
         }
@@ -44,6 +44,44 @@ public static class KeyboardExtensions
 
         // Set the content type hint
         TextInputOptions.SetContentType(textBox, contentType);
+
+        // Configure auto-capitalization based on keyboard type
+        var autoCapitalize = keyboard != Microsoft.Maui.Keyboard.Plain && 
+                             keyboard != Microsoft.Maui.Keyboard.Email && 
+                             keyboard != Microsoft.Maui.Keyboard.Url;
+        TextInputOptions.SetAutoCapitalization(textBox, autoCapitalize);
+
+        // Configure suggestions. Chat keyboard shows suggestions; Plain keyboard does not.
+        bool? showSuggestions = null;
+        if (keyboard == Microsoft.Maui.Keyboard.Chat)
+            showSuggestions = true;
+        else if (keyboard == Microsoft.Maui.Keyboard.Plain)
+            showSuggestions = false;
+        
+        TextInputOptions.SetShowSuggestions(textBox, showSuggestions);
+    }
+
+    /// <summary>
+    /// Converts a .NET MAUI <see cref="Microsoft.Maui.Keyboard"/> to an Avalonia <see cref="TextInputContentType"/>.
+    /// </summary>
+    /// <param name="keyboard">The MAUI Keyboard.</param>
+    /// <returns>The corresponding Avalonia TextInputContentType.</returns>
+    public static TextInputContentType ToTextInputContentType(this Microsoft.Maui.Keyboard keyboard)
+    {
+        if (keyboard == Microsoft.Maui.Keyboard.Email)
+            return TextInputContentType.Email;
+        
+        if (keyboard == Microsoft.Maui.Keyboard.Numeric)
+            return TextInputContentType.Number;
+        
+        if (keyboard == Microsoft.Maui.Keyboard.Telephone)
+            return TextInputContentType.Digits;
+        
+        if (keyboard == Microsoft.Maui.Keyboard.Url)
+            return TextInputContentType.Url;
+        
+        // Text, Chat, Plain, and Default all map to Normal
+        return TextInputContentType.Normal;
     }
 
     /// <summary>

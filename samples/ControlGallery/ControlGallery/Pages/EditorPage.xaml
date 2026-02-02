@@ -6,7 +6,7 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="Editor Control" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+            <Label Text="Editor" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
 
             <!-- Basic Editor -->
             <Border Stroke="Gray" Padding="10">

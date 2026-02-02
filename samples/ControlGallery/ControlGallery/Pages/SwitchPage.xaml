@@ -9,7 +9,7 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="Switch Control"
+            <Label Text="Switch"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />

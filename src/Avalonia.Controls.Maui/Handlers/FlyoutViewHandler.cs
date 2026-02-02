@@ -13,7 +13,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// </summary>
 public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
 {
-    // Like IViewHandler.ContainerView, those properties should be set with priority because other mappers depend on them.
+    // Properties are set with priority because other mappers depend on them.
     private static readonly IPropertyMapper<IFlyoutView, FlyoutViewHandler> FlyoutLayoutMapper = new PropertyMapper<IFlyoutView, FlyoutViewHandler>()
     {
         [nameof(IFlyoutView.Flyout)] = MapFlyout,
@@ -150,7 +150,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
         }
         else if (flyoutView.FlyoutWidth == -1)
         {
-            // -1 means auto/match parent, use a reasonable default
+            // A value of -1 denotes auto or match parent; a default of 320 is applied.
             platformView.FlyoutWidth = 320;
         }
     }

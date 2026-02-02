@@ -10,7 +10,7 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="RefreshView Control"
+            <Label Text="RefreshView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>
@@ -22,7 +22,7 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="RefreshView State Control"
+                    <Label Text="RefreshView State"
                            FontAttributes="Bold"/>
                     <Label Text="Pull down to refresh or use the controls below (desktop friendly)."
                            FontSize="12"/>
