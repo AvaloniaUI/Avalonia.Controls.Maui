@@ -377,9 +377,9 @@ public class CellTypeItem
 {
     public string? Name { get; set; }
     public string? Detail { get; set; }
-    public bool IsToggled { get; set; } // For SwitchCell
-    public string? Placeholder { get; set; } // For EntryCell
-    public string? Type { get; set; } // "Text", "Image", "Switch", "Entry", "View"
+    public bool IsToggled { get; set; } // SwitchCell state
+    public string? Placeholder { get; set; } // EntryCell placeholder
+    public string? Type { get; set; } // Cell type: Text, Image, Switch, Entry, View
 }
 
 public class ListViewGroup : ObservableCollection<ItemModel>

@@ -94,7 +94,7 @@
                     <RoundRectangle CornerRadius="8"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="4">
-                    <Label Text="Deprecated Control" 
+                    <Label Text="Deprecated" 
                            FontAttributes="Bold" 
                            TextColor="#856404"/>
                     <Label Text="ListView is deprecated in .NET MAUI 9+. Use CollectionView instead for new development."

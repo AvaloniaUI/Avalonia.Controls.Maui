@@ -8,7 +8,7 @@
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="16">
-            <Label Text="ScrollView Control"
+            <Label Text="ScrollView"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />

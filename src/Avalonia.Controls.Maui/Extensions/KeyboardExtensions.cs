@@ -34,7 +34,7 @@ public static class KeyboardExtensions
                              keyboard != Keyboard.Url;
         TextInputOptions.SetAutoCapitalization(textBox, autoCapitalize);
 
-        // Configure suggestions. Chat keyboard should show suggestions, Plain should not
+        // Configure suggestions. Chat keyboard shows suggestions; Plain keyboard does not.
         bool? showSuggestions = null;
         if (keyboard == Keyboard.Chat)
             showSuggestions = true;

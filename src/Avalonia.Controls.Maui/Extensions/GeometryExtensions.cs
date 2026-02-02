@@ -15,9 +15,9 @@ namespace Avalonia.Controls.Maui.Extensions;
 /// </para>
 /// <para><b>Conversion Strategy:</b></para>
 /// <list type="bullet">
-///   <item>Preserves geometry properties (coordinates, radii, corner radii, etc.)</item>
-///   <item>Converts complex path definitions to SVG-compatible path data strings</item>
-///   <item>Handles nested geometry groups recursively</item>
+///   <item>Coordinates, radii, and corner radii are preserved</item>
+///   <item>Complex path definitions convert to SVG-compatible path data strings</item>
+///   <item>Nested geometry groups are handled recursively</item>
 ///   <item>Returns null for unsupported geometry types or invalid configurations</item>
 /// </list>
 /// </remarks>
@@ -91,8 +91,8 @@ public static class GeometryExtensions
     ///     Uses the maximum of (TopLeft, TopRight, BottomLeft, BottomRight) to ensure
     ///     all corners are at least as rounded as specified.
     ///     <br/>
-    ///     <b>Returns null if no Rect specified</b> - This signals to the caller (e.g., UpdateClip)
-    ///     that bounds-based sizing should be used instead.
+    ///     <b>Returns null if no Rect is specified</b>. This signals to the caller
+    ///     that bounds-based sizing is used instead.
     ///     </description>
     ///   </item>
     ///   <item>
@@ -138,14 +138,14 @@ public static class GeometryExtensions
     ///     CornerRadius = new CornerRadius(20)
     /// };
     /// var result = mauiRoundRect2.ToPlatform();
-    /// // Returns: null (caller should use container bounds)
+    /// // Returns: null (caller uses container bounds)
     /// </code>
     ///
     /// <para><b>Performance Considerations:</b></para>
     /// <list type="bullet">
-    ///   <item>Simple geometries (Line, Rectangle, Ellipse) - Fast, direct object creation</item>
-    ///   <item>PathGeometry - Moderate, requires string building and parsing</item>
-    ///   <item>GeometryGroup - Performance depends on number and complexity of children</item>
+    ///   <item>Simple geometries (Line, Rectangle, Ellipse) provide fast, direct object creation</item>
+    ///   <item>PathGeometry requires string building and parsing</item>
+    ///   <item>GeometryGroup performance depends on number and complexity of children</item>
     /// </list>
     /// </remarks>
     /// <seealso cref="Microsoft.Maui.Controls.Shapes.Geometry"/>
@@ -210,7 +210,7 @@ public static class GeometryExtensions
 
             // Check if an explicit Rect was provided
             // If yes: Create geometry with that rect
-            // If no: Return null to signal caller should use container bounds
+            // If no: Return null to signal that container bounds are used
             if (roundRectGeometry.Rect is { Width: > 0, Height: > 0 } rect)
             {
                 return new global::Avalonia.Media.RectangleGeometry(
@@ -219,8 +219,8 @@ public static class GeometryExtensions
                     radius); // radiusY (vertical)
             }
 
-            // No explicit Rect property means this should adapt to container bounds
-            // Return null to signal that UpdateClip or similar method needs to provide bounds
+            // No explicit Rect property means this adapts to container bounds
+            // Return null to signal that UpdateClip or similar method provides bounds
             // Example XAML: <RoundRectangleGeometry CornerRadius="20" /> without Rect property
             return null;
         }

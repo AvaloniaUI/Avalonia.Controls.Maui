@@ -14,7 +14,7 @@
             <Border Stroke="Gray" Padding="20">
                 <VerticalStackLayout Spacing="20">
                     <Label Text="Basic Tooltips" FontAttributes="Bold" FontSize="18"/>
-                    <Label Text="Tooltips provide helpful hints when hovering over controls." TextColor="Gray"/>
+                    <Label Text="Tooltips provide helpful hints when hovering over elements." TextColor="Gray"/>
                     
                     <HorizontalStackLayout Spacing="15" HorizontalOptions="Center">
                         <Button Text="Save" 
@@ -35,10 +35,10 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Tooltips on Various Controls -->
+            <!-- Tooltips on Various elements -->
             <Border Stroke="Gray" Padding="20">
                 <VerticalStackLayout Spacing="15">
-                    <Label Text="Tooltips on Various Controls" FontAttributes="Bold" FontSize="18"/>
+                    <Label Text="Tooltips on Various elements" FontAttributes="Bold" FontSize="18"/>
                     
                     <Label Text="Hover over me!"
                            FontSize="16"
