@@ -1,5 +1,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sys="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
              x:Class="ControlGallery.Pages.IndicatorViewPage"
              Title="IndicatorView">
     <ScrollView>
@@ -299,7 +300,7 @@
                                        Position="2"
                                        HorizontalOptions="Center">
                             <IndicatorView.IndicatorTemplate>
-                                <DataTemplate x:DataType="KeyValuePair(x:Int32, x:Boolean)">
+                                <DataTemplate x:DataType="sys:KeyValuePair(x:Int32, x:Boolean)">
                                     <Frame CornerRadius="12"
                                            Padding="10,6"
                                            HasShadow="False"
