@@ -7,12 +7,12 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="Picker Control"
+            <Label Text="Picker"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
 
-            <Label Text="The Title property displays a header above the Picker control, and TitleColor allows customizing its color."
+            <Label Text="The Title property displays a header above the Picker, and TitleColor allows customizing its color."
                    FontSize="14"
                    TextColor="Gray"
                    HorizontalOptions="Center"

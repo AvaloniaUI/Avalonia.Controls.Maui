@@ -233,7 +233,7 @@ public static class ViewExtensions
     /// </summary>
     /// <param name="control">The platform view to unfocus.</param>
     /// <param name="view">The .NET MAUI view associated with the control.</param>
-    /// <remarks>Implementation pending - unfocus logic needs to be added.</remarks>
+    /// <remarks>Implementation pending. Unfocus logic requires addition.</remarks>
     public static void Unfocus(this PlatformView control, IView view)
     {
         var topLevel = TopLevel.GetTopLevel(control);
@@ -342,10 +342,10 @@ public static class ViewExtensions
     /// <remarks>
     /// <para><b>Supported Clip Geometries:</b></para>
     /// <list type="bullet">
-    ///   <item>RectangleGeometry - Sharp rectangular clip</item>
-    ///   <item>RoundRectangleGeometry - Rounded corners (uses largest corner radius)</item>
-    ///   <item>EllipseGeometry - Elliptical/circular clip</item>
-    ///   <item>PathGeometry - Custom path-based clipping via ToPlatform()</item>
+    ///   <item>RectangleGeometry with sharp rectangular clip</item>
+    ///   <item>RoundRectangleGeometry with rounded corners</item>
+    ///   <item>EllipseGeometry with elliptical or circular clip</item>
+    ///   <item>PathGeometry with custom path-based clipping via ToPlatform()</item>
     /// </list>
     /// <para><b>Timing Issue (Known Bug):</b></para>
     /// When the window is initially large, controls may not have their bounds calculated yet,
@@ -357,9 +357,7 @@ public static class ViewExtensions
     ///   <item>Resizing the window triggers a new layout pass, which fires the event</item>
     /// </list>
     /// <para><b>Workaround:</b></para>
-    /// The method uses a PropertyChangedSubscription to automatically retry when bounds
-    /// become available. If clips don't appear initially, they should render after the
-    /// first layout pass or window resize.
+    /// become available. Visual clips render after the first layout pass or window resize if not initially present.
     /// </remarks>
     public static void UpdateClip(this PlatformView control, IView view)
     {
@@ -374,7 +372,7 @@ public static class ViewExtensions
         }
 
         // Attempt to get control dimensions from various sources
-        // This tries: control.Bounds → view.Width/Height → view.Frame → control.DesiredSize
+        // Resolve control size from Bounds, Width/Height properties, Frame, or DesiredSize
         var (width, height) = GetClipSize(control, view);
 
         if (width <= 0 || height <= 0)
@@ -404,7 +402,7 @@ public static class ViewExtensions
             SetClipSubscription(control, subscription);
 
             // POTENTIAL FIX: Force a layout pass to ensure bounds get calculated
-            // This should trigger the BoundsProperty change we're subscribed to above
+            // Triggers the BoundsProperty change subscription.
             // Note: InvalidateMeasure may not immediately solve the issue if the parent
             // container hasn't been measured yet, but it helps in many cases
             control.InvalidateMeasure();
@@ -429,7 +427,7 @@ public static class ViewExtensions
         {
             // RoundRectangleGeometry without explicit Rect - use container bounds
             // This happens when XAML has <RoundRectangleGeometry CornerRadius="32" />
-            // without a Rect property, meaning it should clip to the container's bounds
+            // without a Rect property, meaning it clips to the container bounds
             var radius = Math.Max(
                 roundRect.CornerRadius.TopLeft,
                 Math.Max(
@@ -458,17 +456,17 @@ public static class ViewExtensions
     /// <remarks>
     /// <para><b>Size Source Priority (fallback chain):</b></para>
     /// <list type="number">
-    ///   <item><b>control.Bounds</b> - Most reliable, from Avalonia's layout system</item>
-    ///   <item><b>view.Width/Height</b> - Explicit MAUI size properties</item>
-    ///   <item><b>view.Frame</b> - MAUI's calculated frame rectangle</item>
-    ///   <item><b>control.DesiredSize</b> - Avalonia's measure pass result</item>
+    ///   <item>control.Bounds from Avalonia's layout system</item>
+    ///   <item>view.Width/Height explicit MAUI size properties</item>
+    ///   <item>view.Frame MAUI calculated frame rectangle</item>
+    ///   <item>control.DesiredSize Avalonia measure pass result</item>
     /// </list>
-    /// <para><b>Why Multiple Sources?</b></para>
+    /// <para><b>Sizing Sources</b></para>
     /// Different layout phases provide size information at different times:
     /// <list type="bullet">
     ///   <item>Early: DesiredSize available after measure pass</item>
-    ///   <item>Middle: Width/Height if explicitly set in XAML/code</item>
-    ///   <item>Late: Bounds available after arrange pass (most reliable)</item>
+    ///   <item>Middle: Width/Height explicitly set in XAML or code</item>
+    ///   <item>Late: Bounds available after arrange pass</item>
     /// </list>
     /// <para><b>Common Failure Scenario:</b></para>
     /// On initial load with wide windows, none of these sources may have valid values yet,
@@ -555,31 +553,31 @@ public static class ViewExtensions
     /// <param name="control">The platform view to apply the shadow to.</param>
     /// <param name="view">The .NET MAUI view containing shadow configuration.</param>
     /// <remarks>
-    /// <para><b>How it works:</b></para>
+    /// <para><b>Functionality</b></para>
     /// <list type="number">
-    ///   <item>Converts MAUI's IShadow to Avalonia's DropShadowEffect via ToAvalonia() extension</item>
+    ///   <item>Converts IShadow to DropShadowEffect using ToAvalonia()</item>
     ///   <item>Maps shadow properties:
     ///     <list type="bullet">
-    ///       <item>Shadow.Paint.Color → DropShadowEffect.Color (with opacity applied)</item>
-    ///       <item>Shadow.Offset.X/Y → DropShadowEffect.OffsetX/OffsetY</item>
-    ///       <item>Shadow.Radius → DropShadowEffect.BlurRadius</item>
+    ///       <item>Shadow.Paint.Color to DropShadowEffect.Color</item>
+    ///       <item>Shadow.Offset to DropShadowEffect Offset</item>
+    ///       <item>Shadow.Radius to DropShadowEffect.BlurRadius</item>
     ///     </list>
     ///   </item>
-    ///   <item>If shadow is null, clears the effect to remove any existing shadow</item>
-    ///   <item>Applies the effect to control.Effect property (GPU-accelerated rendering)</item>
+    ///   <item>Clears the effect if shadow is null</item>
+    ///   <item>Applies the effect to control.Effect property</item>
     /// </list>
-    /// <para><b>Implementation details:</b></para>
+    /// <para><b>Implementation Details</b></para>
     /// <list type="bullet">
-    ///   <item>Uses Avalonia's IEffect system for efficient shadow rendering</item>
-    ///   <item>DropShadowEffect is GPU-accelerated when possible</item>
-    ///   <item>Shadow opacity is combined with paint color alpha channel</item>
-    ///   <item>Only SolidPaint is supported; gradient shadows default to black</item>
+    ///   <item>Uses the IEffect system for efficient rendering</item>
+    ///   <item>Provides GPU acceleration for DropShadowEffect</item>
+    ///   <item>Combines shadow opacity with paint color alpha channel</item>
+    ///   <item>Supports SolidPaint; gradient shadows default to black</item>
     /// </list>
-    /// <para><b>Performance notes:</b></para>
+    /// <para><b>Performance</b></para>
     /// <list type="bullet">
-    ///   <item>Shadows can impact rendering performance, especially with large blur radius</item>
-    ///   <item>Effect is applied to the container view when NeedsContainer is true</item>
-    ///   <item>Changes are immediate; no animation or transitions</item>
+    ///   <item>Large blur radius can impact rendering performance</item>
+    ///   <item>Applies to the container view when NeedsContainer is true</item>
+    ///   <item>Updates are immediate</item>
     /// </list>
     /// </remarks>
     /// <example>
@@ -652,7 +650,7 @@ public static class ViewExtensions
     /// <param name="imageSource">The image source to set as background.</param>
     /// <param name="provider">The image source service provider.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    /// <remarks>Implementation pending - image background logic needs to be added.</remarks>
+    /// <remarks>Implementation pending. Image background logic requires addition.</remarks>
     [Avalonia.Controls.Maui.Platform.NotImplemented("Pending to implement image background logic.")]
     public static Task UpdateBackgroundImageSourceAsync(this PlatformView control, IImageSource? imageSource, IImageSourceServiceProvider provider)
     {
@@ -665,7 +663,7 @@ public static class ViewExtensions
     /// </summary>
     /// <param name="control">The platform view to update.</param>
     /// <param name="view">The .NET MAUI view containing border properties.</param>
-    /// <remarks>Implementation pending - border logic needs to be added.</remarks>
+    /// <remarks>Implementation pending. Border logic requires addition.</remarks>
     [Avalonia.Controls.Maui.Platform.NotImplemented("Type or member is obsolete.")]
     public static void UpdateBorder(this PlatformView control, IView view)
     {

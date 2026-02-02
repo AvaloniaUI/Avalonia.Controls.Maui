@@ -123,6 +123,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         };
         _flyoutGrid.Children.Add(_flyoutPaneContainer);
 
+        // Flyout header docked to top
         _flyoutHeaderControl = new ContentControl
         {
             [DockPanel.DockProperty] = Dock.Top,
@@ -131,6 +132,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         };
         _flyoutPaneContainer.Children.Add(_flyoutHeaderControl);
 
+        // Flyout footer docked to bottom
         _flyoutFooterControl = new ContentControl
         {
             [DockPanel.DockProperty] = Dock.Bottom,
@@ -139,6 +141,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         };
         _flyoutPaneContainer.Children.Add(_flyoutFooterControl);
 
+        // Flyout items panel fills remaining space
         _flyoutPanel = new StackPanel
         {
             Spacing = DefaultFlyoutSpacing,

@@ -213,7 +213,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="FlexLayout.Grow Attached Property"
                            FontAttributes="Bold"/>
-                    <Label Text="Controls how items grow to fill available space"
+                    <Label Text="Determines how items grow to fill available space"
                            FontSize="12"
                            FontAttributes="Italic"/>
                     
@@ -344,7 +344,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="FlexLayout.Order Attached Property"
                            FontAttributes="Bold"/>
-                    <Label Text="Controls the visual order of items (default is 0)"
+                    <Label Text="Specifies the visual order of items (default is 0)"
                            FontSize="12"
                            FontAttributes="Italic"/>
                     

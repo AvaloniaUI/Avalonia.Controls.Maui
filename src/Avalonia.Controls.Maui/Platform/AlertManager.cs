@@ -69,7 +69,6 @@ internal class AlertManager
         /// <summary>
         /// Gets the platform host control that can contain overlays.
         /// For desktop apps, this is a Window.
-        /// For single-view apps (WASM/mobile), this is the MauiAvaloniaContent.
         /// </summary>
         static Control? GetPlatformHost(Page? page)
         {
@@ -246,7 +245,7 @@ internal class AlertManager
                      {
                          Background = new Avalonia.Media.SolidColorBrush(Media.Color.FromArgb(128, 0, 0, 0)) // Dim background
                      };
-                     dialogContainer.Children.Add(dialog); // Dialog UserControl should be Centered by itself
+                     dialogContainer.Children.Add(dialog); // Dialog UserControl center-aligns itself
                      
                      _dialogGrid?.Children.Add(dialogContainer);
                  });

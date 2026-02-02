@@ -26,8 +26,7 @@ public static class RefreshViewExtensions
     /// <param name="refreshView">The cross-platform refresh view.</param>
     /// <param name="mauiContext">The MAUI context for converting views.</param>
     /// <remarks>
-    /// The content should typically be a scrollable control such as ScrollView, CollectionView, or ListView
-    /// to enable pull-to-refresh gesture recognition.
+    /// Content is typically a scrollable control such as ScrollView, CollectionView, or ListView.
     /// </remarks>
     public static void UpdateContent(this PlatformView platformView, IRefreshView refreshView, IMauiContext? mauiContext)
     {
@@ -67,9 +66,13 @@ public static class RefreshViewExtensions
         IBrush? brush = refreshView.RefreshColor?.ToPlatform();
         
         if (brush != null)
+        {
             visualizer.Foreground = brush;
+        }
         else
+        {
             visualizer.ClearValue(Primitives.TemplatedControl.ForegroundProperty);
+        }
 
         if (visualizer is Visual visual)
         {

@@ -9,7 +9,7 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="ImageButton Control"
+            <Label Text="ImageButton"
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center"/>

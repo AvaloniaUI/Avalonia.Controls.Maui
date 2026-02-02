@@ -13,7 +13,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// </summary>
 public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
 {
-    // Like IViewHandler.ContainerView, those properties should be set with priority because other mappers depend on them.
+    // Properties are set with priority because other mappers depend on them.
     private static readonly IPropertyMapper<IFlyoutView, FlyoutViewHandler> FlyoutLayoutMapper = new PropertyMapper<IFlyoutView, FlyoutViewHandler>()
     {
         [nameof(IFlyoutView.Flyout)] = MapFlyout,

@@ -11,7 +11,7 @@ using ContentPresenter = Avalonia.Controls.Presenters.ContentPresenter;
 namespace Avalonia.Controls.Maui;
 
 // NOTE: This control is a temporary copy of the Swipe control from Avalonia.Labs.
-// It should be replaced with a package reference once PR https://github.com/AvaloniaUI/Avalonia.Labs/pull/130 is merged and released.
+// Replaced with a package reference upon release of PR https://github.com/AvaloniaUI/Avalonia.Labs/pull/130.
 
 /// <summary>
 /// A control that provides swipe gestures to reveal items behind the main content.
