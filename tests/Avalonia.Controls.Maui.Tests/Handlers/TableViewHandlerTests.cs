@@ -1,4 +1,4 @@
-using Avalonia.Controls.Maui.Handlers;
+using Avalonia.Controls.Maui.Compatibility.Handlers;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
 using Microsoft.Maui.Controls;
@@ -14,7 +14,7 @@ public class TableViewHandlerTests : HandlerTestBase<TableViewHandler, TableView
         var handler = await CreateHandlerAsync(tableView);
 
         Assert.NotNull(handler.PlatformView);
-        Assert.IsType<Avalonia.Controls.Maui.MauiTableView>(handler.PlatformView);
+        Assert.IsType<Avalonia.Controls.Maui.Compatibility.MauiTableView>(handler.PlatformView);
     }
 
     [AvaloniaFact(DisplayName = "Root Initializes Correctly")]

@@ -1,10 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui.Handlers;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using System.Reflection;
 
-namespace Avalonia.Controls.Maui.Handlers;
+namespace Avalonia.Controls.Maui.Compatibility.Handlers;
 
 public class ListViewHandler : ViewHandler<Microsoft.Maui.Controls.ListView, MauiListView>
 {

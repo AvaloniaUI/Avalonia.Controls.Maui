@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(DotNetTfm)</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
+    <IsAotCompatible>true</IsAotCompatible>
+    <AddMauiInternals>true</AddMauiInternals>
+    <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
+    <PackageDescription>Avalonia.Controls.Maui.Compatibility provides handlers for legacy/obsolete MAUI controls (ListView, Frame, TableView, Cells) using Avalonia-based implementations. These controls are provided for backward compatibility with apps porting from Xamarin.Forms.</PackageDescription>
+    <SignAssembly>true</SignAssembly>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+  </ItemGroup>
+</Project>
