@@ -1,6 +1,6 @@
 using Avalonia.Media;
 
-namespace Avalonia.Controls.Maui;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 /// <summary>
 /// Platform control for rendering a MAUI ViewCell.
