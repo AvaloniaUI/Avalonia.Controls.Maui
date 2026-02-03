@@ -3,7 +3,7 @@ using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 
-namespace Avalonia.Controls.Maui.Handlers.Cells;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 public class EntryCellHandler : ElementHandler<EntryCell, MauiEntryCell>
 {

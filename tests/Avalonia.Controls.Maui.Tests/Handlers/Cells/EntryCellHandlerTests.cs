@@ -1,4 +1,4 @@
-using Avalonia.Controls.Maui.Handlers.Cells;
+using Avalonia.Controls.Maui.Compatibility;
 using Avalonia.Headless.XUnit;
 using Microsoft.Maui.Controls;
 

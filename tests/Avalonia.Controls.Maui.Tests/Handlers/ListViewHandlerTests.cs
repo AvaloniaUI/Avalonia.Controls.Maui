@@ -1,16 +1,17 @@
 using System.Collections.ObjectModel;
-using Avalonia.Headless.XUnit;
+using Avalonia.Controls.Maui.Compatibility;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Headless.XUnit;
 using Microsoft.Maui.Controls;
-using AvaloniaListView = Avalonia.Controls.Maui.MauiListView;
+using AvaloniaListView = Avalonia.Controls.Maui.Compatibility.MauiListView;
 using AvaloniaSelectionMode = Avalonia.Controls.SelectionMode;
 using MauiBoxView = Microsoft.Maui.Controls.BoxView;
 using MauiDataTemplate = Microsoft.Maui.Controls.DataTemplate;
 using MauiLabel = Microsoft.Maui.Controls.Label;
+using MauiListViewHandler = Avalonia.Controls.Maui.Compatibility.Handlers.ListViewHandler;
 using MauiMenuItem = Microsoft.Maui.Controls.MenuItem;
-using MauiListViewHandler = Avalonia.Controls.Maui.Handlers.ListViewHandler;
-using MauiSelectionMode = Microsoft.Maui.Controls.ListViewSelectionMode;
 using MauiScrollBarVisibility = Microsoft.Maui.ScrollBarVisibility;
+using MauiSelectionMode = Microsoft.Maui.Controls.ListViewSelectionMode;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
