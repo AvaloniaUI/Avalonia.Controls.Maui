@@ -3,7 +3,7 @@ using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Avalonia.Media;
 using MauiColors = Microsoft.Maui.Graphics.Colors;
-using MauiFrameHandler = Avalonia.Controls.Maui.Handlers.FrameHandler;
+using MauiFrameHandler = Avalonia.Controls.Maui.Compatibility.Handlers.FrameHandler;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
