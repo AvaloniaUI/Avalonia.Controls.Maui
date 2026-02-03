@@ -1,7 +1,8 @@
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Styling;
 using Microsoft.Maui.Controls;
 
-namespace Avalonia.Controls.Maui.Extensions;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 /// <summary>
 /// Extension methods for <see cref="MauiSwitchCell"/>.
@@ -53,7 +54,7 @@ public static class SwitchCellExtensions
         // Remove existing styles
         for (int i = toggleSwitch.Styles.Count - 1; i >= 0; i--)
         {
-            if (toggleSwitch.Styles[i] is global::Avalonia.Styling.Style style &&
+            if (toggleSwitch.Styles[i] is Styling.Style style &&
                 style.Resources != null &&
                 style.Resources.ContainsKey(TrackStyleTag))
             {

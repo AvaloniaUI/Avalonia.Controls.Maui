@@ -4,7 +4,7 @@ using Avalonia.Media.Immutable;
 using Microsoft.Maui;
 using Microsoft.Maui.Platform;
 
-namespace Avalonia.Controls.Maui.Platform;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 /// <summary>
 /// Provides extension methods for updating Avalonia <see cref="Border"/> properties from cross-platform

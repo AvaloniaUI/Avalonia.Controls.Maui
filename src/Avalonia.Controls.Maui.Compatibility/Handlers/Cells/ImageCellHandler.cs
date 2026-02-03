@@ -4,7 +4,7 @@ using Avalonia.Input;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 
-namespace Avalonia.Controls.Maui.Handlers.Cells;
+namespace Avalonia.Controls.Maui.Compatibility;
 
 public class ImageCellHandler : ElementHandler<ImageCell, MauiImageCell>
 {
