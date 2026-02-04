@@ -7,7 +7,7 @@ using Avalonia.Threading;
 using MauiColors = Microsoft.Maui.Graphics.Colors;
 using MauiContentView = Microsoft.Maui.Controls.ContentView;
 using MauiEllipseGeometry = Microsoft.Maui.Controls.Shapes.EllipseGeometry;
-using MauiEntry = Microsoft.Maui.Controls.Entry;
+using MauiVirtualEntry = Microsoft.Maui.Controls.Entry;
 using MauiPoint = Microsoft.Maui.Graphics.Point;
 using MauiSolidPaint = Microsoft.Maui.Graphics.SolidPaint;
 
@@ -127,7 +127,7 @@ public class ViewHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "Focused/Unfocused reflect platform focus")]
     public async Task FocusedAndUnfocusedReflectPlatformFocus()
     {
-        var entry = new MauiEntry();
+        var entry = new MauiVirtualEntry();
         var focusedCount = 0;
         var unfocusedCount = 0;
 
