@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.EntryPage"
+             Title="Entry">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Label Text="Entry Control" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+            
+            <!-- Basic Entry -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Usage" FontAttributes="Bold" />
+                    <Entry Placeholder="Type something here..."/>
+                    <Entry Text="Pre-filled text"/>
+                    <Entry Placeholder="Custom placeholder text"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Password Entry -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Password Entry" FontAttributes="Bold" />
+                    <Entry Placeholder="Enter password..." IsPassword="True"/>
+                    <Entry Text="SecretPassword123" IsPassword="True"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Constraints -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Constraints &amp; State" FontAttributes="Bold" />
+                    <Label Text="Read Only:" FontSize="12" />
+                    <Entry Text="Read Only Content" IsReadOnly="True" />
+                    
+                    <Label Text="Max Length (10):" FontSize="12" />
+                    <Entry Placeholder="Type max 10 chars" MaxLength="10" />
+                    
+                    <Label Text="Disabled:" FontSize="12" />
+                    <Entry Text="This entry is disabled" IsEnabled="False"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Keyboard Options -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Keyboard Options" FontAttributes="Bold" />
+                    
+                    <Label Text="Email:" FontSize="12" />
+                    <Entry Placeholder="name@example.com" Keyboard="Email" />
+                    
+                    <Label Text="Numeric:" FontSize="12" />
+                    <Entry Placeholder="123456" Keyboard="Numeric" />
+                    
+                    <Label Text="Telephone:" FontSize="12" />
+                    <Entry Placeholder="+1-555-0199" Keyboard="Telephone" />
+                    
+                    <Label Text="Url:" FontSize="12" />
+                    <Entry Placeholder="https://example.com" Keyboard="Url" />
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Colors -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Colors" FontAttributes="Bold" />
+                    
+                    <Label Text="Text Color:" FontSize="12" />
+                    <Entry Text="Blue Text" TextColor="Blue"/>
+                    
+                    <Label Text="Placeholder Color:" FontSize="12" />
+                    <Entry Placeholder="Red Placeholder" PlaceholderColor="Red"/>
+                    
+                    <Label Text="Background Color:" FontSize="12" />
+                    <Entry Text="Light Yellow Background" BackgroundColor="LightGoldenrodYellow" TextColor="Black" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Dynamic Background -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Background" FontAttributes="Bold" />
+                    <Entry x:Name="DynamicEntry" Placeholder="Background changes on button click"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Red" Clicked="OnRedClicked" BackgroundColor="Red" TextColor="White" />
+                        <Button Text="Green" Clicked="OnGreenClicked" BackgroundColor="Green" TextColor="White" />
+                        <Button Text="Blue" Clicked="OnBlueClicked" BackgroundColor="Blue" TextColor="White" />
+                        <Button Text="Clear" Clicked="OnClearClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Dynamic Text Color -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Text Color" FontAttributes="Bold" />
+                    <Entry x:Name="DynamicTextColorEntry" Text="Text color changes on button click" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Red" Clicked="OnTextColorRedClicked" BackgroundColor="Red" TextColor="White" />
+                        <Button Text="Green" Clicked="OnTextColorGreenClicked" BackgroundColor="Green" TextColor="White" />
+                        <Button Text="Blue" Clicked="OnTextColorBlueClicked" BackgroundColor="Blue" TextColor="White" />
+                        <Button Text="Default" Clicked="OnTextColorDefaultClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Dynamic Placeholder Color -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Placeholder Color" FontAttributes="Bold" />
+                    <Entry x:Name="DynamicPlaceholderColorEntry" Placeholder="Placeholder color changes on button click" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Red" Clicked="OnPlaceholderRedClicked" BackgroundColor="Red" TextColor="White" />
+                        <Button Text="Green" Clicked="OnPlaceholderGreenClicked" BackgroundColor="Green" TextColor="White" />
+                        <Button Text="Blue" Clicked="OnPlaceholderBlueClicked" BackgroundColor="Blue" TextColor="White" />
+                        <Button Text="Default" Clicked="OnPlaceholderDefaultClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Typography & Formatting -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Typography &amp; Formatting" FontAttributes="Bold" />
+                    
+                    <Label Text="Font Size &amp; Attributes:" FontSize="12" />
+                    <Entry Text="Large (24)" FontSize="24" />
+                    <Entry Text="Bold Italic" FontAttributes="Bold,Italic" />
+
+                    <Label Text="Character Spacing (5):" FontSize="12" />
+                    <Entry Text="Wide Spacing" CharacterSpacing="5" />
+                    
+                    <Label Text="Text Transform:" FontSize="12" />
+                    <Entry Text="uppercase text" TextTransform="Uppercase" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Alignment -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Alignment" FontAttributes="Bold" />
+                    
+                    <Label Text="Horizontal Alignment:" FontSize="12" FontAttributes="Bold"/>
+                    <Entry Text="Left Aligned" HorizontalTextAlignment="Start" />
+                    <Entry Text="Center Aligned" HorizontalTextAlignment="Center" />
+                    <Entry Text="Right Aligned" HorizontalTextAlignment="End" />
+                    <Label Text="Vertical Alignment:" FontSize="12" FontAttributes="Bold"/>
+                    <Entry Text="Top Aligned" VerticalTextAlignment="Start" HeightRequest="60" />
+                    <Entry Text="Center Aligned" VerticalTextAlignment="Center" HeightRequest="60" />
+                    <Entry Text="Bottom Aligned" VerticalTextAlignment="End" HeightRequest="60" />
+                </VerticalStackLayout>
+            </Border>
+            
+            <!-- Clear Button -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Clear Button" FontAttributes="Bold" />
+                    <Label Text="Show 'WhileEditing':" FontSize="12" />
+                    <Entry Placeholder="Type to see clear button" ClearButtonVisibility="WhileEditing"/>
+                    
+                    <Label Text="Show 'Never' (Default):" FontSize="12" />
+                    <Entry Placeholder="No clear button" ClearButtonVisibility="Never"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Cursor & Selection -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cursor &amp; Selection" FontAttributes="Bold" />
+                    
+                    <Label Text="Cursor Position:" FontSize="12" FontAttributes="Bold"/>
+                    <Entry x:Name="CursorEntry" Text="Cursor Position Test" />
+                    <Label Text="{Binding CursorPosition, Source={x:Reference CursorEntry}, StringFormat='Position: {0}'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Start" Clicked="OnSetCursorStart" />
+                        <Button Text="Middle" Clicked="OnSetCursorMiddle" />
+                        <Button Text="End" Clicked="OnSetCursorEnd" />
+                    </HorizontalStackLayout>
+                    
+                    <BoxView HeightRequest="1" Color="LightGray" Margin="0,5"/>
+                    
+                    <Label Text="Selection:" FontSize="12" FontAttributes="Bold"/>
+                    <Entry x:Name="SelectionEntry" Text="Select text in this entry" />
+                    <Label Text="{Binding SelectionLength, Source={x:Reference SelectionEntry}, StringFormat='Selection Length: {0}'}" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="First 5" Clicked="OnSelectFirst5" />
+                        <Button Text="All" Clicked="OnSelectAll" />
+                        <Button Text="Null" Clicked="OnClearSelection" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Return Key Options -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Return Key &amp; Command" FontAttributes="Bold" />
+                    
+                    <Label Text="ReturnType='Done' (triggers Command):" FontSize="12" />
+                    <Entry Placeholder="Press Done/Enter" ReturnType="Done" ReturnCommand="{Binding ReturnCommand}" />
+                    
+                    <Label Text="ReturnType='Search' (triggers Command with Param):" FontSize="12" />
+                    <Entry Placeholder="Press Search/Enter" ReturnType="Search" ReturnCommand="{Binding ReturnCommand}" ReturnCommandParameter="SearchAction" />
+                    
+                    <Label Text="ReturnType='Next':" FontSize="12" />
+                    <Entry Placeholder="Press Next (triggers Command)" ReturnType="Next" ReturnCommand="{Binding ReturnCommand}" ReturnCommandParameter="NextAction" />
+                    
+                    <Label x:Name="ReturnResultLabel" Text="Command Result: Waiting..." TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Events -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Events" FontAttributes="Bold" />
+                    <Entry x:Name="EventEntry" Placeholder="Type and press Enter..." Completed="OnEntryCompleted" TextChanged="OnEntryTextChanged"/>
+                    <Label x:Name="EventLabel" Text="Status: Waiting..." TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
