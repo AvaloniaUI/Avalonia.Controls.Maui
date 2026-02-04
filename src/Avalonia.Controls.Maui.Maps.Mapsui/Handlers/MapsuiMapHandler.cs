@@ -118,9 +118,7 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
         platformView.Map.Info -= OnMapInfo;
         platformView.LayoutUpdated -= OnLayoutUpdated;
 
-        _locationCts?.Cancel();
-        _locationCts?.Dispose();
-        _locationCts = null;
+        CancelLocationTask();
 
         base.DisconnectHandler(platformView);
     }
@@ -192,15 +190,13 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
         mapControl.Refresh();
     }
 
-    private static async void MapIsShowingUser(MapsuiMapHandler handler, IMapView map)
+    private static void MapIsShowingUser(MapsuiMapHandler handler, IMapView map)
     {
         if (handler.PlatformView?.Map == null) return;
         var mapControl = handler.PlatformView;
         
         // Cancel any pending location request
-        handler._locationCts?.Cancel();
-        handler._locationCts?.Dispose();
-        handler._locationCts = null;
+        handler.CancelLocationTask();
 
         // Find existing location layer
         var locationLayer = mapControl.Map.Layers.OfType<MapsuiLayers.MemoryLayer>().FirstOrDefault(l => l.Name == "MyLocation");
@@ -214,45 +210,7 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
                 mapControl.Map.Layers.Add(locationLayer);
             }
  
-            try 
-            {
-                handler._locationCts = new CancellationTokenSource();
-                var token = handler._locationCts.Token;
-
-                // Run geolocation on a background thread to avoid blocking the UI thread
-                await Task.Run(async () =>
-                {
-                    Microsoft.Maui.Devices.Sensors.Location? location = null;
-
-                    // Use IP-based geolocation on Desktop
-                    if (OperatingSystem.IsMacOS() || OperatingSystem.IsWindows())
-                    {
-                        location = await GetLocationFromIpAsync(token).ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
-                        location = await Geolocation.Default.GetLocationAsync(request, token).ConfigureAwait(false);
-                    }
-                    
-                    if (location != null && !token.IsCancellationRequested)
-                    {
-                        // Dispatch the UI update back to the UI thread
-                        Avalonia.Threading.Dispatcher.UIThread.Post(() => 
-                        {
-                            UpdateUserLocation(handler, mapControl, locationLayer, location);
-                        });
-                    }
-                }, token).ConfigureAwait(false);
-            }
-            catch (OperationCanceledException)
-            {
-                // Request was canceled, ignore
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error getting location: {ex.Message}");
-            }
+            handler.StartLocationTask(locationLayer);
         }
         else
         {
@@ -263,6 +221,81 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
         }
         
         mapControl.Refresh();
+    }
+
+    private void CancelLocationTask()
+    {
+        try
+        {
+            _locationCts?.Cancel();
+            _locationCts?.Dispose();
+        }
+        catch
+        {
+            // Ignore errors during cancellation
+        }
+        finally
+        {
+            _locationCts = null;
+        }
+    }
+
+    private async void StartLocationTask(MapsuiLayers.MemoryLayer locationLayer)
+    {
+        if (PlatformView == null) return;
+        
+        var mapControl = PlatformView;
+        
+        try 
+        {
+            _locationCts = new CancellationTokenSource();
+            var token = _locationCts.Token;
+
+            // Run geolocation on a background thread to avoid blocking the UI thread
+            await Task.Run(async () =>
+            {
+                Microsoft.Maui.Devices.Sensors.Location? location = null;
+
+                try
+                {
+                    // Use IP-based geolocation on Desktop
+                    if (OperatingSystem.IsMacOS() || OperatingSystem.IsWindows())
+                    {
+                        location = await GetLocationFromIpAsync(token).ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        var request = new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(10));
+                        location = await Geolocation.Default.GetLocationAsync(request, token).ConfigureAwait(false);
+                    }
+                }
+                catch (PlatformNotSupportedException)
+                {
+                    // Fallback to IP matching if Geolocation is not supported
+                    location = await GetLocationFromIpAsync(token).ConfigureAwait(false);
+                }
+                
+                if (location != null && !token.IsCancellationRequested)
+                {
+                    // Dispatch the UI update back to the UI thread
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() => 
+                    {
+                        if (!token.IsCancellationRequested)
+                        {
+                            UpdateUserLocation(this, mapControl, locationLayer, location);
+                        }
+                    });
+                }
+            }, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // Request was canceled, ignore
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error getting location: {ex.Message}");
+        }
     }
     
     private static void MapCenterToCommand(MapsuiMapHandler handler, IMapView map, object? args)
