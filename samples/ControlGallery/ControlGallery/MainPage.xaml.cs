@@ -79,6 +79,7 @@ public partial class MainPage : FlyoutPage
         [typeof(TooltipsPage)] = () => new TooltipsPage(),
         [typeof(TriggersPage)] = () => new TriggersPage(),
         [typeof(VisualStateManagerPage)] = () => new VisualStateManagerPage(),
+        [typeof(LifecycleEventsPage)] = () => new LifecycleEventsPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
     };
@@ -187,7 +188,8 @@ public partial class MainPage : FlyoutPage
                 new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
                 new("TitleBar", "Custom window title bar", typeof(TitleBarPage)),
                 new("ToolbarItems", "Toolbar items and interactions", typeof(ToolbarItemPage)),
-                new("Popups", "Alerts, ActionSheets, and Prompts", typeof(PopupsPage))
+                new("Popups", "Alerts, ActionSheets, and Prompts", typeof(PopupsPage)),
+                new("Lifecycle Events", "View & VisualElement event tracing", typeof(LifecycleEventsPage))
             }),
 
             new SampleGroup("Layout", new List<SampleItem>
