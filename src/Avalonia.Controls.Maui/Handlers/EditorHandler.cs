@@ -52,6 +52,16 @@ namespace Avalonia.Controls.Maui.Handlers
             return new MauiEditor();
         }
 
+        public static void MapBackground(EditorHandler handler, IEditor editor)
+        {
+            handler.UpdateValue(nameof(IViewHandler.ContainerView));
+
+            if (handler.PlatformView != null)
+            {
+                Extensions.EntryExtensions.UpdateBackground(handler.PlatformView, editor);
+            }
+        }
+        
         protected override void ConnectHandler(MauiEditor platformView)
         {
             base.ConnectHandler(platformView);
@@ -69,12 +79,6 @@ namespace Avalonia.Controls.Maui.Handlers
         }
 
         public override bool NeedsContainer => false;
-
-        public static void MapBackground(EditorHandler handler, IEditor editor)
-        {
-            handler.UpdateValue(nameof(IViewHandler.ContainerView));
-            handler.PlatformView?.UpdateBackground(editor);
-        }
 
         public static void MapText(EditorHandler handler, IEditor editor) =>
             handler.PlatformView?.UpdateEditorText(editor);
