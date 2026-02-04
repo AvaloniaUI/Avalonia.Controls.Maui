@@ -1,0 +1,115 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:Avalonia.Controls.Maui">
+
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="EntryBackground" Color="#FFFFFFFF" />
+            <SolidColorBrush x:Key="EntryBorderBrush" Color="#FF8A8A8A" />
+            <SolidColorBrush x:Key="EntryForeground" Color="#FF000000" />
+            <SolidColorBrush x:Key="EntryPlaceholderForeground" Color="#FF8A8A8A" />
+            <SolidColorBrush x:Key="EntryBorderBrushPointerOver" Color="#FF5A5A5A" />
+            <SolidColorBrush x:Key="EntryBorderBrushFocused" Color="#FF0078D4" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="EntryBackground" Color="#FF2B2B2B" />
+            <SolidColorBrush x:Key="EntryBorderBrush" Color="#FF5A5A5A" />
+            <SolidColorBrush x:Key="EntryForeground" Color="#FFFFFFFF" />
+            <SolidColorBrush x:Key="EntryPlaceholderForeground" Color="#FFB0B0B0" />
+            <SolidColorBrush x:Key="EntryBorderBrushPointerOver" Color="#FF7A7A7A" />
+            <SolidColorBrush x:Key="EntryBorderBrushFocused" Color="#FF0078D4" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <ControlTheme x:Key="{x:Type controls:MauiEntry}"
+                  TargetType="controls:MauiEntry">
+        <Setter Property="Background" Value="{DynamicResource EntryBackground}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource EntryBorderBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource EntryForeground}" />
+        <Setter Property="PlaceholderForeground" Value="{DynamicResource EntryPlaceholderForeground}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource EntryForeground}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource TextControlSelectionHighlightColor}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="10,6" />
+        <Setter Property="FocusAdorner" Value="{x:Null}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border
+                    Name="PART_BorderElement"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{TemplateBinding CornerRadius}"
+                    Padding="{TemplateBinding Padding}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <ScrollViewer Grid.Column="0" Name="PART_ScrollViewer"
+                                      HorizontalScrollBarVisibility="{TemplateBinding (ScrollViewer.HorizontalScrollBarVisibility)}"
+                                      VerticalScrollBarVisibility="{TemplateBinding (ScrollViewer.VerticalScrollBarVisibility)}">
+                            <Panel>
+                                <TextBlock Name="PART_Watermark"
+                                           Text="{TemplateBinding Watermark}"
+                                           Foreground="{TemplateBinding PlaceholderForeground}"
+                                           TextAlignment="{TemplateBinding TextAlignment}"
+                                           TextWrapping="{TemplateBinding TextWrapping}"
+                                           HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                           VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                           IsHitTestVisible="False"
+                                           IsVisible="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Converter={x:Static StringConverters.IsNullOrEmpty}}" />
+                                <TextPresenter Name="PART_TextPresenter"
+                                               Text="{TemplateBinding Text, Mode=TwoWay}"
+                                               CaretBlinkInterval="{TemplateBinding CaretBlinkInterval}"
+                                               CaretIndex="{TemplateBinding CaretIndex}"
+                                               SelectionStart="{TemplateBinding SelectionStart}"
+                                               SelectionEnd="{TemplateBinding SelectionEnd}"
+                                               TextAlignment="{TemplateBinding TextAlignment}"
+                                               TextWrapping="{TemplateBinding TextWrapping}"
+                                               LineHeight="{TemplateBinding LineHeight}"
+                                               LetterSpacing="{TemplateBinding LetterSpacing}"
+                                               SelectionBrush="{TemplateBinding SelectionBrush}"
+                                               SelectionForegroundBrush="{TemplateBinding SelectionForegroundBrush}"
+                                               CaretBrush="{TemplateBinding CaretBrush}"
+                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                               PasswordChar="{TemplateBinding PasswordChar}"
+                                               RevealPassword="{TemplateBinding RevealPassword}" />
+                            </Panel>
+                        </ScrollViewer>
+                        <Button Grid.Column="1" Name="PART_ClearButton"
+                                Focusable="False"
+                                Width="20" Height="20"
+                                Padding="4" Margin="4,0,0,0"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{Binding ClearCommand, RelativeSource={RelativeSource TemplatedParent}}"
+                                IsVisible="{TemplateBinding IsClearButtonVisible}" 
+                                IsTabStop="False"
+                                Cursor="Hand">
+                            <Path Data="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+                                  Fill="{TemplateBinding Foreground}"
+                                  Stretch="Uniform"
+                                  Width="10" Height="10"/>
+                        </Button>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- PointerOver State -->
+        <Style Selector="^:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="{DynamicResource EntryBorderBrushPointerOver}" />
+        </Style>
+
+        <!-- Focused State -->
+        <Style Selector="^:focus /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="{DynamicResource EntryBorderBrushFocused}" />
+            <Setter Property="BorderThickness" Value="2" />
+        </Style>
+
+        <!-- Disabled State -->
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

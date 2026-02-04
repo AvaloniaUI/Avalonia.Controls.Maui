@@ -279,39 +279,39 @@ Enables you to enter and edit a single line of text.
 
 | Property | Status |
 |----------|--------|
-| CharacterSpacing | ⏳ TODO |
-| ClearButtonVisibility | ⏳ TODO |
-| CursorPosition | ⏳ TODO |
-| FontAttributes | ⏳ TODO |
-| FontAutoScalingEnabled | ⏳ TODO |
-| FontFamily | ⏳ TODO |
-| FontSize | ⏳ TODO |
+| CharacterSpacing | ✅ Implemented |
+| ClearButtonVisibility | ✅ Implemented |
+| CursorPosition | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
 | Keyboard | ✅ Implemented |
-| HorizontalTextAlignment | ⏳ TODO |
-| IsPassword | ⏳ TODO |
+| HorizontalTextAlignment | ✅ Implemented |
+| IsPassword | ✅ Implemented |
 | IsTextPredictionEnabled | ✅ Implemented |
-| IsReadOnly | ⏳ TODO |
-| IsSpellCheckEnabled | ⏳ TODO |
-| MaxLength | ⏳ TODO |
-| Placeholder | ⏳ TODO |
-| PlaceholderColor | ⏳ TODO |
-| ReturnCommand | ⏳ TODO |
-| ReturnCommandParameter | ⏳ TODO |
-| ReturnType | ⏳ TODO |
-| SelectionLength | ⏳ TODO |
-| Text | ⏳ TODO |
-| TextColor | ⏳ TODO |
-| TextTransform | ⏳ TODO |
-| VerticalTextAlignment | ⏳ TODO |
+| IsReadOnly | ✅ Implemented |
+| IsSpellCheckEnabled | ⏳ TODO (Avalonia lacks spell check) |
+| MaxLength | ✅ Implemented |
+| Placeholder | ✅ Implemented |
+| PlaceholderColor | ✅ Implemented |
+| ReturnCommand | ✅ Implemented |
+| ReturnCommandParameter | ✅ Implemented |
+| ReturnType | ✅ Implemented |
+| SelectionLength | ✅ Implemented |
+| Text | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| TextTransform | ✅ Implemented |
+| VerticalTextAlignment | ✅ Implemented |
+
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| TextChanged | ⏳ TODO |
-| Completed | ⏳ TODO |
-| Focused | ⏳ TODO |
-| Unfocused | ⏳ TODO |
+| TextChanged | ✅ Implemented |
+| Completed | ✅ Implemented |
+| Focused | ✅ Implemented (via VisualElement) |
+| Unfocused | ✅ Implemented (via VisualElement) |
 
 ---
 

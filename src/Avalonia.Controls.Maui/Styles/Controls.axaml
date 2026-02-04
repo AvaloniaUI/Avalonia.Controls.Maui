@@ -6,8 +6,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <MergeResourceInclude Source="../Controls/DatePicker/DatePicker.axaml" />
-                <MergeResourceInclude Source="../Controls/ProgressRing/ProgressRing.axaml" />
                 <MergeResourceInclude Source="../Controls/MauiComboBox/MauiComboBox.axaml" />
+                <MergeResourceInclude Source="../Controls/MauiEntry/MauiEntry.axaml" />
+                <MergeResourceInclude Source="../Controls/ProgressRing/ProgressRing.axaml" />
                 <MergeResourceInclude Source="../Controls/RadioButton/MauiRadioButton.axaml" />
                 <MergeResourceInclude Source="../Controls/SearchBar/MauiSearchBar.axaml" />
                 <MergeResourceInclude Source="../Controls/Stepper/Stepper.axaml" />
