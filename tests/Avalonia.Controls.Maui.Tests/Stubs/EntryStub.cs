@@ -4,7 +4,7 @@ using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui.Tests.Stubs
 {
-    public class EntryStub : StubBase, IEntry
+    public class EntryStub : StubBase, IEntry, ITextElement
     {
         public string Text { get; set; } = string.Empty;
         public Color TextColor { get; set; } = null!;
@@ -33,6 +33,28 @@ namespace Avalonia.Controls.Maui.Tests.Stubs
         public void Completed() 
         {
             CompletedCalled = true;
+        }
+
+        public void OnTextColorPropertyChanged(Color oldValue, Color newValue)
+        {
+        }
+
+        public void OnCharacterSpacingPropertyChanged(double oldValue, double newValue)
+        {
+        }
+
+        public void OnTextTransformChanged(TextTransform oldValue, TextTransform newValue)
+        {
+        }
+
+        public string UpdateFormsText(string original, TextTransform transform)
+        {
+            return transform switch
+            {
+                TextTransform.Uppercase => original?.ToUpperInvariant() ?? string.Empty,
+                TextTransform.Lowercase => original?.ToLowerInvariant() ?? string.Empty,
+                _ => original ?? string.Empty
+            };
         }
     }
 }
