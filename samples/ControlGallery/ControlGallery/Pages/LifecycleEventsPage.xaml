@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
              x:Class="ControlGallery.Pages.LifecycleEventsPage"
+             x:DataType="pages:LifecycleEventsPage"
              Title="Lifecycle Events">
     <ContentPage.Resources>
         <Color x:Key="SectionBorderLight">#CCCCCC</Color>
@@ -128,9 +131,9 @@
                         <Label Text="Event Log" FontAttributes="Bold"/>
                         <CollectionView ItemsSource="{Binding EventLog}" HeightRequest="220">
                             <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Label Text="{Binding .}" FontSize="12" />
-                                </DataTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Label Text="{Binding .}" FontSize="12" />
+                            </DataTemplate>
                             </CollectionView.ItemTemplate>
                         </CollectionView>
                     </VerticalStackLayout>
