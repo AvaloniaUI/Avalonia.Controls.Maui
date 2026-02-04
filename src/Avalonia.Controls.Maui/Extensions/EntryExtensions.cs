@@ -19,25 +19,13 @@ public static class EntryExtensions
     /// </summary>
     /// <param name="textBox">The Avalonia TextBox.</param>
     /// <param name="entry">The .NET MAUI Entry.</param>
-    [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Reflection-based access to TextTransform is used for non-standard MAUI Entry types.")]
     public static void UpdateText(this AvaloniaTextBox textBox, IEntry entry)
     {
         var text = entry.Text;
 
-        if (entry is Microsoft.Maui.Controls.Entry mauiEntry)
+        if (entry is Microsoft.Maui.Controls.ITextElement textElement)
         {
-             text = TextTransformUtilities.GetTransformedText(entry.Text, mauiEntry.TextTransform);
-        }
-        else
-        {
-#pragma warning disable IL2075
-             var prop = entry.GetType().GetProperty("TextTransform");
-#pragma warning restore IL2075
-             if (prop != null && prop.PropertyType == typeof(TextTransform))
-             {
-                 var transform = (TextTransform)prop.GetValue(entry)!;
-                 text = TextTransformUtilities.GetTransformedText(entry.Text, transform);
-             }
+            text = TextTransformUtilities.GetTransformedText(entry.Text, textElement.TextTransform);
         }
 
         if (textBox.Text != text)
