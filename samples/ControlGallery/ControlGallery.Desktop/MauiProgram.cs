@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Controls.Maui;
 using Avalonia.Controls.Maui.Maps.Mapsui;
+using Avalonia.Controls.Maui.Compatibility;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
@@ -22,6 +23,7 @@ public static class MauiProgram
         builder
              .UseMauiApp<MauiAppStub>()
              .UseAvaloniaApp()
+             .UseAvaloniaCompatibility()
              .UseAvaloniaGraphics()
              .UseAvaloniaMapsui()
              .ConfigureFonts(fonts =>

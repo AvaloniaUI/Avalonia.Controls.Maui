@@ -102,9 +102,6 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.ContentView, Avalonia.Controls.Maui.Handlers.ContentViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.ContentPresenter, Avalonia.Controls.Maui.Handlers.ContentPresenterHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Border, Avalonia.Controls.Maui.Handlers.BorderHandler>();
-#pragma warning disable CS0618 // Type or member is obsolete
-                handlers.AddHandler<Microsoft.Maui.Controls.Frame, Avalonia.Controls.Maui.Handlers.FrameHandler>();
-#pragma warning restore CS0618 // Type or member is obsolete
                 handlers.AddHandler<Microsoft.Maui.Controls.Image, Avalonia.Controls.Maui.Handlers.ImageHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Page, Avalonia.Controls.Maui.Handlers.PageHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Label, Avalonia.Controls.Maui.Handlers.LabelHandler>();
@@ -127,15 +124,8 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.ActivityIndicator, Avalonia.Controls.Maui.Handlers.ActivityIndicatorHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Stepper, Avalonia.Controls.Maui.Handlers.StepperHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.CollectionView, Avalonia.Controls.Maui.Handlers.CollectionViewHandler>();
-                handlers.AddHandler<Microsoft.Maui.Controls.ListView, Avalonia.Controls.Maui.Handlers.ListViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.CarouselView, Avalonia.Controls.Maui.Handlers.CarouselViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.IndicatorView, Avalonia.Controls.Maui.Handlers.IndicatorViewHandler>();
-                handlers.AddHandler<Microsoft.Maui.Controls.TableView, Avalonia.Controls.Maui.Handlers.TableViewHandler>();
-                handlers.AddHandler<Microsoft.Maui.Controls.TextCell, Avalonia.Controls.Maui.Handlers.Cells.TextCellHandler>();
-                handlers.AddHandler<Microsoft.Maui.Controls.ImageCell, Avalonia.Controls.Maui.Handlers.Cells.ImageCellHandler>();
-                handlers.AddHandler<Microsoft.Maui.Controls.ViewCell, Avalonia.Controls.Maui.Handlers.Cells.ViewCellHandler>();
-                handlers.AddHandler<Microsoft.Maui.Controls.SwitchCell, Avalonia.Controls.Maui.Handlers.Cells.SwitchCellHandler>();
-                handlers.AddHandler<Microsoft.Maui.Controls.EntryCell, Avalonia.Controls.Maui.Handlers.Cells.EntryCellHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.TabbedPage, Avalonia.Controls.Maui.Handlers.TabbedPageHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.FlyoutPage, Avalonia.Controls.Maui.Handlers.FlyoutViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Shell, Avalonia.Controls.Maui.Handlers.Shell.ShellHandler>();

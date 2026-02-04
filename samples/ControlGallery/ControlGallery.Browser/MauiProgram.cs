@@ -1,4 +1,5 @@
-﻿using Avalonia.Controls;
+using Avalonia.Controls;
+using Avalonia.Controls.Maui.Compatibility;
 using Avalonia.Controls.Maui.Maps.Mapsui;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls.Hosting;
@@ -14,6 +15,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<ControlGallery.MauiAppStub>()
             .UseAvaloniaApp(useSingleViewLifetime: true)
+            .UseAvaloniaCompatibility()
             .UseAvaloniaGraphics()
             .UseAvaloniaMapsui()
             .ConfigureFonts(fonts =>

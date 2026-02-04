@@ -2,7 +2,7 @@ using Avalonia.Media;
 
 namespace Avalonia.Controls.Maui.Extensions;
 
-internal static class ColorExtensions
+public static class ColorExtensions
 {
     public static IBrush? ToAvaloniaBrush(this Microsoft.Maui.Graphics.Color? color)
     {

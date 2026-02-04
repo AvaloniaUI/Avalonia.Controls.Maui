@@ -13,6 +13,7 @@ using Avalonia.Animation;
 using AImage = Avalonia.Controls.Image;
 using AGrid = Avalonia.Controls.Grid;
 using IImage = Microsoft.Maui.IImage;
+using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -154,41 +155,10 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
     private void UpdateIsLoading(bool isLoading)
     {
-        // IsLoading is a read-only property on the public Image API, intended to be set only by internal logic.
-        // To report accurate loading states from our custom handler back to the cross-platform control,
-        // we must use reflection to invoke the internal/private 'SetIsLoading' method.
-
-        try
+        if (VirtualView is IImageController mauiImage)
         {
-            if (VirtualView is Microsoft.Maui.Controls.Image mauiImage)
-            {
-                var method = typeof(Microsoft.Maui.Controls.Image).GetMethod(
-                    "SetIsLoading",
-                    BindingFlags.Instance | BindingFlags.NonPublic);
-
-                method?.Invoke(mauiImage, [isLoading]);
-                return;
-            }
-
-            if (VirtualView != null)
-            {
-                UpdateIsLoadingViaReflection(VirtualView, isLoading);
-            }
+            mauiImage.SetIsLoading(isLoading);
         }
-        catch
-        {
-            // Ignore reflection errors
-        }
-    }
-
-    [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Custom IImage implementations may expose UpdateIsLoading via reflection.")]
-    private static void UpdateIsLoadingViaReflection(object virtualView, bool isLoading)
-    {
-        var updateIsLoading = virtualView
-            .GetType()
-            .GetMethod("UpdateIsLoading", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
-        updateIsLoading?.Invoke(virtualView, new object[] { isLoading });
     }
 
     private async Task LoadGifAsync(IImageSource source, bool shouldPlay, CancellationToken token)

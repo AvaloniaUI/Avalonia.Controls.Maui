@@ -30,6 +30,8 @@
 
   <ItemGroup>
     <ProjectReference
+      Include="../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
+    <ProjectReference
       Include="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
     <ProjectReference Include="../../src/Avalonia.Controls.Maui.Maps/Avalonia.Controls.Maui.Maps.csproj" />
     <ProjectReference Include="../../src/Avalonia.Controls.Maui.Maps.Mapsui/Avalonia.Controls.Maui.Maps.Mapsui.csproj" />
