@@ -1,66 +1,83 @@
 using Avalonia.Input.TextInput;
-using Microsoft.Maui;
 using AvaloniaTextBox = Avalonia.Controls.TextBox;
 
 namespace Avalonia.Controls.Maui.Extensions;
 
 /// <summary>
-/// Extension methods for mapping .NET MAUI <see cref="Keyboard"/> to Avalonia's <see cref="TextInputOptions"/>.
+/// Extension methods for Avalonia TextBox to support .NET MAUI Keyboard.
 /// </summary>
 public static class KeyboardExtensions
 {
     /// <summary>
-    /// Updates the keyboard/input method options on the TextBox based on the MAUI Keyboard type.
+    /// Updates the keyboard type of the TextBox from the Entry.
     /// </summary>
     /// <param name="textBox">The Avalonia TextBox.</param>
-    /// <param name="keyboard">The .NET MAUI Keyboard type.</param>
-    public static void UpdateKeyboard(this AvaloniaTextBox textBox, Keyboard? keyboard)
+    /// <param name="keyboard">The .NET MAUI Keyboard.</param>
+    public static void UpdateKeyboard(this AvaloniaTextBox textBox, Microsoft.Maui.Keyboard keyboard)
     {
-        if (keyboard == null)
+        var contentType = TextInputContentType.Normal;
+
+        if (keyboard == Microsoft.Maui.Keyboard.Email)
         {
-            // Reset to defaults
-            TextInputOptions.SetContentType(textBox, TextInputContentType.Normal);
-            TextInputOptions.SetAutoCapitalization(textBox, true);
-            TextInputOptions.SetShowSuggestions(textBox, null);
-            return;
+            contentType = TextInputContentType.Email;
+        }
+        else if (keyboard == Microsoft.Maui.Keyboard.Text)
+        {
+            contentType = TextInputContentType.Normal;
+        }
+        else if (keyboard == Microsoft.Maui.Keyboard.Url)
+        {
+            contentType = TextInputContentType.Url;
+        }
+        else if (keyboard == Microsoft.Maui.Keyboard.Telephone)
+        {
+            contentType = TextInputContentType.Digits;
+        }
+        else if (keyboard == Microsoft.Maui.Keyboard.Numeric)
+        {
+            contentType = TextInputContentType.Number;
+        }
+        else if (keyboard == Microsoft.Maui.Keyboard.Chat)
+        {
+            contentType = TextInputContentType.Normal;
         }
 
-        var contentType = keyboard.ToTextInputContentType();
+        // Set the content type hint
         TextInputOptions.SetContentType(textBox, contentType);
 
         // Configure auto-capitalization based on keyboard type
-        var autoCapitalize = keyboard != Keyboard.Plain && 
-                             keyboard != Keyboard.Email && 
-                             keyboard != Keyboard.Url;
+        var autoCapitalize = keyboard != Microsoft.Maui.Keyboard.Plain && 
+                             keyboard != Microsoft.Maui.Keyboard.Email && 
+                             keyboard != Microsoft.Maui.Keyboard.Url;
         TextInputOptions.SetAutoCapitalization(textBox, autoCapitalize);
 
         // Configure suggestions. Chat keyboard shows suggestions; Plain keyboard does not.
         bool? showSuggestions = null;
-        if (keyboard == Keyboard.Chat)
+        if (keyboard == Microsoft.Maui.Keyboard.Chat)
             showSuggestions = true;
-        else if (keyboard == Keyboard.Plain)
+        else if (keyboard == Microsoft.Maui.Keyboard.Plain)
             showSuggestions = false;
         
         TextInputOptions.SetShowSuggestions(textBox, showSuggestions);
     }
 
     /// <summary>
-    /// Converts a .NET MAUI <see cref="Keyboard"/> to an Avalonia <see cref="TextInputContentType"/>.
+    /// Converts a .NET MAUI <see cref="Microsoft.Maui.Keyboard"/> to an Avalonia <see cref="TextInputContentType"/>.
     /// </summary>
     /// <param name="keyboard">The MAUI Keyboard.</param>
     /// <returns>The corresponding Avalonia TextInputContentType.</returns>
-    public static TextInputContentType ToTextInputContentType(this Keyboard keyboard)
+    public static TextInputContentType ToTextInputContentType(this Microsoft.Maui.Keyboard keyboard)
     {
-        if (keyboard == Keyboard.Email)
+        if (keyboard == Microsoft.Maui.Keyboard.Email)
             return TextInputContentType.Email;
         
-        if (keyboard == Keyboard.Numeric)
+        if (keyboard == Microsoft.Maui.Keyboard.Numeric)
             return TextInputContentType.Number;
         
-        if (keyboard == Keyboard.Telephone)
+        if (keyboard == Microsoft.Maui.Keyboard.Telephone)
             return TextInputContentType.Digits;
         
-        if (keyboard == Keyboard.Url)
+        if (keyboard == Microsoft.Maui.Keyboard.Url)
             return TextInputContentType.Url;
         
         // Text, Chat, Plain, and Default all map to Normal
