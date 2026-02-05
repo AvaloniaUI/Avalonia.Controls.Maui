@@ -1332,23 +1332,23 @@ All controls inherit these common events from the View and VisualElement base cl
 
 | Event | Status |
 |-------|--------|
-| BindingContextChanged | ⏳ TODO |
-| ChildAdded | ⏳ TODO |
-| ChildRemoved | ⏳ TODO |
-| ChildrenReordered | ⏳ TODO |
-| DescendantAdded | ⏳ TODO |
-| DescendantRemoved | ⏳ TODO |
-| Focused | ⏳ TODO |
-| HandlerChanged | ⏳ TODO |
-| HandlerChanging | ⏳ TODO |
-| Loaded | ⏳ TODO |
-| ParentChanged | ⏳ TODO |
-| ParentChanging | ⏳ TODO |
-| PropertyChanged | ⏳ TODO |
-| PropertyChanging | ⏳ TODO |
-| SizeChanged | ⏳ TODO |
-| Unfocused | ⏳ TODO |
-| Unloaded | ⏳ TODO |
+| BindingContextChanged | ✅ Implemented |
+| ChildAdded | ✅ Implemented |
+| ChildRemoved | ✅ Implemented |
+| ChildrenReordered | ✅ Implemented |
+| DescendantAdded | ✅ Implemented |
+| DescendantRemoved | ✅ Implemented |
+| Focused | ✅ Implemented |
+| HandlerChanged | ✅ Implemented |
+| HandlerChanging | ✅ Implemented |
+| Loaded | ✅ Implemented |
+| ParentChanged | ✅ Implemented |
+| ParentChanging | ✅ Implemented |
+| PropertyChanged | ✅ Implemented |
+| PropertyChanging | ✅ Implemented |
+| SizeChanged | ✅ Implemented |
+| Unfocused | ✅ Implemented |
+| Unloaded | ✅ Implemented |
 
 ---
 
