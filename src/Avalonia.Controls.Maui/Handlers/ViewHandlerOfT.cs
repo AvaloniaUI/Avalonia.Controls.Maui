@@ -1,6 +1,9 @@
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Controls;
 using System;
+using System.Runtime.CompilerServices;
+using Avalonia.VisualTree;
 using PlatformView = Avalonia.Controls.Control;
 
 namespace Avalonia.Controls.Maui.Handlers;
@@ -10,6 +13,7 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         where TPlatformView : PlatformView
 {
     private Avalonia.Controls.Maui.Platform.GestureManager? _gestureManager;
+    private bool _isLoaded;
 
     protected ViewHandler(IPropertyMapper mapper, CommandMapper? commandMapper = null)
         : base(mapper, commandMapper)
@@ -68,6 +72,8 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         {
             _gestureManager = new Avalonia.Controls.Maui.Platform.GestureManager(controlsView);
         }
+
+        AttachPlatformViewEvents(platformView);
     }
 
     /// <summary>
@@ -78,6 +84,7 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
     /// It disposes the gesture manager and can be overridden to perform additional cleanup logic.</remarks>
     protected virtual void DisconnectHandler(TPlatformView platformView)
     {
+        DetachPlatformViewEvents(platformView);
         _gestureManager?.Dispose();
         _gestureManager = null;
     }
@@ -111,5 +118,123 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         }
 
         ContainerView = null;
+    }
+
+    private void AttachPlatformViewEvents(TPlatformView platformView)
+    {
+        platformView.AttachedToVisualTree += OnPlatformViewAttachedToVisualTree;
+        platformView.DetachedFromVisualTree += OnPlatformViewDetachedFromVisualTree;
+        platformView.GotFocus += OnPlatformViewGotFocus;
+        platformView.LostFocus += OnPlatformViewLostFocus;
+        platformView.PropertyChanged += OnPlatformViewPropertyChanged;
+
+        if (platformView.GetVisualRoot() != null)
+        {
+            _isLoaded = true;
+            TrySendLoaded();
+        }
+
+        if (platformView.IsFocused)
+        {
+            SetFocused(true);
+        }
+    }
+
+    private void DetachPlatformViewEvents(TPlatformView platformView)
+    {
+        platformView.AttachedToVisualTree -= OnPlatformViewAttachedToVisualTree;
+        platformView.DetachedFromVisualTree -= OnPlatformViewDetachedFromVisualTree;
+        platformView.GotFocus -= OnPlatformViewGotFocus;
+        platformView.LostFocus -= OnPlatformViewLostFocus;
+        platformView.PropertyChanged -= OnPlatformViewPropertyChanged;
+    }
+
+    private void OnPlatformViewAttachedToVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
+    {
+        if (_isLoaded)
+            return;
+
+        _isLoaded = true;
+        TrySendLoaded();
+    }
+
+    private void OnPlatformViewDetachedFromVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
+    {
+        if (!_isLoaded)
+            return;
+
+        _isLoaded = false;
+        TrySendUnloaded();
+        SetFocused(false);
+    }
+
+    private void OnPlatformViewGotFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        SetFocused(true);
+    }
+
+    private void OnPlatformViewLostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        SetFocused(false);
+    }
+
+    private void OnPlatformViewPropertyChanged(object? sender, global::Avalonia.AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property != Avalonia.Visual.BoundsProperty && e.Property.Name != "Bounds")
+            return;
+
+        if (e.NewValue is not Avalonia.Rect newBounds)
+            return;
+
+        var oldBounds = e.OldValue is Avalonia.Rect oldRect ? oldRect : new Avalonia.Rect();
+        if (newBounds.Width.Equals(oldBounds.Width) && newBounds.Height.Equals(oldBounds.Height))
+            return;
+
+        if (VirtualView is IVisualElementController controller)
+        {
+            controller.PlatformSizeChanged();
+        }
+    }
+
+    private void SetFocused(bool isFocused)
+    {
+        if (VirtualView is null)
+            return;
+
+        if (VirtualView.IsFocused == isFocused)
+            return;
+
+        VirtualView.IsFocused = isFocused;
+    }
+
+    private void TrySendLoaded()
+    {
+        if (VirtualView is VisualElement visualElement)
+        {
+            VisualElementLifecycle.TrySendLoaded(visualElement);
+        }
+    }
+
+    private void TrySendUnloaded()
+    {
+        if (VirtualView is VisualElement visualElement)
+        {
+            VisualElementLifecycle.TrySendUnloaded(visualElement);
+        }
+    }
+
+    private static class VisualElementLifecycle
+    {
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "SendLoaded")]
+        private static extern void SendLoaded(VisualElement element);
+
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "SendUnloaded")]
+        private static extern void SendUnloaded(VisualElement element);
+
+        public static void TrySendLoaded(VisualElement element) =>
+            SendLoaded(element);
+
+        public static void TrySendUnloaded(VisualElement element) =>
+            SendUnloaded(element);
     }
 }
