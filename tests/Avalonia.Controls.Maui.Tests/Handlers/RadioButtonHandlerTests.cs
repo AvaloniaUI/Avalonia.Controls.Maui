@@ -48,6 +48,45 @@ public partial class RadioButtonHandlerTests : HandlerTestBase<MauiRadioButtonHa
         ColorComparisonHelpers.AssertColorsAreEqual(Colors.Red, nativeColor);
     }
 
+    [AvaloniaTheory(DisplayName = "StrokeColor Updates Correctly")]
+    [InlineData(255, 0, 0)]   // Red
+    [InlineData(0, 255, 0)]   // Green
+    [InlineData(0, 0, 255)]   // Blue
+    public async Task StrokeColorUpdatesCorrectly(byte r, byte g, byte b)
+    {
+        var radioButton = new RadioButtonStub { StrokeColor = Colors.Black };
+        var expectedColor = Color.FromRgb(r, g, b);
+
+        var handler = await CreateHandlerAsync(radioButton);
+        await InvokeOnMainThreadAsync(() =>
+        {
+            radioButton.StrokeColor = expectedColor;
+            handler.UpdateValue(nameof(IButtonStroke.StrokeColor));
+        });
+
+        var nativeColor = GetNativeBorderBrushColor(handler);
+        Assert.NotNull(nativeColor);
+        ColorComparisonHelpers.AssertColorsAreEqual(expectedColor, nativeColor);
+    }
+
+    [AvaloniaFact(DisplayName = "BorderColor (string) Updates Correctly")]
+    public async Task BorderColorStringUpdatesCorrectly()
+    {
+        var radioButton = new RadioButtonStub { StrokeColor = Colors.Black };
+        var expectedColor = Colors.Red;
+
+        var handler = await CreateHandlerAsync(radioButton);
+        await InvokeOnMainThreadAsync(() =>
+        {
+            radioButton.StrokeColor = expectedColor;
+            handler.UpdateValue("BorderColor");
+        });
+
+        var nativeColor = GetNativeBorderBrushColor(handler);
+        Assert.NotNull(nativeColor);
+        ColorComparisonHelpers.AssertColorsAreEqual(expectedColor, nativeColor);
+    }
+
     [AvaloniaTheory(DisplayName = "StrokeThickness Updates Correctly")]
     [InlineData(0)]
     [InlineData(1)]
