@@ -706,6 +706,24 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         Assert.Equal(Media.TextTrimming.CharacterEllipsis, textBlock.TextTrimming);
     }
 
+    [AvaloniaFact]
+    public async Task IsPressedUpdatesCorrectly()
+    {
+        var button = new MButton { Text = "Button" };
+        var handler = await CreateHandlerAsync<MauiButtonHandler>(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            // Simulate PointerPressed
+            ((IButton)button).Pressed();
+            Assert.True(button.IsPressed);
+            
+            // Simulate PointerReleased
+            ((IButton)button).Released();
+            Assert.False(button.IsPressed);
+        });
+    }
+
     [AvaloniaFact(DisplayName = "Disabled Button Does Not Trigger Clicked")]
     public async Task DisabledButtonDoesNotTriggerClicked()
     {

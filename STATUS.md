@@ -70,7 +70,7 @@ Displays text and responds to a tap or click that directs the app to carry out a
 | FontFamily | ✅ Implemented |
 | FontSize | ✅ Implemented |
 | ImageSource | ✅ Implemented |
-| IsPressed | ⏳ TODO |
+| IsPressed | ✅ Implemented |
 | LineBreakMode | ✅ Implemented |
 | Padding | ✅ Implemented |
 | Text | ✅ Implemented |
