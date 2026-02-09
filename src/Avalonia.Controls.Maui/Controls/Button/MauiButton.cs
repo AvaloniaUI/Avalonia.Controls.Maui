@@ -138,8 +138,17 @@ public class MauiButton : Button
             _textBlock.IsVisible = false;
         }
 
-        _contentPanel.HorizontalAlignment = HorizontalAlignment.Center;
-        _contentPanel.VerticalAlignment = VerticalAlignment.Center;
+        if (hasImage)
+        {
+            _contentPanel.HorizontalAlignment = HorizontalAlignment.Center;
+            _contentPanel.VerticalAlignment = VerticalAlignment.Center;
+        }
+        else
+        {
+            _contentPanel.HorizontalAlignment = HorizontalAlignment.Stretch;
+            _contentPanel.VerticalAlignment = VerticalAlignment.Stretch;
+        }
+        
         _contentPanel.LastChildFill = true;
 
         switch (_contentLayout.Position)
