@@ -25,49 +25,7 @@
                            FontAttributes="Bold"/>
                     <Button x:Name="DefaultButton"
                             Text="Default Button"
-                            Clicked="OnButtonClicked">
-                        <Button.Triggers>
-                            <DataTrigger TargetType="Button" 
-                                         Binding="{Binding IsPressed, Source={x:Reference DefaultButton}}" 
-                                         Value="True">
-                                <Setter Property="BackgroundColor" Value="DarkCyan"/>
-                                <Setter Property="Scale" Value="0.98"/>
-                            </DataTrigger>
-                        </Button.Triggers>
-                    </Button>
-
-                    <HorizontalStackLayout Spacing="5" HorizontalOptions="Center">
-                        <Label Text="IsPressed:" FontSize="11" VerticalOptions="Center" TextColor="Gray"/>
-                        <BoxView WidthRequest="8" HeightRequest="8" CornerRadius="4" VerticalOptions="Center">
-                            <BoxView.Triggers>
-                                <DataTrigger TargetType="BoxView" 
-                                             Binding="{Binding IsPressed, Source={x:Reference DefaultButton}}" 
-                                             Value="True">
-                                    <Setter Property="Color" Value="Green"/>
-                                </DataTrigger>
-                                <DataTrigger TargetType="BoxView" 
-                                             Binding="{Binding IsPressed, Source={x:Reference DefaultButton}}" 
-                                             Value="False">
-                                    <Setter Property="Color" Value="Red"/>
-                                </DataTrigger>
-                            </BoxView.Triggers>
-                        </BoxView>
-                        <Label Text="{Binding IsPressed, Source={x:Reference DefaultButton}, StringFormat='{0}'}"
-                               FontAttributes="Bold" FontSize="11" VerticalOptions="Center">
-                            <Label.Triggers>
-                                <DataTrigger TargetType="Label"
-                                             Binding="{Binding IsPressed, Source={x:Reference DefaultButton}}"
-                                             Value="True">
-                                    <Setter Property="TextColor" Value="Green"/>
-                                </DataTrigger>
-                                <DataTrigger TargetType="Label"
-                                             Binding="{Binding IsPressed, Source={x:Reference DefaultButton}}"
-                                             Value="False">
-                                    <Setter Property="TextColor" Value="Red"/>
-                                </DataTrigger>
-                            </Label.Triggers>
-                        </Label>
-                    </HorizontalStackLayout>
+                            Clicked="OnButtonClicked"/>
 
                     <Button Text="Disabled Button"
                             IsEnabled="False"/>
