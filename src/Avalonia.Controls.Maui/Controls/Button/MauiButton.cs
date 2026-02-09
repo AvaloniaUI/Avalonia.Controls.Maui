@@ -11,7 +11,7 @@ namespace Avalonia.Controls.Maui;
 /// </summary>
 public class MauiButton : Button
 {
-    private StackPanel? _contentPanel;
+    private DockPanel? _contentPanel;
     private TextBlock? _textBlock;
     private Image? _image;
     private MauiContentLayout _contentLayout = new(MauiContentLayout.ImagePosition.Left, 10);
@@ -28,15 +28,20 @@ public class MauiButton : Button
     public static readonly StyledProperty<MauiContentLayout> ContentLayoutProperty =
         AvaloniaProperty.Register<MauiButton, MauiContentLayout>(nameof(ContentLayout), new MauiContentLayout(MauiContentLayout.ImagePosition.Left, 10));
 
+    public static readonly StyledProperty<Microsoft.Maui.LineBreakMode> LineBreakModeProperty =
+        AvaloniaProperty.Register<MauiButton, Microsoft.Maui.LineBreakMode>(nameof(LineBreakMode), Microsoft.Maui.LineBreakMode.NoWrap);
+
     static MauiButton()
     {
         TextProperty.Changed.AddClassHandler<MauiButton>((button, e) => button.UpdateContent());
         ImageSourceProperty.Changed.AddClassHandler<MauiButton>((button, e) => button.UpdateContent());
         ContentLayoutProperty.Changed.AddClassHandler<MauiButton>((button, e) => button.ApplyContentLayout(e.GetNewValue<MauiContentLayout>()));
+        LineBreakModeProperty.Changed.AddClassHandler<MauiButton>((button, e) => button.UpdateContent());
     }
 
     public MauiButton()
     {
+        HorizontalAlignment = HorizontalAlignment.Stretch;
         InitializeContent();
     }
 
@@ -64,18 +69,25 @@ public class MauiButton : Button
         set => SetValue(ContentLayoutProperty, value);
     }
 
+    public Microsoft.Maui.LineBreakMode LineBreakMode
+    {
+        get => GetValue(LineBreakModeProperty);
+        set => SetValue(LineBreakModeProperty, value);
+    }
+
     private void InitializeContent()
     {
-        _contentPanel = new StackPanel
+        _contentPanel = new DockPanel
         {
-            Orientation = Orientation.Horizontal,
             HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Center
         };
 
         _textBlock = new TextBlock
         {
-            VerticalAlignment = VerticalAlignment.Center
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            TextAlignment = TextAlignment.Center
         };
 
         _image = new Image
@@ -87,8 +99,8 @@ public class MauiButton : Button
         };
 
         Content = _contentPanel;
-        HorizontalContentAlignment = HorizontalAlignment.Center;
-        VerticalContentAlignment = VerticalAlignment.Center;
+        HorizontalContentAlignment = HorizontalAlignment.Stretch;
+        VerticalContentAlignment = VerticalAlignment.Stretch;
     }
 
     private void UpdateContent()
@@ -101,10 +113,6 @@ public class MauiButton : Button
         var spacing = hasImage && hasText ? _contentLayout.Spacing : 0;
 
         _contentPanel.Children.Clear();
-        _contentPanel.Orientation = _contentLayout.Position is MauiContentLayout.ImagePosition.Top or MauiContentLayout.ImagePosition.Bottom
-            ? Orientation.Vertical
-            : Orientation.Horizontal;
-
         _image.Margin = new Thickness(0);
         _textBlock.Margin = new Thickness(0);
 
@@ -123,60 +131,113 @@ public class MauiButton : Button
         {
             _textBlock.Text = Text;
             _textBlock.IsVisible = true;
+            UpdateLineBreakMode();
         }
         else
         {
             _textBlock.IsVisible = false;
         }
 
+        _contentPanel.HorizontalAlignment = HorizontalAlignment.Center;
+        _contentPanel.VerticalAlignment = VerticalAlignment.Center;
+        _contentPanel.LastChildFill = true;
+
         switch (_contentLayout.Position)
         {
             case MauiContentLayout.ImagePosition.Top:
                 if (hasImage)
                 {
+                    DockPanel.SetDock(_image, Dock.Top);
+                    _image.HorizontalAlignment = HorizontalAlignment.Center;
                     _contentPanel.Children.Add(_image);
                 }
                 if (hasText)
                 {
                     _textBlock.Margin = new Thickness(0, spacing, 0, 0);
                     _contentPanel.Children.Add(_textBlock);
+                    UpdateLineBreakMode();
                 }
                 break;
 
             case MauiContentLayout.ImagePosition.Bottom:
-                if (hasText)
-                {
-                    _contentPanel.Children.Add(_textBlock);
-                }
                 if (hasImage)
                 {
-                    _image.Margin = new Thickness(0, spacing, 0, 0);
+                    DockPanel.SetDock(_image, Dock.Bottom);
+                    _image.HorizontalAlignment = HorizontalAlignment.Center;
                     _contentPanel.Children.Add(_image);
+                }
+                if (hasText)
+                {
+                    _textBlock.Margin = new Thickness(0, 0, 0, spacing);
+                    _contentPanel.Children.Add(_textBlock);
+                    UpdateLineBreakMode();
                 }
                 break;
 
             case MauiContentLayout.ImagePosition.Right:
-                if (hasText)
-                {
-                    _contentPanel.Children.Add(_textBlock);
-                }
                 if (hasImage)
                 {
-                    _image.Margin = new Thickness(spacing, 0, 0, 0);
+                    DockPanel.SetDock(_image, Dock.Right);
+                    _image.VerticalAlignment = VerticalAlignment.Center;
                     _contentPanel.Children.Add(_image);
+                }
+                if (hasText)
+                {
+                    _textBlock.Margin = new Thickness(0, 0, spacing, 0);
+                    _contentPanel.Children.Add(_textBlock);
+                    UpdateLineBreakMode();
                 }
                 break;
 
-            default:
+            default: // Left
                 if (hasImage)
                 {
+                    DockPanel.SetDock(_image, Dock.Left);
+                    _image.VerticalAlignment = VerticalAlignment.Center;
                     _contentPanel.Children.Add(_image);
                 }
                 if (hasText)
                 {
                     _textBlock.Margin = new Thickness(spacing, 0, 0, 0);
                     _contentPanel.Children.Add(_textBlock);
+                    UpdateLineBreakMode();
                 }
+                break;
+        }
+    }
+
+    private void UpdateLineBreakMode()
+    {
+        if (_textBlock == null)
+            return;
+
+        switch (LineBreakMode)
+        {
+            case Microsoft.Maui.LineBreakMode.NoWrap:
+                _textBlock.TextWrapping = TextWrapping.NoWrap;
+                _textBlock.TextTrimming = TextTrimming.None;
+                break;
+            case Microsoft.Maui.LineBreakMode.WordWrap:
+                _textBlock.TextWrapping = TextWrapping.Wrap;
+                _textBlock.TextTrimming = TextTrimming.None;
+                break;
+            case Microsoft.Maui.LineBreakMode.CharacterWrap:
+                _textBlock.TextWrapping = TextWrapping.Wrap;
+                _textBlock.TextTrimming = TextTrimming.None;
+                break;
+            case Microsoft.Maui.LineBreakMode.HeadTruncation:
+                _textBlock.TextWrapping = TextWrapping.NoWrap;
+                _textBlock.TextTrimming = TextTrimming.PrefixCharacterEllipsis;
+                break;
+            case Microsoft.Maui.LineBreakMode.MiddleTruncation:
+                // MiddleTruncation is not supported by Avalonia TextBlock yet.
+                // Fallback to CharacterEllipsis (TailTruncation).
+                _textBlock.TextWrapping = TextWrapping.NoWrap;
+                _textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
+                break;
+            case Microsoft.Maui.LineBreakMode.TailTruncation:
+                _textBlock.TextWrapping = TextWrapping.NoWrap;
+                _textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
                 break;
         }
     }

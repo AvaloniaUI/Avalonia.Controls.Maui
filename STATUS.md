@@ -66,12 +66,12 @@ Displays text and responds to a tap or click that directs the app to carry out a
 | CommandParameter | ✅ Implemented |
 | ContentLayout | ✅ Implemented |
 | CornerRadius | ✅ Implemented |
-| FontAttributes | ⏳ TODO |
-| FontFamily | ⏳ TODO |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
 | FontSize | ✅ Implemented |
 | ImageSource | ✅ Implemented |
 | IsPressed | ⏳ TODO |
-| LineBreakMode | ⏳ TODO |
+| LineBreakMode | ✅ Implemented |
 | Padding | ✅ Implemented |
 | Text | ✅ Implemented |
 | TextColor | ✅ Implemented |

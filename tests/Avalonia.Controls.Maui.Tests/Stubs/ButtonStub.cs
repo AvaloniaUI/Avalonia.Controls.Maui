@@ -20,6 +20,7 @@ public class ButtonStub : StubBase, IButton, IText, ITextStyle, IPadding, IButto
     private IImageSource? _imageSource;
     private MauiGraphics.Paint? _background;
     private MButton.ButtonContentLayout _contentLayout = new(MButton.ButtonContentLayout.ImagePosition.Left, 10);
+    private Microsoft.Maui.LineBreakMode _lineBreakMode = Microsoft.Maui.LineBreakMode.NoWrap;
 
     // Event counters for testing
     public int ClickedCount { get; private set; }
@@ -119,6 +120,12 @@ public class ButtonStub : StubBase, IButton, IText, ITextStyle, IPadding, IButto
     {
         get => _contentLayout;
         set => SetProperty(ref _contentLayout, value);
+    }
+
+    public Microsoft.Maui.LineBreakMode LineBreakMode
+    {
+        get => _lineBreakMode;
+        set => SetProperty(ref _lineBreakMode, value);
     }
 
     IImageSource? IImageSourcePart.Source => ImageSource;
