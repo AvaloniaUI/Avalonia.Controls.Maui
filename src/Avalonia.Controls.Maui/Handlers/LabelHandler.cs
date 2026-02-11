@@ -256,7 +256,7 @@ public static class LabelTextBlockExtensions
                 textBlock.TextWrapping = TextWrapping.Wrap;
                 break;
             case LineBreakMode.HeadTruncation:
-                textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
+                textBlock.TextTrimming = TextTrimming.PrefixCharacterEllipsis;
                 textBlock.TextWrapping = TextWrapping.NoWrap;
                 break;
             case LineBreakMode.TailTruncation:
