@@ -23,8 +23,10 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Basic Buttons"
                            FontAttributes="Bold"/>
-                    <Button Text="Default Button"
+                    <Button x:Name="DefaultButton"
+                            Text="Default Button"
                             Clicked="OnButtonClicked"/>
+
                     <Button Text="Disabled Button"
                             IsEnabled="False"/>
                     <Button Text="Button with Long Text That Might Wrap"/>
@@ -428,6 +430,48 @@
                 </VerticalStackLayout>
             </Border>
             
+            <!-- Line Break Mode -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Line Break Mode"
+                           FontAttributes="Bold"/>
+                    
+                    <Label Text="NoWrap (Default)" FontSize="12"/>
+                    <Button Text="This is a very long text that should not wrap and might be truncated depending on the layout constraints of the content view"
+                            LineBreakMode="NoWrap"
+                            TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                            BackgroundColor="{AppThemeBinding Light=#E0E0E0, Dark=#333333}"/>
+                    
+                    <Label Text="WordWrap" FontSize="12"/>
+                    <Button Text="This is a very long text that should wrap to multiple lines if there is not enough space in the current view port to display it all on one line"
+                            LineBreakMode="WordWrap"
+                            TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                            BackgroundColor="{AppThemeBinding Light=#D1E8FF, Dark=#004085}"/>
+
+                    <Label Text="TailTruncation" FontSize="12"/>
+                    <Button Text="This is a very long text that should be truncated at the end with an ellipsis if it doesn't fit within the available space provided by the parent container"
+                            LineBreakMode="TailTruncation"
+                            TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                            BackgroundColor="{AppThemeBinding Light=#FFD6D6, Dark=#8B0000}"/>
+                            
+                     <Label Text="HeadTruncation" FontSize="12"/>
+                    <Button Text="This is a very long text that should be truncated at the start with an ellipsis if it doesn't fit within the available space provided by the parent container"
+                            LineBreakMode="HeadTruncation"
+                            TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                            BackgroundColor="{AppThemeBinding Light=#FFF3CD, Dark=#856404}"/>
+                            
+                    <Label Text="MiddleTruncation" FontSize="12"/>
+                    <Button Text="This is a very long text that should be truncated at the middle with an ellipsis if it doesn't fit within the available space provided by the parent container"
+                            LineBreakMode="MiddleTruncation"
+                            TextColor="{AppThemeBinding Light=Black, Dark=White}"
+                            BackgroundColor="{AppThemeBinding Light=#D4EDDA, Dark=#155724}"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Content Layout -->
             <Border Stroke="Gray"
                     Padding="10">
