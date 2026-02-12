@@ -89,6 +89,52 @@ public class ViewHandlerTests : HandlerTestBase
         Assert.Null(control.Effect);
     }
 
+    [AvaloniaFact(DisplayName = "Margin maps to platform control")]
+    public async Task MarginMapsToPlatformControl()
+    {
+        var margin = new Microsoft.Maui.Thickness(1, 2, 3, 4);
+        var view = new ContentViewStub
+        {
+            Margin = margin
+        };
+
+        var platformMargin = await GetValueAsync<global::Avalonia.Thickness, ContentViewHandler>(view, handler => handler.PlatformView.Margin);
+
+        Assert.Equal(new global::Avalonia.Thickness(1, 2, 3, 4), platformMargin);
+    }
+
+    [AvaloniaFact(DisplayName = "InputTransparent maps to IsHitTestVisible")]
+    public async Task InputTransparentMapsToIsHitTestVisible()
+    {
+        var view = new ContentViewStub
+        {
+            InputTransparent = true
+        };
+
+        var handler = await CreateHandlerAsync<ContentViewHandler>(view);
+
+        var isHitTestVisible = await InvokeOnMainThreadAsync(() => handler.PlatformView.IsHitTestVisible);
+        Assert.False(isHitTestVisible);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            view.InputTransparent = false;
+            handler.UpdateValue(nameof(Microsoft.Maui.IView.InputTransparent));
+        });
+
+        isHitTestVisible = await InvokeOnMainThreadAsync(() => handler.PlatformView.IsHitTestVisible);
+        Assert.True(isHitTestVisible);
+    }
+
+    [AvaloniaFact(DisplayName = "Handler is assigned to view")]
+    public async Task HandlerIsAssignedToView()
+    {
+        var view = new ContentViewStub();
+        var handler = await CreateHandlerAsync<ContentViewHandler>(view);
+
+        Assert.Same(handler, view.Handler);
+    }
+
     [AvaloniaFact(DisplayName = "Loaded and Unloaded fire on attach/detach")]
     public async Task LoadedAndUnloadedFireOnAttachDetach()
     {
@@ -157,6 +203,38 @@ public class ViewHandlerTests : HandlerTestBase
 
             Assert.False(entry.IsFocused, "Entry should clear focus state");
             Assert.True(unfocusedCount > 0, "Unfocused event should fire");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    [AvaloniaFact(DisplayName = "Focus/Unfocus update IsFocused")]
+    public async Task FocusAndUnfocusUpdateIsFocused()
+    {
+        var entry = new MauiVirtualEntry();
+        var handler = await CreateHandlerAsync<EntryHandler>(entry);
+        var platformView = handler.PlatformView;
+        platformView.Focusable = true;
+
+        var window = new Window { Content = platformView, Width = 200, Height = 80 };
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            var focused = await InvokeOnMainThreadAsync(() => entry.Focus());
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.True(focused, "Focus should return true");
+            Assert.True(entry.IsFocused, "Entry should report focused");
+
+            await InvokeOnMainThreadAsync(() => entry.Unfocus());
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.False(entry.IsFocused, "Entry should report unfocused");
         }
         finally
         {
