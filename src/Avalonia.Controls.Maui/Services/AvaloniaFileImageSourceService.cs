@@ -94,12 +94,10 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
         bitmap = null;
         try
         {
-            // Try to get the resource from the Avalonia resource system
-            // We need to check both the current assembly and the entry assembly
             var assemblies = new[]
             {
+                Microsoft.Maui.Controls.Application.Current?.GetType().Assembly,
                 System.Reflection.Assembly.GetEntryAssembly(),
-                System.Reflection.Assembly.GetCallingAssembly(),
                 typeof(AvaloniaFileImageSourceService).Assembly
             }.Where(a => a != null).Distinct();
 
@@ -107,39 +105,17 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             {
                 var assemblyName = assembly!.GetName().Name;
 
-                // Try different URI schemes for each assembly
-                var uris = new[]
+                try
                 {
-                    new Uri($"avares://{assemblyName}{resourcePath}"),
-                    new Uri($"resm:{assemblyName}{resourcePath.Replace('/', '.')}?assembly={assemblyName}"),
-                };
-
-                foreach (var uri in uris)
-                {
-                    try
-                    {
-                        using var stream = AssetLoader.Open(uri);
-                        bitmap = new Bitmap(stream);
-                        return true;
-                    }
-                    catch
-                    {
-                        // Try next URI format
-                    }
+                    var uri = new Uri($"avares://{assemblyName}{resourcePath}");
+                    using var stream = AssetLoader.Open(uri);
+                    bitmap = new Bitmap(stream);
+                    return true;
                 }
-            }
-
-            // Also try without assembly name (for embedded resources)
-            try
-            {
-                var uri = new Uri($"avares:///{resourcePath.TrimStart('/')}");
-                using var stream = AssetLoader.Open(uri);
-                bitmap = new Bitmap(stream);
-                return true;
-            }
-            catch
-            {
-                // Resource not found
+                catch
+                {
+                    // Try next assembly
+                }
             }
         }
         catch (Exception)
