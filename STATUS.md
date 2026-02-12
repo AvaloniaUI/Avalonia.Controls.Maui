@@ -66,12 +66,12 @@ Displays text and responds to a tap or click that directs the app to carry out a
 | CommandParameter | ✅ Implemented |
 | ContentLayout | ✅ Implemented |
 | CornerRadius | ✅ Implemented |
-| FontAttributes | ⏳ TODO |
-| FontFamily | ⏳ TODO |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
 | FontSize | ✅ Implemented |
 | ImageSource | ✅ Implemented |
-| IsPressed | ⏳ TODO |
-| LineBreakMode | ⏳ TODO |
+| IsPressed | ✅ Implemented |
+| LineBreakMode | ✅ Implemented |
 | Padding | ✅ Implemented |
 | Text | ✅ Implemented |
 | TextColor | ✅ Implemented |
@@ -757,7 +757,7 @@ A type of button that allows the selection of one option from a set.
 
 | Property | Status |
 |----------|--------|
-| BorderColor | ⏳ TODO |
+| BorderColor | ✅ Implemented |
 | BorderWidth | ✅ Implemented |
 | CharacterSpacing | ✅ Implemented |
 | Content | ✅ Implemented |
@@ -1366,21 +1366,21 @@ All controls inherit these common properties from the View and VisualElement bas
 | BindingContext | object | ⏳ TODO |
 | Bounds | Rect | ⏳ TODO |
 | Clip | Geometry | ✅ Implemented |
-| DesiredSize | Size | ⏳ TODO |
+| DesiredSize | Size | ✅ Implemented |
 | Effects | IList<Effect> | ⏳ TODO |
 | FlowDirection | FlowDirection | ✅ Implemented |
 | Frame | Rect | ⏳ TODO |
-| GestureRecognizers | IList<IGestureRecognizer> | ⏳ TODO |
-| Handler | IViewHandler | ⏳ TODO |
+| GestureRecognizers | IList<IGestureRecognizer> | ✅ Implemented |
+| Handler | IViewHandler | ✅ Implemented |
 | Height | double | ✅ Implemented |
 | HeightRequest | double | ✅ Implemented |
 | HorizontalOptions | LayoutOptions | ✅ Implemented |
-| InputTransparent | bool | ⏳ TODO |
+| InputTransparent | bool | ✅ Implemented |
 | IsEnabled | bool | ✅ Implemented |
-| IsFocused | bool | ⏳ TODO |
-| IsLoaded | bool | ⏳ TODO |
+| IsFocused | bool | ✅ Implemented |
+| IsLoaded | bool | ✅ Implemented |
 | IsVisible | bool | ✅ Implemented |
-| Margin | Thickness | ⏳ TODO |
+| Margin | Thickness | ✅ Implemented |
 | MaximumHeightRequest | double | ✅ Implemented |
 | MaximumWidthRequest | double | ✅ Implemented |
 | MinimumHeightRequest | double | ✅ Implemented |
@@ -1416,23 +1416,23 @@ All controls inherit these common events from the View and VisualElement base cl
 
 | Event | Status |
 |-------|--------|
-| BindingContextChanged | ⏳ TODO |
-| ChildAdded | ⏳ TODO |
-| ChildRemoved | ⏳ TODO |
-| ChildrenReordered | ⏳ TODO |
-| DescendantAdded | ⏳ TODO |
-| DescendantRemoved | ⏳ TODO |
-| Focused | ⏳ TODO |
-| HandlerChanged | ⏳ TODO |
-| HandlerChanging | ⏳ TODO |
-| Loaded | ⏳ TODO |
-| ParentChanged | ⏳ TODO |
-| ParentChanging | ⏳ TODO |
-| PropertyChanged | ⏳ TODO |
-| PropertyChanging | ⏳ TODO |
-| SizeChanged | ⏳ TODO |
-| Unfocused | ⏳ TODO |
-| Unloaded | ⏳ TODO |
+| BindingContextChanged | ✅ Implemented |
+| ChildAdded | ✅ Implemented |
+| ChildRemoved | ✅ Implemented |
+| ChildrenReordered | ✅ Implemented |
+| DescendantAdded | ✅ Implemented |
+| DescendantRemoved | ✅ Implemented |
+| Focused | ✅ Implemented |
+| HandlerChanged | ✅ Implemented |
+| HandlerChanging | ✅ Implemented |
+| Loaded | ✅ Implemented |
+| ParentChanged | ✅ Implemented |
+| ParentChanging | ✅ Implemented |
+| PropertyChanged | ✅ Implemented |
+| PropertyChanging | ✅ Implemented |
+| SizeChanged | ✅ Implemented |
+| Unfocused | ✅ Implemented |
+| Unloaded | ✅ Implemented |
 
 ---
 
