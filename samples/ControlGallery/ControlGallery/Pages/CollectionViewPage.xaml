@@ -330,8 +330,9 @@
                            FontAttributes="Italic"/>
                     <CollectionView ItemsSource="{Binding SimpleItems}"
                                     SelectionMode="Single"
+                                    SelectedItem="{Binding SelectionCommandSelectedItem, Mode=TwoWay}"
                                     SelectionChangedCommand="{Binding SelectionCommand}"
-                                    SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}"
+                                    SelectionChangedCommandParameter="{Binding SelectionCommandSelectedItem}"
                                     HeightRequest="150">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="sys:String">
