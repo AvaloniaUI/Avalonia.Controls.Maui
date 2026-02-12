@@ -112,15 +112,17 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
                     bitmap = new Bitmap(stream);
                     return true;
                 }
-                catch
+                catch (Exception ex)
                 {
                     // Try next assembly
+                    _logger?.LogDebug(ex, $"Resource not found in assembly {assemblyName}: {resourcePath}");
                 }
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             // Resource not found
+            _logger?.LogDebug(ex, $"Error loading Avalonia resource: {resourcePath}");
         }
 
         return false;
