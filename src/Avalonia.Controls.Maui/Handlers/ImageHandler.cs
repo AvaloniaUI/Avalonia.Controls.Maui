@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Avalonia.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Platform;
@@ -322,35 +321,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
     private bool TryFindEmbeddedGif(string fileName, out Uri? result)
     {
-        result = null;
-        var targetName = Path.GetFileName(fileName);
-
-        var assembly = Assembly.GetEntryAssembly();
-        if (assembly == null)
-            return false;
-
-        var assemblyName = assembly.GetName().Name;
-        var rootUri = new Uri($"avares://{assemblyName}/");
-
-        try
-        {
-            var assets = AssetLoader.GetAssets(rootUri, null);
-
-            foreach (var assetUri in assets)
-            {
-                if (assetUri.ToString().EndsWith(targetName, StringComparison.OrdinalIgnoreCase))
-                {
-                    result = assetUri;
-                    return true;
-                }
-            }
-        }
-        catch
-        {
-            // Assembly might not have any Avalonia resources
-        }
-
-        return false;
+        return AvaloniaResourceHelper.TryResolveResourceUri(fileName, out result);
     }
 
     private void Log(LogLevel level, Exception? ex, string message)

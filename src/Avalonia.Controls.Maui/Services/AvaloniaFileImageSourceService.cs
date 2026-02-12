@@ -50,10 +50,9 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             Bitmap? bitmap = null;
 
             // First try to load as an Avalonia resource
-            var resourcePath = GetResourcePath(fileName);
-            if (TryLoadFromAvaloniaResource(resourcePath, out bitmap) && bitmap != null)
+            if (TryLoadFromAvaloniaResource(fileName, out bitmap) && bitmap != null)
             {
-                _logger?.LogDebug($"Loaded image from Avalonia resource: {resourcePath}");
+                _logger?.LogDebug($"Loaded image from Avalonia resource: {fileName}");
                 return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(
                     new ImageSourceServiceResult(bitmap));
             }
@@ -78,39 +77,23 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
         }
     }
 
-    private string GetResourcePath(string fileName)
-    {
-        // Remove any file extension for the resource lookup
-        var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-        var extension = Path.GetExtension(fileName);
-
-        // The Avalonia.Controls.Target task embeds images under the /Images/ folder.
-        return $"/Images/{nameWithoutExtension}{extension}";
-    }
-
-    private bool TryLoadFromAvaloniaResource(string resourcePath, out Bitmap? bitmap)
+    private bool TryLoadFromAvaloniaResource(string fileName, out Bitmap? bitmap)
     {
         bitmap = null;
-        string? assemblyName = null;
+        if (!AvaloniaResourceHelper.TryResolveResourceUri(fileName, out var uri) || uri == null)
+            return false;
+
         try
         {
-            var assembly = System.Reflection.Assembly.GetEntryAssembly();
-            if (assembly == null)
-                return false;
-
-            assemblyName = assembly.GetName().Name;
-            var uri = new Uri($"avares://{assemblyName}{resourcePath}");
             using var stream = AssetLoader.Open(uri);
             bitmap = new Bitmap(stream);
             return true;
         }
         catch (Exception ex)
         {
-            // Resource not found
-            _logger?.LogDebug(ex, $"Resource not found in {assemblyName ?? "unknown assembly"}: {resourcePath}");
+            _logger?.LogDebug(ex, $"Resource URI resolved but failed to load bitmap: {uri}");
+            return false;
         }
-
-        return false;
     }
 }
 
