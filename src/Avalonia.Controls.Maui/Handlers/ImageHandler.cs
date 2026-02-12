@@ -325,37 +325,29 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         result = null;
         var targetName = Path.GetFileName(fileName);
 
-        var assemblies = new[]
-        {
-            Microsoft.Maui.Controls.Application.Current?.GetType().Assembly,
-            Assembly.GetEntryAssembly(),
-            Assembly.GetExecutingAssembly()
-        }.Where(x => x != null).Distinct();
+        var assembly = Assembly.GetEntryAssembly();
+        if (assembly == null)
+            return false;
 
-        foreach (var assembly in assemblies)
-        {
-            if (assembly == null) continue;
-            var assemblyName = assembly.GetName().Name;
-            var rootUri = new Uri($"avares://{assemblyName}/");
+        var assemblyName = assembly.GetName().Name;
+        var rootUri = new Uri($"avares://{assemblyName}/");
 
-            try
+        try
+        {
+            var assets = AssetLoader.GetAssets(rootUri, null);
+
+            foreach (var assetUri in assets)
             {
-                var assets = AssetLoader.GetAssets(rootUri, null);
-                
-                foreach (var assetUri in assets)
+                if (assetUri.ToString().EndsWith(targetName, StringComparison.OrdinalIgnoreCase))
                 {
-                    // Match suffix (handles folders automatically)
-                    if (assetUri.ToString().EndsWith(targetName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        result = assetUri;
-                        return true;
-                    }
+                    result = assetUri;
+                    return true;
                 }
             }
-            catch
-            {
-                // Assembly might not have any Avalonia resources
-            }
+        }
+        catch
+        {
+            // Assembly might not have any Avalonia resources
         }
 
         return false;
