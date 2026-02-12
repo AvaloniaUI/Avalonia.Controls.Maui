@@ -7,7 +7,7 @@ public partial class BrushesPage : ContentPage
 		InitializeComponent();
 	}
 
-    private async void OnAnimateColorsClicked(object sender, EventArgs e)
+    private async void OnAnimateColorsClicked(object? sender, EventArgs e)
     {
         var duration = 2000u;
         

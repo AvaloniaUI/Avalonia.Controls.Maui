@@ -186,7 +186,7 @@ public partial class SliderPage : ContentPage, INotifyPropertyChanged
         }
     }
 
-    void OnColorVariationValueChanged(object sender, ValueChangedEventArgs e)
+    void OnColorVariationValueChanged(object? sender, ValueChangedEventArgs e)
     {
         if (sender is Slider slider)
             LastEventText = $"ValueChanged: {slider.MinimumTrackColor} -> {e.NewValue:F2}";

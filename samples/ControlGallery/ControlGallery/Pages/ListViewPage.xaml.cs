@@ -243,7 +243,7 @@ internal partial class ListViewPage : ContentPage
         }
     }
 
-    private void OnSelectionChanged(object sender, SelectedItemChangedEventArgs e)
+    private void OnSelectionChanged(object? sender, SelectedItemChangedEventArgs e)
     {
         if (e.SelectedItem == null)
             SelectionStatus = "No selection";
@@ -294,35 +294,35 @@ internal partial class ListViewPage : ContentPage
         }
     }
 
-    public void SetSelectionSingle(object sender, EventArgs e) => CurrentSelectionMode = ListViewSelectionMode.Single;
+    public void SetSelectionSingle(object? sender, EventArgs e) => CurrentSelectionMode = ListViewSelectionMode.Single;
 
-    public void SetSelectionNone(object sender, EventArgs e)
+    public void SetSelectionNone(object? sender, EventArgs e)
     {
         CurrentSelectionMode = ListViewSelectionMode.None;
         SelectionStatus = "None";
     }
 
-    private void OnItemSelected(object sender, SelectedItemChangedEventArgs e)
+    private void OnItemSelected(object? sender, SelectedItemChangedEventArgs e)
     {
         LogEvent($"Selected: {e.SelectedItem}");
     }
 
-    private void OnItemTapped(object sender, ItemTappedEventArgs e)
+    private void OnItemTapped(object? sender, ItemTappedEventArgs e)
     {
         LogEvent($"Tapped: {e.Item}");
     }
 
-    private void OnItemAppearing(object sender, ItemVisibilityEventArgs e)
+    private void OnItemAppearing(object? sender, ItemVisibilityEventArgs e)
     {
         LogEvent($"Appearing: {e.Item}");
     }
 
-    private void OnItemDisappearing(object sender, ItemVisibilityEventArgs e)
+    private void OnItemDisappearing(object? sender, ItemVisibilityEventArgs e)
     {
         LogEvent($"Disappearing: {e.Item}");
     }
 
-    private void OnScrolled(object sender, ScrolledEventArgs e)
+    private void OnScrolled(object? sender, ScrolledEventArgs e)
     {
         if (Math.Abs(e.ScrollY % 50) < 5)
             LogEvent($"Scrolled: {e.ScrollX:F1}, {e.ScrollY:F1}");
@@ -340,7 +340,7 @@ internal partial class ListViewPage : ContentPage
         }
     }
 
-    private void OnToggleSeparatorClicked(object sender, EventArgs e)
+    private void OnToggleSeparatorClicked(object? sender, EventArgs e)
     {
         if (SeparatorVisibilityListView.SeparatorVisibility == SeparatorVisibility.Default)
             SeparatorVisibilityListView.SeparatorVisibility = SeparatorVisibility.None;
@@ -348,28 +348,28 @@ internal partial class ListViewPage : ContentPage
             SeparatorVisibilityListView.SeparatorVisibility = SeparatorVisibility.Default;
     }
 
-    private void OnSeparatorColorRedClicked(object sender, EventArgs e)
+    private void OnSeparatorColorRedClicked(object? sender, EventArgs e)
     {
         SeparatorColorListView.SeparatorColor = Colors.Red;
     }
 
-    private void OnSeparatorColorGreenClicked(object sender, EventArgs e)
+    private void OnSeparatorColorGreenClicked(object? sender, EventArgs e)
     {
         SeparatorColorListView.SeparatorColor = Microsoft.Maui.Graphics.Colors.Green;
     }
 
-    private void OnSeparatorColorBlueClicked(object sender, EventArgs e)
+    private void OnSeparatorColorBlueClicked(object? sender, EventArgs e)
     {
         SeparatorColorListView.SeparatorColor = Colors.Blue;
     }
 
-    private void OnScrollNeverClicked(object sender, EventArgs e) =>
+    private void OnScrollNeverClicked(object? sender, EventArgs e) =>
         ScrollBarVisibilityListView.VerticalScrollBarVisibility = ScrollBarVisibility.Never;
 
-    private void OnScrollAlwaysClicked(object sender, EventArgs e) =>
+    private void OnScrollAlwaysClicked(object? sender, EventArgs e) =>
         ScrollBarVisibilityListView.VerticalScrollBarVisibility = ScrollBarVisibility.Always;
 
-    private void OnScrollDefaultClicked(object sender, EventArgs e) =>
+    private void OnScrollDefaultClicked(object? sender, EventArgs e) =>
         ScrollBarVisibilityListView.VerticalScrollBarVisibility = ScrollBarVisibility.Default;
 }
 
