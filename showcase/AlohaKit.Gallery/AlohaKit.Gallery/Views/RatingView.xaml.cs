@@ -9,22 +9,22 @@ public partial class RatingView : ContentPage
         UpdateColors();
     }
 
-    void OnSelectedFillColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnSelectedFillColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnUnSelectedFillColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnUnSelectedFillColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnSelectedStrokeColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnSelectedStrokeColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnUnSelectedStrokeColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnUnSelectedStrokeColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }

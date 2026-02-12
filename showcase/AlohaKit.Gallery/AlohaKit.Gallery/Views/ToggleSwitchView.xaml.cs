@@ -9,22 +9,22 @@ public partial class ToggleSwitchView : ContentPage
         UpdateBrushes();
     }
 
-    void OnTrackStartColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnTrackStartColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnTrackEndColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnTrackEndColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnThumbStartColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnThumbStartColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnThumbEndColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnThumbEndColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }

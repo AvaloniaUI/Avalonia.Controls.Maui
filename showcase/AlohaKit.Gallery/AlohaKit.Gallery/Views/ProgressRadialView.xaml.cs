@@ -17,17 +17,17 @@ public partial class ProgressRadialView : ContentPage
         ProgressRadial.Direction = e.Value ? ProgressRadialDirection.LeftToRight : ProgressRadialDirection.RightToLeft;
     }
 
-    void OnBackgroundColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnBackgroundColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnProgressColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnProgressColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnTextColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnTextColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }

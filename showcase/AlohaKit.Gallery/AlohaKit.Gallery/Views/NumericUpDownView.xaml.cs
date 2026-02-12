@@ -9,32 +9,32 @@ public partial class NumericUpDownView : ContentPage
         UpdateColors();
     }
 
-    void OnColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnTextColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnTextColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnMaximumColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnMaximumColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnMinimumColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnMinimumColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }    
     
-    void OnMaximumTextColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnMaximumTextColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }    
     
-    void OnMinimumTextColorTextChanged(object sender, TextChangedEventArgs e)
+    void OnMinimumTextColorTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }

@@ -9,12 +9,12 @@ public partial class PulseIconView : ContentPage
         UpdateColors();
     }
 
-    void OnPulseColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnPulseColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnBackgroundColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnBackgroundColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
