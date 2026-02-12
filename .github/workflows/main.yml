@@ -92,7 +92,7 @@ jobs:
       with:
         name: render-test-images
         path: |
-          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net10.0/*.out.png
-          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net10.0/*.diff.png
+          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net11.0/*.out.png
+          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net11.0/*.diff.png
         if-no-files-found: ignore
         retention-days: 7

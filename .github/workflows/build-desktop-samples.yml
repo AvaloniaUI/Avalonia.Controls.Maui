@@ -50,7 +50,7 @@ jobs:
         run: |
           dotnet publish ${{ matrix.app.project }} \
             -c Release \
-            -f net10.0 \
+            -f net11.0 \
             -r linux-x64 \
             -o ./artifacts/${{ matrix.app.name }} \
             /p:PublishAOT=true

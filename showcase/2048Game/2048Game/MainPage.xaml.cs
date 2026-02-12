@@ -388,7 +388,7 @@ public partial class MainPage : ContentPage
         CurrentViewModel.RequestMove(direction);
     }
 
-    void UndoButton_Clicked(System.object? sender, System.EventArgs e)
+    void UndoButton_Clicked(object? sender, System.EventArgs e)
     {
         if (CurrentViewModel.CanUndo)
         {

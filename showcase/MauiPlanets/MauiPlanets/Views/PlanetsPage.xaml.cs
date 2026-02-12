@@ -23,7 +23,7 @@ public partial class PlanetsPage : ContentPage
         MainContentGrid.Opacity = 1;
     }
 
-    async void Planets_SelectionChanged(System.object? sender, Microsoft.Maui.Controls.SelectionChangedEventArgs e)
+    async void Planets_SelectionChanged(object? sender, Microsoft.Maui.Controls.SelectionChangedEventArgs e)
     {
         if (e.CurrentSelection.FirstOrDefault() is Planet planet)
         {
@@ -31,7 +31,7 @@ public partial class PlanetsPage : ContentPage
         }
     }
 
-    async void ProfilePic_Clicked(System.object? sender, System.EventArgs e)
+    async void ProfilePic_Clicked(object? sender, System.EventArgs e)
     {
         // Reveal our menu and move the main content out of the view
         _ = MainContentGrid.TranslateToAsync(-this.Width * 0.5, this.Height * 0.1, AnimationDuration, Easing.CubicIn);
@@ -39,7 +39,7 @@ public partial class PlanetsPage : ContentPage
         _ = MainContentGrid.FadeToAsync(0.8, AnimationDuration);
     }
 
-    async void GridArea_Tapped(System.object? sender, System.EventArgs e)
+    async void GridArea_Tapped(object? sender, System.EventArgs e)
     {
         await CloseMenu();
     }
