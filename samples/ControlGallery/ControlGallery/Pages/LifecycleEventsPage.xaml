@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ControlGallery.Pages"
+             xmlns:sys="clr-namespace:System;assembly=netstandard"
+             x:Class="ControlGallery.Pages.LifecycleEventsPage"
+             x:DataType="pages:LifecycleEventsPage"
+             Title="Lifecycle Events">
+    <ContentPage.Resources>
+        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+        <Color x:Key="SectionBorderDark">#444444</Color>
+        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Lifecycle Events"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Actions" FontAttributes="Bold"/>
+                        <Label Text="Add/remove, move, reorder, and update BindingContext."
+                               FontSize="12"
+                               FontAttributes="Italic"/>
+                        <Grid ColumnDefinitions="*,*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8">
+                            <Button Text="Toggle Child" Clicked="OnToggleChildClicked" />
+                            <Button Text="Move Child" Grid.Column="1" Clicked="OnMoveChildClicked" />
+                            <Button Text="Reorder" Grid.Column="2" Clicked="OnReorderChildrenClicked" />
+                            <Button Text="BindingContext" Grid.Row="1" Clicked="OnBindingContextClicked" />
+                            <Button Text="Clear Log" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Clicked="OnClearLogClicked" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1"
+                             Color="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Focus" FontAttributes="Bold"/>
+                        <Label Text="Focus/Unfocus the Entry to raise Focused/Unfocused."
+                               FontSize="12"
+                               FontAttributes="Italic"/>
+                        <HorizontalStackLayout Spacing="8">
+                            <Entry x:Name="FocusEntry" Placeholder="Tap or focus me" WidthRequest="200" />
+                            <Button Text="Focus" Clicked="OnFocusEntryClicked" />
+                            <Button Text="Unfocus" Clicked="OnUnfocusEntryClicked" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1"
+                             Color="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Size" FontAttributes="Bold"/>
+                        <Label Text="Adjust the tracked element to raise SizeChanged."
+                               FontSize="12"
+                               FontAttributes="Italic"/>
+                        <VerticalStackLayout Spacing="6">
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="Width" WidthRequest="60" />
+                                <Slider x:Name="WidthSlider"
+                                        Minimum="80"
+                                        Maximum="300"
+                                        ValueChanged="OnSizeSliderChanged" />
+                                <Label x:Name="WidthValueLabel" WidthRequest="50" HorizontalTextAlignment="End" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="Height" WidthRequest="60" />
+                                <Slider x:Name="HeightSlider"
+                                        Minimum="40"
+                                        Maximum="200"
+                                        ValueChanged="OnSizeSliderChanged" />
+                                <Label x:Name="HeightValueLabel" WidthRequest="50" HorizontalTextAlignment="End" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1"
+                             Color="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Parents" FontAttributes="Bold"/>
+                        <Label Text="Move the tracked element between parents to raise parent/child events."
+                               FontSize="12"
+                               FontAttributes="Italic"/>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                            <Border Grid.Column="0" Stroke="Gray" Padding="8" BackgroundColor="#FFF6F6F6">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <VerticalStackLayout x:Name="ParentA" Spacing="6">
+                                    <Label Text="Parent A" FontAttributes="Bold" />
+                                    <Border x:Name="TrackedBorder"
+                                            Stroke="DarkGray"
+                                            StrokeThickness="1"
+                                            BackgroundColor="#FFEFEFEF"
+                                            Padding="8">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="6"/>
+                                        </Border.StrokeShape>
+                                        <Label Text="Tracked Element" />
+                                    </Border>
+                                    <BoxView x:Name="SiblingBoxA" Color="#FFDDDDDD" HeightRequest="20" WidthRequest="80" />
+                                </VerticalStackLayout>
+                            </Border>
+                            <Border Grid.Column="1" Stroke="Gray" Padding="8" BackgroundColor="#FFF6F6F6">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8"/>
+                                </Border.StrokeShape>
+                                <VerticalStackLayout x:Name="ParentB" Spacing="6">
+                                    <Label Text="Parent B" FontAttributes="Bold" />
+                                    <BoxView x:Name="SiblingBoxB" Color="#FFDDDDDD" HeightRequest="20" WidthRequest="80" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1"
+                             Color="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Event Log" FontAttributes="Bold"/>
+                        <CollectionView ItemsSource="{Binding EventLog}" HeightRequest="220">
+                            <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="sys:String">
+                                <Label Text="{Binding .}" FontSize="12" />
+                            </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

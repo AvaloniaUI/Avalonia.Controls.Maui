@@ -3,14 +3,17 @@ using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
+using Avalonia.Threading;
 using MauiColors = Microsoft.Maui.Graphics.Colors;
+using MauiContentView = Microsoft.Maui.Controls.ContentView;
 using MauiEllipseGeometry = Microsoft.Maui.Controls.Shapes.EllipseGeometry;
+using MauiVirtualEntry = Microsoft.Maui.Controls.Entry;
 using MauiPoint = Microsoft.Maui.Graphics.Point;
 using MauiSolidPaint = Microsoft.Maui.Graphics.SolidPaint;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
-public class ViewHandlerTests
+public class ViewHandlerTests : HandlerTestBase
 {
     [AvaloniaFact(DisplayName = "UpdateClip applies geometry to control")]
     public void UpdateClipAppliesGeometry()
@@ -27,11 +30,11 @@ public class ViewHandlerTests
             Height = 80
         };
 
-        var control = new global::Avalonia.Controls.Control();
+        var control = new Control();
         control.UpdateClip(view);
 
-        var clip = Assert.IsType<global::Avalonia.Media.EllipseGeometry>(control.Clip);
-        Assert.Equal(new global::Avalonia.Rect(0, 0, 100, 80), clip.Rect);
+        var clip = Assert.IsType<EllipseGeometry>(control.Clip);
+        Assert.Equal(new Rect(0, 0, 100, 80), clip.Rect);
     }
 
     [AvaloniaFact(DisplayName = "UpdateShadow applies DropShadowEffect")]
@@ -77,12 +80,165 @@ public class ViewHandlerTests
             }
         };
 
-        var control = new global::Avalonia.Controls.Control();
+        var control = new Control();
         control.UpdateShadow(view);
 
         view.Shadow = null;
         control.UpdateShadow(view);
 
         Assert.Null(control.Effect);
+    }
+
+    [AvaloniaFact(DisplayName = "Margin maps to platform control")]
+    public async Task MarginMapsToPlatformControl()
+    {
+        var margin = new Microsoft.Maui.Thickness(1, 2, 3, 4);
+        var view = new ContentViewStub
+        {
+            Margin = margin
+        };
+
+        var platformMargin = await GetValueAsync<global::Avalonia.Thickness, ContentViewHandler>(view, handler => handler.PlatformView.Margin);
+
+        Assert.Equal(new global::Avalonia.Thickness(1, 2, 3, 4), platformMargin);
+    }
+
+    [AvaloniaFact(DisplayName = "InputTransparent maps to IsHitTestVisible")]
+    public async Task InputTransparentMapsToIsHitTestVisible()
+    {
+        var view = new ContentViewStub
+        {
+            InputTransparent = true
+        };
+
+        var handler = await CreateHandlerAsync<ContentViewHandler>(view);
+
+        var isHitTestVisible = await InvokeOnMainThreadAsync(() => handler.PlatformView.IsHitTestVisible);
+        Assert.False(isHitTestVisible);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            view.InputTransparent = false;
+            handler.UpdateValue(nameof(Microsoft.Maui.IView.InputTransparent));
+        });
+
+        isHitTestVisible = await InvokeOnMainThreadAsync(() => handler.PlatformView.IsHitTestVisible);
+        Assert.True(isHitTestVisible);
+    }
+
+    [AvaloniaFact(DisplayName = "Handler is assigned to view")]
+    public async Task HandlerIsAssignedToView()
+    {
+        var view = new ContentViewStub();
+        var handler = await CreateHandlerAsync<ContentViewHandler>(view);
+
+        Assert.Same(handler, view.Handler);
+    }
+
+    [AvaloniaFact(DisplayName = "Loaded and Unloaded fire on attach/detach")]
+    public async Task LoadedAndUnloadedFireOnAttachDetach()
+    {
+        var view = new MauiContentView();
+        var loadedCount = 0;
+        var unloadedCount = 0;
+
+        view.Loaded += (_, _) => loadedCount++;
+        view.Unloaded += (_, _) => unloadedCount++;
+
+        var handler = await CreateHandlerAsync<ContentViewHandler>(view);
+        var platformView = handler.PlatformView;
+
+        var window = new Window { Content = platformView, Width = 200, Height = 200 };
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Equal(1, loadedCount);
+            Assert.Equal(0, unloadedCount);
+
+            window.Content = null;
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Equal(1, loadedCount);
+            Assert.Equal(1, unloadedCount);
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+    
+    [AvaloniaFact(DisplayName = "Focused/Unfocused reflect platform focus")]
+    public async Task FocusedAndUnfocusedReflectPlatformFocus()
+    {
+        var entry = new MauiVirtualEntry();
+        var focusedCount = 0;
+        var unfocusedCount = 0;
+
+        entry.Focused += (_, _) => focusedCount++;
+        entry.Unfocused += (_, _) => unfocusedCount++;
+
+        var handler = await CreateHandlerAsync<EntryHandler>(entry);
+        var platformView = handler.PlatformView;
+        platformView.Focusable = true;
+
+        var window = new Window { Content = platformView, Width = 200, Height = 80 };
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            platformView.Focus();
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.True(platformView.IsFocused, "Platform view should accept focus");
+            Assert.True(entry.IsFocused, "Entry should reflect focus state");
+            Assert.True(focusedCount > 0, "Focused event should fire");
+
+            window.FocusManager?.ClearFocus();
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.False(entry.IsFocused, "Entry should clear focus state");
+            Assert.True(unfocusedCount > 0, "Unfocused event should fire");
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
+    [AvaloniaFact(DisplayName = "Focus/Unfocus update IsFocused")]
+    public async Task FocusAndUnfocusUpdateIsFocused()
+    {
+        var entry = new MauiVirtualEntry();
+        var handler = await CreateHandlerAsync<EntryHandler>(entry);
+        var platformView = handler.PlatformView;
+        platformView.Focusable = true;
+
+        var window = new Window { Content = platformView, Width = 200, Height = 80 };
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            var focused = await InvokeOnMainThreadAsync(() => entry.Focus());
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.True(focused, "Focus should return true");
+            Assert.True(entry.IsFocused, "Entry should report focused");
+
+            await InvokeOnMainThreadAsync(() => entry.Unfocus());
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.False(entry.IsFocused, "Entry should report unfocused");
+        }
+        finally
+        {
+            window.Close();
+        }
     }
 }

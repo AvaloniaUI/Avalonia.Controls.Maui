@@ -38,6 +38,8 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         
         // Button image properties
         [nameof(MButton.ImageSource)] = MapImageSource,
+
+        [nameof(MButton.LineBreakMode)] = MapLineBreakMode,
     };
 
     public static CommandMapper<IButton, ButtonHandler> CommandMapper = new(ViewCommandMapper);
@@ -166,7 +168,6 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         buttonHandler._imageSourceCts = cts;
         _ = buttonHandler.LoadImageSourceAsync(imageSource, cts.Token);
     }
-
     public static void MapContentLayout(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -182,6 +183,14 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         {
             platformView.UpdateContentLayout(value);
         }
+    }
+
+    public static void MapLineBreakMode(ButtonHandler handler, IButton button)
+    {
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
+            return;
+
+        platformView.UpdateLineBreakMode(handler.VirtualView);
     }
 
     protected override void ConnectHandler(PlatformView platformView)
