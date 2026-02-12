@@ -757,7 +757,7 @@ A type of button that allows the selection of one option from a set.
 
 | Property | Status |
 |----------|--------|
-| BorderColor | ⏳ TODO |
+| BorderColor | ✅ Implemented |
 | BorderWidth | ✅ Implemented |
 | CharacterSpacing | ✅ Implemented |
 | Content | ✅ Implemented |
