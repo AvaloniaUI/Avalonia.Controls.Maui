@@ -53,7 +53,8 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        global-json-file: global.json
+        dotnet-version: '11.0.x'
+        dotnet-quality: 'preview'
 
     - name: Restore dotnet workloads
       run: |
