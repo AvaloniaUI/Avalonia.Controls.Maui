@@ -66,12 +66,12 @@ Displays text and responds to a tap or click that directs the app to carry out a
 | CommandParameter | ✅ Implemented |
 | ContentLayout | ✅ Implemented |
 | CornerRadius | ✅ Implemented |
-| FontAttributes | ⏳ TODO |
-| FontFamily | ⏳ TODO |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
 | FontSize | ✅ Implemented |
 | ImageSource | ✅ Implemented |
-| IsPressed | ⏳ TODO |
-| LineBreakMode | ⏳ TODO |
+| IsPressed | ✅ Implemented |
+| LineBreakMode | ✅ Implemented |
 | Padding | ✅ Implemented |
 | Text | ✅ Implemented |
 | TextColor | ✅ Implemented |
@@ -757,7 +757,7 @@ A type of button that allows the selection of one option from a set.
 
 | Property | Status |
 |----------|--------|
-| BorderColor | ⏳ TODO |
+| BorderColor | ✅ Implemented |
 | BorderWidth | ✅ Implemented |
 | CharacterSpacing | ✅ Implemented |
 | Content | ✅ Implemented |

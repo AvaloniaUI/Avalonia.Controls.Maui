@@ -16,8 +16,9 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>
         [nameof(IButtonStroke.StrokeColor)] = MapStrokeColor,
         [nameof(IButtonStroke.StrokeThickness)] = MapStrokeThickness,
         [nameof(IButtonStroke.CornerRadius)] = MapCornerRadius,
+        ["BorderColor"] = MapStrokeColor,
+        ["BorderWidth"] = MapStrokeThickness,
         ["ContentTemplate"] = MapContent,
-        ["GroupName"] = MapGroupName,
         ["TextTransform"] = MapContent,
         ["Value"] = MapValue,
     };
