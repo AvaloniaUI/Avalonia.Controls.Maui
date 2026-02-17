@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Maui;
 using Microsoft.Maui.Animations;
 using Microsoft.Maui.Hosting;
+using Avalonia;
 
 public static class MauiAppBuilderExtensions
 {
@@ -40,6 +41,30 @@ public static class MauiAppBuilderExtensions
         return builder;
     }
 
+    public static MauiAppBuilder UseAvaloniaEmbedding<TApp>(this MauiAppBuilder builder, Action<Avalonia.AppBuilder>? customizeBuilder = null) where TApp : Avalonia.Application, new()
+    {
+        var avaloniaBuilder = Avalonia.AppBuilder.Configure<TApp>();
+#if ANDROID
+        avaloniaBuilder.UseAndroid();
+#elif IOS || MACCATALYST
+        avaloniaBuilder.UseiOS();
+#elif WINDOWS10_0_19041_0_OR_GREATER
+        avaloniaBuilder.UsePlatformDetect();
+#endif
+
+        customizeBuilder?.Invoke(avaloniaBuilder);
+
+        avaloniaBuilder.SetupWithoutStarting();
+
+        SetAppInfoImplementation();
+
+        return builder
+        .ConfigureMauiHandlers(handlers =>
+        {
+            handlers.AddHandler(typeof(Avalonia.Controls.Maui.Controls.AvaloniaView), typeof(Avalonia.Controls.Maui.Handlers.AvaloniaViewHandler));
+        });
+    }
+
     /// <summary>
     /// Configures all Avalonia-specific services for MAUI
     /// </summary>
@@ -56,13 +81,7 @@ public static class MauiAppBuilderExtensions
         Microsoft.Maui.Controls.DependencyService.Register<AvaloniaFontNamedSizeService>();
 #pragma warning restore CS0612 // Type or member is obsolete
 
-        // Set Avalonia AppInfo implementation for theme detection using reflection
-        // HACK: There is no public API to set the AppInfo implementation, we need this to be opened or any alternative
-        // TODO: Remove reflection when possible or replace with UnsafeAccessor in .NET 10
-        var setCurrentMethod = typeof(Microsoft.Maui.ApplicationModel.AppInfo).GetMethod("SetCurrent",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static,
-            [typeof(Microsoft.Maui.ApplicationModel.IAppInfo)]);
-        setCurrentMethod?.Invoke(null, [new AvaloniaAppInfoImplementation()]);
+        SetAppInfoImplementation();
 
         builder.Services.AddSingleton<Microsoft.Maui.Dispatching.IDispatcher>(services =>
         {
@@ -154,6 +173,17 @@ public static class MauiAppBuilderExtensions
 
             })
             .ConfigureImageSources();
+    }
+
+    static void SetAppInfoImplementation()
+    {
+        // Set Avalonia AppInfo implementation for theme detection using reflection
+        // HACK: There is no public API to set the AppInfo implementation, we need this to be opened or any alternative
+        // TODO: Remove reflection when possible or replace with UnsafeAccessor in .NET 10
+        var setCurrentMethod = typeof(Microsoft.Maui.ApplicationModel.AppInfo).GetMethod("SetCurrent",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static,
+            [typeof(Microsoft.Maui.ApplicationModel.IAppInfo)]);
+        setCurrentMethod?.Invoke(null, [new AvaloniaAppInfoImplementation()]);
     }
 
     class ImageSourceRegistration

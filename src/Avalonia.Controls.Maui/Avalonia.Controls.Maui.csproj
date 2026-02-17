@@ -32,6 +32,15 @@
     <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
   </ItemGroup>
 
+  <!-- If iOS or Catalyst -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <PackageReference Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="build/Avalonia.Controls.Maui.targets" />
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.targets" />
