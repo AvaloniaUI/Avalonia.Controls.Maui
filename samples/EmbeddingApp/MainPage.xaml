@@ -16,7 +16,7 @@
                 SemanticProperties.Description="dot net bot in a submarine number ten" />
 
             <maui:AvaloniaView>
-                <ava:TextBlock FontSize="20" Text="Avalonia TextBox" />
+                <ava:TextBlock FontSize="20" Text="Avalonia TextBlock" />
             </maui:AvaloniaView>
 
             <Label

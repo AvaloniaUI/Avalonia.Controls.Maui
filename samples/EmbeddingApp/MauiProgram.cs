@@ -12,10 +12,6 @@ public static class MauiProgram
 			.UseAvaloniaEmbedding<AvaloniaApp>(appBuilder =>
 			{
 			})
-			.ConfigureMauiHandlers(handlers =>
-			{
-				handlers.AddHandler<Microsoft.Maui.Controls.Button, Avalonia.Controls.Maui.Handlers.ButtonHandler>();
-			})
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
