@@ -77,4 +77,18 @@
   <PropertyGroup>
     <EnableAvaloniaXamlCompilation Condition="'$(EnableAvaloniaXamlCompilation)' == ''">true</EnableAvaloniaXamlCompilation>
   </PropertyGroup>
+
+  <!-- Source Generator: Expose MSBuild properties -->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="TargetPlatformIdentifier" />
+    <CompilerVisibleProperty Include="RootNamespace" />
+  </ItemGroup>
+
+  <!-- Auto-detect Avalonia platform for desktop and browser TFMs -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == ''">
+    <_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
+  </PropertyGroup>
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">
+    <_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
+  </PropertyGroup>
 </Project>

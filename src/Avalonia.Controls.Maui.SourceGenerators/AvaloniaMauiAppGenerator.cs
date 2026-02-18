@@ -1,0 +1,256 @@
+using System.Collections.Immutable;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+namespace Avalonia.Controls.Maui.SourceGenerators;
+
+[Generator(LanguageNames.CSharp)]
+public sealed class AvaloniaMauiAppGenerator : IIncrementalGenerator
+{
+    private const string AttributeFullName = "Avalonia.Controls.Maui.AvaloniaMauiAppAttribute";
+
+    public void Initialize(IncrementalGeneratorInitializationContext context)
+    {
+        // Collect methods decorated with [AvaloniaMauiApp]
+        var methods = context.SyntaxProvider
+            .ForAttributeWithMetadataName(
+                AttributeFullName,
+                predicate: static (node, _) => node is MethodDeclarationSyntax,
+                transform: static (ctx, ct) => GetMethodInfo(ctx, ct))
+            .Where(static m => m is not null)
+            .Select(static (m, _) => m!.Value);
+
+        // Read TargetPlatformIdentifier and RootNamespace from MSBuild
+        var platformId = context.AnalyzerConfigOptionsProvider
+            .Select(static (provider, _) =>
+            {
+                provider.GlobalOptions.TryGetValue("build_property.TargetPlatformIdentifier", out var pid);
+                provider.GlobalOptions.TryGetValue("build_property.RootNamespace", out var ns);
+                return (PlatformId: pid ?? "", RootNamespace: ns ?? "");
+            });
+
+        // Combine all method candidates with platform info
+        var combined = methods.Collect().Combine(platformId);
+
+        context.RegisterSourceOutput(combined, static (spc, source) => Execute(spc, source.Left, source.Right));
+    }
+
+    private static MethodCandidate? GetMethodInfo(GeneratorAttributeSyntaxContext ctx, CancellationToken ct)
+    {
+        if (ctx.TargetSymbol is not IMethodSymbol method)
+            return null;
+
+        var containingType = method.ContainingType;
+        if (containingType is null)
+            return null;
+
+        return new MethodCandidate(
+            methodName: method.Name,
+            containingTypeFullName: containingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            isPublic: method.DeclaredAccessibility == Accessibility.Public,
+            isStatic: method.IsStatic,
+            returnTypeFullName: method.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            parameterCount: method.Parameters.Length,
+            location: method.Locations.FirstOrDefault());
+    }
+
+    private static void Execute(
+        SourceProductionContext spc,
+        ImmutableArray<MethodCandidate> methods,
+        (string PlatformId, string RootNamespace) buildProps)
+    {
+        if (methods.IsEmpty)
+            return;
+
+        var platformId = buildProps.PlatformId;
+
+        // Only generate for desktop (empty platform ID) or browser
+        if (!string.IsNullOrEmpty(platformId) &&
+            !string.Equals(platformId, "browser", System.StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        // Validate: only one method allowed
+        if (methods.Length > 1)
+        {
+            foreach (var m in methods)
+            {
+                spc.ReportDiagnostic(Diagnostic.Create(
+                    Diagnostics.MultipleAvaloniaMauiAppMethods,
+                    m.Location));
+            }
+            return;
+        }
+
+        var method = methods[0];
+
+        // Validate: must be public static
+        if (!method.IsPublic || !method.IsStatic)
+        {
+            spc.ReportDiagnostic(Diagnostic.Create(
+                Diagnostics.MethodMustBePublicStatic,
+                method.Location,
+                method.MethodName));
+            return;
+        }
+
+        // Validate: must return MauiApp
+        if (!method.ReturnTypeFullName.EndsWith("MauiApp"))
+        {
+            spc.ReportDiagnostic(Diagnostic.Create(
+                Diagnostics.MethodMustReturnMauiApp,
+                method.Location,
+                method.MethodName));
+            return;
+        }
+
+        // Validate: must be parameterless
+        if (method.ParameterCount > 0)
+        {
+            spc.ReportDiagnostic(Diagnostic.Create(
+                Diagnostics.MethodMustBeParameterless,
+                method.Location,
+                method.MethodName));
+            return;
+        }
+
+        var isBrowser = string.Equals(platformId, "browser", System.StringComparison.OrdinalIgnoreCase);
+        var fullyQualifiedCall = $"{method.ContainingTypeFullName}.{method.MethodName}()";
+
+        var source = isBrowser
+            ? GenerateBrowserSource(fullyQualifiedCall)
+            : GenerateDesktopSource(fullyQualifiedCall);
+
+        spc.AddSource("AvaloniaMauiApp.g.cs", source);
+    }
+
+    private static string GenerateDesktopSource(string createMauiAppCall)
+    {
+        return $$"""
+            // <auto-generated />
+            using Avalonia;
+            using Avalonia.Controls.Maui.Platform;
+            using Avalonia.Themes.Simple;
+            using Microsoft.Maui.Hosting;
+            using System;
+
+            namespace AvaloniaMauiAppGenerated
+            {
+                internal sealed class AvaloniaMauiApplication : MauiAvaloniaApplication
+                {
+                    public override void Initialize()
+                    {
+                        Styles.Add(new SimpleTheme());
+                    }
+
+                    protected override MauiApp CreateMauiApp() => {{createMauiAppCall}};
+                }
+
+                internal static class AvaloniaEntryPoint
+                {
+                    [STAThread]
+                    public static void Main(string[] args)
+                        => AppBuilder.Configure<AvaloniaMauiApplication>()
+                            .UsePlatformDetect()
+                            .WithInterFont()
+                            .StartWithClassicDesktopLifetime(args);
+                }
+            }
+            """;
+    }
+
+    private static string GenerateBrowserSource(string createMauiAppCall)
+    {
+        return $$"""
+            // <auto-generated />
+            using Avalonia;
+            using Avalonia.Browser;
+            using Avalonia.Controls.Maui.Platform;
+            using Avalonia.Themes.Simple;
+            using Microsoft.Maui.Hosting;
+            using System.Runtime.Versioning;
+            using System.Threading.Tasks;
+
+            namespace AvaloniaMauiAppGenerated
+            {
+                internal sealed class AvaloniaMauiApplication : MauiAvaloniaApplication
+                {
+                    public override void Initialize()
+                    {
+                        Styles.Add(new SimpleTheme());
+                    }
+
+                    protected override MauiApp CreateMauiApp() => {{createMauiAppCall}};
+                }
+
+                internal static class AvaloniaEntryPoint
+                {
+                    [SupportedOSPlatform("browser")]
+                    public static Task Main(string[] args)
+                        => AppBuilder.Configure<AvaloniaMauiApplication>()
+                            .WithInterFont()
+                            .StartBrowserAppAsync("out");
+                }
+            }
+            """;
+    }
+
+    private readonly struct MethodCandidate : System.IEquatable<MethodCandidate>
+    {
+        public string MethodName { get; }
+        public string ContainingTypeFullName { get; }
+        public bool IsPublic { get; }
+        public bool IsStatic { get; }
+        public string ReturnTypeFullName { get; }
+        public int ParameterCount { get; }
+        public Location? Location { get; }
+
+        public MethodCandidate(
+            string methodName,
+            string containingTypeFullName,
+            bool isPublic,
+            bool isStatic,
+            string returnTypeFullName,
+            int parameterCount,
+            Location? location)
+        {
+            MethodName = methodName;
+            ContainingTypeFullName = containingTypeFullName;
+            IsPublic = isPublic;
+            IsStatic = isStatic;
+            ReturnTypeFullName = returnTypeFullName;
+            ParameterCount = parameterCount;
+            Location = location;
+        }
+
+        public bool Equals(MethodCandidate other)
+            => MethodName == other.MethodName
+                && ContainingTypeFullName == other.ContainingTypeFullName
+                && IsPublic == other.IsPublic
+                && IsStatic == other.IsStatic
+                && ReturnTypeFullName == other.ReturnTypeFullName
+                && ParameterCount == other.ParameterCount;
+
+        public override bool Equals(object? obj) => obj is MethodCandidate other && Equals(other);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hash = 17;
+                hash = hash * 31 + (MethodName?.GetHashCode() ?? 0);
+                hash = hash * 31 + (ContainingTypeFullName?.GetHashCode() ?? 0);
+                hash = hash * 31 + IsPublic.GetHashCode();
+                hash = hash * 31 + IsStatic.GetHashCode();
+                hash = hash * 31 + (ReturnTypeFullName?.GetHashCode() ?? 0);
+                hash = hash * 31 + ParameterCount.GetHashCode();
+                return hash;
+            }
+        }
+    }
+}

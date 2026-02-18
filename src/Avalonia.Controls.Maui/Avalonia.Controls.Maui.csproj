@@ -37,6 +37,16 @@
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.targets" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj"
+                      PrivateAssets="all"
+                      Pack="true"
+                      PackagePath="analyzers/dotnet/cs"
+                      ReferenceOutputAssembly="false"
+                      OutputItemType="Analyzer"
+                      SetTargetFramework="TargetFramework=netstandard2.0" />
+  </ItemGroup>
+
   <!-- Platform-specific file includes -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == ''">
     <!-- Exclude platform-specific files from non-platform builds -->
