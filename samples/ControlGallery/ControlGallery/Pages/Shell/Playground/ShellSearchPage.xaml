@@ -5,11 +5,18 @@
              Title="Shell SearchHandler">
     
     <Shell.SearchHandler>
-        <local:FeaturesSearchHandler 
+        <local:FeaturesSearchHandler
             Placeholder="Search features..."
             ShowsResults="True"
-            DisplayMemberName="Name"
-            TextColor="DarkBlue" />
+            TextColor="DarkBlue">
+            <SearchHandler.ItemTemplate>
+                <DataTemplate>
+                    <Label Text="{Binding Name}"
+                           Padding="5"
+                           VerticalOptions="Center" />
+                </DataTemplate>
+            </SearchHandler.ItemTemplate>
+        </local:FeaturesSearchHandler>
     </Shell.SearchHandler>
 
     <ScrollView>
@@ -48,7 +55,7 @@
                     <Button Text="Use Custom ItemTemplate" 
                             Clicked="OnSetCustomItemTemplate" />
                     
-                    <Button Text="Reset to Default (DisplayMemberName)" 
+                    <Button Text="Reset to Default"
                             Clicked="OnResetItemTemplate" />
                 </VerticalStackLayout>
             </Border>

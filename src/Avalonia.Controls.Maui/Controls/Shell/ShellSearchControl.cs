@@ -13,7 +13,6 @@ using Avalonia.VisualTree;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell
 {
@@ -564,68 +563,27 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             UpdateShowsResults();
         }
 
-        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "DisplayMemberName requires reflection.")]
-        [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "DisplayMemberName requires reflection.")]
-        [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "DisplayMemberName requires reflection.")]
         private void UpdateItemTemplate()
         {
             if (_resultsList == null) return;
-            
+
             var template = _mauiSearchHandler.ItemTemplate;
             if (template != null)
             {
-                 _resultsList.ItemTemplate = new MauiDataTemplateWrapper(template, _mauiContext);
+                _resultsList.ItemTemplate = new MauiDataTemplateWrapper(template, _mauiContext);
             }
             else
             {
-
-                 // Default template (TextBlock)
-                 _resultsList.ItemTemplate = new FuncDataTemplate<object>((item, ns) => 
-                 {
-                     var textBlock = new TextBlock 
-                     { 
-                         Margin = new Thickness(5),
-                         VerticalAlignment = Layout.VerticalAlignment.Center
-                     };
-
-                     if (!string.IsNullOrEmpty(_mauiSearchHandler.DisplayMemberName) && item != null)
-                     {
-                         try 
-                         {
-                             var value = GetPropertyValue(item, _mauiSearchHandler.DisplayMemberName);
-                             textBlock.Text = value?.ToString() ?? string.Empty;
-                         }
-                         catch
-                         {
-                             textBlock.Text = item.ToString() ?? string.Empty;
-                         }
-                     }
-                     else
-                     {
-                         // Use simple string conversion
-                         textBlock.Text = item?.ToString() ?? string.Empty;
-                     }
-                     
-                     return textBlock;
-                  });
+                // Default template: use ToString() on the item.
+                // Use ItemTemplate on the SearchHandler for custom display.
+                _resultsList.ItemTemplate = new FuncDataTemplate<object>((item, ns) =>
+                    new TextBlock
+                    {
+                        Text = item?.ToString() ?? string.Empty,
+                        Margin = new Thickness(5),
+                        VerticalAlignment = Layout.VerticalAlignment.Center
+                    });
             }
-        }
-
-        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Reflection is required for DisplayMemberName support.")]
-        [UnconditionalSuppressMessage("Trimming", "IL2075", Justification = "Reflection is required for DisplayMemberName support.")]
-        private static object? GetPropertyValue(object target, string path)
-        {
-            var parts = path.Split('.');
-            var current = target;
-            foreach (var part in parts)
-            {
-                if (current == null) return null;
-                var type = current.GetType();
-                var prop = type.GetProperty(part);
-                if (prop == null) return null;
-                current = prop.GetValue(current);
-            }
-            return current;
         }
 
         private void OnResultsListSelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -742,13 +700,26 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                 var handler = view.ToHandler(_mauiContext);
                 if (handler?.PlatformView is AvaloniaControl control)
                 {
+                    DetachFromVisualParent(control);
                     return control;
                 }
             }
-            
+
             return new TextBlock { Text = "Template Error" };
         }
 
         public bool Match(object? data) => true;
+
+        private static void DetachFromVisualParent(AvaloniaControl control)
+        {
+            if (control.Parent == null) return;
+
+            if (control.Parent is ContentControl cc)
+                cc.Content = null;
+            else if (control.Parent is Panel panel)
+                panel.Children.Remove(control);
+            else if (control.Parent is Decorator decorator)
+                decorator.Child = null;
+        }
     }
 }

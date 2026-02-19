@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ControlGallery.Pages.ShellSamples"
              x:Class="ControlGallery.Pages.ShellSamples.AnimalDetailPage"
-             Title="Details">
+             Title="Details"
+             Shell.TabBarIsVisible="False">
     <Shell.SearchHandler>
         <SearchHandler SearchBoxVisibility="Hidden" />
     </Shell.SearchHandler>

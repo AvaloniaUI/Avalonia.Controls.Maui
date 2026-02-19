@@ -5,6 +5,8 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
     {
         public string Name { get; set; } = string.Empty;
         public string Route { get; set; } = string.Empty;
+
+        public override string ToString() => Name;
     }
 
     public class FeaturesSearchHandler : SearchHandler

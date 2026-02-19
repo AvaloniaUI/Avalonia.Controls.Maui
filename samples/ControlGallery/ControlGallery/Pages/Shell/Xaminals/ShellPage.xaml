@@ -37,8 +37,15 @@
 
     <Shell.SearchHandler>
         <local:AnimalSearchHandler Placeholder="Search animals..."
-                                   ShowsResults="true"
-                                   DisplayMemberName="Name" />
+                                   ShowsResults="true">
+            <SearchHandler.ItemTemplate>
+                <DataTemplate>
+                    <Label Text="{Binding Name}"
+                           Padding="5"
+                           VerticalOptions="Center" />
+                </DataTemplate>
+            </SearchHandler.ItemTemplate>
+        </local:AnimalSearchHandler>
     </Shell.SearchHandler>
 
     <!-- Monkeys Flyout Item -->
