@@ -1,0 +1,59 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ShellSamples.ShellPlayground.ShellAppearancePage"
+             Title="Shell Appearance">
+    <ScrollView>
+        <VerticalStackLayout Spacing="10" Padding="20">
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Global Appearance" FontSize="Title" FontAttributes="Bold" />
+                    
+                    <Label Text="Navbar &amp; TabBar" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Toggle NavBar" Clicked="OnToggleNavBar" />
+                        <Button Text="Toggle TabBar" Clicked="OnToggleTabBar" />
+                    </HorizontalStackLayout>
+                    
+                    <Label Text="Title View" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Toggle TitleView" Clicked="OnToggleTitleView" />
+                        <Button Text="Update TitleView" Clicked="OnUpdateTitleView" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Presentation Mode" FontSize="Title" FontAttributes="Bold" />
+                    <Label Text="Control how pages are pushed onto the stack." FontSize="12" />
+                    
+                    <Button Text="Animated" 
+                            Clicked="OnNavigate"
+                            CommandParameter="animated" />
+
+                    <Button Text="Not Animated" 
+                            Clicked="OnNavigate"
+                            CommandParameter="notanimated" />
+                    
+                    <Button Text="Modal Animated" 
+                            Clicked="OnNavigate"
+                            CommandParameter="modal" />
+
+                    <Button Text="Modal Not Animated" 
+                            Clicked="OnNavigate"
+                            CommandParameter="modalnotanimated" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

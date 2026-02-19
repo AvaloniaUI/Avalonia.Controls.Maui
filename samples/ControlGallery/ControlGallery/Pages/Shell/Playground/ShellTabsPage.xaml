@@ -1,0 +1,98 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ShellSamples.ShellPlayground.ShellTabsPage"
+             Title="Shell Tabs">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Dynamic Tabs (ShellSection)" FontSize="Title" FontAttributes="Bold" />
+                    
+                    <Label Text="Add/Remove Tabs" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Add Dynamic Tab" Clicked="OnAddTab" />
+                        <Button Text="Remove Last Tab" Clicked="OnRemoveTab" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Tab Visibility" FontSize="Title" FontAttributes="Bold" />
+                    <Button Text="Toggle 'Search' Tab" Clicked="OnToggleTabVisibility" />
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Tab Appearance" FontSize="Title" FontAttributes="Bold" />
+                    <Label Text="Control colors for the Shell TabBar." FontSize="12" />
+
+                    <Label Text="Background Color" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Set (LightBlue)" Clicked="OnSetTabBarBackgroundColor" CommandParameter="#ADD8E6" />
+                        <Button Text="Clear" Clicked="OnClearTabBarBackgroundColor" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Disabled Color" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Set (Gray)" Clicked="OnSetTabBarDisabledColor" CommandParameter="#808080" />
+                        <Button Text="Clear" Clicked="OnClearTabBarDisabledColor" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Foreground Color" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Set (Orange)" Clicked="OnSetTabBarForegroundColor" CommandParameter="#FFA500" />
+                        <Button Text="Clear" Clicked="OnClearTabBarForegroundColor" />
+                    </HorizontalStackLayout>
+                    
+                    <Label Text="Title Color" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Set (Green)" Clicked="OnSetTabBarTitleColor" CommandParameter="#008000" />
+                        <Button Text="Clear" Clicked="OnClearTabBarTitleColor" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Unselected Color" FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Set (Red)" Clicked="OnSetTabBarUnselectedColor" CommandParameter="#FF0000" />
+                        <Button Text="Clear" Clicked="OnClearTabBarUnselectedColor" />
+                    </HorizontalStackLayout>
+
+                    <Button Text="Reset All" Clicked="OnResetTabBarColors" Margin="0,10,0,0" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Tab Selection" FontSize="Title" FontAttributes="Bold" />
+                    <Label Text="Test programmatic tab switching." FontSize="12" />
+                    
+                    <FlexLayout Wrap="Wrap" Direction="Row" AlignItems="Start" AlignContent="Start">
+                        <Button Text="Select First Tab" Clicked="OnSelectFirstTab" Margin="0,0,10,10" />
+                        <Button Text="Select Last Tab" Clicked="OnSelectLastTab" Margin="0,0,10,10" />
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
