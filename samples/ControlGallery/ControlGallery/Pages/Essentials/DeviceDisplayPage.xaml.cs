@@ -10,9 +10,7 @@ public partial class DeviceDisplayPage : ContentPage
     public DeviceDisplayPage()
     {
         InitializeComponent();
-        
-        // In a real app, this would be injected or accessed via DeviceDisplay.Current
-        // For the gallery, we'll use our new implementation directly.
+
         _deviceDisplay = new AvaloniaDeviceDisplay();
     }
 
