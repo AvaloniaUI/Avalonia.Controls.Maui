@@ -66,10 +66,8 @@ public partial class ThemePage : ContentPage, INotifyPropertyChanged
         };
     }
 
-    public new event PropertyChangedEventHandler? PropertyChanged;
-
     protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        base.OnPropertyChanged(propertyName);
     }
 }

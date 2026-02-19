@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(DotNetTfm);$(DotNetTfm)-browser</TargetFrameworks>
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);$(DotNetTfm)-ios;$(DotNetTfm)-maccatalyst</TargetFrameworks>
+    <TargetFrameworks>$(TargetFrameworks);$(DotNetTfm)-android</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);$(DotNetTfm)-windows10.0.19041.0</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
+    <IsAotCompatible>true</IsAotCompatible>
+    <LangVersion>preview</LangVersion>
+    <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
+    <PackageDescription>Avalonia.Controls.Maui.Essentials provides Avalonia-based implementations for MAUI Essentials APIs.</PackageDescription>
+    <SignAssembly>true</SignAssembly>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">$(MinIOSVersion)</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">$(MinCatalystVersion)</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">$(MinAndroidVersion)</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">$(MinWindowsVersion)</SupportedOSPlatformVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">
+    <Content Include="Devices/*.Browser.js"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Devices/*.Browser.js"
+          Pack="true"
+          PackagePath="contentFiles/any/any/Devices/"
+          PackageCopyToOutput="true"
+          PackageFlatten="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="build/Avalonia.Controls.Maui.Essentials.targets" />
+    <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.Essentials.targets" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == ''">
+    <Compile Remove="**/*.iOS.cs" />
+    <Compile Remove="**/*.Android.cs" />
+    <Compile Remove="**/*.Windows.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <Compile Remove="**/*.Android.cs" />
+    <Compile Remove="**/*.Windows.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <Compile Remove="**/*.iOS.cs" />
+    <Compile Remove="**/*.Windows.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+    <Compile Remove="**/*.iOS.cs" />
+    <Compile Remove="**/*.Android.cs" />
+  </ItemGroup>
+
+</Project>

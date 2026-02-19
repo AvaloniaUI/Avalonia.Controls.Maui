@@ -34,5 +34,9 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\src\Avalonia.Controls.Maui.Essentials\Avalonia.Controls.Maui.Essentials.csproj" />
+	</ItemGroup>
 	
 </Project>

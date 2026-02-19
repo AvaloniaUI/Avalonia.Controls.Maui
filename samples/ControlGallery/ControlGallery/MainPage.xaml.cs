@@ -81,6 +81,10 @@ public partial class MainPage : FlyoutPage
         [typeof(TriggersPage)] = () => new TriggersPage(),
         [typeof(VisualStateManagerPage)] = () => new VisualStateManagerPage(),
         [typeof(LifecycleEventsPage)] = () => new LifecycleEventsPage(),
+        // Essentials
+        [typeof(Pages.Essentials.DeviceDisplayPage)] = () => new Pages.Essentials.DeviceDisplayPage(),
+        [typeof(Pages.Essentials.DeviceInfoPage)] = () => new Pages.Essentials.DeviceInfoPage(),
+        [typeof(Pages.Essentials.BatteryPage)] = () => new Pages.Essentials.BatteryPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
     };
@@ -265,6 +269,13 @@ public partial class MainPage : FlyoutPage
             new SampleGroup("Settings", new List<SampleItem>
             {
                 new("Theme", "Theme toggle and AppThemeBinding", typeof(ThemePage))
+            }),
+
+            new SampleGroup("Essentials", new List<SampleItem>
+            {
+                new("Device Display", "Screen metrics and orientation", typeof(ControlGallery.Pages.Essentials.DeviceDisplayPage)),
+                new("Device Info", "Hardware and platform details", typeof(ControlGallery.Pages.Essentials.DeviceInfoPage)),
+                new("Battery", "Charge level and power status", typeof(ControlGallery.Pages.Essentials.BatteryPage))
             })
         };
     }
