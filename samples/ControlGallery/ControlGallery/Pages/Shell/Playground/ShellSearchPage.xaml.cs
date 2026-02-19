@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace ControlGallery.Pages.ShellSamples.ShellPlayground
 {
     public partial class ShellSearchPage : ContentPage
@@ -11,7 +9,7 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
             FeaturesSearch.ItemTemplate = new DataTemplate(() =>
             {
                 var label = new Label { Padding = new Thickness(5) };
-                label.SetBinding(Label.TextProperty, nameof(Feature.Name));
+                label.SetBinding(Label.TextProperty, static (Feature f) => f.Name);
                 return label;
             });
         }
@@ -36,7 +34,6 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
             }
         }
 
-        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Sample code with known properties")]
         private void OnSetCustomItemTemplate(object sender, EventArgs e)
         {
             var handler = Shell.GetSearchHandler(this);
@@ -69,7 +66,7 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
                         FontSize = 16,
                         VerticalOptions = LayoutOptions.Center
                     };
-                    label.SetBinding(Label.TextProperty, "Name");
+                    label.SetBinding(Label.TextProperty, static (Feature f) => f.Name);
 
                     grid.Add(icon, 0, 0);
                     grid.Add(label, 1, 0);

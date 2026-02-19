@@ -11,7 +11,7 @@ public partial class ShellPage : Shell
         AnimalSearch.ItemTemplate = new DataTemplate(() =>
         {
             var label = new Label { Padding = new Thickness(5) };
-            label.SetBinding(Label.TextProperty, nameof(Animal.Name));
+            label.SetBinding(Label.TextProperty, static (Animal a) => a.Name);
             return label;
         });
     }
