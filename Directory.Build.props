@@ -3,7 +3,7 @@
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <Version Condition="'$(Version)' == ''">12.0.0</Version>
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0061513-alpha</AvaloniaVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.0-preview1</AvaloniaVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net11.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
         <BuildDirectory>$(MSBuildThisFileDirectory)/build/</BuildDirectory>
@@ -31,7 +31,7 @@
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net10.0'">
-        <MauiVersion>10.0.20-ci.main.25602.3</MauiVersion>
+        <MauiVersion>10.0.40</MauiVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net9.0'">
