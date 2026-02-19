@@ -19,4 +19,9 @@
   <ItemGroup>
     <ProjectReference Include="../Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
   </ItemGroup>
+
+  <ItemGroup Condition=" ('$(IsPackable)' == 'true')">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath=""
+      Visible="false" />
+  </ItemGroup>
 </Project>
