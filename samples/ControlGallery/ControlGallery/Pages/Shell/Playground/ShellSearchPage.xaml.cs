@@ -7,6 +7,13 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
         public ShellSearchPage()
         {
             InitializeComponent();
+
+            FeaturesSearch.ItemTemplate = new DataTemplate(() =>
+            {
+                var label = new Label { Padding = new Thickness(5) };
+                label.SetBinding(Label.TextProperty, nameof(Feature.Name));
+                return label;
+            });
         }
 
         private void OnToggleSearchVisibility(object sender, EventArgs e)

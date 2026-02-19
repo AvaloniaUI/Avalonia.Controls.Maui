@@ -36,16 +36,9 @@
     </Shell.FlyoutHeader>
 
     <Shell.SearchHandler>
-        <local:AnimalSearchHandler Placeholder="Search animals..."
-                                   ShowsResults="true">
-            <SearchHandler.ItemTemplate>
-                <DataTemplate>
-                    <Label Text="{Binding Name}"
-                           Padding="5"
-                           VerticalOptions="Center" />
-                </DataTemplate>
-            </SearchHandler.ItemTemplate>
-        </local:AnimalSearchHandler>
+        <local:AnimalSearchHandler x:Name="AnimalSearch"
+                                   Placeholder="Search animals..."
+                                   ShowsResults="true" />
     </Shell.SearchHandler>
 
     <!-- Monkeys Flyout Item -->

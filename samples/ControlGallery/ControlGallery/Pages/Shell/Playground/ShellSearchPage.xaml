@@ -5,18 +5,10 @@
              Title="Shell SearchHandler">
     
     <Shell.SearchHandler>
-        <local:FeaturesSearchHandler
+        <local:FeaturesSearchHandler x:Name="FeaturesSearch"
             Placeholder="Search features..."
             ShowsResults="True"
-            TextColor="DarkBlue">
-            <SearchHandler.ItemTemplate>
-                <DataTemplate>
-                    <Label Text="{Binding Name}"
-                           Padding="5"
-                           VerticalOptions="Center" />
-                </DataTemplate>
-            </SearchHandler.ItemTemplate>
-        </local:FeaturesSearchHandler>
+            TextColor="DarkBlue" />
     </Shell.SearchHandler>
 
     <ScrollView>
