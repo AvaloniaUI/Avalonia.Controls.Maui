@@ -1,7 +1,6 @@
 <Project>
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
-        <Version Condition="'$(Version)' == ''">12.0.0</Version>
         <IsPackable>false</IsPackable>
         <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.0-preview1</AvaloniaVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net11.0</DotNetTfm>
@@ -36,6 +35,12 @@
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net9.0'">
         <MauiVersion>9.0.120</MauiVersion>
+    </PropertyGroup>
+    
+    <!-- Map to MAUIs version naming by default -->
+    <PropertyGroup>
+        <Version Condition="'$(Version)' == ''">$(MauiVersion)</Version>
+        <Version Condition="'$(Version)' == ''">11.0.0</Version>
     </PropertyGroup>
 
     <!-- Nuget Info -->
