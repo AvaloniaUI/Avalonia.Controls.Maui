@@ -23,7 +23,7 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
                 var newSection = new ShellSection
                 {
                     Title = $"Dynamic {_dynamicSections.Count + 1}",
-                    Icon = "brush.png"
+                    Icon = "dotnet_bot.png"
                 };
                 newSection.Items.Add(new ShellContent 
                 { 
