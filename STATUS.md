@@ -881,6 +881,7 @@ A user input control used to initiate a search.
 | FontFamily | ✅ Implemented |
 | FontSize | ✅ Implemented |
 | HorizontalTextAlignment | ✅ Implemented |
+| Keyboard | ✅ Implemented |
 | Placeholder | ✅ Implemented |
 | PlaceholderColor | ✅ Implemented |
 | SearchCommand | ✅ Implemented |
@@ -888,7 +889,7 @@ A user input control used to initiate a search.
 | SelectionLength | ✅ Implemented |
 | Text | ✅ Implemented |
 | TextColor | ✅ Implemented |
-| VerticalTextAlignment | ⏳ TODO |
+| VerticalTextAlignment | ✅ Implemented |
 
 ### Events
 
@@ -896,6 +897,54 @@ A user input control used to initiate a search.
 |-------|--------|
 | TextChanged | ✅ Implemented |
 | SearchButtonPressed | ✅ Implemented |
+
+---
+
+## ShellSearchHandler
+
+A user input control that provides search functionality integrated with the Shell.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| BackgroundColor | ✅ Implemented |
+| CancelButtonColor | ✅ Implemented |
+| CharacterSpacing | ✅ Implemented |
+| ClearIcon | ✅ Implemented |
+| ClearIconHelpText | ✅ Implemented |
+| ClearPlaceholderCommand | ✅ Implemented |
+| ClearPlaceholderCommandParameter | ✅ Implemented |
+| ClearPlaceholderEnabled | ✅ Implemented |
+| ClearPlaceholderHelpText | ✅ Implemented |
+| Command | ✅ Implemented |
+| CommandParameter | ✅ Implemented |
+| DisplayMemberName | ✅ Implemented |
+| FontAttributes | ✅ Implemented |
+| FontFamily | ✅ Implemented |
+| FontSize | ✅ Implemented |
+| HorizontalTextAlignment | ✅ Implemented |
+| IsSearchEnabled | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| Keyboard | ✅ Implemented |
+| Placeholder | ✅ Implemented |
+| PlaceholderColor | ✅ Implemented |
+| Query | ✅ Implemented |
+| QueryIcon | ✅ Implemented |
+| QueryIconHelpText | ✅ Implemented |
+| SearchBoxVisibility | ✅ Implemented |
+| SelectedItem | ✅ Implemented |
+| ShowsResults | ✅ Implemented |
+| TextColor | ✅ Implemented |
+| VerticalTextAlignment | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| Focused | ✅ Implemented |
+| Unfocused | ✅ Implemented |
 
 ---
 
@@ -939,7 +988,7 @@ A Page that provides fundamental UI features that most applications require, inc
 | NavBarIsVisible | ✅ Implemented |
 | NavBarVisibilityAnimationEnabled | ⏳ TODO |
 | PresentationMode | ⏳ TODO |
-| SearchHandler | ⏳ TODO |
+| SearchHandler | ✅ Implemented |
 | TabBarBackgroundColor | ✅ Implemented |
 | TabBarDisabledColor | ✅ Implemented (placeholder) |
 | TabBarForegroundColor | ✅ Implemented |
@@ -949,6 +998,8 @@ A Page that provides fundamental UI features that most applications require, inc
 | TitleColor | ✅ Implemented |
 | TitleView | ✅ Implemented |
 | UnselectedColor | ✅ Implemented |
+| PresentationMode | ✅ Implemented |
+| FlyoutDisplayOptions | ✅ Implemented (AsSingleItem/AsMultipleItems) |
 
 ### Events
 
@@ -961,26 +1012,59 @@ A Page that provides fundamental UI features that most applications require, inc
 
 | Method | Status |
 |--------|--------|
-| GoToAsync | ⏳ TODO |
-| GoToAsync(bool) | ⏳ TODO |
-| GoToAsync(ShellNavigationState) | ⏳ TODO |
+| GoToAsync | ✅ Implemented (Absolute/Relative, ".." support) |
+| GoToAsync(bool) | ✅ Implemented |
+| GoToAsync(ShellNavigationState) | ✅ Implemented |
+| GoToAsync(ShellNavigationState, bool) | ✅ Implemented |
 
-### Notes
+---
 
-Shell provides comprehensive flyout and tabbed navigation functionality with a custom FlyoutContainer that supports:
-- Sliding flyout panel with gesture support and configurable height
-- Flyout backdrop overlay with customizable brush
-- Flyout background image with aspect ratio support
-- Flyout header with Fixed/Scroll/CollapseOnScroll behavior options
-- Flyout vertical scroll mode (Auto/Enabled/Disabled)
-- Hamburger menu and back button in the navigation bar
-- NavBar visibility control with optional shadow
-- Custom TitleView support for navigation bar
-- Tab-based navigation for ShellItems with multiple sections
-- TabBar styling (background, foreground, visibility)
-- Navigation stack support (push/pop pages)
-- Dynamic title updates based on current page
-- Shell appearance colors (Background, Foreground, Title, Disabled, Unselected)
+## ShellItem
+
+A single item in the Shell, which can contain multiple ShellSections (Tabs).
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Title | ✅ Implemented |
+| Icon | ✅ Implemented |
+| FlyoutIcon | ✅ Implemented |
+| IsVisible | ✅ Implemented |
+| FlyoutItemIsVisible | ✅ Implemented |
+
+---
+
+## ShellSection
+
+A group of ShellContent items, typically represented as a tab.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Title | ✅ Implemented |
+| Icon | ✅ Implemented |
+| FlyoutIcon | ✅ Implemented |
+| IsVisible | ✅ Implemented |
+| FlyoutItemIsVisible | ✅ Implemented |
+
+---
+
+## ShellContent
+
+The actual page content within a ShellSection.
+
+### Properties
+
+| Property | Status |
+|----------|--------|
+| Title | ✅ Implemented |
+| Icon | ✅ Implemented |
+| FlyoutIcon | ✅ Implemented |
+| IsVisible | ✅ Implemented |
+| FlyoutItemIsVisible | ✅ Implemented |
+| Content | ✅ Implemented |
 
 ---
 

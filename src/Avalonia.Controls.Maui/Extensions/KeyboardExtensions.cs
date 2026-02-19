@@ -13,8 +13,9 @@ public static class KeyboardExtensions
     /// </summary>
     /// <param name="textBox">The Avalonia TextBox.</param>
     /// <param name="keyboard">The .NET MAUI Keyboard.</param>
-    public static void UpdateKeyboard(this AvaloniaTextBox textBox, Microsoft.Maui.Keyboard keyboard)
+    public static void UpdateKeyboard(this AvaloniaTextBox textBox, Microsoft.Maui.Keyboard? keyboard)
     {
+        keyboard ??= Microsoft.Maui.Keyboard.Default;
         var contentType = TextInputContentType.Normal;
 
         if (keyboard == Microsoft.Maui.Keyboard.Email)
@@ -66,8 +67,11 @@ public static class KeyboardExtensions
     /// </summary>
     /// <param name="keyboard">The MAUI Keyboard.</param>
     /// <returns>The corresponding Avalonia TextInputContentType.</returns>
-    public static TextInputContentType ToTextInputContentType(this Microsoft.Maui.Keyboard keyboard)
+    public static TextInputContentType ToTextInputContentType(this Microsoft.Maui.Keyboard? keyboard)
     {
+        if (keyboard == null)
+            return TextInputContentType.Normal;
+
         if (keyboard == Microsoft.Maui.Keyboard.Email)
             return TextInputContentType.Email;
         

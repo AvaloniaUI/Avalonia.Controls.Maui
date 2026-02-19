@@ -3,10 +3,8 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
-using Avalonia.Animation;
-using Avalonia.Styling;
 
-namespace Avalonia.Controls.Maui.Platform;
+namespace Avalonia.Controls.Maui.Controls.Shell;
 
 /// <summary>
 /// Custom flyout container that manages flyout/detail layout without using SplitView
@@ -19,70 +17,104 @@ public class FlyoutContainer : Panel
     private TranslateTransform? _flyoutTransform;
     private bool _isAnimating;
 
+    public const double DefaultFlyoutWidth = 320;
+    internal const double GestureEdgeThreshold = 50.0;
+    internal const double GestureVelocityRatio = 1.0 / 3.0;
+    internal static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(250);
+    
+    public Control? DetailContent => _detailContent;
+    
     public static readonly StyledProperty<bool> IsFlyoutOpenProperty =
         AvaloniaProperty.Register<FlyoutContainer, bool>(nameof(IsFlyoutOpen), false);
-
+    
     public static readonly StyledProperty<double> FlyoutWidthProperty =
-        AvaloniaProperty.Register<FlyoutContainer, double>(nameof(FlyoutWidth), 320);
-
+        AvaloniaProperty.Register<FlyoutContainer, double>(nameof(FlyoutWidth), DefaultFlyoutWidth);
+    
     public static readonly StyledProperty<FlyoutBehavior> FlyoutBehaviorProperty =
         AvaloniaProperty.Register<FlyoutContainer, FlyoutBehavior>(nameof(FlyoutBehavior), FlyoutBehavior.Default);
-
+    
     public static readonly StyledProperty<double> FlyoutHeightProperty =
         AvaloniaProperty.Register<FlyoutContainer, double>(nameof(FlyoutHeight), -1);
-
+    
     public static readonly StyledProperty<IBrush?> FlyoutBackdropProperty =
         AvaloniaProperty.Register<FlyoutContainer, IBrush?>(nameof(FlyoutBackdrop));
-
+    
     public static readonly StyledProperty<bool> IsGestureEnabledProperty =
         AvaloniaProperty.Register<FlyoutContainer, bool>(nameof(IsGestureEnabled), true);
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the flyout is currently open.
+    /// </summary>
     public bool IsFlyoutOpen
     {
         get => GetValue(IsFlyoutOpenProperty);
         set => SetValue(IsFlyoutOpenProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the width of the flyout.
+    /// </summary>
     public double FlyoutWidth
     {
         get => GetValue(FlyoutWidthProperty);
         set => SetValue(FlyoutWidthProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the flyout behavior.
+    /// </summary>
     public FlyoutBehavior FlyoutBehavior
     {
         get => GetValue(FlyoutBehaviorProperty);
         set => SetValue(FlyoutBehaviorProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the height of the flyout.
+    /// </summary>
     public double FlyoutHeight
     {
         get => GetValue(FlyoutHeightProperty);
         set => SetValue(FlyoutHeightProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the brush used for the flyout backdrop.
+    /// </summary>
     public IBrush? FlyoutBackdrop
     {
         get => GetValue(FlyoutBackdropProperty);
         set => SetValue(FlyoutBackdropProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether gestures are enabled.
+    /// </summary>
     public bool IsGestureEnabled
     {
         get => GetValue(IsGestureEnabledProperty);
         set => SetValue(IsGestureEnabledProperty, value);
     }
 
+    /// <summary>
+    /// Occurs when the flyout is opened.
+    /// </summary>
     public event EventHandler? FlyoutOpened;
+
+    /// <summary>
+    /// Occurs when the flyout is closed.
+    /// </summary>
     public event EventHandler? FlyoutClosed;
 
     private Point? _gestureStartPoint;
     private double _gestureStartOffset;
     private bool _isLandscape;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FlyoutContainer"/> class.
+    /// </summary>
     public FlyoutContainer()
     {
-        // Create scrim (overlay that dims the detail content when flyout is open)
         _scrim = new Panel
         {
             Background = new SolidColorBrush(Colors.Black, 0.5),
@@ -92,7 +124,6 @@ public class FlyoutContainer : Panel
         _scrim.PointerPressed += OnScrimPressed;
         Children.Add(_scrim);
 
-        // Setup property change handlers
         IsFlyoutOpenProperty.Changed.AddClassHandler<FlyoutContainer>((x, e) => x.OnIsFlyoutOpenChanged(e));
         FlyoutBehaviorProperty.Changed.AddClassHandler<FlyoutContainer>((x, e) => x.OnFlyoutBehaviorChanged(e));
         FlyoutBackdropProperty.Changed.AddClassHandler<FlyoutContainer>((x, e) => x.OnFlyoutBackdropChanged(e));
@@ -100,12 +131,22 @@ public class FlyoutContainer : Panel
 
     private void OnFlyoutBackdropChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        if (_scrim != null && e.NewValue is IBrush backdrop)
+        if (_scrim == null) return;
+
+        if (e.NewValue is IBrush backdrop)
         {
             _scrim.Background = backdrop;
         }
+        else
+        {
+            _scrim.Background = new SolidColorBrush(Colors.Black, 0.5);
+        }
     }
 
+    /// <summary>
+    /// Sets the content of the flyout.
+    /// </summary>
+    /// <param name="content">The flyout content.</param>
     public void SetFlyoutContent(Control? content)
     {
         if (_flyoutContent != null)
@@ -124,7 +165,6 @@ public class FlyoutContainer : Panel
             _flyoutContent.RenderTransform = _flyoutTransform;
             _flyoutContent.ZIndex = 2;
 
-            // Add gesture support
             if (IsGestureEnabled)
             {
                 _flyoutContent.PointerPressed += OnFlyoutPointerPressed;
@@ -137,6 +177,10 @@ public class FlyoutContainer : Panel
         }
     }
 
+    /// <summary>
+    /// Sets the content of the detail area.
+    /// </summary>
+    /// <param name="content">The detail content.</param>
     public void SetDetailContent(Control? content)
     {
         if (_detailContent != null)
@@ -153,7 +197,6 @@ public class FlyoutContainer : Panel
         {
             _detailContent.ZIndex = 0;
 
-            // Add gesture support for swiping from edge to open
             if (IsGestureEnabled)
             {
                 _detailContent.PointerPressed += OnDetailPointerPressed;
@@ -189,38 +232,27 @@ public class FlyoutContainer : Panel
         var flyoutHeight = FlyoutHeight > 0 ? FlyoutHeight : availableSize.Height;
         var isSplitMode = IsSplitMode();
 
-        // Update landscape/portrait state based on available size
         _isLandscape = availableSize.Width > availableSize.Height;
 
         if (isSplitMode)
         {
-            // In split mode, detail takes remaining space after flyout
             var detailWidth = Math.Max(0, availableSize.Width - flyoutWidth);
             _detailContent?.Measure(new Size(detailWidth, availableSize.Height));
-
-            // Scrim not used in split mode
             _scrim?.Measure(new Size(0, 0));
 
-            // Flyout gets its defined width and height
             if (_flyoutContent != null)
             {
-                var flyoutSize = new Size(flyoutWidth, flyoutHeight);
-                _flyoutContent.Measure(flyoutSize);
+                _flyoutContent.Measure(new Size(flyoutWidth, flyoutHeight));
             }
         }
         else
         {
-            // In popover mode, detail content takes full size
             _detailContent?.Measure(availableSize);
-
-            // Measure scrim (full size)
             _scrim?.Measure(availableSize);
 
-            // Measure flyout content
             if (_flyoutContent != null)
             {
-                var flyoutSize = new Size(flyoutWidth, flyoutHeight);
-                _flyoutContent.Measure(flyoutSize);
+                _flyoutContent.Measure(new Size(flyoutWidth, flyoutHeight));
             }
         }
 
@@ -235,24 +267,11 @@ public class FlyoutContainer : Panel
 
         if (isSplitMode)
         {
-            // Split mode: flyout on left, detail on right, no scrim
             var detailWidth = Math.Max(0, finalSize.Width - flyoutWidth);
 
-            // Arrange flyout on the left
-            if (_flyoutContent != null)
-            {
-                var flyoutRect = new Rect(0, 0, flyoutWidth, flyoutHeight);
-                _flyoutContent.Arrange(flyoutRect);
-            }
+            _flyoutContent?.Arrange(new Rect(0, 0, flyoutWidth, flyoutHeight));
+            _detailContent?.Arrange(new Rect(flyoutWidth, 0, detailWidth, finalSize.Height));
 
-            // Arrange detail on the right
-            if (_detailContent != null)
-            {
-                var detailRect = new Rect(flyoutWidth, 0, detailWidth, finalSize.Height);
-                _detailContent.Arrange(detailRect);
-            }
-
-            // Hide scrim in split mode
             if (_scrim != null)
             {
                 _scrim.Arrange(new Rect(0, 0, 0, 0));
@@ -261,25 +280,9 @@ public class FlyoutContainer : Panel
         }
         else
         {
-            // Popover mode: detail takes full size, flyout overlays from left
-            // Arrange detail content (full size)
-            if (_detailContent != null)
-            {
-                _detailContent.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
-            }
-
-            // Arrange scrim (full size, but visibility controlled separately)
-            if (_scrim != null)
-            {
-                _scrim.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
-            }
-
-            // Arrange flyout content (positioned at 0, but transform will move it)
-            if (_flyoutContent != null)
-            {
-                var flyoutRect = new Rect(0, 0, flyoutWidth, flyoutHeight);
-                _flyoutContent.Arrange(flyoutRect);
-            }
+            _detailContent?.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
+            _scrim?.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
+            _flyoutContent?.Arrange(new Rect(0, 0, flyoutWidth, flyoutHeight));
         }
 
         return finalSize;
@@ -304,7 +307,6 @@ public class FlyoutContainer : Panel
 
     private void OnFlyoutBehaviorChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        // Behavior change may affect split mode, so invalidate measure and arrangement
         InvalidateMeasure();
         InvalidateArrange();
         UpdateFlyoutPosition(false);
@@ -325,13 +327,12 @@ public class FlyoutContainer : Panel
 
         if (isSplitMode)
         {
-            // In split mode, flyout is always visible at position 0, no transform needed
             targetX = 0;
             showScrim = false;
+            _flyoutContent.IsVisible = true;
         }
         else
         {
-            // Popover mode behaviors
             switch (behavior)
             {
                 case FlyoutBehavior.Disabled:
@@ -339,16 +340,15 @@ public class FlyoutContainer : Panel
                     showScrim = false;
                     break;
 
-                case FlyoutBehavior.Popover:
-                case FlyoutBehavior.Default:
-                    targetX = isOpen ? 0 : -flyoutWidth;
-                    showScrim = isOpen;
-                    break;
-
                 default:
                     targetX = isOpen ? 0 : -flyoutWidth;
                     showScrim = isOpen;
                     break;
+            }
+
+            if (targetX > -flyoutWidth)
+            {
+                _flyoutContent.IsVisible = true;
             }
         }
 
@@ -363,6 +363,11 @@ public class FlyoutContainer : Panel
             {
                 _scrim.IsVisible = showScrim;
             }
+
+            if (!isSplitMode && targetX <= -flyoutWidth)
+            {
+                _flyoutContent.IsVisible = false;
+            }
         }
     }
 
@@ -374,10 +379,9 @@ public class FlyoutContainer : Panel
         _isAnimating = true;
 
         var startX = _flyoutTransform.X;
-        var duration = TimeSpan.FromMilliseconds(250);
+        var duration = DefaultTransitionDuration;
         var startTime = DateTime.Now;
 
-        // Show scrim immediately if opening
         if (showScrim && _scrim != null)
         {
             _scrim.IsVisible = true;
@@ -396,7 +400,7 @@ public class FlyoutContainer : Panel
                 _scrim.Opacity = showScrim ? progress : (1 - progress);
             }
 
-            await System.Threading.Tasks.Task.Delay(16); // ~60fps
+            await System.Threading.Tasks.Task.Delay(16);
         }
 
         _flyoutTransform.X = targetX;
@@ -405,6 +409,11 @@ public class FlyoutContainer : Panel
         {
             _scrim.IsVisible = showScrim;
             _scrim.Opacity = showScrim ? 1 : 0;
+        }
+
+        if (!IsSplitMode() && targetX <= -FlyoutWidth && _flyoutContent != null)
+        {
+            _flyoutContent.IsVisible = false;
         }
 
         _isAnimating = false;
@@ -417,14 +426,12 @@ public class FlyoutContainer : Panel
 
     private void OnScrimPressed(object? sender, PointerPressedEventArgs e)
     {
-        // Close flyout when scrim is clicked (only in popover mode)
         if (IsFlyoutOpen && !IsSplitMode())
         {
             IsFlyoutOpen = false;
         }
     }
 
-    // Gesture handling for detail content (swipe from left edge to open)
     private void OnDetailPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (!IsGestureEnabled || IsSplitMode())
@@ -432,8 +439,7 @@ public class FlyoutContainer : Panel
 
         var point = e.GetPosition(_detailContent);
 
-        // Only start gesture if press is near left edge (within 50 pixels)
-        if (point.X <= 50)
+        if (point.X <= GestureEdgeThreshold)
         {
             _gestureStartPoint = point;
             _gestureStartOffset = _flyoutTransform?.X ?? -FlyoutWidth;
@@ -448,13 +454,11 @@ public class FlyoutContainer : Panel
         var currentPoint = e.GetPosition(_detailContent);
         var deltaX = currentPoint.X - _gestureStartPoint.Value.X;
 
-        // Only allow dragging to the right
         if (deltaX > 0 && _flyoutTransform != null)
         {
             var newX = Math.Max(-FlyoutWidth, Math.Min(0, _gestureStartOffset + deltaX));
             _flyoutTransform.X = newX;
 
-            // Update scrim opacity based on position
             if (_scrim != null)
             {
                 var progress = (newX + FlyoutWidth) / FlyoutWidth;
@@ -472,21 +476,18 @@ public class FlyoutContainer : Panel
         var currentPoint = e.GetPosition(_detailContent);
         var deltaX = currentPoint.X - _gestureStartPoint.Value.X;
 
-        // If dragged more than halfway or fast swipe, open the flyout
         if (deltaX > FlyoutWidth / 3)
         {
             IsFlyoutOpen = true;
         }
         else
         {
-            // Snap back closed
             UpdateFlyoutPosition(true);
         }
 
         _gestureStartPoint = null;
     }
 
-    // Gesture handling for flyout content (swipe left to close)
     private void OnFlyoutPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (!IsGestureEnabled || IsSplitMode())
@@ -504,13 +505,11 @@ public class FlyoutContainer : Panel
         var currentPoint = e.GetPosition(_flyoutContent);
         var deltaX = currentPoint.X - _gestureStartPoint.Value.X;
 
-        // Only allow dragging to the left
         if (deltaX < 0 && _flyoutTransform != null)
         {
             var newX = Math.Max(-FlyoutWidth, Math.Min(0, _gestureStartOffset + deltaX));
             _flyoutTransform.X = newX;
 
-            // Update scrim opacity based on position
             if (_scrim != null)
             {
                 var progress = (newX + FlyoutWidth) / FlyoutWidth;
@@ -528,14 +527,12 @@ public class FlyoutContainer : Panel
         var currentPoint = e.GetPosition(_flyoutContent);
         var deltaX = currentPoint.X - _gestureStartPoint.Value.X;
 
-        // If dragged more than halfway or fast swipe, close the flyout
-        if (Math.Abs(deltaX) > FlyoutWidth / 3)
+        if (Math.Abs(deltaX) > FlyoutWidth * GestureVelocityRatio)
         {
             IsFlyoutOpen = false;
         }
         else
         {
-            // Snap back open
             UpdateFlyoutPosition(true);
         }
 
@@ -544,7 +541,7 @@ public class FlyoutContainer : Panel
 }
 
 /// <summary>
-/// Flyout behavior that matches MAUI's FlyoutLayoutBehavior enum values
+/// Flyout behavior that matches MAUI's FlyoutLayoutBehavior enum values.
 /// </summary>
 public enum FlyoutBehavior
 {

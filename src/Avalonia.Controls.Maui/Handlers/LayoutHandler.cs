@@ -223,6 +223,10 @@ internal static class LayoutPanelExtensions
         {
             panel.Background = layout.Background.ToPlatform();
         }
+        else if (layout is Microsoft.Maui.Controls.Layout mauiLayout && mauiLayout.BackgroundColor != null)
+        {
+            panel.Background = mauiLayout.BackgroundColor.ToPlatform();
+        }
         else
         {
             panel.Background = Avalonia.Media.Brushes.Transparent;

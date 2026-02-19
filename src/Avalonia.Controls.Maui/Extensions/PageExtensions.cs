@@ -75,6 +75,10 @@ public static class PageExtensions
         {
             platformView.Background = page.Background.ToPlatform();
         }
+        else if (page?.BackgroundColor != null)
+        {
+            platformView.Background = page.BackgroundColor.ToPlatform();
+        }
         else
         {
             platformView.ClearValue(AvaloniaPanel.BackgroundProperty);

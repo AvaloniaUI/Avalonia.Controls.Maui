@@ -1,0 +1,99 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ShellSamples.ShellPlayground.ShellNavigationPage"
+             Title="Shell Navigation">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Navigation Routes" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="Demonstrates different ways to navigate." FontSize="12" />
+                    
+                    <Button Text="Go to Detail (Relative)" 
+                            Clicked="OnGoToDetailRelative" />
+                    
+                    <Button Text="Go to Detail (Absolute)" 
+                            Clicked="OnGoToDetailAbsolute" />
+                            
+                    <Button Text="Go to Detail (Modal)" 
+                            Clicked="OnPushModalAnimated" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Back Button Behavior" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="Select a behavior, then navigate to test the back button." FontSize="12" />
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="Behavior:" VerticalOptions="Center" />
+                        <Picker x:Name="BackButtonBehaviorPicker" SelectedIndex="0" SelectedIndexChanged="OnBackButtonBehaviorChanged">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>Default</x:String>
+                                    <x:String>Disabled</x:String>
+                                    <x:String>Hidden</x:String>
+                                    <x:String>Text Override</x:String>
+                                    <x:String>Command (Show Alert)</x:String>
+                                    <x:String>Command with Parameter</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </HorizontalStackLayout>
+
+                    <Label x:Name="BackButtonBehaviorDescription"
+                           Text="Default: Standard back button behavior"
+                           FontSize="11"
+                           TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
+
+                    <Button Text="Navigate to Test Back Button"
+                            Clicked="OnTestBackButtonBehavior" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Passing Data" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="Pass data to the next page using QueryParameters." FontSize="12" />
+                    
+                    <Entry x:Name="DataEntry" Placeholder="Enter text to pass" />
+                    <Button Text="Go with Data" 
+                            Clicked="OnGoToDetailWithParams" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Navigation Events" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="Log of navigation events." FontSize="12" />
+                    <Button Text="Test Navigation (Go to Detail)" Clicked="OnGoToDetailRelative" />
+                    
+                    <ScrollView HeightRequest="150" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}">
+                        <Label x:Name="EventsLabel" Padding="5" TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+                    </ScrollView>
+                    <Button Text="Clear Log" Clicked="OnClearLog" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,68 @@
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+       xmlns:local="clr-namespace:ControlGallery.Pages.ShellSamples.ShellPlayground"
+       x:Class="ControlGallery.Pages.ShellSamples.ShellPlayground.ShellPlaygroundPage"
+       x:DataType="local:ShellPlaygroundPage"
+       Title="Shell"
+       FlyoutBehavior="Flyout">
+
+    <Shell.FlyoutHeader>
+        <Grid BackgroundColor="{AppThemeBinding Light=#512BD4, Dark=#212121}" HeightRequest="150">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                <Label Text="Shell Playground" TextColor="White" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" />
+                <Label Text="Test all the Features" TextColor="White" FontSize="12" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <!-- Main Navigation Content -->
+    <FlyoutItem Title="Home" Route="home" FlyoutDisplayOptions="AsMultipleItems">
+        <Tab Title="Home" Route="main">
+            <ShellContent Title="Home" ContentTemplate="{DataTemplate local:ShellFlyoutPage}" />
+        </Tab>
+
+        <Tab Title="Flyout" Route="flyout">
+            <ShellContent Title="Flyout" Route="flyout" ContentTemplate="{DataTemplate local:ShellFlyoutPage}" />
+        </Tab>
+        
+        <Tab Title="Tabs" Route="tabs">
+            <ShellContent Title="Tabs" Route="tabs" ContentTemplate="{DataTemplate local:ShellTabsPage}" />
+        </Tab>
+        
+        <Tab Title="Appearance" Route="appearance">
+            <ShellContent Title="Appearance" Route="appearance" ContentTemplate="{DataTemplate local:ShellAppearancePage}" />
+        </Tab>
+        
+        <Tab Title="Navigation" Route="navigation">
+            <ShellContent Title="Navigation" Route="navigation" ContentTemplate="{DataTemplate local:ShellNavigationPage}" />
+        </Tab>
+
+        <Tab Title="Search" Route="search">
+            <ShellContent Title="Search" Route="search" ContentTemplate="{DataTemplate local:ShellSearchPage}" />
+        </Tab>
+    </FlyoutItem>
+    
+    <FlyoutItem Title="Flyout" Route="flyout2">
+         <ShellContent ContentTemplate="{DataTemplate local:ShellFlyoutPage}" />
+    </FlyoutItem>
+    
+    <FlyoutItem Title="Appearance" Route="flyout3">
+        <ShellContent ContentTemplate="{DataTemplate local:ShellAppearancePage}" />
+    </FlyoutItem>
+    
+    <FlyoutItem Title="Navigation" Route="flyout4">
+        <ShellContent ContentTemplate="{DataTemplate local:ShellNavigationPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Search" Route="flyout5">
+        <ShellContent ContentTemplate="{DataTemplate local:ShellSearchPage}" />
+    </FlyoutItem>
+    
+    <MenuItem Text="Help / About" 
+              Command="{Binding HelpCommand}" />
+
+    <Shell.FlyoutFooter>
+        <Label Text="Avalonia.Controls.Maui" Margin="20" HorizontalOptions="Center" />
+    </Shell.FlyoutFooter>
+
+</Shell>
