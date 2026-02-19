@@ -8,21 +8,6 @@ namespace Avalonia.Controls.Maui.Controls
     /// </summary>
     public class MauiEditor : TextBox
     {
-        /// <summary>
-        /// Defines the <see cref="PlaceholderForeground"/> property.
-        /// </summary>
-        public static readonly StyledProperty<IBrush?> PlaceholderForegroundProperty =
-            AvaloniaProperty.Register<MauiEditor, IBrush?>(nameof(PlaceholderForeground));
-
-        /// <summary>
-        /// Gets or sets the brush used to draw the placeholder text.
-        /// </summary>
-        public IBrush? PlaceholderForeground
-        {
-            get => GetValue(PlaceholderForegroundProperty);
-            set => SetValue(PlaceholderForegroundProperty, value);
-        }
-
         public event EventHandler<Interactivity.RoutedEventArgs>? SelectionChanged;
 
         /// <summary>
