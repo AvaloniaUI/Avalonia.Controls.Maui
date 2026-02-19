@@ -1,31 +1,35 @@
-using System;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Controls.Maui.Services;
+using Avalonia.Styling;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
-using Microsoft.Maui.Platform;
 using AvaloniaControl = Avalonia.Controls.Control;
+using SolidColorBrush = Avalonia.Media.SolidColorBrush;
 using AvaloniaGrid = Avalonia.Controls.Grid;
 using MauiShell = Microsoft.Maui.Controls.Shell;
-using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Maui.Extensions;
+using Avalonia.Controls.Maui.Controls.Shell;
+using Avalonia.VisualTree;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell;
 
 public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 {
+    internal const double DefaultBarHeight = 48;
+    internal const double DefaultFlyoutSpacing = 4.0;
+    internal static readonly Color DefaultSelectionColor = Color.FromArgb(60, 0, 120, 215);
+    internal static readonly Color SelectionInteractionColor = Color.FromArgb(90, 0, 120, 215);
+    internal static readonly Color DarkThemeFlyoutBackground = Color.Parse("#1F1F1F");
+    internal static readonly Color LightThemeFlyoutBackground = Colors.White;
+    internal static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(250);
+
     public static IPropertyMapper<MauiShell, ShellHandler> Mapper =
         new PropertyMapper<MauiShell, ShellHandler>(ViewHandler.ViewMapper)
         {
             [nameof(MauiShell.CurrentItem)] = MapCurrentItem,
             [nameof(MauiShell.FlyoutBehavior)] = MapFlyoutBehavior,
             [nameof(MauiShell.FlyoutIsPresented)] = MapFlyoutIsPresented,
+            [nameof(MauiShell.FlyoutIcon)] = MapFlyoutIcon,
             [nameof(MauiShell.FlyoutWidth)] = MapFlyoutWidth,
             [nameof(MauiShell.FlyoutHeight)] = MapFlyoutHeight,
             [nameof(MauiShell.FlyoutBackground)] = MapFlyoutBackground,
@@ -44,43 +48,52 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [nameof(MauiShell.Items)] = MapItems,
             [nameof(MauiShell.ItemTemplate)] = MapItemTemplate,
             [nameof(MauiShell.MenuItemTemplate)] = MapMenuItemTemplate,
-            // Attached properties use string literals for property names
-            ["BackgroundColor"] = MapBackgroundColor,
-            ["ForegroundColor"] = MapForegroundColor,
-            ["TitleColor"] = MapTitleColor,
-            ["DisabledColor"] = MapDisabledColor,
-            ["UnselectedColor"] = MapUnselectedColor,
-            ["NavBarIsVisible"] = MapNavBarIsVisible,
-            ["NavBarHasShadow"] = MapNavBarHasShadow,
-            ["TitleView"] = MapTitleView,
-            ["TabBarIsVisible"] = MapTabBarIsVisible,
-            ["TabBarBackgroundColor"] = MapTabBarBackgroundColor,
-            ["TabBarForegroundColor"] = MapTabBarForegroundColor,
-            ["TabBarTitleColor"] = MapTabBarTitleColor,
-            ["TabBarDisabledColor"] = MapTabBarDisabledColor,
-            ["TabBarUnselectedColor"] = MapTabBarUnselectedColor,
+            [nameof(VisualElement.BackgroundColor)] = MapBackgroundColor,
+            [nameof(MauiShell.TitleView)] = MapTitleView,
+            [MauiShell.SearchHandlerProperty.PropertyName] = MapSearchHandler,
+            [MauiShell.ForegroundColorProperty.PropertyName] = MapForegroundColor,
+            [MauiShell.TitleColorProperty.PropertyName] = MapTitleColor,
+            [MauiShell.DisabledColorProperty.PropertyName] = MapDisabledColor,
+            [MauiShell.UnselectedColorProperty.PropertyName] = MapUnselectedColor,
+            [MauiShell.NavBarIsVisibleProperty.PropertyName] = MapNavBarIsVisible,
+            [MauiShell.NavBarHasShadowProperty.PropertyName] = MapNavBarHasShadow,
+            [MauiShell.BackButtonBehaviorProperty.PropertyName] = MapBackButtonBehavior,
+            [MauiShell.TabBarIsVisibleProperty.PropertyName] = MapTabBarIsVisible,
+            [MauiShell.TabBarBackgroundColorProperty.PropertyName] = MapTabBarBackgroundColor,
+            [MauiShell.TabBarForegroundColorProperty.PropertyName] = MapTabBarForegroundColor,
+            [MauiShell.TabBarTitleColorProperty.PropertyName] = MapTabBarTitleColor,
+            [MauiShell.TabBarDisabledColorProperty.PropertyName] = MapTabBarDisabledColor,
+            [MauiShell.TabBarUnselectedColorProperty.PropertyName] = MapTabBarUnselectedColor,
         };
 
     public static CommandMapper<MauiShell, ShellHandler> CommandMapper =
         new CommandMapper<MauiShell, ShellHandler>(ViewHandler.ViewCommandMapper);
 
-    FlyoutContainer? _flyoutContainer;
-    ContentControl? _flyoutContentControl;
-    StackPanel? _flyoutPanel;
-    ContentControl? _flyoutHeaderControl;
-    ContentControl? _flyoutFooterControl;
-    DockPanel? _mainContainer;
-    DockPanel? _topBar;
-    Border? _topBarShadow;
-    Avalonia.Controls.Button? _hamburgerButton;
-    Avalonia.Controls.Button? _backButton;
-    TextBlock? _titleTextBlock;
-    ContentControl? _titleViewControl;
-    ContentControl? _mainContentControl;
-    ShellItemHandler? _currentItemHandler;
-    Image? _flyoutBackgroundImage;
-    ScrollViewer? _flyoutScrollViewer;
-    Dictionary<ShellItem, Avalonia.Controls.Button> _flyoutItemButtons = new();
+    internal new MauiShell? VirtualView => (MauiShell?)base.VirtualView;
+    internal FlyoutContainer? _flyoutContainer;
+    internal ContentControl? _flyoutContentControl;
+    internal StackPanel? _flyoutPanel;
+    internal ScrollViewer? _flyoutScrollViewer;
+    internal DockPanel? _flyoutPaneContainer;
+    internal Grid? _flyoutGrid;
+    internal ContentControl? _flyoutHeaderControl;
+    internal ContentControl? _flyoutFooterControl;
+    internal DockPanel? _mainContainer;
+    internal DockPanel? _topBar;
+    internal Border? _topBarShadow;
+    internal Button? _hamburgerButton;
+    internal Button? _backButton;
+    internal TextBlock? _titleTextBlock;
+    internal ContentControl? _titleViewControl;
+    internal TransitioningContentControl? _mainContentControl;
+    internal ShellItemHandler? _currentItemHandler;
+    internal int _previousItemIndex = -1;
+    internal Dictionary<ShellItem, Button> _flyoutItemButtons = new();
+    internal ShellSearchControl? _searchControl;
+    internal SearchHandler? _currentSearchHandler;
+    internal Page? _trackedPage;
+    internal TransitioningContentControl? _modalContainer;
+    internal Page? _currentModalPage;
 
     public ShellHandler() : base(Mapper, CommandMapper)
     {
@@ -91,158 +104,168 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     {
     }
 
-    protected override AvaloniaControl CreatePlatformView()
+    protected override Panel CreatePlatformView()
     {
-        // Create the flyout container
         _flyoutContainer = new FlyoutContainer
         {
-            FlyoutWidth = 300,
-            FlyoutBehavior = Platform.FlyoutBehavior.Popover,
-            IsFlyoutOpen = false
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch
         };
 
-        // Create flyout pane structure with background image support
-        var flyoutPaneGrid = new AvaloniaGrid();
+        _flyoutGrid = new AvaloniaGrid();
 
-        // Background image (behind all content)
-        _flyoutBackgroundImage = new Image
+        _flyoutPaneContainer = new DockPanel
         {
-            Stretch = Avalonia.Media.Stretch.UniformToFill,
-            IsVisible = false
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            LastChildFill = true,
+            Background = null
         };
-        flyoutPaneGrid.Children.Add(_flyoutBackgroundImage);
-
-        // Flyout content container
-        var flyoutPaneContainer = new DockPanel
-        {
-            LastChildFill = true
-        };
-        flyoutPaneGrid.Children.Add(flyoutPaneContainer);
-
-        flyoutPaneContainer.Background = null; // Inherit from theme
+        _flyoutGrid.Children.Add(_flyoutPaneContainer);
 
         // Flyout header docked to top
         _flyoutHeaderControl = new ContentControl
         {
-            [DockPanel.DockProperty] = Dock.Top
+            [DockPanel.DockProperty] = Dock.Top,
+            IsVisible = false,
+            Background = null
         };
-        flyoutPaneContainer.Children.Add(_flyoutHeaderControl);
+        _flyoutPaneContainer.Children.Add(_flyoutHeaderControl);
 
         // Flyout footer docked to bottom
         _flyoutFooterControl = new ContentControl
         {
-            [DockPanel.DockProperty] = Dock.Bottom
+            [DockPanel.DockProperty] = Dock.Bottom,
+            IsVisible = false,
+            Background = null
         };
-        flyoutPaneContainer.Children.Add(_flyoutFooterControl);
+        _flyoutPaneContainer.Children.Add(_flyoutFooterControl);
 
         // Flyout items panel fills remaining space
         _flyoutPanel = new StackPanel
         {
-            Spacing = 4
+            Spacing = DefaultFlyoutSpacing,
+            Background = null
         };
+        ApplyFlyoutStyles(_flyoutPanel);
+
         _flyoutScrollViewer = new ScrollViewer
         {
             Content = _flyoutPanel,
-            HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-            VerticalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
+            HorizontalScrollBarVisibility = Primitives.ScrollBarVisibility.Disabled,
+            VerticalScrollBarVisibility = Primitives.ScrollBarVisibility.Auto,
+            Background = null
         };
-        flyoutPaneContainer.Children.Add(_flyoutScrollViewer);
+        _flyoutPaneContainer.Children.Add(_flyoutScrollViewer);
 
         // Set up flyout content control
         _flyoutContentControl = new ContentControl
         {
-            Content = flyoutPaneGrid
+            Content = _flyoutGrid,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            VerticalContentAlignment = VerticalAlignment.Stretch,
+            Background = null
         };
 
         _flyoutContainer.SetFlyoutContent(_flyoutContentControl);
 
-        // Create main container
+        // Ensure selection is updated when flyout content is attached to visual tree
+        _flyoutContentControl.AttachedToVisualTree += (s, e) =>
+        {
+            if (VirtualView != null)
+            {
+                Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    this.UpdateFlyoutItemsAppearance(VirtualView);
+                }, Threading.DispatcherPriority.Render);
+            }
+        };
+
+
         _mainContainer = new DockPanel
         {
             LastChildFill = true
         };
 
-        // Create top bar with hamburger button and title
         _topBar = new DockPanel
         {
+            Height = DefaultBarHeight,
             [DockPanel.DockProperty] = Dock.Top,
-            Height = 48
+            ZIndex = 1
         };
+        _topBar.Bind(Avalonia.Controls.Panel.BackgroundProperty, new Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("SystemRegionBrush"));
 
-        _topBar.Background = null; // Inherit from theme
-
-        // Shadow border under the nav bar (initially hidden)
         _topBarShadow = new Border
         {
             Height = 1,
-            Background = new Avalonia.Media.SolidColorBrush(Avalonia.Media.Color.FromArgb(50, 0, 0, 0)),
+            Background = new SolidColorBrush(Color.FromArgb(50, 0, 0, 0)),
             IsVisible = false,
             [DockPanel.DockProperty] = Dock.Top
         };
 
-        // Back button on the left (hidden by default)
-        _backButton = new Avalonia.Controls.Button
+        _backButton = new Button
         {
             Content = "←",
             FontSize = 20,
             Width = 48,
             Height = 48,
-            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center,
             Background = Brushes.Transparent,
             IsVisible = false,
             [DockPanel.DockProperty] = Dock.Left
         };
         _backButton.Click += OnBackButtonClick;
+        
         _topBar.Children.Add(_backButton);
 
-        // Hamburger button next to back button
-        _hamburgerButton = new Avalonia.Controls.Button
+
+        _hamburgerButton = new Button
         {
             Content = "☰",
             FontSize = 20,
             Width = 48,
             Height = 48,
-            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center,
             Background = Brushes.Transparent,
             [DockPanel.DockProperty] = Dock.Left
         };
         _hamburgerButton.Click += OnHamburgerButtonClick;
         _topBar.Children.Add(_hamburgerButton);
 
-        // TitleView control (for custom title content)
         _titleViewControl = new ContentControl
         {
             IsVisible = false,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Stretch
         };
         _topBar.Children.Add(_titleViewControl);
 
-        // Title text in the center
         _titleTextBlock = new TextBlock
         {
             FontSize = 18,
-            FontWeight = Avalonia.Media.FontWeight.SemiBold,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-            Margin = new Thickness(8, 0)
+            FontWeight = Media.FontWeight.SemiBold,
+            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            Margin = new Thickness(8, 0),
+            ZIndex = 0
         };
         _topBar.Children.Add(_titleTextBlock);
 
+        _mainContentControl = new TransitioningContentControl
+        {
+            PageTransition = new Avalonia.Animation.CrossFade(ShellHandler.DefaultTransitionDuration),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            VerticalContentAlignment = VerticalAlignment.Stretch
+        };
+
         _mainContainer.Children.Add(_topBar);
         _mainContainer.Children.Add(_topBarShadow);
-
-        // Main content area
-        _mainContentControl = new ContentControl
-        {
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
-            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-            VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Stretch
-        };
         _mainContainer.Children.Add(_mainContentControl);
+
 
         _flyoutContainer.SetDetailContent(_mainContainer);
 
@@ -253,24 +276,35 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     {
         base.ConnectHandler(platformView);
 
+        if (_flyoutContainer != null)
+        {
+            _flyoutContainer.FlyoutOpened += OnFlyoutOpened;
+            _flyoutContainer.FlyoutClosed += OnFlyoutClosed;
+        }
+
         if (VirtualView != null)
         {
             VirtualView.PropertyChanged += OnShellPropertyChanged;
 
-            if (VirtualView is IShellController shellController)
+            this.UpdateItemCheckedStates(VirtualView);
+            this.UpdateFlyoutItems(VirtualView);
+            this.UpdateCurrentItem(VirtualView);
+            this.UpdateSearchHandler(VirtualView);
+            this.UpdateFlyoutHeader(VirtualView);
+            this.UpdateFlyoutFooter(VirtualView);
+            this.UpdateFlyoutItemsAppearance(VirtualView);
+            TrackCurrentPage();
+
+
+            Threading.Dispatcher.UIThread.Post(() =>
             {
-                // Subscribe to flyout item selection
-            }
+                if (VirtualView != null)
+                {
+                    this.UpdateFlyoutItemsAppearance(VirtualView);
+                }
+            }, Threading.DispatcherPriority.Loaded);
 
-            // Initialize UI now that MauiContext is available
-            UpdateFlyoutItems();
-            UpdateCurrentItem();
-            UpdateFlyoutHeader();
-            UpdateFlyoutFooter();
-            UpdateItemCheckedStates(); // Initialize checked states
-
-            // Apply flyout background if set
-            if (VirtualView.FlyoutBackground != null)
+            if (VirtualView.FlyoutBackground != null && !VirtualView.FlyoutBackground.IsEmpty)
             {
                 MapFlyoutBackground(this, VirtualView);
             }
@@ -278,14 +312,34 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             {
                 MapFlyoutBackgroundColor(this, VirtualView);
             }
+            else if (VirtualView.FlyoutBackgroundImage != null)
+            {
+                this.UpdateFlyoutBackground(VirtualView);
+            }
+            else
+            {
+                _flyoutPaneContainer?.ApplyDefaultFlyoutBackground();
+            }
         }
     }
 
     protected override void DisconnectHandler(AvaloniaControl platformView)
     {
+        if (_flyoutContainer != null)
+        {
+            _flyoutContainer.FlyoutOpened -= OnFlyoutOpened;
+            _flyoutContainer.FlyoutClosed -= OnFlyoutClosed;
+        }
+
         if (VirtualView != null)
         {
             VirtualView.PropertyChanged -= OnShellPropertyChanged;
+        }
+
+        if (_trackedPage != null)
+        {
+            _trackedPage.PropertyChanged -= OnCurrentPagePropertyChanged;
+            _trackedPage = null;
         }
 
         _currentItemHandler = null;
@@ -293,308 +347,326 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         base.DisconnectHandler(platformView);
     }
 
+    private void OnFlyoutOpened(object? sender, EventArgs e)
+    {
+        if (VirtualView != null)
+        {
+            VirtualView.FlyoutIsPresented = true;
+            Threading.Dispatcher.UIThread.Post(() =>
+            {
+                if (VirtualView != null)
+                {
+                    this.UpdateFlyoutItemsAppearance(VirtualView);
+                }
+            }, Threading.DispatcherPriority.Loaded);
+        }
+    }
+
+    private void OnFlyoutClosed(object? sender, EventArgs e)
+    {
+        if (VirtualView != null)
+        {
+            VirtualView.FlyoutIsPresented = false;
+        }
+    }
+
     private void OnShellPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        // Update title when navigation changes
         if (e.PropertyName == nameof(MauiShell.CurrentItem) ||
-            e.PropertyName == "CurrentState")
+            e.PropertyName == MauiShell.CurrentStateProperty.PropertyName ||
+            e.PropertyName == nameof(MauiShell.CurrentPage))
         {
-            UpdateTitle();
-            UpdateBackButtonVisibility();
+            if (VirtualView != null)
+            {
+                this.UpdateTitle(VirtualView);
+                this.UpdateSearchHandler(VirtualView);
+                this.UpdateBackButtonBehavior(VirtualView);
+                this.UpdateFlyoutItemsAppearance(VirtualView);
+            }
+
+            TrackCurrentPage();
+            if (VirtualView?.CurrentItem != null)
+                _currentItemHandler?.UpdateTabBarVisibility(VirtualView.CurrentItem);
+
+            // Force focus clear on page change to ensure navigation settles cleanly
+            Threading.Dispatcher.UIThread.Post(() => 
+            {
+                var topLevel = _mainContainer != null ? TopLevel.GetTopLevel(_mainContainer) : null;
+                topLevel?.FocusManager?.ClearFocus();
+            });
         }
+        else if (e.PropertyName == nameof(VisualElement.BackgroundColor))
+        {
+            MapBackgroundColor(this, VirtualView!);
+        }
+        else if (e.PropertyName == MauiShell.ForegroundColorProperty.PropertyName)
+        {
+            MapForegroundColor(this, VirtualView!);
+        }
+        else if (e.PropertyName == MauiShell.TitleColorProperty.PropertyName)
+        {
+            MapTitleColor(this, VirtualView!);
+        }
+        else if (e.PropertyName == MauiShell.FlyoutIconProperty.PropertyName)
+        {
+            MapFlyoutIcon(this, VirtualView!);
+        }
+        else if (e.PropertyName == MauiShell.FlyoutBackgroundImageProperty.PropertyName ||
+                 e.PropertyName == MauiShell.FlyoutBackgroundImageAspectProperty.PropertyName)
+        {
+            MapFlyoutBackgroundImage(this, VirtualView!);
+        }
+        else if (e.PropertyName == MauiShell.TabBarBackgroundColorProperty.PropertyName)
+        {
+            MapTabBarBackgroundColor(this, VirtualView!);
+        }
+        else if (e.PropertyName == MauiShell.TabBarForegroundColorProperty.PropertyName)
+        {
+            MapTabBarForegroundColor(this, VirtualView!);
+        }
+        else if (e.PropertyName == MauiShell.TabBarTitleColorProperty.PropertyName)
+        {
+            MapTabBarTitleColor(this, VirtualView!);
+        }
+        else if (e.PropertyName == MauiShell.TabBarDisabledColorProperty.PropertyName)
+        {
+            MapTabBarDisabledColor(this, VirtualView!);
+        }
+        else if (e.PropertyName == MauiShell.TabBarUnselectedColorProperty.PropertyName)
+        {
+            MapTabBarUnselectedColor(this, VirtualView!);
+        }
+        else if (e.PropertyName == MauiShell.SearchHandlerProperty.PropertyName)
+        {
+            MapSearchHandler(this, VirtualView!);
+        }
+    }
+
+    private void TrackCurrentPage()
+    {
+        var newPage = VirtualView?.CurrentPage;
+        if (_trackedPage == newPage)
+            return;
+
+        if (_trackedPage != null)
+            _trackedPage.PropertyChanged -= OnCurrentPagePropertyChanged;
+
+        _trackedPage = newPage;
+
+        if (_trackedPage != null)
+            _trackedPage.PropertyChanged += OnCurrentPagePropertyChanged;
+    }
+
+    private void OnCurrentPagePropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (VirtualView == null)
+            return;
+
+        if (e.PropertyName == MauiShell.TabBarIsVisibleProperty.PropertyName)
+        {
+            if (VirtualView.CurrentItem != null)
+                _currentItemHandler?.UpdateTabBarVisibility(VirtualView.CurrentItem);
+        }
+        else if (e.PropertyName == MauiShell.NavBarIsVisibleProperty.PropertyName)
+        {
+            this.UpdateNavBarIsVisible(VirtualView);
+            this.UpdateNavBarHasShadow(VirtualView);
+        }
+        else if (e.PropertyName == MauiShell.NavBarHasShadowProperty.PropertyName)
+            this.UpdateNavBarHasShadow(VirtualView);
+        else if (e.PropertyName == nameof(MauiShell.TitleView))
+            this.UpdateTitleView(VirtualView);
+        else if (e.PropertyName == MauiShell.BackButtonBehaviorProperty.PropertyName)
+            this.UpdateBackButtonBehavior(VirtualView);
     }
 
     public static void MapCurrentItem(ShellHandler handler, MauiShell shell)
     {
         if (handler.MauiContext != null)
         {
-            handler.UpdateCurrentItem();
-            handler.UpdateItemCheckedStates();
+            handler.UpdateCurrentItem(shell);
         }
     }
 
     public static void MapFlyoutBehavior(ShellHandler handler, MauiShell shell)
     {
-        if (handler._flyoutContainer == null)
-            return;
+        handler.UpdateFlyoutBehavior(shell);
+    }
 
-        switch (shell.FlyoutBehavior)
-        {
-            case Microsoft.Maui.FlyoutBehavior.Disabled:
-                handler._flyoutContainer.FlyoutBehavior = Platform.FlyoutBehavior.Disabled;
-                handler._flyoutContainer.IsFlyoutOpen = false;
-                if (handler._hamburgerButton != null)
-                    handler._hamburgerButton.IsVisible = false;
-                break;
-            case Microsoft.Maui.FlyoutBehavior.Flyout:
-                handler._flyoutContainer.FlyoutBehavior = Platform.FlyoutBehavior.Popover;
-                if (handler._hamburgerButton != null)
-                    handler._hamburgerButton.IsVisible = true;
-                break;
-            case Microsoft.Maui.FlyoutBehavior.Locked:
-                handler._flyoutContainer.FlyoutBehavior = Platform.FlyoutBehavior.Locked;
-                handler._flyoutContainer.IsFlyoutOpen = true;
-                if (handler._hamburgerButton != null)
-                    handler._hamburgerButton.IsVisible = false;
-                break;
-        }
+    public static void MapFlyoutIcon(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateFlyoutIcon(shell);
     }
 
     public static void MapFlyoutIsPresented(ShellHandler handler, MauiShell shell)
     {
-        if (handler._flyoutContainer != null)
-        {
-            handler._flyoutContainer.IsFlyoutOpen = shell.FlyoutIsPresented;
-        }
+        handler.UpdateFlyoutIsPresented(shell);
     }
 
     public static void MapFlyoutWidth(ShellHandler handler, MauiShell shell)
     {
-        if (handler._flyoutContainer != null && shell.FlyoutWidth > 0)
-        {
-            handler._flyoutContainer.FlyoutWidth = shell.FlyoutWidth;
-        }
+        handler.UpdateFlyoutWidth(shell);
     }
 
     public static void MapFlyoutBackground(ShellHandler handler, MauiShell shell)
     {
-        if (handler._flyoutContentControl != null && shell.FlyoutBackground != null)
-        {
-            handler._flyoutContentControl.Background = shell.FlyoutBackground.ToPlatform();
-        }
+        handler.UpdateFlyoutBackground(shell);
     }
 
     public static void MapFlyoutBackgroundColor(ShellHandler handler, MauiShell shell)
     {
-        if (handler._flyoutContentControl != null && shell.FlyoutBackgroundColor != null)
-        {
-            handler._flyoutContentControl.Background = new Avalonia.Media.SolidColorBrush(
-                Avalonia.Media.Color.FromArgb(
-                    (byte)(shell.FlyoutBackgroundColor.Alpha * 255),
-                    (byte)(shell.FlyoutBackgroundColor.Red * 255),
-                    (byte)(shell.FlyoutBackgroundColor.Green * 255),
-                    (byte)(shell.FlyoutBackgroundColor.Blue * 255)
-                )
-            );
-        }
+        handler.UpdateFlyoutBackground(shell);
     }
 
     public static void MapFlyoutContent(ShellHandler handler, MauiShell shell)
     {
-        if (handler.MauiContext != null)
-        {
-            handler.UpdateFlyoutContent();
-        }
+        handler.UpdateFlyoutContent(shell);
     }
 
     public static void MapFlyoutHeader(ShellHandler handler, MauiShell shell)
     {
-        if (handler.MauiContext != null)
-        {
-            handler.UpdateFlyoutHeader();
-        }
+        handler.UpdateFlyoutHeader(shell);
     }
 
     public static void MapFlyoutFooter(ShellHandler handler, MauiShell shell)
     {
-        if (handler.MauiContext != null)
-        {
-            handler.UpdateFlyoutFooter();
-        }
+        handler.UpdateFlyoutFooter(shell);
     }
 
     public static void MapItems(ShellHandler handler, MauiShell shell)
     {
-        if (handler.MauiContext != null)
-        {
-            handler.UpdateFlyoutItems();
-        }
+        handler.UpdateFlyoutItems(shell);
     }
 
     public static void MapItemTemplate(ShellHandler handler, MauiShell shell)
     {
-        if (handler.MauiContext != null)
-        {
-            handler.UpdateFlyoutItems();
-        }
+        handler.UpdateFlyoutItems(shell);
     }
-
 
     public static void MapFlyoutHeight(ShellHandler handler, MauiShell shell)
     {
-        if (handler._flyoutContainer != null && shell.FlyoutHeight > 0)
-        {
-            handler._flyoutContainer.FlyoutHeight = shell.FlyoutHeight;
-        }
+        handler.UpdateFlyoutHeight(shell);
     }
 
     public static void MapFlyoutBackgroundImage(ShellHandler handler, MauiShell shell)
     {
-        handler.UpdateFlyoutBackgroundImage();
+        handler.UpdateFlyoutBackgroundImage(shell);
+        handler.UpdateFlyoutBackground(shell);
     }
 
     public static void MapFlyoutBackdrop(ShellHandler handler, MauiShell shell)
     {
-        handler.UpdateFlyoutBackdrop();
+        handler.UpdateFlyoutBackdrop(shell);
     }
 
     public static void MapFlyoutContentTemplate(ShellHandler handler, MauiShell shell)
     {
-        if (handler.MauiContext != null)
-        {
-            handler.UpdateFlyoutContent();
-        }
+        handler.UpdateFlyoutContent(shell);
     }
 
     public static void MapFlyoutHeaderBehavior(ShellHandler handler, MauiShell shell)
     {
-        handler.UpdateFlyoutHeaderBehavior();
+        handler.UpdateFlyoutHeaderBehavior(shell);
     }
 
     public static void MapFlyoutVerticalScrollMode(ShellHandler handler, MauiShell shell)
     {
-        handler.UpdateFlyoutVerticalScrollMode();
+        handler.UpdateFlyoutVerticalScrollMode(shell);
     }
 
     public static void MapMenuItemTemplate(ShellHandler handler, MauiShell shell)
     {
-        if (handler.MauiContext != null)
-        {
-            handler.UpdateFlyoutItems();
-        }
+        handler.UpdateFlyoutItems(shell);
     }
 
     public static void MapBackgroundColor(ShellHandler handler, MauiShell shell)
     {
-        handler.UpdateBackgroundColor();
+        handler.UpdateBackgroundColor(shell);
     }
 
     public static void MapForegroundColor(ShellHandler handler, MauiShell shell)
     {
-        handler.UpdateForegroundColor();
+        handler.UpdateForegroundColor(shell);
     }
 
     public static void MapTitleColor(ShellHandler handler, MauiShell shell)
     {
-        handler.UpdateTitleColor();
+        handler.UpdateTitleColor(shell);
     }
 
     public static void MapDisabledColor(ShellHandler handler, MauiShell shell)
     {
-        // DisabledColor is used for styling disabled flyout items
-        handler.UpdateFlyoutItems();
+        handler.UpdateFlyoutItemsAppearance(shell);
     }
 
     public static void MapUnselectedColor(ShellHandler handler, MauiShell shell)
     {
-        // UnselectedColor is used for styling unselected flyout items
-        handler.UpdateFlyoutItems();
+        handler.UpdateFlyoutItemsAppearance(shell);
     }
 
     public static void MapNavBarIsVisible(ShellHandler handler, MauiShell shell)
     {
-        handler.UpdateNavBarVisibility();
+        handler.UpdateNavBarIsVisible(shell);
+        handler.UpdateNavBarHasShadow(shell);
     }
 
     public static void MapNavBarHasShadow(ShellHandler handler, MauiShell shell)
     {
-        handler.UpdateNavBarShadow();
+        handler.UpdateNavBarHasShadow(shell);
+    }
+
+    public static void MapBackButtonBehavior(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateBackButtonBehavior(shell);
     }
 
     public static void MapTitleView(ShellHandler handler, MauiShell shell)
     {
-        handler.UpdateTitleView();
+        handler.UpdateTitleView(shell);
     }
 
     public static void MapTabBarIsVisible(ShellHandler handler, MauiShell shell)
     {
-        // TabBar visibility is handled by ShellItemHandler
-        if (handler._currentItemHandler != null)
-        {
-            handler._currentItemHandler.UpdateTabBarVisibility();
-        }
+        if (shell.CurrentItem != null)
+            handler._currentItemHandler?.UpdateTabBarVisibility(shell.CurrentItem);
     }
 
     public static void MapTabBarBackgroundColor(ShellHandler handler, MauiShell shell)
     {
-        if (handler._currentItemHandler != null)
-        {
-            handler._currentItemHandler.UpdateTabBarBackgroundColor();
-        }
+        if (shell.CurrentItem != null)
+            handler._currentItemHandler?.UpdateTabBarBackgroundColor(shell.CurrentItem);
     }
 
     public static void MapTabBarForegroundColor(ShellHandler handler, MauiShell shell)
     {
-        if (handler._currentItemHandler != null)
-        {
-            handler._currentItemHandler.UpdateTabBarForegroundColor();
-        }
+        if (shell.CurrentItem != null)
+            handler._currentItemHandler?.UpdateTabBarForegroundColor(shell.CurrentItem);
     }
 
     public static void MapTabBarTitleColor(ShellHandler handler, MauiShell shell)
     {
-        if (handler._currentItemHandler != null)
-        {
-            handler._currentItemHandler.UpdateTabBarTitleColor();
-        }
+        if (shell.CurrentItem != null)
+            handler._currentItemHandler?.UpdateTabBarTitleColor(shell.CurrentItem);
     }
 
     public static void MapTabBarDisabledColor(ShellHandler handler, MauiShell shell)
     {
-        if (handler._currentItemHandler != null)
-        {
-            handler._currentItemHandler.UpdateTabBarDisabledColor();
-        }
+        if (shell.CurrentItem != null)
+            handler._currentItemHandler?.UpdateTabBarDisabledColor(shell.CurrentItem);
     }
 
     public static void MapTabBarUnselectedColor(ShellHandler handler, MauiShell shell)
     {
-        if (handler._currentItemHandler != null)
-        {
-            handler._currentItemHandler.UpdateTabBarUnselectedColor();
-        }
+        if (shell.CurrentItem != null)
+            handler._currentItemHandler?.UpdateTabBarUnselectedColor(shell.CurrentItem);
     }
-
-    private void UpdateCurrentItem()
+    
+    public static void MapSearchHandler(ShellHandler handler, MauiShell shell)
     {
-        if (VirtualView?.CurrentItem == null || _mainContentControl == null || MauiContext == null)
-            return;
-
-        // Unsubscribe from previous item
-        if (_currentItemHandler?.VirtualView != null)
-        {
-            _currentItemHandler.VirtualView.PropertyChanged -= OnCurrentItemPropertyChanged;
-            if (_currentItemHandler.VirtualView.CurrentItem != null)
-            {
-                _currentItemHandler.VirtualView.CurrentItem.PropertyChanged -= OnCurrentSectionPropertyChanged;
-            }
-        }
-
-        // Create new handler for current item
-        var handler = VirtualView.CurrentItem.ToHandler(MauiContext);
-        _currentItemHandler = handler as ShellItemHandler;
-
-        if (handler?.PlatformView is AvaloniaControl control)
-        {
-            _mainContentControl.Content = control;
-        }
-
-        // Subscribe to current item changes for title updates
-        if (_currentItemHandler?.VirtualView != null)
-        {
-            _currentItemHandler.VirtualView.PropertyChanged += OnCurrentItemPropertyChanged;
-            if (_currentItemHandler.VirtualView.CurrentItem != null)
-            {
-                _currentItemHandler.VirtualView.CurrentItem.PropertyChanged += OnCurrentSectionPropertyChanged;
-            }
-        }
-
-        // Update title and back button
-        UpdateTitle();
-        UpdateBackButtonVisibility();
+        handler.UpdateSearchHandler(shell);
     }
 
-    private void OnCurrentItemPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    internal void OnCurrentItemPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(ShellItem.CurrentItem))
         {
@@ -603,219 +675,44 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             {
                 item.CurrentItem.PropertyChanged += OnCurrentSectionPropertyChanged;
             }
-            UpdateTitle();
-            UpdateBackButtonVisibility();
+
+            if (VirtualView != null)
+            {
+                this.UpdateTitle(VirtualView);
+                this.UpdateSearchHandler(VirtualView);
+                this.UpdateBackButtonBehavior(VirtualView);
+            }
         }
     }
 
-    private void OnCurrentSectionPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    internal void OnCurrentSectionPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(ShellSection.CurrentItem))
         {
-            UpdateTitle();
-            UpdateBackButtonVisibility();
-        }
-    }
-
-    private void UpdateTitle()
-    {
-        if (_titleTextBlock == null || VirtualView == null)
-            return;
-
-        // Get the current title from the navigation hierarchy
-        string? title = null;
-
-        // Try to get title from current content
-        if (VirtualView.CurrentItem?.CurrentItem?.CurrentItem is ShellContent content)
-        {
-            title = content.Title;
-        }
-        // Fallback to current section title
-        else if (VirtualView.CurrentItem?.CurrentItem is ShellSection section)
-        {
-            title = section.Title;
-        }
-        // Fallback to current item title
-        else if (VirtualView.CurrentItem is ShellItem item)
-        {
-            title = item.Title;
-        }
-
-        _titleTextBlock.Text = title ?? string.Empty;
-    }
-
-    private void UpdateFlyoutContent()
-    {
-        if (_flyoutContentControl == null || MauiContext == null)
-            return;
-
-        if (VirtualView?.FlyoutContent != null && VirtualView.FlyoutContent is IElement element)
-        {
-            // Use custom flyout content
-            var contentHandler = element.ToHandler(MauiContext);
-            if (contentHandler?.PlatformView is AvaloniaControl control)
+            if (VirtualView != null)
             {
-                _flyoutContentControl.Content = control;
+                this.UpdateTitle(VirtualView);
+                this.UpdateSearchHandler(VirtualView);
+                this.UpdateBackButtonBehavior(VirtualView);
             }
         }
-        else
-        {
-            // Use default flyout structure with items
-            UpdateFlyoutItems();
-        }
     }
 
-    private void UpdateFlyoutHeader()
+    internal Button CreateFlyoutItemButton(ShellItem item)
     {
-        if (_flyoutHeaderControl == null || VirtualView == null || MauiContext == null)
-            return;
-
-        // Check if there's a template first
-        if (VirtualView.FlyoutHeaderTemplate != null)
+        var button = new Button
         {
-            var templateContent = VirtualView.FlyoutHeaderTemplate.CreateContent();
-            if (templateContent is Microsoft.Maui.Controls.View templateView)
-            {
-                // Set binding context if FlyoutHeader is set (acts as data context for template)
-                if (VirtualView.FlyoutHeader != null)
-                {
-                    templateView.BindingContext = VirtualView.FlyoutHeader;
-                }
-
-                var handler = templateView.ToHandler(MauiContext);
-                if (handler?.PlatformView is AvaloniaControl control)
-                {
-                    _flyoutHeaderControl.Content = control;
-                }
-            }
-            return;
-        }
-
-        // Fallback to direct content
-        object? header = VirtualView.FlyoutHeader;
-
-        if (header is Microsoft.Maui.Controls.View headerView)
-        {
-            var headerHandler = headerView.ToHandler(MauiContext);
-            if (headerHandler?.PlatformView is AvaloniaControl control)
-            {
-                _flyoutHeaderControl.Content = control;
-            }
-        }
-        else if (header != null)
-        {
-            _flyoutHeaderControl.Content = new TextBlock { Text = header.ToString() };
-        }
-        else
-        {
-            _flyoutHeaderControl.Content = null;
-        }
-    }
-
-    private void UpdateFlyoutFooter()
-    {
-        if (_flyoutFooterControl == null || VirtualView == null || MauiContext == null)
-            return;
-
-        // Check if there's a template first
-        if (VirtualView.FlyoutFooterTemplate != null)
-        {
-            var templateContent = VirtualView.FlyoutFooterTemplate.CreateContent();
-            if (templateContent is Microsoft.Maui.Controls.View templateView)
-            {
-                // Set binding context if FlyoutFooter is set (acts as data context for template)
-                if (VirtualView.FlyoutFooter != null)
-                {
-                    templateView.BindingContext = VirtualView.FlyoutFooter;
-                }
-
-                var handler = templateView.ToHandler(MauiContext);
-                if (handler?.PlatformView is AvaloniaControl control)
-                {
-                    _flyoutFooterControl.Content = control;
-                }
-            }
-            return;
-        }
-
-        // Fallback to direct content
-        object? footer = VirtualView.FlyoutFooter;
-
-        if (footer is Microsoft.Maui.Controls.View footerView)
-        {
-            var footerHandler = footerView.ToHandler(MauiContext);
-            if (footerHandler?.PlatformView is AvaloniaControl control)
-            {
-                _flyoutFooterControl.Content = control;
-            }
-        }
-        else if (footer != null)
-        {
-            _flyoutFooterControl.Content = new TextBlock { Text = footer.ToString() };
-        }
-        else
-        {
-            _flyoutFooterControl.Content = null;
-        }
-    }
-
-    private void UpdateFlyoutItems()
-    {
-        if (_flyoutPanel == null || VirtualView == null)
-            return;
-
-        // Unsubscribe from old items
-        foreach (var kvp in _flyoutItemButtons)
-        {
-            kvp.Key.PropertyChanged -= OnFlyoutItemPropertyChanged;
-        }
-
-        _flyoutPanel.Children.Clear();
-        _flyoutItemButtons.Clear();
-
-        foreach (var item in VirtualView.Items)
-        {
-            // Check both IsVisible and FlyoutItemIsVisible
-            if (!item.IsVisible || !item.FlyoutItemIsVisible)
-                continue;
-
-            // Create flyout item button with dynamic content
-            var button = CreateFlyoutItemButton(item);
-            button.Click += (s, e) => OnFlyoutItemSelected(item);
-
-            _flyoutPanel.Children.Add(button);
-            _flyoutItemButtons[item] = button;
-
-            // Subscribe to property changes for this item
-            item.PropertyChanged += OnFlyoutItemPropertyChanged;
-
-            // Load initial icon based on IsChecked state
-            UpdateFlyoutItemIcon(button, item);
-        }
-    }
-
-    private Avalonia.Controls.Button CreateFlyoutItemButton(ShellItem item)
-    {
-        var button = new Avalonia.Controls.Button
-        {
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Left,
-            Padding = new Thickness(16, 12),
-            Background = Brushes.Transparent,
-            BorderBrush = Brushes.Transparent
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Left,
+            Padding = new Thickness(16, 12)
         };
 
-        // Check if there's a custom ItemTemplate defined
         if (VirtualView?.ItemTemplate != null && MauiContext != null)
         {
-            // Create content from the DataTemplate
             var templateContent = VirtualView.ItemTemplate.CreateContent();
-            if (templateContent is Microsoft.Maui.Controls.View mauiView)
+            if (templateContent is View mauiView)
             {
-                // Set the binding context to the ShellItem
                 mauiView.BindingContext = item;
-
-                // Convert the MAUI view to an Avalonia control
                 var handler = mauiView.ToHandler(MauiContext);
                 if (handler?.PlatformView is AvaloniaControl avaloniaControl)
                 {
@@ -825,86 +722,59 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
         else
         {
-            // Use default layout
             var contentPanel = new StackPanel
             {
                 Orientation = Orientation.Horizontal,
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Center
             };
 
             bool hasText = !string.IsNullOrEmpty(item.Title);
-
-            // Add image placeholder that will be populated asynchronously
             var icon = item.FlyoutIcon ?? item.Icon;
+
             if (icon != null)
             {
                 var image = new Image
                 {
                     Width = 24,
                     Height = 24,
-                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                    // Add margin only when both image and text are present
+                    VerticalAlignment = VerticalAlignment.Center,
                     Margin = hasText ? new Thickness(0, 0, 8, 0) : new Thickness(0)
                 };
                 contentPanel.Children.Add(image);
             }
 
-            // Add text if present
             if (hasText)
             {
                 var textBlock = new TextBlock
                 {
                     Text = item.Title ?? string.Empty,
-                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Center
                 };
                 contentPanel.Children.Add(textBlock);
             }
 
-            button.Content = contentPanel;
+            // Only set content if we have something to show
+            if (contentPanel.Children.Count > 0)
+            {
+                button.Content = contentPanel;
+            }
+            else
+            {
+                button.IsVisible = false;
+            }
         }
 
         return button;
     }
 
-    private async Task LoadFlyoutItemIconAsync(Avalonia.Controls.Button button, ImageSource imageSource)
-    {
-        if (MauiContext == null || button.Content is not StackPanel contentPanel)
-            return;
-
-        // Find the image control in the content panel
-        var image = contentPanel.Children.OfType<Image>().FirstOrDefault();
-        if (image == null)
-            return;
-
-        try
-        {
-            var imageSourceServiceProvider = this.GetRequiredService<IImageSourceServiceProvider>();
-            var serviceSource = imageSourceServiceProvider.GetImageSourceService(imageSource.GetType());
-
-            if (serviceSource is IAvaloniaImageSourceService avaloniaService)
-            {
-                var result = await avaloniaService.GetImageAsync(imageSource, 1.0f);
-                if (result?.Value is global::Avalonia.Media.Imaging.Bitmap bitmap)
-                {
-                    image.Source = bitmap;
-                }
-            }
-        }
-        catch
-        {
-            // If image loading fails, the placeholder remains empty
-        }
-    }
-
-    private void OnFlyoutItemSelected(ShellItem item)
+    internal void OnFlyoutItemSelected(ShellItem item)
     {
         if (VirtualView == null)
             return;
 
-        VirtualView.CurrentItem = item;
+        ((IShellController)VirtualView).OnFlyoutItemSelected(item);
 
-        // Close flyout on item selection
         if (VirtualView.FlyoutBehavior == Microsoft.Maui.FlyoutBehavior.Flyout && _flyoutContainer != null)
         {
             _flyoutContainer.IsFlyoutOpen = false;
@@ -912,7 +782,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
     }
 
-    private void OnHamburgerButtonClick(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnHamburgerButtonClick(object? sender, Interactivity.RoutedEventArgs e)
     {
         if (VirtualView != null && _flyoutContainer != null)
         {
@@ -921,74 +791,42 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
     }
 
-    private async void OnBackButtonClick(object? sender, global::Avalonia.Interactivity.RoutedEventArgs e)
+    private async void OnBackButtonClick(object? sender, Interactivity.RoutedEventArgs e)
     {
-        if (VirtualView?.CurrentItem?.CurrentItem is ShellSection section)
+        var topLevel = _topBar != null ? TopLevel.GetTopLevel(_topBar) : null;
+        
+        if (topLevel != null)
         {
-            // Try to pop from the navigation stack
-            await section.Navigation.PopAsync();
-
-            // Force UI update by triggering the section handler to sync
-            if (_currentItemHandler?.VirtualView?.CurrentItem is ShellSection currentSection &&
-                currentSection.Handler is ShellSectionHandler sectionHandler)
-            {
-                sectionHandler.SyncNavigationStack();
-            }
-
-            UpdateBackButtonVisibility();
-            UpdateTitle();
-        }
-    }
-
-    private void UpdateBackButtonVisibility()
-    {
-        if (_backButton == null)
-            return;
-
-        // Check if there's a navigation stack with more than one page
-        bool canGoBack = false;
-
-        if (VirtualView?.CurrentItem?.CurrentItem is ShellSection section)
-        {
-            canGoBack = section.Navigation?.NavigationStack?.Count > 1;
+            topLevel.FocusManager?.ClearFocus();
         }
 
-        _backButton.IsVisible = canGoBack;
-    }
-
-    /// <summary>
-    /// Updates the IsChecked state of all shell items based on the current selection.
-    /// This method uses reflection to access the internal IsCheckedPropertyKey from BaseShellItem.
-    /// </summary>
-    private void UpdateItemCheckedStates()
-    {
         if (VirtualView == null)
             return;
 
-        // Get the IsCheckedPropertyKey using reflection
-        var baseShellItemType = typeof(BaseShellItem);
-        var isCheckedPropertyKeyField = baseShellItemType.GetField("IsCheckedPropertyKey",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        // Check for BackButtonBehavior with custom Command
+        var behavior = VirtualView.CurrentPage != null
+            ? MauiShell.GetBackButtonBehavior(VirtualView.CurrentPage)
+            : null;
 
-        if (isCheckedPropertyKeyField == null)
-            return;
-
-        var isCheckedPropertyKey = isCheckedPropertyKeyField.GetValue(null) as BindablePropertyKey;
-        if (isCheckedPropertyKey == null)
-            return;
-
-        // Update all items
-        foreach (var item in VirtualView.Items)
+        if (behavior?.Command != null && behavior.Command.CanExecute(behavior.CommandParameter))
         {
-            bool isChecked = item == VirtualView.CurrentItem;
-            item.SetValue(isCheckedPropertyKey, isChecked);
+            behavior.Command.Execute(behavior.CommandParameter);
+            e.Handled = true;
+            return;
+        }
+
+        // Navigate back
+        if (VirtualView.CurrentItem?.CurrentItem is ShellSection section)
+        {
+            if (section.Navigation?.NavigationStack?.Count > 1)
+            {
+                await VirtualView.GoToAsync("..");
+                e.Handled = true;
+            }
         }
     }
 
-    /// <summary>
-    /// Handles property changes on flyout items, particularly the IsChecked and FlyoutIcon properties.
-    /// </summary>
-    private void OnFlyoutItemPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    internal void OnFlyoutItemPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (sender is not ShellItem item)
             return;
@@ -997,211 +835,53 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         {
             if (_flyoutItemButtons.TryGetValue(item, out var button))
             {
-                UpdateFlyoutItemIcon(button, item);
+                this.UpdateFlyoutItemIcon(button, item);
             }
         }
     }
 
-    /// <summary>
-    /// Updates the flyout item button's icon based on the item's IsChecked state.
-    /// </summary>
-    private void UpdateFlyoutItemIcon(Avalonia.Controls.Button button, ShellItem item)
+    internal void OnSearchHandlerPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        // If using ItemTemplate, the binding context will automatically update the content
-        // through MAUI's binding system, so we only need to handle the default case
-        if (VirtualView?.ItemTemplate == null)
+        if (e.PropertyName == SearchHandler.SearchBoxVisibilityProperty.PropertyName)
         {
-            var icon = item.FlyoutIcon ?? item.Icon;
-            if (icon != null && MauiContext != null)
+            Threading.Dispatcher.UIThread.Post(() => 
             {
-                LoadFlyoutItemIconAsync(button, icon).ConfigureAwait(false);
-            }
-        }
-        // For templates, the MAUI binding system handles updates automatically
-    }
-
-    private async void UpdateFlyoutBackgroundImage()
-    {
-        if (_flyoutBackgroundImage == null || VirtualView == null || MauiContext == null)
-            return;
-
-        var imageSource = VirtualView.FlyoutBackgroundImage;
-        if (imageSource == null)
-        {
-            _flyoutBackgroundImage.Source = null;
-            _flyoutBackgroundImage.IsVisible = false;
-            return;
-        }
-
-        try
-        {
-            var imageSourceServiceProvider = this.GetRequiredService<IImageSourceServiceProvider>();
-            var serviceSource = imageSourceServiceProvider.GetImageSourceService(imageSource.GetType());
-
-            if (serviceSource is IAvaloniaImageSourceService avaloniaService)
-            {
-                var result = await avaloniaService.GetImageAsync(imageSource, 1.0f);
-                if (result?.Value is global::Avalonia.Media.Imaging.Bitmap bitmap)
+                if (VirtualView != null)
                 {
-                    _flyoutBackgroundImage.Source = bitmap;
-                    _flyoutBackgroundImage.IsVisible = true;
-
-                    // Apply aspect
-                    _flyoutBackgroundImage.Stretch = VirtualView.FlyoutBackgroundImageAspect switch
-                    {
-                        Microsoft.Maui.Aspect.AspectFill => Avalonia.Media.Stretch.UniformToFill,
-                        Microsoft.Maui.Aspect.AspectFit => Avalonia.Media.Stretch.Uniform,
-                        Microsoft.Maui.Aspect.Fill => Avalonia.Media.Stretch.Fill,
-                        Microsoft.Maui.Aspect.Center => Avalonia.Media.Stretch.None,
-                        _ => Avalonia.Media.Stretch.UniformToFill
-                    };
+                    this.UpdateSearchHandler(VirtualView);
                 }
-            }
-        }
-        catch
-        {
-            _flyoutBackgroundImage.IsVisible = false;
+            });
         }
     }
 
-    private void UpdateFlyoutBackdrop()
+    private void ApplyFlyoutStyles(StackPanel panel)
     {
-        if (_flyoutContainer == null || VirtualView == null)
-            return;
+        var baseButtonStyle = new Styling.Style(x => x.OfType<Button>());
+        baseButtonStyle.Setters.Add(new Styling.Setter { Property = Button.BackgroundProperty, Value = Brushes.Transparent });
+        baseButtonStyle.Setters.Add(new Styling.Setter { Property = Button.BorderBrushProperty, Value = Brushes.Transparent });
+        baseButtonStyle.Setters.Add(new Styling.Setter { Property = Button.BorderThicknessProperty, Value = new Thickness(0) });
+        baseButtonStyle.Setters.Add(new Styling.Setter { Property = Button.PaddingProperty, Value = new Thickness(12, 8) });
+        panel.Styles.Add(baseButtonStyle);
 
-        var backdrop = VirtualView.FlyoutBackdrop;
-        if (backdrop != null)
+        var selectedButtonStyle = new Styling.Style(x => x.OfType<Button>().Class("selected"));
+        selectedButtonStyle.Setters.Add(new Styling.Setter
         {
-            _flyoutContainer.FlyoutBackdrop = backdrop.ToPlatform();
-        }
-    }
+            Property = Button.BackgroundProperty,
+            Value = new SolidColorBrush(DefaultSelectionColor)
+        });
+        panel.Styles.Add(selectedButtonStyle);
 
-    private void UpdateFlyoutHeaderBehavior()
-    {
-        if (_flyoutHeaderControl == null || _flyoutScrollViewer == null || VirtualView == null)
-            return;
-
-        // FlyoutHeaderBehavior controls how the header scrolls with the flyout content
-        switch (VirtualView.FlyoutHeaderBehavior)
+        var interactionStates = new[] { ":pointerover", ":pressed" };
+        foreach (var state in interactionStates)
         {
-            case FlyoutHeaderBehavior.Default:
-            case FlyoutHeaderBehavior.Fixed:
-                // Header stays fixed at top, only items scroll
-                _flyoutHeaderControl.SetValue(DockPanel.DockProperty, Dock.Top);
-                break;
-            case FlyoutHeaderBehavior.Scroll:
-            case FlyoutHeaderBehavior.CollapseOnScroll:
-                // In a more complete implementation, header would be inside the scroll viewer
-                // For now, treat similar to Fixed
-                _flyoutHeaderControl.SetValue(DockPanel.DockProperty, Dock.Top);
-                break;
-        }
-    }
+            var selectedStateStyle = new Styling.Style(x => x.OfType<Button>().Class("selected").Class(state).Template().Name("PART_Border"));
+            selectedStateStyle.Setters.Add(new Styling.Setter { Property = Border.BackgroundProperty, Value = new SolidColorBrush(SelectionInteractionColor) });
+            panel.Styles.Add(selectedStateStyle);
 
-    private void UpdateFlyoutVerticalScrollMode()
-    {
-        if (_flyoutScrollViewer == null || VirtualView == null)
-            return;
-
-        _flyoutScrollViewer.VerticalScrollBarVisibility = VirtualView.FlyoutVerticalScrollMode switch
-        {
-            Microsoft.Maui.Controls.ScrollMode.Auto => Avalonia.Controls.Primitives.ScrollBarVisibility.Auto,
-            Microsoft.Maui.Controls.ScrollMode.Enabled => Avalonia.Controls.Primitives.ScrollBarVisibility.Visible,
-            Microsoft.Maui.Controls.ScrollMode.Disabled => Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
-            _ => Avalonia.Controls.Primitives.ScrollBarVisibility.Auto
-        };
-    }
-
-    private void UpdateBackgroundColor()
-    {
-        if (_mainContainer == null || VirtualView == null)
-            return;
-
-        var color = VirtualView.BackgroundColor;
-        if (color != null)
-        {
-            _mainContainer.Background = color.ToPlatform();
-        }
-        else
-        {
-            _mainContainer.ClearValue(DockPanel.BackgroundProperty);
-        }
-    }
-
-    private void UpdateForegroundColor()
-    {
-        // ForegroundColor affects text in the shell chrome (hamburger button, etc.)
-        // For now, we'll leave the default theme colors
-    }
-
-    private void UpdateTitleColor()
-    {
-        if (_titleTextBlock == null || VirtualView == null)
-            return;
-
-        // TitleColor is an attached property
-        var color = MauiShell.GetTitleColor(VirtualView);
-        if (color != null)
-        {
-            _titleTextBlock.Foreground = color.ToPlatform();
-        }
-        else
-        {
-            _titleTextBlock.ClearValue(TextBlock.ForegroundProperty);
-        }
-    }
-
-    private void UpdateNavBarVisibility()
-    {
-        if (_topBar == null || _topBarShadow == null || VirtualView == null)
-            return;
-
-        // Check current page's NavBarIsVisible attached property
-        var isVisible = MauiShell.GetNavBarIsVisible(VirtualView.CurrentPage ?? VirtualView);
-
-        _topBar.IsVisible = isVisible;
-        // Shadow visibility follows nav bar visibility (and NavBarHasShadow property)
-        if (!isVisible)
-        {
-            _topBarShadow.IsVisible = false;
-        }
-    }
-
-    private void UpdateNavBarShadow()
-    {
-        if (_topBarShadow == null || VirtualView == null)
-            return;
-
-        // Check current page's NavBarHasShadow attached property
-        var hasShadow = MauiShell.GetNavBarHasShadow(VirtualView.CurrentPage ?? VirtualView);
-        var navBarVisible = _topBar?.IsVisible ?? true;
-
-        _topBarShadow.IsVisible = hasShadow && navBarVisible;
-    }
-
-    private void UpdateTitleView()
-    {
-        if (_titleViewControl == null || _titleTextBlock == null || VirtualView == null || MauiContext == null)
-            return;
-
-        // Get TitleView from current page or shell
-        var titleView = MauiShell.GetTitleView(VirtualView.CurrentPage ?? VirtualView);
-
-        if (titleView != null)
-        {
-            var handler = ((IElement)titleView).ToHandler(MauiContext);
-            if (handler?.PlatformView is AvaloniaControl control)
-            {
-                _titleViewControl.Content = control;
-                _titleViewControl.IsVisible = true;
-                _titleTextBlock.IsVisible = false;
-            }
-        }
-        else
-        {
-            _titleViewControl.Content = null;
-            _titleViewControl.IsVisible = false;
-            _titleTextBlock.IsVisible = true;
+            var unselectedStateStyle = new Styling.Style(x => x.OfType<Button>().Class(":not(.selected)").Class(state).Template().Name("PART_Border"));
+            unselectedStateStyle.Setters.Add(new Styling.Setter { Property = Border.BackgroundProperty, Value = Brushes.Transparent });
+            unselectedStateStyle.Setters.Add(new Styling.Setter { Property = Border.BorderBrushProperty, Value = Brushes.Transparent });
+            panel.Styles.Add(unselectedStateStyle);
         }
     }
 }

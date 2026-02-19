@@ -1,16 +1,13 @@
 using Microsoft.Maui.Handlers;
-using System;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Avalonia.Controls;
-using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Presenters;
 using Avalonia.Layout;
+using Avalonia.Styling;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Platform;
 using AvaloniaControl = Avalonia.Controls.Control;
-using AvaloniaGrid = Avalonia.Controls.Grid;
 using AvaloniaSelectionChangedEventArgs = Avalonia.Controls.SelectionChangedEventArgs;
+using Avalonia.Controls.Maui.Extensions;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell;
 
@@ -23,19 +20,21 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
             [nameof(ShellItem.Items)] = MapItems,
             [nameof(ShellItem.Title)] = MapTitle,
         };
-
+    
     public static CommandMapper<ShellItem, ShellItemHandler> CommandMapper =
         new CommandMapper<ShellItem, ShellItemHandler>(ElementHandler.ElementCommandMapper);
 
-    TabControl? _tabControl;
-    ContentControl? _contentControl;
-    ShellSectionHandler? _currentSectionHandler;
-    bool _showTabs;
-
+    internal TabControl? _tabControl;
+    internal TransitioningContentControl? _contentControl;
+    internal ShellSectionHandler? _currentSectionHandler;
+    internal int _previousSectionIndex = -1;
+    internal bool _showTabs;
+    internal bool _isUpdatingTabs;
+    
     public ShellItemHandler() : base(Mapper, CommandMapper)
     {
     }
-
+    
     public ShellItemHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
@@ -43,35 +42,53 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
 
     protected override AvaloniaControl CreatePlatformElement()
     {
-        // Determine tab visibility
-        _showTabs = ShouldShowTabs();
+        // Determine if we should show tabs
+        _showTabs = this.ShouldShowTabs(VirtualView);
 
         if (_showTabs)
         {
             // Create tab control for multiple sections
             _tabControl = new TabControl
             {
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
                 TabStripPlacement = Dock.Top
             };
+
+            // Style to hide the tab strip (ItemsPresenter) when "hide-tabstrip" class is set
+            var hideTabStripStyle = new Styling.Style(x =>
+                x.OfType<TabControl>().Class("hide-tabstrip").Template().OfType<ItemsPresenter>());
+            hideTabStripStyle.Setters.Add(
+                new Styling.Setter(AvaloniaControl.IsVisibleProperty, false));
+            _tabControl.Styles.Add(hideTabStripStyle);
+
             _tabControl.SelectionChanged += OnTabSelectionChanged;
+
+            var selectedStyle = new Styling.Style(x => x.OfType<TabItem>().Class(":selected"));
+            selectedStyle.Setters.Add(new Styling.Setter(TabItem.BackgroundProperty, new Markup.Xaml.MarkupExtensions.DynamicResourceExtension("ShellTabSelectedBackground")));
+            selectedStyle.Setters.Add(new Styling.Setter(TabItem.ForegroundProperty, new Markup.Xaml.MarkupExtensions.DynamicResourceExtension("ShellTabSelectedForeground")));
+            _tabControl.Styles.Add(selectedStyle);
+
+            var hoverStyle = new Styling.Style(x => x.OfType<TabItem>().Class(":pointerover"));
+            hoverStyle.Setters.Add(new Styling.Setter(TabItem.BackgroundProperty, new Markup.Xaml.MarkupExtensions.DynamicResourceExtension("ShellTabHoverBackground")));
+            _tabControl.Styles.Add(hoverStyle);
+
             return _tabControl;
         }
         else
         {
-            // Single section displays content directly without a wrapper grid
-            _contentControl = new ContentControl
+            // Single section, show content directly without wrapper grid
+            _contentControl = new TransitioningContentControl
             {
-                HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
-                HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Stretch
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                VerticalContentAlignment = VerticalAlignment.Stretch
             };
             return _contentControl;
         }
     }
-
+    
     protected override void ConnectHandler(AvaloniaControl platformView)
     {
         base.ConnectHandler(platformView);
@@ -81,8 +98,7 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
             itemController.ItemsCollectionChanged += OnItemsCollectionChanged;
         }
 
-        UpdateTabs();
-        UpdateCurrentItem();
+        this.UpdateTabs(VirtualView);
     }
 
     protected override void DisconnectHandler(AvaloniaControl platformView)
@@ -101,15 +117,15 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
 
         base.DisconnectHandler(platformView);
     }
-
+    
     public static void MapCurrentItem(ShellItemHandler handler, ShellItem item)
     {
-        handler.UpdateCurrentItem();
+        handler.UpdateCurrentItem(item);
     }
-
+    
     public static void MapItems(ShellItemHandler handler, ShellItem item)
     {
-        handler.UpdateTabs();
+        handler.UpdateTabs(item);
     }
 
     public static void MapTitle(ShellItemHandler handler, ShellItem item)
@@ -119,251 +135,41 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
 
     private void OnItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        UpdateTabs();
+        if (VirtualView != null)
+            this.UpdateTabs(VirtualView);
     }
 
     private void OnTabSelectionChanged(object? sender, AvaloniaSelectionChangedEventArgs e)
     {
-        if (_tabControl?.SelectedItem is TabItem tabItem &&
-            tabItem.Tag is ShellSection section &&
-            VirtualView != null)
+        if (_isUpdatingTabs)
+            return;
+
+        if (e.AddedItems.Count > 0)
         {
-            if (VirtualView is IShellItemController itemController)
+            var selectedItem = e.AddedItems[0];
+            ShellSection? section = null;
+
+            if (selectedItem is TabItem tabItem && VirtualView != null && _tabControl != null)
+            {
+                // Find the section associated with this TabItem (Store it in Tag or just match by index)
+                var index = _tabControl.Items.IndexOf(tabItem);
+                if (index >= 0 && index < VirtualView.Items.Count)
+                {
+                    section = VirtualView.Items[index];
+                }
+            }
+            else if (selectedItem is ShellSection s)
+            {
+                section = s;
+            }
+
+            if (section != null && VirtualView is IShellItemController itemController)
             {
                 itemController.ProposeSection(section, true);
             }
+
+            if (VirtualView != null)
+                this.UpdateTabAppearance(VirtualView);
         }
-    }
-
-    private bool ShouldShowTabs()
-    {
-        if (VirtualView is IShellItemController itemController)
-        {
-            return itemController.ShowTabs;
-        }
-
-        return VirtualView?.Items?.Count > 1;
-    }
-
-    private void UpdateTabs()
-    {
-        if (VirtualView == null)
-            return;
-
-        _showTabs = ShouldShowTabs();
-
-        if (!_showTabs)
-        {
-            // Single section or no tabs display content directly
-            UpdateCurrentItem();
-            return;
-        }
-
-        if (_tabControl == null)
-            return;
-
-        _tabControl.Items.Clear();
-
-        var sections = VirtualView is IShellItemController itemController
-            ? itemController.GetItems()
-            : VirtualView.Items;
-
-        foreach (var section in sections)
-        {
-            if (!section.IsVisible)
-                continue;
-
-            var tabItem = new TabItem
-            {
-                Header = CreateTabHeader(section),
-                Tag = section
-            };
-
-            _tabControl.Items.Add(tabItem);
-
-            // Set selected if current
-            if (section == VirtualView.CurrentItem)
-            {
-                _tabControl.SelectedItem = tabItem;
-            }
-        }
-    }
-
-    private object CreateTabHeader(ShellSection section)
-    {
-        var panel = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            Spacing = 8
-        };
-
-        if (section.Icon != null)
-        {
-            // TODO: Implement proper icon rendering
-            panel.Children.Add(new Avalonia.Controls.Border
-            {
-                Width = 16,
-                Height = 16,
-                Background = Avalonia.Media.Brushes.Gray
-            });
-        }
-
-        if (!string.IsNullOrEmpty(section.Title))
-        {
-            panel.Children.Add(new TextBlock
-            {
-                Text = section.Title,
-                VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center
-            });
-        }
-
-        return panel;
-    }
-
-    private void UpdateCurrentItem()
-    {
-        if (VirtualView?.CurrentItem == null || MauiContext == null)
-            return;
-
-        // Create handler for current section
-        var handler = VirtualView.CurrentItem.ToHandler(MauiContext);
-        _currentSectionHandler = handler as ShellSectionHandler;
-
-        if (handler?.PlatformView is not AvaloniaControl control)
-            return;
-
-        if (_showTabs && _tabControl != null)
-        {
-            // Update tab content
-            var selectedTab = _tabControl.SelectedItem as TabItem;
-            if (selectedTab != null)
-            {
-                selectedTab.Content = control;
-            }
-            else
-            {
-                // Find and select the correct tab
-                foreach (var item in _tabControl.Items)
-                {
-                    if (item is TabItem tabItem && tabItem.Tag == VirtualView.CurrentItem)
-                    {
-                        _tabControl.SelectedItem = tabItem;
-                        tabItem.Content = control;
-                        break;
-                    }
-                }
-            }
-        }
-        else if (_contentControl != null)
-        {
-            // Single section mode
-            _contentControl.Content = control;
-        }
-    }
-
-    /// <summary>
-    /// Updates the visibility of the tab bar based on the Shell's TabBarIsVisible attached property.
-    /// </summary>
-    public void UpdateTabBarVisibility()
-    {
-        if (_tabControl == null || VirtualView == null)
-            return;
-
-        // Get the Shell from the parent hierarchy
-        var shell = VirtualView.Parent as Microsoft.Maui.Controls.Shell;
-        if (shell == null)
-            return;
-
-        // Check TabBarIsVisible for the current page
-        var currentPage = shell.CurrentPage;
-        var isVisible = currentPage != null
-            ? Microsoft.Maui.Controls.Shell.GetTabBarIsVisible(currentPage)
-            : true;
-
-        // In Avalonia TabControl, we can hide the tab strip by setting TabStripPlacement
-        // or by changing the template. For now, we'll use visibility on each tab item's header.
-        // A full implementation would require a custom TabControl style.
-
-        // For simplicity, we'll set the entire tab strip to visible/hidden
-        // This requires accessing the tab strip part of the template
-        _tabControl.IsVisible = isVisible || !_showTabs;
-    }
-
-    /// <summary>
-    /// Updates the background color of the tab bar.
-    /// </summary>
-    public void UpdateTabBarBackgroundColor()
-    {
-        if (_tabControl == null || VirtualView == null)
-            return;
-
-        var shell = VirtualView.Parent as Microsoft.Maui.Controls.Shell;
-        if (shell == null)
-            return;
-
-        // TabBarBackgroundColor is an attached property
-        var color = Microsoft.Maui.Controls.Shell.GetTabBarBackgroundColor(shell);
-        if (color != null)
-        {
-            _tabControl.Background = color.ToPlatform();
-        }
-        else
-        {
-            _tabControl.ClearValue(TabControl.BackgroundProperty);
-        }
-    }
-
-    /// <summary>
-    /// Updates the foreground color of the tab bar.
-    /// </summary>
-    public void UpdateTabBarForegroundColor()
-    {
-        if (_tabControl == null || VirtualView == null)
-            return;
-
-        var shell = VirtualView.Parent as Microsoft.Maui.Controls.Shell;
-        if (shell == null)
-            return;
-
-        // TabBarForegroundColor is an attached property
-        var color = Microsoft.Maui.Controls.Shell.GetTabBarForegroundColor(shell);
-        if (color != null)
-        {
-            _tabControl.Foreground = color.ToPlatform();
-        }
-        else
-        {
-            _tabControl.ClearValue(TabControl.ForegroundProperty);
-        }
-    }
-
-    /// <summary>
-    /// Updates the title color of the tab bar (active tab text color).
-    /// </summary>
-    public void UpdateTabBarTitleColor()
-    {
-        // TabBarTitleColor applies to the selected tab's text
-        // This would require styling individual tab items
-        // For now, this is a placeholder that could be enhanced with custom styling
-    }
-
-    /// <summary>
-    /// Updates the disabled color of the tab bar.
-    /// </summary>
-    public void UpdateTabBarDisabledColor()
-    {
-        // TabBarDisabledColor applies to disabled tabs
-        // This would require styling individual tab items when disabled
-        // For now, this is a placeholder
-    }
-
-    /// <summary>
-    /// Updates the unselected color of the tab bar (inactive tab text color).
-    /// </summary>
-    public void UpdateTabBarUnselectedColor()
-    {
-        // TabBarUnselectedColor applies to unselected tabs' text
-        // This would require styling individual tab items
-        // For now, this is a placeholder that could be enhanced with custom styling
     }
 }

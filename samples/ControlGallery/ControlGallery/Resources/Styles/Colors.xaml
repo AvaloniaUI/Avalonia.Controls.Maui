@@ -28,6 +28,11 @@
     <Color x:Key="BannerLight">#f3f1ef</Color>
     <Color x:Key="BannerDark">#111222</Color>
 
+    <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+    <Color x:Key="SectionBorderDark">#444444</Color>
+    <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+    <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>

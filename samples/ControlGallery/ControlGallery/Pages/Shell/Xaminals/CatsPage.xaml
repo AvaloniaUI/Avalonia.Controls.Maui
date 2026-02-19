@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ControlGallery.Pages.ShellSamples"
+             x:Class="ControlGallery.Pages.ShellSamples.CatsPage"
+             Title="Cats">
+    <CollectionView ItemsSource="{x:Static local:AnimalData.Cats}"
+                    SelectionMode="Single"
+                    SelectionChanged="OnSelectionChanged">
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="local:Animal">
+                <Grid Padding="10" ColumnDefinitions="Auto, *">
+                    <Image Source="{Binding ImageUrl}" 
+                           WidthRequest="60" 
+                           HeightRequest="60" 
+                           Aspect="AspectFill" />
+                    <StackLayout Grid.Column="1" VerticalOptions="Center" Padding="10,0">
+                        <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="16" />
+                        <Label Text="{Binding Location}" FontSize="14" TextColor="Gray" />
+                    </StackLayout>
+                </Grid>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+</ContentPage>

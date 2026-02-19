@@ -89,12 +89,16 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
     private void OnModalPushed(object? sender, Microsoft.Maui.Controls.ModalPushedEventArgs e)
     {
-        PresentModalPage(e.Modal);
+        var mode = Microsoft.Maui.Controls.Shell.GetPresentationMode(e.Modal);
+        bool animated = !mode.HasFlag(Microsoft.Maui.Controls.PresentationMode.NotAnimated);
+        PresentModalPage(e.Modal, animated);
     }
 
     private void OnModalPopped(object? sender, Microsoft.Maui.Controls.ModalPoppedEventArgs e)
     {
-        DismissModalPage();
+        var mode = Microsoft.Maui.Controls.Shell.GetPresentationMode(e.Modal);
+        bool animated = !mode.HasFlag(Microsoft.Maui.Controls.PresentationMode.NotAnimated);
+        DismissModalPage(animated);
     }
 
     static void mapTitle(WindowHandler handler, IWindow window) =>
@@ -159,26 +163,26 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     }
 
     /// <summary>
-    /// Presents a modal page on top of the current content.
+    /// Presents a modal page as a fullscreen overlay on top of the current content.
     /// </summary>
-    public void PresentModalPage(Microsoft.Maui.IView modalPage)
+    public void PresentModalPage(Microsoft.Maui.IView modalPage, bool animated = true)
     {
         var mauiWindow = GetMauiWindow(this);
         var modalControl = modalPage.ToPlatform(MauiContext!);
 
         if (modalControl is Control control)
         {
-            mauiWindow.PresentModal(control);
+            mauiWindow.PresentModal(control, animated);
         }
     }
 
     /// <summary>
     /// Dismisses the top-most modal page.
     /// </summary>
-    public void DismissModalPage()
+    public void DismissModalPage(bool animated = true)
     {
         var mauiWindow = GetMauiWindow(this);
-        mauiWindow.DismissModal();
+        mauiWindow.DismissModal(animated);
     }
 
     static void mapMaximumWidth(WindowHandler handler, IWindow window)
