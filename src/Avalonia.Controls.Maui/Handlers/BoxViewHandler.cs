@@ -8,7 +8,6 @@ public class BoxViewHandler : ViewHandler<BoxView, Border>
 {
     public static IPropertyMapper<BoxView, BoxViewHandler> Mapper = new PropertyMapper<BoxView, BoxViewHandler>(ViewHandler.ViewMapper)
     {
-        [nameof(BoxView.Background)] = MapBackground,
         [nameof(BoxView.Color)] = MapColor,
         [nameof(BoxView.CornerRadius)] = MapCornerRadius,
     };
@@ -32,14 +31,6 @@ public class BoxViewHandler : ViewHandler<BoxView, Border>
     protected override Border CreatePlatformView()
     {
         return new Border();
-    }
-
-    public static void MapBackground(BoxViewHandler handler, BoxView boxView)
-    {
-        if (handler.PlatformView is Border platformView)
-        {
-            platformView.UpdateBackground(boxView);
-        }
     }
     
     public static void MapColor(BoxViewHandler handler, BoxView boxView)
