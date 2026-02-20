@@ -17,7 +17,26 @@ public static class BoxViewExtensions
     {
         if (boxView.Color != null)
         {
+            // If color is set, override whatever background is already set with the color...
             border.Background = boxView.Color.ToPlatform();
+        }
+        else if (boxView.Background == null)
+        {
+            // ... but if it's not set, don't clear the value unless background is also null, since that _should_ be set.
+            border.ClearValue(Border.BackgroundProperty);
+        }
+    }
+
+    /// <summary>
+    /// Updates the Border's background color based on the BoxView's background.
+    /// </summary>
+    /// <param name="border">The Border control to update.</param>
+    /// <param name="boxView">The .NET MAUI BoxView providing the background.</param>
+    public static void UpdateBackground(this Border border, BoxView boxView)
+    {
+        if (boxView.Background != null)
+        {
+            border.Background = boxView.Background.ToPlatform();
         }
         else
         {

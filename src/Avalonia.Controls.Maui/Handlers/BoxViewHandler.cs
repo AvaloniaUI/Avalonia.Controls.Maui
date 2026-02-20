@@ -32,6 +32,14 @@ public class BoxViewHandler : ViewHandler<BoxView, Border>
     {
         return new Border();
     }
+
+    public static void MapBackground(BoxViewHandler handler, BoxView boxView)
+    {
+        if (handler.PlatformView is Border platformView)
+        {
+            platformView.UpdateBackground(boxView);
+        }
+    }
     
     public static void MapColor(BoxViewHandler handler, BoxView boxView)
     {

@@ -12,7 +12,7 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>
             [nameof(ICheckBox.Background)] = MapBackground,
             [nameof(ICheckBox.IsChecked)] = MapIsChecked,
             [nameof(ICheckBox.Foreground)] = MapForeground,
-            ["Color"] = MapColor, // Color is on CheckBox class, not ICheckBox interface
+            [nameof(Microsoft.Maui.Controls.CheckBox.Color)] = MapColor, // Color is on CheckBox class, not ICheckBox interface
         };
 
     public static CommandMapper<ICheckBox, CheckBoxHandler> CommandMapper = new(ViewCommandMapper)
