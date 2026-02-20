@@ -7,7 +7,6 @@
     <IsPackable>false</IsPackable>
     <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
-    <!-- Disable xUnit v3 analyzer rule that requires TestContext.Current.CancellationToken -->
     <NoWarn>$(NoWarn);xUnit1051</NoWarn>
   </PropertyGroup>
 
@@ -22,17 +21,10 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Headless.XUnit" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.HarfBuzz" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference
-      Include="../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
-    <ProjectReference
-      Include="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
-    <ProjectReference Include="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+    <ProjectReference Include="../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
   </ItemGroup>
 
   <ItemGroup>

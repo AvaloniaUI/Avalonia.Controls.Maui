@@ -49,6 +49,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="../../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
+		<ProjectReference Include="../../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
 		<ProjectReference Include="..\..\..\src\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
 		<ProjectReference Include="..\..\..\src\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
