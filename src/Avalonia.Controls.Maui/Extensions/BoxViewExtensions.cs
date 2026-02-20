@@ -28,23 +28,6 @@ public static class BoxViewExtensions
     }
 
     /// <summary>
-    /// Updates the Border's background color based on the BoxView's background.
-    /// </summary>
-    /// <param name="border">The Border control to update.</param>
-    /// <param name="boxView">The .NET MAUI BoxView providing the background.</param>
-    public static void UpdateBackground(this Border border, BoxView boxView)
-    {
-        if (boxView.Background != null)
-        {
-            border.Background = boxView.Background.ToPlatform();
-        }
-        else
-        {
-            border.ClearValue(Border.BackgroundProperty);
-        }
-    }
-
-    /// <summary>
     /// Updates the Border's corner radius based on the BoxView's corner radius.
     /// </summary>
     /// <param name="border">The Border control to update.</param>
