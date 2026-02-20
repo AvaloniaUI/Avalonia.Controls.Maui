@@ -1,18 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-		     xmlns:shimmer="http://schemas.syncfusion.com/maui/toolkit"
-			 x:Class="SandboxApp.MainPage">
-		<BoxView InputTransparent="True">
-            <BoxView.Background>
-                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                    <GradientStop Color="#080510" Offset="0.0" />
-                    <GradientStop Color="#1B0D3D" Offset="0.25" />
-                    <GradientStop Color="#3A1D7A" Offset="0.50" />
-                    <GradientStop Color="#6B3FA0" Offset="0.70" />
-                    <GradientStop Color="#B85A6A" Offset="0.85" />
-                    <GradientStop Color="#E8734F" Offset="1.0" />
-                </LinearGradientBrush>
-            </BoxView.Background>
-        </BoxView>
+             x:Class="SandboxApp.MainPage">
 </ContentPage>
