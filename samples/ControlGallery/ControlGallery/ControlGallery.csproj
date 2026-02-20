@@ -5,8 +5,9 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<UseMaui>true</UseMaui>
-		<NoWarn>CS0618;CS0612;XC0022</NoWarn>
+		<NoWarn>CS0618;CS0612;XC0022;CS8622</NoWarn>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	</PropertyGroup>
 
 	<PropertyGroup Label="AOT Validation">
