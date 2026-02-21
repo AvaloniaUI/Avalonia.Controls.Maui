@@ -29,7 +29,6 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         [nameof(IImage.Aspect)] = MapAspect,
         [nameof(IImage.IsAnimationPlaying)] = MapIsAnimationPlaying,
         [nameof(IImage.Source)] = MapSource,
-        [nameof(IView.Opacity)] = MapOpacity,
         [nameof(IView.Clip)] = MapClip,
         // IsLoading is read-only and updated automatically by the handler
     };
@@ -73,11 +72,6 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     public static void MapIsAnimationPlaying(ImageHandler handler, IImage image)
     {
         (handler.PlatformView as AGrid)?.UpdateIsAnimationPlaying(image.IsAnimationPlaying);
-    }
-
-    public static void MapOpacity(ImageHandler handler, IView view)
-    {
-        (handler.PlatformView as AGrid)?.UpdateImageOpacity(view.Opacity);
     }
 
     public static void MapAspect(ImageHandler handler, IImage image)
