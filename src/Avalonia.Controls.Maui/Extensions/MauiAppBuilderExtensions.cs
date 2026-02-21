@@ -79,8 +79,9 @@ public static class MauiAppBuilderExtensions
         builder.Services.Replace(ServiceDescriptor.Singleton<IFontRegistrar>(fontRegistrar));
         builder.Services.Replace(ServiceDescriptor.Singleton<IFontManager>(svcs => new Avalonia.Controls.Maui.FontManager(svcs.GetRequiredService<IFontRegistrar>(), svcs)));
 
-        // Register Avalonia-specific animation manager
-        builder.Services.AddSingleton<IAnimationManager>(svcs => new AvaloniaAnimationManager());
+        // Register Avalonia-specific Ticker
+        builder.Services.RemoveAll<ITicker>();
+        builder.Services.AddSingleton<ITicker>(svcs => new AvaloniaTicker());
 
         builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.AlertManager.IAlertManagerSubscription, AlertManager.AlertRequestHelper>();
 
