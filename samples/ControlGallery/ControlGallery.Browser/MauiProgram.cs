@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls.Maui.Compatibility;
+using Avalonia.Controls.Maui.Essentials;
 
 namespace ControlGallery;
 
@@ -11,6 +12,7 @@ public static class MauiProgram
             .UseMauiApp<ControlGallery.MauiAppStub>()
             .UseAvaloniaApp(useSingleViewLifetime: true)
             .UseAvaloniaCompatibility()
+            .UseAvaloniaEssentials()
             .UseAvaloniaGraphics()
             .ConfigureFonts(fonts =>
             {

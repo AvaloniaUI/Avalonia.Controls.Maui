@@ -85,6 +85,8 @@ public partial class MainPage : FlyoutPage
         [typeof(TriggersPage)] = () => new TriggersPage(),
         [typeof(VisualStateManagerPage)] = () => new VisualStateManagerPage(),
         [typeof(LifecycleEventsPage)] = () => new LifecycleEventsPage(),
+        // Essentials
+        [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
     };
@@ -271,6 +273,12 @@ public partial class MainPage : FlyoutPage
                 new("Shell", "Shell samples", typeof(ShellPlaygroundPage)),
                 new("Xaminals", "Shell with navigation and search", typeof(ShellPage)),
             }),
+
+            new SampleGroup("Essentials", new List<SampleItem>
+            {
+                new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
+            }),
+
 
             new SampleGroup("Settings", new List<SampleItem>
             {

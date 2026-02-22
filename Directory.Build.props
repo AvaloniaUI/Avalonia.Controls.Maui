@@ -76,6 +76,7 @@
     <ItemGroup Condition="'$(AddMauiInternals)' == 'true'">
         <IgnoresAccessChecksTo Include="Microsoft.Maui" />
         <IgnoresAccessChecksTo Include="Microsoft.Maui.Controls" />
+        <IgnoresAccessChecksTo Include="Microsoft.Maui.Essentials" />
 
         <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.8.0">
             <PrivateAssets>all</PrivateAssets>

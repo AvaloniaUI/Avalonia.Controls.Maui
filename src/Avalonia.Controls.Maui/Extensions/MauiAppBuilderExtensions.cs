@@ -20,8 +20,7 @@ public static class MauiAppBuilderExtensions
             services.AddService<IFileImageSource, AvaloniaFileImageSourceService>();
             services.AddService<IUriImageSource, AvaloniaUriImageSourceService>();
             services.AddService<IFontImageSource, AvaloniaFontImageSourceService>();
-            // HACK: There is a Stream source service as well, but I don't know if we need to register it explicitly
-            // services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
+            services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
         });
 
         return builder;
@@ -79,8 +78,9 @@ public static class MauiAppBuilderExtensions
         builder.Services.Replace(ServiceDescriptor.Singleton<IFontRegistrar>(fontRegistrar));
         builder.Services.Replace(ServiceDescriptor.Singleton<IFontManager>(svcs => new Avalonia.Controls.Maui.FontManager(svcs.GetRequiredService<IFontRegistrar>(), svcs)));
 
-        // Register Avalonia-specific animation manager
-        builder.Services.AddSingleton<IAnimationManager>(svcs => new AvaloniaAnimationManager());
+        // Register Avalonia-specific Ticker
+        builder.Services.RemoveAll<ITicker>();
+        builder.Services.AddSingleton<ITicker>(svcs => new AvaloniaTicker());
 
         builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.AlertManager.IAlertManagerSubscription, AlertManager.AlertRequestHelper>();
 
