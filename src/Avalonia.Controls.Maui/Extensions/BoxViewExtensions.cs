@@ -17,11 +17,24 @@ public static class BoxViewExtensions
     {
         if (boxView.Color != null)
         {
+            // If color is set, override whatever background is already set with the color...
             border.Background = boxView.Color.ToPlatform();
         }
         else
         {
-            border.ClearValue(Border.BackgroundProperty);
+            // If the literal BackgroundColor property is set, don't clear the border background.
+            if (boxView.BackgroundColor is not null)
+            {
+                return;
+            }
+
+            // If boxview's background color has a color, don't clear it. 
+            // Only clear the background if the boxview's color is null,
+            // and the background is also empty.
+            if (boxView.Background is Brush brush && brush.IsEmpty)
+            {
+                border.ClearValue(Border.BackgroundProperty);
+            }
         }
     }
 
