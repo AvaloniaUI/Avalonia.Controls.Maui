@@ -169,10 +169,7 @@ public static class ViewExtensions
     /// <remarks>This method posts the update to the UI thread to ensure thread safety.</remarks>
     public static void UpdateOpacity(this PlatformView control, IView view)
     {
-        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-        {
-            control.Opacity = view.Opacity;
-        });
+        control.Opacity = view.Opacity;
     }
 
     /// <summary>
@@ -183,10 +180,7 @@ public static class ViewExtensions
     /// <remarks>This method posts the update to the UI thread to ensure thread safety.</remarks>
     public static void UpdateOpacity(this PlatformView control, double opacity)
     {
-        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-        {
-            control.Opacity = opacity;
-        });
+        control.Opacity = opacity;
     }
 
     /// <summary>
