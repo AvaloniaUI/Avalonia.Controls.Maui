@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ScreenshotPage"
+             Title="Screenshot">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <Label Text="Screenshot"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"/>
+
+            <!-- Capture -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Window Screenshot"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="SupportedLabel"
+                           Text="IsCaptureSupported: --"/>
+                    <Button Text="Capture Screenshot"
+                            Clicked="OnCaptureClicked"/>
+                    <Label x:Name="DimensionsLabel"
+                           Text="Dimensions: --"
+                           FontAttributes="Italic"/>
+                    <Image x:Name="ScreenshotImage"
+                           HeightRequest="300"
+                           Aspect="AspectFit"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

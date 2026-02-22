@@ -20,8 +20,7 @@ public static class MauiAppBuilderExtensions
             services.AddService<IFileImageSource, AvaloniaFileImageSourceService>();
             services.AddService<IUriImageSource, AvaloniaUriImageSourceService>();
             services.AddService<IFontImageSource, AvaloniaFontImageSourceService>();
-            // HACK: There is a Stream source service as well, but I don't know if we need to register it explicitly
-            // services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
+            services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
         });
 
         return builder;
