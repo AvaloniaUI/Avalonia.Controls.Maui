@@ -155,7 +155,7 @@ public partial class LifecycleEventsPage : ContentPage
         }
     }
 
-    private void OnToggleChildClicked(object sender, EventArgs e)
+    private void OnToggleChildClicked(object? sender, EventArgs e)
     {
         if (TrackedBorder.Parent is Layout parent)
         {
@@ -168,7 +168,7 @@ public partial class LifecycleEventsPage : ContentPage
         Log("Action: Tracked element added to ParentA");
     }
 
-    private void OnMoveChildClicked(object sender, EventArgs e)
+    private void OnMoveChildClicked(object? sender, EventArgs e)
     {
         if (TrackedBorder.Parent == ParentA)
         {
@@ -189,7 +189,7 @@ public partial class LifecycleEventsPage : ContentPage
         }
     }
 
-    private void OnReorderChildrenClicked(object sender, EventArgs e)
+    private void OnReorderChildrenClicked(object? sender, EventArgs e)
     {
         if (TrackedBorder.Parent is not Layout parent)
             return;
@@ -213,32 +213,32 @@ public partial class LifecycleEventsPage : ContentPage
         Log($"Action: Reordered children in {GetLabel(parent)}");
     }
 
-    private void OnBindingContextClicked(object sender, EventArgs e)
+    private void OnBindingContextClicked(object? sender, EventArgs e)
     {
         _bindingContextVersion++;
         TrackedBorder.BindingContext = new { Version = _bindingContextVersion };
         Log("Action: Tracked BindingContext updated");
     }
 
-    private void OnClearLogClicked(object sender, EventArgs e)
+    private void OnClearLogClicked(object? sender, EventArgs e)
     {
         EventLog.Clear();
         _sequence = 0;
     }
 
-    private void OnFocusEntryClicked(object sender, EventArgs e)
+    private void OnFocusEntryClicked(object? sender, EventArgs e)
     {
         FocusEntry.Focus();
         Log("Action: Focus entry");
     }
 
-    private void OnUnfocusEntryClicked(object sender, EventArgs e)
+    private void OnUnfocusEntryClicked(object? sender, EventArgs e)
     {
         FocusEntry.Unfocus();
         Log("Action: Unfocus entry");
     }
 
-    private void OnSizeSliderChanged(object sender, ValueChangedEventArgs e)
+    private void OnSizeSliderChanged(object? sender, ValueChangedEventArgs e)
     {
         ApplyTrackedSize();
     }

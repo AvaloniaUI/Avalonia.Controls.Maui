@@ -25,19 +25,19 @@ public partial class NavigationDemoPage : ContentPage
     }
 
     // Basic Navigation
-    private async void OnPushSimplePage(object sender, EventArgs e)
+    private async void OnPushSimplePage(object? sender, EventArgs e)
     {
         await Navigation.PushAsync(new NavigationChildPage("Simple Page", "This is a simple child page."));
     }
 
-    private async void OnPushPageWithBackTitle(object sender, EventArgs e)
+    private async void OnPushPageWithBackTitle(object? sender, EventArgs e)
     {
         var page = new NavigationChildPage("Custom Back", "This page has a custom BackButtonTitle. Push another page to see 'Custom Back' in the back button.");
         NavigationPage.SetBackButtonTitle(page, "Custom Back");
         await Navigation.PushAsync(page);
     }
 
-    private async void OnPushPageWithoutNavBar(object sender, EventArgs e)
+    private async void OnPushPageWithoutNavBar(object? sender, EventArgs e)
     {
         var page = new NavigationChildPage("No Nav Bar", "This page has the navigation bar hidden.");
         NavigationPage.SetHasNavigationBar(page, false);
@@ -45,7 +45,7 @@ public partial class NavigationDemoPage : ContentPage
     }
 
     // Navigation Bar Colors
-    private void OnSetBlueBar(object sender, EventArgs e)
+    private void OnSetBlueBar(object? sender, EventArgs e)
     {
         if (Parent is NavigationPage navPage)
         {
@@ -54,7 +54,7 @@ public partial class NavigationDemoPage : ContentPage
         }
     }
 
-    private void OnSetDarkBar(object sender, EventArgs e)
+    private void OnSetDarkBar(object? sender, EventArgs e)
     {
         if (Parent is NavigationPage navPage)
         {
@@ -63,7 +63,7 @@ public partial class NavigationDemoPage : ContentPage
         }
     }
 
-    private void OnSetGreenBar(object sender, EventArgs e)
+    private void OnSetGreenBar(object? sender, EventArgs e)
     {
         if (Parent is NavigationPage navPage)
         {
@@ -72,7 +72,7 @@ public partial class NavigationDemoPage : ContentPage
         }
     }
 
-    private void OnResetBar(object sender, EventArgs e)
+    private void OnResetBar(object? sender, EventArgs e)
     {
         if (Parent is NavigationPage navPage)
         {
@@ -83,7 +83,7 @@ public partial class NavigationDemoPage : ContentPage
     }
 
     // Gradient Background
-    private void OnSetGradientBar(object sender, EventArgs e)
+    private void OnSetGradientBar(object? sender, EventArgs e)
     {
         if (Parent is NavigationPage navPage)
         {
@@ -102,7 +102,7 @@ public partial class NavigationDemoPage : ContentPage
         }
     }
 
-    private void OnSetRadialGradientBar(object sender, EventArgs e)
+    private void OnSetRadialGradientBar(object? sender, EventArgs e)
     {
         if (Parent is NavigationPage navPage)
         {
@@ -121,14 +121,14 @@ public partial class NavigationDemoPage : ContentPage
     }
 
     // Title View and Icon
-    private async void OnPushPageWithTitleIcon(object sender, EventArgs e)
+    private async void OnPushPageWithTitleIcon(object? sender, EventArgs e)
     {
         var page = new NavigationChildPage("With Icon", "This page has a title icon next to the title.");
         NavigationPage.SetTitleIconImageSource(page, "dotnet_bot.png");
         await Navigation.PushAsync(page);
     }
 
-    private async void OnPushPageWithTitleView(object sender, EventArgs e)
+    private async void OnPushPageWithTitleView(object? sender, EventArgs e)
     {
         var page = new NavigationChildPage("Custom Title", "This page has a custom TitleView.");
 
@@ -164,14 +164,14 @@ public partial class NavigationDemoPage : ContentPage
     }
 
     // Icon Color
-    private async void OnPushPageWithRedIcon(object sender, EventArgs e)
+    private async void OnPushPageWithRedIcon(object? sender, EventArgs e)
     {
         var page = new NavigationChildPage("Red Icon", "The back button has a red color.");
         NavigationPage.SetIconColor(page, Colors.Red);
         await Navigation.PushAsync(page);
     }
 
-    private async void OnPushPageWithBlueIcon(object sender, EventArgs e)
+    private async void OnPushPageWithBlueIcon(object? sender, EventArgs e)
     {
         var page = new NavigationChildPage("Blue Icon", "The back button has a blue color.");
         NavigationPage.SetIconColor(page, Colors.Blue);
@@ -179,7 +179,7 @@ public partial class NavigationDemoPage : ContentPage
     }
 
     // HasBackButton
-    private async void OnPushPageWithoutBackButton(object sender, EventArgs e)
+    private async void OnPushPageWithoutBackButton(object? sender, EventArgs e)
     {
         var page = new NavigationChildPage("No Back", "This page has the back button hidden. Use the button below to go back.")
         {

@@ -12,47 +12,47 @@ public partial class ButtonView : ContentPage
 		UpdateShadowColor();
 	}
 
-	void OnButtonClicked(object sender, EventArgs e)
+	void OnButtonClicked(object? sender, EventArgs e)
 	{
 		Debug.WriteLine("Button Clicked");
 	}
 
-	void OnBackgroundStartColorEntryTextChanged(object sender, TextChangedEventArgs e)
+	void OnBackgroundStartColorEntryTextChanged(object? sender, TextChangedEventArgs e)
 	{
 		UpdateBrushes();
 	}
 
-	void OnBackgroundEndColorEntryTextChanged(object sender, TextChangedEventArgs e)
+	void OnBackgroundEndColorEntryTextChanged(object? sender, TextChangedEventArgs e)
 	{
 		UpdateBrushes();
 	}
 
-	void OnStrokeStartColorEntryTextChanged(object sender, TextChangedEventArgs e)
+	void OnStrokeStartColorEntryTextChanged(object? sender, TextChangedEventArgs e)
 	{
 		UpdateBrushes();
 	}
 
-	void OnStrokeEndColorEntryTextChanged(object sender, TextChangedEventArgs e)
+	void OnStrokeEndColorEntryTextChanged(object? sender, TextChangedEventArgs e)
 	{
 		UpdateBrushes();
 	}
 
-	void OnShadowColorEntryTextChanged(object sender, TextChangedEventArgs e)
+	void OnShadowColorEntryTextChanged(object? sender, TextChangedEventArgs e)
 	{
 		UpdateShadowColor();
 	}
 
-	void OnHorizontalAlignPickerSelectedIndexChanged(object sender, EventArgs e)
+	void OnHorizontalAlignPickerSelectedIndexChanged(object? sender, EventArgs e)
 	{
 		UpdateTextAlignment();
 	}
 
-	void OnVerticalAlignPickerSelectedIndexChanged(object sender, EventArgs e)
+	void OnVerticalAlignPickerSelectedIndexChanged(object? sender, EventArgs e)
 	{
 		UpdateTextAlignment();
 	}
 
-	void OnFontSizeEntryTextChanged(object sender, TextChangedEventArgs e)
+	void OnFontSizeEntryTextChanged(object? sender, TextChangedEventArgs e)
 	{
 		UpdateFontSize();
 	}

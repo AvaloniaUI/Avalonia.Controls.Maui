@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Nuke.Common;
 using Nuke.Common.IO;
@@ -83,7 +82,7 @@ class Build : NukeBuild
 
     string GetVersion() => VersionResolver
         .GetGitHubVersion(
-            baseVersionNumber: new Version(11, 3, 999),
+            baseVersionNumber: VersionResolver.ReadBaseVersionFromProps(RootDirectory / "Directory.Build.props"),
             isPackingToLocalCache: RunningTargets.Concat(ScheduledTargets)
                 .Any(t => t.Name == nameof(CopyPackagesToNuGetCache)))
         .ToString();

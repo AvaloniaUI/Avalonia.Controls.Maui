@@ -287,7 +287,7 @@ public partial class MainPage : FlyoutPage
         };
     }
 
-    private void OnSearchBarTextChanged(object sender, TextChangedEventArgs e)
+    private void OnSearchBarTextChanged(object? sender, TextChangedEventArgs e)
     {
         _lastSearchText = e.NewTextValue ?? string.Empty;
         UpdateMenu(_lastSearchText);

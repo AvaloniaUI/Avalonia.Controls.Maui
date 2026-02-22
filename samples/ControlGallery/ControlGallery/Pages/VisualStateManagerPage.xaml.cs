@@ -10,17 +10,17 @@ namespace ControlGallery.Pages
             InitializeComponent();
         }
 
-        private void OnNeutralClicked(object sender, EventArgs e)
+        private void OnNeutralClicked(object? sender, EventArgs e)
         {
             VisualStateManager.GoToState(StatefulBox, "Neutral");
         }
 
-        private void OnSuccessClicked(object sender, EventArgs e)
+        private void OnSuccessClicked(object? sender, EventArgs e)
         {
             VisualStateManager.GoToState(StatefulBox, "Success");
         }
 
-        private void OnErrorClicked(object sender, EventArgs e)
+        private void OnErrorClicked(object? sender, EventArgs e)
         {
             VisualStateManager.GoToState(StatefulBox, "Error");
         }
