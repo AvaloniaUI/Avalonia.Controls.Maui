@@ -41,24 +41,6 @@ public static class ImageExtensions
     }
 
     /// <summary>
-    /// Updates the opacity on all image children in the container.
-    /// </summary>
-    /// <param name="container"></param>
-    /// <param name="opacity"></param>
-    public static void UpdateImageOpacity(this Grid container, double opacity)
-    {
-        // Update static image
-        var staticImage = container.Children.OfType<Image>().FirstOrDefault();
-        if (staticImage != null)
-            staticImage.Opacity = opacity;
-
-        // Update GIF image if present
-        var gifImage = container.Children.OfType<GifImage>().FirstOrDefault();
-        if (gifImage != null)
-            gifImage.Opacity = opacity;
-    }
-
-    /// <summary>
     /// Updates the animation playing state of a GIF image in the container.
     /// </summary>
     /// <param name="container"></param>

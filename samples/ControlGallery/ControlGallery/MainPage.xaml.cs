@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using ControlGallery.Pages;
+using ControlGallery.Pages.ShellSamples;
+using ControlGallery.Pages.ShellSamples.ShellPlayground;
 
 namespace ControlGallery;
 
@@ -26,11 +28,8 @@ public partial class MainPage : FlyoutPage
         [typeof(TitleBarPage)] = () => new TitleBarPage(),
         [typeof(PopupsPage)] = () => new PopupsPage(),
         [typeof(ToolbarItemPage)] = () => new NavigationPage(new ToolbarItemPage()),
-        // Layout
-        [typeof(StackLayoutPage)] = () => new StackLayoutPage(),
-        [typeof(GridPage)] = () => new GridPage(),
-        [typeof(FlexLayoutPage)] = () => new FlexLayoutPage(),
-        [typeof(AbsoluteLayoutPage)] = () => new AbsoluteLayoutPage(),
+        [typeof(ShellPage)] = () => new ShellPage(),
+        [typeof(ShellPlaygroundPage)] = () => new ShellPlaygroundPage(),
         // Views
         [typeof(ActivityIndicatorPage)] = () => new ActivityIndicatorPage(),
         [typeof(BorderPage)] = () => new BorderPage(),
@@ -63,6 +62,11 @@ public partial class MainPage : FlyoutPage
         // Effects
         [typeof(ClipPage)] = () => new ClipPage(),
         [typeof(ShadowPage)] = () => new ShadowPage(),
+        // Layout
+        [typeof(StackLayoutPage)] = () => new StackLayoutPage(),
+        [typeof(GridPage)] = () => new GridPage(),
+        [typeof(FlexLayoutPage)] = () => new FlexLayoutPage(),
+        [typeof(AbsoluteLayoutPage)] = () => new AbsoluteLayoutPage(),
         [typeof(TransformationsPage)] = () => new TransformationsPage(),
         // Shapes
         [typeof(RectanglePage)] = () => new RectanglePage(),
@@ -101,7 +105,7 @@ public partial class MainPage : FlyoutPage
         // Navigate to Welcome Page by default
         Detail = new WelcomePage();
     }
-
+// ...
     private void UpdateMenu(string searchText)
     {
         var root = new TableRoot();
@@ -262,6 +266,12 @@ public partial class MainPage : FlyoutPage
                 new("Tooltips", "Tooltips on various elements", typeof(TooltipsPage)),
                 new("Triggers", "Visual states and actions", typeof(TriggersPage)),
                 new("Visual States", "VisualStateManager examples", typeof(VisualStateManagerPage)),
+            }),
+
+            new SampleGroup("Shell", new List<SampleItem>
+            {
+                new("Shell", "Shell samples", typeof(ShellPlaygroundPage)),
+                new("Xaminals", "Shell with navigation and search", typeof(ShellPage)),
             }),
 
             new SampleGroup("Settings", new List<SampleItem>

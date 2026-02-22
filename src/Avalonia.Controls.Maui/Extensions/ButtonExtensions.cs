@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Controls.Primitives;
 using Microsoft.Maui;
@@ -193,5 +194,18 @@ public static class ButtonExtensions
     public static void UpdateContentLayout(this PlatformView platformView, MButton button)
     {
         platformView.UpdateContentLayout(button.ContentLayout);
+    }
+
+    /// <summary>
+    /// Updates the line break mode of the button.
+    /// </summary>
+    /// <param name="platformView">The platform button control.</param>
+    /// <param name="button">The cross-platform button.</param>
+    public static void UpdateLineBreakMode(this PlatformView platformView, IButton button)
+    {
+        if (button is MButton mauiButton)
+        {
+            platformView.LineBreakMode = mauiButton.LineBreakMode;
+        }
     }
 }

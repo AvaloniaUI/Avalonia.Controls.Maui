@@ -183,7 +183,7 @@ public class NavigationView : DockPanel
 
         _contentControl = new TransitioningContentControl
         {
-            PageTransition = new CrossFade(TimeSpan.FromMilliseconds(200))
+            PageTransition = new PageSlide(TimeSpan.FromMilliseconds(300), PageSlide.SlideAxis.Horizontal)
         };
 
         Children.Add(_navigationBar);

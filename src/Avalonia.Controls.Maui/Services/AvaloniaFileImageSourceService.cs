@@ -50,10 +50,9 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             Bitmap? bitmap = null;
 
             // First try to load as an Avalonia resource
-            var resourcePath = GetResourcePath(fileName);
-            if (TryLoadFromAvaloniaResource(resourcePath, out bitmap) && bitmap != null)
+            if (TryLoadFromAvaloniaResource(fileName, out bitmap) && bitmap != null)
             {
-                _logger?.LogDebug($"Loaded image from Avalonia resource: {resourcePath}");
+                _logger?.LogDebug($"Loaded image from Avalonia resource: {fileName}");
                 return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(
                     new ImageSourceServiceResult(bitmap));
             }
@@ -78,76 +77,23 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
         }
     }
 
-    private string GetResourcePath(string fileName)
-    {
-        // Remove any file extension for the resource lookup
-        var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
-        var extension = Path.GetExtension(fileName);
-
-        // Try different resource path patterns
-        // MAUI images are typically in the Images folder
-        return $"/Images/{nameWithoutExtension}{extension}";
-    }
-
-    private bool TryLoadFromAvaloniaResource(string resourcePath, out Bitmap? bitmap)
+    private bool TryLoadFromAvaloniaResource(string fileName, out Bitmap? bitmap)
     {
         bitmap = null;
+        if (!AvaloniaResourceHelper.TryResolveResourceUri(fileName, out var uri) || uri == null)
+            return false;
+
         try
         {
-            // Try to get the resource from the Avalonia resource system
-            // We need to check both the current assembly and the entry assembly
-            var assemblies = new[]
-            {
-                System.Reflection.Assembly.GetEntryAssembly(),
-                System.Reflection.Assembly.GetCallingAssembly(),
-                typeof(AvaloniaFileImageSourceService).Assembly
-            }.Where(a => a != null).Distinct();
-
-            foreach (var assembly in assemblies)
-            {
-                var assemblyName = assembly!.GetName().Name;
-
-                // Try different URI schemes for each assembly
-                var uris = new[]
-                {
-                    new Uri($"avares://{assemblyName}{resourcePath}"),
-                    new Uri($"resm:{assemblyName}{resourcePath.Replace('/', '.')}?assembly={assemblyName}"),
-                };
-
-                foreach (var uri in uris)
-                {
-                    try
-                    {
-                        using var stream = AssetLoader.Open(uri);
-                        bitmap = new Bitmap(stream);
-                        return true;
-                    }
-                    catch
-                    {
-                        // Try next URI format
-                    }
-                }
-            }
-
-            // Also try without assembly name (for embedded resources)
-            try
-            {
-                var uri = new Uri($"avares:///{resourcePath.TrimStart('/')}");
-                using var stream = AssetLoader.Open(uri);
-                bitmap = new Bitmap(stream);
-                return true;
-            }
-            catch
-            {
-                // Resource not found
-            }
+            using var stream = AssetLoader.Open(uri);
+            bitmap = new Bitmap(stream);
+            return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            // Resource not found
+            _logger?.LogDebug(ex, $"Resource URI resolved but failed to load bitmap: {uri}");
+            return false;
         }
-
-        return false;
     }
 }
 
