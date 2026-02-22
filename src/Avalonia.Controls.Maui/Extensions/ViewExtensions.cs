@@ -635,6 +635,17 @@ public static class ViewExtensions
                 templatedControl.ClearValue(TemplatedControl.BackgroundProperty);
             }
         }
+        else if (control is Border border)
+        {
+            if (view.Background != null)
+            {
+                border.Background = view.Background.ToPlatform();
+            }
+            else
+            {
+                border.ClearValue(Border.BackgroundProperty);
+            }
+        }
     }
 
     /// <summary>
