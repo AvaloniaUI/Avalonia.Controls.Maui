@@ -38,8 +38,8 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     {
         if (arg3 is DisplayDensityRequest request)
         {
-            var toplevel = handler.PlatformView.GetVisualRoot() as Avalonia.Controls.TopLevel;
-            request.SetResult((float)(toplevel?.RenderScaling ?? 1.0));
+            var renderingScale = handler.PlatformView.Presenter?.GetPresentationSource()?.RenderScaling;
+            request.SetResult((float)(renderingScale ?? 1.0));
         }
     }
 

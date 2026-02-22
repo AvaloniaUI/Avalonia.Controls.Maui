@@ -504,7 +504,7 @@ public class MauiCollectionView : TemplatedControl
             if (Child is Control content)
             {
                 // Verify if we need to update the binding context registration
-                if (this.GetVisualRoot() != null)
+                if (this.Parent != null)
                 {
                     _owner.UnregisterItemContainer(this);
                     _owner.RegisterItemContainer(this, content, DataContext);
@@ -559,7 +559,7 @@ public class MauiCollectionView : TemplatedControl
                 info.Content.TryGetTarget(out var content) &&
                 info.DataContext.TryGetTarget(out var dataContext))
             {
-                if (border.IsVisible && border.GetVisualRoot() != null)
+                if (border.IsVisible && border.Parent != null)
                 {
                     bool isSelected = IsItemSelected(dataContext);
                     UpdateVisualState(content, isSelected);
