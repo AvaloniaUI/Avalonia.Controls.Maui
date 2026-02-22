@@ -66,6 +66,8 @@ public static class MauiTestAppBuilderExtensions
             handlers.AddHandler<Microsoft.Maui.Controls.SwipeView, SwipeViewHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.Switch, SwitchHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.TimePicker, TimePickerHandler>();
+
+            handlers.AddHandler<Microsoft.Maui.Controls.Page, PageHandler>();
             
             // Shapes
             handlers.AddHandler<Microsoft.Maui.Controls.Shapes.Ellipse, EllipseHandler>();
