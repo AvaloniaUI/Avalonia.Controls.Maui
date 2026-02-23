@@ -91,16 +91,16 @@ public static class ShellItemExtensions
 
         if (section.Icon != null)
         {
-            var image = new Avalonia.Controls.Image
+            var iconBorder = new Border
             {
                 Width = 16,
-                Height = 16
+                Height = 16,
+                Background = Brushes.White
             };
-            image.Classes.Add("shell-tab-header-icon");
+            iconBorder.Classes.Add("shell-tab-header-icon");
 
-            // Load icon asynchronously
-            _ = handler.LoadIconAsync(section.Icon, image);
-            panel.Children.Add(image);
+            _ = handler.LoadIconForTintAsync(section.Icon, iconBorder);
+            panel.Children.Add(iconBorder);
         }
 
         if (!string.IsNullOrEmpty(section.Title))
@@ -141,6 +141,40 @@ public static class ShellItemExtensions
                 if (result?.Value != null)
                 {
                     imageControl.Source = result.Value;
+                }
+            }
+        }
+        catch
+        {
+            // Icon loading failed silently
+        }
+    }
+
+    /// <summary>
+    /// Loads an icon asynchronously and applies it as an OpacityMask on a Border for tinting support.
+    /// The Border's Background acts as the tint color; the icon's opaque pixels determine visibility.
+    /// </summary>
+    internal static async Task LoadIconForTintAsync(this ShellItemHandler handler, ImageSource iconSource, Border iconBorder)
+    {
+        try
+        {
+            if (handler.MauiContext == null)
+                return;
+
+            var imageSourceServiceProvider = handler.MauiContext.Services.GetService<IImageSourceServiceProvider>();
+            if (imageSourceServiceProvider == null)
+                return;
+
+            var service = imageSourceServiceProvider.GetImageSourceService(iconSource.GetType());
+            if (service is IAvaloniaImageSourceService avaloniaService)
+            {
+                var result = await avaloniaService.GetImageAsync(iconSource);
+                if (result?.Value != null)
+                {
+                    iconBorder.OpacityMask = new Avalonia.Media.ImageBrush(result.Value)
+                    {
+                        Stretch = Avalonia.Media.Stretch.Uniform
+                    };
                 }
             }
         }
@@ -335,9 +369,10 @@ public static class ShellItemExtensions
                     if (textBrush != null) textBlock.Foreground = textBrush;
                     else textBlock.ClearValue(TextBlock.ForegroundProperty);
                 }
-                else if (child is Avalonia.Controls.Image image && image.Classes.Contains("shell-tab-header-icon"))
+                else if (child is Border border && border.Classes.Contains("shell-tab-header-icon"))
                 {
-                    // Icon tinting could be added here if needed
+                    if (iconBrush != null) border.Background = iconBrush;
+                    else border.ClearValue(Border.BackgroundProperty);
                 }
             }
         }
