@@ -30,7 +30,7 @@
             </BoxView>
         </Grid>
 
-    <ScrollView VerticalScrollBarVisibility="Never">
+    <ScrollView VerticalScrollBarVisibility="Always">
         <VerticalStackLayout x:Name="MainContent" Spacing="0" Padding="0,70,0,0">
 
             <!-- Top bar -->
@@ -38,11 +38,14 @@
                 <Label Text="Profile" FontSize="22" FontAttributes="Bold"
                        TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" VerticalOptions="Center" />
                 <Border Grid.Column="1" StrokeShape="RoundRectangle 16"
-                        Stroke="Transparent" BackgroundColor="{AppThemeBinding Dark={StaticResource CardBgAlt_Dark}, Light={StaticResource CardBgAlt_Light}}"
+                        Stroke="Transparent" BackgroundColor="{AppThemeBinding Dark={StaticResource SettingsButtonBg_Dark}, Light={StaticResource SettingsButtonBg_Light}}"
                         WidthRequest="34" HeightRequest="34">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
                     </Border.GestureRecognizers>
+                    <Border.Shadow>
+                        <Shadow Brush="{AppThemeBinding Dark={StaticResource ShadowColor_Dark}, Light={StaticResource ShadowColor_Light}}" Offset="0,2" Radius="8" Opacity="0.3" />
+                    </Border.Shadow>
                     <Image Source="icon_settings.png" WidthRequest="16" HeightRequest="16" HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.7" />
                 </Border>
             </Grid>

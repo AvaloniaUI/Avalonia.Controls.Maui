@@ -9,7 +9,7 @@
              Shell.NavBarVisibilityAnimationEnabled="False"
              SafeAreaEdges="None"
              BackgroundColor="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}">
-    <Grid Margin="0,-60,0,0" SafeAreaEdges="None">
+    <Grid Margin="0,0,0,0" SafeAreaEdges="None">
         <BoxView InputTransparent="True">
             <BoxView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
@@ -32,7 +32,7 @@
         </Grid>
 
 
-    <ScrollView VerticalScrollBarVisibility="Never">
+    <ScrollView VerticalScrollBarVisibility="Always">
         <VerticalStackLayout x:Name="MainContent" Padding="20,70,20,100" Spacing="16">
             <Label Text="Learning Paths"
                    FontSize="28"
@@ -41,7 +41,7 @@
                    Margin="0,0,0,4" />
             <Label Text="Choose a path to start learning"
                    FontSize="14"
-                   TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}"
+                   TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray900}}"
                    Margin="0,0,0,8" />
 
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding Paths}" Spacing="16">
