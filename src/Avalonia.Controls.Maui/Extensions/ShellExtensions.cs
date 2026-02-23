@@ -97,7 +97,9 @@ public static class ShellExtensions
         if (handler._topBar == null || shell == null)
             return;
 
-        var isVisible = MauiShell.GetNavBarIsVisible(shell.CurrentPage ?? (BindableObject)shell);
+        var isVisible = shell.CurrentPage != null && shell.CurrentPage.IsSet(MauiShell.NavBarIsVisibleProperty)
+            ? MauiShell.GetNavBarIsVisible(shell.CurrentPage)
+            : MauiShell.GetNavBarIsVisible(shell);
         handler._topBar.IsVisible = isVisible;
     }
 
@@ -111,8 +113,12 @@ public static class ShellExtensions
         if (handler._topBarShadow == null || shell == null)
             return;
 
-        var hasShadow = MauiShell.GetNavBarHasShadow(shell.CurrentPage ?? (BindableObject)shell);
-        var isVisible = MauiShell.GetNavBarIsVisible(shell.CurrentPage ?? (BindableObject)shell);
+        var hasShadow = shell.CurrentPage != null && shell.CurrentPage.IsSet(MauiShell.NavBarHasShadowProperty)
+            ? MauiShell.GetNavBarHasShadow(shell.CurrentPage)
+            : MauiShell.GetNavBarHasShadow(shell);
+        var isVisible = shell.CurrentPage != null && shell.CurrentPage.IsSet(MauiShell.NavBarIsVisibleProperty)
+            ? MauiShell.GetNavBarIsVisible(shell.CurrentPage)
+            : MauiShell.GetNavBarIsVisible(shell);
         handler._topBarShadow.IsVisible = hasShadow && isVisible;
     }
 
@@ -126,7 +132,8 @@ public static class ShellExtensions
         if (handler._titleTextBlock == null || shell == null)
             return;
 
-        var color = MauiShell.GetTitleColor(shell.CurrentPage ?? (BindableObject)shell);
+        var color = (shell.CurrentPage != null ? MauiShell.GetTitleColor(shell.CurrentPage) : null)
+            ?? MauiShell.GetTitleColor(shell);
         if (color != null)
         {
             handler._titleTextBlock.Foreground = color.ToPlatform();
@@ -147,7 +154,8 @@ public static class ShellExtensions
         if (handler._hamburgerButton == null || shell == null)
             return;
 
-        var color = MauiShell.GetForegroundColor(shell.CurrentPage ?? (BindableObject)shell);
+        var color = (shell.CurrentPage != null ? MauiShell.GetForegroundColor(shell.CurrentPage) : null)
+            ?? MauiShell.GetForegroundColor(shell);
         if (color != null)
         {
             handler._hamburgerButton.Foreground = color.ToPlatform();
@@ -879,7 +887,8 @@ public static class ShellExtensions
             return;
         }
 
-        var titleView = MauiShell.GetTitleView(shell.CurrentPage ?? (BindableObject)shell);
+        var titleView = (shell.CurrentPage != null ? MauiShell.GetTitleView(shell.CurrentPage) : null)
+            ?? MauiShell.GetTitleView(shell);
 
         if (titleView != null)
         {
