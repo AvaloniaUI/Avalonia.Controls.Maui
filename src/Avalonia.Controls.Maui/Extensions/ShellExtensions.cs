@@ -31,14 +31,20 @@ public static class ShellExtensions
         if (handler._mainContainer == null || shell == null)
             return;
 
-        var color = shell.BackgroundColor;
+        var color = (shell.CurrentPage != null ? MauiShell.GetBackgroundColor(shell.CurrentPage) : null)
+            ?? MauiShell.GetBackgroundColor(shell);
         if (color != null)
         {
             handler._mainContainer.Background = color.ToPlatform();
+
+            if (handler._topBar != null)
+                handler._topBar.Background = color.ToPlatform();
         }
         else
         {
             handler._mainContainer.ClearValue(DockPanel.BackgroundProperty);
+            if (handler._topBar != null)
+                handler._topBar.ClearValue(DockPanel.BackgroundProperty);
         }
     }
 
