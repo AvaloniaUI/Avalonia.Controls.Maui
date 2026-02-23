@@ -303,7 +303,7 @@ public class ProfileViewModel : BaseViewModel
             if (result == null) return;
 
             var destPath = Path.Combine(FileSystem.AppDataDirectory, "profile_photo.jpg");
-            using var sourceStream = await result.OpenReadAsync();
+            using var sourceStream = File.OpenRead(result.FullPath);
             using var destStream = File.OpenWrite(destPath);
             await sourceStream.CopyToAsync(destStream);
 
