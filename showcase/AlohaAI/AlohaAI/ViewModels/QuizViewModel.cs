@@ -227,7 +227,8 @@ public class QuizViewModel : BaseViewModel
         if (option == null || ShowExplanation || _quiz == null) return;
 
         var question = _quiz.Questions[_currentIndex];
-        HapticFeedback.Default.Perform(HapticFeedbackType.Click);
+        // Not supported in Avalonia Essentials.
+        // HapticFeedback.Default.Perform(HapticFeedbackType.Click);
 
         foreach (var opt in Options)
         {

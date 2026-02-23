@@ -23,6 +23,7 @@ public class QuizQuestion
     public string Id { get; set; } = string.Empty;
 
     [JsonPropertyName("type")]
+    [JsonConverter(typeof(JsonStringEnumConverter<QuestionType>))]
     public QuestionType Type { get; set; } = QuestionType.MultipleChoice;
 
     [JsonPropertyName("question")]
