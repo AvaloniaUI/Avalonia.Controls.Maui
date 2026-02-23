@@ -62,6 +62,18 @@
             "stopAtEntry": false
         },
         {
+            "name": "WeatherTwentyOne Desktop",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_weathertwentyone_desktop",
+            "program": "${workspaceFolder}/showcase/WeatherTwentyOne/WeatherTwentyOne.Desktop/bin/Debug/net11.0/WeatherTwentyOne.Desktop.dll",
+            "args": [ 
+            ],
+            "cwd": "${workspaceFolder}/showcase/WeatherTwentyOne/WeatherTwentyOne.Desktop/bin/Debug/net11.0",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
