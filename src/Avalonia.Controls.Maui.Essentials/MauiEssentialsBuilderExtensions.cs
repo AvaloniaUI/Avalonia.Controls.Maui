@@ -16,6 +16,8 @@ public static class MauiEssentialsBuilderExtensions
         var platformProvider = new AvaloniaEssentialsPlatformProvider();
 
         Microsoft.Maui.Media.Screenshot.SetDefault(new AvaloniaScreenshot(platformProvider));
+        Microsoft.Maui.Storage.FilePicker.SetDefault(new AvaloniaFilePicker(platformProvider));
+        Microsoft.Maui.Media.MediaPicker.SetDefault(new AvaloniaMediaPicker(platformProvider));
         FileSystem.SetCurrent(new AvaloniaFileSystem());
 
         return builder;

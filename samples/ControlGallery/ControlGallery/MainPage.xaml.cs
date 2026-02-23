@@ -277,6 +277,7 @@ public partial class MainPage : FlyoutPage
             new SampleGroup("Essentials", new List<SampleItem>
             {
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
+                new("File Picker", "Pick files from the system", typeof(FilePickerPage)),
             }),
 
 
