@@ -1,0 +1,60 @@
+{
+  "moduleId": "01-prompt-design",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "Which part of a prompt sets the model's behavior and constraints?",
+      "options": [
+        "User message",
+        "System instruction",
+        "Temperature setting",
+        "Token limit"
+      ],
+      "correctIndex": 1,
+      "explanation": "System instructions define the model's role, constraints, and behavioral guidelines before any user interaction.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "Few-shot prompting means providing zero examples before asking the model to perform a task.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Few-shot prompting provides several examples to guide the model. Zero examples is called zero-shot prompting.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "What is the main benefit of requesting structured JSON output from an LLM?",
+      "options": [
+        "It makes the model faster",
+        "It enables reliable parsing and integration with code",
+        "It reduces token usage",
+        "It improves creativity"
+      ],
+      "correctIndex": 1,
+      "explanation": "Structured outputs like JSON can be parsed programmatically, making LLM responses reliable for integration into software systems.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "In role prompting, you ask the model to:",
+      "options": [
+        "Generate random text",
+        "Adopt a specific persona or expertise",
+        "Use fewer tokens",
+        "Ignore the system prompt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Role prompting instructs the model to act as a specific expert (e.g., 'You are a senior data engineer'), which shapes the style and depth of responses.",
+      "xp": 5
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ResourceDictionary 
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- AlohaAI Brand Colors — Tropical Sunset Palette -->
+    <Color x:Key="Primary">#5B8FD4</Color>
+    <Color x:Key="PrimaryDark">#7BA3DB</Color>
+    <Color x:Key="PrimaryDarkText">#FFFFFF</Color>
+    <Color x:Key="Secondary">#7B68AE</Color>
+    <Color x:Key="SecondaryDarkText">#FFFFFF</Color>
+    <Color x:Key="Tertiary">#E88BBF</Color>
+    <Color x:Key="Accent">#F5A623</Color>
+
+    <!-- Gradient Anchors (for reference in code) -->
+    <Color x:Key="GradientTop">#5B9FE6</Color>
+    <Color x:Key="GradientMid">#7B68AE</Color>
+    <Color x:Key="GradientBottom">#2D1B69</Color>
+
+    <!-- Learning Path Colors -->
+    <Color x:Key="AgenticAIColor">#5B8FD4</Color>
+    <Color x:Key="MLFundamentalsColor">#7B68AE</Color>
+    <Color x:Key="PracticeAIColor">#E88BBF</Color>
+
+    <!-- Streak / Gamification -->
+    <Color x:Key="StreakColor">#F5A623</Color>
+    <Color x:Key="XPColor">#7EB4F0</Color>
+    <Color x:Key="SuccessColor">#66BB6A</Color>
+    <Color x:Key="ErrorColor">#EF5350</Color>
+
+    <!-- Neutrals -->
+    <Color x:Key="White">#FFFFFF</Color>
+    <Color x:Key="Black">#000000</Color>
+
+    <Color x:Key="Gray50">#F5F3F7</Color>
+    <Color x:Key="Gray100">#EBE7EF</Color>
+    <Color x:Key="Gray200">#D6D0DC</Color>
+    <Color x:Key="Gray300">#B8B0C2</Color>
+    <Color x:Key="Gray400">#9A90A8</Color>
+    <Color x:Key="Gray500">#6E6580</Color>
+    <Color x:Key="Gray600">#4A4258</Color>
+    <Color x:Key="Gray700">#342D42</Color>
+    <Color x:Key="Gray800">#231E30</Color>
+    <Color x:Key="Gray900">#18132A</Color>
+    <Color x:Key="Gray950">#080510</Color>
+
+    <!-- Surface Colors -->
+    <Color x:Key="SurfaceDark">#18132A</Color>
+    <Color x:Key="SurfaceLight">#FFFFFF</Color>
+    <Color x:Key="CardDark">#231E30</Color>
+    <Color x:Key="CardLight">#F5F3F7</Color>
+    <Color x:Key="CodeBlockDark">#080510</Color>
+    <Color x:Key="CodeBlockLight">#F0EDF4</Color>
+
+    <!-- Glassmorphism & Ambient -->
+    <Color x:Key="GlassSurface">#E81A1035</Color> <!-- Semi-transparent dark -->
+    <Color x:Key="GlassBorder">#33FFFFFF</Color>   <!-- Subtle highlight -->
+    <Color x:Key="AmbientBlue">#5B9FE6</Color>
+    <Color x:Key="AmbientPurple">#7B68AE</Color>
+    <Color x:Key="AmbientPink">#E88BBF</Color>
+
+    <!-- Brushes -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
+    <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
+    <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource White}"/>
+    <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource Black}"/>
+
+    <SolidColorBrush x:Key="Gray100Brush" Color="{StaticResource Gray100}"/>
+    <SolidColorBrush x:Key="Gray200Brush" Color="{StaticResource Gray200}"/>
+    <SolidColorBrush x:Key="Gray300Brush" Color="{StaticResource Gray300}"/>
+    <SolidColorBrush x:Key="Gray400Brush" Color="{StaticResource Gray400}"/>
+    <SolidColorBrush x:Key="Gray500Brush" Color="{StaticResource Gray500}"/>
+    <SolidColorBrush x:Key="Gray600Brush" Color="{StaticResource Gray600}"/>
+    <SolidColorBrush x:Key="Gray900Brush" Color="{StaticResource Gray900}"/>
+    <SolidColorBrush x:Key="Gray950Brush" Color="{StaticResource Gray950}"/>
+</ResourceDictionary>

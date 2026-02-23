@@ -1,0 +1,66 @@
+{
+  "moduleId": "02-supervised-learning",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "What type of output does a regression model predict?",
+      "options": [
+        "A discrete category or label",
+        "A continuous numerical value",
+        "A probability distribution over classes",
+        "A cluster assignment"
+      ],
+      "correctIndex": 1,
+      "explanation": "Regression models predict continuous numerical values — such as prices, temperatures, or durations — as opposed to discrete categories.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "Logistic regression is used for regression tasks despite its name.",
+      "options": ["True", "False"],
+      "correctIndex": 1,
+      "explanation": "Despite having 'regression' in its name, logistic regression is a classification algorithm. It outputs probabilities and applies a threshold to assign discrete class labels.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "In a confusion matrix, what does a False Negative (FN) represent?",
+      "options": [
+        "The model correctly predicted a negative case",
+        "The model incorrectly predicted a positive case",
+        "The model missed a positive case — predicted negative when it was actually positive",
+        "The model correctly predicted a positive case"
+      ],
+      "correctIndex": 2,
+      "explanation": "A False Negative occurs when the model predicts negative but the actual value is positive — it missed a true positive case.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "If your task is medical screening where missing a disease is very costly, which metric should you prioritize?",
+      "options": [
+        "Precision",
+        "Recall",
+        "Accuracy",
+        "R² Score"
+      ],
+      "correctIndex": 1,
+      "explanation": "In medical screening, missing a positive case (false negative) is more dangerous than a false alarm. Recall measures the proportion of actual positives that were correctly identified.",
+      "xp": 5
+    },
+    {
+      "id": "q5",
+      "type": "TrueFalse",
+      "question": "Mean Squared Error (MSE) penalizes large prediction errors more heavily than Mean Absolute Error (MAE).",
+      "options": ["True", "False"],
+      "correctIndex": 0,
+      "explanation": "MSE squares the errors, so a prediction that is off by 10 contributes 100 to the error, while MAE would only contribute 10. This makes MSE more sensitive to outliers and large errors.",
+      "xp": 5
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "moduleId": "01-cv-foundations",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "What is the fundamental building block of a Vision Transformer (ViT)?",
+      "options": [
+        "Pixels",
+        "Convolution filters",
+        "Image patches",
+        "Sliding windows"
+      ],
+      "correctIndex": 2,
+      "explanation": "ViTs split images into fixed-size patches, flatten them, and process them as a sequence using self-attention \u2014 similar to tokens in NLP.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "Vision Transformers generally require less training data than CNNs to achieve comparable performance.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 1,
+      "explanation": "ViTs typically need more data than CNNs because they lack the inductive biases (locality, translation invariance) that CNNs have built in.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "Which model family is known for real-time object detection?",
+      "options": [
+        "ResNet",
+        "VGG",
+        "YOLO",
+        "BERT"
+      ],
+      "correctIndex": 2,
+      "explanation": "YOLO (You Only Look Once) processes the entire image in a single pass, achieving real-time detection speeds.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "OCR stands for:",
+      "options": [
+        "Optimal Character Recognition",
+        "Optical Character Recognition",
+        "Online Content Retrieval",
+        "Object Classification & Recognition"
+      ],
+      "correctIndex": 1,
+      "explanation": "Optical Character Recognition converts images of text (printed or handwritten) into machine-readable text.",
+      "xp": 5
+    }
+  ]
+}

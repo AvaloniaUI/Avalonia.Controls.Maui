@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="AlohaAI.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:AlohaAI.Views"
+    Title="AlohaAI"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False"
+    Shell.BackgroundColor="Transparent"
+    Shell.NavBarHasShadow="False"
+    BackgroundColor="#120C24">
+
+    <TabBar>
+        <ShellContent
+            Title="Home"
+            Icon="tab_home.png"
+            ContentTemplate="{DataTemplate views:HomePage}"
+            Route="home" />
+        <ShellContent
+            Title="Learning"
+            Icon="tab_paths.png"
+            ContentTemplate="{DataTemplate views:PathsPage}"
+            Route="paths" />
+        <ShellContent
+            Title="Explore"
+            Icon="tab_search.png"
+            ContentTemplate="{DataTemplate views:SearchPage}"
+            Route="search" />
+        <ShellContent
+            Title="Profile"
+            Icon="tab_activity.png"
+            ContentTemplate="{DataTemplate views:ProfilePage}"
+            Route="profile" />
+    </TabBar>
+
+</Shell>

@@ -1,0 +1,46 @@
+{
+  "moduleId": "03-audio-generation",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "TrueFalse",
+      "question": "A Mel-spectrogram represents audio frequency content over time.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 0,
+      "explanation": "Mel-spectrograms convert audio into a visual representation of frequency (y-axis) over time (x-axis), using the Mel scale which approximates human hearing.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "MultipleChoice",
+      "question": "What is the primary ethical concern with voice cloning?",
+      "options": [
+        "It uses too much storage",
+        "It sounds too robotic",
+        "Non-consensual deepfakes and impersonation",
+        "It cannot handle accents"
+      ],
+      "correctIndex": 2,
+      "explanation": "Voice cloning can create convincing replicas of anyone's voice, enabling fraud, impersonation, and non-consensual content creation.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "The key challenge in real-time voice interfaces is:",
+      "options": [
+        "Audio quality",
+        "Latency \u2014 generating speech fast enough for natural conversation",
+        "Storage space",
+        "Internet bandwidth"
+      ],
+      "correctIndex": 1,
+      "explanation": "Real-time conversation requires generating speech in under 200ms to feel natural, which demands optimized streaming architectures.",
+      "xp": 5
+    }
+  ]
+}

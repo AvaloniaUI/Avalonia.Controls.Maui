@@ -1,0 +1,76 @@
+{
+  "paths": [
+    {
+      "id": "agentic-ai",
+      "title": "Agentic AI",
+      "description": "Master AI agents, MCP, RAG, tools, and orchestration patterns",
+      "icon": "robot.png",
+      "color": "#5B8FD4",
+      "moduleCount": 6,
+      "estimatedHours": 10
+    },
+    {
+      "id": "ml-fundamentals",
+      "title": "ML Fundamentals",
+      "description": "From basic concepts to neural networks and transformers",
+      "icon": "brain.png",
+      "color": "#7B68AE",
+      "moduleCount": 5,
+      "estimatedHours": 8
+    },
+    {
+      "id": "ai-in-practice",
+      "title": "AI in Practice",
+      "description": "Build real-world AI solutions with cloud services and frameworks",
+      "icon": "rocket.png",
+      "color": "#E88BBF",
+      "moduleCount": 4,
+      "estimatedHours": 7
+    },
+    {
+      "id": "prompt-engineering",
+      "title": "Prompt Engineering",
+      "description": "Design reliable prompts, evaluation loops, and model strategies for production LLM apps",
+      "icon": "gem.png",
+      "color": "#7C3AED",
+      "moduleCount": 4,
+      "estimatedHours": 7
+    },
+    {
+      "id": "vision-multimodal",
+      "title": "Vision & Multimodal AI",
+      "description": "Build apps that understand images, documents, video, and mixed media",
+      "icon": "island.png",
+      "color": "#0EA5E9",
+      "moduleCount": 4,
+      "estimatedHours": 7
+    },
+    {
+      "id": "generative-ai",
+      "title": "Generative AI Studio",
+      "description": "Create and ship image, video, audio, and music generation features",
+      "icon": "flowers.png",
+      "color": "#EC4899",
+      "moduleCount": 4,
+      "estimatedHours": 7
+    },
+    {
+      "id": "ai-safety",
+      "title": "AI Safety & Security",
+      "description": "Build AI systems that are secure, aligned, auditable, and compliant",
+      "icon": "trophy.png",
+      "color": "#F59E0B",
+      "moduleCount": 4,
+      "estimatedHours": 6
+    },
+    {
+      "id": "mlops-engineering",
+      "title": "MLOps & AI Engineering",
+      "description": "Deploy, monitor, and scale AI systems from cloud to edge with reliability",
+      "icon": "notebook.png",
+      "color": "#10B981",
+      "moduleCount": 4,
+      "estimatedHours": 7
+    }
+  ]
+}

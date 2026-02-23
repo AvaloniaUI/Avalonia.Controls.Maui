@@ -1,0 +1,66 @@
+{
+  "moduleId": "04-llms-foundation-models",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "At its core, what does a large language model learn to do during pre-training?",
+      "options": [
+        "Classify images into categories",
+        "Predict the next token in a sequence",
+        "Cluster documents by topic",
+        "Execute code in a sandbox"
+      ],
+      "correctIndex": 1,
+      "explanation": "LLMs are trained with a next-token prediction objective. Given a sequence of tokens, the model learns to predict what comes next — and this simple objective, applied at massive scale, produces remarkably capable models.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "Subword tokenization is used because it balances vocabulary size with the ability to represent any word.",
+      "options": ["True", "False"],
+      "correctIndex": 0,
+      "explanation": "Subword tokenization (BPE, WordPiece) keeps the vocabulary manageable while still being able to represent any word — including rare or unseen words — by breaking them into known subword pieces.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "What is the difference between zero-shot and few-shot prompting?",
+      "options": [
+        "Zero-shot uses no examples in the prompt; few-shot includes examples",
+        "Zero-shot requires fine-tuning; few-shot does not",
+        "Few-shot is faster than zero-shot",
+        "There is no difference — they are the same technique"
+      ],
+      "correctIndex": 0,
+      "explanation": "Zero-shot prompting gives the model a task with no examples, relying on its pre-trained knowledge. Few-shot prompting includes a few input-output examples in the prompt to help the model understand the desired pattern.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "What is LoRA in the context of fine-tuning LLMs?",
+      "options": [
+        "A type of tokenizer optimized for long texts",
+        "A parameter-efficient fine-tuning method that inserts small trainable matrices",
+        "A data augmentation technique for text",
+        "A loss function designed for language models"
+      ],
+      "correctIndex": 1,
+      "explanation": "LoRA (Low-Rank Adaptation) is a parameter-efficient fine-tuning method. Instead of updating all model weights, it inserts small trainable matrices alongside frozen layers, dramatically reducing compute and memory requirements.",
+      "xp": 5
+    },
+    {
+      "id": "q5",
+      "type": "TrueFalse",
+      "question": "In decoder-only models like GPT, each token can attend to all tokens in the sequence — both before and after it.",
+      "options": ["True", "False"],
+      "correctIndex": 1,
+      "explanation": "Decoder-only models use causal (masked) attention — each token can only attend to tokens that came before it. This prevents the model from seeing future tokens during generation.",
+      "xp": 5
+    }
+  ]
+}

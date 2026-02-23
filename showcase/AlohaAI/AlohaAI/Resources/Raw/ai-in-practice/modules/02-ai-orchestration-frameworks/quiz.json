@@ -1,0 +1,66 @@
+{
+  "moduleId": "02-ai-orchestration-frameworks",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "What is the primary purpose of an AI orchestration framework?",
+      "options": [
+        "To train language models from scratch",
+        "To provide a structured way to connect LLMs with tools, memory, and multi-step workflows",
+        "To replace language models with rule-based systems",
+        "To host language models on your own hardware"
+      ],
+      "correctIndex": 1,
+      "explanation": "Orchestration frameworks manage the connections between your application, AI models, plugins, and memory stores — handling the complexity so you can focus on business logic.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "MultipleChoice",
+      "question": "In Semantic Kernel, what is a 'Kernel' object?",
+      "options": [
+        "A neural network layer inside the language model",
+        "The central object that wires together AI services, plugins, and configuration",
+        "A database connection pool",
+        "A security module for API authentication"
+      ],
+      "correctIndex": 1,
+      "explanation": "The Kernel acts as a dependency injection container for AI services — you register model connections, plugins, and configuration, then use it to execute AI operations.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "TrueFalse",
+      "question": "When automatic function calling is enabled in Semantic Kernel, the AI model decides which plugins to invoke based on the user's request.",
+      "options": ["True", "False"],
+      "correctIndex": 0,
+      "explanation": "With FunctionChoiceBehavior.Auto(), the model analyzes the user's request and autonomously decides which registered plugin functions to call to fulfill it.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "What attribute is used to mark a C# method as callable by the AI model in Semantic Kernel?",
+      "options": [
+        "[AIMethod]",
+        "[KernelFunction]",
+        "[LLMCallable]",
+        "[SemanticAction]"
+      ],
+      "correctIndex": 1,
+      "explanation": "The [KernelFunction] attribute marks a method as a function that can be discovered and invoked by the AI model through Semantic Kernel's plugin system.",
+      "xp": 5
+    },
+    {
+      "id": "q5",
+      "type": "TrueFalse",
+      "question": "Semantic memory stores text as plain strings and uses exact keyword matching to find relevant information.",
+      "options": ["True", "False"],
+      "correctIndex": 1,
+      "explanation": "Semantic memory stores text as high-dimensional embedding vectors and uses vector similarity (not keyword matching) to find semantically relevant information.",
+      "xp": 5
+    }
+  ]
+}

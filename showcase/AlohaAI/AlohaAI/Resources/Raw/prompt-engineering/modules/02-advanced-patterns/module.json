@@ -1,0 +1,32 @@
+{
+  "id": "02-advanced-patterns",
+  "title": "Advanced Prompting Patterns",
+  "description": "Practical reasoning and workflow patterns used in production AI applications",
+  "lessons": [
+    {
+      "id": "01-chain-of-thought",
+      "title": "Chain-of-Thought Reasoning",
+      "file": "01-chain-of-thought.md",
+      "xp": 15
+    },
+    {
+      "id": "02-react-prompting",
+      "title": "ReAct & Tool-Calling Prompts",
+      "file": "02-react-prompting.md",
+      "xp": 15
+    },
+    {
+      "id": "03-decomposition",
+      "title": "Multi-Step Task Decomposition",
+      "file": "03-decomposition.md",
+      "xp": 15
+    },
+    {
+      "id": "04-prompt-versioning",
+      "title": "Prompt Libraries & Versioning",
+      "file": "04-prompt-versioning.md",
+      "xp": 10
+    }
+  ],
+  "quiz": "quiz.json"
+}

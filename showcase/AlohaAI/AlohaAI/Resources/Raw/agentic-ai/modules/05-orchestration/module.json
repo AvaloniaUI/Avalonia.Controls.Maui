@@ -1,0 +1,11 @@
+{
+  "id": "05-orchestration",
+  "title": "Agent Orchestration",
+  "description": "Multi-agent systems, communication patterns, guardrails, and evaluation",
+  "lessons": [
+    { "id": "01-multi-agent-systems", "title": "Multi-Agent Systems", "file": "01-multi-agent-systems.md", "xp": 15 },
+    { "id": "02-communication-patterns", "title": "Agent Communication Patterns", "file": "02-communication-patterns.md", "xp": 15 },
+    { "id": "03-guardrails-safety", "title": "Guardrails & Safety", "file": "03-guardrails-safety.md", "xp": 15 }
+  ],
+  "quiz": "quiz.json"
+}

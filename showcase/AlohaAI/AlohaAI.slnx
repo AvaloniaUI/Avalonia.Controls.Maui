@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+  <Project Path="AlohaAI.Desktop/AlohaAI.Desktop.csproj" />
+  <Project Path="AlohaAI/AlohaAI.csproj" />
+</Solution>

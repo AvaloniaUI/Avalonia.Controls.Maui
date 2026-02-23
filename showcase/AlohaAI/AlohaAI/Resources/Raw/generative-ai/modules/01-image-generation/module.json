@@ -1,0 +1,32 @@
+{
+  "id": "01-image-generation",
+  "title": "Image Generation Engineering",
+  "description": "Build text-to-image and image-editing capabilities with diffusion models",
+  "lessons": [
+    {
+      "id": "01-diffusion-basics",
+      "title": "How Diffusion Models Work",
+      "file": "01-diffusion-basics.md",
+      "xp": 15
+    },
+    {
+      "id": "02-prompting-images",
+      "title": "Prompting for Style & Composition",
+      "file": "02-prompting-images.md",
+      "xp": 10
+    },
+    {
+      "id": "03-controlnet-editing",
+      "title": "ControlNet, Inpainting & Editing",
+      "file": "03-controlnet-editing.md",
+      "xp": 15
+    },
+    {
+      "id": "04-lora-finetuning",
+      "title": "LoRA & Fine-Tuning for Custom Styles",
+      "file": "04-lora-finetuning.md",
+      "xp": 20
+    }
+  ],
+  "quiz": "quiz.json"
+}

@@ -1,0 +1,11 @@
+{
+  "id": "04-skills-tools",
+  "title": "Skills & Tools",
+  "description": "How LLMs use function calling, skills, and tool integration to take actions",
+  "lessons": [
+    { "id": "01-tool-use-llms", "title": "Tool Use in LLMs", "file": "01-tool-use-llms.md", "xp": 10 },
+    { "id": "02-function-calling", "title": "Function Calling", "file": "02-function-calling.md", "xp": 15 },
+    { "id": "03-skill-composition", "title": "Skill Composition", "file": "03-skill-composition.md", "xp": 15 }
+  ],
+  "quiz": "quiz.json"
+}

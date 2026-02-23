@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AlohaAI.ViewModels"
+             x:Class="AlohaAI.Views.ProfilePage"
+             x:DataType="vm:ProfileViewModel"
+             Shell.NavBarIsVisible="False"
+             Shell.NavBarVisibilityAnimationEnabled="False"
+             SafeAreaEdges="None"
+             BackgroundColor="#120C24">
+    <Grid Margin="0,-60,0,0" SafeAreaEdges="None">
+        <BoxView InputTransparent="True">
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#1E1035" Offset="0.0" />
+                    <GradientStop Color="#120C24" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+        <Grid HeightRequest="380" VerticalOptions="Start" InputTransparent="True">
+            <Image Source="bg_sunset.png" Aspect="AspectFill" />
+            <BoxView>
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#00000000" Offset="0.0" />
+                        <GradientStop Color="#901E1035" Offset="0.5" />
+                        <GradientStop Color="#FF120C24" Offset="1.0" />
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
+        </Grid>
+
+    <ScrollView VerticalScrollBarVisibility="Never">
+        <VerticalStackLayout x:Name="MainContent" Spacing="0" Padding="0,70,0,0">
+
+            <!-- Top bar -->
+            <Grid Padding="20,20,20,12" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                <Label Text="Profile" FontSize="22" FontAttributes="Bold"
+                       TextColor="White" VerticalOptions="Center" />
+                <Border Grid.Column="1" StrokeShape="RoundRectangle 16"
+                        Stroke="Transparent" BackgroundColor="#1A1035"
+                        WidthRequest="34" HeightRequest="34">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
+                    </Border.GestureRecognizers>
+                    <Image Source="icon_settings.png" WidthRequest="16" HeightRequest="16" HorizontalOptions="Center" VerticalOptions="Center" Opacity="0.7" />
+                </Border>
+            </Grid>
+
+            <!-- Level & Stats Card -->
+            <Border Margin="16,0,16,12" Style="{StaticResource GlassCard}" Padding="20,16">
+                <VerticalStackLayout Spacing="14">
+                    <!-- Avatar + Level + Name row -->
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                        <Grid WidthRequest="68" HeightRequest="68">
+                            <Border StrokeShape="RoundRectangle 34"
+                                    Stroke="#7EB4F0" StrokeThickness="2.5"
+                                    BackgroundColor="#20FFFFFF"
+                                    WidthRequest="68" HeightRequest="68"
+                                    HorizontalOptions="Center" VerticalOptions="Center">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding PickPhotoCommand}" />
+                                </Border.GestureRecognizers>
+                                <Grid>
+                                    <Image Source="{Binding ProfileImageSource}" Aspect="AspectFill"
+                                           IsVisible="{Binding HasProfileImage}" />
+                                    <Label Text="+" FontSize="32" TextColor="#7EB4F0"
+                                           HorizontalOptions="Center" VerticalOptions="Center"
+                                           IsVisible="{Binding HasProfileImage, Converter={StaticResource InvertedBoolConverter}}" />
+                                </Grid>
+                            </Border>
+                            <!-- Level badge overlay -->
+                            <Border StrokeShape="RoundRectangle 10"
+                                    Stroke="Transparent"
+                                    BackgroundColor="#7B68AE"
+                                    WidthRequest="28" HeightRequest="20"
+                                    HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,-4">
+                                <Label Text="{Binding Level, StringFormat='L{0}'}" FontSize="10" FontAttributes="Bold"
+                                       TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="{Binding DisplayName}" FontSize="20" FontAttributes="Bold" TextColor="White" />
+                                <Border StrokeShape="RoundRectangle 10" Stroke="Transparent"
+                                        BackgroundColor="#20FFFFFF" Padding="6,2"
+                                        VerticalOptions="Center">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding EditProfileCommand}" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="Edit" FontSize="11" VerticalOptions="Center" TextColor="White" />
+                                </Border>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="{Binding Level, StringFormat='Level {0}'}" FontSize="13" TextColor="#7EB4F0" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <!-- Stats row -->
+                    <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                        <Border StrokeShape="RoundRectangle 12" Stroke="Transparent"
+                                BackgroundColor="#1A1035" Padding="0">
+                            <Grid RowDefinitions="4,*">
+                                <BoxView Color="#B8A0E0" HeightRequest="4">
+                                    <BoxView.Clip>
+                                        <RoundRectangleGeometry CornerRadius="12,12,0,0" Rect="0,0,200,4" />
+                                    </BoxView.Clip>
+                                </BoxView>
+                                <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" Spacing="2" Padding="8,8,8,10">
+                                    <Label Text="{Binding TotalXp}" FontSize="20" FontAttributes="Bold" TextColor="#7EB4F0" HorizontalOptions="Center" />
+                                    <Label Text="Total XP" FontSize="11" FontAttributes="Bold" TextColor="#AAAAAA" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 12" Stroke="Transparent"
+                                BackgroundColor="#1A1035" Padding="0">
+                            <Grid RowDefinitions="4,*">
+                                <BoxView Color="#E8A04E" HeightRequest="4">
+                                    <BoxView.Clip>
+                                        <RoundRectangleGeometry CornerRadius="12,12,0,0" Rect="0,0,200,4" />
+                                    </BoxView.Clip>
+                                </BoxView>
+                                <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" Spacing="2" Padding="8,8,8,10">
+                                    <Label Text="{Binding CurrentStreak}" FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                                    <Label Text="Day Streak" FontSize="11" FontAttributes="Bold" TextColor="#AAAAAA" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="2" StrokeShape="RoundRectangle 12" Stroke="Transparent"
+                                BackgroundColor="#1A1035" Padding="0">
+                            <Grid RowDefinitions="4,*">
+                                <BoxView Color="#6DD4A0" HeightRequest="4">
+                                    <BoxView.Clip>
+                                        <RoundRectangleGeometry CornerRadius="12,12,0,0" Rect="0,0,200,4" />
+                                    </BoxView.Clip>
+                                </BoxView>
+                                <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" Spacing="2" Padding="8,8,8,10">
+                                    <Label Text="{Binding LessonsCompleted}" FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                                    <Label Text="Lessons" FontSize="11" FontAttributes="Bold" TextColor="#AAAAAA" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                    <!-- Daily Goal Progress -->
+                    <VerticalStackLayout Spacing="6">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="Daily Goal" FontSize="13" TextColor="#AAAAAA" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="{Binding DailyGoalFraction, StringFormat='{0:P0}'}" FontSize="13"
+                                   FontAttributes="Bold" TextColor="#7EB4F0" VerticalOptions="Center" />
+                        </Grid>
+                        <Grid HeightRequest="6">
+                            <Border BackgroundColor="#15FFFFFF" StrokeShape="RoundRectangle 3" Stroke="Transparent" />
+                            <Border BackgroundColor="#7EB4F0" StrokeShape="RoundRectangle 3" Stroke="Transparent"
+                                    HorizontalOptions="Start"
+                                    WidthRequest="{Binding DailyGoalFraction, Converter={StaticResource ProgressToWidthConverter}, ConverterParameter=280}">
+                                <Border.Shadow>
+                                    <Shadow Brush="#7EB4F0" Offset="0,0" Radius="4" Opacity="0.5" />
+                                </Border.Shadow>
+                            </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Learning Paths Header -->
+            <Label Text="Learning Paths" FontSize="20" FontAttributes="Bold" TextColor="White"
+                   Padding="20,8,20,8" />
+
+            <!-- Path Progress Cards using BindableLayout -->
+            <VerticalStackLayout Padding="16,0,16,0" Spacing="10"
+                                 BindableLayout.ItemsSource="{Binding PathProgress}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PathProgressItem">
+                        <Border Style="{StaticResource GlassCard}" Padding="0">
+                            <Grid ColumnDefinitions="4,*">
+                                <BoxView Color="{Binding BarColor}" WidthRequest="4" VerticalOptions="Fill">
+                                    <BoxView.Clip>
+                                        <RoundRectangleGeometry CornerRadius="2" Rect="0,0,4,200" />
+                                    </BoxView.Clip>
+                                </BoxView>
+                                <VerticalStackLayout Grid.Column="1" Spacing="8" Padding="14,12">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                    <Image Source="{Binding IconImage}" WidthRequest="24" HeightRequest="24" VerticalOptions="Center" />
+                                    <Label Grid.Column="1" Text="{Binding Title}" FontSize="17"
+                                           FontAttributes="Bold" TextColor="White" VerticalOptions="Center" />
+                                    <Label Grid.Column="2" Text="{Binding PercentText}" FontSize="15"
+                                           FontAttributes="Bold" TextColor="{Binding BarColor}" VerticalOptions="Center" />
+                                </Grid>
+                                <Grid HeightRequest="5">
+                                    <Border BackgroundColor="#15FFFFFF"
+                                            StrokeShape="RoundRectangle 2.5" Stroke="Transparent" />
+                                    <Border BackgroundColor="{Binding BarColor}"
+                                            StrokeShape="RoundRectangle 2.5" Stroke="Transparent"
+                                            HorizontalOptions="Start"
+                                            WidthRequest="{Binding Progress, Converter={StaticResource ProgressToWidthConverter}, ConverterParameter=280}" />
+                                </Grid>
+                                <!-- Module list using BindableLayout -->
+                                <VerticalStackLayout Spacing="3"
+                                                     BindableLayout.ItemsSource="{Binding Modules}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:ModuleProgressItem">
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="2,1">
+                                                <Label Text="{Binding Title}" FontSize="13" TextColor="#CCCCCC"
+                                                       MaxLines="1" LineBreakMode="TailTruncation" VerticalOptions="Center" />
+                                                <Label Grid.Column="1" Text="{Binding ProgressText}" FontSize="11" TextColor="#999999" VerticalOptions="Center" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+                            </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <!-- Achievements Section -->
+            <Label Text="Achievements" FontSize="20" FontAttributes="Bold" TextColor="White"
+                   Padding="20,16,20,8" />
+
+            <!-- Achievements Grid -->
+            <FlexLayout Wrap="Wrap" JustifyContent="SpaceEvenly" Margin="12,0,12,0"
+                        BindableLayout.ItemsSource="{Binding Achievements}">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:AchievementItem">
+                        <Border BackgroundColor="#151025" StrokeShape="RoundRectangle 16"
+                                StrokeThickness="0.8" Padding="0"
+                                WidthRequest="115" HeightRequest="130" Margin="4,5">
+                            <Border.Stroke>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#30FFFFFF" Offset="0.0" />
+                                    <GradientStop Color="#08FFFFFF" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Border.Stroke>
+                            <Grid RowDefinitions="4,*">
+                                <BoxView Color="{Binding TextColor}" HeightRequest="4">
+                                    <BoxView.Clip>
+                                        <RoundRectangleGeometry CornerRadius="16,16,0,0" Rect="0,0,200,4" />
+                                    </BoxView.Clip>
+                                </BoxView>
+                                <VerticalStackLayout Grid.Row="1" Spacing="6" VerticalOptions="Center" HorizontalOptions="Center" Padding="8,8">
+                                    <Image Source="{Binding Icon}" WidthRequest="40" HeightRequest="40"
+                                           Opacity="{Binding IconOpacity}" HorizontalOptions="Center" />
+                                    <Label Text="{Binding Title}" FontSize="12" FontAttributes="Bold"
+                                           TextColor="{Binding TextColor}" HorizontalOptions="Center"
+                                           HorizontalTextAlignment="Center" MaxLines="2" LineBreakMode="WordWrap" />
+                                    <Label Text="{Binding StatusText}" FontSize="10"
+                                           TextColor="{Binding DescColor}" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
+
+            <!-- About -->
+            <VerticalStackLayout Spacing="4" HorizontalOptions="Center" Margin="0,20,0,110">
+                <Label Text="AlohaAI v1.0.0" FontSize="11" TextColor="#AAAAAA" HorizontalOptions="Center" />
+                <Label Text="Open source • MIT License" FontSize="11" TextColor="#AAAAAA" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+        <!-- Profile Setup Backdrop -->
+        <BoxView IsVisible="{Binding ShowProfileSetup}" Color="#FF0D0B1E"
+                 ZIndex="10" InputTransparent="False" />
+        <!-- Profile Setup Card -->
+        <Border IsVisible="{Binding ShowProfileSetup}" ZIndex="11" InputTransparent="False"
+                BackgroundColor="#FF1A1035" StrokeShape="RoundRectangle 20"
+                StrokeThickness="1" Padding="24,24"
+                Margin="24,0" VerticalOptions="Center" HorizontalOptions="Fill">
+            <Border.Stroke>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#50FFFFFF" Offset="0.0" />
+                    <GradientStop Color="#10FFFFFF" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Stroke>
+            <VerticalStackLayout Spacing="16">
+                <Label Text="Set Up Your Profile" FontSize="24" FontAttributes="Bold"
+                       TextColor="White" HorizontalOptions="Center" />
+                <Label Text="Add your name and photo to personalize your learning experience"
+                       FontSize="14" TextColor="#AAAAAA" HorizontalTextAlignment="Center"
+                       HorizontalOptions="Center" />
+                <Border StrokeShape="RoundRectangle 12" Stroke="#30FFFFFF" StrokeThickness="1"
+                        BackgroundColor="#20FFFFFF" Padding="4,0" HeightRequest="48">
+                    <Entry x:Name="SetupNameEntry" Placeholder="Enter your name"
+                           PlaceholderColor="#AAAAAA" TextColor="White" FontSize="16"
+                           Text="{Binding EditName}" ReturnType="Done"
+                           BackgroundColor="Transparent" />
+                </Border>
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Text="Add Photo" BackgroundColor="#25FFFFFF"
+                            TextColor="White" FontSize="14" CornerRadius="12"
+                            HeightRequest="46" Command="{Binding PickPhotoCommand}" />
+                    <Button Grid.Column="1" Text="Save" BackgroundColor="#5B8FD4"
+                            TextColor="White" FontSize="14" FontAttributes="Bold"
+                            CornerRadius="12" HeightRequest="46"
+                            Command="{Binding SaveProfileCommand}" />
+                </Grid>
+                <Button Text="Skip for now" BackgroundColor="Transparent"
+                        TextColor="#AAAAAA" FontSize="13" HeightRequest="36"
+                        Command="{Binding CancelEditCommand}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Edit Profile Backdrop -->
+        <BoxView IsVisible="{Binding IsEditingProfile}" Color="#FF0D0B1E"
+                 ZIndex="12" InputTransparent="False" />
+        <!-- Edit Profile Card -->
+        <Border IsVisible="{Binding IsEditingProfile}" ZIndex="13" InputTransparent="False"
+                BackgroundColor="#FF1A1035" StrokeShape="RoundRectangle 20"
+                StrokeThickness="1" Padding="24,20"
+                Margin="20,0" VerticalOptions="Center" HorizontalOptions="Fill">
+            <Border.Stroke>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#50FFFFFF" Offset="0.0" />
+                    <GradientStop Color="#10FFFFFF" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Stroke>
+            <VerticalStackLayout Spacing="16">
+                <Label Text="Edit Profile" FontSize="22" FontAttributes="Bold"
+                       TextColor="White" HorizontalOptions="Center" />
+                <Border StrokeShape="RoundRectangle 12" Stroke="#30FFFFFF" StrokeThickness="1"
+                        BackgroundColor="#15FFFFFF" Padding="4,0">
+                    <Entry x:Name="EditNameEntry" Placeholder="Enter your name"
+                           PlaceholderColor="#AAAAAA" TextColor="White" FontSize="16"
+                           Text="{Binding EditName}" ReturnType="Done"
+                           BackgroundColor="Transparent" />
+                </Border>
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                    <Button Text="Cancel" BackgroundColor="#20FFFFFF"
+                            TextColor="White" FontSize="14" CornerRadius="12"
+                            HeightRequest="44" Command="{Binding CancelEditCommand}" />
+                    <Button Grid.Column="1" Text="Save" BackgroundColor="#5B8FD4"
+                            TextColor="White" FontSize="14" FontAttributes="Bold"
+                            CornerRadius="12" HeightRequest="44"
+                            Command="{Binding SaveProfileCommand}" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+
+    </Grid>
+</ContentPage>

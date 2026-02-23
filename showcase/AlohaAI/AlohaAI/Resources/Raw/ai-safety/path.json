@@ -1,0 +1,8 @@
+{
+  "modules": [
+    "01-safety-alignment",
+    "02-llm-security",
+    "03-responsible-ai",
+    "04-compliance"
+  ]
+}

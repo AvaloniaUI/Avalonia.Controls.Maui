@@ -74,6 +74,17 @@
     <Message Text="Converted MAUI fonts to Avalonia resources: @(MauiFont)" Importance="high" />
   </Target>
 
+  <Target Name="ConvertMauiAssetsToAvaloniaResources"
+          BeforeTargets="GenerateAvaloniaResources;CoreCompile"
+          Condition="'@(MauiAsset)' != ''">
+    <ItemGroup>
+      <AvaloniaResource Include="@(MauiAsset)">
+        <Link>%(MauiAsset.LogicalName)</Link>
+      </AvaloniaResource>
+    </ItemGroup>
+    <Message Text="Converted MAUI assets to Avalonia resources: @(MauiAsset)" Importance="high" />
+  </Target>
+
   <PropertyGroup>
     <EnableAvaloniaXamlCompilation Condition="'$(EnableAvaloniaXamlCompilation)' == ''">true</EnableAvaloniaXamlCompilation>
   </PropertyGroup>

@@ -1,0 +1,60 @@
+{
+  "moduleId": "02-llm-security",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "TrueFalse",
+      "question": "Indirect prompt injection can occur when an LLM processes untrusted external content like emails or web pages.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 0,
+      "explanation": "Indirect injection hides malicious instructions in data the LLM reads \u2014 emails, web pages, database records \u2014 which the LLM then follows.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "MultipleChoice",
+      "question": "What is 'jailbreaking' in the context of LLMs?",
+      "options": [
+        "Hacking the server hardware",
+        "Bypassing the model's safety training and restrictions",
+        "Stealing the model weights",
+        "Accelerating inference speed"
+      ],
+      "correctIndex": 1,
+      "explanation": "Jailbreaking tricks the model into ignoring its safety guidelines, often using role-play scenarios, encoded text, or persona manipulation.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "Tool sandboxing in AI agents means:",
+      "options": [
+        "Giving tools unlimited access",
+        "Restricting what actions tools can perform and what data they can access",
+        "Removing all tools",
+        "Running tools faster"
+      ],
+      "correctIndex": 1,
+      "explanation": "Sandboxing limits tool capabilities \u2014 read-only vs write access, network restrictions, allowed file paths \u2014 to prevent an agent from causing harm.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "A defensive measure against prompt injection is:",
+      "options": [
+        "Using a higher temperature",
+        "Validating inputs, using delimiters, and separating data from instructions",
+        "Making the prompt longer",
+        "Using a smaller model"
+      ],
+      "correctIndex": 1,
+      "explanation": "Input validation, clear delimiters between instructions and data, and instruction hierarchy help the model distinguish trusted instructions from injected content.",
+      "xp": 5
+    }
+  ]
+}

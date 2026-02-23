@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AlohaAI.ViewModels"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             x:Class="AlohaAI.Views.SearchPage"
+             x:DataType="vm:SearchViewModel"
+             Shell.NavBarIsVisible="False"
+             Shell.NavBarVisibilityAnimationEnabled="False"
+             SafeAreaEdges="None"
+             BackgroundColor="#120C24">
+    <Grid Margin="0,-60,0,0" SafeAreaEdges="None">
+        <BoxView InputTransparent="True">
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#1E1035" Offset="0.0" />
+                    <GradientStop Color="#120C24" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+        <Grid HeightRequest="380" VerticalOptions="Start" InputTransparent="True">
+            <Image Source="bg_sunset.png" Aspect="AspectFill" />
+            <BoxView>
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#00000000" Offset="0.0" />
+                        <GradientStop Color="#901E1035" Offset="0.5" />
+                        <GradientStop Color="#FF120C24" Offset="1.0" />
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
+        </Grid>
+
+    <ScrollView VerticalScrollBarVisibility="Never">
+    <VerticalStackLayout Padding="20,70,20,100" Spacing="16">
+        <!-- Header -->
+        <Label Text="Explore" FontSize="28" FontAttributes="Bold" TextColor="White" Margin="0,0,0,0" />
+
+        <!-- Search Bar -->
+        <Border StrokeShape="RoundRectangle 16" Padding="4,0">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#CC1A1035" Offset="0.0" />
+                    <GradientStop Color="#AA1A1035" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Background>
+            <Border.Stroke>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#50FFFFFF" Offset="0.0" />
+                    <GradientStop Color="#20FFFFFF" Offset="1.0" />
+                </LinearGradientBrush>
+            </Border.Stroke>
+            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="8">
+                <Image Source="tab_search.png" WidthRequest="20" HeightRequest="20"
+                       VerticalOptions="Center" Margin="12,0,0,0" />
+                <Entry Grid.Column="1"
+                       Placeholder="Search topics, lessons..."
+                       Text="{Binding SearchQuery}"
+                       FontSize="17"
+                       PlaceholderColor="{StaticResource Gray400}"
+                       TextColor="White"
+                       ReturnType="Search" />
+                <Button Grid.Column="2"
+                        Text="✕"
+                        IsVisible="{Binding HasResults}"
+                        Command="{Binding ClearCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource Gray400}"
+                        FontSize="17"
+                        Padding="8"
+                        WidthRequest="44" />
+            </Grid>
+        </Border>
+
+        <!-- Filter Chips -->
+        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+            <HorizontalStackLayout Spacing="8">
+                <Border BackgroundColor="{Binding AllFilterBackground}"
+                        StrokeShape="RoundRectangle 16" Stroke="{Binding AllFilterStroke}" StrokeThickness="1"
+                        Padding="14,8">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding FilterCommand}" CommandParameter="" />
+                    </Border.GestureRecognizers>
+                    <Label Text="All" FontSize="13" TextColor="{Binding AllFilterText}" />
+                </Border>
+                <HorizontalStackLayout BindableLayout.ItemsSource="{Binding FilterChips}" Spacing="8">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FilterChipItem">
+                            <Border BackgroundColor="{Binding Background}"
+                                    StrokeShape="RoundRectangle 16" Stroke="{Binding StrokeColor}" StrokeThickness="1"
+                                    Padding="14,8">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=FilterCommand}"
+                                        CommandParameter="{Binding PathId}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="{Binding Title}" FontSize="13" TextColor="{Binding TextColor}" />
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
+            </HorizontalStackLayout>
+        </ScrollView>
+
+        <!-- Results -->
+        <VerticalStackLayout IsVisible="{Binding HasResults}" Spacing="8"
+                             BindableLayout.ItemsSource="{Binding Results}">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate x:DataType="vm:SearchResultItem">
+                    <Border Style="{StaticResource GlassCard}" Padding="16">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=SelectResultCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <Border BackgroundColor="{Binding PathColor}"
+                                    StrokeShape="RoundRectangle 10"
+                                    Stroke="Transparent"
+                                    WidthRequest="36" HeightRequest="36">
+                                <Border.Shadow>
+                                    <Shadow Brush="{Binding PathColor}" Offset="0,2" Radius="8" Opacity="0.4" />
+                                </Border.Shadow>
+                                <Image Source="icon_notebook.png" WidthRequest="20" HeightRequest="20"
+                                       HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label Text="{Binding LessonTitle}" FontSize="15" FontAttributes="Bold"
+                                       TextColor="White" MaxLines="1" LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding Subtitle}" FontSize="13" TextColor="{StaticResource Gray400}"
+                                       MaxLines="1" LineBreakMode="TailTruncation" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="{Binding Xp, StringFormat='+{0} XP'}"
+                                   FontSize="13" TextColor="{StaticResource XPColor}" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </VerticalStackLayout>
+
+        <!-- Empty State -->
+        <VerticalStackLayout IsVisible="{Binding ShowEmpty}" Spacing="8" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,40,0,0">
+            <Image Source="icon_explore.png" WidthRequest="48" HeightRequest="48" HorizontalOptions="Center" Opacity="0.5" />
+            <Label Text="No results found" FontSize="17" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+            <Label Text="Try a different search term" FontSize="15" TextColor="{StaticResource Gray400}" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+        <!-- Browse by Topic (when no search) -->
+        <VerticalStackLayout IsVisible="{Binding ShowBrowse}" Spacing="12" Margin="0,8,0,0">
+            <Label Text="Browse Topics" FontSize="20" FontAttributes="Bold" TextColor="White" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding BrowseItems}" Spacing="8">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:BrowseTopicItem">
+                        <Border Style="{StaticResource GlassCard}" Padding="0">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=BrowseTopicCommand}"
+                                    CommandParameter="{Binding PathId}" />
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="4,*">
+                                <BoxView Color="{Binding Color}" WidthRequest="4"
+                                         VerticalOptions="Fill" HorizontalOptions="Start">
+                                    <BoxView.Clip>
+                                        <RoundRectangleGeometry CornerRadius="2" Rect="0,0,4,100" />
+                                    </BoxView.Clip>
+                                </BoxView>
+                                <Grid Grid.Column="1" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" Padding="12,16">
+                                    <Image Source="{Binding Icon}" WidthRequest="44" HeightRequest="44"
+                                           HorizontalOptions="Center" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                        <Label Text="{Binding Title}" FontSize="15" FontAttributes="Bold" TextColor="White" />
+                                        <Label Text="{Binding LessonCount, StringFormat='{0} lessons'}" FontSize="13"
+                                               TextColor="{StaticResource Gray300}" />
+                                    </VerticalStackLayout>
+                                    <Label Grid.Column="2" Text="›" FontSize="20" TextColor="{StaticResource Gray400}" VerticalOptions="Center" />
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </VerticalStackLayout>
+    </ScrollView>
+    </Grid>
+</ContentPage>
