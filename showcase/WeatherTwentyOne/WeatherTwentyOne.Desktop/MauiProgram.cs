@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Controls.Maui;
+using Avalonia.Controls.Maui.Essentials;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
@@ -24,7 +25,8 @@ public static class MauiProgram
              .UseMauiApp<App>()
              .UseAvaloniaApp()
              .UseAvaloniaGraphics()
-             			.ConfigureFonts(fonts =>
+             .UseAvaloniaEssentials()
+             .ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("fa-solid-900.ttf", "FontAwesome");
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

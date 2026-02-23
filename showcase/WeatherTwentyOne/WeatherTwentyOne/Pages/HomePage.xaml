@@ -7,7 +7,7 @@
     xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
     ios:Page.UseSafeArea="True"
     Title="{OnIdiom 'St. Louis, Missouri USA', Desktop=''}"
-    Shell.NavBarIsVisible="{OnPlatform True, MacCatalyst=False}"
+    Shell.NavBarIsVisible="{OnPlatform False, iOS=True, Android=True}"
     x:Class="WeatherTwentyOne.Pages.HomePage"
     x:Name="this"
     x:DataType="vm:HomeViewModel">
