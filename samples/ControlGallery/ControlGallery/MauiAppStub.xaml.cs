@@ -12,6 +12,6 @@ public partial class MauiAppStub : Application
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
-        return new Window(new MainPage());
+        return new Window(new MainPage()) { Title = "Control Gallery" };
     }
 }

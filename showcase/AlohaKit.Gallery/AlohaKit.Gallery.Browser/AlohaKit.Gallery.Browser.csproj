@@ -26,7 +26,7 @@
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
 		<PackageReference Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(MicrosoftExtensionsVersion)" />
 	</ItemGroup>
 
 	<ItemGroup>
