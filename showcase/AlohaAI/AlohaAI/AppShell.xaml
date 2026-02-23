@@ -9,7 +9,7 @@
     Shell.NavBarIsVisible="False"
     Shell.BackgroundColor="Transparent"
     Shell.NavBarHasShadow="False"
-    BackgroundColor="#120C24">
+    BackgroundColor="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}">
 
     <TabBar>
         <ShellContent

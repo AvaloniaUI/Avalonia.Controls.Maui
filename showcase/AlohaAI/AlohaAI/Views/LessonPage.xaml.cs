@@ -37,16 +37,18 @@ public partial class LessonPage : ContentPage
                                 }
                             }
                         }
-                        var rendered = MarkdownRenderer.Render(content, darkMode: true);
+                        var darkMode = Application.Current?.RequestedTheme == AppTheme.Dark;
+                        var rendered = MarkdownRenderer.Render(content, darkMode: darkMode);
                         ContentArea.Children.Add(rendered);
                     }
                     catch (Exception ex)
                     {
+                        var fallbackDark = Application.Current?.RequestedTheme == AppTheme.Dark;
                         ContentArea.Children.Add(new Label
                         {
                             Text = vm.MarkdownContent,
                             FontSize = 15,
-                            TextColor = Color.FromArgb("#342D42"),
+                            TextColor = Color.FromArgb(fallbackDark ? "#CCCCCC" : "#342D42"),
                             Padding = new Thickness(0, 8)
                         });
                         System.Diagnostics.Debug.WriteLine($"Markdown render error: {ex.Message}");

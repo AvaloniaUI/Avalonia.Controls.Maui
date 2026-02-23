@@ -59,6 +59,66 @@
     <Color x:Key="AmbientPurple">#7B68AE</Color>
     <Color x:Key="AmbientPink">#E88BBF</Color>
 
+    <!-- Theme-Aware Semantic Colors (Dark / Light) -->
+    <Color x:Key="PageBg_Dark">#120C24</Color>
+    <Color x:Key="PageBg_Light">#F5F3F7</Color>
+    <Color x:Key="GradientTop_Dark">#1E1035</Color>
+    <Color x:Key="GradientTop_Light">#E8E0F2</Color>
+    <Color x:Key="GradientOverlayMid_Dark">#901E1035</Color>
+    <Color x:Key="GradientOverlayMid_Light">#C0E8E0F2</Color>
+    <Color x:Key="GradientOverlayEnd_Dark">#FF120C24</Color>
+    <Color x:Key="GradientOverlayEnd_Light">#FFF5F3F7</Color>
+    <Color x:Key="CardBg_Dark">#151025</Color>
+    <Color x:Key="CardBg_Light">#FFFFFF</Color>
+    <Color x:Key="CardBgAlt_Dark">#1A1035</Color>
+    <Color x:Key="CardBgAlt_Light">#F0ECF5</Color>
+    <Color x:Key="CardBgStats_Dark">#181530</Color>
+    <Color x:Key="CardBgStats_Light">#F0ECF5</Color>
+    <Color x:Key="GlassSurfaceDark_Dark">#151025</Color>
+    <Color x:Key="GlassSurfaceDark_Light">#FFFFFF</Color>
+    <Color x:Key="TextPrimary_Dark">#FFFFFF</Color>
+    <Color x:Key="TextPrimary_Light">#18132A</Color>
+    <Color x:Key="TextSecondary_Dark">#AAAAAA</Color>
+    <Color x:Key="TextSecondary_Light">#6E6580</Color>
+    <Color x:Key="TextTertiary_Dark">#888888</Color>
+    <Color x:Key="TextTertiary_Light">#9A90A8</Color>
+    <Color x:Key="TextSubtle_Dark">#CCCCCC</Color>
+    <Color x:Key="TextSubtle_Light">#4A4258</Color>
+    <Color x:Key="DividerColor_Dark">#20FFFFFF</Color>
+    <Color x:Key="DividerColor_Light">#20000000</Color>
+    <Color x:Key="InputBg_Dark">#15FFFFFF</Color>
+    <Color x:Key="InputBg_Light">#10000000</Color>
+    <Color x:Key="InputBorder_Dark">#30FFFFFF</Color>
+    <Color x:Key="InputBorder_Light">#30000000</Color>
+    <Color x:Key="OverlayBg_Dark">#80000000</Color>
+    <Color x:Key="OverlayBg_Light">#40000000</Color>
+    <Color x:Key="ModalBackdrop_Dark">#FF0D0B1E</Color>
+    <Color x:Key="ModalBackdrop_Light">#80000000</Color>
+    <Color x:Key="ModalCardBg_Dark">#FF1A1035</Color>
+    <Color x:Key="ModalCardBg_Light">#FFFFFFFF</Color>
+    <Color x:Key="ProgressBarBg_Dark">#12FFFFFF</Color>
+    <Color x:Key="ProgressBarBg_Light">#15000000</Color>
+    <Color x:Key="WordOfDayGradient1_Dark">#2D1B4E</Color>
+    <Color x:Key="WordOfDayGradient1_Light">#E8DCF5</Color>
+    <Color x:Key="WordOfDayGradient2_Dark">#1E1238</Color>
+    <Color x:Key="WordOfDayGradient2_Light">#F0E8F8</Color>
+    <Color x:Key="WordOfDayGradient3_Dark">#140E28</Color>
+    <Color x:Key="WordOfDayGradient3_Light">#F5F0FA</Color>
+    <Color x:Key="ModuleCardBg_Dark">#241840</Color>
+    <Color x:Key="ModuleCardBg_Light">#F0ECF5</Color>
+    <Color x:Key="GlassBorderStart_Dark">#50FFFFFF</Color>
+    <Color x:Key="GlassBorderStart_Light">#30000000</Color>
+    <Color x:Key="GlassBorderMid_Dark">#15FFFFFF</Color>
+    <Color x:Key="GlassBorderMid_Light">#10000000</Color>
+    <Color x:Key="GlassBorderEnd_Dark">#08FFFFFF</Color>
+    <Color x:Key="GlassBorderEnd_Light">#05000000</Color>
+    <Color x:Key="ShadowColor_Dark">#000000</Color>
+    <Color x:Key="ShadowColor_Light">#40000000</Color>
+    <Color x:Key="SettingsButtonBg_Dark">#D01A1035</Color>
+    <Color x:Key="SettingsButtonBg_Light">#30000000</Color>
+    <Color x:Key="AchievementCardBg_Dark">#151025</Color>
+    <Color x:Key="AchievementCardBg_Light">#FFFFFF</Color>
+
     <!-- Brushes -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>

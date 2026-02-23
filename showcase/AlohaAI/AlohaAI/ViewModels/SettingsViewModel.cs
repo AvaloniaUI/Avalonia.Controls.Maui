@@ -7,16 +7,18 @@ public class SettingsViewModel : BaseViewModel
 {
     private readonly IProgressService _progressService;
 
-    private bool _isDarkMode;
-    public bool IsDarkMode
+    private int _selectedThemeIndex;
+    public int SelectedThemeIndex
     {
-        get => _isDarkMode;
+        get => _selectedThemeIndex;
         set
         {
-            if (SetProperty(ref _isDarkMode, value))
-                ApplyTheme();
+            if (SetProperty(ref _selectedThemeIndex, value))
+                ApplyAndSaveTheme();
         }
     }
+
+    public List<string> ThemeOptions { get; } = ["System", "Light", "Dark"];
 
     public ICommand GoBackCommand { get; }
     public ICommand ResetProgressCommand { get; }
@@ -27,7 +29,10 @@ public class SettingsViewModel : BaseViewModel
     {
         _progressService = progressService;
         Title = "Settings";
-        _isDarkMode = Application.Current?.RequestedTheme == AppTheme.Dark;
+
+        // Load saved theme preference
+        _ = LoadThemePreferenceAsync();
+
         GoBackCommand = new AsyncRelayCommand(async () => await Shell.Current.GoToAsync(".."));
         ResetProgressCommand = new AsyncRelayCommand(ResetProgressAsync);
         OpenGitHubCommand = new AsyncRelayCommand(async () =>
@@ -36,6 +41,25 @@ public class SettingsViewModel : BaseViewModel
             catch { /* browser not available */ }
         });
         ShowOnboardingCommand = new AsyncRelayCommand(ShowOnboardingAsync);
+    }
+
+    private async Task LoadThemePreferenceAsync()
+    {
+        try
+        {
+            var saved = await _progressService.GetSettingAsync("app_theme");
+            _selectedThemeIndex = saved switch
+            {
+                "light" => 1,
+                "dark" => 2,
+                _ => 0 // system
+            };
+            OnPropertyChanged(nameof(SelectedThemeIndex));
+        }
+        catch
+        {
+            // Default to system
+        }
     }
 
     private async Task ResetProgressAsync()
@@ -60,9 +84,32 @@ public class SettingsViewModel : BaseViewModel
             Application.Current.Windows[0].Page = new Views.OnboardingPage(_progressService);
     }
 
-    private void ApplyTheme()
+    private async void ApplyAndSaveTheme()
     {
+        var themeValue = _selectedThemeIndex switch
+        {
+            1 => "light",
+            2 => "dark",
+            _ => "system"
+        };
+
         if (Application.Current != null)
-            Application.Current.UserAppTheme = IsDarkMode ? AppTheme.Dark : AppTheme.Light;
+        {
+            Application.Current.UserAppTheme = _selectedThemeIndex switch
+            {
+                1 => AppTheme.Light,
+                2 => AppTheme.Dark,
+                _ => AppTheme.Unspecified
+            };
+        }
+
+        try
+        {
+            await _progressService.SaveSettingAsync("app_theme", themeValue);
+        }
+        catch
+        {
+            // Non-critical save failure
+        }
     }
 }

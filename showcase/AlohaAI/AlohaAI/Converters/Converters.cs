@@ -41,9 +41,16 @@ public class UserMessageColorConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
+        var isDark = Application.Current?.RequestedTheme == AppTheme.Dark;
         if (value is bool isUser)
-            return isUser ? Color.FromArgb("#5B8FD4") : Color.FromArgb("#E81A1035");
-        return Color.FromArgb("#E81A1035");
+        {
+            // User message: blue (same both modes)
+            // AI message: dark purple (dark mode) or light purple (light mode)
+            return isUser
+                ? Color.FromArgb("#5B8FD4")
+                : Color.FromArgb(isDark ? "#E81A1035" : "#E8E0F2");
+        }
+        return Color.FromArgb(isDark ? "#E81A1035" : "#E8E0F2");
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

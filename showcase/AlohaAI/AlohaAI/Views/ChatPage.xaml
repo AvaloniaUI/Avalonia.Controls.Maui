@@ -7,40 +7,40 @@
              Title="Chat"
              Shell.NavBarIsVisible="False"
              Shell.NavBarVisibilityAnimationEnabled="False"
-             BackgroundColor="#120C24"
+             BackgroundColor="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}"
              SafeAreaEdges="None">
     <Grid Margin="0,-60,0,0" SafeAreaEdges="None">
         <BoxView InputTransparent="True">
             <BoxView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="#1E1035" Offset="0.0" />
-                    <GradientStop Color="#120C24" Offset="1.0" />
+                    <GradientStop Color="{AppThemeBinding Dark=#1E1035, Light=#E8E0F2}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}" Offset="1.0" />
                 </LinearGradientBrush>
             </BoxView.Background>
         </BoxView>
         <Grid HeightRequest="260" VerticalOptions="Start" InputTransparent="True">
-            <Image Source="bg_sunset.png" Aspect="AspectFill" />
+            <Image Source="{AppThemeBinding Dark=bg_sunset.png, Light=bg_sunrise.png}" Aspect="AspectFill" />
             <BoxView>
                 <BoxView.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="#00000000" Offset="0.0" />
-                        <GradientStop Color="#901E1035" Offset="0.5" />
-                        <GradientStop Color="#FF120C24" Offset="1.0" />
+                        <GradientStop Color="{AppThemeBinding Dark=#901E1035, Light=#C0E8E0F2}" Offset="0.5" />
+                        <GradientStop Color="{AppThemeBinding Dark=#FF120C24, Light=#FFF5F3F7}" Offset="1.0" />
                     </LinearGradientBrush>
                 </BoxView.Background>
             </BoxView>
         </Grid>
-        
+
         <!-- Layer 2: Main Content -->
         <Grid RowDefinitions="Auto,*,Auto" Padding="0" SafeAreaEdges="None">
-            
+
             <!-- Header Area -->
             <VerticalStackLayout Grid.Row="0" Padding="24,0,24,20" Spacing="8">
                     <HorizontalStackLayout HorizontalOptions="Center" Spacing="8">
-                        <Label Text="Aloha AI" 
-                               FontSize="28" 
+                        <Label Text="Aloha AI"
+                               FontSize="28"
                                FontAttributes="Bold"
-                               TextColor="White"
+                               TextColor="{AppThemeBinding Dark=White, Light=#18132A}"
                                HorizontalOptions="Center">
                             <Label.Shadow>
                                 <Shadow Brush="#40000000" Offset="0,2" Radius="6" Opacity="0.5" />
@@ -48,7 +48,7 @@
                         </Label>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
-            
+
             <!-- Chat Content Area -->
             <Grid Grid.Row="1">
                 <!-- Empty State (no messages yet) -->
@@ -61,18 +61,18 @@
                     <Label Text="{Binding UserName, StringFormat='Hello, {0}'}"
                            FontSize="28"
                            FontAttributes="Bold"
-                           TextColor="White"
+                           TextColor="{AppThemeBinding Dark=White, Light=#18132A}"
                            HorizontalOptions="Center">
                         <Label.Shadow>
                             <Shadow Brush="#40000000" Offset="0,2" Radius="4" Opacity="0.4" />
                         </Label.Shadow>
                     </Label>
-                    
+
                     <Label Text="How can I help you?"
                            FontSize="17"
-                           TextColor="#CCFFFFFF"
+                           TextColor="{AppThemeBinding Dark=#CCFFFFFF, Light=#6E6580}"
                            HorizontalOptions="Center" />
-                    
+
                     <!-- Microphone Button -->
                     <Border StrokeShape="RoundRectangle 40"
                             Stroke="Transparent"
@@ -93,22 +93,22 @@
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding StartVoiceInputCommand}" />
                         </Border.GestureRecognizers>
-                        <Image Source="icon_explore.png" 
+                        <Image Source="icon_explore.png"
                                WidthRequest="36" HeightRequest="36"
-                               HorizontalOptions="Center" 
+                               HorizontalOptions="Center"
                                VerticalOptions="Center" />
                     </Border>
-                    
+
                     <Label Text="Tap to speak"
                            FontSize="13"
-                           TextColor="#AAFFFFFF"
+                           TextColor="{AppThemeBinding Dark=#AAFFFFFF, Light=#9A90A8}"
                            HorizontalOptions="Center"
                            Margin="0,8,0,0" />
                 </VerticalStackLayout>
-                
+
                 <!-- Messages List (when there are messages) -->
                 <ScrollView IsVisible="{Binding HasMessages}" Padding="16,0" VerticalScrollBarVisibility="Never">
-                    <VerticalStackLayout Spacing="12" 
+                    <VerticalStackLayout Spacing="12"
                                          BindableLayout.ItemsSource="{Binding Messages}"
                                          Padding="0,0,0,20">
                         <BindableLayout.ItemTemplate>
@@ -120,7 +120,7 @@
                                         BackgroundColor="{Binding IsUser, Converter={StaticResource UserMessageColorConverter}}"
                                         HorizontalOptions="{Binding IsUser, Converter={StaticResource BoolToHorizontalOptionsConverter}}">
                                     <Border.Shadow>
-                                        <Shadow Brush="#000000" Offset="0,4" Radius="12" Opacity="0.3" />
+                                        <Shadow Brush="{AppThemeBinding Dark=#000000, Light=#40000000}" Offset="0,4" Radius="12" Opacity="0.3" />
                                     </Border.Shadow>
                                     <Label Text="{Binding Text}"
                                            FontSize="15"
@@ -131,41 +131,41 @@
                         </BindableLayout.ItemTemplate>
                     </VerticalStackLayout>
                 </ScrollView>
-                
+
                 <!-- Loading indicator -->
-                <ActivityIndicator IsRunning="{Binding IsBusy}" 
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
                                    IsVisible="{Binding IsBusy}"
-                                   HorizontalOptions="Center" 
+                                   HorizontalOptions="Center"
                                    VerticalOptions="End"
                                    Color="{StaticResource Primary}"
                                    Margin="0,0,0,20" />
             </Grid>
-            
+
             <!-- Input Area -->
-            <Border Grid.Row="2" 
+            <Border Grid.Row="2"
                     Margin="16,0,16,30"
                     Padding="4,4,4,4"
                     StrokeShape="RoundRectangle 25"
                     StrokeThickness="1">
                 <Border.BackgroundColor>
-                    <Color>#1A1035</Color>
+                    <AppThemeBinding Dark="#1A1035" Light="#FFFFFF" />
                 </Border.BackgroundColor>
                 <Border.Stroke>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                        <GradientStop Color="#40FFFFFF" Offset="0.0" />
-                        <GradientStop Color="#10FFFFFF" Offset="1.0" />
+                        <GradientStop Color="{AppThemeBinding Dark=#40FFFFFF, Light=#30000000}" Offset="0.0" />
+                        <GradientStop Color="{AppThemeBinding Dark=#10FFFFFF, Light=#10000000}" Offset="1.0" />
                     </LinearGradientBrush>
                 </Border.Stroke>
                 <Border.Shadow>
-                    <Shadow Brush="#000000" Offset="0,4" Radius="16" Opacity="0.4" />
+                    <Shadow Brush="{AppThemeBinding Dark=#000000, Light=#40000000}" Offset="0,4" Radius="16" Opacity="0.4" />
                 </Border.Shadow>
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                     <Entry Grid.Column="0"
                            Placeholder="Ask Aloha AI anything..."
                            Text="{Binding UserMessage}"
                            FontSize="17"
-                           PlaceholderColor="#80FFFFFF"
-                           TextColor="White"
+                           PlaceholderColor="{AppThemeBinding Dark=#80FFFFFF, Light=#9A90A8}"
+                           TextColor="{AppThemeBinding Dark=White, Light=#18132A}"
                            BackgroundColor="Transparent"
                            ReturnType="Send"
                            ReturnCommand="{Binding SendMessageCommand}"
@@ -183,15 +183,15 @@
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding SendMessageCommand}" />
                         </Border.GestureRecognizers>
-                        <Label Text="➤" 
-                               FontSize="18" 
+                        <Label Text="➤"
+                               FontSize="18"
                                TextColor="White"
-                               HorizontalOptions="Center" 
+                               HorizontalOptions="Center"
                                VerticalOptions="Center" />
                     </Border>
                 </Grid>
             </Border>
-            
+
         </Grid>
     </Grid>
 </ContentPage>

@@ -8,15 +8,15 @@
              Shell.NavBarIsVisible="False"
              Shell.NavBarVisibilityAnimationEnabled="False"
              Shell.TabBarIsVisible="False"
-             BackgroundColor="#120C24"
+             BackgroundColor="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}"
              SafeAreaEdges="None">
     <Grid Margin="0,-60,0,-40" SafeAreaEdges="None">
         <!-- Purple background -->
         <BoxView InputTransparent="True">
             <BoxView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="#1E1035" Offset="0.0" />
-                    <GradientStop Color="#120C24" Offset="1.0" />
+                    <GradientStop Color="{AppThemeBinding Dark=#1E1035, Light=#E8E0F2}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}" Offset="1.0" />
                 </LinearGradientBrush>
             </BoxView.Background>
         </BoxView>
@@ -28,8 +28,8 @@
                 <BoxView.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="#00000000" Offset="0.0" />
-                        <GradientStop Color="#901E1035" Offset="0.5" />
-                        <GradientStop Color="#FF120C24" Offset="1.0" />
+                        <GradientStop Color="{AppThemeBinding Dark=#901E1035, Light=#C0E8E0F2}" Offset="0.5" />
+                        <GradientStop Color="{AppThemeBinding Dark=#FF120C24, Light=#FFF5F3F7}" Offset="1.0" />
                     </LinearGradientBrush>
                 </BoxView.Background>
             </BoxView>
@@ -39,13 +39,13 @@
             <VerticalStackLayout x:Name="MainContent" Spacing="0" Padding="0,0,0,0">
 
                 <!-- Back button -->
-                <Border BackgroundColor="#80000000" StrokeShape="RoundRectangle 12"
+                <Border BackgroundColor="{AppThemeBinding Dark=#80000000, Light=#40000000}" StrokeShape="RoundRectangle 12"
                         Stroke="Transparent" WidthRequest="36" HeightRequest="36"
                         HorizontalOptions="Start" VerticalOptions="Start" Margin="16,70,0,0">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoBackCommand}" />
                     </Border.GestureRecognizers>
-                    <Path Data="M14,5 L6,12 L14,19" Stroke="White" StrokeThickness="2"
+                    <Path Data="M14,5 L6,12 L14,19" Stroke="{AppThemeBinding Dark=White, Light=#18132A}" StrokeThickness="2"
                           StrokeLineCap="Round" StrokeLineJoin="Round"
                           Aspect="Uniform" HeightRequest="14" WidthRequest="14"
                           HorizontalOptions="Center" VerticalOptions="Center" />
@@ -53,13 +53,13 @@
 
                 <!-- Title section -->
                 <VerticalStackLayout Padding="20,10,20,0" Spacing="6">
-                    <Label Text="{Binding Title}" FontSize="28" FontAttributes="Bold" TextColor="White" />
-                    <Label Text="{Binding PathDescription}" FontSize="15" TextColor="#AABBCC"
+                    <Label Text="{Binding Title}" FontSize="28" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" />
+                    <Label Text="{Binding PathDescription}" FontSize="15" TextColor="{AppThemeBinding Dark=#AABBCC, Light=#6E6580}"
                            MaxLines="2" LineBreakMode="TailTruncation" />
                 </VerticalStackLayout>
 
                 <!-- Progress -->
-                <Label Text="{Binding OverallProgressText}" FontSize="13" TextColor="#8899AA"
+                <Label Text="{Binding OverallProgressText}" FontSize="13" TextColor="{AppThemeBinding Dark=#8899AA, Light=#6E6580}"
                        Padding="20,20,20,8" HorizontalTextAlignment="End" />
 
                 <!-- Modules list -->
@@ -68,11 +68,11 @@
                     <BindableLayout.ItemTemplate>
                         <DataTemplate x:DataType="vm:ModuleDisplayItem">
                             <Border StrokeShape="RoundRectangle 16" StrokeThickness="0.5" Padding="0"
-                                    BackgroundColor="#241840">
+                                    BackgroundColor="{AppThemeBinding Dark=#241840, Light=#F0ECF5}">
                                 <Border.Stroke>
                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#30FFFFFF" Offset="0.0" />
-                                        <GradientStop Color="#08FFFFFF" Offset="1.0" />
+                                        <GradientStop Color="{AppThemeBinding Dark=#30FFFFFF, Light=#30000000}" Offset="0.0" />
+                                        <GradientStop Color="{AppThemeBinding Dark=#08FFFFFF, Light=#05000000}" Offset="1.0" />
                                     </LinearGradientBrush>
                                 </Border.Stroke>
                                 <VerticalStackLayout Spacing="0">
@@ -86,8 +86,8 @@
                                                    TextColor="#7EB4F0" HorizontalOptions="Center" VerticalOptions="Center" />
                                         </Border>
                                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
-                                            <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="White" />
-                                            <Label Text="{Binding Description}" FontSize="13" TextColor="#778899"
+                                            <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" />
+                                            <Label Text="{Binding Description}" FontSize="13" TextColor="{AppThemeBinding Dark=#778899, Light=#6E6580}"
                                                    MaxLines="1" LineBreakMode="TailTruncation" />
                                         </VerticalStackLayout>
                                         <Label Grid.Column="2" Text="{Binding ProgressText}" FontSize="13"
@@ -95,7 +95,7 @@
                                     </Grid>
 
                                     <!-- Separator -->
-                                    <BoxView HeightRequest="0.5" Color="#18FFFFFF" />
+                                    <BoxView HeightRequest="0.5" Color="{AppThemeBinding Dark=#18FFFFFF, Light=#18000000}" />
 
                                     <!-- Lessons -->
                                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Lessons}" Spacing="0"
@@ -112,7 +112,7 @@
                                                         <Label Text="{Binding Title}" FontSize="15"
                                                                TextColor="{Binding TitleColor}" VerticalOptions="Center" />
                                                         <Label Grid.Column="1" Text="›" FontSize="18"
-                                                               TextColor="#556677" VerticalOptions="Center" />
+                                                               TextColor="{AppThemeBinding Dark=#556677, Light=#9A90A8}" VerticalOptions="Center" />
                                                     </Grid>
                                                 </Border>
                                             </DataTemplate>

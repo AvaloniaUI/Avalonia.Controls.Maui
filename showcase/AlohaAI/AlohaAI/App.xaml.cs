@@ -1,4 +1,4 @@
-﻿using AlohaAI.Services;
+using AlohaAI.Services;
 using AlohaAI.Views;
 
 namespace AlohaAI;
@@ -12,8 +12,8 @@ public partial class App : Application
 		InitializeComponent();
 		_progressService = progressService;
 
-		// Force dark mode as default for the tropical sunset theme
-		UserAppTheme = AppTheme.Dark;
+		// Load saved theme preference (async fire-and-forget on startup)
+		_ = LoadThemeAsync();
 
 		AppDomain.CurrentDomain.UnhandledException += (s, e) =>
 			System.Diagnostics.Debug.WriteLine($"Unhandled: {e.ExceptionObject}");
@@ -23,6 +23,28 @@ public partial class App : Application
 			System.Diagnostics.Debug.WriteLine($"Unobserved task: {e.Exception}");
 			e.SetObserved();
 		};
+	}
+
+	private async Task LoadThemeAsync()
+	{
+		try
+		{
+			var saved = await _progressService.GetSettingAsync("app_theme");
+			switch (saved)
+			{
+				case "dark":
+					UserAppTheme = AppTheme.Dark;
+					break;
+				case "light":
+					UserAppTheme = AppTheme.Light;
+					break;
+				// "system" or null => follow system theme (don't set UserAppTheme)
+			}
+		}
+		catch
+		{
+			// If settings aren't available yet, follow system theme
+		}
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)

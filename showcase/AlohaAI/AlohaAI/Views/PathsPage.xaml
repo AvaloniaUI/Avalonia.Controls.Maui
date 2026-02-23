@@ -8,24 +8,24 @@
              Shell.NavBarIsVisible="False"
              Shell.NavBarVisibilityAnimationEnabled="False"
              SafeAreaEdges="None"
-             BackgroundColor="#120C24">
+             BackgroundColor="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}">
     <Grid Margin="0,-60,0,0" SafeAreaEdges="None">
         <BoxView InputTransparent="True">
             <BoxView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="#1E1035" Offset="0.0" />
-                    <GradientStop Color="#120C24" Offset="1.0" />
+                    <GradientStop Color="{AppThemeBinding Dark=#1E1035, Light=#E8E0F2}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}" Offset="1.0" />
                 </LinearGradientBrush>
             </BoxView.Background>
         </BoxView>
         <Grid HeightRequest="380" VerticalOptions="Start" InputTransparent="True">
-            <Image Source="bg_sunset.png" Aspect="AspectFill" />
+            <Image Source="{AppThemeBinding Dark=bg_sunset.png, Light=bg_sunrise.png}" Aspect="AspectFill" />
             <BoxView>
                 <BoxView.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="#00000000" Offset="0.0" />
-                        <GradientStop Color="#901E1035" Offset="0.5" />
-                        <GradientStop Color="#FF120C24" Offset="1.0" />
+                        <GradientStop Color="{AppThemeBinding Dark=#901E1035, Light=#C0E8E0F2}" Offset="0.5" />
+                        <GradientStop Color="{AppThemeBinding Dark=#FF120C24, Light=#FFF5F3F7}" Offset="1.0" />
                     </LinearGradientBrush>
                 </BoxView.Background>
             </BoxView>
@@ -37,11 +37,11 @@
             <Label Text="Learning Paths"
                    FontSize="28"
                    FontAttributes="Bold"
-                   TextColor="White"
+                   TextColor="{AppThemeBinding Dark=White, Light=#18132A}"
                    Margin="0,0,0,4" />
             <Label Text="Choose a path to start learning"
                    FontSize="14"
-                   TextColor="{StaticResource Gray300}"
+                   TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}"
                    Margin="0,0,0,8" />
 
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding Paths}" Spacing="16">
@@ -73,23 +73,23 @@
                                     <!-- Title Row -->
                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
                                         <VerticalStackLayout VerticalOptions="Center" Spacing="2">
-                                            <Label Text="{Binding Title}" FontSize="19" FontAttributes="Bold" TextColor="White" />
-                                            <Label Text="{Binding Description}" FontSize="12" TextColor="#AAAAAA"
+                                            <Label Text="{Binding Title}" FontSize="19" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" />
+                                            <Label Text="{Binding Description}" FontSize="12" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}"
                                                    MaxLines="2" LineBreakMode="TailTruncation" Margin="0,0,80,0" />
                                         </VerticalStackLayout>
-                                        <Label Grid.Column="1" Text="→" FontSize="20" TextColor="#666666" VerticalOptions="Center" />
+                                        <Label Grid.Column="1" Text="→" FontSize="20" TextColor="{AppThemeBinding Dark=#666666, Light=#9A90A8}" VerticalOptions="Center" />
                                     </Grid>
 
                                     <!-- Info Row -->
                                     <HorizontalStackLayout Grid.Row="1" Spacing="16">
-                                        <Label Text="{Binding ModuleCount, StringFormat='{0} modules'}" FontSize="12" TextColor="#AAAAAA" />
-                                        <Label Text="{Binding EstimatedHours, StringFormat='~{0}h'}" FontSize="12" TextColor="#AAAAAA" />
-                                        <Label Text="{Binding ProgressText}" FontSize="12" TextColor="#AAAAAA" />
+                                        <Label Text="{Binding ModuleCount, StringFormat='{0} modules'}" FontSize="12" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}" />
+                                        <Label Text="{Binding EstimatedHours, StringFormat='~{0}h'}" FontSize="12" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}" />
+                                        <Label Text="{Binding ProgressText}" FontSize="12" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}" />
                                     </HorizontalStackLayout>
 
                                     <!-- Progress Bar -->
                                     <Grid Grid.Row="2" HeightRequest="5">
-                                        <Border BackgroundColor="#12FFFFFF"
+                                        <Border BackgroundColor="{AppThemeBinding Dark=#12FFFFFF, Light=#15000000}"
                                                 StrokeShape="RoundRectangle 2.5"
                                                 Stroke="Transparent" />
                                         <Border BackgroundColor="{Binding Color}"
