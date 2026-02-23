@@ -5,9 +5,8 @@
              xmlns:m="clr-namespace:WeatherTwentyOne.Models"
              xmlns:c="clr-namespace:WeatherClient2021"
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
-             ios:Page.UseSafeArea="True"
              Title="Favorites"
-             Shell.NavBarIsVisible="{OnIdiom True, Desktop=False}"
+             Shell.NavBarIsVisible="False"
              x:Class="WeatherTwentyOne.Pages.FavoritesPage"
              x:DataType="vm:FavoritesViewModel">
     <ContentPage.Resources>
@@ -68,7 +67,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="FavBorderTemplate">
-            <Border Margin="{OnIdiom Phone=15,Default=25}"
+            <Border Margin="25"
                     Padding="0"
                     HorizontalOptions="Start"
                     HeightRequest="154"
@@ -137,7 +136,7 @@
             <!-- Search Box -->
             <HorizontalStackLayout VerticalOptions="Start"
                                    Spacing="18"
-                                   Padding="{OnIdiom Phone='15,15,15,15', Default='25,25,25,0'}">
+                                   Padding="25,25,25,0">
                 <Image Source="search_icon.png"
                        VerticalOptions="Center"
                        HeightRequest="22"
@@ -164,7 +163,7 @@
                         <Border HeightRequest="132"
                                 WidthRequest="132"
                                 HorizontalOptions="Start"
-                                Margin="{OnIdiom Phone=15,Default=25}"
+                                Margin="25"
                                 Stroke="Transparent"
                                 StrokeThickness="1"
                                 BackgroundColor="{StaticResource Background_Mid}">

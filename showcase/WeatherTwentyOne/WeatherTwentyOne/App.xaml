@@ -11,7 +11,7 @@
         <Shell 
             Title="WeatherTwentyOne"
             FlyoutWidth="68" FlyoutBackgroundColor="{StaticResource Background_Mid}"
-            FlyoutBehavior="{OnIdiom Phone=Disabled, Default=Locked}">
+            FlyoutBehavior="Locked">
 
             <Shell.FlyoutFooterTemplate>
                 <DataTemplate>

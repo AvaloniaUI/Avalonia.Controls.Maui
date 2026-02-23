@@ -7,14 +7,14 @@
 
     <Label
         Text="Next 24 Hours"
-        Margin="{OnIdiom Phone='15,0',Default='25,0'}"
+        Margin="25,0"
         class="SectionTitle"/>
 
     <ScrollView
         Orientation="Horizontal">
         <HorizontalStackLayout
             Spacing="12"
-            Padding="{OnIdiom Phone='15,0',Default='25,0'}"
+            Padding="25,0"
             BindableLayout.ItemsSource="{Binding Hours}">
             <BindableLayout.ItemTemplate>
                 <DataTemplate x:DataType="m:Forecast">
