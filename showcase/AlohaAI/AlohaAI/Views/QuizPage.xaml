@@ -8,15 +8,15 @@
              Shell.NavBarIsVisible="False"
              Shell.NavBarVisibilityAnimationEnabled="False"
              Shell.TabBarIsVisible="False"
-             BackgroundColor="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}"
+             BackgroundColor="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}"
              SafeAreaEdges="None">
     <Grid Margin="0,-60,0,-40">
         <!-- Purple gradient background -->
         <BoxView InputTransparent="True">
             <BoxView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="{AppThemeBinding Dark=#1E1035, Light=#E8E0F2}" Offset="0.0" />
-                    <GradientStop Color="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}" Offset="1.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientTop_Dark}, Light={StaticResource GradientTop_Light}}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}" Offset="1.0" />
                 </LinearGradientBrush>
             </BoxView.Background>
         </BoxView>
@@ -27,8 +27,8 @@
                 <BoxView.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="#00000000" Offset="0.0" />
-                        <GradientStop Color="{AppThemeBinding Dark=#901E1035, Light=#C0E8E0F2}" Offset="0.5" />
-                        <GradientStop Color="{AppThemeBinding Dark=#FF120C24, Light=#FFF5F3F7}" Offset="1.0" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayMid_Dark}, Light={StaticResource GradientOverlayMid_Light}}" Offset="0.5" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayEnd_Dark}, Light={StaticResource GradientOverlayEnd_Light}}" Offset="1.0" />
                     </LinearGradientBrush>
                 </BoxView.Background>
             </BoxView>
@@ -37,18 +37,18 @@
         <!-- Header bar -->
         <VerticalStackLayout Padding="20,70,20,0" Spacing="12" VerticalOptions="Start" ZIndex="10">
             <Grid ColumnDefinitions="Auto,*,Auto">
-                <Border BackgroundColor="{AppThemeBinding Dark=#80000000, Light=#40000000}" StrokeShape="RoundRectangle 12" Stroke="Transparent"
+                <Border BackgroundColor="{AppThemeBinding Dark={StaticResource OverlayBg_Dark}, Light={StaticResource OverlayBg_Light}}" StrokeShape="RoundRectangle 12" Stroke="Transparent"
                         WidthRequest="36" HeightRequest="36" VerticalOptions="Center">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding GoBackCommand}" />
                     </Border.GestureRecognizers>
-                    <Path Data="M14,5 L6,12 L14,19" Stroke="{AppThemeBinding Dark=White, Light=#18132A}" StrokeThickness="2"
+                    <Path Data="M14,5 L6,12 L14,19" Stroke="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" StrokeThickness="2"
                           StrokeLineCap="Round" StrokeLineJoin="Round"
                           Aspect="Uniform" HeightRequest="14" WidthRequest="14"
                           HorizontalOptions="Center" VerticalOptions="Center" />
                 </Border>
                 <Label Grid.Column="1" Text="{Binding QuizTitle}" FontSize="17" FontAttributes="Bold"
-                       TextColor="{AppThemeBinding Dark=White, Light=#18132A}" VerticalOptions="Center" HorizontalOptions="Center" />
+                       TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" VerticalOptions="Center" HorizontalOptions="Center" />
                 <Label Grid.Column="2" Text="{Binding ProgressText}" FontSize="13"
                        TextColor="{AppThemeBinding Dark=#CCFFFFFF, Light=#6E6580}" VerticalOptions="Center" />
             </Grid>
@@ -68,7 +68,7 @@
         <ScrollView IsVisible="{Binding ShowQuestion}" Margin="0,160,0,0" VerticalScrollBarVisibility="Never">
             <VerticalStackLayout Spacing="16" Padding="20,16,20,40">
                 <Label Text="{Binding QuestionText}" FontSize="22" FontAttributes="Bold"
-                       TextColor="{AppThemeBinding Dark=White, Light=#18132A}" LineHeight="1.3" />
+                       TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" LineHeight="1.3" />
 
                 <VerticalStackLayout BindableLayout.ItemsSource="{Binding Options}" Spacing="8">
                     <BindableLayout.ItemTemplate>
@@ -99,7 +99,7 @@
                                                VerticalOptions="Center" />
                                     </Border>
                                     <Label Grid.Column="1" Text="{Binding Text}" FontSize="15"
-                                           TextColor="{AppThemeBinding Dark=White, Light=#18132A}" Opacity="{Binding TextOpacity}"
+                                           TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" Opacity="{Binding TextOpacity}"
                                            VerticalOptions="Center" />
                                 </Grid>
                             </Border>
@@ -149,7 +149,7 @@
             <Image Source="{Binding ResultIcon}" WidthRequest="80" HeightRequest="80"
                    HorizontalOptions="Center" />
             <Label Text="{Binding ResultTitle}" HorizontalOptions="Center"
-                   FontSize="28" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" />
+                   FontSize="28" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
             <Label Text="{Binding ResultSubtitle}" HorizontalOptions="Center"
                    FontSize="15" TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" />
             <Border Style="{StaticResource GlassCard}" Padding="24">
@@ -157,7 +157,7 @@
                     <Label Text="Score" FontSize="13" TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" HorizontalOptions="Center" />
                     <Label Grid.Column="1" Text="XP Earned" FontSize="13" TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" HorizontalOptions="Center" />
                     <Label Grid.Row="1" Text="{Binding ScoreDisplay}" FontSize="28"
-                           FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" HorizontalOptions="Center" />
+                           FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" HorizontalOptions="Center" />
                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding XpEarned, StringFormat='+{0}'}"
                            FontSize="28" FontAttributes="Bold" TextColor="{StaticResource XPColor}" HorizontalOptions="Center" />
                 </Grid>

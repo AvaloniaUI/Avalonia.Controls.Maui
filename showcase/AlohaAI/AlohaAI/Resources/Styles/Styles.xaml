@@ -406,13 +406,13 @@
     </Style>
 
     <Style TargetType="Shell" ApplyToDerivedTypes="True">
-        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}" />
-        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Dark=White, Light=#18132A}" />
-        <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Dark=White, Light=#18132A}" />
+        <Setter Property="Shell.BackgroundColor" Value="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}" />
+        <Setter Property="Shell.ForegroundColor" Value="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
+        <Setter Property="Shell.TitleColor" Value="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
         <Setter Property="Shell.DisabledColor" Value="{StaticResource Gray600}" />
         <Setter Property="Shell.UnselectedColor" Value="{StaticResource Gray500}" />
         <Setter Property="Shell.NavBarHasShadow" Value="False" />
-        <Setter Property="Shell.TabBarBackgroundColor" Value="{AppThemeBinding Dark=Transparent, Light=#F5F3F7}" />
+        <Setter Property="Shell.TabBarBackgroundColor" Value="{AppThemeBinding Dark=Transparent, Light={StaticResource PageBg_Light}}" />
         <Setter Property="Shell.TabBarForegroundColor" Value="{StaticResource Tertiary}" />
         <Setter Property="Shell.TabBarTitleColor" Value="{StaticResource Tertiary}" />
         <Setter Property="Shell.TabBarUnselectedColor" Value="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" />
@@ -432,22 +432,22 @@
     </Style>
 
     <Style x:Key="GlassCard" TargetType="Border">
-        <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark=#151025, Light=#FFFFFF}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Dark={StaticResource CardBg_Dark}, Light={StaticResource CardBg_Light}}" />
         <Setter Property="StrokeShape" Value="RoundRectangle 20" />
         <Setter Property="StrokeThickness" Value="1" />
         <Setter Property="Padding" Value="20" />
         <Setter Property="Stroke">
             <Setter.Value>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="{AppThemeBinding Dark=#50FFFFFF, Light=#30000000}" Offset="0.0" />
-                    <GradientStop Color="{AppThemeBinding Dark=#15FFFFFF, Light=#10000000}" Offset="0.4" />
-                    <GradientStop Color="{AppThemeBinding Dark=#08FFFFFF, Light=#05000000}" Offset="1.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GlassBorderStart_Dark}, Light={StaticResource GlassBorderStart_Light}}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource InputBg_Dark}, Light={StaticResource InputBg_Light}}" Offset="0.4" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GlassBorderEnd_Dark}, Light={StaticResource GlassBorderEnd_Light}}" Offset="1.0" />
                 </LinearGradientBrush>
             </Setter.Value>
         </Setter>
         <Setter Property="Shadow">
             <Setter.Value>
-                <Shadow Brush="{AppThemeBinding Dark=#000000, Light=#40000000}" Offset="0,6" Radius="20" Opacity="0.6" />
+                <Shadow Brush="{AppThemeBinding Dark={StaticResource ShadowColor_Dark}, Light={StaticResource ShadowColor_Light}}" Offset="0,6" Radius="20" Opacity="0.6" />
             </Setter.Value>
         </Setter>
     </Style>

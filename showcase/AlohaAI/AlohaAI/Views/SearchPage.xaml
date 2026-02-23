@@ -8,13 +8,13 @@
              Shell.NavBarIsVisible="False"
              Shell.NavBarVisibilityAnimationEnabled="False"
              SafeAreaEdges="None"
-             BackgroundColor="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}">
+             BackgroundColor="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}">
     <Grid Margin="0,-60,0,0" SafeAreaEdges="None">
         <BoxView InputTransparent="True">
             <BoxView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="{AppThemeBinding Dark=#1E1035, Light=#E8E0F2}" Offset="0.0" />
-                    <GradientStop Color="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}" Offset="1.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientTop_Dark}, Light={StaticResource GradientTop_Light}}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}" Offset="1.0" />
                 </LinearGradientBrush>
             </BoxView.Background>
         </BoxView>
@@ -24,8 +24,8 @@
                 <BoxView.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="#00000000" Offset="0.0" />
-                        <GradientStop Color="{AppThemeBinding Dark=#901E1035, Light=#C0E8E0F2}" Offset="0.5" />
-                        <GradientStop Color="{AppThemeBinding Dark=#FF120C24, Light=#FFF5F3F7}" Offset="1.0" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayMid_Dark}, Light={StaticResource GradientOverlayMid_Light}}" Offset="0.5" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayEnd_Dark}, Light={StaticResource GradientOverlayEnd_Light}}" Offset="1.0" />
                     </LinearGradientBrush>
                 </BoxView.Background>
             </BoxView>
@@ -34,7 +34,7 @@
     <ScrollView VerticalScrollBarVisibility="Never">
     <VerticalStackLayout Padding="20,70,20,100" Spacing="16">
         <!-- Header -->
-        <Label Text="Explore" FontSize="28" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" Margin="0,0,0,0" />
+        <Label Text="Explore" FontSize="28" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" Margin="0,0,0,0" />
 
         <!-- Search Bar -->
         <Border StrokeShape="RoundRectangle 16" Padding="4,0">
@@ -46,7 +46,7 @@
             </Border.Background>
             <Border.Stroke>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="{AppThemeBinding Dark=#50FFFFFF, Light=#30000000}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GlassBorderStart_Dark}, Light={StaticResource GlassBorderStart_Light}}" Offset="0.0" />
                     <GradientStop Color="{AppThemeBinding Dark=#20FFFFFF, Light=#10000000}" Offset="1.0" />
                 </LinearGradientBrush>
             </Border.Stroke>
@@ -58,7 +58,7 @@
                        Text="{Binding SearchQuery}"
                        FontSize="17"
                        PlaceholderColor="{StaticResource Gray400}"
-                       TextColor="{AppThemeBinding Dark=White, Light=#18132A}"
+                       TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}"
                        ReturnType="Search" />
                 <Button Grid.Column="2"
                         Text="✕"
@@ -126,7 +126,7 @@
                             </Border>
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
                                 <Label Text="{Binding LessonTitle}" FontSize="15" FontAttributes="Bold"
-                                       TextColor="{AppThemeBinding Dark=White, Light=#18132A}" MaxLines="1" LineBreakMode="TailTruncation" />
+                                       TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" MaxLines="1" LineBreakMode="TailTruncation" />
                                 <Label Text="{Binding Subtitle}" FontSize="13" TextColor="{StaticResource Gray400}"
                                        MaxLines="1" LineBreakMode="TailTruncation" />
                             </VerticalStackLayout>
@@ -141,13 +141,13 @@
         <!-- Empty State -->
         <VerticalStackLayout IsVisible="{Binding ShowEmpty}" Spacing="8" VerticalOptions="Center" HorizontalOptions="Center" Margin="0,40,0,0">
             <Image Source="icon_explore.png" WidthRequest="48" HeightRequest="48" HorizontalOptions="Center" Opacity="0.5" />
-            <Label Text="No results found" FontSize="17" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" HorizontalOptions="Center" />
+            <Label Text="No results found" FontSize="17" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" HorizontalOptions="Center" />
             <Label Text="Try a different search term" FontSize="15" TextColor="{StaticResource Gray400}" HorizontalOptions="Center" />
         </VerticalStackLayout>
 
         <!-- Browse by Topic (when no search) -->
         <VerticalStackLayout IsVisible="{Binding ShowBrowse}" Spacing="12" Margin="0,8,0,0">
-            <Label Text="Browse Topics" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" />
+            <Label Text="Browse Topics" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding BrowseItems}" Spacing="8">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="vm:BrowseTopicItem">
@@ -168,7 +168,7 @@
                                     <Image Source="{Binding Icon}" WidthRequest="44" HeightRequest="44"
                                            HorizontalOptions="Center" VerticalOptions="Center" />
                                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                                        <Label Text="{Binding Title}" FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" />
+                                        <Label Text="{Binding Title}" FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
                                         <Label Text="{Binding LessonCount, StringFormat='{0} lessons'}" FontSize="13"
                                                TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" />
                                     </VerticalStackLayout>

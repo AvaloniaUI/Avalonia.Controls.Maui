@@ -7,14 +7,14 @@
              Title="Chat"
              Shell.NavBarIsVisible="False"
              Shell.NavBarVisibilityAnimationEnabled="False"
-             BackgroundColor="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}"
+             BackgroundColor="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}"
              SafeAreaEdges="None">
     <Grid Margin="0,-60,0,0" SafeAreaEdges="None">
         <BoxView InputTransparent="True">
             <BoxView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="{AppThemeBinding Dark=#1E1035, Light=#E8E0F2}" Offset="0.0" />
-                    <GradientStop Color="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}" Offset="1.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientTop_Dark}, Light={StaticResource GradientTop_Light}}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}" Offset="1.0" />
                 </LinearGradientBrush>
             </BoxView.Background>
         </BoxView>
@@ -24,8 +24,8 @@
                 <BoxView.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="#00000000" Offset="0.0" />
-                        <GradientStop Color="{AppThemeBinding Dark=#901E1035, Light=#C0E8E0F2}" Offset="0.5" />
-                        <GradientStop Color="{AppThemeBinding Dark=#FF120C24, Light=#FFF5F3F7}" Offset="1.0" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayMid_Dark}, Light={StaticResource GradientOverlayMid_Light}}" Offset="0.5" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayEnd_Dark}, Light={StaticResource GradientOverlayEnd_Light}}" Offset="1.0" />
                     </LinearGradientBrush>
                 </BoxView.Background>
             </BoxView>
@@ -40,7 +40,7 @@
                         <Label Text="Aloha AI"
                                FontSize="28"
                                FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Dark=White, Light=#18132A}"
+                               TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}"
                                HorizontalOptions="Center">
                             <Label.Shadow>
                                 <Shadow Brush="#40000000" Offset="0,2" Radius="6" Opacity="0.5" />
@@ -61,7 +61,7 @@
                     <Label Text="{Binding UserName, StringFormat='Hello, {0}'}"
                            FontSize="28"
                            FontAttributes="Bold"
-                           TextColor="{AppThemeBinding Dark=White, Light=#18132A}"
+                           TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}"
                            HorizontalOptions="Center">
                         <Label.Shadow>
                             <Shadow Brush="#40000000" Offset="0,2" Radius="4" Opacity="0.4" />
@@ -120,7 +120,7 @@
                                         BackgroundColor="{Binding IsUser, Converter={StaticResource UserMessageColorConverter}}"
                                         HorizontalOptions="{Binding IsUser, Converter={StaticResource BoolToHorizontalOptionsConverter}}">
                                     <Border.Shadow>
-                                        <Shadow Brush="{AppThemeBinding Dark=#000000, Light=#40000000}" Offset="0,4" Radius="12" Opacity="0.3" />
+                                        <Shadow Brush="{AppThemeBinding Dark={StaticResource ShadowColor_Dark}, Light={StaticResource ShadowColor_Light}}" Offset="0,4" Radius="12" Opacity="0.3" />
                                     </Border.Shadow>
                                     <Label Text="{Binding Text}"
                                            FontSize="15"
@@ -148,7 +148,7 @@
                     StrokeShape="RoundRectangle 25"
                     StrokeThickness="1">
                 <Border.BackgroundColor>
-                    <AppThemeBinding Dark="#1A1035" Light="#FFFFFF" />
+                    <AppThemeBinding Dark="{StaticResource CardBgAlt_Dark}" Light="{StaticResource CardBg_Light}" />
                 </Border.BackgroundColor>
                 <Border.Stroke>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
@@ -157,7 +157,7 @@
                     </LinearGradientBrush>
                 </Border.Stroke>
                 <Border.Shadow>
-                    <Shadow Brush="{AppThemeBinding Dark=#000000, Light=#40000000}" Offset="0,4" Radius="16" Opacity="0.4" />
+                    <Shadow Brush="{AppThemeBinding Dark={StaticResource ShadowColor_Dark}, Light={StaticResource ShadowColor_Light}}" Offset="0,4" Radius="16" Opacity="0.4" />
                 </Border.Shadow>
                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                     <Entry Grid.Column="0"
@@ -165,7 +165,7 @@
                            Text="{Binding UserMessage}"
                            FontSize="17"
                            PlaceholderColor="{AppThemeBinding Dark=#80FFFFFF, Light=#9A90A8}"
-                           TextColor="{AppThemeBinding Dark=White, Light=#18132A}"
+                           TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}"
                            BackgroundColor="Transparent"
                            ReturnType="Send"
                            ReturnCommand="{Binding SendMessageCommand}"

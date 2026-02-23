@@ -9,13 +9,13 @@
              Shell.NavBarIsVisible="False"
              Shell.NavBarVisibilityAnimationEnabled="False"
              SafeAreaEdges="None"
-             BackgroundColor="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}">
+             BackgroundColor="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}">
     <Grid Margin="0,-60,0,0" SafeAreaEdges="None">
         <BoxView InputTransparent="True">
             <BoxView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="{AppThemeBinding Dark=#1E1035, Light=#E8E0F2}" Offset="0.0" />
-                    <GradientStop Color="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}" Offset="1.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientTop_Dark}, Light={StaticResource GradientTop_Light}}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}" Offset="1.0" />
                 </LinearGradientBrush>
             </BoxView.Background>
         </BoxView>
@@ -25,8 +25,8 @@
                 <BoxView.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="#00000000" Offset="0.0" />
-                        <GradientStop Color="{AppThemeBinding Dark=#901E1035, Light=#C0E8E0F2}" Offset="0.5" />
-                        <GradientStop Color="{AppThemeBinding Dark=#FF120C24, Light=#FFF5F3F7}" Offset="1.0" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayMid_Dark}, Light={StaticResource GradientOverlayMid_Light}}" Offset="0.5" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayEnd_Dark}, Light={StaticResource GradientOverlayEnd_Light}}" Offset="1.0" />
                     </LinearGradientBrush>
                 </BoxView.Background>
             </BoxView>
@@ -38,18 +38,18 @@
             <!-- Header -->
             <VerticalStackLayout Padding="20,70,20,20">
                     <Grid ColumnDefinitions="Auto,*,Auto">
-                        <Border BackgroundColor="{AppThemeBinding Dark=#80000000, Light=#40000000}" StrokeShape="RoundRectangle 12" Stroke="Transparent"
+                        <Border BackgroundColor="{AppThemeBinding Dark={StaticResource OverlayBg_Dark}, Light={StaticResource OverlayBg_Light}}" StrokeShape="RoundRectangle 12" Stroke="Transparent"
                                 WidthRequest="36" HeightRequest="36" VerticalOptions="Center">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding GoBackCommand}" />
                             </Border.GestureRecognizers>
-                            <Path Data="M14,5 L6,12 L14,19" Stroke="{AppThemeBinding Dark=White, Light=#18132A}" StrokeThickness="2"
+                            <Path Data="M14,5 L6,12 L14,19" Stroke="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" StrokeThickness="2"
                                   StrokeLineCap="Round" StrokeLineJoin="Round"
                                   Aspect="Uniform" HeightRequest="14" WidthRequest="14"
                                   HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
                         <Label Grid.Column="1" Text="Settings" FontSize="22" FontAttributes="Bold"
-                               TextColor="{AppThemeBinding Dark=White, Light=#18132A}" HorizontalOptions="Center" VerticalOptions="Center">
+                               TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" HorizontalOptions="Center" VerticalOptions="Center">
                             <Label.Shadow>
                                 <Shadow Brush="#40000000" Offset="0,2" Radius="4" Opacity="0.4" />
                             </Label.Shadow>
@@ -65,7 +65,7 @@
                 <Border Style="{StaticResource GlassCard}" Padding="16">
                     <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                         <Image Source="icon_clock.png" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" />
-                        <Label Grid.Column="1" Text="Theme" FontSize="17" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="Theme" FontSize="17" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" VerticalOptions="Center" />
                         <Picker Grid.Column="2" ItemsSource="{Binding ThemeOptions}" SelectedIndex="{Binding SelectedThemeIndex}"
                                 VerticalOptions="Center" WidthRequest="150" />
                     </Grid>
@@ -78,19 +78,19 @@
                     <VerticalStackLayout Spacing="12">
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                             <Image Source="icon_applogo.png" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="Version" FontSize="15" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Version" FontSize="15" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" VerticalOptions="Center" />
                             <Label Grid.Column="2" Text="1.0.0" FontSize="15" TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" VerticalOptions="Center" />
                         </Grid>
-                        <BoxView HeightRequest="0.5" Color="{AppThemeBinding Dark=#20FFFFFF, Light=#20000000}" />
+                        <BoxView HeightRequest="0.5" Color="{AppThemeBinding Dark={StaticResource DividerColor_Dark}, Light={StaticResource DividerColor_Light}}" />
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                             <Image Source="icon_rocket.png" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="Framework" FontSize="15" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="Framework" FontSize="15" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" VerticalOptions="Center" />
                             <Label Grid.Column="2" Text=".NET MAUI" FontSize="15" TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" VerticalOptions="Center" />
                         </Grid>
-                        <BoxView HeightRequest="0.5" Color="{AppThemeBinding Dark=#20FFFFFF, Light=#20000000}" />
+                        <BoxView HeightRequest="0.5" Color="{AppThemeBinding Dark={StaticResource DividerColor_Dark}, Light={StaticResource DividerColor_Light}}" />
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                             <Image Source="icon_notebook.png" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" />
-                            <Label Grid.Column="1" Text="License" FontSize="15" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" VerticalOptions="Center" />
+                            <Label Grid.Column="1" Text="License" FontSize="15" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" VerticalOptions="Center" />
                             <Label Grid.Column="2" Text="MIT" FontSize="15" TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" VerticalOptions="Center" />
                         </Grid>
                     </VerticalStackLayout>
@@ -107,24 +107,24 @@
                             </Grid.GestureRecognizers>
                             <Image Source="icon_books.png" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                <Label Text="GitHub Repository" FontSize="15" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" />
+                                <Label Text="GitHub Repository" FontSize="15" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
                                 <Label Text="View source code &amp; contribute" FontSize="12" TextColor="{AppThemeBinding Dark={StaticResource Gray400}, Light={StaticResource Gray500}}" />
                             </VerticalStackLayout>
                             <Label Grid.Column="2" Text="→" FontSize="16" TextColor="{AppThemeBinding Dark={StaticResource Gray400}, Light={StaticResource Gray500}}" VerticalOptions="Center" />
                         </Grid>
-                        <BoxView HeightRequest="0.5" Color="{AppThemeBinding Dark=#20FFFFFF, Light=#20000000}" />
+                        <BoxView HeightRequest="0.5" Color="{AppThemeBinding Dark={StaticResource DividerColor_Dark}, Light={StaticResource DividerColor_Light}}" />
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ShowOnboardingCommand}" />
                             </Grid.GestureRecognizers>
                             <Image Source="icon_explore.png" WidthRequest="22" HeightRequest="22" VerticalOptions="Center" />
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
-                                <Label Text="Show Welcome Screen" FontSize="15" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" />
+                                <Label Text="Show Welcome Screen" FontSize="15" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
                                 <Label Text="View the onboarding experience again" FontSize="12" TextColor="{AppThemeBinding Dark={StaticResource Gray400}, Light={StaticResource Gray500}}" />
                             </VerticalStackLayout>
                             <Label Grid.Column="2" Text="→" FontSize="16" TextColor="{AppThemeBinding Dark={StaticResource Gray400}, Light={StaticResource Gray500}}" VerticalOptions="Center" />
                         </Grid>
-                        <BoxView HeightRequest="0.5" Color="{AppThemeBinding Dark=#20FFFFFF, Light=#20000000}" />
+                        <BoxView HeightRequest="0.5" Color="{AppThemeBinding Dark={StaticResource DividerColor_Dark}, Light={StaticResource DividerColor_Light}}" />
                         <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
                             <Grid.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding ResetProgressCommand}" />

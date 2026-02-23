@@ -7,13 +7,13 @@
              Shell.NavBarIsVisible="False"
              Shell.NavBarVisibilityAnimationEnabled="False"
              SafeAreaEdges="None"
-             BackgroundColor="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}">
+             BackgroundColor="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}">
     <Grid Margin="0,-60,0,0" SafeAreaEdges="None">
         <BoxView InputTransparent="True">
             <BoxView.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="{AppThemeBinding Dark=#1E1035, Light=#E8E0F2}" Offset="0.0" />
-                    <GradientStop Color="{AppThemeBinding Dark=#120C24, Light=#F5F3F7}" Offset="1.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientTop_Dark}, Light={StaticResource GradientTop_Light}}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}" Offset="1.0" />
                 </LinearGradientBrush>
             </BoxView.Background>
         </BoxView>
@@ -23,8 +23,8 @@
                 <BoxView.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="#00000000" Offset="0.0" />
-                        <GradientStop Color="{AppThemeBinding Dark=#901E1035, Light=#C0E8E0F2}" Offset="0.5" />
-                        <GradientStop Color="{AppThemeBinding Dark=#FF120C24, Light=#FFF5F3F7}" Offset="1.0" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayMid_Dark}, Light={StaticResource GradientOverlayMid_Light}}" Offset="0.5" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayEnd_Dark}, Light={StaticResource GradientOverlayEnd_Light}}" Offset="1.0" />
                     </LinearGradientBrush>
                 </BoxView.Background>
             </BoxView>
@@ -36,9 +36,9 @@
             <!-- Top bar -->
             <Grid Padding="20,20,20,12" ColumnDefinitions="*,Auto" ColumnSpacing="12">
                 <Label Text="Profile" FontSize="22" FontAttributes="Bold"
-                       TextColor="{AppThemeBinding Dark=White, Light=#18132A}" VerticalOptions="Center" />
+                       TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" VerticalOptions="Center" />
                 <Border Grid.Column="1" StrokeShape="RoundRectangle 16"
-                        Stroke="Transparent" BackgroundColor="{AppThemeBinding Dark=#1A1035, Light=#F0ECF5}"
+                        Stroke="Transparent" BackgroundColor="{AppThemeBinding Dark={StaticResource CardBgAlt_Dark}, Light={StaticResource CardBgAlt_Light}}"
                         WidthRequest="34" HeightRequest="34">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Command="{Binding OpenSettingsCommand}" />
@@ -81,14 +81,14 @@
                         </Grid>
                         <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
                             <HorizontalStackLayout Spacing="8">
-                                <Label Text="{Binding DisplayName}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" />
+                                <Label Text="{Binding DisplayName}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
                                 <Border StrokeShape="RoundRectangle 10" Stroke="Transparent"
                                         BackgroundColor="{AppThemeBinding Dark=#20FFFFFF, Light=#10000000}" Padding="6,2"
                                         VerticalOptions="Center">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding EditProfileCommand}" />
                                     </Border.GestureRecognizers>
-                                    <Label Text="Edit" FontSize="11" VerticalOptions="Center" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" />
+                                    <Label Text="Edit" FontSize="11" VerticalOptions="Center" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
                                 </Border>
                             </HorizontalStackLayout>
                             <HorizontalStackLayout Spacing="4">
@@ -99,7 +99,7 @@
                     <!-- Stats row -->
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
                         <Border StrokeShape="RoundRectangle 12" Stroke="Transparent"
-                                BackgroundColor="{AppThemeBinding Dark=#1A1035, Light=#F0ECF5}" Padding="0">
+                                BackgroundColor="{AppThemeBinding Dark={StaticResource CardBgAlt_Dark}, Light={StaticResource CardBgAlt_Light}}" Padding="0">
                             <Grid RowDefinitions="4,*">
                                 <BoxView Color="#B8A0E0" HeightRequest="4">
                                     <BoxView.Clip>
@@ -108,12 +108,12 @@
                                 </BoxView>
                                 <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" Spacing="2" Padding="8,8,8,10">
                                     <Label Text="{Binding TotalXp}" FontSize="20" FontAttributes="Bold" TextColor="#7EB4F0" HorizontalOptions="Center" />
-                                    <Label Text="Total XP" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}" HorizontalOptions="Center" />
+                                    <Label Text="Total XP" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextSecondary_Dark}, Light={StaticResource TextSecondary_Light}}" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Grid>
                         </Border>
                         <Border Grid.Column="1" StrokeShape="RoundRectangle 12" Stroke="Transparent"
-                                BackgroundColor="{AppThemeBinding Dark=#1A1035, Light=#F0ECF5}" Padding="0">
+                                BackgroundColor="{AppThemeBinding Dark={StaticResource CardBgAlt_Dark}, Light={StaticResource CardBgAlt_Light}}" Padding="0">
                             <Grid RowDefinitions="4,*">
                                 <BoxView Color="#E8A04E" HeightRequest="4">
                                     <BoxView.Clip>
@@ -121,13 +121,13 @@
                                     </BoxView.Clip>
                                 </BoxView>
                                 <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" Spacing="2" Padding="8,8,8,10">
-                                    <Label Text="{Binding CurrentStreak}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" HorizontalOptions="Center" />
-                                    <Label Text="Day Streak" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}" HorizontalOptions="Center" />
+                                    <Label Text="{Binding CurrentStreak}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" HorizontalOptions="Center" />
+                                    <Label Text="Day Streak" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextSecondary_Dark}, Light={StaticResource TextSecondary_Light}}" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Grid>
                         </Border>
                         <Border Grid.Column="2" StrokeShape="RoundRectangle 12" Stroke="Transparent"
-                                BackgroundColor="{AppThemeBinding Dark=#1A1035, Light=#F0ECF5}" Padding="0">
+                                BackgroundColor="{AppThemeBinding Dark={StaticResource CardBgAlt_Dark}, Light={StaticResource CardBgAlt_Light}}" Padding="0">
                             <Grid RowDefinitions="4,*">
                                 <BoxView Color="#6DD4A0" HeightRequest="4">
                                     <BoxView.Clip>
@@ -135,8 +135,8 @@
                                     </BoxView.Clip>
                                 </BoxView>
                                 <VerticalStackLayout Grid.Row="1" HorizontalOptions="Center" Spacing="2" Padding="8,8,8,10">
-                                    <Label Text="{Binding LessonsCompleted}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" HorizontalOptions="Center" />
-                                    <Label Text="Lessons" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}" HorizontalOptions="Center" />
+                                    <Label Text="{Binding LessonsCompleted}" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" HorizontalOptions="Center" />
+                                    <Label Text="Lessons" FontSize="11" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextSecondary_Dark}, Light={StaticResource TextSecondary_Light}}" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Grid>
                         </Border>
@@ -144,7 +144,7 @@
                     <!-- Daily Goal Progress -->
                     <VerticalStackLayout Spacing="6">
                         <Grid ColumnDefinitions="*,Auto">
-                            <Label Text="Daily Goal" FontSize="13" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}" VerticalOptions="Center" />
+                            <Label Text="Daily Goal" FontSize="13" TextColor="{AppThemeBinding Dark={StaticResource TextSecondary_Dark}, Light={StaticResource TextSecondary_Light}}" VerticalOptions="Center" />
                             <Label Grid.Column="1" Text="{Binding DailyGoalFraction, StringFormat='{0:P0}'}" FontSize="13"
                                    FontAttributes="Bold" TextColor="#7EB4F0" VerticalOptions="Center" />
                         </Grid>
@@ -163,7 +163,7 @@
             </Border>
 
             <!-- Learning Paths Header -->
-            <Label Text="Learning Paths" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}"
+            <Label Text="Learning Paths" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}"
                    Padding="20,8,20,8" />
 
             <!-- Path Progress Cards using BindableLayout -->
@@ -182,7 +182,7 @@
                                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                                     <Image Source="{Binding IconImage}" WidthRequest="24" HeightRequest="24" VerticalOptions="Center" />
                                     <Label Grid.Column="1" Text="{Binding Title}" FontSize="17"
-                                           FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" VerticalOptions="Center" />
+                                           FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" VerticalOptions="Center" />
                                     <Label Grid.Column="2" Text="{Binding PercentText}" FontSize="15"
                                            FontAttributes="Bold" TextColor="{Binding BarColor}" VerticalOptions="Center" />
                                 </Grid>
@@ -200,7 +200,7 @@
                                     <BindableLayout.ItemTemplate>
                                         <DataTemplate x:DataType="vm:ModuleProgressItem">
                                             <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Padding="2,1">
-                                                <Label Text="{Binding Title}" FontSize="13" TextColor="{AppThemeBinding Dark=#CCCCCC, Light=#4A4258}"
+                                                <Label Text="{Binding Title}" FontSize="13" TextColor="{AppThemeBinding Dark={StaticResource TextSubtle_Dark}, Light={StaticResource TextSubtle_Light}}"
                                                        MaxLines="1" LineBreakMode="TailTruncation" VerticalOptions="Center" />
                                                 <Label Grid.Column="1" Text="{Binding ProgressText}" FontSize="11" TextColor="{AppThemeBinding Dark=#999999, Light=#9A90A8}" VerticalOptions="Center" />
                                             </Grid>
@@ -215,7 +215,7 @@
             </VerticalStackLayout>
 
             <!-- Achievements Section -->
-            <Label Text="Achievements" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark=White, Light=#18132A}"
+            <Label Text="Achievements" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}"
                    Padding="20,16,20,8" />
 
             <!-- Achievements Grid -->
@@ -223,13 +223,13 @@
                         BindableLayout.ItemsSource="{Binding Achievements}">
                 <BindableLayout.ItemTemplate>
                     <DataTemplate x:DataType="vm:AchievementItem">
-                        <Border BackgroundColor="{AppThemeBinding Dark=#151025, Light=#FFFFFF}" StrokeShape="RoundRectangle 16"
+                        <Border BackgroundColor="{AppThemeBinding Dark={StaticResource CardBg_Dark}, Light={StaticResource CardBg_Light}}" StrokeShape="RoundRectangle 16"
                                 StrokeThickness="0.8" Padding="0"
                                 WidthRequest="115" HeightRequest="130" Margin="4,5">
                             <Border.Stroke>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="{AppThemeBinding Dark=#30FFFFFF, Light=#30000000}" Offset="0.0" />
-                                    <GradientStop Color="{AppThemeBinding Dark=#08FFFFFF, Light=#05000000}" Offset="1.0" />
+                                    <GradientStop Color="{AppThemeBinding Dark={StaticResource InputBorder_Dark}, Light={StaticResource InputBorder_Light}}" Offset="0.0" />
+                                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GlassBorderEnd_Dark}, Light={StaticResource GlassBorderEnd_Light}}" Offset="1.0" />
                                 </LinearGradientBrush>
                             </Border.Stroke>
                             <Grid RowDefinitions="4,*">
@@ -255,43 +255,43 @@
 
             <!-- About -->
             <VerticalStackLayout Spacing="4" HorizontalOptions="Center" Margin="0,20,0,110">
-                <Label Text="AlohaAI v1.0.0" FontSize="11" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}" HorizontalOptions="Center" />
-                <Label Text="Open source • MIT License" FontSize="11" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}" HorizontalOptions="Center" />
+                <Label Text="AlohaAI v1.0.0" FontSize="11" TextColor="{AppThemeBinding Dark={StaticResource TextSecondary_Dark}, Light={StaticResource TextSecondary_Light}}" HorizontalOptions="Center" />
+                <Label Text="Open source • MIT License" FontSize="11" TextColor="{AppThemeBinding Dark={StaticResource TextSecondary_Dark}, Light={StaticResource TextSecondary_Light}}" HorizontalOptions="Center" />
             </VerticalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>
 
         <!-- Profile Setup Backdrop -->
-        <BoxView IsVisible="{Binding ShowProfileSetup}" Color="{AppThemeBinding Dark=#FF0D0B1E, Light=#80000000}"
+        <BoxView IsVisible="{Binding ShowProfileSetup}" Color="{AppThemeBinding Dark={StaticResource ModalBackdrop_Dark}, Light={StaticResource ModalBackdrop_Light}}"
                  ZIndex="10" InputTransparent="False" />
         <!-- Profile Setup Card -->
         <Border IsVisible="{Binding ShowProfileSetup}" ZIndex="11" InputTransparent="False"
-                BackgroundColor="{AppThemeBinding Dark=#FF1A1035, Light=#FFFFFFFF}" StrokeShape="RoundRectangle 20"
+                BackgroundColor="{AppThemeBinding Dark={StaticResource ModalCardBg_Dark}, Light={StaticResource ModalCardBg_Light}}" StrokeShape="RoundRectangle 20"
                 StrokeThickness="1" Padding="24,24"
                 Margin="24,0" VerticalOptions="Center" HorizontalOptions="Fill">
             <Border.Stroke>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="{AppThemeBinding Dark=#50FFFFFF, Light=#30000000}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GlassBorderStart_Dark}, Light={StaticResource GlassBorderStart_Light}}" Offset="0.0" />
                     <GradientStop Color="{AppThemeBinding Dark=#10FFFFFF, Light=#10000000}" Offset="1.0" />
                 </LinearGradientBrush>
             </Border.Stroke>
             <VerticalStackLayout Spacing="16">
                 <Label Text="Set Up Your Profile" FontSize="24" FontAttributes="Bold"
-                       TextColor="{AppThemeBinding Dark=White, Light=#18132A}" HorizontalOptions="Center" />
+                       TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" HorizontalOptions="Center" />
                 <Label Text="Add your name and photo to personalize your learning experience"
-                       FontSize="14" TextColor="{AppThemeBinding Dark=#AAAAAA, Light=#6E6580}" HorizontalTextAlignment="Center"
+                       FontSize="14" TextColor="{AppThemeBinding Dark={StaticResource TextSecondary_Dark}, Light={StaticResource TextSecondary_Light}}" HorizontalTextAlignment="Center"
                        HorizontalOptions="Center" />
-                <Border StrokeShape="RoundRectangle 12" Stroke="{AppThemeBinding Dark=#30FFFFFF, Light=#30000000}" StrokeThickness="1"
+                <Border StrokeShape="RoundRectangle 12" Stroke="{AppThemeBinding Dark={StaticResource InputBorder_Dark}, Light={StaticResource InputBorder_Light}}" StrokeThickness="1"
                         BackgroundColor="{AppThemeBinding Dark=#20FFFFFF, Light=#10000000}" Padding="4,0" HeightRequest="48">
                     <Entry x:Name="SetupNameEntry" Placeholder="Enter your name"
-                           PlaceholderColor="{AppThemeBinding Dark=#AAAAAA, Light=#9A90A8}" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" FontSize="16"
+                           PlaceholderColor="{AppThemeBinding Dark=#AAAAAA, Light=#9A90A8}" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" FontSize="16"
                            Text="{Binding EditName}" ReturnType="Done"
                            BackgroundColor="Transparent" />
                 </Border>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                     <Button Text="Add Photo" BackgroundColor="{AppThemeBinding Dark=#25FFFFFF, Light=#15000000}"
-                            TextColor="{AppThemeBinding Dark=White, Light=#18132A}" FontSize="14" CornerRadius="12"
+                            TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" FontSize="14" CornerRadius="12"
                             HeightRequest="46" Command="{Binding PickPhotoCommand}" />
                     <Button Grid.Column="1" Text="Save" BackgroundColor="#5B8FD4"
                             TextColor="White" FontSize="14" FontAttributes="Bold"
@@ -305,32 +305,32 @@
         </Border>
 
         <!-- Edit Profile Backdrop -->
-        <BoxView IsVisible="{Binding IsEditingProfile}" Color="{AppThemeBinding Dark=#FF0D0B1E, Light=#80000000}"
+        <BoxView IsVisible="{Binding IsEditingProfile}" Color="{AppThemeBinding Dark={StaticResource ModalBackdrop_Dark}, Light={StaticResource ModalBackdrop_Light}}"
                  ZIndex="12" InputTransparent="False" />
         <!-- Edit Profile Card -->
         <Border IsVisible="{Binding IsEditingProfile}" ZIndex="13" InputTransparent="False"
-                BackgroundColor="{AppThemeBinding Dark=#FF1A1035, Light=#FFFFFFFF}" StrokeShape="RoundRectangle 20"
+                BackgroundColor="{AppThemeBinding Dark={StaticResource ModalCardBg_Dark}, Light={StaticResource ModalCardBg_Light}}" StrokeShape="RoundRectangle 20"
                 StrokeThickness="1" Padding="24,20"
                 Margin="20,0" VerticalOptions="Center" HorizontalOptions="Fill">
             <Border.Stroke>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                    <GradientStop Color="{AppThemeBinding Dark=#50FFFFFF, Light=#30000000}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GlassBorderStart_Dark}, Light={StaticResource GlassBorderStart_Light}}" Offset="0.0" />
                     <GradientStop Color="{AppThemeBinding Dark=#10FFFFFF, Light=#10000000}" Offset="1.0" />
                 </LinearGradientBrush>
             </Border.Stroke>
             <VerticalStackLayout Spacing="16">
                 <Label Text="Edit Profile" FontSize="22" FontAttributes="Bold"
-                       TextColor="{AppThemeBinding Dark=White, Light=#18132A}" HorizontalOptions="Center" />
-                <Border StrokeShape="RoundRectangle 12" Stroke="{AppThemeBinding Dark=#30FFFFFF, Light=#30000000}" StrokeThickness="1"
-                        BackgroundColor="{AppThemeBinding Dark=#15FFFFFF, Light=#10000000}" Padding="4,0">
+                       TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" HorizontalOptions="Center" />
+                <Border StrokeShape="RoundRectangle 12" Stroke="{AppThemeBinding Dark={StaticResource InputBorder_Dark}, Light={StaticResource InputBorder_Light}}" StrokeThickness="1"
+                        BackgroundColor="{AppThemeBinding Dark={StaticResource InputBg_Dark}, Light={StaticResource InputBg_Light}}" Padding="4,0">
                     <Entry x:Name="EditNameEntry" Placeholder="Enter your name"
-                           PlaceholderColor="{AppThemeBinding Dark=#AAAAAA, Light=#9A90A8}" TextColor="{AppThemeBinding Dark=White, Light=#18132A}" FontSize="16"
+                           PlaceholderColor="{AppThemeBinding Dark=#AAAAAA, Light=#9A90A8}" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" FontSize="16"
                            Text="{Binding EditName}" ReturnType="Done"
                            BackgroundColor="Transparent" />
                 </Border>
                 <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                     <Button Text="Cancel" BackgroundColor="{AppThemeBinding Dark=#20FFFFFF, Light=#15000000}"
-                            TextColor="{AppThemeBinding Dark=White, Light=#18132A}" FontSize="14" CornerRadius="12"
+                            TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" FontSize="14" CornerRadius="12"
                             HeightRequest="44" Command="{Binding CancelEditCommand}" />
                     <Button Grid.Column="1" Text="Save" BackgroundColor="#5B8FD4"
                             TextColor="White" FontSize="14" FontAttributes="Bold"
