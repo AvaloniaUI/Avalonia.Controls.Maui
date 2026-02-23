@@ -159,29 +159,29 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
 
         if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
         {
-            // Already on UI thread, execute directly
-            var avaloniaConstraint = new global::Avalonia.Size(
-                double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
-                double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
-
-            platformView.Measure(avaloniaConstraint);
-            var avaloniaSize = platformView.DesiredSize;
-            return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
+            return MeasureCore(platformView, widthConstraint, heightConstraint);
         }
         else
         {
-            // Not on UI thread, invoke synchronously on UI thread
             return Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                var avaloniaConstraint = new global::Avalonia.Size(
-                    double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
-                    double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
-
-                platformView.Measure(avaloniaConstraint);
-                var avaloniaSize = platformView.DesiredSize;
-                return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
+                return MeasureCore(platformView, widthConstraint, heightConstraint);
             }).GetAwaiter().GetResult();
         }
+    }
+
+    private static Microsoft.Maui.Graphics.Size MeasureCore(PlatformView platformView, double widthConstraint, double heightConstraint)
+    {
+        var avaloniaConstraint = new global::Avalonia.Size(
+            double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
+            double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
+
+        platformView.Measure(avaloniaConstraint);
+
+        // Avalonia's DesiredSize includes the control's Margin, but MAUI's layout system
+        // adds margin separately when positioning children. Subtract it to avoid double-counting.
+        var contentSize = platformView.DesiredSize.Deflate(platformView.Margin);
+        return new Microsoft.Maui.Graphics.Size(contentSize.Width, contentSize.Height);
     }
 
     /// <inheritdoc/>
@@ -198,13 +198,17 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         if (PlatformView is null)
             return;
 
-        // Only measure if the control hasn't been measured yet or if measure is invalid.
+        // MAUI's frame already accounts for margin positioning. Avalonia's Arrange
+        // further deflates by Margin internally, so inflate to compensate.
+        var arrangeRect = new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height)
+            .Inflate(PlatformView.Margin);
+
         if (!PlatformView.IsMeasureValid)
         {
-            PlatformView.Measure(new global::Avalonia.Size(frame.Width, frame.Height));
+            PlatformView.Measure(arrangeRect.Size);
         }
 
-        PlatformView.Arrange(new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height));
+        PlatformView.Arrange(arrangeRect);
     }
 
 
