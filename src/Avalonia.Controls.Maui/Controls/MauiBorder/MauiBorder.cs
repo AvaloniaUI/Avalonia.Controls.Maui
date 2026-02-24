@@ -188,7 +188,7 @@ namespace Avalonia.Controls.Maui
 
                 _backgroundGeometry = null;
                 _strokeGeometry = null;
-                Clip = null;
+                Child?.Clip = null;
                 InvalidateMeasure();
                 InvalidateVisual();
             }
@@ -197,7 +197,7 @@ namespace Avalonia.Controls.Maui
             {
                 _backgroundGeometry = null;
                 _strokeGeometry = null;
-                Clip = null;
+                Child?.Clip = null;
                 InvalidateVisual();
             }
             else if (change.Property == StrokeProperty ||
@@ -225,7 +225,35 @@ namespace Avalonia.Controls.Maui
                 _strokeGeometry = CreateGeometry(finalSize);
                 _backgroundGeometry = _strokeGeometry;
                 _lastRenderSize = finalSize;
-                Clip = _strokeGeometry;
+
+                if (Child != null)
+                {
+                    if (_strokeGeometry != null)
+                    {
+                        var childBounds = Child.Bounds;
+                        if (childBounds.X == 0 && childBounds.Y == 0)
+                        {
+                            // Child starts at origin, clip geometry can be used directly
+                            Child.Clip = _strokeGeometry;
+                        }
+                        else
+                        {
+                            // Child is offset within the border (e.g. centered and smaller),
+                            // translate the clip geometry to the child's coordinate space
+                            var clipGeometry = CreateGeometry(finalSize);
+                            if (clipGeometry != null)
+                            {
+                                clipGeometry.Transform = new TranslateTransform(-childBounds.X, -childBounds.Y);
+                            }
+
+                            Child.Clip = clipGeometry;
+                        }
+                    }
+                    else
+                    {
+                        Child.Clip = null;
+                    }
+                }
             }
 
             return arrangedSize;
@@ -318,7 +346,7 @@ namespace Avalonia.Controls.Maui
         {
             _backgroundGeometry = null;
             _strokeGeometry = null;
-            Clip = null;
+            Child?.Clip = null;
             InvalidateMeasure();
             InvalidateArrange();
             InvalidateVisual();
