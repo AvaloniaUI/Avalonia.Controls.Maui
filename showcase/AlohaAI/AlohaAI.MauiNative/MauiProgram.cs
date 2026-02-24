@@ -9,6 +9,16 @@ public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
+#if MACCATALYST
+        // Changes buttons to match iPad behavior.
+        // This allows us to keep colors and styles.
+        Microsoft.Maui.Handlers.ButtonHandler.Mapper.AppendToMapping("ButtonChange", (handler, view) =>
+        {
+            handler.PlatformView.PreferredBehavioralStyle = UIKit.UIBehavioralStyle.Pad;
+            handler.PlatformView.Layer.CornerRadius = 5;
+            handler.PlatformView.ClipsToBounds = true;
+        });
+#endif
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
@@ -20,6 +30,8 @@ public static class MauiProgram
 				{
 					handler.PlatformView.Bounces = false;
 				});
+
+				
 			})
 #endif
 			.ConfigureFonts(fonts =>

@@ -1,7 +1,10 @@
-﻿using AlohaAI.Services;
+﻿using System.Runtime.InteropServices;
+using AlohaAI.Services;
 using AlohaAI.ViewModels;
 using AlohaAI.Views;
 using Avalonia.Controls.Maui.Essentials;
+using Avalonia.Controls.Maui.Platform;
+using Avalonia.Platform;
 using Microsoft.Extensions.Logging;
 
 namespace AlohaAI;

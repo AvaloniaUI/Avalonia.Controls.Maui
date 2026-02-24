@@ -49,6 +49,6 @@ public partial class App : Application
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		return new Window(new LoadingPage(_progressService)) { Title = "AlohaAI" };
+		return new AppWindow(_progressService);
 	}
 }

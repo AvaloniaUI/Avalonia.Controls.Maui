@@ -14,7 +14,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 {
     static readonly AlertManager s_alertManager = new();
 
-    static IPropertyMapper<IWindow, WindowHandler> mapper = new PropertyMapper<IWindow, WindowHandler>(ElementHandler.ElementMapper)
+    public static IPropertyMapper<IWindow, WindowHandler> Mapper = new PropertyMapper<IWindow, WindowHandler>(ElementHandler.ElementMapper)
     {
         [nameof(IWindow.Title)] = mapTitle,
         [nameof(IWindow.Content)] = mapContent,
@@ -44,7 +44,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     }
 
     public WindowHandler()
-        : base(mapper, CommandMapper)
+        : base(Mapper, CommandMapper)
     {
     }
 
