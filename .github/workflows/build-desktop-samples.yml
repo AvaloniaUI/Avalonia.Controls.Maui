@@ -23,6 +23,8 @@ jobs:
             project: showcase/2048Game/2048Game.Desktop/2048Game.Desktop.csproj
           - name: WeatherTwentyOne.Desktop
             project: showcase/WeatherTwentyOne/WeatherTwentyOne.Desktop/WeatherTwentyOne.Desktop.csproj
+          - name: AlohaAI.Desktop
+            project: showcase/AlohaAI/AlohaAI.Desktop/AlohaAI.Desktop.csproj
 
     runs-on: ubuntu-latest
     name: ${{ matrix.app.name }} (NativeAOT)
