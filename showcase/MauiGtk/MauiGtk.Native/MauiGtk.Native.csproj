@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>$(DotNetTfm)</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Platform.Maui.Linux.Gtk4.Sample</RootNamespace>
+    <ApplicationId>com.platform.maui.linux.gtk4.sample</ApplicationId>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="../MauiGtk/MauiGtk.csproj" />
+    <PackageReference Include="Platform.Maui.Linux.Gtk4" Version="0.3.0" />
+    <PackageReference Include="Platform.Maui.Linux.Gtk4.Essentials" Version="0.3.0" />
+    <PackageReference Include="GirCore.Gtk-4.0" Version="0.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AathifMahir.Maui.MauiIcons.FontAwesome" Version="5.0.0" />
+    <PackageReference Include="AathifMahir.Maui.MauiIcons.FontAwesome.Solid" Version="5.0.0" />
+  </ItemGroup>
+
+</Project>
