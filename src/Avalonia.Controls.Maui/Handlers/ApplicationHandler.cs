@@ -135,15 +135,11 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
             {
                 AppTheme.Dark => ThemeVariant.Dark,
                 AppTheme.Light => ThemeVariant.Light,
-                AppTheme.Unspecified => ThemeVariant.Default, // Use system theme
+                AppTheme.Unspecified => null, // Use system theme
                 _ => null
             };
 
-            // Only update if different to avoid circular updates
-            if (avaloniaApp.RequestedThemeVariant != requestedTheme)
-            {
-                avaloniaApp.RequestedThemeVariant = requestedTheme;
-            }
+            avaloniaApp.RequestedThemeVariant = requestedTheme;
         }
     }
 }
