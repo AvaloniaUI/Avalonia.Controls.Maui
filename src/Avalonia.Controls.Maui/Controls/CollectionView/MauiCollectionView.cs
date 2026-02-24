@@ -800,6 +800,11 @@ public class MauiCollectionView : TemplatedControl
 
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (IsGrouped)
+        {
+            UpdateItemsSource();
+        }
+
         UpdateEmptyView();
     }
 
