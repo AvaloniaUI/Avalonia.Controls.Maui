@@ -3,7 +3,7 @@
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			xmlns:local="clr-namespace:ControlGallery"
 			x:DataType="local:MainPage"
-			FlyoutLayoutBehavior="Popover"
+			FlyoutLayoutBehavior="Split"
 			x:Class="ControlGallery.MainPage">
 	<FlyoutPage.Flyout>
 		<ContentPage

@@ -10,10 +10,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="ActivityIndicator"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
 
             <!-- Basic elements and running toggle -->
             <Border Stroke="Gray"

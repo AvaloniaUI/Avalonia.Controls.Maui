@@ -22,11 +22,11 @@ public partial class MainPage : FlyoutPage
         // Services
         [typeof(FontsPage)] = () => new FontsPage(),
         // Pages
-        [typeof(NavigationDemoPage)] = () => new NavigationPage(new NavigationDemoPage()),
+        [typeof(NavigationDemoPage)] = () => new NavigationDemoPage(),
         [typeof(ControlGallery.Pages.TabbedPage)] = () => new ControlGallery.Pages.TabbedPage(),
         [typeof(TitleBarPage)] = () => new TitleBarPage(),
         [typeof(PopupsPage)] = () => new PopupsPage(),
-        [typeof(ToolbarItemPage)] = () => new NavigationPage(new ToolbarItemPage()),
+        [typeof(ToolbarItemPage)] = () => new ToolbarItemPage(),
         [typeof(ShellPage)] = () => new ShellPage(),
         [typeof(ShellPlaygroundPage)] = () => new ShellPlaygroundPage(),
         // Views

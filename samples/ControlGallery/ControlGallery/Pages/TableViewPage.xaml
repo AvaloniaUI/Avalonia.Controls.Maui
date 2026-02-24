@@ -7,10 +7,6 @@
              Title="TableView">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="TableView"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
             
             <!-- Deprecation Notice -->
             <Border BackgroundColor="#FFF3CD" Stroke="#856404" Padding="12">
