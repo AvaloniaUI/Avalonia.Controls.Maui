@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Threading;
 
 namespace Avalonia.Controls.Maui.Controls.Shell;
 
@@ -15,7 +17,11 @@ public class FlyoutContainer : Panel
     private Control? _detailContent;
     private Panel? _scrim;
     private TranslateTransform? _flyoutTransform;
-    private bool _isAnimating;
+    private DispatcherTimer? _animationTimer;
+    private Stopwatch? _animStopwatch;
+    private double _animStartX;
+    private double _animTargetX;
+    private bool _animShowScrim;
 
     public const double DefaultFlyoutWidth = 320;
     internal const double GestureEdgeThreshold = 50.0;
@@ -149,6 +155,9 @@ public class FlyoutContainer : Panel
     /// <param name="content">The flyout content.</param>
     public void SetFlyoutContent(Control? content)
     {
+        if (content != null && content == _flyoutContent)
+            return;
+
         if (_flyoutContent != null)
         {
             Children.Remove(_flyoutContent);
@@ -183,6 +192,9 @@ public class FlyoutContainer : Panel
     /// <param name="content">The detail content.</param>
     public void SetDetailContent(Control? content)
     {
+        if (content != null && content == _detailContent)
+            return;
+
         if (_detailContent != null)
         {
             Children.Remove(_detailContent);
@@ -352,12 +364,13 @@ public class FlyoutContainer : Panel
             }
         }
 
-        if (animate && !_isAnimating)
+        if (animate)
         {
             AnimateToPosition(targetX, showScrim);
         }
         else
         {
+            CancelAnimation();
             _flyoutTransform.X = targetX;
             if (_scrim != null)
             {
@@ -371,16 +384,17 @@ public class FlyoutContainer : Panel
         }
     }
 
-    private async void AnimateToPosition(double targetX, bool showScrim)
+    private void AnimateToPosition(double targetX, bool showScrim)
     {
-        if (_flyoutTransform == null || _isAnimating)
+        if (_flyoutTransform == null)
             return;
 
-        _isAnimating = true;
+        // Cancel any running animation and start fresh from current position
+        CancelAnimation();
 
-        var startX = _flyoutTransform.X;
-        var duration = DefaultTransitionDuration;
-        var startTime = DateTime.Now;
+        _animStartX = _flyoutTransform.X;
+        _animTargetX = targetX;
+        _animShowScrim = showScrim;
 
         if (showScrim && _scrim != null)
         {
@@ -388,38 +402,73 @@ public class FlyoutContainer : Panel
             _scrim.Opacity = 0;
         }
 
-        while (DateTime.Now - startTime < duration)
+        _animStopwatch = Stopwatch.StartNew();
+        _animationTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+        _animationTimer.Tick += OnAnimationTick;
+        _animationTimer.Start();
+    }
+
+    private void OnAnimationTick(object? sender, EventArgs e)
+    {
+        if (_flyoutTransform == null || _animStopwatch == null)
         {
-            var progress = (DateTime.Now - startTime).TotalMilliseconds / duration.TotalMilliseconds;
-            progress = EaseOut(progress);
-
-            _flyoutTransform.X = startX + (targetX - startX) * progress;
-
-            if (_scrim != null)
-            {
-                _scrim.Opacity = showScrim ? progress : (1 - progress);
-            }
-
-            await System.Threading.Tasks.Task.Delay(16);
+            CompleteAnimation();
+            return;
         }
 
-        _flyoutTransform.X = targetX;
+        var elapsedMs = _animStopwatch.Elapsed.TotalMilliseconds;
+        var durationMs = DefaultTransitionDuration.TotalMilliseconds;
+
+        if (elapsedMs >= durationMs)
+        {
+            CompleteAnimation();
+            return;
+        }
+
+        var progress = EaseOut(elapsedMs / durationMs);
+        _flyoutTransform.X = _animStartX + (_animTargetX - _animStartX) * progress;
 
         if (_scrim != null)
         {
-            _scrim.IsVisible = showScrim;
-            _scrim.Opacity = showScrim ? 1 : 0;
+            _scrim.Opacity = _animShowScrim ? progress : (1 - progress);
+        }
+    }
+
+    private void CompleteAnimation()
+    {
+        if (_flyoutTransform != null)
+        {
+            _flyoutTransform.X = _animTargetX;
         }
 
-        if (!IsSplitMode() && targetX <= -FlyoutWidth && _flyoutContent != null)
+        if (_scrim != null)
+        {
+            _scrim.IsVisible = _animShowScrim;
+            _scrim.Opacity = _animShowScrim ? 1 : 0;
+        }
+
+        if (!IsSplitMode() && _animTargetX <= -FlyoutWidth && _flyoutContent != null)
         {
             _flyoutContent.IsVisible = false;
         }
 
-        _isAnimating = false;
+        CancelAnimation();
     }
 
-    private double EaseOut(double t)
+    private void CancelAnimation()
+    {
+        if (_animationTimer != null)
+        {
+            _animationTimer.Stop();
+            _animationTimer.Tick -= OnAnimationTick;
+            _animationTimer = null;
+        }
+
+        _animStopwatch?.Stop();
+        _animStopwatch = null;
+    }
+
+    private static double EaseOut(double t)
     {
         return 1 - Math.Pow(1 - t, 3);
     }

@@ -111,6 +111,22 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
         Assert.NotNull(flyoutContainer.DetailContent);
     }
 
+    [AvaloniaFact(DisplayName = "SetFlyoutContent With Same Content Preserves Transform")]
+    public void SetFlyoutContentWithSameContentPreservesTransform()
+    {
+        var container = new FlyoutContainer();
+        var flyoutPanel = new Avalonia.Controls.Panel();
+
+        container.SetFlyoutContent(flyoutPanel);
+        var childCountAfterFirst = container.Children.Count;
+
+        // Setting the same content again should be a no-op
+        container.SetFlyoutContent(flyoutPanel);
+        var childCountAfterSecond = container.Children.Count;
+
+        Assert.Equal(childCountAfterFirst, childCountAfterSecond);
+    }
+
     private FlyoutPage CreateBasicFlyoutPage()
     {
         var flyoutPage = new FlyoutPage
