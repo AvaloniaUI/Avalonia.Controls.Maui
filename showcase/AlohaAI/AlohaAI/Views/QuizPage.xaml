@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AlohaAI.ViewModels"
+             x:Class="AlohaAI.Views.QuizPage"
+             x:Name="ThisPage"
+             x:DataType="vm:QuizViewModel"
+             Title="Quiz"
+             Shell.NavBarIsVisible="False"
+             Shell.NavBarVisibilityAnimationEnabled="False"
+             Shell.TabBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}"
+             SafeAreaEdges="None">
+    <Grid Margin="0,-60,0,-40">
+        <!-- Purple gradient background -->
+        <BoxView InputTransparent="True">
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientTop_Dark}, Light={StaticResource GradientTop_Light}}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+        <!-- Header image fading out -->
+        <Grid HeightRequest="260" VerticalOptions="Start" InputTransparent="True">
+            <Image Source="{Binding HeaderImage}" Aspect="AspectFill" />
+            <BoxView>
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#00000000" Offset="0.0" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayMid_Dark}, Light={StaticResource GradientOverlayMid_Light}}" Offset="0.5" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayEnd_Dark}, Light={StaticResource GradientOverlayEnd_Light}}" Offset="1.0" />
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
+        </Grid>
+
+        <!-- Header bar -->
+        <VerticalStackLayout Padding="20,70,20,0" Spacing="12" VerticalOptions="Start" ZIndex="10">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <Border BackgroundColor="{AppThemeBinding Dark={StaticResource OverlayBg_Dark}, Light={StaticResource OverlayBg_Light}}" StrokeShape="RoundRectangle 12" Stroke="Transparent"
+                        WidthRequest="36" HeightRequest="36" VerticalOptions="Center">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                    </Border.GestureRecognizers>
+                    <Path Data="M14,5 L6,12 L14,19" Stroke="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" StrokeThickness="2"
+                          StrokeLineCap="Round" StrokeLineJoin="Round"
+                          Aspect="Uniform" HeightRequest="14" WidthRequest="14"
+                          HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <Label Grid.Column="1" Text="{Binding QuizTitle}" FontSize="17" FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" VerticalOptions="Center" HorizontalOptions="Center" />
+                <Label Grid.Column="2" Text="{Binding ProgressText}" FontSize="13"
+                       TextColor="{AppThemeBinding Dark=#CCFFFFFF, Light=#6E6580}" VerticalOptions="Center" />
+            </Grid>
+            <Grid HeightRequest="5">
+                <Border BackgroundColor="{AppThemeBinding Dark=#FFFFFF30, Light=#15000000}" StrokeShape="RoundRectangle 2.5" Stroke="Transparent" />
+                <Border BackgroundColor="#7EB4F0" StrokeShape="RoundRectangle 2.5" Stroke="Transparent"
+                        HorizontalOptions="Start"
+                        WidthRequest="{Binding ProgressValue, Converter={StaticResource ProgressToWidthConverter}, ConverterParameter=340}">
+                    <Border.Shadow>
+                        <Shadow Brush="#7EB4F0" Offset="0,0" Radius="6" Opacity="0.6" />
+                    </Border.Shadow>
+                </Border>
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Question View -->
+        <ScrollView IsVisible="{Binding ShowQuestion}" Margin="0,160,0,0" VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Spacing="16" Padding="20,16,20,40">
+                <Label Text="{Binding QuestionText}" FontSize="22" FontAttributes="Bold"
+                       TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" LineHeight="1.3" />
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Options}" Spacing="8">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:QuizOptionItem">
+                            <Border BackgroundColor="{Binding BackgroundColor}"
+                                    StrokeShape="RoundRectangle 16"
+                                    StrokeThickness="1.5" Padding="16,14">
+                                <Border.Stroke>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="{AppThemeBinding Dark=#40FFFFFF, Light=#30000000}" Offset="0.0" />
+                                        <GradientStop Color="{AppThemeBinding Dark=#10FFFFFF, Light=#10000000}" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Border.Stroke>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding TapCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="Auto,*">
+                                    <Border BackgroundColor="{Binding IndicatorColor}"
+                                            StrokeShape="RoundRectangle 12"
+                                            Stroke="{Binding IndicatorStroke}"
+                                            StrokeThickness="2"
+                                            WidthRequest="28" HeightRequest="28"
+                                            VerticalOptions="Center" Margin="0,0,12,0">
+                                        <Label Text="{Binding IndicatorText}" FontSize="12" FontAttributes="Bold"
+                                               TextColor="White" HorizontalOptions="Center"
+                                               VerticalOptions="Center" />
+                                    </Border>
+                                    <Label Grid.Column="1" Text="{Binding Text}" FontSize="15"
+                                           TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" Opacity="{Binding TextOpacity}"
+                                           VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+                <!-- Explanation -->
+                <Border x:Name="ExplanationCard"
+                        IsVisible="{Binding ShowExplanation}"
+                        Style="{StaticResource GlassCard}"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <HorizontalStackLayout Spacing="6">
+                            <Image Source="icon_xp.png" WidthRequest="18" HeightRequest="18" VerticalOptions="Center" />
+                            <Label Text="Explanation" FontSize="14" FontAttributes="Bold"
+                                   TextColor="{StaticResource XPColor}" />
+                        </HorizontalStackLayout>
+                        <Label Text="{Binding ExplanationText}" FontSize="14"
+                               TextColor="{AppThemeBinding Dark={StaticResource Gray200}, Light={StaticResource Gray600}}" LineHeight="1.4" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Next Button -->
+                <Button Text="Next →"
+                        IsVisible="{Binding ShowExplanation}"
+                        Command="{Binding NextQuestionCommand}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="White"
+                        CornerRadius="14"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        Margin="0,12,0,0">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource Primary}" Offset="0,4" Radius="12" Opacity="0.4" />
+                    </Button.Shadow>
+                </Button>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Results View -->
+        <VerticalStackLayout x:Name="ResultsView"
+                             IsVisible="{Binding ShowResults}"
+                             Padding="20,160,20,20"
+                             Spacing="20"
+                             VerticalOptions="Center">
+            <Image Source="{Binding ResultIcon}" WidthRequest="80" HeightRequest="80"
+                   HorizontalOptions="Center" />
+            <Label Text="{Binding ResultTitle}" HorizontalOptions="Center"
+                   FontSize="28" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
+            <Label Text="{Binding ResultSubtitle}" HorizontalOptions="Center"
+                   FontSize="15" TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" />
+            <Border Style="{StaticResource GlassCard}" Padding="24">
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" RowSpacing="8" ColumnSpacing="16">
+                    <Label Text="Score" FontSize="13" TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" HorizontalOptions="Center" />
+                    <Label Grid.Column="1" Text="XP Earned" FontSize="13" TextColor="{AppThemeBinding Dark={StaticResource Gray300}, Light={StaticResource Gray500}}" HorizontalOptions="Center" />
+                    <Label Grid.Row="1" Text="{Binding ScoreDisplay}" FontSize="28"
+                           FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" HorizontalOptions="Center" />
+                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding XpEarned, StringFormat='+{0}'}"
+                           FontSize="28" FontAttributes="Bold" TextColor="{StaticResource XPColor}" HorizontalOptions="Center" />
+                </Grid>
+            </Border>
+            <Button Text="Continue"
+                    Command="{Binding FinishCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    CornerRadius="14"
+                    FontAttributes="Bold"
+                    HeightRequest="50">
+                <Button.Shadow>
+                    <Shadow Brush="{StaticResource Primary}" Offset="0,4" Radius="12" Opacity="0.4" />
+                </Button.Shadow>
+            </Button>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

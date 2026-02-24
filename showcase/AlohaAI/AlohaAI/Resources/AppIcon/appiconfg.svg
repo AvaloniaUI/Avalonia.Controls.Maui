@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="456" height="456" viewBox="0 0 456 456" xmlns="http://www.w3.org/2000/svg">
+    <!-- Brain outline - left hemisphere -->
+    <path d="M228 120 C180 120, 140 160, 140 210 C140 240, 150 260, 165 275 C155 290, 150 310, 155 330 C160 355, 185 370, 210 370 C220 370, 228 365, 228 365"
+          fill="none" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <!-- Brain outline - right hemisphere -->
+    <path d="M228 120 C276 120, 316 160, 316 210 C316 240, 306 260, 291 275 C301 290, 306 310, 301 330 C296 355, 271 370, 246 370 C236 370, 228 365, 228 365"
+          fill="none" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <!-- Neural connection dots -->
+    <circle cx="180" cy="200" r="10" fill="white"/>
+    <circle cx="276" cy="200" r="10" fill="white"/>
+    <circle cx="200" cy="260" r="8" fill="white"/>
+    <circle cx="256" cy="260" r="8" fill="white"/>
+    <circle cx="228" cy="310" r="8" fill="white"/>
+    <circle cx="190" cy="320" r="6" fill="white" opacity="0.7"/>
+    <circle cx="266" cy="320" r="6" fill="white" opacity="0.7"/>
+    <!-- Neural connections -->
+    <line x1="180" y1="200" x2="200" y2="260" stroke="white" stroke-width="3" opacity="0.6"/>
+    <line x1="276" y1="200" x2="256" y2="260" stroke="white" stroke-width="3" opacity="0.6"/>
+    <line x1="200" y1="260" x2="228" y2="310" stroke="white" stroke-width="3" opacity="0.6"/>
+    <line x1="256" y1="260" x2="228" y2="310" stroke="white" stroke-width="3" opacity="0.6"/>
+    <line x1="180" y1="200" x2="276" y2="200" stroke="white" stroke-width="3" opacity="0.4"/>
+    <!-- Hibiscus flower accent -->
+    <ellipse cx="322" cy="132" rx="14" ry="18" fill="#E88BBF" transform="rotate(-20 322 132)"/>
+    <ellipse cx="340" cy="124" rx="12" ry="16" fill="#E88BBF" transform="rotate(15 340 124)" opacity="0.85"/>
+    <ellipse cx="344" cy="146" rx="12" ry="16" fill="#E88BBF" transform="rotate(50 344 146)" opacity="0.85"/>
+    <ellipse cx="314" cy="148" rx="11" ry="15" fill="#E88BBF" transform="rotate(-50 314 148)" opacity="0.75"/>
+    <ellipse cx="308" cy="126" rx="11" ry="14" fill="#E88BBF" transform="rotate(-80 308 126)" opacity="0.75"/>
+    <circle cx="328" cy="138" r="6" fill="#FFD54F"/>
+    <circle cx="326" cy="134" r="2" fill="#F5A623"/>
+    <circle cx="332" cy="136" r="2" fill="#F5A623"/>
+    <circle cx="328" cy="142" r="2" fill="#F5A623"/>
+</svg>

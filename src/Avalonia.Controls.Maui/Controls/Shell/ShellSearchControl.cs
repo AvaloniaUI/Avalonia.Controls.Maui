@@ -451,9 +451,7 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             }
             else
             {
-                // Fallback to theme-aware brush
-                _resultsList.Bind(Avalonia.Controls.Primitives.TemplatedControl.BackgroundProperty, 
-                    new Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("SystemRegionBrush"));
+                _resultsList.ClearValue(Avalonia.Controls.Primitives.TemplatedControl.BackgroundProperty);
             }
         }
 

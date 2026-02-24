@@ -1,4 +1,5 @@
 using Microsoft.Maui.Hosting;
+using Microsoft.Maui.Storage;
 
 namespace Avalonia.Controls.Maui.Essentials;
 
@@ -13,8 +14,12 @@ public static class MauiEssentialsBuilderExtensions
     public static MauiAppBuilder UseAvaloniaEssentials(this MauiAppBuilder builder)
     {
         var platformProvider = new AvaloniaEssentialsPlatformProvider();
-        
+
         Microsoft.Maui.Media.Screenshot.SetDefault(new AvaloniaScreenshot(platformProvider));
+        Microsoft.Maui.Storage.FilePicker.SetDefault(new AvaloniaFilePicker(platformProvider));
+        Microsoft.Maui.Media.MediaPicker.SetDefault(new AvaloniaMediaPicker(platformProvider));
+        Microsoft.Maui.Devices.HapticFeedback.SetDefault(new AvaloniaHapticFeedback());
+        FileSystem.SetCurrent(new AvaloniaFileSystem());
 
         return builder;
     }

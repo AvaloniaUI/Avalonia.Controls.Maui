@@ -1,0 +1,69 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="AlohaAI.Browser.AvaApp">
+	<Application.Styles>
+        <FluentTheme />
+
+        <!-- Pill-style tab bar for Shell TabBar -->
+        <Style Selector="TabControl">
+            <Setter Property="Background" Value="#18132A" />
+            <Setter Property="CornerRadius" Value="20" />
+            <Setter Property="Padding" Value="4,4" />
+            <Setter Property="Margin" Value="0,0,0,0" />
+        </Style>
+
+        <!-- TabItem: pill shape with rounded corners -->
+        <Style Selector="TabItem">
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="Padding" Value="16,6" />
+            <Setter Property="Foreground" Value="#80FFFFFF" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Margin" Value="5,10,5,10" />
+        </Style>
+
+        <!-- Hide the default pipe/accent indicator -->
+        <Style Selector="TabItem /template/ Border#PART_SelectedPipe">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+
+        <!-- Selected tab: pill background -->
+        <Style Selector="TabItem:selected">
+            <Setter Property="Foreground" Value="#FFFFFF" />
+        </Style>
+        <Style Selector="TabItem:selected /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="#405B8FD4" />
+        </Style>
+
+        <!-- Pointer-over states -->
+        <Style Selector="TabItem:pointerover /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="#205B8FD4" />
+            <Setter Property="TextElement.Foreground" Value="#C0FFFFFF" />
+        </Style>
+        <Style Selector="TabItem:selected:pointerover /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="#505B8FD4" />
+            <Setter Property="TextElement.Foreground" Value="#FFFFFF" />
+        </Style>
+
+        <!-- Pressed states -->
+        <Style Selector="TabItem:pressed /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="#305B8FD4" />
+            <Setter Property="TextElement.Foreground" Value="#C0FFFFFF" />
+        </Style>
+        <Style Selector="TabItem:selected:pressed /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="#605B8FD4" />
+            <Setter Property="TextElement.Foreground" Value="#FFFFFF" />
+        </Style>
+
+        <!-- Tab header icon sizing -->
+        <Style Selector="TabItem Image.shell-tab-header-icon">
+            <Setter Property="Width" Value="18" />
+            <Setter Property="Height" Value="18" />
+        </Style>
+    </Application.Styles>
+</Application>

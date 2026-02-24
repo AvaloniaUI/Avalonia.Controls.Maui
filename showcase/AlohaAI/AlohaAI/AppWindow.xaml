@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Window xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="AlohaAI.AppWindow">
+             <Window.TitleBar>
+                <TitleBar 
+                    BackgroundColor="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}"
+                    Title="AlohaAI" />
+             </Window.TitleBar>
+</Window>

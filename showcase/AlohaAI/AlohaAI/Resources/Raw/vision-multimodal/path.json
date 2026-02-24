@@ -1,0 +1,8 @@
+{
+  "modules": [
+    "01-cv-foundations",
+    "02-multimodal-llms",
+    "03-video-intelligence",
+    "04-production-vision"
+  ]
+}

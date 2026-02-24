@@ -1,0 +1,72 @@
+{
+  "moduleId": "01-intro-to-agents",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "What distinguishes an AI agent from a simple chatbot?",
+      "options": [
+        "Agents can only respond to text",
+        "Agents can autonomously take actions and use tools",
+        "Agents require more training data",
+        "Agents only work with images"
+      ],
+      "correctIndex": 1,
+      "explanation": "AI agents are distinguished by their ability to autonomously decide and execute actions using tools, rather than just generating text responses.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "In the ReAct pattern, the agent creates a complete plan before taking any actions.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 1,
+      "explanation": "ReAct alternates between reasoning and acting step-by-step. The Plan-and-Execute pattern is the one that creates a complete plan first.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "Which agent architecture uses specialized agents that collaborate on a task?",
+      "options": [
+        "ReAct",
+        "Plan-and-Execute",
+        "Multi-Agent Systems",
+        "Reflection"
+      ],
+      "correctIndex": 2,
+      "explanation": "Multi-Agent Systems use multiple specialized agents (e.g., researcher, writer, reviewer) that collaborate to complete complex tasks.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "What is the correct order of the agent loop?",
+      "options": [
+        "Act → Think → Observe",
+        "Observe → Think → Act",
+        "Think → Observe → Act",
+        "Observe → Act → Think"
+      ],
+      "correctIndex": 1,
+      "explanation": "Agents follow an Observe-Think-Act loop: they first observe their environment, then reason about what to do, then take an action.",
+      "xp": 5
+    },
+    {
+      "id": "q5",
+      "type": "TrueFalse",
+      "question": "A chatbot can call external APIs and execute code as part of its response.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Standard chatbots can only generate text. Agents have the ability to call external APIs, execute code, and interact with external systems.",
+      "xp": 5
+    }
+  ]
+}
