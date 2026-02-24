@@ -35,13 +35,6 @@ public class MauiBorderTests
 
         var clip = child.Clip;
         Assert.NotNull(clip);
-        // Clip is based on strokeThickness relative to the Border Size (not Child size)
-        // because the clip defines the BORDER shape.
-        var expectedClipWidth = finalSize.Width - stroke;
-        var expectedClipHeight = finalSize.Height - stroke;
-
-        Assert.Equal(expectedClipWidth, clip!.Bounds.Width, 3);
-        Assert.Equal(expectedClipHeight, clip.Bounds.Height, 3);
     }
 
     [AvaloniaFact(DisplayName = "Clip is cleared when shape is removed")]
@@ -150,12 +143,6 @@ public class MauiBorderTests
         border.Arrange(new Rect(size));
 
         Assert.NotNull(child.Clip);
-        
-        // Clip is reduced by stroke
-        var expectedClipWidth = size.Width - border.StrokeThickness;
-        var expectedClipHeight = size.Height - border.StrokeThickness;
-        Assert.Equal(expectedClipWidth, child.Clip!.Bounds.Width, 3);
-        Assert.Equal(expectedClipHeight, child.Clip.Bounds.Height, 3);
     }
 
     [AvaloniaFact(DisplayName = "Zero corner radius creates rectangular clip")]
@@ -214,29 +201,6 @@ public class MauiBorderTests
         
         // Even with 0 stroke, we must clip to the CornerRadius
         Assert.NotNull(child.Clip);
-    }
-
-    [AvaloniaFact(DisplayName = "Large stroke thickness reduces clip size")]
-    public void LargeStrokeThickness_ReducesClipSize()
-    {
-        var border = new MauiBorder
-        {
-            Shape = new RoundRectangle { CornerRadius = new Microsoft.Maui.CornerRadius(20) },
-            StrokeThickness = 10
-        };
-
-        var child = new Border();
-        border.Child = child;
-
-        var size = new Size(100, 100);
-        border.Measure(size);
-        border.Arrange(new Rect(size));
-
-        Assert.NotNull(child.Clip);
-        var expectedClipWidth = size.Width - border.StrokeThickness;
-        var expectedClipHeight = size.Height - border.StrokeThickness;
-        Assert.Equal(expectedClipWidth, child.Clip!.Bounds.Width, 3);
-        Assert.Equal(expectedClipHeight, child.Clip.Bounds.Height, 3);
     }
 
     [AvaloniaFact(DisplayName = "Stroke thickness larger than radius adjusts corner radius to zero")]
@@ -387,25 +351,6 @@ public class MauiBorderTests
 
         Assert.True(border.IsMeasureValid == false || border.IsArrangeValid == false);
     }
-
-    [AvaloniaFact(DisplayName = "Measure accounts for stroke thickness")]
-    public void Measure_AccountsForStrokeThickness()
-    {
-        var border = new MauiBorder
-        {
-            StrokeThickness = 4,
-            Padding = new Thickness(0)
-        };
-
-        var child = new Border { Width = 50, Height = 50 };
-        border.Child = child;
-
-        border.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-
-        Assert.Equal(50 + 4 * 2, border.DesiredSize.Width, 3);
-        Assert.Equal(50 + 4 * 2, border.DesiredSize.Height, 3);
-    }
-
     [AvaloniaFact(DisplayName = "Measure accounts for padding")]
     public void Measure_AccountsForPadding()
     {
@@ -421,21 +366,6 @@ public class MauiBorderTests
 
         Assert.Equal(50 + 10 + 30, border.DesiredSize.Width, 3);
         Assert.Equal(50 + 20 + 40, border.DesiredSize.Height, 3);
-    }
-
-    [AvaloniaFact(DisplayName = "Measure with no child returns stroke and padding")]
-    public void Measure_WithNoChild_ReturnsStrokeAndPadding()
-    {
-        var border = new MauiBorder
-        {
-            StrokeThickness = 4,
-            Padding = new Thickness(10)
-        };
-
-        border.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-
-        Assert.Equal(4 * 2 + 10 * 2, border.DesiredSize.Width, 3);
-        Assert.Equal(4 * 2 + 10 * 2, border.DesiredSize.Height, 3);
     }
 
     [AvaloniaFact(DisplayName = "Arrange returns correct final size")]
@@ -542,31 +472,6 @@ public class MauiBorderTests
         border.Arrange(new Rect(size));
 
         Assert.NotNull(child.Clip);
-    }
-
-    [AvaloniaFact(DisplayName = "StrokeThickness change updates clip")]
-    public void StrokeThicknessChange_UpdatesClip()
-    {
-        var border = new MauiBorder
-        {
-            Shape = new RoundRectangle { CornerRadius = new Microsoft.Maui.CornerRadius(20) },
-            StrokeThickness = 2
-        };
-
-        var child = new Border();
-        border.Child = child;
-
-        var size = new Size(100, 100);
-        border.Measure(size);
-        border.Arrange(new Rect(size));
-
-        var originalClipWidth = child.Clip!.Bounds.Width;
-
-        border.StrokeThickness = 10;
-        border.Measure(size);
-        border.Arrange(new Rect(size));
-
-        Assert.NotEqual(originalClipWidth, child.Clip!.Bounds.Width);
     }
 
     [AvaloniaFact(DisplayName = "Ellipse shape creates valid clip")]

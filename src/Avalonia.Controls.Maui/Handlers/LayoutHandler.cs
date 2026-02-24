@@ -73,7 +73,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
     {
         if (arg is LayoutHandlerUpdate args)
         {
-            handler.Remove(args.View);
+            handler.Remove(args.Index, args.View);
         }
     }
 
@@ -118,13 +118,23 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
-    public void Remove(IView child)
+    public void Remove(int index, IView child)
     {
         _ = PlatformView ?? throw new InvalidOperationException($"{nameof(PlatformView)} should have been set by base class.");
 
-        if (child?.Handler?.PlatformView is Control control)
+        if (child?.Handler is IViewHandler viewHandler)
         {
-            PlatformView.Children.Remove(control);
+            var control = viewHandler.ContainerView as Control ?? viewHandler.PlatformView as Control;
+            if (control != null)
+            {
+                PlatformView.Children.Remove(control);
+                return;
+            }
+        }
+
+        if (index >= 0 && index < PlatformView.Children.Count)
+        {
+            PlatformView.Children.RemoveAt(index);
         }
     }
 

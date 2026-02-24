@@ -317,7 +317,7 @@ namespace Avalonia.Controls.Maui
                 return ShapeExtensions.ToAvaloniaGeometry(pathF);
             }
 
-            return new RectangleGeometry(new Rect(size).Deflate(0));
+            return null;
         }
 
         private Pen CreatePen()
