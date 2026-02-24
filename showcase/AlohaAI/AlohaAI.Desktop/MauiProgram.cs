@@ -26,7 +26,7 @@ public static class MauiProgram
 			});
 
 		// Services
-		builder.Services.AddSingleton<IDatabaseService, SqliteDatabaseService>();
+		builder.Services.AddSingleton<IDatabaseService, InMemoryDatabaseService>();
 		builder.Services.AddSingleton<IContentService, ContentService>();
 		builder.Services.AddSingleton<IProgressService, ProgressService>();
 		builder.Services.AddSingleton<IStreakService, StreakService>();
