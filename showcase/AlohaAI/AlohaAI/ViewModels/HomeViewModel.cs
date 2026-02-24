@@ -18,6 +18,7 @@ public class HomePathItem
     public string LevelTag { get; set; } = "Beginner";
     public string ContinueText { get; set; } = string.Empty;
     public bool HasContinueText => !string.IsNullOrEmpty(ContinueText);
+    public ICommand? NavigateCommand { get; set; }
 }
 
 public class HomeViewModel : BaseViewModel
@@ -226,6 +227,7 @@ public class HomeViewModel : BaseViewModel
                     Id = path.Id,
                     Title = path.Title,
                     Description = path.Description,
+                    NavigateCommand = NavigateToPathCommand,
                     IconImage = path.Id switch
                     {
                         "agentic-ai" => "icon_explore.png",

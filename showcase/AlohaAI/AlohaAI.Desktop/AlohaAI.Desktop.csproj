@@ -7,7 +7,7 @@
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<UseMaui>true</UseMaui>
 		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
-		<NoWarn>$(NoWarn);IL3050;IL2070;IL2026;IL2072</NoWarn>
+		<NoWarn>$(NoWarn);IL3050;IL2070;IL2072</NoWarn>
 	</PropertyGroup>
 
     <PropertyGroup Label="AOT Validation">

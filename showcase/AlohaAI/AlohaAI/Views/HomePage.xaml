@@ -175,7 +175,7 @@
                             </Border.Shadow>
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:HomeViewModel}}, Path=NavigateToPathCommand}"
+                                    Command="{Binding NavigateCommand}"
                                     CommandParameter="{Binding Id}" />
                             </Border.GestureRecognizers>
                             <Grid>
