@@ -5,8 +5,7 @@ using AlohaAI.Services;
 
 namespace AlohaAI.ViewModels;
 
-[QueryProperty(nameof(PathId), "pathId")]
-public class PathDetailViewModel : BaseViewModel
+public class PathDetailViewModel : BaseViewModel, IQueryAttributable
 {
     private readonly IContentService _contentService;
     private readonly IProgressService _progressService;
@@ -15,7 +14,14 @@ public class PathDetailViewModel : BaseViewModel
     public string PathId
     {
         get => _pathId;
-        set { SetProperty(ref _pathId, value); LoadDataCommand.Execute(null); }
+        set => SetProperty(ref _pathId, value);
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("pathId", out var pathId))
+            PathId = pathId?.ToString() ?? string.Empty;
+        LoadDataCommand.Execute(null);
     }
 
     private string _pathDescription = string.Empty;

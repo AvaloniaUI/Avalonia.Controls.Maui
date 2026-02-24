@@ -5,9 +5,7 @@ using AlohaAI.Services;
 
 namespace AlohaAI.ViewModels;
 
-[QueryProperty(nameof(PathId), "pathId")]
-[QueryProperty(nameof(ModuleId), "moduleId")]
-public class QuizViewModel : BaseViewModel
+public class QuizViewModel : BaseViewModel, IQueryAttributable
 {
     private readonly IContentService _contentService;
     private readonly IProgressService _progressService;
@@ -21,7 +19,7 @@ public class QuizViewModel : BaseViewModel
     public string PathId
     {
         get => _pathId;
-        set { SetProperty(ref _pathId, value); UpdateHeaderImage(); }
+        set => SetProperty(ref _pathId, value);
     }
 
     private string _headerImage = "header_agentic_ai.jpg";
@@ -51,7 +49,17 @@ public class QuizViewModel : BaseViewModel
     public string ModuleId
     {
         get => _moduleId;
-        set { SetProperty(ref _moduleId, value); LoadQuizCommand.Execute(null); }
+        set => SetProperty(ref _moduleId, value);
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("pathId", out var pathId))
+            PathId = pathId?.ToString() ?? string.Empty;
+        if (query.TryGetValue("moduleId", out var moduleId))
+            ModuleId = moduleId?.ToString() ?? string.Empty;
+        UpdateHeaderImage();
+        LoadQuizCommand.Execute(null);
     }
 
     private string _questionText = string.Empty;

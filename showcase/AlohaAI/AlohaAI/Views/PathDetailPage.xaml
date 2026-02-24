@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:AlohaAI.ViewModels"
              x:Class="AlohaAI.Views.PathDetailPage"
+             x:Name="ThisPage"
              x:DataType="vm:PathDetailViewModel"
              Title="{Binding Title}"
              Shell.NavBarIsVisible="False"
@@ -105,7 +106,7 @@
                                                 <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="0,12">
                                                     <Border.GestureRecognizers>
                                                         <TapGestureRecognizer
-                                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PathDetailViewModel}}, Path=SelectLessonCommand}"
+                                                            Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.SelectLessonCommand}"
                                                             CommandParameter="{Binding .}" />
                                                     </Border.GestureRecognizers>
                                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
@@ -125,7 +126,7 @@
                                             Padding="0,12" Margin="16,4,16,14" HeightRequest="44">
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PathDetailViewModel}}, Path=StartQuizCommand}"
+                                                Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.StartQuizCommand}"
                                                 CommandParameter="{Binding Id}" />
                                         </Border.GestureRecognizers>
                                         <Label Text="Take Quiz" FontSize="16" FontAttributes="Bold"

@@ -3,10 +3,7 @@ using AlohaAI.Services;
 
 namespace AlohaAI.ViewModels;
 
-[QueryProperty(nameof(PathId), "pathId")]
-[QueryProperty(nameof(ModuleId), "moduleId")]
-[QueryProperty(nameof(LessonId), "lessonId")]
-public class LessonViewModel : BaseViewModel
+public class LessonViewModel : BaseViewModel, IQueryAttributable
 {
     private readonly IContentService _contentService;
     private readonly IProgressService _progressService;
@@ -30,7 +27,18 @@ public class LessonViewModel : BaseViewModel
     public string LessonId
     {
         get => _lessonId;
-        set { SetProperty(ref _lessonId, value); LoadLessonCommand.Execute(null); }
+        set => SetProperty(ref _lessonId, value);
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("pathId", out var pathId))
+            PathId = pathId?.ToString() ?? string.Empty;
+        if (query.TryGetValue("moduleId", out var moduleId))
+            ModuleId = moduleId?.ToString() ?? string.Empty;
+        if (query.TryGetValue("lessonId", out var lessonId))
+            LessonId = lessonId?.ToString() ?? string.Empty;
+        LoadLessonCommand.Execute(null);
     }
 
     private string _markdownContent = string.Empty;

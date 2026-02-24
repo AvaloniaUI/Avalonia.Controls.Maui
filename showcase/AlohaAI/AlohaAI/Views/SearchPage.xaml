@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:AlohaAI.ViewModels"
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              x:Class="AlohaAI.Views.SearchPage"
+             x:Name="ThisPage"
              x:DataType="vm:SearchViewModel"
              Shell.NavBarIsVisible="False"
              Shell.NavBarVisibilityAnimationEnabled="False"
@@ -91,7 +92,7 @@
                                     Padding="14,8">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=FilterCommand}"
+                                        Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.FilterCommand}"
                                         CommandParameter="{Binding PathId}" />
                                 </Border.GestureRecognizers>
                                 <Label Text="{Binding Title}" FontSize="13" TextColor="{Binding TextColor}" />
@@ -110,7 +111,7 @@
                     <Border Style="{StaticResource GlassCard}" Padding="16">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer
-                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=SelectResultCommand}"
+                                Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.SelectResultCommand}"
                                 CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
@@ -154,7 +155,7 @@
                         <Border Style="{StaticResource GlassCard}" Padding="0">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:SearchViewModel}}, Path=BrowseTopicCommand}"
+                                    Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.BrowseTopicCommand}"
                                     CommandParameter="{Binding PathId}" />
                             </Border.GestureRecognizers>
                             <Grid ColumnDefinitions="4,*">

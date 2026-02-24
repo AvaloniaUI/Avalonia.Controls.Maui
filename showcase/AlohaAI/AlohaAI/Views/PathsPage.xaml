@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:AlohaAI.ViewModels"
              xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
              x:Class="AlohaAI.Views.PathsPage"
+             x:Name="ThisPage"
              x:DataType="vm:PathsViewModel"
              Shell.NavBarIsVisible="False"
              Shell.NavBarVisibilityAnimationEnabled="False"
@@ -50,7 +51,7 @@
                         <Border Style="{StaticResource GlassCard}" Padding="0">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:PathsViewModel}}, Path=SelectPathCommand}"
+                                    Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.SelectPathCommand}"
                                     CommandParameter="{Binding Id}" />
                             </Border.GestureRecognizers>
                             <Grid>
