@@ -144,6 +144,7 @@ public class SearchViewModel : BaseViewModel
             {
                 FilterChips.Add(new FilterChipItem
                 {
+                    TapCommand = FilterCommand,
                     PathId = path.Id,
                     Title = path.Title,
                     Color = path.Color,
@@ -154,6 +155,7 @@ public class SearchViewModel : BaseViewModel
                 var lessonCount = modules.Sum(m => m.Lessons.Count);
                 _allBrowseItems.Add(new BrowseTopicItem
                 {
+                    TapCommand = BrowseTopicCommand,
                     PathId = path.Id,
                     Title = path.Title,
                     Color = path.Color,
@@ -240,6 +242,7 @@ public class SearchViewModel : BaseViewModel
                         {
                             Results.Add(new SearchResultItem
                             {
+                                TapCommand = SelectResultCommand,
                                 PathId = path.Id,
                                 ModuleId = module.Id,
                                 LessonId = lesson.Id,
@@ -266,6 +269,7 @@ public class SearchViewModel : BaseViewModel
 
 public class SearchResultItem
 {
+    public ICommand? TapCommand { get; set; }
     public string PathId { get; set; } = string.Empty;
     public string ModuleId { get; set; } = string.Empty;
     public string LessonId { get; set; } = string.Empty;
@@ -279,6 +283,7 @@ public class SearchResultItem
 
 public class FilterChipItem : BaseViewModel
 {
+    public ICommand? TapCommand { get; set; }
     public string PathId { get; set; } = string.Empty;
     public new string Title { get; set; } = string.Empty;
     public string Color { get; set; } = "#5B8FD4";
@@ -303,6 +308,7 @@ public class FilterChipItem : BaseViewModel
 
 public class BrowseTopicItem
 {
+    public ICommand? TapCommand { get; set; }
     public string PathId { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string Color { get; set; } = "#5B8FD4";

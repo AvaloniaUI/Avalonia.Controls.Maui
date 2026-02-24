@@ -106,7 +106,7 @@
                                                 <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="0,12">
                                                     <Border.GestureRecognizers>
                                                         <TapGestureRecognizer
-                                                            Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.SelectLessonCommand}"
+                                                            Command="{Binding TapCommand}"
                                                             CommandParameter="{Binding .}" />
                                                     </Border.GestureRecognizers>
                                                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
@@ -126,7 +126,7 @@
                                             Padding="0,12" Margin="16,4,16,14" HeightRequest="44">
                                         <Border.GestureRecognizers>
                                             <TapGestureRecognizer
-                                                Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.StartQuizCommand}"
+                                                Command="{Binding QuizCommand}"
                                                 CommandParameter="{Binding Id}" />
                                         </Border.GestureRecognizers>
                                         <Label Text="Take Quiz" FontSize="16" FontAttributes="Bold"

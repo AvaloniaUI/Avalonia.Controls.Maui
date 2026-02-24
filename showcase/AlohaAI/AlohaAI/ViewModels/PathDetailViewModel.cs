@@ -148,7 +148,8 @@ public class PathDetailViewModel : BaseViewModel, IQueryAttributable
                         ModuleId = module.Id,
                         Title = lesson.Title,
                         Xp = lesson.Xp,
-                        IsCompleted = completed
+                        IsCompleted = completed,
+                        TapCommand = SelectLessonCommand
                     });
                 }
 
@@ -162,7 +163,8 @@ public class PathDetailViewModel : BaseViewModel, IQueryAttributable
                     Lessons = lessons,
                     CompletedCount = completedCount,
                     TotalCount = lessons.Count,
-                    HasQuiz = !string.IsNullOrEmpty(module.Quiz)
+                    HasQuiz = !string.IsNullOrEmpty(module.Quiz),
+                    QuizCommand = StartQuizCommand
                 });
             }
 
@@ -192,6 +194,7 @@ public class ModuleDisplayItem
     public int CompletedCount { get; set; }
     public int TotalCount { get; set; }
     public bool HasQuiz { get; set; }
+    public ICommand? QuizCommand { get; set; }
     public string ProgressText => $"{CompletedCount}/{TotalCount}";
     public bool AllLessonsComplete => CompletedCount == TotalCount && TotalCount > 0;
     public string ModuleLabel => $"Module {ModuleNumber}";
@@ -205,6 +208,7 @@ public class LessonDisplayItem
     public string Title { get; set; } = string.Empty;
     public int Xp { get; set; }
     public bool IsCompleted { get; set; }
+    public ICommand? TapCommand { get; set; }
     public string StatusColor => IsCompleted ? "#4CAF50" : "#555555";
     public string StatusBackground => IsCompleted ? "#4CAF50" : "Transparent";
     public string TitleColor => IsCompleted ? "#AAAAAA" : "#FFFFFF";

@@ -67,6 +67,7 @@ public class PathsViewModel : BaseViewModel
                     ModuleCount = path.ModuleCount,
                     EstimatedHours = path.EstimatedHours,
                     Progress = progress,
+                    TapCommand = SelectPathCommand,
                     CompletedLessons = completedLessons,
                     TotalLessons = totalLessons
                 });
@@ -93,6 +94,7 @@ public class PathDisplayItem : BaseViewModel
     public int ModuleCount { get; set; }
     public int EstimatedHours { get; set; }
     public double Progress { get; set; }
+    public ICommand? TapCommand { get; set; }
     public int CompletedLessons { get; set; }
     public int TotalLessons { get; set; }
     public string ProgressText => $"{CompletedLessons}/{TotalLessons} lessons";

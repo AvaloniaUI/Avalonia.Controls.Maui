@@ -225,7 +225,8 @@ public class QuizViewModel : BaseViewModel, IQueryAttributable
                 Index = i,
                 Text = question.Options[i],
                 IsCorrect = i == question.CorrectIndex,
-                State = OptionState.Default
+                State = OptionState.Default,
+                TapCommand = SelectOptionCommand
             });
         }
     }
@@ -292,6 +293,7 @@ public class QuizOptionItem : BaseViewModel
     public int Index { get; set; }
     public string Text { get; set; } = string.Empty;
     public bool IsCorrect { get; set; }
+    public ICommand? TapCommand { get; set; }
 
     private OptionState _state = OptionState.Default;
     public OptionState State

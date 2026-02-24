@@ -92,7 +92,7 @@
                                     Padding="14,8">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer
-                                        Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.FilterCommand}"
+                                        Command="{Binding TapCommand}"
                                         CommandParameter="{Binding PathId}" />
                                 </Border.GestureRecognizers>
                                 <Label Text="{Binding Title}" FontSize="13" TextColor="{Binding TextColor}" />
@@ -111,7 +111,7 @@
                     <Border Style="{StaticResource GlassCard}" Padding="16">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer
-                                Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.SelectResultCommand}"
+                                Command="{Binding TapCommand}"
                                 CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
@@ -155,7 +155,7 @@
                         <Border Style="{StaticResource GlassCard}" Padding="0">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
-                                    Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.BrowseTopicCommand}"
+                                    Command="{Binding TapCommand}"
                                     CommandParameter="{Binding PathId}" />
                             </Border.GestureRecognizers>
                             <Grid ColumnDefinitions="4,*">

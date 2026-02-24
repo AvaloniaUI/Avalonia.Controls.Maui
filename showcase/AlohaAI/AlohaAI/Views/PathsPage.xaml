@@ -51,7 +51,7 @@
                         <Border Style="{StaticResource GlassCard}" Padding="0">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
-                                    Command="{Binding Source={x:Reference ThisPage}, Path=BindingContext.SelectPathCommand}"
+                                    Command="{Binding TapCommand}"
                                     CommandParameter="{Binding Id}" />
                             </Border.GestureRecognizers>
                             <Grid>
