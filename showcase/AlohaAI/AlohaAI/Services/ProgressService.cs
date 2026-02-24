@@ -1,46 +1,35 @@
 using AlohaAI.Models;
-using SQLite;
 
 namespace AlohaAI.Services;
 
 public class ProgressService : IProgressService
 {
-    private SQLiteAsyncConnection? _db;
+    private readonly IDatabaseService _db;
 
-    private async Task<SQLiteAsyncConnection> GetDbAsync()
+    public ProgressService(IDatabaseService db)
     {
-        if (_db != null) return _db;
-        var path = Path.Combine(FileSystem.AppDataDirectory, "alohaai.db");
-        _db = new SQLiteAsyncConnection(path);
-        await _db.CreateTableAsync<UserProgress>();
-        await _db.CreateTableAsync<UserStreak>();
-        await _db.CreateTableAsync<UserSetting>();
-        return _db;
+        _db = db;
     }
 
     public async Task InitializeAsync()
     {
-        await GetDbAsync();
+        await _db.InitializeAsync();
     }
 
     public async Task MarkLessonCompleteAsync(string pathId, string moduleId, string lessonId, int xp)
     {
-        var db = await GetDbAsync();
-
-        var existing = await db.Table<UserProgress>()
-            .Where(p => p.PathId == pathId && p.ModuleId == moduleId && p.LessonId == lessonId)
-            .FirstOrDefaultAsync();
+        var existing = await _db.FindProgressAsync(pathId, moduleId, lessonId);
 
         if (existing != null)
         {
             existing.Completed = true;
             existing.CompletedAt = DateTime.UtcNow;
             existing.XpEarned = xp;
-            await db.UpdateAsync(existing);
+            await _db.SaveProgressAsync(existing);
         }
         else
         {
-            await db.InsertAsync(new UserProgress
+            await _db.SaveProgressAsync(new UserProgress
             {
                 PathId = pathId,
                 ModuleId = moduleId,
@@ -54,11 +43,7 @@ public class ProgressService : IProgressService
 
     public async Task SaveQuizScoreAsync(string pathId, string moduleId, double score, int xp)
     {
-        var db = await GetDbAsync();
-
-        var existing = await db.Table<UserProgress>()
-            .Where(p => p.PathId == pathId && p.ModuleId == moduleId && p.LessonId == "__quiz__")
-            .FirstOrDefaultAsync();
+        var existing = await _db.FindProgressAsync(pathId, moduleId, "__quiz__");
 
         if (existing != null)
         {
@@ -66,11 +51,11 @@ public class ProgressService : IProgressService
             existing.XpEarned = xp;
             existing.CompletedAt = DateTime.UtcNow;
             existing.Completed = true;
-            await db.UpdateAsync(existing);
+            await _db.SaveProgressAsync(existing);
         }
         else
         {
-            await db.InsertAsync(new UserProgress
+            await _db.SaveProgressAsync(new UserProgress
             {
                 PathId = pathId,
                 ModuleId = moduleId,
@@ -85,31 +70,19 @@ public class ProgressService : IProgressService
 
     public async Task<bool> IsLessonCompletedAsync(string pathId, string moduleId, string lessonId)
     {
-        var db = await GetDbAsync();
-        var entry = await db.Table<UserProgress>()
-            .Where(p => p.PathId == pathId && p.ModuleId == moduleId && p.LessonId == lessonId && p.Completed)
-            .FirstOrDefaultAsync();
-        return entry != null;
+        var entry = await _db.FindProgressAsync(pathId, moduleId, lessonId);
+        return entry is { Completed: true };
     }
 
     public async Task<int> GetCompletedLessonCountAsync(string pathId, string? moduleId = null)
     {
-        var db = await GetDbAsync();
-        if (moduleId != null)
-        {
-            return await db.Table<UserProgress>()
-                .Where(p => p.PathId == pathId && p.ModuleId == moduleId && p.Completed && p.LessonId != "__quiz__")
-                .CountAsync();
-        }
-        return await db.Table<UserProgress>()
-            .Where(p => p.PathId == pathId && p.Completed && p.LessonId != "__quiz__")
-            .CountAsync();
+        var completed = await _db.GetCompletedProgressAsync(pathId, moduleId);
+        return completed.Count(p => p.LessonId != "__quiz__");
     }
 
     public async Task<int> GetTotalXpAsync()
     {
-        var db = await GetDbAsync();
-        var all = await db.Table<UserProgress>().Where(p => p.Completed).ToListAsync();
+        var all = await _db.GetCompletedProgressAsync(null, null);
         return all.Sum(p => p.XpEarned);
     }
 
@@ -122,39 +95,23 @@ public class ProgressService : IProgressService
 
     public async Task<UserProgress?> GetLastCompletedLessonAsync()
     {
-        var db = await GetDbAsync();
-        return await db.Table<UserProgress>()
-            .Where(p => p.Completed && p.LessonId != "__quiz__")
-            .OrderByDescending(p => p.CompletedAt)
-            .FirstOrDefaultAsync();
+        return await _db.GetLastCompletedLessonAsync();
     }
 
     public async Task ResetAllAsync()
     {
-        var db = await GetDbAsync();
-        await db.DeleteAllAsync<UserProgress>();
-        await db.DeleteAllAsync<UserStreak>();
+        await _db.DeleteAllProgressAsync();
+        await _db.DeleteAllStreaksAsync();
     }
 
     public async Task<string?> GetSettingAsync(string key)
     {
-        var db = await GetDbAsync();
-        var setting = await db.Table<UserSetting>().Where(s => s.Key == key).FirstOrDefaultAsync();
+        var setting = await _db.GetSettingAsync(key);
         return setting?.Value;
     }
 
     public async Task SaveSettingAsync(string key, string value)
     {
-        var db = await GetDbAsync();
-        var existing = await db.Table<UserSetting>().Where(s => s.Key == key).FirstOrDefaultAsync();
-        if (existing != null)
-        {
-            existing.Value = value;
-            await db.UpdateAsync(existing);
-        }
-        else
-        {
-            await db.InsertAsync(new UserSetting { Key = key, Value = value });
-        }
+        await _db.SaveSettingAsync(new UserSetting { Key = key, Value = value });
     }
 }

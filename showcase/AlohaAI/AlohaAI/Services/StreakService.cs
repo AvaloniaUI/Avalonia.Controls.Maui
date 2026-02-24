@@ -1,38 +1,29 @@
 using AlohaAI.Models;
-using SQLite;
 
 namespace AlohaAI.Services;
 
 public class StreakService : IStreakService
 {
-    private SQLiteAsyncConnection? _db;
+    private readonly IDatabaseService _db;
 
-    private async Task<SQLiteAsyncConnection> GetDbAsync()
+    public StreakService(IDatabaseService db)
     {
-        if (_db != null) return _db;
-        var path = Path.Combine(FileSystem.AppDataDirectory, "alohaai.db");
-        _db = new SQLiteAsyncConnection(path);
-        await _db.CreateTableAsync<UserStreak>();
-        return _db;
+        _db = db;
     }
 
     public async Task RecordActivityAsync()
     {
-        var db = await GetDbAsync();
         var today = DateTime.UtcNow.ToString("yyyy-MM-dd");
-
-        var existing = await db.Table<UserStreak>()
-            .Where(s => s.Date == today)
-            .FirstOrDefaultAsync();
+        var existing = await _db.FindStreakByDateAsync(today);
 
         if (existing != null)
         {
             existing.LessonsCompleted++;
-            await db.UpdateAsync(existing);
+            await _db.SaveStreakAsync(existing);
         }
         else
         {
-            await db.InsertAsync(new UserStreak
+            await _db.SaveStreakAsync(new UserStreak
             {
                 Date = today,
                 LessonsCompleted = 1
@@ -42,10 +33,7 @@ public class StreakService : IStreakService
 
     public async Task<int> GetCurrentStreakAsync()
     {
-        var db = await GetDbAsync();
-        var streaks = await db.Table<UserStreak>()
-            .OrderByDescending(s => s.Date)
-            .ToListAsync();
+        var streaks = await _db.GetAllStreaksAsync(descending: true);
 
         if (streaks.Count == 0) return 0;
 
@@ -78,10 +66,7 @@ public class StreakService : IStreakService
 
     public async Task<int> GetBestStreakAsync()
     {
-        var db = await GetDbAsync();
-        var streaks = await db.Table<UserStreak>()
-            .OrderBy(s => s.Date)
-            .ToListAsync();
+        var streaks = await _db.GetAllStreaksAsync(descending: false);
 
         if (streaks.Count == 0) return 0;
 
@@ -109,11 +94,8 @@ public class StreakService : IStreakService
 
     public async Task<int> GetTodayLessonsCountAsync()
     {
-        var db = await GetDbAsync();
         var today = DateTime.UtcNow.ToString("yyyy-MM-dd");
-        var entry = await db.Table<UserStreak>()
-            .Where(s => s.Date == today)
-            .FirstOrDefaultAsync();
+        var entry = await _db.FindStreakByDateAsync(today);
         return entry?.LessonsCompleted ?? 0;
     }
 }

@@ -48,6 +48,11 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(MicrosoftExtensionsVersion)" />
+		<PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="../AlohaAI.Desktop/Services/SqliteDatabaseService.cs" Link="Services/SqliteDatabaseService.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

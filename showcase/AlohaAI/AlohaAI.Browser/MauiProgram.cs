@@ -1,22 +1,29 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using AlohaAI.Services;
 using AlohaAI.ViewModels;
 using AlohaAI.Views;
+using Avalonia.Controls.Maui;
 using Avalonia.Controls.Maui.Essentials;
-using Avalonia.Controls.Maui.Platform;
-using Avalonia.Platform;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
+using Microsoft.Maui.Platform;
 
-namespace AlohaAI;
+namespace AlohaAI.Browser;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
+public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
-			.UseAvaloniaApp()
+			.UseAvaloniaApp(true)
 			.UseAvaloniaEssentials()
 			.ConfigureFonts(fonts =>
 			{
@@ -26,7 +33,7 @@ public static class MauiProgram
 			});
 
 		// Services
-		builder.Services.AddSingleton<IDatabaseService, SqliteDatabaseService>();
+		builder.Services.AddSingleton<IDatabaseService, InMemoryDatabaseService>();
 		builder.Services.AddSingleton<IContentService, ContentService>();
 		builder.Services.AddSingleton<IProgressService, ProgressService>();
 		builder.Services.AddSingleton<IStreakService, StreakService>();
