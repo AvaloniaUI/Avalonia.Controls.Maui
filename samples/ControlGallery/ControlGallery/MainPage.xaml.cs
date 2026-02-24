@@ -104,9 +104,9 @@ public partial class MainPage : FlyoutPage
         UpdateMenu(string.Empty);
 
         // Navigate to Welcome Page by default
-        Detail = new WelcomePage();
+        Detail = new NavigationPage(new WelcomePage());
     }
-// ...
+
     private void UpdateMenu(string searchText)
     {
         var root = new TableRoot();
@@ -277,7 +277,6 @@ public partial class MainPage : FlyoutPage
             new SampleGroup("Essentials", new List<SampleItem>
             {
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
-                new("File Picker", "Pick files from the system", typeof(FilePickerPage)),
             }),
 
 
@@ -301,7 +300,8 @@ public partial class MainPage : FlyoutPage
 
         if (PageFactory.TryGetValue(pageType, out var factory))
         {
-            Detail = factory();
+            ((NavigationPage)Detail).Navigation.InsertPageBefore(factory(), ((NavigationPage)Detail).RootPage);
+            ((NavigationPage)Detail).Navigation.PopToRootAsync(animated: false);
         }
     }
 }

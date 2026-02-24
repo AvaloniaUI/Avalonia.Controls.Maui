@@ -1,8 +1,6 @@
 using System;
 using Microsoft.Maui;
 using Avalonia.Controls;
-using Avalonia.Input;
-using Avalonia.Interactivity;
 using Microsoft.Maui.Platform;
 using PlatformView = Avalonia.Controls.Maui.Controls.Shell.FlyoutContainer;
 
@@ -136,7 +134,20 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
         if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        platformView.FlyoutBehavior = (Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior)(int)flyoutView.FlyoutBehavior;
+        switch (flyoutView.FlyoutBehavior)
+        {
+            case Microsoft.Maui.FlyoutBehavior.Disabled:
+                platformView.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Disabled;
+                platformView.IsFlyoutOpen = false;
+                break;
+            case Microsoft.Maui.FlyoutBehavior.Flyout:
+                platformView.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Popover;
+                break;
+            case Microsoft.Maui.FlyoutBehavior.Locked:
+                platformView.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Locked;
+                platformView.IsFlyoutOpen = true;
+                break;
+        }
     }
 
     public static void MapFlyoutWidth(FlyoutViewHandler handler, IFlyoutView flyoutView)
@@ -165,8 +176,6 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
 
     public static void MapToolbar(FlyoutViewHandler handler, IFlyoutView flyoutView)
     {
-        // Toolbar support would require wrapping the detail content in a DockPanel
-        // This is not currently implemented with the custom FlyoutContainer
-        // TODO: Add toolbar support by wrapping detail content when toolbar is present
+        // Toolbar is handled by NavigationPage's StackNavigationManager
     }
 }
