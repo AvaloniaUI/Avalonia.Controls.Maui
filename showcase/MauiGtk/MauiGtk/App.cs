@@ -10,8 +10,8 @@ public class App : Application
 {
 	public App()
 	{
-		Resources.MergedDictionaries.Add(new AppStyles.Colors());
-		Resources.MergedDictionaries.Add(new AppStyles.Styles());
+		//Resources.MergedDictionaries.Add(new AppStyles.Colors());
+		//Resources.MergedDictionaries.Add(new AppStyles.Styles());
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
