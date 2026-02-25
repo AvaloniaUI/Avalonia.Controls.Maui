@@ -74,6 +74,18 @@
             "stopAtEntry": false
         },
         {
+            "name": "AlohaAI Desktop",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_alohaai_desktop",
+            "program": "${workspaceFolder}/showcase/AlohaAI/AlohaAI.Desktop/bin/Debug/${config:dotnetTfm}/AlohaAI.Desktop.dll",
+            "args": [ 
+            ],
+            "cwd": "${workspaceFolder}/showcase/AlohaAI/AlohaAI.Desktop/bin/Debug/${config:dotnetTfm}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"

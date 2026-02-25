@@ -78,6 +78,19 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build_alohaai_desktop",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/showcase/AlohaAI/AlohaAI.Desktop/AlohaAI.Desktop.csproj",
+                "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }
