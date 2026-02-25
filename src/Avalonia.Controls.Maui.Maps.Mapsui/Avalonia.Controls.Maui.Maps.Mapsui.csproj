@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>$(DotNetTfm)</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
+    <IsAotCompatible>true</IsAotCompatible>
+    <AddMauiInternals>true</AddMauiInternals>
+    <LangVersion>preview</LangVersion>
+    <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
+    <PackageDescription>Mapsui implementation for Avalonia.Controls.Maui.Maps providing map control support using Mapsui.Avalonia.</PackageDescription>
+    <SignAssembly>true</SignAssembly>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+    
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Mapsui.Avalonia" Version="5.0.0" />
+    <PackageReference Include="Mapsui.Nts" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
+    <ProjectReference Include="..\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
+    <ProjectReference Include="..\Avalonia.Controls.Maui.Maps\Avalonia.Controls.Maui.Maps.csproj" />
+  </ItemGroup>
+
+</Project>
