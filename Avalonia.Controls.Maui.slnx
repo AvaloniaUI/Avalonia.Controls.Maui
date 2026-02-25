@@ -16,6 +16,8 @@
     <Project Path="src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
     <Project Path="src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
     <Project Path="src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
+    <Project Path="src/Avalonia.Controls.Maui.Maps/Avalonia.Controls.Maui.Maps.csproj" />
+    <Project Path="src/Avalonia.Controls.Maui.Maps.Mapsui/Avalonia.Controls.Maui.Maps.Mapsui.csproj" />
     <Project Path="src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
   </Folder>
   <Folder Name="/Tests/">

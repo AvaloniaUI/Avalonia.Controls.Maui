@@ -561,18 +561,33 @@ Displays a scrollable list of selectable data items.
 
 Displays a map, and requires the Microsoft.Maui.Controls.Maps NuGet package to be installed in your app.
 
+**Implementation Note:** Uses Mapsui.Avalonia as the underlying rendering engine with OpenStreetMap (Street) and Esri (Satellite/Hybrid) tiles.
+
 ### Properties
 
-| Property | Status |
-|----------|--------|
-| IsShowingUser | ⏳ TODO |
-| IsScrollEnabled | ⏳ TODO |
-| IsTrafficEnabled | ⏳ TODO |
-| IsZoomEnabled | ⏳ TODO |
-| ItemsSource | ⏳ TODO |
-| ItemTemplate | ⏳ TODO |
-| MapType | ⏳ TODO |
-| Pins | ⏳ TODO |
+| Property | Status                                    |
+|----------|-------------------------------------------|
+| IsShowingUser | ✅ Implemented                             |
+| IsScrollEnabled | ✅ Implemented                             |
+| IsTrafficEnabled | ❌ Not Supported (No provider configured)  |
+| IsZoomEnabled | ✅ Implemented                             |
+| ItemsSource | ✅ Implemented                             |
+| ItemTemplate | ✅ Implemented                             |
+| MapType | ✅ Implemented (Street, Satellite, Hybrid) |
+| Pins | ✅ Implemented                             |
+| MapElements | ✅ Implemented (Polygons, Lines, Circles)  |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| MapClicked | ✅ Implemented |
+
+### Methods
+
+| Method | Status |
+|--------|--------|
+| MoveToRegion | ✅ Implemented |
 
 ---
 
