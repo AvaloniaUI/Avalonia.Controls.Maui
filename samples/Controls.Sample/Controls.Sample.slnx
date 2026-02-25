@@ -1,6 +1,8 @@
 <Solution>
   <Project Path="Controls.Sample/Maui.Controls.Sample.csproj" />
   <Project Path="Controls.Sample.Desktop/Maui.Controls.Sample.Desktop.csproj" />
+  <Project Path="Controls.Sample.Browser/Maui.Controls.Sample.Browser.csproj" />
+  <Project Path="Controls.Sample.MauiNative/Maui.Controls.Sample.MauiNative.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />

@@ -21,9 +21,6 @@ namespace Maui.Controls.Sample.ViewModels
 			new SectionModel(typeof(GridPage), "Grid",
 				"The Grid is a layout that organizes its children into rows and columns, which can have proportional or absolute sizes."),
 
-			new SectionModel(typeof(RelativeLayoutPage), "RelativeLayout",
-				"A RelativeLayout is used to position and size children relative to properties of the layout or sibling elements. This allows UIs to be created that scale proportionally across device sizes."),
-
 			new SectionModel(typeof(ScrollViewPage), "ScrollView",
 				"ScrollView is capable of scrolling its contents."),
 

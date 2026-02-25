@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+	<PropertyGroup>
+		<TargetFramework>$(DotNetTfm)-browser</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<Nullable>enable</Nullable>
+		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
+		<UseMaui>true</UseMaui>
+		<RootNamespace>AlohaAI</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(MicrosoftExtensionsVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
+	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
+	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+      <ProjectReference Include="../../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
+	  <ProjectReference Include="../Controls.Sample/Maui.Controls.Sample.csproj" />
+	</ItemGroup>
+
+	<Import Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.targets" />
+</Project>
