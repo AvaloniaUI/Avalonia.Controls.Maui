@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+  <Project Path="WeatherTwentyOne.Browser/WeatherTwentyOne.Browser.csproj" />
+  <Project Path="WeatherTwentyOne.Desktop/WeatherTwentyOne.Desktop.csproj" />
+  <Project Path="WeatherTwentyOne.MauiNative/WeatherTwentyOne.MauiNative.csproj" />
+  <Project Path="WeatherTwentyOne/WeatherTwentyOne.csproj" />
+</Solution>

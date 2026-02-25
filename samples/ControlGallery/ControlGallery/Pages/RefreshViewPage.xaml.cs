@@ -345,7 +345,7 @@ public partial class RefreshViewPage : ContentPage
         InteractiveRefreshing = false;
     }
 
-    private void OnRefreshing(object sender, EventArgs e)
+    private void OnRefreshing(object? sender, EventArgs e)
     {
         EventHandlerCount++;
     }

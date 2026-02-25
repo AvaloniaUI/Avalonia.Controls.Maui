@@ -40,6 +40,8 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         [nameof(MButton.ImageSource)] = MapImageSource,
 
         [nameof(MButton.LineBreakMode)] = MapLineBreakMode,
+
+        [nameof(IView.Shadow)] = MapButtonShadow,
     };
 
     public static CommandMapper<IButton, ButtonHandler> CommandMapper = new(ViewCommandMapper);
@@ -59,12 +61,36 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
     {
     }
 
+    // Shadow is applied directly to the PlatformView, so the button does not need
+    // a ContainerView wrapper just for shadow. This avoids a rendering issue where
+    // DropShadowEffect on a parent Panel causes the button content to disappear
+    // when the button's visual state changes (hover/pressed).
+    public override bool NeedsContainer
+    {
+        get
+        {
+            if (VirtualView is not IView view)
+                return false;
+
+            // Still need a container for Clip; just not for Shadow alone
+            return view.Clip != null;
+        }
+    }
+
     public ImageSourcePartLoader ImageSourceLoader =>
         _imageSourcePartLoader ??= new ImageSourcePartLoader(new ButtonImageSourcePartSetter(this));
 
     protected override MauiButton CreatePlatformView()
     {
         return new MauiButton();
+    }
+
+    public static void MapButtonShadow(ButtonHandler handler, IButton button)
+    {
+        if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is not IView view)
+            return;
+
+        Avalonia.Controls.Maui.Extensions.ViewExtensions.UpdateShadow(platformView, view);
     }
 
     public static void MapBackground(ButtonHandler handler, IButton button)

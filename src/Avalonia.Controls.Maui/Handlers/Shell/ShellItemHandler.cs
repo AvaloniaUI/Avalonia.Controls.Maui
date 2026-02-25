@@ -52,7 +52,8 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
             {
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = VerticalAlignment.Stretch,
-                TabStripPlacement = Dock.Top
+                TabStripPlacement = Dock.Top,
+                Padding = new Thickness(0)
             };
 
             // Style to hide the tab strip (ItemsPresenter) when "hide-tabstrip" class is set

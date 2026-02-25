@@ -24,6 +24,8 @@ jobs:
           filters: |
             maui:
               - 'src/Avalonia.Controls.Maui/**'
+              - 'src/Avalonia.Controls.Maui.Compatibility/**'
+              - 'src/Avalonia.Controls.Maui.Essentials/**'
               - 'src/Avalonia.Controls.Maui.Graphics/**'
               - 'Directory.*.props'
               - 'Directory.*.targets'
@@ -50,6 +52,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '11.0.x'
+        dotnet-quality: 'preview'
+
     - name: Restore dotnet workloads
       run: |
         dotnet workload restore ${{github.workspace}}/Avalonia.Controls.Maui.slnx --source https://api.nuget.org/v3/index.json
@@ -69,6 +77,12 @@ jobs:
     needs: build
     steps:
     - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '11.0.x'
+        dotnet-quality: 'preview'
 
     - name: Restore dotnet workloads
       run: |
@@ -92,7 +106,7 @@ jobs:
       with:
         name: render-test-images
         path: |
-          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net10.0/*.out.png
-          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net10.0/*.diff.png
+          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net11.0/*.out.png
+          ${{github.workspace}}/tests/Avalonia.Controls.Maui.RenderTests/bin/Release/net11.0/*.diff.png
         if-no-files-found: ignore
         retention-days: 7

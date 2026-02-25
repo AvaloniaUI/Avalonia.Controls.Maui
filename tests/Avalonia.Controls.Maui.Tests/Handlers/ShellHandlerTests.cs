@@ -542,7 +542,7 @@ public partial class ShellHandlerTests : HandlerTestBase
     public async Task ShellBackgroundColorInitializesCorrectly()
     {
         var shell = CreateBasicShell();
-        shell.BackgroundColor = Colors.Green;
+        Shell.SetBackgroundColor(shell, Colors.Green);
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
         var platformView = handler.PlatformView;

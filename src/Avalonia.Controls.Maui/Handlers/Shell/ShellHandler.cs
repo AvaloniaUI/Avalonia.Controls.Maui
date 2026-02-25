@@ -193,7 +193,6 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [DockPanel.DockProperty] = Dock.Top,
             ZIndex = 1
         };
-        _topBar.Bind(Avalonia.Controls.Panel.BackgroundProperty, new Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("SystemRegionBrush"));
 
         _topBarShadow = new Border
         {
@@ -382,6 +381,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
                 this.UpdateSearchHandler(VirtualView);
                 this.UpdateBackButtonBehavior(VirtualView);
                 this.UpdateFlyoutItemsAppearance(VirtualView);
+                this.UpdateBackgroundColor(VirtualView);
             }
 
             TrackCurrentPage();
@@ -478,6 +478,8 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             this.UpdateTitleView(VirtualView);
         else if (e.PropertyName == MauiShell.BackButtonBehaviorProperty.PropertyName)
             this.UpdateBackButtonBehavior(VirtualView);
+        else if (e.PropertyName == MauiShell.BackgroundColorProperty.PropertyName)
+            this.UpdateBackgroundColor(VirtualView);
     }
 
     public static void MapCurrentItem(ShellHandler handler, MauiShell shell)

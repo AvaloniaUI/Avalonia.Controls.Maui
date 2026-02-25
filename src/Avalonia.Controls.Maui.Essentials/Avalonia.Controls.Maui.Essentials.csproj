@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>$(DotNetTfm)</TargetFrameworks>
+    <IsPackable>true</IsPackable>
+    <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
+    <IsAotCompatible>true</IsAotCompatible>
+    <AddMauiInternals>true</AddMauiInternals>
+    <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
+    <PackageDescription>Avalonia.Controls.Maui.Essentials provides an implementation of Microsoft.Maui.Essentials, using Avalonia-based implementations.</PackageDescription>
+    <SignAssembly>true</SignAssembly>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Microsoft.Maui.Core" Version="$(MauiVersion)" />
+  </ItemGroup>
+</Project>

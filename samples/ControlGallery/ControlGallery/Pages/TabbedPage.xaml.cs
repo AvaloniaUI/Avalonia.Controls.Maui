@@ -33,13 +33,13 @@ public partial class TabbedPage : ContentPage
         }
     }
 
-    private void OnOpenBasicTabbedPage(object sender, EventArgs e)
+    private void OnOpenBasicTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = CreateBasicTabbedPage();
         Application.Current?.Windows[0].Page = tabbedPage;
     }
 
-    private void OnOpenIconsTabbedPage(object sender, EventArgs e)
+    private void OnOpenIconsTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = new ControlsTabbedPage
         {
@@ -76,7 +76,7 @@ public partial class TabbedPage : ContentPage
         Application.Current?.Windows[0].Page = tabbedPage;
     }
 
-    private void OnOpenBlueBarTabbedPage(object sender, EventArgs e)
+    private void OnOpenBlueBarTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = CreateBasicTabbedPage();
         tabbedPage.BarBackgroundColor = Colors.Blue;
@@ -84,7 +84,7 @@ public partial class TabbedPage : ContentPage
         Application.Current?.Windows[0].Page = tabbedPage;
     }
 
-    private void OnOpenDarkBarTabbedPage(object sender, EventArgs e)
+    private void OnOpenDarkBarTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = CreateBasicTabbedPage();
         tabbedPage.BarBackgroundColor = Color.FromArgb("#1a1a2e");
@@ -92,7 +92,7 @@ public partial class TabbedPage : ContentPage
         Application.Current?.Windows[0].Page = tabbedPage;
     }
 
-    private void OnOpenWhiteTextTabbedPage(object sender, EventArgs e)
+    private void OnOpenWhiteTextTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = CreateBasicTabbedPage();
         tabbedPage.BarBackgroundColor = Color.FromArgb("#16213e");
@@ -100,7 +100,7 @@ public partial class TabbedPage : ContentPage
         Application.Current?.Windows[0].Page = tabbedPage;
     }
 
-    private void OnOpenRedTextTabbedPage(object sender, EventArgs e)
+    private void OnOpenRedTextTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = CreateBasicTabbedPage();
         tabbedPage.BarBackgroundColor = Color.FromArgb("#f5f5f5");
@@ -108,7 +108,7 @@ public partial class TabbedPage : ContentPage
         Application.Current?.Windows[0].Page = tabbedPage;
     }
 
-    private void OnOpenCustomTabColorsTabbedPage(object sender, EventArgs e)
+    private void OnOpenCustomTabColorsTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = new ControlsTabbedPage
         {
@@ -147,7 +147,7 @@ public partial class TabbedPage : ContentPage
         Application.Current?.Windows[0].Page = tabbedPage;
     }
 
-    private void OnOpenGradientTabbedPage(object sender, EventArgs e)
+    private void OnOpenGradientTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = CreateBasicTabbedPage();
         tabbedPage.BarBackground = new LinearGradientBrush
@@ -165,7 +165,7 @@ public partial class TabbedPage : ContentPage
         Application.Current?.Windows[0].Page = tabbedPage;
     }
 
-    private void OnOpenDynamicTabbedPage(object sender, EventArgs e)
+    private void OnOpenDynamicTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = new ControlsTabbedPage
         {
@@ -383,7 +383,7 @@ public partial class TabbedPage : ContentPage
         return cardBorder;
     }
 
-    private void OnOpenSelectedItemTabbedPage(object sender, EventArgs e)
+    private void OnOpenSelectedItemTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = new ControlsTabbedPage
         {
@@ -447,7 +447,7 @@ public partial class TabbedPage : ContentPage
         });
     }
 
-    private void OnOpenItemsSourceTabbedPage(object sender, EventArgs e)
+    private void OnOpenItemsSourceTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = new ControlsTabbedPage
         {

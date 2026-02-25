@@ -3,6 +3,21 @@
                     xmlns:controls="using:Avalonia.Controls.Maui"
                     x:ClassModifier="internal">
 
+  <ResourceDictionary.ThemeDictionaries>
+    <ResourceDictionary x:Key="Light">
+      <SolidColorBrush x:Key="RadioButtonIndicatorBorderBrush" Color="#FF8A8A8A" />
+      <SolidColorBrush x:Key="RadioButtonIndicatorBorderBrushPointerOver" Color="#FF5A5A5A" />
+      <SolidColorBrush x:Key="RadioButtonIndicatorFill" Color="#FF0078D4" />
+      <SolidColorBrush x:Key="RadioButtonIndicatorIndeterminateFill" Color="#FF0078D4" />
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Dark">
+      <SolidColorBrush x:Key="RadioButtonIndicatorBorderBrush" Color="#FF9A9A9A" />
+      <SolidColorBrush x:Key="RadioButtonIndicatorBorderBrushPointerOver" Color="#FFBABABA" />
+      <SolidColorBrush x:Key="RadioButtonIndicatorFill" Color="#FF4CC2FF" />
+      <SolidColorBrush x:Key="RadioButtonIndicatorIndeterminateFill" Color="#FF4CC2FF" />
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+
   <ControlTheme x:Key="{x:Type controls:MauiRadioButton}"
                 TargetType="controls:MauiRadioButton">
     <Setter Property="Background" Value="Transparent" />
@@ -23,7 +38,7 @@
                        Width="18"
                        Height="18"
                        VerticalAlignment="Center"
-                       Stroke="{DynamicResource ThemeBorderMidBrush}"
+                       Stroke="{DynamicResource RadioButtonIndicatorBorderBrush}"
                        StrokeThickness="1" />
               <Ellipse Name="checkMark"
                        Width="10"
@@ -37,7 +52,7 @@
                        Height="10"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
-                       Fill="{DynamicResource ThemeAccentBrush}"
+                       Fill="{DynamicResource RadioButtonIndicatorIndeterminateFill}"
                        Stretch="Uniform"
                        UseLayoutRounding="False" />
             </Grid>
@@ -57,10 +72,10 @@
     </Style>
 
     <Style Selector="^:pointerover /template/ Ellipse#border">
-      <Setter Property="Stroke" Value="{DynamicResource ThemeBorderHighBrush}" />
+      <Setter Property="Stroke" Value="{DynamicResource RadioButtonIndicatorBorderBrushPointerOver}" />
     </Style>
     <Style Selector="^ /template/ Ellipse#checkMark">
-      <Setter Property="Fill" Value="{DynamicResource HighlightBrush}" />
+      <Setter Property="Fill" Value="{DynamicResource RadioButtonIndicatorFill}" />
       <Setter Property="IsVisible" Value="False" />
     </Style>
     <Style Selector="^ /template/ Ellipse#indeterminateMark">
@@ -73,7 +88,7 @@
       <Setter Property="IsVisible" Value="True" />
     </Style>
     <Style Selector="^:disabled /template/ Ellipse#border">
-      <Setter Property="Opacity" Value="{DynamicResource ThemeDisabledOpacity}" />
+      <Setter Property="Opacity" Value="0.5" />
     </Style>
 
     <!-- Hide indicator when ShowIndicator is false (custom ControlTemplate in use) -->

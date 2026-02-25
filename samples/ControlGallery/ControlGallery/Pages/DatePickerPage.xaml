@@ -7,10 +7,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="DatePicker"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
 
             <Label Text="The DatePicker invokes the platform's selection interface and allows the user to select a date."
                    FontSize="14"

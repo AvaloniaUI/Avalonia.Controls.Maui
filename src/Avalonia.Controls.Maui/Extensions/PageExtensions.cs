@@ -60,7 +60,7 @@ public static class PageExtensions
         }
         else
         {
-            platformView.ClearValue(AvaloniaPanel.BackgroundProperty);
+            platformView.UpdateBackground(page);
         }
     }
 
@@ -71,11 +71,11 @@ public static class PageExtensions
     /// <param name="page">The MAUI page containing the background.</param>
     public static void UpdateBackground(this AvaloniaPanel platformView, Page page)
     {
-        if (page?.Background != null)
+        if (!page.Background?.IsEmpty ?? false)
         {
             platformView.Background = page.Background.ToPlatform();
         }
-        else if (page?.BackgroundColor != null)
+        else if (page.BackgroundColor is not null)
         {
             platformView.Background = page.BackgroundColor.ToPlatform();
         }

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Avalonia.Controls.Maui.Compatibility;
+using Avalonia.Controls.Maui.Essentials;
+using Microsoft.Extensions.Logging;
 
 namespace ControlGallery.AvaloniaMaui;
 
@@ -11,6 +13,8 @@ public static class MauiProgram
 			.UseMauiApp<MauiAppStub>()
 			.UseAvaloniaApp(true)
 			.UseAvaloniaGraphics()
+			.UseAvaloniaCompatibility()
+			// .UseAvaloniaEssentials()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

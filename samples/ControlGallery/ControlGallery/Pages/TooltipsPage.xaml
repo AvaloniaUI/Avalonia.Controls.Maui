@@ -5,10 +5,6 @@
              Title="Tooltips">
     <ScrollView>
         <VerticalStackLayout Spacing="20" Padding="20">
-            <Label Text="Tooltips"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
 
             <!-- Basic Tooltips -->
             <Border Stroke="Gray" Padding="20">

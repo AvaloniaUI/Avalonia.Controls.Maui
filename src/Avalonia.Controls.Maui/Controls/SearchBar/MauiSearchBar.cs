@@ -516,7 +516,12 @@ public partial class MauiSearchBar : TemplatedControl
 
     private void OnClearButtonClick(object? sender, RoutedEventArgs e)
     {
+        var hadText = !string.IsNullOrEmpty(Text);
         Text = string.Empty;
+        if (hadText)
+        {
+            TextChanged?.Invoke(this, new TextChangedEventArgs(null));
+        }
         _textBox?.Focus();
     }
 

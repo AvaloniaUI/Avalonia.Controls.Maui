@@ -1,0 +1,12 @@
+{
+  "id": "02-ai-orchestration-frameworks",
+  "title": "AI Orchestration Frameworks",
+  "description": "Learn how orchestration frameworks connect language models to plugins, memory, and planners — with a deep dive into Semantic Kernel and C#.",
+  "lessons": [
+    { "id": "what-is-orchestration", "title": "What Is AI Orchestration?", "file": "what-is-orchestration.md", "xp": 10 },
+    { "id": "semantic-kernel-intro", "title": "Getting Started with Semantic Kernel", "file": "semantic-kernel-intro.md", "xp": 15 },
+    { "id": "plugins-and-planners", "title": "Plugins & Planners", "file": "plugins-and-planners.md", "xp": 15 },
+    { "id": "memory-and-embeddings", "title": "Memory & Embeddings", "file": "memory-and-embeddings.md", "xp": 20 }
+  ],
+  "quiz": "quiz.json"
+}

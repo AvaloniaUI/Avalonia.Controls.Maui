@@ -13,9 +13,6 @@
     
     <ScrollView>
         <VerticalStackLayout Spacing="20" Padding="20">
-            <Label Text="Behaviors" 
-                   Style="{StaticResource Headline}" />
-
             <!-- Numeric Validation Behavior -->
             <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
                     StrokeThickness="1"

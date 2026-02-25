@@ -128,7 +128,7 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         platformView.LostFocus += OnPlatformViewLostFocus;
         platformView.PropertyChanged += OnPlatformViewPropertyChanged;
 
-        if (platformView.GetVisualRoot() != null)
+        if (platformView.Parent != null)
         {
             _isLoaded = true;
             TrySendLoaded();

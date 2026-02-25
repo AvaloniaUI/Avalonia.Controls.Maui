@@ -16,7 +16,7 @@ public partial class GesturesPage : ContentPage
         InitializeComponent();
     }
 
-    private void OnSingleTapTapped(object sender, TappedEventArgs e)
+    private void OnSingleTapTapped(object? sender, TappedEventArgs e)
     {
         _singleTapCount++;
         SingleTapCountLabel.Text = $"Taps: {_singleTapCount}";
@@ -24,7 +24,7 @@ public partial class GesturesPage : ContentPage
         AnimateBox(SingleTapBox);
     }
 
-    private void OnDoubleTapTapped(object sender, TappedEventArgs e)
+    private void OnDoubleTapTapped(object? sender, TappedEventArgs e)
     {
         _doubleTapCount++;
         DoubleTapCountLabel.Text = $"Double Taps: {_doubleTapCount}";
@@ -38,7 +38,7 @@ public partial class GesturesPage : ContentPage
         await view.ScaleTo(1.0, 50, Easing.CubicIn);
     }
 
-    private void OnPanUpdated(object sender, PanUpdatedEventArgs e)
+    private void OnPanUpdated(object? sender, PanUpdatedEventArgs e)
     {
         switch (e.StatusType)
         {
@@ -71,34 +71,34 @@ public partial class GesturesPage : ContentPage
         }
     }
 
-    private void OnPointerEntered(object sender, PointerEventArgs e)
+    private void OnPointerEntered(object? sender, PointerEventArgs e)
     {
         PointerStatusLabel.Text = "Status: Entered";
         UpdatePointerPosition(e);
         PointerBox.BackgroundColor = Colors.LightGreen;
     }
 
-    private void OnPointerExited(object sender, PointerEventArgs e)
+    private void OnPointerExited(object? sender, PointerEventArgs e)
     {
         PointerStatusLabel.Text = "Status: Exited";
         PointerPositionLabel.Text = "Position: -";
         PointerBox.BackgroundColor = Colors.LightGoldenrodYellow;
     }
 
-    private void OnPointerMoved(object sender, PointerEventArgs e)
+    private void OnPointerMoved(object? sender, PointerEventArgs e)
     {
         PointerStatusLabel.Text = "Status: Moving";
         UpdatePointerPosition(e);
     }
 
-    private void OnPointerPressed(object sender, PointerEventArgs e)
+    private void OnPointerPressed(object? sender, PointerEventArgs e)
     {
         PointerStatusLabel.Text = "Status: Pressed";
         UpdatePointerPosition(e);
         PointerBox.BackgroundColor = Colors.Orange;
     }
 
-    private void OnPointerReleased(object sender, PointerEventArgs e)
+    private void OnPointerReleased(object? sender, PointerEventArgs e)
     {
         PointerStatusLabel.Text = "Status: Released";
         UpdatePointerPosition(e);
@@ -117,7 +117,7 @@ public partial class GesturesPage : ContentPage
         PointerPositionLabel.Text = $"Box: {boxPos} | Page: {pagePos}";
     }
 
-    private void OnSwiped(object sender, SwipedEventArgs e)
+    private void OnSwiped(object? sender, SwipedEventArgs e)
     {
         SwipeStatusLabel.Text = $"Last Swipe: {e.Direction}";
         SwipeBox.BackgroundColor = GetColorForDirection(e.Direction);

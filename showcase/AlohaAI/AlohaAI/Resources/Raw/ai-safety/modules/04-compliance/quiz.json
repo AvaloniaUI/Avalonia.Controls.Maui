@@ -1,0 +1,60 @@
+{
+  "moduleId": "04-compliance",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "TrueFalse",
+      "question": "Under the EU AI Act, 'Unacceptable Risk' AI systems are banned.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 0,
+      "explanation": "The EU AI Act categorizes AI by risk level. Unacceptable risk (e.g., social scoring) is banned. High risk requires strict compliance.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "MultipleChoice",
+      "question": "Privacy-by-design means:",
+      "options": [
+        "Adding privacy features after deployment",
+        "Integrating privacy protections into the system from the design phase",
+        "Hiding the model from users",
+        "Using only open-source models"
+      ],
+      "correctIndex": 1,
+      "explanation": "Privacy-by-design builds data protection into the architecture from the start \u2014 data minimization, anonymization, and consent management.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "Decision records in AI systems are important for:",
+      "options": [
+        "Making the model faster",
+        "Providing an audit trail of what the AI decided and why",
+        "Reducing storage costs",
+        "Training new models"
+      ],
+      "correctIndex": 1,
+      "explanation": "Decision records log inputs, outputs, and reasoning traces, enabling post-hoc auditing, debugging, and regulatory compliance.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "Which is considered 'High Risk' under the EU AI Act?",
+      "options": [
+        "Spam filters",
+        "AI for recruitment and hiring decisions",
+        "Video game NPCs",
+        "Personal scheduling assistants"
+      ],
+      "correctIndex": 1,
+      "explanation": "AI used in employment (recruitment, performance evaluation) is classified as high-risk due to its significant impact on people's lives.",
+      "xp": 5
+    }
+  ]
+}

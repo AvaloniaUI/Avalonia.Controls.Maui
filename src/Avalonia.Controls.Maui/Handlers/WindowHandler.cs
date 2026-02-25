@@ -14,7 +14,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 {
     static readonly AlertManager s_alertManager = new();
 
-    static IPropertyMapper<IWindow, WindowHandler> mapper = new PropertyMapper<IWindow, WindowHandler>(ElementHandler.ElementMapper)
+    public static IPropertyMapper<IWindow, WindowHandler> Mapper = new PropertyMapper<IWindow, WindowHandler>(ElementHandler.ElementMapper)
     {
         [nameof(IWindow.Title)] = mapTitle,
         [nameof(IWindow.Content)] = mapContent,
@@ -27,6 +27,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         [nameof(IWindow.MaximumHeight)] = mapMaximumHeight,
         [nameof(IWindow.MinimumWidth)] = mapMinimumWidth,
         [nameof(IWindow.MinimumHeight)] = mapMinimumHeight,
+        [nameof(IWindow.FlowDirection)] = mapFlowDirection,
     };
 
     static CommandMapper<IWindow, WindowHandler> CommandMapper = new(ElementCommandMapper)
@@ -38,13 +39,13 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     {
         if (arg3 is DisplayDensityRequest request)
         {
-            var toplevel = handler.PlatformView.GetVisualRoot() as Avalonia.Controls.TopLevel;
-            request.SetResult((float)(toplevel?.RenderScaling ?? 1.0));
+            var renderingScale = handler.PlatformView.Presenter?.GetPresentationSource()?.RenderScaling;
+            request.SetResult((float)(renderingScale ?? 1.0));
         }
     }
 
     public WindowHandler()
-        : base(mapper, CommandMapper)
+        : base(Mapper, CommandMapper)
     {
     }
 
@@ -219,5 +220,20 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             avWindow.MinHeight = 0;
         else
             avWindow.MinHeight = window.MinimumHeight;
+    }
+
+    static void mapFlowDirection(WindowHandler handler, IWindow window)
+    {
+        var avWindow = (Window)handler.PlatformView;
+        switch (window.FlowDirection)
+        {
+            case FlowDirection.MatchParent:
+            case FlowDirection.LeftToRight:
+                avWindow.FlowDirection = Avalonia.Media.FlowDirection.LeftToRight;
+                break;
+            case FlowDirection.RightToLeft:
+                avWindow.FlowDirection = Avalonia.Media.FlowDirection.RightToLeft;
+                break;
+        }
     }
 }

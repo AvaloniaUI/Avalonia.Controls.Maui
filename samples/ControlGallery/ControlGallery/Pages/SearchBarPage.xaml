@@ -10,10 +10,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="SearchBar"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
 
             <!-- Basic SearchBar -->
             <Border Stroke="Gray"

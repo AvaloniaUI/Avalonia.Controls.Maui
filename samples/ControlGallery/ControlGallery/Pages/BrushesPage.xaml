@@ -15,10 +15,6 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
             
-            <Label Text="Brushes"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
             
             <Label Text="Solid Colors and Gradients"
                    HorizontalOptions="Center"

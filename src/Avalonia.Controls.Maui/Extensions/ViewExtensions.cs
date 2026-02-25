@@ -587,8 +587,6 @@ public static class ViewExtensions
     /// </example>
     public static void UpdateShadow(this PlatformView control, IView view)
     {
-        // Convert MAUI shadow to Avalonia DropShadowEffect
-        // This handles color conversion, offset mapping, and blur radius
         var shadow = view.Shadow.ToPlatform();
 
         if (shadow is null)
@@ -598,8 +596,6 @@ public static class ViewExtensions
             return;
         }
 
-        // Apply the DropShadowEffect to the control
-        // Avalonia will render this as a GPU-accelerated drop shadow
         control.Effect = shadow;
     }
 
@@ -686,6 +682,10 @@ public static class ViewExtensions
         switch (view.FlowDirection)
         {
             case FlowDirection.MatchParent:
+                // Clear the local value so Avalonia's inherited property system
+                // picks up the parent's FlowDirection automatically.
+                control.ClearValue(Visual.FlowDirectionProperty);
+                break;
             case FlowDirection.LeftToRight:
                 control.FlowDirection = Media.FlowDirection.LeftToRight;
                 break;

@@ -18,12 +18,10 @@ public class TitleBarView : MauiView
 {
     private readonly DockPanel _rootPanel;
     private readonly Image _iconImage;
-    private readonly ContentControl _leadingContentContainer;
     private readonly StackPanel _titleStack;
     private readonly TextBlock _titleTextBlock;
     private readonly TextBlock _subtitleTextBlock;
     private readonly ContentControl _contentContainer;
-    private readonly ContentControl _trailingContentContainer;
 
     private IMauiContext? _mauiContext;
     private ITitleBar? _titleBar;
@@ -75,27 +73,6 @@ public class TitleBarView : MauiView
         };
         DockPanel.SetDock(_iconImage, Dock.Left);
         _rootPanel.Children.Add(_iconImage);
-
-        // Leading content
-        _leadingContentContainer = new ContentControl
-        {
-            IsVisible = false,
-            VerticalAlignment = VerticalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center
-        };
-        DockPanel.SetDock(_leadingContentContainer, Dock.Left);
-        _rootPanel.Children.Add(_leadingContentContainer);
-
-        // Trailing content
-        _trailingContentContainer = new ContentControl
-        {
-            IsVisible = false,
-            VerticalAlignment = VerticalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center
-            // Note: Margin is dynamically set by UpdateMarginForWindowControls based on platform
-        };
-        DockPanel.SetDock(_trailingContentContainer, Dock.Right);
-        _rootPanel.Children.Add(_trailingContentContainer);
 
         // Title and subtitle stack (left aligned)
         _titleStack = new StackPanel
@@ -153,9 +130,9 @@ public class TitleBarView : MauiView
             _attachedWindow = window;
             _attachedWindow.PropertyChanged += OnWindowPropertyChanged;
 
-            // Calculate and apply initial margin
+            // Calculate initial margin and trigger re-layout
             UpdateWindowControlsMargin(window);
-            ApplyMarginToChildren();
+            InvalidateMeasure();
         }
     }
 
@@ -171,17 +148,6 @@ public class TitleBarView : MauiView
         }
     }
 
-    /// <summary>
-    /// Called when children are added or removed. Applies margin to new children.
-    /// </summary>
-    protected override void ChildrenChanged(object? sender, global::System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        base.ChildrenChanged(sender, e);
-
-        // Apply current margin to any new children
-        ApplyMarginToChildren();
-    }
-
     private void OnWindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (_attachedWindow == null)
@@ -192,7 +158,7 @@ public class TitleBarView : MauiView
             e.Property == Window.OffScreenMarginProperty)
         {
             UpdateWindowControlsMargin(_attachedWindow);
-            ApplyMarginToChildren();
+            InvalidateMeasure();
         }
     }
 
@@ -206,6 +172,7 @@ public class TitleBarView : MauiView
         if (!window.IsExtendedIntoWindowDecorations)
         {
             _windowControlsMargin = new Thickness(0);
+            InvalidateArrange();
             return;
         }
 
@@ -219,12 +186,10 @@ public class TitleBarView : MauiView
                 0,
                 offScreenMargin.Right > 0 ? offScreenMargin.Right + 8 : 0,
                 0);
+            InvalidateArrange();
             return;
         }
 
-        // Fallback: When using PreferSystemChrome, system buttons are rendered by the OS
-        // but Avalonia doesn't report their position in OffScreenMargin.
-        // Use platform-specific defaults matching MAUI's approach.
         if (OperatingSystem.IsMacOS())
         {
             // macOS: traffic light buttons are on the left (80px as used by MAUI)
@@ -232,24 +197,67 @@ public class TitleBarView : MauiView
         }
         else
         {
-            // Windows/Linux: window buttons are typically on the right (150px as used by MAUI)
-            // Note: Some Linux window managers put buttons on the left, but right is most common
+            // Windows: window buttons are typically on the right (150px as used by MAUI)
+            // X11 doesn't support TitleBar.
             _windowControlsMargin = new Thickness(0, 0, 150, 0);
         }
+
+        InvalidateArrange();
     }
 
-    /// <summary>
-    /// Applies the current window controls margin to all children.
-    /// </summary>
-    private void ApplyMarginToChildren()
+    /// <inheritdoc />
+    protected override Size MeasureOverride(Size availableSize)
     {
-        foreach (var child in Children)
+        var layout = CrossPlatformLayout;
+        if (layout == null)
         {
-            if (child is Control control)
-            {
-                control.Margin = _windowControlsMargin;
-            }
+            return base.MeasureOverride(availableSize);
         }
+
+        var widthConstraint = availableSize.Width;
+        var heightConstraint = availableSize.Height;
+
+        // Reduce available width by window controls margin so MAUI layout
+        // measures children within the content area only.
+        var inset = _windowControlsMargin.Left + _windowControlsMargin.Right;
+        var adjustedWidth = Math.Max(0, widthConstraint - inset);
+
+        var crossPlatformSize = layout.CrossPlatformMeasure(adjustedWidth, heightConstraint);
+
+        CacheMeasureConstraints(adjustedWidth, heightConstraint);
+
+        // Return the full width so the TitleBarView background fills the entire window.
+        return new Size(widthConstraint, crossPlatformSize.Height);
+    }
+
+    /// <inheritdoc />
+    protected override Size ArrangeOverride(Size finalSize)
+    {
+        var layout = CrossPlatformLayout;
+        if (layout == null)
+        {
+            return base.ArrangeOverride(finalSize);
+        }
+
+        var inset = _windowControlsMargin.Left + _windowControlsMargin.Right;
+        var adjustedWidth = Math.Max(0, finalSize.Width - inset);
+
+        // Pass offset bounds so MAUI positions children starting after the left window controls.
+        var bounds = new Microsoft.Maui.Graphics.Rect(
+            _windowControlsMargin.Left, 0, adjustedWidth, finalSize.Height);
+
+        var widthConstraint = bounds.Width;
+        var heightConstraint = bounds.Height;
+
+        if (!IsMeasureValid(widthConstraint, heightConstraint))
+        {
+            layout.CrossPlatformMeasure(widthConstraint, heightConstraint);
+            CacheMeasureConstraints(widthConstraint, heightConstraint);
+        }
+
+        layout.CrossPlatformArrange(bounds);
+
+        return finalSize;
     }
 
     /// <summary>
@@ -362,7 +370,7 @@ public class TitleBarView : MauiView
     private void UpdateLeadingContent()
     {
         // Leading content is handled through the IContentView pattern
-        _leadingContentContainer.IsVisible = false;
+        //_leadingContentContainer.IsVisible = false;
     }
 
     private void UpdateContent()
@@ -374,7 +382,7 @@ public class TitleBarView : MauiView
     private void UpdateTrailingContent()
     {
         // Trailing content is handled through the IContentView pattern
-        _trailingContentContainer.IsVisible = false;
+        //_trailingContentContainer.IsVisible = false;
     }
 
     private void UpdateForegroundColor()

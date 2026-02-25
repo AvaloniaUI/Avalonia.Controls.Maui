@@ -20,8 +20,7 @@ public static class MauiAppBuilderExtensions
             services.AddService<IFileImageSource, AvaloniaFileImageSourceService>();
             services.AddService<IUriImageSource, AvaloniaUriImageSourceService>();
             services.AddService<IFontImageSource, AvaloniaFontImageSourceService>();
-            // HACK: There is a Stream source service as well, but I don't know if we need to register it explicitly
-            // services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
+            services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
         });
 
         return builder;
@@ -101,6 +100,7 @@ public static class MauiAppBuilderExtensions
                 }
                 handlers.AddHandler<Microsoft.Maui.Controls.NavigationPage, Avalonia.Controls.Maui.Handlers.NavigationViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.ContentView, Avalonia.Controls.Maui.Handlers.ContentViewHandler>();
+                handlers.AddHandler<Microsoft.Maui.Controls.TemplatedView, Avalonia.Controls.Maui.Handlers.ContentViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.ContentPresenter, Avalonia.Controls.Maui.Handlers.ContentPresenterHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Border, Avalonia.Controls.Maui.Handlers.BorderHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Image, Avalonia.Controls.Maui.Handlers.ImageHandler>();
@@ -152,6 +152,7 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.SwipeItemView, Avalonia.Controls.Maui.Handlers.SwipeItemViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.RefreshView, Avalonia.Controls.Maui.Handlers.RefreshViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.TitleBar, Avalonia.Controls.Maui.Handlers.TitleBarHandler>();
+                handlers.AddHandler<Microsoft.Maui.Controls.WebView, Avalonia.Controls.Maui.Handlers.WebViewHandler>();
 
             })
             .ConfigureImageSources();

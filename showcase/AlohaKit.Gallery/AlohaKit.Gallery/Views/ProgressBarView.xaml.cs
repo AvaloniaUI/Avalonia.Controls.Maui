@@ -11,22 +11,22 @@ public partial class ProgressBarView : ContentPage
         CheckAnimate.IsChecked = true;
     }
 
-    void OnBackgroundStartColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnBackgroundStartColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnBackgroundEndColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnBackgroundEndColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnProgressStartColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnProgressStartColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnProgressEndColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnProgressEndColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
@@ -88,14 +88,14 @@ public partial class ProgressBarView : ContentPage
         }
     }
 
-    private void stylePicker_SelectedIndexChanged(object sender, EventArgs e)
+    private void stylePicker_SelectedIndexChanged(object? sender, EventArgs e)
     {
         var selectedItem = (sender as Picker)?.SelectedItem as string;
 		HorizontalProgressBar.RoundCorners = selectedItem == "Rounded";
 		VerticalProgressBar.RoundCorners = selectedItem == "Rounded";
 	}
 
-    private void CheckAnimate_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    private void CheckAnimate_CheckedChanged(object? sender, CheckedChangedEventArgs e)
     {
         var isChecked = (sender as CheckBox)?.IsChecked ?? false;
 		HorizontalProgressBar.EnableAnimations = isChecked;

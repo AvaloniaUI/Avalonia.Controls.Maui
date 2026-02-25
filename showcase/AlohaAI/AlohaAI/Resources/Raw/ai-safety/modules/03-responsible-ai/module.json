@@ -1,0 +1,32 @@
+{
+  "id": "03-responsible-ai",
+  "title": "Responsible AI Governance",
+  "description": "Build repeatable governance processes for teams shipping AI products fast",
+  "lessons": [
+    {
+      "id": "01-model-cards",
+      "title": "Model Cards & System Cards",
+      "file": "01-model-cards.md",
+      "xp": 10
+    },
+    {
+      "id": "02-bias-fairness",
+      "title": "Bias Testing & Fairness Evaluation",
+      "file": "02-bias-fairness.md",
+      "xp": 15
+    },
+    {
+      "id": "03-human-oversight",
+      "title": "Human Oversight & Escalation Protocols",
+      "file": "03-human-oversight.md",
+      "xp": 15
+    },
+    {
+      "id": "04-incident-response",
+      "title": "Incident Response for AI Failures",
+      "file": "04-incident-response.md",
+      "xp": 15
+    }
+  ],
+  "quiz": "quiz.json"
+}

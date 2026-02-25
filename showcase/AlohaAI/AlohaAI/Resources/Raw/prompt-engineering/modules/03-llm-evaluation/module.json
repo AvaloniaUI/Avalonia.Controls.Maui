@@ -1,0 +1,32 @@
+{
+  "id": "03-llm-evaluation",
+  "title": "LLM Evaluation & Testing",
+  "description": "Measure quality, detect regressions, and reduce hallucinations in LLM outputs",
+  "lessons": [
+    {
+      "id": "01-eval-datasets",
+      "title": "Building Evaluation Datasets",
+      "file": "01-eval-datasets.md",
+      "xp": 15
+    },
+    {
+      "id": "02-llm-as-judge",
+      "title": "LLM-as-Judge Evaluation",
+      "file": "02-llm-as-judge.md",
+      "xp": 15
+    },
+    {
+      "id": "03-ab-testing",
+      "title": "Prompt A/B Testing & Regression",
+      "file": "03-ab-testing.md",
+      "xp": 15
+    },
+    {
+      "id": "04-hallucination-detection",
+      "title": "Detecting & Reducing Hallucinations",
+      "file": "04-hallucination-detection.md",
+      "xp": 20
+    }
+  ],
+  "quiz": "quiz.json"
+}

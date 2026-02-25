@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Weather"
              x:Class="Weather.MainPage"
+             Title="Weather"
              x:DataType="local:WeatherData"
              BackgroundColor="{DynamicResource PageBackground}">
     <ContentPage.Resources>
@@ -38,7 +39,6 @@
         <!-- Header Card -->
         <Border Style="{StaticResource cardStyle}">
             <VerticalStackLayout Spacing="12">
-                <Label Text="Weather" FontSize="32" FontAttributes="Bold" TextColor="{DynamicResource Primary}" HorizontalOptions="Center" />
                 <HorizontalStackLayout Spacing="8">
                     <Label Text="City:" Style="{StaticResource labelStyle}" VerticalOptions="Center" />
                     <Entry x:Name="_cityEntry"

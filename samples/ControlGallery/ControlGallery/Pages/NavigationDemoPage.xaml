@@ -10,10 +10,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="NavigationPage Demo"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
 
             <Label Text="This demo shows NavigationPage features including navigation bar customization, back button title, title icon, and page navigation."
                    HorizontalOptions="Center"

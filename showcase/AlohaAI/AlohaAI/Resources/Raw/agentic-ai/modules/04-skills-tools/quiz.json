@@ -1,0 +1,74 @@
+{
+  "moduleId": "04-skills-tools",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "What is the primary purpose of tool use in LLMs?",
+      "options": [
+        "To make the model generate longer responses",
+        "To allow the model to interact with external systems and take actions",
+        "To reduce the model's training time",
+        "To replace the need for prompt engineering"
+      ],
+      "correctIndex": 1,
+      "explanation": "Tool use bridges the gap between text generation and real-world interaction, letting the model invoke functions, call APIs, and perform actions.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "When an LLM makes a function call, the model itself executes the function directly.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 1,
+      "explanation": "The LLM only generates a structured request (function name and arguments). Your application code is responsible for actually executing the function and returning the result.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "In Semantic Kernel, what attribute is used to expose a C# method as a tool the LLM can call?",
+      "options": [
+        "[ToolExport]",
+        "[LLMFunction]",
+        "[KernelFunction]",
+        "[AgentTool]"
+      ],
+      "correctIndex": 2,
+      "explanation": "Semantic Kernel uses the [KernelFunction] attribute along with [Description] to register C# methods as callable tools for the model.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "What is the difference between a 'tool' and a 'skill' in the context of agent development?",
+      "options": [
+        "There is no difference — the terms are interchangeable",
+        "A tool is a single function, while a skill is a group of related tools covering a domain",
+        "A skill is simpler than a tool",
+        "Tools are for reading data, skills are for writing data"
+      ],
+      "correctIndex": 1,
+      "explanation": "A tool is a single function (e.g., SendEmail), while a skill (or plugin) groups related tools into a domain-specific collection that the agent can use together.",
+      "xp": 5
+    },
+    {
+      "id": "q5",
+      "type": "MultipleChoice",
+      "question": "Which design principle is most important for building skills that compose well?",
+      "options": [
+        "Each function should handle as many responsibilities as possible",
+        "Functions should have vague descriptions so the model has flexibility",
+        "Each function should do one thing well with a clear description",
+        "Functions should always return plain text strings"
+      ],
+      "correctIndex": 2,
+      "explanation": "Single responsibility and clear descriptions are essential. The model relies on descriptions to select the right tool, and focused functions are easier to chain together reliably.",
+      "xp": 5
+    }
+  ]
+}

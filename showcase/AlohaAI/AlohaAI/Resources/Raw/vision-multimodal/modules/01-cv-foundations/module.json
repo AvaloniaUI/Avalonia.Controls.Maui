@@ -1,0 +1,32 @@
+{
+  "id": "01-cv-foundations",
+  "title": "Computer Vision Foundations",
+  "description": "Essential concepts and modern architectures developers need for vision tasks",
+  "lessons": [
+    {
+      "id": "01-image-representation",
+      "title": "Image Representation & Embeddings",
+      "file": "01-image-representation.md",
+      "xp": 10
+    },
+    {
+      "id": "02-cnns-to-vits",
+      "title": "From CNNs to Vision Transformers",
+      "file": "02-cnns-to-vits.md",
+      "xp": 15
+    },
+    {
+      "id": "03-detection-segmentation",
+      "title": "Object Detection & Segmentation",
+      "file": "03-detection-segmentation.md",
+      "xp": 15
+    },
+    {
+      "id": "04-ocr-document-ai",
+      "title": "OCR & Document Understanding",
+      "file": "04-ocr-document-ai.md",
+      "xp": 15
+    }
+  ],
+  "quiz": "quiz.json"
+}

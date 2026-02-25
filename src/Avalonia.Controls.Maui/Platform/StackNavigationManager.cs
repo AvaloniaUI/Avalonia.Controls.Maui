@@ -22,6 +22,7 @@ public class StackNavigationManager
     private IStackNavigation? _stackNavigation;
     private bool _connected;
     private ILogger? _logger;
+    private FlyoutPage? _parentFlyoutPage;
 
     public IReadOnlyList<IView> NavigationStack { get; private set; } = new List<IView>();
 
@@ -55,6 +56,24 @@ public class StackNavigationManager
         // Wire up back button click
         _navigationView.BackButton.Click += OnBackButtonClicked;
 
+        // Wire up hamburger button click
+        _navigationView.HamburgerButton.Click += OnHamburgerButtonClicked;
+
+        // Detect FlyoutPage parent for hamburger button visibility
+        if (stackNavigation is NavigationPage navPage)
+        {
+            _parentFlyoutPage = FindParentFlyoutPage(navPage);
+            if (_parentFlyoutPage != null)
+            {
+                _parentFlyoutPage.PropertyChanged += OnParentFlyoutPagePropertyChanged;
+            }
+            else
+            {
+                // Parent may not be set yet; listen for late parenting
+                navPage.ParentChanged += OnNavigationPageParentChanged;
+            }
+        }
+
         _logger?.LogDebug("StackNavigationManager connected");
     }
 
@@ -76,6 +95,18 @@ public class StackNavigationManager
         if (_navigationView != null)
         {
             _navigationView.BackButton.Click -= OnBackButtonClicked;
+            _navigationView.HamburgerButton.Click -= OnHamburgerButtonClicked;
+        }
+
+        if (_parentFlyoutPage != null)
+        {
+            _parentFlyoutPage.PropertyChanged -= OnParentFlyoutPagePropertyChanged;
+            _parentFlyoutPage = null;
+        }
+
+        if (stackNavigation is NavigationPage navPage)
+        {
+            navPage.ParentChanged -= OnNavigationPageParentChanged;
         }
 
         _connected = false;
@@ -113,6 +144,49 @@ public class StackNavigationManager
             _logger?.LogDebug("Back button clicked, popping page");
             await navigationPage.PopAsync();
         }
+    }
+
+    private void OnHamburgerButtonClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (_parentFlyoutPage != null)
+        {
+            _parentFlyoutPage.IsPresented = !_parentFlyoutPage.IsPresented;
+        }
+    }
+
+    private void OnParentFlyoutPagePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(FlyoutPage.FlyoutLayoutBehavior))
+        {
+            UpdateBackButton();
+        }
+    }
+
+    private void OnNavigationPageParentChanged(object? sender, EventArgs e)
+    {
+        if (sender is NavigationPage navPage)
+        {
+            navPage.ParentChanged -= OnNavigationPageParentChanged;
+
+            _parentFlyoutPage = FindParentFlyoutPage(navPage);
+            if (_parentFlyoutPage != null)
+            {
+                _parentFlyoutPage.PropertyChanged += OnParentFlyoutPagePropertyChanged;
+                UpdateBackButton();
+            }
+        }
+    }
+
+    private static FlyoutPage? FindParentFlyoutPage(Page page)
+    {
+        var parent = page.Parent;
+        while (parent != null)
+        {
+            if (parent is FlyoutPage fp)
+                return fp;
+            parent = (parent as Element)?.Parent;
+        }
+        return null;
     }
 
     /// <summary>
@@ -184,7 +258,7 @@ public class StackNavigationManager
         // Navigate to the new page
         try
         {
-            _navigationView.NavigateToPage(control, isBackNavigation);
+            _navigationView.NavigateToPage(control, isBackNavigation, request.Animated);
             _navigationView.CurrentPage = _currentPage;
 
             // Update TitleView for the current page
@@ -306,8 +380,10 @@ public class StackNavigationManager
                 (byte)(textColor.Green * 255),
                 (byte)(textColor.Blue * 255)
             );
-            _navigationView.TitleTextBlock.Foreground = new Avalonia.Media.SolidColorBrush(avaloniaColor);
-            _navigationView.BackButton.Foreground = new Avalonia.Media.SolidColorBrush(avaloniaColor);
+            var brush = new Avalonia.Media.SolidColorBrush(avaloniaColor);
+            _navigationView.TitleTextBlock.Foreground = brush;
+            _navigationView.BackButton.Foreground = brush;
+            _navigationView.HamburgerButton.Foreground = brush;
         }
         else
         {
@@ -315,6 +391,7 @@ public class StackNavigationManager
             var defaultBrush = Avalonia.Media.Brushes.Black;
             _navigationView.TitleTextBlock.Foreground = defaultBrush;
             _navigationView.BackButton.Foreground = defaultBrush;
+            _navigationView.HamburgerButton.Foreground = defaultBrush;
         }
     }
 
@@ -394,6 +471,16 @@ public class StackNavigationManager
             }
         }
 
+        // Determine hamburger button visibility
+        // Matching MAUI's NavigationPageToolbar.UpdateBackButton logic:
+        // Show hamburger when parent is FlyoutPage, at root of nav stack, and flyout should show toolbar button
+        bool showHamburger = false;
+        if (_parentFlyoutPage != null && NavigationStack.Count <= 1)
+        {
+            showHamburger = _parentFlyoutPage.ShouldShowToolbarButton();
+        }
+
+        _navigationView.HamburgerButton.IsVisible = showHamburger;
         _navigationView.BackButton.IsVisible = showBackButton;
 
         // Update back button content - show title if available, otherwise show arrow
@@ -420,7 +507,8 @@ public class StackNavigationManager
         }
         // Note: If iconColor is null, the color will be set by UpdateNavigationBarColors based on BarTextColor
 
-        _logger?.LogDebug("Back button visible: {IsVisible}, title: {Title}, iconColor: {IconColor}", showBackButton, backButtonTitle, iconColor);
+        _logger?.LogDebug("Back button visible: {IsVisible}, hamburger visible: {HamburgerVisible}, title: {Title}, iconColor: {IconColor}",
+            showBackButton, showHamburger, backButtonTitle, iconColor);
     }
 
     private void OnToolbarItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)

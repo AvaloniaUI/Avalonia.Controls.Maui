@@ -9,6 +9,7 @@
                 "build",
                 "${workspaceFolder}/samples/SandboxApp/SandboxApp.csproj",
                 "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
@@ -21,6 +22,7 @@
                 "build",
                 "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj",
                 "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
@@ -33,6 +35,7 @@
                 "build",
                 "${workspaceFolder}/showcase/MauiPlanets/MauiPlanets.Desktop/MauiPlanets.Desktop.csproj",
                 "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
@@ -45,6 +48,7 @@
                 "build",
                 "${workspaceFolder}/showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/AlohaKit.Gallery.Desktop.csproj",
                 "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
@@ -57,6 +61,33 @@
                 "build",
                 "${workspaceFolder}/showcase/2048Game/2048Game.Desktop/2048Game.Desktop.csproj",
                 "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build_weathertwentyone_desktop",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/showcase/WeatherTwentyOne/WeatherTwentyOne.Desktop/WeatherTwentyOne.Desktop.csproj",
+                "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build_alohaai_desktop",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/showcase/AlohaAI/AlohaAI.Desktop/AlohaAI.Desktop.csproj",
+                "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
