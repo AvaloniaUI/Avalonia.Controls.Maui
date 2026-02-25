@@ -1,4 +1,5 @@
 using Avalonia.Controls.Maui.Handlers;
+using Avalonia.Controls.Maui.Platform;
 using Avalonia.Headless.XUnit;
 using Microsoft.Maui.Controls;
 using Avalonia.Controls.Maui.Tests.Stubs;
@@ -7,6 +8,95 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
 {
     public class NavigationPageHandlerTests : HandlerTestBase<NavigationViewHandler, NavigationPage>
     {
+        [AvaloniaFact(DisplayName = "Hamburger Visible When Inside FlyoutPage Popover At Root")]
+        public async Task Hamburger_Visible_When_Inside_FlyoutPage_Popover_At_Root()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new NavigationPage(rootPage);
+            var flyoutPage = new FlyoutPage
+            {
+                Flyout = new ContentPage { Title = "Menu" },
+                Detail = navigationPage,
+                FlyoutLayoutBehavior = FlyoutLayoutBehavior.Popover
+            };
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                Assert.True(handler.PlatformView.HamburgerButton.IsVisible);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "Hamburger Hidden When NavigationPage Is Standalone")]
+        public async Task Hamburger_Hidden_When_NavigationPage_Is_Standalone()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new NavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                Assert.False(handler.PlatformView.HamburgerButton.IsVisible);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "Hamburger Hidden When FlyoutBehavior Is Split")]
+        public async Task Hamburger_Hidden_When_FlyoutBehavior_Is_Split()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new NavigationPage(rootPage);
+            var flyoutPage = new FlyoutPage
+            {
+                Flyout = new ContentPage { Title = "Menu" },
+                Detail = navigationPage,
+                FlyoutLayoutBehavior = FlyoutLayoutBehavior.Split
+            };
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                Assert.False(handler.PlatformView.HamburgerButton.IsVisible);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "Back Button Replaces Hamburger When Navigated Deeper")]
+        public async Task Back_Button_Replaces_Hamburger_When_Navigated_Deeper()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new NavigationPage(rootPage);
+            var flyoutPage = new FlyoutPage
+            {
+                Flyout = new ContentPage { Title = "Menu" },
+                Detail = navigationPage,
+                FlyoutLayoutBehavior = FlyoutLayoutBehavior.Popover
+            };
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            // At root: hamburger visible, back hidden
+            await InvokeOnMainThreadAsync(() =>
+            {
+                Assert.True(handler.PlatformView.HamburgerButton.IsVisible);
+                Assert.False(handler.PlatformView.BackButton.IsVisible);
+            });
+
+            // Push a second page
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                await navigationPage.PushAsync(new ContentPage { Title = "Detail Page" });
+            });
+
+            // After push: hamburger hidden, back visible
+            await InvokeOnMainThreadAsync(() =>
+            {
+                Assert.False(handler.PlatformView.HamburgerButton.IsVisible);
+                Assert.True(handler.PlatformView.BackButton.IsVisible);
+            });
+        }
+
         [AvaloniaFact(DisplayName = "ToolbarItems Are Added To Platform View")]
         public async Task ToolbarItems_Are_Added_To_Platform_View()
         {

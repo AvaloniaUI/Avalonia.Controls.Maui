@@ -11,6 +11,7 @@ namespace Avalonia.Controls.Maui;
 /// </summary>
 public class MauiButton : Button
 {
+    protected override Type StyleKeyOverride => typeof(Button);
     private DockPanel? _contentPanel;
     private TextBlock? _textBlock;
     private Image? _image;

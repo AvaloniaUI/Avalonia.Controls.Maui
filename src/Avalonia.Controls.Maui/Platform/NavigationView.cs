@@ -11,6 +11,7 @@ public class NavigationView : DockPanel
     private readonly TransitioningContentControl _contentControl;
     private readonly ContentControl _titleViewContainer;
     private readonly TextBlock _titleTextBlock;
+    private readonly Button _hamburgerButton;
     private readonly Button _backButton;
     private readonly DockPanel _navigationBar;
     private readonly Image _titleIconImage;
@@ -38,6 +39,11 @@ public class NavigationView : DockPanel
     /// Gets the text block for displaying the page title.
     /// </summary>
     public TextBlock TitleTextBlock => _titleTextBlock;
+
+    /// <summary>
+    /// Gets the hamburger menu button.
+    /// </summary>
+    public Button HamburgerButton => _hamburgerButton;
 
     /// <summary>
     /// Gets the back button.
@@ -93,6 +99,22 @@ public class NavigationView : DockPanel
             LastChildFill = true
         };
         DockPanel.SetDock(_navigationBar, Dock.Top);
+
+        _hamburgerButton = new Button
+        {
+            Content = "\u2630",
+            FontSize = 16,
+            MinWidth = 40,
+            Height = 40,
+            IsVisible = false,
+            Background = Brushes.Transparent,
+            BorderThickness = new Thickness(0),
+            Padding = new Thickness(8, 0),
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center
+        };
+        DockPanel.SetDock(_hamburgerButton, Dock.Left);
+        _navigationBar.Children.Add(_hamburgerButton);
 
         _backButton = new Button
         {
@@ -195,9 +217,22 @@ public class NavigationView : DockPanel
     /// </summary>
     /// <param name="page">The page to navigate to.</param>
     /// <param name="isBackNavigation">True if this is a back navigation (will reverse the transition).</param>
-    public void NavigateToPage(Control page, bool isBackNavigation)
+    /// <param name="animated">Whether to animate the transition.</param>
+    public void NavigateToPage(Control page, bool isBackNavigation, bool animated = true)
     {
         _contentControl.IsTransitionReversed = isBackNavigation;
-        _contentControl.Content = page;
+
+        if (!animated)
+        {
+            // Temporarily disable the transition
+            var savedTransition = _contentControl.PageTransition;
+            _contentControl.PageTransition = null;
+            _contentControl.Content = page;
+            _contentControl.PageTransition = savedTransition;
+        }
+        else
+        {
+            _contentControl.Content = page;
+        }
     }
 }

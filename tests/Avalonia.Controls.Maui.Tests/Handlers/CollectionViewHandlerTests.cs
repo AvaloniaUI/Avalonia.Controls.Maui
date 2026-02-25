@@ -136,6 +136,41 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         Assert.Equal(3, platformItems.Cast<object>().Count());
     }
 
+    [AvaloniaFact(DisplayName = "Grouped Collection Change Triggers Update")]
+    public void GroupedCollectionChangeTriggersUpdate()
+    {
+        var groups = new ObservableCollection<List<string>>
+        {
+            new List<string> { "A", "B" },
+            new List<string> { "C", "D" },
+        };
+
+        var avCollectionView = new AvaloniaCollectionView();
+        avCollectionView.IsGrouped = true;
+        avCollectionView.GroupHeaderTemplate = new Templates.FuncDataTemplate<object>((_, _) =>
+            new TextBlock { Text = "Header" });
+        avCollectionView.ItemsSource = groups;
+
+        // Show in a window so the visual tree is available
+        var window = new Window { Content = avCollectionView, Width = 300, Height = 400 };
+        window.Show();
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        // Find the internal ItemsControl to check the flattened items
+        var itemsControl = avCollectionView.GetVisualDescendants()
+            .OfType<Avalonia.Controls.ItemsControl>().First();
+
+        // Initial: 2 headers + 4 items = 6 flattened items
+        Assert.Equal(6, itemsControl.ItemCount);
+
+        // Clear and re-add a single smaller group (simulates filtering)
+        groups.Clear();
+        groups.Add(new List<string> { "A" });
+
+        // After fix: 1 header + 1 item = 2 flattened items
+        Assert.Equal(2, itemsControl.ItemCount);
+    }
+
     [AvaloniaFact(DisplayName = "EmptyView String Initializes Correctly")]
     public async Task EmptyViewStringInitializesCorrectly()
     {

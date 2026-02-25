@@ -6,9 +6,6 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
 
-            <Label Text="TitleBar"
-                   FontSize="24"
-                   FontAttributes="Bold" />
 
             <Label Text="TitleBar provides a customizable title bar for windows. On desktop platforms, it can replace the default system title bar with custom content."
                    TextColor="Gray" />

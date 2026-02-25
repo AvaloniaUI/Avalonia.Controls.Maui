@@ -9,7 +9,6 @@ namespace ControlGallery;
 public partial class MainPage : FlyoutPage
 {
     private List<SampleGroup> _allSamples = new List<SampleGroup>();
-    private Type? _selectedPageType;
     private string _lastSearchText = string.Empty;
 
     private static readonly Dictionary<Type, Func<Page>> PageFactory = new()
@@ -23,11 +22,11 @@ public partial class MainPage : FlyoutPage
         // Services
         [typeof(FontsPage)] = () => new FontsPage(),
         // Pages
-        [typeof(NavigationDemoPage)] = () => new NavigationPage(new NavigationDemoPage()),
+        [typeof(NavigationDemoPage)] = () => new NavigationDemoPage(),
         [typeof(ControlGallery.Pages.TabbedPage)] = () => new ControlGallery.Pages.TabbedPage(),
         [typeof(TitleBarPage)] = () => new TitleBarPage(),
         [typeof(PopupsPage)] = () => new PopupsPage(),
-        [typeof(ToolbarItemPage)] = () => new NavigationPage(new ToolbarItemPage()),
+        [typeof(ToolbarItemPage)] = () => new ToolbarItemPage(),
         [typeof(ShellPage)] = () => new ShellPage(),
         [typeof(ShellPlaygroundPage)] = () => new ShellPlaygroundPage(),
         // Views
@@ -98,77 +97,45 @@ public partial class MainPage : FlyoutPage
     {
         InitializeComponent();
 
+        BindingContext = this;
         NavigateCommand = new Command<Type>(NavigateToPage);
 
         InitializeSamples();
         UpdateMenu(string.Empty);
 
         // Navigate to Welcome Page by default
-        Detail = new WelcomePage();
+        Detail = new NavigationPage(new WelcomePage());
     }
-// ...
+
     private void UpdateMenu(string searchText)
     {
-        var root = new TableRoot();
+        FilteredSamples.Clear();
 
         foreach (var group in _allSamples)
         {
-            var section = new TableSection(group.Name);
-            bool hasItems = false;
+            var filteredItems = group.Where(item =>
+                string.IsNullOrWhiteSpace(searchText) ||
+                item.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
+                item.Detail.Contains(searchText, StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
-            foreach (var item in group)
+            if (filteredItems.Count > 0)
             {
-                if (string.IsNullOrWhiteSpace(searchText) || 
-                    item.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) || 
-                    item.Detail.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-                {
-                    bool isSelected = item.PageType == _selectedPageType;
-                    
-                    var cell = new ViewCell();
-                    var grid = new Grid
-                    {
-                        Padding = new Thickness(16, 8),
-                        BackgroundColor = isSelected ? Color.FromRgba(128, 128, 128, 40) : Colors.Transparent
-                    };
-
-                    var stack = new StackLayout { Spacing = 2 };
-                    var titleLabel = new Label 
-                    { 
-                        Text = item.Title, 
-                        FontSize = 16,
-                        FontAttributes = isSelected ? FontAttributes.Bold : FontAttributes.None
-                    };
-                    titleLabel.SetAppThemeColor(Label.TextColorProperty, Colors.Black, Colors.White);
-                    
-                    var detailLabel = new Label 
-                    { 
-                        Text = item.Detail, 
-                        FontSize = 13, 
-                        Opacity = 0.7 
-                    };
-                    detailLabel.SetAppThemeColor(Label.TextColorProperty, Colors.Gray, Colors.LightGray);
-                    
-                    stack.Children.Add(titleLabel);
-                    stack.Children.Add(detailLabel);
-                    grid.Children.Add(stack);
-                    cell.View = grid;
-
-                    var tap = new TapGestureRecognizer();
-                    tap.Tapped += (s, e) => NavigateToPage(item.PageType);
-                    grid.GestureRecognizers.Add(tap);
-
-                    section.Add(cell);
-                    hasItems = true;
-                }
-            }
-
-            if (hasItems)
-            {
-                root.Add(section);
+                FilteredSamples.Add(new SampleGroup(group.Name, filteredItems));
             }
         }
+    }
 
-        MenuTableView.Root = root;
+    private void OnMenuSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is SampleItem selectedItem)
+        {
+            NavigateToPage(selectedItem.PageType);
+
+            // Clear selection so the same item can be tapped again
+            if (sender is CollectionView cv)
+                cv.SelectedItem = null;
+        }
     }
 
     private void InitializeSamples()
@@ -277,7 +244,6 @@ public partial class MainPage : FlyoutPage
             new SampleGroup("Essentials", new List<SampleItem>
             {
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
-                new("File Picker", "Pick files from the system", typeof(FilePickerPage)),
             }),
 
 
@@ -296,12 +262,10 @@ public partial class MainPage : FlyoutPage
 
     private void NavigateToPage(Type pageType)
     {
-        _selectedPageType = pageType;
-        UpdateMenu(_lastSearchText);
-
         if (PageFactory.TryGetValue(pageType, out var factory))
         {
-            Detail = factory();
+            ((NavigationPage)Detail).Navigation.InsertPageBefore(factory(), ((NavigationPage)Detail).RootPage);
+            ((NavigationPage)Detail).Navigation.PopToRootAsync(animated: false);
         }
     }
 }

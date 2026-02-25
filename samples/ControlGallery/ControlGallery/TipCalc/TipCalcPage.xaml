@@ -2,7 +2,8 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:TipCalc"
-             x:Class="TipCalc.TipCalcPage">
+             x:Class="TipCalc.TipCalcPage"
+             Title="Tip Calculator">
     <ContentPage.Resources>
         <ResourceDictionary>
             <local:TipCalcModel x:Key="Model" TipPercent="15" />

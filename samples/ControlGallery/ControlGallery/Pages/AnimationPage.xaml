@@ -16,10 +16,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="Animations"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
 
             <!-- Rotation -->
             <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"

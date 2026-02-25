@@ -3,6 +3,7 @@
     <Project Path="build/_build.csproj" />
   </Folder>
   <Folder Name="/Samples/">
+    <Project Path="samples/AvaloniaSandboxApp/AvaloniaSandboxApp.csproj" />
     <Project Path="samples/SandboxApp/SandboxApp.csproj" />
     <Project Path="samples/SandboxAppWasm/SandboxAppWasm.csproj" />
   </Folder>

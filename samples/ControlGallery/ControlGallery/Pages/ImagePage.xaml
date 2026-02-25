@@ -52,10 +52,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="Image"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
 
             <!-- File Image Source -->
             <Border Stroke="Gray"

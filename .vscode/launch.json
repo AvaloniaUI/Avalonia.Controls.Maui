@@ -6,10 +6,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_sandbox",
-            "program": "${workspaceFolder}/samples/SandboxApp/bin/Debug/net11.0/SandboxApp.dll",
+            "program": "${workspaceFolder}/samples/SandboxApp/bin/Debug/${config:dotnetTfm}/SandboxApp.dll",
             "args": [ 
             ],
-            "cwd": "${workspaceFolder}/samples/SandboxApp/bin/Debug/net11.0",
+            "cwd": "${workspaceFolder}/samples/SandboxApp/bin/Debug/${config:dotnetTfm}",
             "console": "internalConsole",
             "stopAtEntry": false
         },
@@ -18,10 +18,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_controlgallery_desktop",
-            "program": "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/bin/Debug/net11.0/ControlGallery.Desktop.dll",
+            "program": "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/bin/Debug/${config:dotnetTfm}/ControlGallery.Desktop.dll",
             "args": [ 
             ],
-            "cwd": "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/bin/Debug/net11.0",
+            "cwd": "${workspaceFolder}/samples/ControlGallery/ControlGallery.Desktop/bin/Debug/${config:dotnetTfm}",
             "console": "internalConsole",
             "stopAtEntry": false
         },
@@ -30,10 +30,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_mauiplanets_desktop",
-            "program": "${workspaceFolder}/showcase/MauiPlanets/MauiPlanets.Desktop/bin/Debug/net11.0/MauiPlanets.Desktop.dll",
+            "program": "${workspaceFolder}/showcase/MauiPlanets/MauiPlanets.Desktop/bin/Debug/${config:dotnetTfm}/MauiPlanets.Desktop.dll",
             "args": [ 
             ],
-            "cwd": "${workspaceFolder}/showcase/MauiPlanets/MauiPlanets.Desktop/bin/Debug/net11.0",
+            "cwd": "${workspaceFolder}/showcase/MauiPlanets/MauiPlanets.Desktop/bin/Debug/${config:dotnetTfm}",
             "console": "internalConsole",
             "stopAtEntry": false
         },
@@ -42,10 +42,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_alohakit_gallery_desktop",
-            "program": "${workspaceFolder}/showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/bin/Debug/net11.0/AlohaKit.Gallery.Desktop.dll",
+            "program": "${workspaceFolder}/showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/bin/Debug/${config:dotnetTfm}/AlohaKit.Gallery.Desktop.dll",
             "args": [ 
             ],
-            "cwd": "${workspaceFolder}/showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/bin/Debug/net11.0",
+            "cwd": "${workspaceFolder}/showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/bin/Debug/${config:dotnetTfm}",
             "console": "internalConsole",
             "stopAtEntry": false
         },
@@ -54,10 +54,10 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_2048game_desktop",
-            "program": "${workspaceFolder}/showcase/2048Game/2048Game.Desktop/bin/Debug/net11.0/2048Game.Desktop.dll",
+            "program": "${workspaceFolder}/showcase/2048Game/2048Game.Desktop/bin/Debug/${config:dotnetTfm}/2048Game.Desktop.dll",
             "args": [ 
             ],
-            "cwd": "${workspaceFolder}/showcase/2048Game/2048Game.Desktop/bin/Debug/net11.0",
+            "cwd": "${workspaceFolder}/showcase/2048Game/2048Game.Desktop/bin/Debug/${config:dotnetTfm}",
             "console": "internalConsole",
             "stopAtEntry": false
         },
@@ -66,10 +66,22 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build_weathertwentyone_desktop",
-            "program": "${workspaceFolder}/showcase/WeatherTwentyOne/WeatherTwentyOne.Desktop/bin/Debug/net11.0/WeatherTwentyOne.Desktop.dll",
+            "program": "${workspaceFolder}/showcase/WeatherTwentyOne/WeatherTwentyOne.Desktop/bin/Debug/${config:dotnetTfm}/WeatherTwentyOne.Desktop.dll",
             "args": [ 
             ],
-            "cwd": "${workspaceFolder}/showcase/WeatherTwentyOne/WeatherTwentyOne.Desktop/bin/Debug/net11.0",
+            "cwd": "${workspaceFolder}/showcase/WeatherTwentyOne/WeatherTwentyOne.Desktop/bin/Debug/${config:dotnetTfm}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "AlohaAI Desktop",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_alohaai_desktop",
+            "program": "${workspaceFolder}/showcase/AlohaAI/AlohaAI.Desktop/bin/Debug/${config:dotnetTfm}/AlohaAI.Desktop.dll",
+            "args": [ 
+            ],
+            "cwd": "${workspaceFolder}/showcase/AlohaAI/AlohaAI.Desktop/bin/Debug/${config:dotnetTfm}",
             "console": "internalConsole",
             "stopAtEntry": false
         },
