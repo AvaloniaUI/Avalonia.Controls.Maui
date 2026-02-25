@@ -18,10 +18,10 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>AlohaAI.MauiNative</ApplicationTitle>
+		<ApplicationTitle>Maui.Controls.Sample.MauiNative</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.avaloniaui.alohaai.mauinative</ApplicationId>
+		<ApplicationId>com.avaloniaui.mauisample.mauinative</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
