@@ -12,6 +12,7 @@ namespace Avalonia.Controls.Maui;
 /// </summary>
 public class MauiImageButton : Button
 {
+    protected override Type StyleKeyOverride => typeof(Button);
     private Image? _image;
     private MauiAspect _aspect = MauiAspect.AspectFit;
 

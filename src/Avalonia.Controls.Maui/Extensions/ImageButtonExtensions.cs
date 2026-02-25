@@ -65,7 +65,14 @@ public static class ImageButtonExtensions
         if (imageButton is not IButtonStroke stroke)
             return;
 
-        platformView.BorderThickness = new Thickness(stroke.StrokeThickness);
+        if (stroke.StrokeThickness < 0)
+        {
+            platformView.ClearValue(TemplatedControl.BorderThicknessProperty);
+        }
+        else
+        {
+            platformView.BorderThickness = new Thickness(stroke.StrokeThickness);
+        }
     }
 
     /// <summary>
@@ -78,7 +85,14 @@ public static class ImageButtonExtensions
         if (imageButton is not IButtonStroke stroke)
             return;
 
-        platformView.CornerRadius = new CornerRadius(stroke.CornerRadius);
+        if (stroke.CornerRadius < 0)
+        {
+            platformView.ClearValue(TemplatedControl.CornerRadiusProperty);
+        }
+        else
+        {
+            platformView.CornerRadius = new CornerRadius(stroke.CornerRadius);
+        }
     }
 
     /// <summary>
@@ -91,7 +105,19 @@ public static class ImageButtonExtensions
         if (imageButton is not IPadding padding)
             return;
 
-        platformView.Padding = padding.Padding.ToPlatform();
+        var mauiPadding = padding.Padding;
+        if (mauiPadding == Microsoft.Maui.Thickness.Zero)
+        {
+            platformView.ClearValue(TemplatedControl.PaddingProperty);
+        }
+        else if (double.IsNaN(mauiPadding.Left) && double.IsNaN(mauiPadding.Top) && double.IsNaN(mauiPadding.Right) && double.IsNaN(mauiPadding.Bottom))
+        {
+            return;
+        }
+        else
+        {
+            platformView.Padding = mauiPadding.ToPlatform();
+        }
     }
 
     /// <summary>
