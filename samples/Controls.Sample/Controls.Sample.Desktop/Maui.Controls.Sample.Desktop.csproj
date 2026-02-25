@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>$(DotNetTfm)</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+		<UseMaui>true</UseMaui>
+		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
+	</PropertyGroup>
+
+    <PropertyGroup Label="AOT Validation">
+        <IsTrimmable>true</IsTrimmable>
+        <IsAotCompatible>true</IsAotCompatible>
+        <TrimmerSingleWarn>false</TrimmerSingleWarn>
+        <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
+    </PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
+	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
+	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
+	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+	  <ProjectReference Include="../Controls.Sample/Maui.Controls.Sample.csproj" />
+	</ItemGroup>
+
+	<Import Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.targets" />
+</Project>
