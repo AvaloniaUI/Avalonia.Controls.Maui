@@ -1,7 +1,12 @@
-using Avalonia.Controls.Maui.Maps.Controls;
+using Microsoft.Maui.Maps;
+using Microsoft.Maui.Devices.Sensors;
 using Mapsui.Nts;
 using Mapsui.Projections;
 using Mapsui.Styles;
+using MauiPolygon = Microsoft.Maui.Controls.Maps.Polygon;
+using MauiPolyline = Microsoft.Maui.Controls.Maps.Polyline;
+using MauiCircle = Microsoft.Maui.Controls.Maps.Circle;
+using MauiPin = Microsoft.Maui.Controls.Maps.Pin;
 using MapsuiMapControl = Mapsui.UI.Avalonia.MapControl;
 
 namespace Avalonia.Controls.Maui.Maps.Mapsui.Extensions;
@@ -25,10 +30,10 @@ public static class MapsuiMapExtensions
     public static void UpdateCenter(this MapsuiMapControl mapControl, double latitude, double longitude)
     {
         if (mapControl?.Map?.Navigator == null) return;
-        
+
         var (x, y) = SphericalMercator.FromLonLat(longitude, latitude);
         var point = new global::Mapsui.MPoint(x, y);
-        
+
         mapControl.Map.Navigator.CenterOn(point);
         mapControl.Refresh();
     }
@@ -42,7 +47,7 @@ public static class MapsuiMapExtensions
     {
         if (mapControl?.Map?.Navigator == null) return;
         if (zoomLevel <= 0) return;
-        
+
         double resolution = BaseResolution / Math.Pow(2, zoomLevel);
         mapControl.Map.Navigator.ZoomTo(resolution);
         mapControl.Refresh();
@@ -58,12 +63,12 @@ public static class MapsuiMapExtensions
     public static void NavigateTo(this MapsuiMapControl mapControl, double latitude, double longitude, double zoomLevel)
     {
         if (mapControl?.Map?.Navigator == null) return;
-        
+
         var (x, y) = SphericalMercator.FromLonLat(longitude, latitude);
         var point = new global::Mapsui.MPoint(x, y);
-        
+
         double resolution = zoomLevel > 0 ? BaseResolution / Math.Pow(2, zoomLevel) : mapControl.Map.Navigator.Viewport.Resolution;
-        
+
         mapControl.Map.Navigator.CenterOnAndZoomTo(point, resolution);
         mapControl.Refresh();
     }
@@ -91,86 +96,32 @@ public static class MapsuiMapExtensions
     }
 
     /// <summary>
-    /// Updates whether rotation is enabled on the map.
-    /// </summary>
-    /// <param name="mapControl">The Mapsui map control.</param>
-    /// <param name="enabled">True to enable rotation, false to disable.</param>
-    public static void UpdateIsRotationEnabled(this MapsuiMapControl mapControl, bool enabled)
-    {
-        if (mapControl?.Map?.Navigator == null) return;
-        mapControl.Map.Navigator.RotationLock = !enabled;
-    }
-    
-    /// <summary>
     /// Updates the pins on the map from the specified collection.
     /// </summary>
     /// <param name="mapControl">The Mapsui map control.</param>
     /// <param name="pins">The collection of pins to display.</param>
     /// <param name="pinsLayer">The memory layer to store pin features.</param>
-    public static void UpdatePins(this MapsuiMapControl mapControl, IList<MapPin> pins, global::Mapsui.Layers.MemoryLayer pinsLayer)
+    public static void UpdatePins(this MapsuiMapControl mapControl, IList<IMapPin> pins, global::Mapsui.Layers.MemoryLayer pinsLayer)
     {
         if (mapControl == null || pinsLayer == null) return;
-        
+
         var features = new List<global::Mapsui.IFeature>();
-        
+
         foreach (var pin in pins)
         {
             if (pin.Location == null) continue;
-            
+
             var (x, y) = SphericalMercator.FromLonLat(pin.Location.Longitude, pin.Location.Latitude);
             var point = new global::Mapsui.MPoint(x, y);
-            
+
             var feature = new global::Mapsui.Layers.PointFeature(point);
-            
-            // Handle Custom Icon
-            if (pin.Icon != null)
-            {
-                // Synchronous loading attempt for FileImageSource
-                if (pin.Icon is Microsoft.Maui.Controls.FileImageSource fileSource && !string.IsNullOrEmpty(fileSource.File))
-                {
-                    var filePath = fileSource.File;
-                    
-                    // Try to load the image file for Mapsui
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        try
-                        {
-                            // Use file:// URI scheme for local files
-                            var fileUri = new Uri(filePath).AbsoluteUri;
-                            
-                            feature.Styles.Add(new ImageStyle
-                            {
-                                Image = new global::Mapsui.Styles.Image { Source = fileUri },
-                                SymbolScale = (float)pin.IconScale
-                            });
-                        }
-                        catch
-                        {
-                            // Fallback to default circle on error
-                            feature.Styles.Add(CreateDefaultStyle(pin));
-                        }
-                    }
-                    else
-                    {
-                        // File doesn't exist, use default
-                        feature.Styles.Add(CreateDefaultStyle(pin));
-                    }
-                }
-                else
-                {
-                    // Fallback to default circle
-                    feature.Styles.Add(CreateDefaultStyle(pin));
-                }
-            }
-            else
-            {
-                // Default Style
-                feature.Styles.Add(CreateDefaultStyle(pin));
-            }
+
+            // Default Style based on PinType
+            feature.Styles.Add(CreateDefaultStyle(pin));
 
             // Store original pin for hit-testing
-            feature["MauiObject"] = pin;
-            
+            feature["MauiPin"] = pin;
+
             // Add label if present
             if (!string.IsNullOrEmpty(pin.Label))
             {
@@ -182,17 +133,14 @@ public static class MapsuiMapExtensions
                     ForeColor = Color.Black
                 });
             }
-            
-            // Store pin reference for event handling
-            feature["Pin"] = pin;
-            
+
             features.Add(feature);
         }
-        
+
         pinsLayer.Features = features;
         mapControl.Refresh();
     }
-    
+
     /// <summary>
     /// Clears all pins from the map.
     /// </summary>
@@ -204,56 +152,56 @@ public static class MapsuiMapExtensions
         pinsLayer.Features = new List<global::Mapsui.IFeature>();
         mapControl?.Refresh();
     }
-    
+
     /// <summary>
     /// Updates the shapes on the map from the specified collection.
     /// </summary>
     /// <param name="mapControl">The Mapsui map control.</param>
     /// <param name="elements">The collection of map elements to display.</param>
     /// <param name="shapesLayer">The memory layer to store shape features.</param>
-    public static void UpdateShapes(this MapsuiMapControl mapControl, IList<MapElement> elements, global::Mapsui.Layers.MemoryLayer shapesLayer)
+    public static void UpdateShapes(this MapsuiMapControl mapControl, IList<IMapElement> elements, global::Mapsui.Layers.MemoryLayer shapesLayer)
     {
         if (mapControl == null || shapesLayer == null) return;
-        
+
         var features = new List<global::Mapsui.IFeature>();
-        
+
         foreach (var element in elements)
         {
             global::Mapsui.IFeature? feature = element switch
             {
-                MapPolygon polygon => CreatePolygonFeature(polygon),
-                MapPolyline polyline => CreatePolylineFeature(polyline),
-                MapCircle circle => CreateCircleFeature(circle),
+                MauiPolygon polygon => CreatePolygonFeature(polygon),
+                MauiPolyline polyline => CreatePolylineFeature(polyline),
+                MauiCircle circle => CreateCircleFeature(circle),
                 _ => null
             };
-            
+
             if (feature != null)
             {
                 features.Add(feature);
             }
         }
-        
+
         shapesLayer.Features = features;
         mapControl.Refresh();
     }
-    
-    private static global::Mapsui.IFeature? CreatePolygonFeature(MapPolygon polygon)
+
+    private static global::Mapsui.IFeature? CreatePolygonFeature(MauiPolygon polygon)
     {
-        if (polygon.GeoPath.Count < 3) return null;
-        
-        var points = polygon.GeoPath.Select(loc =>
+        if (polygon.Geopath.Count < 3) return null;
+
+        var points = polygon.Geopath.Select(loc =>
         {
             var (x, y) = SphericalMercator.FromLonLat(loc.Longitude, loc.Latitude);
             return new global::Mapsui.MPoint(x, y);
         }).ToList();
-        
+
         // Close the polygon
         points.Add(points[0]);
-        
+
         var linearRing = new NetTopologySuite.Geometries.LinearRing(
             points.Select(p => new NetTopologySuite.Geometries.Coordinate(p.X, p.Y)).ToArray());
         var geometry = new NetTopologySuite.Geometries.Polygon(linearRing);
-        
+
         var feature = new GeometryFeature(geometry);
         feature.Styles.Add(new VectorStyle
         {
@@ -263,22 +211,22 @@ public static class MapsuiMapExtensions
 
         // Store original element for hit-testing
         feature["MauiObject"] = polygon;
-        
+
         return feature;
     }
-    
-    private static global::Mapsui.IFeature? CreatePolylineFeature(MapPolyline polyline)
+
+    private static global::Mapsui.IFeature? CreatePolylineFeature(MauiPolyline polyline)
     {
-        if (polyline.GeoPath.Count < 2) return null;
-        
-        var points = polyline.GeoPath.Select(loc =>
+        if (polyline.Geopath.Count < 2) return null;
+
+        var points = polyline.Geopath.Select(loc =>
         {
             var (x, y) = SphericalMercator.FromLonLat(loc.Longitude, loc.Latitude);
             return new NetTopologySuite.Geometries.Coordinate(x, y);
         }).ToArray();
-        
+
         var geometry = new NetTopologySuite.Geometries.LineString(points);
-        
+
         var feature = new GeometryFeature(geometry);
         feature.Styles.Add(new VectorStyle
         {
@@ -287,30 +235,30 @@ public static class MapsuiMapExtensions
 
         // Store original element for hit-testing
         feature["MauiObject"] = polyline;
-        
+
         return feature;
     }
-    
-    private static global::Mapsui.IFeature? CreateCircleFeature(MapCircle circle)
+
+    private static global::Mapsui.IFeature? CreateCircleFeature(MauiCircle circle)
     {
-        if (circle.Center == null || circle.Radius <= 0) return null;
-        
+        if (circle.Center == null || circle.Radius.Meters <= 0) return null;
+
         var (centerX, centerY) = SphericalMercator.FromLonLat(circle.Center.Longitude, circle.Center.Latitude);
-        
+
         // Create a circular polygon approximation (32 points)
         var points = new List<NetTopologySuite.Geometries.Coordinate>();
         const int segments = 32;
         for (int i = 0; i <= segments; i++)
         {
             double angle = (2 * Math.PI * i) / segments;
-            double x = centerX + (circle.Radius * Math.Cos(angle));
-            double y = centerY + (circle.Radius * Math.Sin(angle));
+            double x = centerX + (circle.Radius.Meters * Math.Cos(angle));
+            double y = centerY + (circle.Radius.Meters * Math.Sin(angle));
             points.Add(new NetTopologySuite.Geometries.Coordinate(x, y));
         }
-        
+
         var linearRing = new NetTopologySuite.Geometries.LinearRing(points.ToArray());
         var geometry = new NetTopologySuite.Geometries.Polygon(linearRing);
-        
+
         var feature = new GeometryFeature(geometry);
         feature.Styles.Add(new VectorStyle
         {
@@ -320,10 +268,10 @@ public static class MapsuiMapExtensions
 
         // Store original element for hit-testing
         feature["MauiObject"] = circle;
-        
+
         return feature;
     }
-    
+
     private static Color ToMapsuiColor(Microsoft.Maui.Graphics.Color? mauiColor)
     {
         if (mauiColor == null) return Color.Transparent;
@@ -333,15 +281,17 @@ public static class MapsuiMapExtensions
             (int)(mauiColor.Blue * 255),
             (int)(mauiColor.Alpha * 255));
     }
-    
-    private static SymbolStyle CreateDefaultStyle(MapPin pin)
+
+    private static SymbolStyle CreateDefaultStyle(IMapPin pin)
     {
-        // Style based on pin type
-        var color = pin.Type switch
+        // Style based on pin type if available
+        var pinType = pin is MauiPin controlsPin ? controlsPin.Type : Microsoft.Maui.Controls.Maps.PinType.Generic;
+
+        var color = pinType switch
         {
-            PinType.Place => Color.Blue,
-            PinType.SavedPin => Color.Green,
-            PinType.SearchResult => Color.Orange,
+            Microsoft.Maui.Controls.Maps.PinType.Place => Color.Blue,
+            Microsoft.Maui.Controls.Maps.PinType.SavedPin => Color.Green,
+            Microsoft.Maui.Controls.Maps.PinType.SearchResult => Color.Orange,
             _ => Color.Red // Generic
         };
 

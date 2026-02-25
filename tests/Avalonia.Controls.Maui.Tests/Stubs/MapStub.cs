@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.Maui;
-using Avalonia.Controls.Maui.Maps;
-using Avalonia.Controls.Maui.Maps.Handlers;
-using Avalonia.Controls.Maui.Maps.Controls;
+using Microsoft.Maui.Maps;
+using Microsoft.Maui.Devices.Sensors;
 
 namespace Avalonia.Controls.Maui.Tests.Stubs;
 
-public class MapStub : StubBase, IMapView
+public class MapStub : StubBase, IMap
 {
     public MapType MapType { get; set; } = MapType.Street;
 
@@ -18,24 +17,25 @@ public class MapStub : StubBase, IMapView
 
     public bool IsZoomEnabled { get; set; } = true;
 
-    public bool IsRotationEnabled { get; set; } = true;
+    public bool IsTrafficEnabled { get; set; }
 
-    public bool ShowAttribution { get; set; } = true;
+    public MapSpan? VisibleRegion { get; set; }
 
-    public double CenterLatitude { get; set; }
+    public IList<IMapPin> Pins { get; set; } = new ObservableCollection<IMapPin>();
 
-    public double CenterLongitude { get; set; }
+    public IList<IMapElement> Elements { get; set; } = new ObservableCollection<IMapElement>();
 
-    public double ZoomLevel { get; set; } = 1;
+    public Microsoft.Maui.Devices.Sensors.Location? LastClickedLocation { get; private set; }
 
-    public IList<MapPin> Pins { get; set; } = new ObservableCollection<MapPin>();
+    public MapSpan? LastMoveToRegion { get; private set; }
 
-    public IList<MapElement> MapElements { get; set; } = new ObservableCollection<MapElement>();
-
-    public event EventHandler<MapClickedEventArgs>? MapClicked;
-
-    public void OnMapClicked(MapClickedEventArgs args)
+    void IMap.Clicked(Microsoft.Maui.Devices.Sensors.Location position)
     {
-        MapClicked?.Invoke(this, args);
+        LastClickedLocation = position;
+    }
+
+    public void MoveToRegion(MapSpan region)
+    {
+        LastMoveToRegion = region;
     }
 }

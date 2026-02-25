@@ -1,18 +1,18 @@
 using global::Mapsui;
 using Microsoft.Maui;
+using Microsoft.Maui.Maps;
+using Microsoft.Maui.Maps.Handlers;
 using Avalonia.Controls.Maui.Handlers;
-using Avalonia.Controls.Maui.Maps.Controls;
-using Avalonia.Controls.Maui.Maps.Handlers;
 using Avalonia.Controls.Maui.Maps.Mapsui.Extensions;
 using global::Mapsui.Tiling;
 using global::Mapsui.Projections;
 using global::Mapsui.Nts;
 using Microsoft.Maui.Devices.Sensors;
-using System.Runtime.CompilerServices;
 using BruTile.Predefined;
 using MapsuiMapControl = global::Mapsui.UI.Avalonia.MapControl;
 using MapsuiLayers = global::Mapsui.Layers;
 using MapsuiStyles = global::Mapsui.Styles;
+using MauiIMapHandler = Microsoft.Maui.Maps.Handlers.IMapHandler;
 
 namespace Avalonia.Controls.Maui.Maps.Mapsui.Handlers;
 
@@ -20,42 +20,37 @@ namespace Avalonia.Controls.Maui.Maps.Mapsui.Handlers;
 /// Mapsui-based implementation of the Map handler for Avalonia.
 /// More information: https://mapsui.com
 /// </summary>
-public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>, IMapHandler
+public partial class MapsuiMapHandler : ViewHandler<IMap, MapsuiMapControl>, MauiIMapHandler
 {
     private MapsuiLayers.MemoryLayer? _pinsLayer;
     private MapsuiLayers.MemoryLayer? _shapesLayer;
     private CancellationTokenSource? _locationCts;
-    
-    private bool _isInitialSyncPerformed;
 
     /// <summary>
     /// Property mapper for the Map handler.
     /// </summary>
-    public static IPropertyMapper<IMapView, MapsuiMapHandler> Mapper = 
-        new PropertyMapper<IMapView, MapsuiMapHandler>(ViewMapper)
+    public static IPropertyMapper<IMap, MapsuiMapHandler> Mapper =
+        new PropertyMapper<IMap, MapsuiMapHandler>(ViewMapper)
         {
-            [nameof(IMapView.IsScrollEnabled)] = MapIsScrollEnabled,
-            [nameof(IMapView.IsZoomEnabled)] = MapIsZoomEnabled,
-            [nameof(IMapView.IsRotationEnabled)] = MapIsRotationEnabled,
-            [nameof(IMapView.CenterLatitude)] = MapCenter,
-            [nameof(IMapView.CenterLongitude)] = MapCenter,
-            [nameof(IMapView.ZoomLevel)] = MapZoomLevel,
-            [nameof(IMapView.MapType)] = MapMapType,
-            [nameof(IMapView.IsShowingUser)] = MapIsShowingUser,
+            [nameof(IMap.MapType)] = MapMapType,
+            [nameof(IMap.IsShowingUser)] = MapIsShowingUser,
+            [nameof(IMap.IsScrollEnabled)] = MapIsScrollEnabled,
+            [nameof(IMap.IsZoomEnabled)] = MapIsZoomEnabled,
+            [nameof(IMap.IsTrafficEnabled)] = MapIsTrafficEnabled,
+            [nameof(IMap.Pins)] = MapPins,
+            [nameof(IMap.Elements)] = MapElements,
         };
-    
+
     /// <summary>
     /// Command mapper for the Map handler.
     /// </summary>
-    public static CommandMapper<IMapView, MapsuiMapHandler> CommandMapper = 
+    public static CommandMapper<IMap, MapsuiMapHandler> CommandMapper =
         new(ViewCommandMapper)
         {
-            ["CenterTo"] = MapCenterToCommand,
-            ["ZoomTo"] = MapZoomToCommand,
-            ["UpdatePins"] = MapUpdatePinsCommand,
-            ["UpdateMapElements"] = MapUpdateMapElementsCommand,
+            [nameof(IMap.MoveToRegion)] = MapMoveToRegion,
+            [nameof(MauiIMapHandler.UpdateMapElement)] = MapUpdateMapElement,
         };
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="MapsuiMapHandler"/> class.
     /// </summary>
@@ -63,20 +58,24 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
     {
     }
 
+    IMap MauiIMapHandler.VirtualView => VirtualView;
+
+    object MauiIMapHandler.PlatformView => PlatformView!;
+
     /// <inheritdoc/>
     protected override MapsuiMapControl CreatePlatformView()
     {
         var mapControl = new MapsuiMapControl();
-        
+
         // Disable Mapsui's debug logging and performance widgets
         global::Mapsui.Logging.Logger.LogDelegate = null;
         mapControl.Map.Widgets.Clear();
-        
+
         // Initialize with OpenStreetMap
         var initialLayer = OpenStreetMap.CreateTileLayer("AvaloniaControlGallery");
         initialLayer.Name = "Basemap";
         mapControl.Map.Layers.Add(initialLayer);
-        
+
         // Pins layer
         _pinsLayer = new MapsuiLayers.MemoryLayer
         {
@@ -84,7 +83,7 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
             Style = null
         };
         mapControl.Map.Layers.Add(_pinsLayer);
-        
+
         // Shapes layer (for polygons, polylines, circles)
         _shapesLayer = new MapsuiLayers.MemoryLayer
         {
@@ -92,80 +91,69 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
             Style = null
         };
         mapControl.Map.Layers.Insert(1, _shapesLayer);
-        
+
         return mapControl;
     }
-    
+
     /// <inheritdoc/>
     protected override void ConnectHandler(MapsuiMapControl platformView)
     {
         base.ConnectHandler(platformView);
         platformView.Refresh();
-        
+
         platformView.Map.Info += OnMapInfo;
-        platformView.LayoutUpdated += OnLayoutUpdated;
-        
-        // Sync pins
-        if (VirtualView?.Pins != null)
-        {
-            UpdatePins();
-        }
     }
-    
+
     /// <inheritdoc/>
     protected override void DisconnectHandler(MapsuiMapControl platformView)
     {
         platformView.Map.Info -= OnMapInfo;
-        platformView.LayoutUpdated -= OnLayoutUpdated;
 
         CancelLocationTask();
 
         base.DisconnectHandler(platformView);
     }
-    
-    private static void MapIsScrollEnabled(MapsuiMapHandler handler, IMapView map)
+
+    private static void MapIsScrollEnabled(MapsuiMapHandler handler, IMap map)
     {
         handler.PlatformView?.UpdateIsScrollEnabled(map.IsScrollEnabled);
     }
 
-    private static void MapIsZoomEnabled(MapsuiMapHandler handler, IMapView map)
+    private static void MapIsZoomEnabled(MapsuiMapHandler handler, IMap map)
     {
         handler.PlatformView?.UpdateIsZoomEnabled(map.IsZoomEnabled);
     }
-    
-    private static void MapIsRotationEnabled(MapsuiMapHandler handler, IMapView map)
+
+    private static void MapIsTrafficEnabled(MapsuiMapHandler handler, IMap map)
     {
-        handler.PlatformView?.UpdateIsRotationEnabled(map.IsRotationEnabled);
-    }
-    
-    private static void MapCenter(MapsuiMapHandler handler, IMapView map)
-    {
-        handler.PlatformView?.UpdateCenter(map.CenterLatitude, map.CenterLongitude);
+        // No-op: Mapsui/OpenStreetMap does not support traffic overlays
     }
 
-    private static void MapZoomLevel(MapsuiMapHandler handler, IMapView map)
+    private static void MapPins(MapsuiMapHandler handler, IMap map)
     {
-        if (map.ZoomLevel > 0)
-        {
-            handler.PlatformView?.UpdateZoomLevel(map.ZoomLevel);
-        }
+        handler.UpdatePins();
     }
 
-    private static void MapMapType(MapsuiMapHandler handler, IMapView map)
+    private static void MapElements(MapsuiMapHandler handler, IMap map)
+    {
+        handler.UpdateMapElements();
+    }
+
+    private static void MapMapType(MapsuiMapHandler handler, IMap map)
     {
         if (handler.PlatformView?.Map == null) return;
-        
+
         var mapControl = handler.PlatformView;
         var mapType = map.MapType;
-        
+
         var layers = mapControl.Map.Layers.Where(l => l.Name == "Basemap").ToList();
         foreach (var l in layers)
         {
             mapControl.Map.Layers.Remove(l);
         }
-        
+
         MapsuiLayers.ILayer layer;
-        
+
         switch (mapType)
         {
             case MapType.Street:
@@ -174,33 +162,33 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
                 layer.Name = "Basemap";
                 mapControl.Map.Layers.Insert(0, layer);
                 break;
-                
+
             case MapType.Satellite:
                 layer = new global::Mapsui.Tiling.Layers.TileLayer(KnownTileSources.Create(KnownTileSource.EsriWorldPhysical)) { Name = "Basemap" };
                 mapControl.Map.Layers.Insert(0, layer);
                 break;
-                
+
             case MapType.Hybrid:
                 layer = new global::Mapsui.Tiling.Layers.TileLayer(KnownTileSources.Create(KnownTileSource.EsriWorldShadedRelief)) { Name = "Basemap" };
                 mapControl.Map.Layers.Insert(0, layer);
                 break;
         }
-        
+
         mapControl.RefreshGraphics();
         mapControl.Refresh();
     }
 
-    private static void MapIsShowingUser(MapsuiMapHandler handler, IMapView map)
+    private static void MapIsShowingUser(MapsuiMapHandler handler, IMap map)
     {
         if (handler.PlatformView?.Map == null) return;
         var mapControl = handler.PlatformView;
-        
+
         // Cancel any pending location request
         handler.CancelLocationTask();
 
         // Find existing location layer
         var locationLayer = mapControl.Map.Layers.OfType<MapsuiLayers.MemoryLayer>().FirstOrDefault(l => l.Name == "MyLocation");
-        
+
         if (map.IsShowingUser)
         {
             // Add layer if missing
@@ -209,7 +197,7 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
                 locationLayer = new MapsuiLayers.MemoryLayer { Name = "MyLocation" };
                 mapControl.Map.Layers.Add(locationLayer);
             }
- 
+
             handler.StartLocationTask(locationLayer);
         }
         else
@@ -219,7 +207,7 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
                 mapControl.Map.Layers.Remove(locationLayer);
             }
         }
-        
+
         mapControl.Refresh();
     }
 
@@ -243,10 +231,10 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
     private async void StartLocationTask(MapsuiLayers.MemoryLayer locationLayer)
     {
         if (PlatformView == null) return;
-        
+
         var mapControl = PlatformView;
-        
-        try 
+
+        try
         {
             _locationCts = new CancellationTokenSource();
             var token = _locationCts.Token;
@@ -274,11 +262,11 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
                     // Fallback to IP matching if Geolocation is not supported
                     location = await GetLocationFromIpAsync(token).ConfigureAwait(false);
                 }
-                
+
                 if (location != null && !token.IsCancellationRequested)
                 {
                     // Dispatch the UI update back to the UI thread
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() => 
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                     {
                         if (!token.IsCancellationRequested)
                         {
@@ -297,77 +285,56 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
             System.Diagnostics.Debug.WriteLine($"Error getting location: {ex.Message}");
         }
     }
-    
-    private static void MapCenterToCommand(MapsuiMapHandler handler, IMapView map, object? args)
+
+    private static void MapMoveToRegion(MapsuiMapHandler handler, IMap map, object? args)
     {
-        if (args is ValueTuple<double, double> tuple)
+        if (args is MapSpan span)
         {
-            handler.PlatformView?.UpdateCenter(tuple.Item1, tuple.Item2);
-        }
-        else if (args is ITuple t && t.Length >= 2 && t[0] is double lat && t[1] is double lon)
-        {
-            handler.PlatformView?.UpdateCenter(lat, lon);
+            var zoomLevel = Math.Log2(360.0 / span.LatitudeDegrees);
+            handler.PlatformView?.NavigateTo(span.Center.Latitude, span.Center.Longitude, zoomLevel);
         }
     }
 
-    private static void MapZoomToCommand(MapsuiMapHandler handler, IMapView map, object? args)
-    {
-        if (args is not double zoomLevel || zoomLevel <= 0) return;
-        handler.PlatformView?.UpdateZoomLevel(zoomLevel);
-    }
-
-    private static void MapUpdatePinsCommand(MapsuiMapHandler handler, IMapView map, object? args)
-    {
-        handler.UpdatePins();
-    }
-    
-    private static void MapUpdateMapElementsCommand(MapsuiMapHandler handler, IMapView map, object? args)
+    private static void MapUpdateMapElement(MapsuiMapHandler handler, IMap map, object? args)
     {
         handler.UpdateMapElements();
     }
-    
-    /// <inheritdoc/>
+
+    /// <summary>
+    /// Updates the map elements (polygons, polylines, circles) displayed on the map.
+    /// </summary>
     public void UpdateMapElements()
     {
-        if (_shapesLayer == null || VirtualView?.MapElements == null) return;
-        
-        PlatformView?.UpdateShapes(VirtualView.MapElements, _shapesLayer);
+        if (_shapesLayer == null || VirtualView?.Elements == null) return;
+
+        PlatformView?.UpdateShapes(VirtualView.Elements, _shapesLayer);
     }
-    
+
     /// <inheritdoc/>
-    public void CenterTo(double latitude, double longitude)
+    public void UpdateMapElement(IMapElement element)
     {
-        PlatformView?.UpdateCenter(latitude, longitude);
+        UpdateMapElements();
     }
-    
-    /// <inheritdoc/>
-    public void ZoomTo(double zoomLevel)
-    {
-        if (zoomLevel > 0)
-        {
-            PlatformView?.UpdateZoomLevel(zoomLevel);
-        }
-    }
-    
+
     private static async Task<Microsoft.Maui.Devices.Sensors.Location?> GetLocationFromIpAsync(CancellationToken cancellationToken)
     {
         try
         {
             using var httpClient = new HttpClient();
             httpClient.Timeout = TimeSpan.FromSeconds(5);
-            
+
             var response = await httpClient.GetStringAsync("http://ip-api.com/json/?fields=lat,lon,status", cancellationToken).ConfigureAwait(false);
-            
+
             if (response.Contains("\"status\":\"success\""))
             {
                 var latMatch = System.Text.RegularExpressions.Regex.Match(response, "\"lat\":([\\d.-]+)");
                 var lonMatch = System.Text.RegularExpressions.Regex.Match(response, "\"lon\":([\\d.-]+)");
-                
+
                 if (latMatch.Success && lonMatch.Success)
                 {
                     var lat = double.Parse(latMatch.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
                     var lon = double.Parse(lonMatch.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture);
-                    
+
                     System.Diagnostics.Debug.WriteLine($"IP Geolocation: {lat}, {lon}");
                     return new Microsoft.Maui.Devices.Sensors.Location(lat, lon);
                 }
@@ -377,16 +344,15 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
         {
             System.Diagnostics.Debug.WriteLine($"IP Geolocation failed: {ex.Message}");
         }
-        
+
         // Fallback to Tallinn, Estonia (Home of Avalonia UI) if IP geolocation fails
         return new Microsoft.Maui.Devices.Sensors.Location(59.4370, 24.7536);
     }
-    
+
     private static void UpdateUserLocation(MapsuiMapHandler handler, MapsuiMapControl mapControl, MapsuiLayers.MemoryLayer layer, Microsoft.Maui.Devices.Sensors.Location location)
     {
         var (x, y) = SphericalMercator.FromLonLat(location.Longitude, location.Latitude);
-        var point = new MPoint(x, y);
-        
+
         // Create User Location Style (Blue Puck with Halo)
         var feature = new GeometryFeature
         {
@@ -407,36 +373,18 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
                 }
             }
         };
-        
+
         layer.Features = new List<IFeature> { feature };
-        
+
         // Move camera to user location
         handler.PlatformView.UpdateCenter(location.Latitude, location.Longitude);
 
         if (handler.PlatformView.Map.Navigator.Viewport.Resolution > 20)
         {
-            handler.PlatformView.UpdateZoomLevel(14); 
+            handler.PlatformView.UpdateZoomLevel(14);
         }
-        
-        mapControl.Refresh();
-    }
 
-    
-    private void OnLayoutUpdated(object? sender, EventArgs e)
-    {
-        if (PlatformView == null) return;
-        
-        var mapControl = PlatformView;
-        if (mapControl.Bounds.Width > 0 && mapControl.Bounds.Height > 0)
-        {
-            if (!_isInitialSyncPerformed && VirtualView != null)
-            {
-                _isInitialSyncPerformed = true;
-                mapControl.UpdateCenter(VirtualView.CenterLatitude, VirtualView.CenterLongitude);
-                mapControl.UpdateZoomLevel(VirtualView.ZoomLevel);
-            }
-            mapControl.Refresh();
-        }
+        mapControl.Refresh();
     }
 
     private void OnMapInfo(object? sender, MapInfoEventArgs e)
@@ -445,13 +393,12 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
         {
             var worldPosition = e.WorldPosition;
             var (lon, lat) = SphericalMercator.ToLonLat(
-                worldPosition.X, 
+                worldPosition.X,
                 worldPosition.Y);
 
             var location = new Microsoft.Maui.Devices.Sensors.Location(lat, lon);
-            var args = new MapClickedEventArgs(location);
+
             var layers = new List<MapsuiLayers.ILayer>();
-            
             if (_pinsLayer != null) layers.Add(_pinsLayer);
             if (_shapesLayer != null) layers.Add(_shapesLayer);
 
@@ -460,25 +407,23 @@ public partial class MapsuiMapHandler : ViewHandler<IMapView, MapsuiMapControl>,
             if (mapInfo?.Feature != null)
             {
                 var feature = mapInfo.Feature;
-                if (feature["MauiObject"] is MapPin pin)
+                if (feature["MauiPin"] is IMapPin pin)
                 {
-                    args.Pin = pin;
-                }
-                else if (feature["MauiObject"] is MapElement element)
-                {
-                    args.Element = element;
+                    pin.SendMarkerClick();
                 }
             }
 
-            VirtualView.OnMapClicked(args);
+            VirtualView.Clicked(location);
         }
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Updates the pins displayed on the map.
+    /// </summary>
     public void UpdatePins()
     {
         if (_pinsLayer == null || VirtualView?.Pins == null) return;
-        
+
         PlatformView?.UpdatePins(VirtualView.Pins, _pinsLayer);
     }
 }

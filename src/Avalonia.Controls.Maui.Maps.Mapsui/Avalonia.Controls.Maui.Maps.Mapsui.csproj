@@ -15,15 +15,14 @@
     
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Mapsui.Avalonia" Version="5.0.0" />
-    <PackageReference Include="Mapsui.Nts" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
+    <PackageReference Include="Mapsui.Avalonia" Version="5.1.0-beta.2" />
+    <PackageReference Include="Mapsui.Nts" Version="5.1.0-beta.2" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="$(MauiVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
     <ProjectReference Include="..\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
-    <ProjectReference Include="..\Avalonia.Controls.Maui.Maps\Avalonia.Controls.Maui.Maps.csproj" />
   </ItemGroup>
 
 </Project>
