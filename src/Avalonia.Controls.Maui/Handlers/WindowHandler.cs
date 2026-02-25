@@ -27,6 +27,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         [nameof(IWindow.MaximumHeight)] = mapMaximumHeight,
         [nameof(IWindow.MinimumWidth)] = mapMinimumWidth,
         [nameof(IWindow.MinimumHeight)] = mapMinimumHeight,
+        [nameof(IWindow.FlowDirection)] = mapFlowDirection,
     };
 
     static CommandMapper<IWindow, WindowHandler> CommandMapper = new(ElementCommandMapper)
@@ -219,5 +220,20 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             avWindow.MinHeight = 0;
         else
             avWindow.MinHeight = window.MinimumHeight;
+    }
+
+    static void mapFlowDirection(WindowHandler handler, IWindow window)
+    {
+        var avWindow = (Window)handler.PlatformView;
+        switch (window.FlowDirection)
+        {
+            case FlowDirection.MatchParent:
+            case FlowDirection.LeftToRight:
+                avWindow.FlowDirection = Avalonia.Media.FlowDirection.LeftToRight;
+                break;
+            case FlowDirection.RightToLeft:
+                avWindow.FlowDirection = Avalonia.Media.FlowDirection.RightToLeft;
+                break;
+        }
     }
 }

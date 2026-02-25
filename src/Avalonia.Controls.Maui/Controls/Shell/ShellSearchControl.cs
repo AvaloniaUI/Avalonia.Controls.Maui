@@ -367,10 +367,10 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
 
             _searchBar.HorizontalTextAlignment = _mauiSearchHandler.HorizontalTextAlignment switch
             {
-                Microsoft.Maui.TextAlignment.Start => Avalonia.Media.TextAlignment.Left,
+                Microsoft.Maui.TextAlignment.Start => Avalonia.Media.TextAlignment.Start,
                 Microsoft.Maui.TextAlignment.Center => Avalonia.Media.TextAlignment.Center,
-                Microsoft.Maui.TextAlignment.End => Avalonia.Media.TextAlignment.Right,
-                _ => Avalonia.Media.TextAlignment.Left
+                Microsoft.Maui.TextAlignment.End => Avalonia.Media.TextAlignment.End,
+                _ => Avalonia.Media.TextAlignment.Start
             };
 
             _searchBar.VerticalContentAlignment = _mauiSearchHandler.VerticalTextAlignment switch

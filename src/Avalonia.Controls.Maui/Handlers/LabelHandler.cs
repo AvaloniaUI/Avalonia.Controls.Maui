@@ -216,13 +216,13 @@ public static class LabelTextBlockExtensions
         switch (label.HorizontalTextAlignment)
         {
             case Microsoft.Maui.TextAlignment.Start:
-                textBlock.TextAlignment = AvaloniaTextAlignment.Left;
+                textBlock.TextAlignment = AvaloniaTextAlignment.Start;
                 break;
             case Microsoft.Maui.TextAlignment.Center:
                 textBlock.TextAlignment = AvaloniaTextAlignment.Center;
                 break;
             case Microsoft.Maui.TextAlignment.End:
-                textBlock.TextAlignment = AvaloniaTextAlignment.Right;
+                textBlock.TextAlignment = AvaloniaTextAlignment.End;
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

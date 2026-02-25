@@ -282,10 +282,10 @@ public partial class SearchBarHandlerTests : HandlerTestBase<MauiSearchBarHandle
 
         var expectedAvalonia = alignment switch
         {
-            TextAlignment.Start => Media.TextAlignment.Left,
+            TextAlignment.Start => Media.TextAlignment.Start,
             TextAlignment.Center => Media.TextAlignment.Center,
-            TextAlignment.End => Media.TextAlignment.Right,
-            _ => Media.TextAlignment.Left,
+            TextAlignment.End => Media.TextAlignment.End,
+            _ => Media.TextAlignment.Start,
         };
 
         Assert.Equal(expectedAvalonia, platformView.HorizontalTextAlignment);

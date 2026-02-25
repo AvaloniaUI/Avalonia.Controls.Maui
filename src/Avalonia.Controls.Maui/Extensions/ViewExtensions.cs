@@ -682,6 +682,10 @@ public static class ViewExtensions
         switch (view.FlowDirection)
         {
             case FlowDirection.MatchParent:
+                // Clear the local value so Avalonia's inherited property system
+                // picks up the parent's FlowDirection automatically.
+                control.ClearValue(Visual.FlowDirectionProperty);
+                break;
             case FlowDirection.LeftToRight:
                 control.FlowDirection = Media.FlowDirection.LeftToRight;
                 break;

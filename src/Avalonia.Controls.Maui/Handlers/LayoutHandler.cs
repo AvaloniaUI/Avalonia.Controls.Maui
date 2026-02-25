@@ -114,6 +114,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
 
         if (child?.ToPlatform(MauiContext) is Control control)
         {
+            control.ZIndex = child.ZIndex;
             PlatformView.Children.Add(control);
         }
     }
@@ -151,6 +152,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
 
         if (child?.ToPlatform(MauiContext) is Control control)
         {
+            control.ZIndex = child.ZIndex;
             PlatformView.Children.Insert(index, control);
         }
     }
@@ -164,15 +166,20 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         PlatformView.Children.RemoveAt(index);
         if (child?.ToPlatform(MauiContext) is Control control)
         {
+            control.ZIndex = child.ZIndex;
             PlatformView.Children.Insert(index, control);
         }
     }
 
     public void UpdateZIndex(IView child)
     {
-        if (child?.Handler?.PlatformView is Control control)
+        if (child?.Handler is IViewHandler viewHandler)
         {
-            control.ZIndex = child.ZIndex;
+            var control = viewHandler.ContainerView as Control ?? viewHandler.PlatformView as Control;
+            if (control != null)
+            {
+                control.ZIndex = child.ZIndex;
+            }
         }
     }
 
