@@ -28,6 +28,6 @@ public class WebViewHandler : ViewHandler<WebView, PlaceholderControl>
 
     protected override PlaceholderControl CreatePlatformView()
     {
-        return new PlaceholderControl("WebView is not available in this version");
+        return new PlaceholderControl("WebView is not available in this version of Avalonia.Controls.Maui");
     }
 }
