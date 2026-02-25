@@ -39,8 +39,13 @@ public class LayoutPanel : Panel
         var width = finalSize.Width;
         var height = finalSize.Height;
 
-        var actual = CrossPlatformArrange(new MauiRect(0, 0, width, height));
+        CrossPlatformArrange(new MauiRect(0, 0, width, height));
 
-        return new AvaloniaSize(actual.Width, actual.Height);
+        // Always return finalSize rather than the cross-platform arrange result.
+        // MAUI layout managers may return a smaller size (or even zero) from ArrangeChildren,
+        // but native platform containers always fill the space given by the parent.
+        // In Avalonia, returning a smaller size would cause the panel to be repositioned
+        // (e.g., centered for Stretch alignment), shifting all children.
+        return finalSize;
     }
 }
