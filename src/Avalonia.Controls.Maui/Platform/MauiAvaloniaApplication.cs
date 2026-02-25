@@ -78,7 +78,7 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
 
     private Control CreatePlatformContent()
     {
-        var mauiContext = new MauiContext(Services);
+        var mauiContext = MakeAvaloniaWindowScope(ApplicationContext!);
 
         Services.InvokeLifecycleEvents<AvaloniaLifecycle.OnMauiContextCreated>(del => del(mauiContext));
 
@@ -96,21 +96,31 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
 
     private MauiAvaloniaWindow CreatePlatformWindow()
     {
-
-        var mauiContext = new MauiContext(Services);
+        var mauiContext = MakeAvaloniaWindowScope(ApplicationContext!);
 
         Services.InvokeLifecycleEvents<AvaloniaLifecycle.OnMauiContextCreated>(del => del(mauiContext));
 
         var activationState = new ActivationState(mauiContext);
         var window = Application.CreateWindow(activationState);
 
-        var test = window.ToPlatform(mauiContext);
         var avaloniaWindow = window.ToPlatform(mauiContext) as MauiAvaloniaWindow
             ?? throw new InvalidOperationException($"The window handler for {window.GetType().FullName} must be a {nameof(MauiAvaloniaWindow)}");
 
         Services.InvokeLifecycleEvents<AvaloniaLifecycle.OnWindowCreated>(del => del(avaloniaWindow));
 
         return avaloniaWindow;
+    }
+
+    /// <summary>
+    /// Creates a window-scoped MauiContext with a proper DI scope.
+    /// </summary>
+    private static IMauiContext MakeAvaloniaWindowScope(IMauiContext mauiContext)
+    {
+        var scope = mauiContext.Services.CreateScope();
+        var scopedContext = new MauiContext(scope.ServiceProvider);
+        scopedContext.SetWindowScope(scope);
+        scopedContext.InitializeScopedServices();
+        return scopedContext;
     }
 
     /// <summary>
