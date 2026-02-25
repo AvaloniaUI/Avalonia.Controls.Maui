@@ -243,7 +243,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
         var provider = this.GetRequiredService<IImageSourceServiceProvider>();
 
-        if (provider.GetImageSourceService(source.GetType()) is IAvaloniaImageSourceService service)
+        if (provider.GetImageSourceService(GetImageSourceInterfaceType(source)) is IAvaloniaImageSourceService service)
         {
             try 
             {
@@ -317,6 +317,18 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     {
         return AvaloniaResourceHelper.TryResolveResourceUri(fileName, out result);
     }
+
+    // UriImageSource implements both IUriImageSource and IStreamImageSource, which causes
+    // an ambiguous match when MAUI's ImageSourceServiceProvider resolves by concrete type.
+    // Resolve by interface type instead, checking more specific interfaces first.
+    private static Type GetImageSourceInterfaceType(IImageSource source) => source switch
+    {
+        IFileImageSource => typeof(IFileImageSource),
+        IFontImageSource => typeof(IFontImageSource),
+        IUriImageSource => typeof(IUriImageSource),
+        IStreamImageSource => typeof(IStreamImageSource),
+        _ => source.GetType()
+    };
 
     private void Log(LogLevel level, Exception? ex, string message)
     {

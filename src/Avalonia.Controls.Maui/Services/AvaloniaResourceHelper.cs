@@ -34,6 +34,8 @@ internal static class AvaloniaResourceHelper
 
     private static string GetResourcePath(string fileName)
     {
+        if (fileName.StartsWith("/images/", StringComparison.OrdinalIgnoreCase) || fileName.StartsWith("images/", StringComparison.OrdinalIgnoreCase))
+            return fileName.StartsWith("/") ? fileName : "/" + fileName;
         var nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
         var extension = Path.GetExtension(fileName);
         // The Avalonia.Controls.Target task embeds images under the /Images/ folder.

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:maps="clr-namespace:Avalonia.Controls.Maui.Maps.Controls;assembly=Avalonia.Controls.Maui.Maps"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              xmlns:pages="clr-namespace:ControlGallery.Pages"
              x:Class="ControlGallery.Pages.MapPage"
              x:DataType="pages:MapPage"
@@ -14,7 +14,7 @@
                    FontSize="24"
                    FontAttributes="Bold"
                    HorizontalOptions="Center" />
-            
+
             <!-- Basic Map -->
             <Border Stroke="Gray"
                     Padding="12">
@@ -28,12 +28,9 @@
                            FontSize="12"
                            TextColor="Gray"
                            Margin="0,0,0,4" />
-                    <maps:MapView x:Name="BasicMap"
+                    <maps:Map x:Name="BasicMap"
                                HeightRequest="300"
                                WidthRequest="350"
-                               CenterLatitude="37.3891"
-                               CenterLongitude="-5.9845"
-                               ZoomLevel="12"
                                HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </Border>
@@ -51,14 +48,11 @@
                            FontSize="12"
                            TextColor="Gray"
                            Margin="0,0,0,4" />
-                    <maps:MapView x:Name="MapTypeMap"
-                               HeightRequest="300"
-                               CenterLatitude="37.3891"
-                               CenterLongitude="-5.9845"
-                               ZoomLevel="12" />
+                    <maps:Map x:Name="MapTypeMap"
+                               HeightRequest="300" />
                     <HorizontalStackLayout Spacing="8" Margin="0,8,0,0">
                          <Label Text="Type:" VerticalOptions="Center" />
-                         <Picker x:Name="MapTypePicker" 
+                         <Picker x:Name="MapTypePicker"
                                  SelectedIndexChanged="OnMapTypeChanged"
                                  WidthRequest="150">
                             <Picker.ItemsSource>
@@ -87,11 +81,8 @@
                            FontSize="12"
                            TextColor="Gray"
                            Margin="0,0,0,4" />
-                    <maps:MapView x:Name="UserLocationMap"
-                               HeightRequest="300"
-                               CenterLatitude="59.4370"
-                               CenterLongitude="24.7536"
-                               ZoomLevel="10" />
+                    <maps:Map x:Name="UserLocationMap"
+                               HeightRequest="300" />
                 </VerticalStackLayout>
             </Border>
 
@@ -113,14 +104,11 @@
                            FontAttributes="Italic"
                            TextColor="#2196F3"
                            Margin="0,0,0,8" />
-                    <maps:MapView x:Name="ClickableMap"
-                               HeightRequest="250"
-                               CenterLatitude="37.3891"
-                               CenterLongitude="-5.9845"
-                               ZoomLevel="12" />
+                    <maps:Map x:Name="ClickableMap"
+                               HeightRequest="250" />
                 </VerticalStackLayout>
             </Border>
-            
+
             <!-- Map Selection (Pins & Shapes) -->
             <Border Stroke="Gray"
                     Padding="12">
@@ -130,7 +118,7 @@
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Pin and Shape Selection"
                            FontAttributes="Bold" />
-                    <Label Text="Click on pins or shapes to see their details in a popup."
+                    <Label Text="Click on pins or shapes to see their details."
                            FontSize="12"
                            TextColor="Gray"
                            Margin="0,0,0,4" />
@@ -140,11 +128,8 @@
                            FontAttributes="Italic"
                            TextColor="#4CAF50"
                            Margin="0,0,0,8" />
-                    <maps:MapView x:Name="SelectionMap"
+                    <maps:Map x:Name="SelectionMap"
                                HeightRequest="300"
-                               CenterLatitude="37.3891"
-                               CenterLongitude="-5.9845"
-                               ZoomLevel="12"
                                MapClicked="OnSelectionMapClicked" />
                 </VerticalStackLayout>
             </Border>
@@ -167,11 +152,8 @@
                            FontSize="14"
                            TextColor="#4CAF50"
                            Margin="0,0,0,8" />
-                    <maps:MapView x:Name="PinsMap"
-                               HeightRequest="300"
-                               CenterLatitude="47.0"
-                               CenterLongitude="10.0"
-                               ZoomLevel="4" />
+                    <maps:Map x:Name="PinsMap"
+                               HeightRequest="300" />
                     <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
                         <Button Text="Add Rome" Clicked="OnAddRomePinClicked" Margin="0,0,8,8" />
                         <Button Text="Add Paris" Clicked="OnAddParisPinClicked" Margin="0,0,8,8" />
@@ -194,25 +176,19 @@
                            FontSize="12"
                            TextColor="Gray"
                            Margin="0,0,0,4" />
-                    
-                    <maps:MapView x:Name="ItemsSourceMap"
+
+                    <maps:Map x:Name="ItemsSourceMap"
                                HeightRequest="300"
-                               CenterLatitude="40.4168"
-                               CenterLongitude="-3.7038"
-                               ZoomLevel="5"
                                ItemsSource="{Binding PlaceData}">
-                        <maps:MapView.ItemTemplate>
+                        <maps:Map.ItemTemplate>
                             <DataTemplate x:DataType="pages:PlaceItem">
-                                <maps:MapPin Label="{Binding Name}"
-                                             Location="{Binding Position}"
-                                             Address="{Binding Description}"
-                                             Icon="{Binding Icon}"
-                                             IconScale="{Binding IconScale}"
-                                             Type="Place" />
+                                <maps:Pin Label="{Binding Name}"
+                                          Location="{Binding Position}"
+                                          Address="{Binding Description}" />
                             </DataTemplate>
-                        </maps:MapView.ItemTemplate>
-                    </maps:MapView>
-                    
+                        </maps:Map.ItemTemplate>
+                    </maps:Map>
+
                     <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
                         <Button Text="Add Madrid" Clicked="OnAddMadridDataClicked" Margin="0,0,8,8" />
                         <Button Text="Add Barcelona" Clicked="OnAddBarcelonaDataClicked" Margin="0,0,8,8" />
@@ -234,11 +210,8 @@
                            FontSize="12"
                            TextColor="Gray"
                            Margin="0,0,0,4" />
-                    <maps:MapView x:Name="InteractionMap"
-                               HeightRequest="250"
-                               CenterLatitude="37.3891"
-                               CenterLongitude="-5.9845"
-                               ZoomLevel="12" />
+                    <maps:Map x:Name="InteractionMap"
+                               HeightRequest="250" />
                     <HorizontalStackLayout Spacing="8" Margin="0,8,0,0">
                         <Label Text="Zoom:" VerticalOptions="Center" />
                         <Slider x:Name="ZoomSlider"
@@ -247,21 +220,21 @@
                                 Value="12"
                                 WidthRequest="200"
                                 ValueChanged="OnZoomSliderChanged" />
-                        <Label x:Name="ZoomLevelLabel" 
-                               Text="12" 
+                        <Label x:Name="ZoomLevelLabel"
+                               Text="12"
                                WidthRequest="30"
                                VerticalOptions="Center" />
                     </HorizontalStackLayout>
                     <Grid ColumnDefinitions="*,*" RowDefinitions="Auto" ColumnSpacing="12">
                         <HorizontalStackLayout Grid.Column="0" Spacing="8">
                             <Label Text="Scroll Enabled:" VerticalOptions="Center" />
-                            <Switch x:Name="ScrollSwitch" 
+                            <Switch x:Name="ScrollSwitch"
                                     IsToggled="True"
                                     Toggled="OnScrollSwitchToggled" />
                         </HorizontalStackLayout>
                         <HorizontalStackLayout Grid.Column="1" Spacing="8">
                             <Label Text="Zoom Enabled:" VerticalOptions="Center" />
-                            <Switch x:Name="ZoomSwitch" 
+                            <Switch x:Name="ZoomSwitch"
                                     IsToggled="True"
                                     Toggled="OnZoomSwitchToggled" />
                         </HorizontalStackLayout>
@@ -287,11 +260,8 @@
                            FontSize="14"
                            TextColor="#FF5722"
                            Margin="0,0,0,8" />
-                    <maps:MapView x:Name="ShapesMap"
-                               HeightRequest="300"
-                               CenterLatitude="46.0"
-                               CenterLongitude="8.0"
-                               ZoomLevel="4" />
+                    <maps:Map x:Name="ShapesMap"
+                               HeightRequest="300" />
                     <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
                         <Button Text="Add Polygon" Clicked="OnAddPolygonClicked" Margin="0,0,8,8" />
                         <Button Text="Add Polyline" Clicked="OnAddPolylineClicked" Margin="0,0,8,8" />
@@ -322,11 +292,8 @@
                            FontAttributes="Italic"
                            TextColor="#4CAF50"
                            Margin="0,0,0,8" />
-                    <maps:MapView x:Name="RegionMap"
-                               HeightRequest="300"
-                               CenterLatitude="40.7128"
-                               CenterLongitude="-74.0060"
-                               ZoomLevel="12" />
+                    <maps:Map x:Name="RegionMap"
+                               HeightRequest="300" />
                     <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Start">
                         <Button Text="New York" Clicked="OnMoveToNYCClicked" Margin="0,0,8,8" />
                         <Button Text="London" Clicked="OnMoveToLondonClicked" Margin="0,0,8,8" />
@@ -337,7 +304,7 @@
             </Border>
 
 
-            
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

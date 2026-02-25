@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
-using Avalonia.Controls.Maui.Maps.Controls;
+using Microsoft.Maui.Controls.Maps;
+using Microsoft.Maui.Maps;
 using Microsoft.Maui.Devices.Sensors;
 
 namespace ControlGallery.Pages;
@@ -10,19 +11,31 @@ public partial class MapPage : ContentPage
     {
         InitializeComponent();
         BindingContext = this;
+
+        // Set initial map positions via MoveToRegion
+        BasicMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(37.3891, -5.9845), Distance.FromKilometers(5)));
+        MapTypeMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(37.3891, -5.9845), Distance.FromKilometers(5)));
+        UserLocationMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(59.4370, 24.7536), Distance.FromKilometers(20)));
+        ClickableMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(37.3891, -5.9845), Distance.FromKilometers(5)));
+        SelectionMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(37.3891, -5.9845), Distance.FromKilometers(5)));
+        PinsMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(47.0, 10.0), Distance.FromKilometers(1000)));
+        ItemsSourceMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(40.4168, -3.7038), Distance.FromKilometers(200)));
+        InteractionMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(37.3891, -5.9845), Distance.FromKilometers(5)));
+        ShapesMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(46.0, 8.0), Distance.FromKilometers(1000)));
+        RegionMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(40.7128, -74.0060), Distance.FromKilometers(5)));
     }
 
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        
+
         // Subscribe to MapClicked
         ClickableMap.MapClicked += OnMapClicked;
 
         try
         {
             var status = PermissionStatus.Unknown;
-            
+
             // Mock permissions on Desktop (macOS/Windows) since we'll mock the location too
             if (OperatingSystem.IsMacOS() || OperatingSystem.IsWindows())
             {
@@ -36,11 +49,11 @@ public partial class MapPage : ContentPage
                     status = await Permissions.RequestAsync<Permissions.LocationWhenInUse>();
                 }
             }
-            
+
             if (status == PermissionStatus.Granted)
             {
                 if (UserLocationMap != null) UserLocationMap.IsShowingUser = true;
-                
+
                 // Initialize Selection Sample
                 InitializeSelectionSample();
             }
@@ -60,32 +73,10 @@ public partial class MapPage : ContentPage
         ClickedCoordsLabel.Text = $"Lat: {e.Location.Latitude:F4}, Lon: {e.Location.Longitude:F4}";
     }
 
-    private async void OnSelectionMapClicked(object? sender, MapClickedEventArgs e)
+    private void OnSelectionMapClicked(object? sender, MapClickedEventArgs e)
     {
-        System.Diagnostics.Debug.WriteLine($"OnSelectionMapClicked: Pin={e.Pin != null}, Element={e.Element?.GetType().Name}");
-        
-        if (e.Pin != null)
-        {
-            SelectionInfoLabel.Text = $"📍 Pin: {e.Pin.Label} at {e.Pin.Location?.Latitude:F4}, {e.Pin.Location?.Longitude:F4}";
-            SelectionInfoLabel.TextColor = Microsoft.Maui.Graphics.Colors.Blue;
-        }
-        else if (e.Element is MapPolygon polygon)
-        {
-            SelectionInfoLabel.Text = $"🔷 Polygon: {polygon.GeoPath.Count} points, Stroke: {polygon.StrokeColor}";
-            SelectionInfoLabel.TextColor = Microsoft.Maui.Graphics.Colors.Blue;
-        }
-        else if (e.Element is MapCircle circle)
-        {
-            SelectionInfoLabel.Text = $"⭕ Circle: Radius={circle.Radius}m, Center: {circle.Center?.Latitude:F4}, {circle.Center?.Longitude:F4}";
-            SelectionInfoLabel.TextColor = Microsoft.Maui.Graphics.Colors.Red;
-        }
-        else
-        {
-            SelectionInfoLabel.Text = $"📍 Clicked: {e.Location.Latitude:F4}, {e.Location.Longitude:F4}";
-            SelectionInfoLabel.TextColor = Microsoft.Maui.Graphics.Colors.Gray;
-        }
-
-        await Task.CompletedTask; // Keep async signature
+        SelectionInfoLabel.Text = $"Clicked: {e.Location.Latitude:F4}, {e.Location.Longitude:F4}";
+        SelectionInfoLabel.TextColor = Microsoft.Maui.Graphics.Colors.Gray;
     }
 
     private void InitializeSelectionSample()
@@ -93,41 +84,52 @@ public partial class MapPage : ContentPage
         if (SelectionMap == null) return;
 
         // Add a Pin
-        SelectionMap.Pins.Add(new MapPin
+        var pin = new Pin
         {
             Label = "Seville Cathedral",
             Address = "Seville, Spain",
             Location = new Location(37.3858, -5.9931),
             Type = PinType.Place
-        });
+        };
+        pin.MarkerClicked += OnSelectionPinClicked;
+        SelectionMap.Pins.Add(pin);
 
         // Add a Circle around the Cathedral
-        SelectionMap.MapElements.Add(new MapCircle
+        SelectionMap.MapElements.Add(new Circle
         {
             Center = new Location(37.3858, -5.9931),
-            Radius = 200,
+            Radius = Distance.FromMeters(200),
             StrokeColor = Microsoft.Maui.Graphics.Colors.Red,
             StrokeWidth = 2,
             FillColor = Microsoft.Maui.Graphics.Color.FromRgba(255, 0, 0, 40)
         });
 
         // Add a Polygon for a nearby plaza
-        var polygon = new MapPolygon
+        var polygon = new Polygon
         {
             StrokeColor = Microsoft.Maui.Graphics.Colors.Blue,
             StrokeWidth = 2,
             FillColor = Microsoft.Maui.Graphics.Color.FromRgba(0, 0, 255, 40)
         };
-        polygon.GeoPath.Add(new Location(37.3833, -5.9912));
-        polygon.GeoPath.Add(new Location(37.3833, -5.9932));
-        polygon.GeoPath.Add(new Location(37.3823, -5.9922));
+        polygon.Geopath.Add(new Location(37.3833, -5.9912));
+        polygon.Geopath.Add(new Location(37.3833, -5.9932));
+        polygon.Geopath.Add(new Location(37.3823, -5.9922));
         SelectionMap.MapElements.Add(polygon);
+    }
+
+    private void OnSelectionPinClicked(object? sender, PinClickedEventArgs e)
+    {
+        if (sender is Pin pin)
+        {
+            SelectionInfoLabel.Text = $"Pin: {pin.Label} at {pin.Location.Latitude:F4}, {pin.Location.Longitude:F4}";
+            SelectionInfoLabel.TextColor = Microsoft.Maui.Graphics.Colors.Blue;
+        }
     }
 
     // Pins handlers
     private void OnAddRomePinClicked(object? sender, EventArgs e)
     {
-        PinsMap.Pins.Add(new MapPin
+        PinsMap.Pins.Add(new Pin
         {
             Label = "Rome",
             Address = "Italy",
@@ -139,7 +141,7 @@ public partial class MapPage : ContentPage
 
     private void OnAddParisPinClicked(object? sender, EventArgs e)
     {
-        PinsMap.Pins.Add(new MapPin
+        PinsMap.Pins.Add(new Pin
         {
             Label = "Paris",
             Address = "France",
@@ -151,7 +153,7 @@ public partial class MapPage : ContentPage
 
     private void OnAddBerlinPinClicked(object? sender, EventArgs e)
     {
-        PinsMap.Pins.Add(new MapPin
+        PinsMap.Pins.Add(new Pin
         {
             Label = "Berlin",
             Address = "Germany",
@@ -188,82 +190,80 @@ public partial class MapPage : ContentPage
     {
         int zoomLevel = (int)Math.Round(e.NewValue);
         ZoomLevelLabel.Text = zoomLevel.ToString();
-        InteractionMap.ZoomTo(zoomLevel);
+        var center = InteractionMap.VisibleRegion?.Center ?? new Location(37.3891, -5.9845);
+        var latDegrees = 360.0 / Math.Pow(2, zoomLevel);
+        InteractionMap.MoveToRegion(new MapSpan(center, latDegrees, latDegrees));
     }
 
     // Navigation handlers
     private void OnMoveToNYCClicked(object? sender, EventArgs e)
     {
-        RegionMap.CenterTo(40.7128, -74.0060);
-        RegionMap.ZoomTo(12);
+        RegionMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(40.7128, -74.0060), Distance.FromKilometers(5)));
         CurrentLocationLabel.Text = "Current: New York, USA";
     }
 
     private void OnMoveToLondonClicked(object? sender, EventArgs e)
     {
-        RegionMap.CenterTo(51.5074, -0.1278);
-        RegionMap.ZoomTo(12);
+        RegionMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(51.5074, -0.1278), Distance.FromKilometers(5)));
         CurrentLocationLabel.Text = "Current: London, UK";
     }
 
     private void OnMoveToTokyoClicked(object? sender, EventArgs e)
     {
-        RegionMap.CenterTo(35.6762, 139.6503);
-        RegionMap.ZoomTo(12);
+        RegionMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(35.6762, 139.6503), Distance.FromKilometers(5)));
         CurrentLocationLabel.Text = "Current: Tokyo, Japan";
     }
 
     private void OnMoveToSydneyClicked(object? sender, EventArgs e)
     {
-        RegionMap.CenterTo(-33.8688, 151.2093);
-        RegionMap.ZoomTo(12);
+        RegionMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(-33.8688, 151.2093), Distance.FromKilometers(5)));
         CurrentLocationLabel.Text = "Current: Sydney, Australia";
     }
 
     // Shapes handlers
     private void OnAddPolygonClicked(object? sender, EventArgs e)
     {
-        var polygon = new MapPolygon
+        var polygon = new Polygon
         {
             StrokeColor = Microsoft.Maui.Graphics.Colors.Blue,
             StrokeWidth = 3,
             FillColor = Microsoft.Maui.Graphics.Color.FromRgba(0, 0, 255, 50)
         };
         // Triangle in France
-        polygon.GeoPath.Add(new Location(48.8566, 2.3522)); // Paris
-        polygon.GeoPath.Add(new Location(43.2965, 5.3698)); // Marseille
-        polygon.GeoPath.Add(new Location(45.7640, 4.8357)); // Lyon
-        
+        polygon.Geopath.Add(new Location(48.8566, 2.3522)); // Paris
+        polygon.Geopath.Add(new Location(43.2965, 5.3698)); // Marseille
+        polygon.Geopath.Add(new Location(45.7640, 4.8357)); // Lyon
+
         ShapesMap.MapElements.Add(polygon);
         UpdateShapesCount();
     }
 
     private void OnAddPolylineClicked(object? sender, EventArgs e)
     {
-        var polyline = new MapPolyline
+        var polyline = new Polyline
         {
             StrokeColor = Microsoft.Maui.Graphics.Colors.Red,
             StrokeWidth = 4
         };
-        polyline.GeoPath.Add(new Location(52.5200, 13.4050)); 
-        polyline.GeoPath.Add(new Location(50.1109, 8.6821));  
-        polyline.GeoPath.Add(new Location(48.1351, 11.5820)); 
-        
+        polyline.Geopath.Add(new Location(52.5200, 13.4050));
+        polyline.Geopath.Add(new Location(50.1109, 8.6821));
+        polyline.Geopath.Add(new Location(48.1351, 11.5820));
+
         ShapesMap.MapElements.Add(polyline);
         UpdateShapesCount();
     }
 
     private void OnAddCircleClicked(object? sender, EventArgs e)
     {
-        var circle = new MapCircle
+        var circle = new Circle
         {
             Center = new Location(41.9028, 12.4964), // Rome
-            Radius = 100000, // 100km in meters
+            Radius = Distance.FromMeters(100000), // 100km
             StrokeColor = Microsoft.Maui.Graphics.Colors.Green,
             StrokeWidth = 2,
             FillColor = Microsoft.Maui.Graphics.Color.FromRgba(0, 255, 0, 50)
         };
-        
+
         ShapesMap.MapElements.Add(circle);
         UpdateShapesCount();
     }
@@ -288,10 +288,10 @@ public partial class MapPage : ContentPage
 
             MapTypeMap.MapType = selectedType switch
             {
-                "Street" => Avalonia.Controls.Maui.Maps.MapType.Street,
-                "Satellite" => Avalonia.Controls.Maui.Maps.MapType.Satellite,
-                "Hybrid" => Avalonia.Controls.Maui.Maps.MapType.Hybrid,
-                _ => Avalonia.Controls.Maui.Maps.MapType.Street
+                "Street" => Microsoft.Maui.Maps.MapType.Street,
+                "Satellite" => Microsoft.Maui.Maps.MapType.Satellite,
+                "Hybrid" => Microsoft.Maui.Maps.MapType.Hybrid,
+                _ => Microsoft.Maui.Maps.MapType.Street
             };
         }
     }
@@ -302,27 +302,7 @@ public partial class MapPage : ContentPage
 
     private void OnAddMadridDataClicked(object? sender, EventArgs e)
     {
-        var item = new PlaceItem("Madrid", "Capital of Spain", new Location(40.4168, -3.7038));
-        
-        // Use dotnet_bot.png as custom icon - try multiple paths
-        var possiblePaths = new[]
-        {
-            System.IO.Path.Combine(AppContext.BaseDirectory, "Resources", "Images", "dotnet_bot.png"),
-            System.IO.Path.Combine(AppContext.BaseDirectory, "dotnet_bot.png"),
-            "/Users/jsuarezruiz/Documents/GitHub/Avalonia.Controls.Maui/samples/ControlGallery/ControlGallery/Resources/Images/dotnet_bot.png"
-        };
-        
-        foreach (var path in possiblePaths)
-        {
-            if (System.IO.File.Exists(path))
-            {
-                item.Icon = ImageSource.FromFile(path);
-                item.IconScale = 0.15;
-                break;
-            }
-        }
-        
-        PlaceData.Add(item);
+        PlaceData.Add(new PlaceItem("Madrid", "Capital of Spain", new Location(40.4168, -3.7038)));
     }
 
     private void OnAddBarcelonaDataClicked(object? sender, EventArgs e)
@@ -341,8 +321,6 @@ public class PlaceItem
     public string Name { get; set; }
     public string Description { get; set; }
     public Location Position { get; set; }
-    public ImageSource? Icon { get; set; }
-    public double IconScale { get; set; } = 1.0;
 
     public PlaceItem(string name, string description, Location position)
     {

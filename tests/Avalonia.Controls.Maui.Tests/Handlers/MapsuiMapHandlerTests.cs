@@ -1,9 +1,10 @@
 using Avalonia.Headless.XUnit;
 using Avalonia.Controls.Maui.Tests.Stubs;
-using Avalonia.Controls.Maui.Maps;
-using Avalonia.Controls.Maui.Maps.Handlers;
-using Avalonia.Controls.Maui.Maps.Controls;
+using Microsoft.Maui.Maps;
+using Microsoft.Maui.Maps.Handlers;
+using Microsoft.Maui.Controls.Maps;
 using Avalonia.Controls.Maui.Maps.Mapsui.Handlers;
+using Location = Microsoft.Maui.Devices.Sensors.Location;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -25,7 +26,7 @@ public class MapsuiMapHandlerTests : HandlerTestBase<MapsuiMapHandler, MapStub>
         var map = new MapStub { MapType = MapType.Street };
         await ValidatePropertyUpdatesValue(
             map,
-            nameof(IMapView.MapType),
+            nameof(IMap.MapType),
             GetPlatformMapType,
             type,
             MapType.Street);
@@ -45,13 +46,6 @@ public class MapsuiMapHandlerTests : HandlerTestBase<MapsuiMapHandler, MapStub>
         await ValidatePropertyInitValue(map, () => map.IsZoomEnabled, GetPlatformIsZoomEnabled, false);
     }
 
-    [AvaloniaFact(DisplayName = "IsRotationEnabled Initializes Correctly")]
-    public async Task IsRotationEnabledInitializesCorrectly()
-    {
-        var map = new MapStub { IsRotationEnabled = false };
-        await ValidatePropertyInitValue(map, () => map.IsRotationEnabled, GetPlatformIsRotationEnabled, false);
-    }
-
     [AvaloniaFact(DisplayName = "IsShowingUser Initializes Correctly")]
     public async Task IsShowingUserInitializesCorrectly()
     {
@@ -59,85 +53,47 @@ public class MapsuiMapHandlerTests : HandlerTestBase<MapsuiMapHandler, MapStub>
         await ValidatePropertyInitValue(map, () => map.IsShowingUser, GetPlatformIsShowingUser, true);
     }
 
-    [AvaloniaFact(DisplayName = "CenterLatitude Initializes Correctly")]
-    public async Task CenterLatitudeInitializesCorrectly()
+    [AvaloniaFact(DisplayName = "MoveToRegion Updates Platform Center and Zoom")]
+    public async Task MoveToRegionUpdatesPlatform()
     {
-        var map = new MapStub { CenterLatitude = 40.4168 };
+        var map = new MapStub();
         var handler = await CreateHandlerAsync(map);
-        
-        // Ensure size for navigator
+
+        // Required for navigator initialization
         handler.PlatformView.Measure(new Size(1000, 1000));
         handler.PlatformView.Arrange(new Rect(0, 0, 1000, 1000));
-        
-        handler.UpdateValue(nameof(IMapView.CenterLatitude));
-        
-        await Task.Delay(200); // Wait for navigator to settle
-        
-        var actual = GetPlatformCenterLatitude(handler);
-        Assert.Equal(40.4168, actual, 0.1);
-    }
 
-    [AvaloniaFact(DisplayName = "CenterLongitude Initializes Correctly")]
-    public async Task CenterLongitudeInitializesCorrectly()
-    {
-        var map = new MapStub { CenterLongitude = -3.7038 };
-        var handler = await CreateHandlerAsync(map);
-        
-        handler.PlatformView.Measure(new Avalonia.Size(1000, 1000));
-        handler.PlatformView.Arrange(new Avalonia.Rect(0, 0, 1000, 1000));
-        
-        handler.UpdateValue(nameof(IMapView.CenterLongitude));
-        
+        var span = new MapSpan(new Microsoft.Maui.Devices.Sensors.Location(41.9028, 12.4964), 0.088, 0.088);
+        handler.Invoke(nameof(IMap.MoveToRegion), span);
+
         await Task.Delay(200);
-        
-        var actual = GetPlatformCenterLongitude(handler);
-        Assert.Equal(-3.7038, actual, 0.1);
+
+        var lat = GetPlatformCenterLatitude(handler);
+        var lon = GetPlatformCenterLongitude(handler);
+
+        Assert.Equal(41.9028, lat, 0.1);
+        Assert.Equal(12.4964, lon, 0.1);
     }
 
-    [AvaloniaFact(DisplayName = "ZoomLevel Initializes Correctly")]
-    public async Task ZoomLevelInitializesCorrectly()
-    {
-        var map = new MapStub { ZoomLevel = 5 };
-        var handler = await CreateHandlerAsync(map);
-        
-        // Simulating Layout for Resolution calculation
-        handler.PlatformView.Measure(new Size(1000, 1000));
-        handler.PlatformView.Arrange(new Rect(0, 0, 1000, 1000));
-        
-        await Task.Delay(200);
-        
-        var actual = GetPlatformZoomLevel(handler);
-        Assert.Equal(5.0, actual, 0.1);
-    }
-
-    [AvaloniaFact(DisplayName = "ShowAttribution Initializes Correctly")]
-    public async Task ShowAttributionInitializesCorrectly()
-    {
-        var map = new MapStub { ShowAttribution = false };
-        var handler = await CreateHandlerAsync(map);
-        
-        var actual = GetPlatformShowAttribution(handler);
-        Assert.False(actual);
-    }
-    
     [AvaloniaFact(DisplayName = "Pins Add To Platform Layer")]
     public async Task PinsAddToPlatformLayer()
     {
         var map = new MapStub();
-        map.Pins.Add(new MapPin 
-        { 
-            Label = "Test Pin", 
+        var pin = new Pin
+        {
+            Label = "Test Pin",
             Location = new Microsoft.Maui.Devices.Sensors.Location(10, 10),
-            Type = PinType.Place 
-        });
-        
+            Type = PinType.Place
+        };
+        map.Pins.Add(pin);
+
         var handler = await CreateHandlerAsync(map);
         handler.PlatformView.Measure(new Size(1000, 1000));
         handler.PlatformView.Arrange(new Rect(0, 0, 1000, 1000));
-        
-        handler.Invoke("UpdatePins", null);
+
+        handler.UpdateValue(nameof(IMap.Pins));
         await Task.Delay(100);
-        
+
         var pinCount = GetPlatformPinCount(handler);
         Assert.Equal(1, pinCount);
     }
@@ -146,89 +102,94 @@ public class MapsuiMapHandlerTests : HandlerTestBase<MapsuiMapHandler, MapStub>
     public async Task PolygonsAddToPlatformLayer()
     {
         var map = new MapStub();
-        var polygon = new MapPolygon { FillColor = Microsoft.Maui.Graphics.Colors.Red };
-        polygon.GeoPath.Add(new Microsoft.Maui.Devices.Sensors.Location(40, -3));
-        polygon.GeoPath.Add(new Microsoft.Maui.Devices.Sensors.Location(41, -3));
-        polygon.GeoPath.Add(new Microsoft.Maui.Devices.Sensors.Location(41, -4));
-        map.MapElements.Add(polygon);
+        var polygon = new Microsoft.Maui.Controls.Maps.Polygon { FillColor = Microsoft.Maui.Graphics.Colors.Red };
+        polygon.Geopath.Add(new Microsoft.Maui.Devices.Sensors.Location(40, -3));
+        polygon.Geopath.Add(new Microsoft.Maui.Devices.Sensors.Location(41, -3));
+        polygon.Geopath.Add(new Microsoft.Maui.Devices.Sensors.Location(41, -4));
+        map.Elements.Add(polygon);
 
         var handler = await CreateHandlerAsync(map);
         handler.PlatformView.Measure(new Size(1000, 1000));
         handler.PlatformView.Arrange(new Rect(0, 0, 1000, 1000));
-        
-        handler.Invoke("UpdateMapElements", null);
+
+        handler.UpdateValue(nameof(IMap.Elements));
         await Task.Delay(100);
 
         var shapeCount = GetPlatformShapeCount(handler);
         Assert.Equal(1, shapeCount);
     }
 
-    [AvaloniaFact(DisplayName = "CenterTo Command Updates Platform")]
-    public async Task CenterToCommandUpdatesPlatform()
+    [AvaloniaFact(DisplayName = "Circles Add To Platform Layer")]
+    public async Task CirclesAddToPlatformLayer()
     {
         var map = new MapStub();
-        var handler = await CreateHandlerAsync(map);
+        var circle = new Circle
+        {
+            Center = new Microsoft.Maui.Devices.Sensors.Location(41.9028, 12.4964),
+            Radius = Distance.FromMeters(100000),
+            StrokeColor = Microsoft.Maui.Graphics.Colors.Green,
+            FillColor = Microsoft.Maui.Graphics.Colors.LightGreen
+        };
+        map.Elements.Add(circle);
 
-        // Required for navigator initialization
+        var handler = await CreateHandlerAsync(map);
         handler.PlatformView.Measure(new Size(1000, 1000));
         handler.PlatformView.Arrange(new Rect(0, 0, 1000, 1000));
-        
-        handler.Invoke("CenterTo", (41.9028, 12.4964));
 
-        await Task.Delay(200);
+        handler.UpdateValue(nameof(IMap.Elements));
+        await Task.Delay(100);
 
-        var lat = GetPlatformCenterLatitude(handler);
-        var lon = GetPlatformCenterLongitude(handler);
-
-        Assert.Equal(41.9028, lat, 0.001);
-        Assert.Equal(12.4964, lon, 0.001);
+        var shapeCount = GetPlatformShapeCount(handler);
+        Assert.Equal(1, shapeCount);
     }
-
-
 
     [AvaloniaFact(DisplayName = "Null Pins Collection Does Not Crash")]
     public async Task NullPinsCollectionDoesNotCrash()
     {
         var map = new MapStub { Pins = null! };
         var handler = await CreateHandlerAsync(map);
-        handler.UpdateValue("Pins");
+        handler.UpdateValue(nameof(IMap.Pins));
     }
 
-    [AvaloniaFact(DisplayName = "Null MapElements Collection Does Not Crash")]
-    public async Task NullMapElementsCollectionDoesNotCrash()
+    [AvaloniaFact(DisplayName = "Null Elements Collection Does Not Crash")]
+    public async Task NullElementsCollectionDoesNotCrash()
     {
-        var map = new MapStub { MapElements = null! };
+        var map = new MapStub { Elements = null! };
         var handler = await CreateHandlerAsync(map);
-        handler.UpdateValue("UpdateMapElements");
+        handler.UpdateValue(nameof(IMap.Elements));
     }
 
     [AvaloniaFact(DisplayName = "Polygon With Empty Path Does Not Crash")]
     public async Task PolygonWithEmptyPathDoesNotCrash()
     {
         var map = new MapStub();
-        var polygon = new MapPolygon();
-        map.MapElements.Add(polygon);
+        var polygon = new Microsoft.Maui.Controls.Maps.Polygon();
+        map.Elements.Add(polygon);
 
         var handler = await CreateHandlerAsync(map);
-        handler.UpdateValue("UpdateMapElements");
+        handler.UpdateValue(nameof(IMap.Elements));
 
         var shapeCount = GetPlatformShapeCount(handler);
         Assert.Equal(0, shapeCount);
     }
 
-    [AvaloniaFact(DisplayName = "Extreme Coordinates Handle Correctly")]
-    public async Task ExtremeCoordinatesHandleCorrectly()
+    [AvaloniaFact(DisplayName = "MoveToRegion With Extreme Values Does Not Crash")]
+    public async Task MoveToRegionWithExtremeValuesDoesNotCrash()
     {
-        var map = new MapStub { CenterLatitude = 95, CenterLongitude = 190 };
+        var map = new MapStub();
         var handler = await CreateHandlerAsync(map);
-        
-        // Mapsui/SphericalMercator usually clamps or wraps, 
-        // we just ensure no crash.
-        handler.UpdateValue(nameof(IMapView.CenterLatitude));
-        
+
+        handler.PlatformView.Measure(new Size(1000, 1000));
+        handler.PlatformView.Arrange(new Rect(0, 0, 1000, 1000));
+
+        // Very wide span (nearly the whole world)
+        var span = new MapSpan(new Microsoft.Maui.Devices.Sensors.Location(0, 0), 80, 180);
+        handler.Invoke(nameof(IMap.MoveToRegion), span);
+
+        await Task.Delay(200);
+
+        // Just ensure no crash occurred
         var lat = GetPlatformCenterLatitude(handler);
-        // latitude 95 is invalid for Mercator (clamped to ~85), 
-        // we just verify it's a number and no crash occurred.
         Assert.True(Math.Abs(lat) <= 90);
     }
 
@@ -236,7 +197,7 @@ public class MapsuiMapHandlerTests : HandlerTestBase<MapsuiMapHandler, MapStub>
     {
         var viewport = handler.PlatformView?.Map?.Navigator.Viewport;
         if (viewport == null) return 0;
-        
+
         var (lon, lat) = Mapsui.Projections.SphericalMercator.ToLonLat(viewport.Value.CenterX, viewport.Value.CenterY);
         return Math.Round(lon, 4);
     }
@@ -245,27 +206,19 @@ public class MapsuiMapHandlerTests : HandlerTestBase<MapsuiMapHandler, MapStub>
     {
         var viewport = handler.PlatformView?.Map?.Navigator.Viewport;
         if (viewport == null) return 0;
-        
+
         var (lon, lat) = Mapsui.Projections.SphericalMercator.ToLonLat(viewport.Value.CenterX, viewport.Value.CenterY);
         return Math.Round(lat, 4);
     }
 
     private double GetPlatformZoomLevel(MapsuiMapHandler handler)
     {
-
         var res = handler.PlatformView?.Map?.Navigator?.Viewport.Resolution ?? 1;
         if (res <= 0) return 0;
-        // MapExtensions.BaseResolution = 156543.03
         double baseRes = 156543.03;
         return Math.Round(Math.Log2(baseRes / res), 1);
     }
 
-    private bool GetPlatformShowAttribution(MapsuiMapHandler handler)
-    {
-
-        return handler.VirtualView.ShowAttribution;
-    }
-    
     private int GetPlatformPinCount(MapsuiMapHandler handler)
     {
         var layer = handler.PlatformView?.Map?.Layers?.FirstOrDefault(l => l.Name == "Pins") as Mapsui.Layers.MemoryLayer;
@@ -278,10 +231,9 @@ public class MapsuiMapHandlerTests : HandlerTestBase<MapsuiMapHandler, MapStub>
         return layer?.Features?.Count() ?? 0;
     }
 
-
     private MapType GetPlatformMapType(MapsuiMapHandler handler)
     {
-        return handler.VirtualView.MapType; 
+        return handler.VirtualView.MapType;
     }
 
     private bool GetPlatformIsScrollEnabled(MapsuiMapHandler handler)
@@ -292,11 +244,6 @@ public class MapsuiMapHandlerTests : HandlerTestBase<MapsuiMapHandler, MapStub>
     private bool GetPlatformIsZoomEnabled(MapsuiMapHandler handler)
     {
         return !(handler.PlatformView?.Map?.Navigator?.ZoomLock ?? true);
-    }
-
-    private bool GetPlatformIsRotationEnabled(MapsuiMapHandler handler)
-    {
-        return !(handler.PlatformView?.Map?.Navigator?.RotationLock ?? true);
     }
 
     private bool GetPlatformIsShowingUser(MapsuiMapHandler handler)

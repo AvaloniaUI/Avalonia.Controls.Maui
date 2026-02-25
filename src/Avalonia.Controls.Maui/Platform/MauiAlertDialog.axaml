@@ -6,7 +6,9 @@
              Width="320"
              HorizontalAlignment="Center"
              VerticalAlignment="Center">
-    <Border Background="{DynamicResource ThemeBackgroundBrush}"
+    <Border Background="{DynamicResource SystemRegionBrush}"
+            BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}"
+            BorderThickness="1"
             CornerRadius="14"
             BoxShadow="0 4 15 0 #40000000">
         <StackPanel Margin="24">
@@ -18,7 +20,7 @@
                        IsVisible="{Binding AlertTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
                        
             <TextBlock Text="{Binding AlertMessage}"
-                       Foreground="{DynamicResource ThemeForegroundBrush}"
+                       Foreground="{DynamicResource SystemControlForegroundBaseHighBrush}"
                        TextWrapping="Wrap"
                        Margin="0,0,0,24"/>
             <StackPanel Orientation="Horizontal"

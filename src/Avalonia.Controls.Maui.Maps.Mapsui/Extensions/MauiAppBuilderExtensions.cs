@@ -1,5 +1,5 @@
-using Avalonia.Controls.Maui.Maps.Controls;
 using Avalonia.Controls.Maui.Maps.Mapsui.Handlers;
+using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Hosting;
 
 namespace Avalonia.Controls.Maui.Maps.Mapsui;
@@ -18,9 +18,9 @@ public static class MauiAppBuilderExtensions
     {
         builder.ConfigureMauiHandlers(handlers =>
         {
-            handlers.AddHandler<MapView, MapsuiMapHandler>();
+            handlers.AddHandler<Map, MapsuiMapHandler>();
         });
-        
+
         return builder;
     }
 }
