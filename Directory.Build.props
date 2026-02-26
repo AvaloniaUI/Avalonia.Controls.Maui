@@ -58,7 +58,6 @@
         <PackageReleaseNotes>https://github.com/AvaloniaUI/Avalonia.Controls.Maui/releases</PackageReleaseNotes>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageIcon>Icon.png</PackageIcon>
     </PropertyGroup>
 

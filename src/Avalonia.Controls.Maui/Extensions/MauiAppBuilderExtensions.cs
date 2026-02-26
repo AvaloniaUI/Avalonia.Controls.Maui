@@ -8,6 +8,9 @@ using Microsoft.Maui;
 using Microsoft.Maui.Animations;
 using Microsoft.Maui.Hosting;
 
+/// <summary>
+/// Provides extension methods for configuring Avalonia services and handlers in a .NET MAUI application.
+/// </summary>
 public static class MauiAppBuilderExtensions
 {
     /// <summary>
@@ -26,6 +29,11 @@ public static class MauiAppBuilderExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Configures Avalonia-specific services for MAUI image handling using a custom registration delegate.
+    /// </summary>
+    /// <param name="builder">The <see cref="MauiAppBuilder"/> to configure.</param>
+    /// <param name="configureDelegate">An optional delegate to register custom <see cref="IImageSourceService"/> implementations.</param>
     public static MauiAppBuilder ConfigureImageSources(this MauiAppBuilder builder, Action<IImageSourceServiceCollection>? configureDelegate)
     {
         if (configureDelegate != null)

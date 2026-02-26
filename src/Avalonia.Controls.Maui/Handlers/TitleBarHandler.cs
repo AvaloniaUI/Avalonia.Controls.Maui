@@ -6,11 +6,10 @@ using System;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-/// <summary>
-/// Handler for MAUI TitleBar control on Avalonia.
-/// </summary>
+/// <summary>Avalonia handler for <see cref="ITitleBar"/>.</summary>
 public partial class TitleBarHandler : ViewHandler<ITitleBar, TitleBarView>
 {
+    /// <summary>Property mapper for <see cref="TitleBarHandler"/>.</summary>
     public static IPropertyMapper<ITitleBar, TitleBarHandler> Mapper =
         new PropertyMapper<ITitleBar, TitleBarHandler>(ViewMapper)
         {
@@ -20,23 +19,31 @@ public partial class TitleBarHandler : ViewHandler<ITitleBar, TitleBarView>
             [nameof(ITitleBar.PassthroughElements)] = MapPassthroughElements,
         };
 
+    /// <summary>Command mapper for <see cref="TitleBarHandler"/>.</summary>
     public static CommandMapper<ITitleBar, TitleBarHandler> CommandMapper =
         new(ViewCommandMapper);
 
+    /// <summary>Initializes a new instance of <see cref="TitleBarHandler"/>.</summary>
     public TitleBarHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="TitleBarHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public TitleBarHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="TitleBarHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public TitleBarHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override TitleBarView CreatePlatformView()
     {
         if (VirtualView == null)
@@ -54,6 +61,7 @@ public partial class TitleBarHandler : ViewHandler<ITitleBar, TitleBarView>
         return view;
     }
 
+    /// <inheritdoc/>
     public override void SetVirtualView(IView view)
     {
         base.SetVirtualView(view);
@@ -65,21 +73,33 @@ public partial class TitleBarHandler : ViewHandler<ITitleBar, TitleBarView>
         PlatformView.CrossPlatformLayout = VirtualView;
     }
 
+    /// <summary>Maps the Title property to the platform view.</summary>
+    /// <param name="handler">The handler for the title bar.</param>
+    /// <param name="titleBar">The virtual title bar.</param>
     public static void MapTitle(TitleBarHandler handler, ITitleBar titleBar)
     {
         handler.PlatformView.TitleBar = titleBar;
     }
 
+    /// <summary>Maps the Subtitle property to the platform view.</summary>
+    /// <param name="handler">The handler for the title bar.</param>
+    /// <param name="titleBar">The virtual title bar.</param>
     public static void MapSubtitle(TitleBarHandler handler, ITitleBar titleBar)
     {
         handler.PlatformView.TitleBar = titleBar;
     }
 
+    /// <summary>Maps the Content property to the platform view.</summary>
+    /// <param name="handler">The handler for the title bar.</param>
+    /// <param name="titleBar">The virtual title bar.</param>
     public static void MapContent(TitleBarHandler handler, ITitleBar titleBar)
     {
         handler.UpdateContent();
     }
 
+    /// <summary>Maps the PassthroughElements property to the platform view.</summary>
+    /// <param name="handler">The handler for the title bar.</param>
+    /// <param name="titleBar">The virtual title bar.</param>
     public static void MapPassthroughElements(TitleBarHandler handler, ITitleBar titleBar)
     {
         handler.UpdatePassthroughElements();

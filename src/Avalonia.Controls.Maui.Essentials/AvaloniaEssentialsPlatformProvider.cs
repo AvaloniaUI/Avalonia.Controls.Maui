@@ -8,6 +8,7 @@ namespace Avalonia.Controls.Maui.Essentials;
 /// </summary>
 internal class AvaloniaEssentialsPlatformProvider : IAvaloniaEssentialsPlatformProvider
 {
+    /// <inheritdoc/>
     public TopLevel? GetTopLevel()
     {
         var lifetime = Application.Current?.ApplicationLifetime;

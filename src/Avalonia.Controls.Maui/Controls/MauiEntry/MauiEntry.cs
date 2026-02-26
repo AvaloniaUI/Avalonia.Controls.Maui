@@ -24,6 +24,9 @@ public class MauiEntry : TextBox
         set => SetValue(ClearButtonVisibilityProperty, value);
     }
 
+    /// <summary>
+    /// Occurs when the text selection changes.
+    /// </summary>
     public event EventHandler<Interactivity.RoutedEventArgs>? SelectionChanged;
 
     /// <summary>
@@ -56,6 +59,7 @@ public class MauiEntry : TextBox
         private set => SetAndRaise(IsClearButtonVisibleProperty, ref _isClearButtonVisible, value);
     }
 
+    /// <inheritdoc/>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -82,6 +86,9 @@ public class MauiEntry : TextBox
                                && IsFocused;
     }
 
+    /// <summary>
+    /// Raises the <see cref="SelectionChanged"/> event.
+    /// </summary>
     public void RaiseSelectionChanged()
     {
         SelectionChanged?.Invoke(this, new Interactivity.RoutedEventArgs());

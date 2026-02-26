@@ -6,11 +6,13 @@ using PlatformView = Avalonia.Controls.RefreshContainer;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="IRefreshView"/>.</summary>
 public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView>
 {
     private RefreshCompletionDeferral? _currentRefreshDeferral;
     private bool _isSettingRefreshingFromCode;
 
+    /// <summary>Property mapper for <see cref="RefreshViewHandler"/>.</summary>
     public static IPropertyMapper<IRefreshView, RefreshViewHandler> Mapper = new PropertyMapper<IRefreshView, RefreshViewHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IRefreshView.IsRefreshing)] = MapIsRefreshing,
@@ -20,29 +22,38 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
         [nameof(IView.IsEnabled)] = MapIsEnabled,
     };
 
+    /// <summary>Command mapper for <see cref="RefreshViewHandler"/>.</summary>
     public static CommandMapper<IRefreshView, RefreshViewHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 
+    /// <summary>Initializes a new instance of <see cref="RefreshViewHandler"/>.</summary>
     public RefreshViewHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="RefreshViewHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public RefreshViewHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
-    
+
+    /// <summary>Initializes a new instance of <see cref="RefreshViewHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public RefreshViewHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformView()
     {
         return new PlatformView();
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
@@ -54,7 +65,8 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
             platformView.Visualizer.TemplateApplied += OnVisualizerTemplateApplied;
         }
     }
-    
+
+    /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.RefreshRequested -= OnRefreshRequested;
@@ -108,7 +120,7 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
 
         VirtualView.IsRefreshing = true;
     }
-    
+
     internal void UpdateIsRefreshingState()
     {
         if (PlatformView == null || VirtualView == null)
@@ -135,11 +147,17 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
         }
     }
 
+    /// <summary>Maps the IsRefreshing property to the platform view.</summary>
+    /// <param name="handler">The handler for the refresh view.</param>
+    /// <param name="refreshView">The virtual refresh view.</param>
     public static void MapIsRefreshing(RefreshViewHandler handler, IRefreshView refreshView)
     {
         handler.UpdateIsRefreshingState();
     }
-    
+
+    /// <summary>Maps the Content property to the platform view.</summary>
+    /// <param name="handler">The handler for the refresh view.</param>
+    /// <param name="refreshView">The virtual refresh view.</param>
     public static void MapContent(RefreshViewHandler handler, IRefreshView refreshView)
     {
         if (handler.PlatformView is not PlatformView platformView)
@@ -147,7 +165,10 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
 
         platformView.UpdateContent(refreshView, handler.MauiContext);
     }
-    
+
+    /// <summary>Maps the RefreshColor property to the platform view.</summary>
+    /// <param name="handler">The handler for the refresh view.</param>
+    /// <param name="refreshView">The virtual refresh view.</param>
     public static void MapRefreshColor(RefreshViewHandler handler, IRefreshView refreshView)
     {
         if (handler.PlatformView is not PlatformView platformView)
@@ -156,6 +177,9 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
         platformView.UpdateRefreshColor(refreshView);
     }
 
+    /// <summary>Maps the Background property to the platform view.</summary>
+    /// <param name="handler">The handler for the refresh view.</param>
+    /// <param name="refreshView">The virtual refresh view.</param>
     public static void MapBackground(RefreshViewHandler handler, IRefreshView refreshView)
     {
         if (handler.PlatformView is not PlatformView platformView)
@@ -164,6 +188,9 @@ public partial class RefreshViewHandler : ViewHandler<IRefreshView, PlatformView
         platformView.UpdateBackground(refreshView);
     }
 
+    /// <summary>Maps the IsEnabled property to the platform view.</summary>
+    /// <param name="handler">The handler for the refresh view.</param>
+    /// <param name="refreshView">The virtual refresh view.</param>
     public static void MapIsEnabled(RefreshViewHandler handler, IRefreshView refreshView)
     {
         if (handler.PlatformView is not PlatformView platformView)

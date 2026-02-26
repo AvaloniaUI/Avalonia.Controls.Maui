@@ -15,6 +15,9 @@ using System.Collections.Specialized;
 
 namespace Avalonia.Controls.Maui;
 
+/// <summary>
+/// Avalonia templated control that implements MAUI's CollectionView with support for selection, grouping, and virtualized scrolling.
+/// </summary>
 public class MauiCollectionView : TemplatedControl
 {
     private ItemsControl? _itemsControl;
@@ -25,77 +28,101 @@ public class MauiCollectionView : TemplatedControl
     private Panel? _rootPanel;
     private StackPanel? _mainContainer;
 
+    /// <summary>Defines the <see cref="ItemsSource"/> property.</summary>
     public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty =
         AvaloniaProperty.Register<MauiCollectionView, IEnumerable?>(nameof(ItemsSource));
 
+    /// <summary>Defines the <see cref="ItemTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> ItemTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(ItemTemplate));
 
+    /// <summary>Defines the <see cref="EmptyView"/> property.</summary>
     public static readonly StyledProperty<object?> EmptyViewProperty =
         AvaloniaProperty.Register<MauiCollectionView, object?>(nameof(EmptyView));
 
+    /// <summary>Defines the <see cref="EmptyViewTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> EmptyViewTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(EmptyViewTemplate));
 
+    /// <summary>Defines the <see cref="HorizontalScrollBarVisibility"/> property.</summary>
     public static readonly StyledProperty<ScrollBarVisibility> HorizontalScrollBarVisibilityProperty =
         AvaloniaProperty.Register<MauiCollectionView, ScrollBarVisibility>(
             nameof(HorizontalScrollBarVisibility),
             ScrollBarVisibility.Auto);
 
+    /// <summary>Defines the <see cref="VerticalScrollBarVisibility"/> property.</summary>
     public static readonly StyledProperty<ScrollBarVisibility> VerticalScrollBarVisibilityProperty =
         AvaloniaProperty.Register<MauiCollectionView, ScrollBarVisibility>(
             nameof(VerticalScrollBarVisibility),
             ScrollBarVisibility.Auto);
 
+    /// <summary>Defines the <see cref="SelectedItem"/> property.</summary>
     public static readonly StyledProperty<object?> SelectedItemProperty =
         AvaloniaProperty.Register<MauiCollectionView, object?>(
             nameof(SelectedItem),
             defaultBindingMode: Data.BindingMode.TwoWay);
 
+    /// <summary>Defines the <see cref="SelectionMode"/> property.</summary>
     public static readonly StyledProperty<SelectionMode> SelectionModeProperty =
         AvaloniaProperty.Register<MauiCollectionView, SelectionMode>(
             nameof(SelectionMode),
             SelectionMode.Single);
 
+    /// <summary>Defines the <see cref="ItemsLayout"/> property.</summary>
     public static readonly StyledProperty<IItemsLayout?> ItemsLayoutProperty =
         AvaloniaProperty.Register<MauiCollectionView, IItemsLayout?>(
             nameof(ItemsLayout),
             LinearItemsLayout.Vertical);
 
+    /// <summary>Defines the <see cref="IsGrouped"/> property.</summary>
     public static readonly StyledProperty<bool> IsGroupedProperty =
         AvaloniaProperty.Register<MauiCollectionView, bool>(nameof(IsGrouped), false);
 
+    /// <summary>Defines the <see cref="GroupHeaderTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> GroupHeaderTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(GroupHeaderTemplate));
 
+    /// <summary>Defines the <see cref="GroupFooterTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> GroupFooterTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(GroupFooterTemplate));
 
+    /// <summary>Defines the <see cref="Header"/> property.</summary>
     public static readonly StyledProperty<object?> HeaderProperty =
         AvaloniaProperty.Register<MauiCollectionView, object?>(nameof(Header));
 
+    /// <summary>Defines the <see cref="HeaderTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> HeaderTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(HeaderTemplate));
 
+    /// <summary>Defines the <see cref="Footer"/> property.</summary>
     public static readonly StyledProperty<object?> FooterProperty =
         AvaloniaProperty.Register<MauiCollectionView, object?>(nameof(Footer));
 
+    /// <summary>Defines the <see cref="FooterTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> FooterTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(FooterTemplate));
 
+    /// <summary>Defines the <see cref="SelectedItems"/> property.</summary>
     public static readonly StyledProperty<IList<object>?> SelectedItemsProperty =
         AvaloniaProperty.Register<MauiCollectionView, IList<object>?>(nameof(SelectedItems));
 
+    /// <summary>Defines the <see cref="ItemsUpdatingScrollMode"/> property.</summary>
     public static readonly StyledProperty<ItemsUpdatingScrollMode> ItemsUpdatingScrollModeProperty =
         AvaloniaProperty.Register<MauiCollectionView, ItemsUpdatingScrollMode>(
             nameof(ItemsUpdatingScrollMode),
             ItemsUpdatingScrollMode.KeepItemsInView);
 
+    /// <summary>Defines the <see cref="RemainingItemsThreshold"/> property.</summary>
     public static readonly StyledProperty<int> RemainingItemsThresholdProperty =
         AvaloniaProperty.Register<MauiCollectionView, int>(nameof(RemainingItemsThreshold), -1);
 
+    /// <summary>Occurs when the current selection changes.</summary>
     public event EventHandler? SelectionChanged;
+
+    /// <summary>Occurs when the user has scrolled close enough to the end of the items that the remaining items threshold has been reached.</summary>
     public event EventHandler? RemainingItemsThresholdReached;
+
+    /// <summary>Occurs when the scroll position changes within the underlying <see cref="ScrollViewer"/>.</summary>
     public event EventHandler<ScrollChangedEventArgs>? ScrollChanged;
 
     static MauiCollectionView()
@@ -117,6 +144,9 @@ public class MauiCollectionView : TemplatedControl
         FooterTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="MauiCollectionView"/>.
+    /// </summary>
     public MauiCollectionView()
     {
         InitializeDefaultTemplate();
@@ -143,120 +173,178 @@ public class MauiCollectionView : TemplatedControl
         LogicalChildren.Add(_rootPanel);
     }
 
+    /// <summary>
+    /// Gets or sets the data source for the collection view.
+    /// </summary>
     public IEnumerable? ItemsSource
     {
         get => GetValue(ItemsSourceProperty);
         set => SetValue(ItemsSourceProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the data template used to render each item in the collection.
+    /// </summary>
     public IDataTemplate? ItemTemplate
     {
         get => GetValue(ItemTemplateProperty);
         set => SetValue(ItemTemplateProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the content displayed when the items source is empty.
+    /// </summary>
     public object? EmptyView
     {
         get => GetValue(EmptyViewProperty);
         set => SetValue(EmptyViewProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the data template used to render the empty view.
+    /// </summary>
     public IDataTemplate? EmptyViewTemplate
     {
         get => GetValue(EmptyViewTemplateProperty);
         set => SetValue(EmptyViewTemplateProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the horizontal scroll bar visibility for the collection view.
+    /// </summary>
     public ScrollBarVisibility HorizontalScrollBarVisibility
     {
         get => GetValue(HorizontalScrollBarVisibilityProperty);
         set => SetValue(HorizontalScrollBarVisibilityProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the vertical scroll bar visibility for the collection view.
+    /// </summary>
     public ScrollBarVisibility VerticalScrollBarVisibility
     {
         get => GetValue(VerticalScrollBarVisibilityProperty);
         set => SetValue(VerticalScrollBarVisibilityProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the currently selected item.
+    /// </summary>
     public object? SelectedItem
     {
         get => GetValue(SelectedItemProperty);
         set => SetValue(SelectedItemProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the selection behavior for the collection view.
+    /// </summary>
     public SelectionMode SelectionMode
     {
         get => GetValue(SelectionModeProperty);
         set => SetValue(SelectionModeProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the layout specification that determines how items are arranged in the collection.
+    /// </summary>
     public IItemsLayout? ItemsLayout
     {
         get => GetValue(ItemsLayoutProperty);
         set => SetValue(ItemsLayoutProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether items in the collection are grouped.
+    /// </summary>
     public bool IsGrouped
     {
         get => GetValue(IsGroupedProperty);
         set => SetValue(IsGroupedProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the data template used to render the header for each group.
+    /// </summary>
     public IDataTemplate? GroupHeaderTemplate
     {
         get => GetValue(GroupHeaderTemplateProperty);
         set => SetValue(GroupHeaderTemplateProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the data template used to render the footer for each group.
+    /// </summary>
     public IDataTemplate? GroupFooterTemplate
     {
         get => GetValue(GroupFooterTemplateProperty);
         set => SetValue(GroupFooterTemplateProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the content displayed at the top of the collection view.
+    /// </summary>
     public object? Header
     {
         get => GetValue(HeaderProperty);
         set => SetValue(HeaderProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the data template used to render the header content.
+    /// </summary>
     public IDataTemplate? HeaderTemplate
     {
         get => GetValue(HeaderTemplateProperty);
         set => SetValue(HeaderTemplateProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the content displayed at the bottom of the collection view.
+    /// </summary>
     public object? Footer
     {
         get => GetValue(FooterProperty);
         set => SetValue(FooterProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the data template used to render the footer content.
+    /// </summary>
     public IDataTemplate? FooterTemplate
     {
         get => GetValue(FooterTemplateProperty);
         set => SetValue(FooterTemplateProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the list of currently selected items when using multiple selection mode.
+    /// </summary>
     public IList<object>? SelectedItems
     {
         get => GetValue(SelectedItemsProperty);
         set => SetValue(SelectedItemsProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the scroll behavior when items are updated in the collection.
+    /// </summary>
     public ItemsUpdatingScrollMode ItemsUpdatingScrollMode
     {
         get => GetValue(ItemsUpdatingScrollModeProperty);
         set => SetValue(ItemsUpdatingScrollModeProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the number of items remaining before the <see cref="RemainingItemsThresholdReached"/> event fires.
+    /// </summary>
     public int RemainingItemsThreshold
     {
         get => GetValue(RemainingItemsThresholdProperty);
         set => SetValue(RemainingItemsThresholdProperty, value);
     }
 
+    /// <inheritdoc/>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -281,6 +369,7 @@ public class MauiCollectionView : TemplatedControl
         UpdateEmptyView();
     }
 
+    /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -774,8 +863,16 @@ public class MauiCollectionView : TemplatedControl
         }
     }
 
+    /// <summary>
+    /// Gets the underlying <see cref="ItemsControl"/> used to display items.
+    /// </summary>
+    /// <returns>The <see cref="ItemsControl"/> instance, or <c>null</c> if the control has not been initialized.</returns>
     public ItemsControl? GetItemsControl() => _itemsControl;
 
+    /// <summary>
+    /// Gets the underlying <see cref="ScrollViewer"/> used for scrolling the collection.
+    /// </summary>
+    /// <returns>The <see cref="ScrollViewer"/> instance, or <c>null</c> if the control has not been initialized.</returns>
     public ScrollViewer? GetScrollViewer() => _scrollViewer;
 
     private void UpdateHeaderFooter()
@@ -864,6 +961,13 @@ public class MauiCollectionView : TemplatedControl
         }
     }
 
+    /// <summary>
+    /// Scrolls the collection view to bring the specified item into view.
+    /// </summary>
+    /// <param name="item">The item to scroll to.</param>
+    /// <param name="group">The group that contains the item.</param>
+    /// <param name="position">The desired scroll position for the item.</param>
+    /// <param name="animate">Whether to animate the scroll operation.</param>
     public void ScrollTo(object item, object group, ScrollToPosition position = ScrollToPosition.MakeVisible, bool animate = true)
     {
         if (_itemsControl == null || _scrollViewer == null)
@@ -879,6 +983,13 @@ public class MauiCollectionView : TemplatedControl
         }, DispatcherPriority.Background);
     }
 
+    /// <summary>
+    /// Scrolls the collection view to bring the item at the specified index into view.
+    /// </summary>
+    /// <param name="index">The zero-based index of the item to scroll to.</param>
+    /// <param name="groupIndex">The zero-based index of the group that contains the item.</param>
+    /// <param name="position">The desired scroll position for the item.</param>
+    /// <param name="animate">Whether to animate the scroll operation.</param>
     public void ScrollTo(int index, int groupIndex, ScrollToPosition position = ScrollToPosition.MakeVisible, bool animate = true)
     {
         if (_itemsControl == null || _scrollViewer == null)

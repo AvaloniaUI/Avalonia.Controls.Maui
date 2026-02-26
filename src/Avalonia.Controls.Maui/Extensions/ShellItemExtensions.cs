@@ -19,6 +19,9 @@ namespace Avalonia.Controls.Maui.Extensions;
 /// </summary>
 public static class ShellItemExtensions
 {
+    /// <summary>
+    /// Updates the tab items for the shell item.
+    /// </summary>
     /// <param name="handler">The <see cref="ShellItemHandler"/> instance.</param>
     /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateTabs(this ShellItemHandler handler, ShellItem item)
@@ -184,6 +187,9 @@ public static class ShellItemExtensions
         }
     }
 
+    /// <summary>
+    /// Updates the currently displayed shell section content.
+    /// </summary>
     /// <param name="handler">The <see cref="ShellItemHandler"/> instance.</param>
     /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateCurrentItem(this ShellItemHandler handler, ShellItem item)
@@ -234,6 +240,9 @@ public static class ShellItemExtensions
         }
     }
 
+    /// <summary>
+    /// Updates tab bar visibility based on the current page's TabBarIsVisible property.
+    /// </summary>
     /// <param name="handler">The <see cref="ShellItemHandler"/> instance.</param>
     /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateTabBarVisibility(this ShellItemHandler handler, ShellItem item)
@@ -254,6 +263,9 @@ public static class ShellItemExtensions
             handler._tabControl.Classes.Add("hide-tabstrip");
     }
 
+    /// <summary>
+    /// Updates tab bar appearance colors from shell properties.
+    /// </summary>
     /// <param name="handler">The <see cref="ShellItemHandler"/> instance.</param>
     /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateTabAppearance(this ShellItemHandler handler, ShellItem item)
@@ -262,6 +274,9 @@ public static class ShellItemExtensions
         handler.UpdateTabAppearanceInternal(item);
     }
 
+    /// <summary>
+    /// Updates the tab bar background color.
+    /// </summary>
     /// <param name="handler">The <see cref="ShellItemHandler"/> instance.</param>
     /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateTabBarBackgroundColor(this ShellItemHandler handler, ShellItem item)
@@ -282,21 +297,41 @@ public static class ShellItemExtensions
             handler._tabControl.ClearValue(TabControl.BackgroundProperty);
     }
 
+    /// <summary>
+    /// Updates the tab bar foreground color by re-applying the full tab appearance.
+    /// </summary>
+    /// <param name="handler">The <see cref="ShellItemHandler"/> instance.</param>
+    /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateTabBarForegroundColor(this ShellItemHandler handler, ShellItem item)
     {
         handler.UpdateTabAppearance(item);
     }
 
+    /// <summary>
+    /// Updates the tab bar title color by re-applying the full tab appearance.
+    /// </summary>
+    /// <param name="handler">The <see cref="ShellItemHandler"/> instance.</param>
+    /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateTabBarTitleColor(this ShellItemHandler handler, ShellItem item)
     {
         handler.UpdateTabAppearance(item);
     }
 
+    /// <summary>
+    /// Updates the tab bar unselected item color by re-applying the full tab appearance.
+    /// </summary>
+    /// <param name="handler">The <see cref="ShellItemHandler"/> instance.</param>
+    /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateTabBarUnselectedColor(this ShellItemHandler handler, ShellItem item)
     {
         handler.UpdateTabAppearance(item);
     }
 
+    /// <summary>
+    /// Updates the tab bar disabled item color by re-applying the full tab appearance.
+    /// </summary>
+    /// <param name="handler">The <see cref="ShellItemHandler"/> instance.</param>
+    /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateTabBarDisabledColor(this ShellItemHandler handler, ShellItem item)
     {
         handler.UpdateTabAppearance(item);

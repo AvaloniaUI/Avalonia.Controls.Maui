@@ -51,6 +51,9 @@ public class TitleBarView : MauiView
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TitleBarView"/> class, constructing the title bar layout with icon, title, subtitle, and content areas.
+    /// </summary>
     public TitleBarView()
     {
         Height = 32; // Standard title bar height

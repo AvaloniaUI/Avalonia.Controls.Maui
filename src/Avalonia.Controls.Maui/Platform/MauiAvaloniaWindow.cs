@@ -10,6 +10,14 @@ using System.Threading.Tasks;
 
 namespace Avalonia.Controls.Maui.Platform;
 
+/// <summary>
+/// Main window for MAUI applications running on Avalonia, providing root layout, title bar, and modal overlay support.
+/// </summary>
+/// <remarks>
+/// The window uses a <see cref="DockPanel"/> inside a <see cref="Grid"/> as its root layout.
+/// The <see cref="DockPanel"/> hosts the optional title bar and main content, while the outer
+/// <see cref="Grid"/> allows modal overlays to be stacked on top of all other content.
+/// </remarks>
 public class MauiAvaloniaWindow : Window, IDisposable
 {
     private readonly Stack<(Control Content, Panel Scrim)> _modalStack = new();
@@ -24,6 +32,10 @@ public class MauiAvaloniaWindow : Window, IDisposable
     /// </summary>
     public TitleBarView? TitleBarView => _titleBarView;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="MauiAvaloniaWindow"/> with a root layout consisting of a
+    /// <see cref="DockPanel"/> inside a <see cref="Grid"/> to support title bar docking and modal overlays.
+    /// </summary>
     public MauiAvaloniaWindow()
     {
         _rootPanel = new DockPanel
@@ -42,6 +54,9 @@ public class MauiAvaloniaWindow : Window, IDisposable
         Closed += OnClosed;
     }
 
+    /// <summary>
+    /// Releases resources by unsubscribing from window lifecycle event handlers.
+    /// </summary>
     public void Dispose()
     {
         Activated -= OnActivated;
@@ -49,16 +64,31 @@ public class MauiAvaloniaWindow : Window, IDisposable
         Closed -= OnClosed;
     }
 
+    /// <summary>
+    /// Handles window activation by updating the title bar to its active visual state.
+    /// </summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The event data.</param>
     protected virtual void OnActivated(object? sender, EventArgs e)
     {
         _titleBarView?.SetActiveState(true);
     }
 
+    /// <summary>
+    /// Handles window deactivation by updating the title bar to its inactive visual state.
+    /// </summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The event data.</param>
     protected virtual void OnDeactivated(object? sender, EventArgs e)
     {
         _titleBarView?.SetActiveState(false);
     }
 
+    /// <summary>
+    /// Handles the window close event.
+    /// </summary>
+    /// <param name="sender">The event source.</param>
+    /// <param name="e">The event data.</param>
     protected virtual void OnClosed(object? sender, EventArgs e)
     {
     }

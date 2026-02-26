@@ -12,7 +12,7 @@ using MapsuiMapControl = Mapsui.UI.Avalonia.MapControl;
 namespace Avalonia.Controls.Maui.Maps.Mapsui.Extensions;
 
 /// <summary>
-/// Extension methods for <see cref="Mapsui.UI.Avalonia.MapControl"/>.
+/// Extension methods for the Mapsui MapControl.
 /// </summary>
 public static class MapsuiMapExtensions
 {

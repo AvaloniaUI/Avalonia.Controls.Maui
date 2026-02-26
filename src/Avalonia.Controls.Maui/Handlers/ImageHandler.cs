@@ -16,6 +16,7 @@ using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="IImage"/>.</summary>
 public partial class ImageHandler : ViewHandler<IImage, AGrid>
 {
     private readonly AImage _staticImage;
@@ -24,6 +25,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
     private static readonly ConcurrentDictionary<string, Uri?> AssetCache = new();
 
+    /// <summary>Property mapper for <see cref="ImageHandler"/>.</summary>
     public static IPropertyMapper<IImage, ImageHandler> Mapper = new PropertyMapper<IImage, ImageHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IImage.Aspect)] = MapAspect,
@@ -33,23 +35,31 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         // IsLoading is read-only and updated automatically by the handler
     };
 
+    /// <summary>Command mapper for <see cref="ImageHandler"/>.</summary>
     public static CommandMapper<IImage, ImageHandler> CommandMapper = new(ViewHandler.ViewCommandMapper);
 
+    /// <summary>Initializes a new instance of <see cref="ImageHandler"/>.</summary>
     public ImageHandler() : base(Mapper, CommandMapper)
     {
         _staticImage = new AImage { IsVisible = true };
     }
 
+    /// <summary>Initializes a new instance of <see cref="ImageHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public ImageHandler(IPropertyMapper? mapper) : base(mapper ?? Mapper, CommandMapper)
     {
         _staticImage = new AImage { IsVisible = true };
     }
 
+    /// <summary>Initializes a new instance of <see cref="ImageHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public ImageHandler(IPropertyMapper? mapper, CommandMapper? commandMapper) : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
         _staticImage = new AImage { IsVisible = true };
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override AGrid CreatePlatformView()
     {
         var grid = new AGrid();
@@ -58,6 +68,9 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         return grid;
     }
 
+    /// <summary>Maps the Source property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="image">The virtual view.</param>
     public static void MapSource(ImageHandler handler, IImage image)
     {
         if (handler is ImageHandler h)
@@ -69,16 +82,25 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
     }
     
+    /// <summary>Maps the IsAnimationPlaying property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="image">The virtual view.</param>
     public static void MapIsAnimationPlaying(ImageHandler handler, IImage image)
     {
         (handler.PlatformView as AGrid)?.UpdateIsAnimationPlaying(image.IsAnimationPlaying);
     }
 
+    /// <summary>Maps the Aspect property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="image">The virtual view.</param>
     public static void MapAspect(ImageHandler handler, IImage image)
     {
         (handler.PlatformView as AGrid)?.UpdateAspect(image.Aspect);
     }
 
+    /// <summary>Maps the Clip property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The virtual view.</param>
     public static void MapClip(ImageHandler handler, IView view)
     {
         if (handler is ImageHandler imageHandler)
@@ -344,7 +366,8 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
     }
 
-    public virtual ImageSourcePartLoader SourceLoader => 
+    /// <summary>Gets the image source part loader for this handler.</summary>
+    public virtual ImageSourcePartLoader SourceLoader =>
         new ImageSourcePartLoader(new ImageImageSourcePartSetter(this));
         
     partial class ImageImageSourcePartSetter : ImageSourcePartSetter<ImageHandler>

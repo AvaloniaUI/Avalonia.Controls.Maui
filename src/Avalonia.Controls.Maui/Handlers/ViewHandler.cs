@@ -7,6 +7,10 @@ using PlatformView = Avalonia.Controls.Control;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>
+/// Base Avalonia handler for <see cref="IView"/>. Provides property and command mappers
+/// that translate MAUI view properties to Avalonia platform equivalents.
+/// </summary>
 public abstract partial class ViewHandler : ElementHandler, IViewHandler
 {
     /// <summary>
@@ -66,6 +70,9 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
 
     bool _hasContainer;
 
+    /// <summary>
+    /// Gets or sets the data flow direction used for property mapping.
+    /// </summary>
     internal DataFlowDirection DataFlowDirection { get; set; }
 
     /// <summary>
@@ -170,6 +177,13 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         }
     }
 
+    /// <summary>
+    /// Performs the core measurement of the platform view against the given constraints.
+    /// </summary>
+    /// <param name="platformView">The Avalonia platform view to measure.</param>
+    /// <param name="widthConstraint">The maximum width constraint.</param>
+    /// <param name="heightConstraint">The maximum height constraint.</param>
+    /// <returns>The desired size of the platform view.</returns>
     private static Microsoft.Maui.Graphics.Size MeasureCore(PlatformView platformView, double widthConstraint, double heightConstraint)
     {
         var avaloniaConstraint = new global::Avalonia.Size(
@@ -193,6 +207,10 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
             Avalonia.Threading.Dispatcher.UIThread.Invoke(() => Arrange(frame));
     }
 
+    /// <summary>
+    /// Arranges the platform view within the specified frame, compensating for MAUI/Avalonia margin differences.
+    /// </summary>
+    /// <param name="frame">The frame rectangle provided by the MAUI layout system.</param>
     private protected void Arrange(Microsoft.Maui.Graphics.Rect frame)
     {
         if (PlatformView is null)
@@ -212,8 +230,13 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     }
 
 
+    /// <summary>
+    /// Creates the Avalonia platform view for this handler.
+    /// </summary>
+    /// <returns>The newly created platform view.</returns>
     private protected abstract PlatformView OnCreatePlatformView();
 
+    /// <inheritdoc/>
     public sealed override object OnCreatePlatformElement() =>
         OnCreatePlatformView();
 
@@ -719,6 +742,11 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         }
     }
 
+    /// <summary>
+    /// Maps the context flyout from a <see cref="IContextFlyoutElement"/> to the Avalonia platform view.
+    /// </summary>
+    /// <param name="handler">The associated element handler.</param>
+    /// <param name="contextFlyoutContainer">The context flyout element containing the flyout to map.</param>
     internal static void MapContextFlyout(IElementHandler handler, IContextFlyoutElement contextFlyoutContainer)
     {
         _ = handler.MauiContext ?? throw new InvalidOperationException($"The handler's {nameof(handler.MauiContext)} cannot be null.");

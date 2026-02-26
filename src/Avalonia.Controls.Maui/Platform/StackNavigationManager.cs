@@ -13,6 +13,9 @@ using Microsoft.Maui.Platform;
 
 namespace Avalonia.Controls.Maui.Platform;
 
+/// <summary>
+/// Manages stack-based navigation for MAUI NavigationPage, coordinating page transitions and toolbar updates within an Avalonia <see cref="NavigationView"/>.
+/// </summary>
 public class StackNavigationManager
 {
     private readonly IMauiContext _mauiContext;
@@ -24,14 +27,30 @@ public class StackNavigationManager
     private ILogger? _logger;
     private FlyoutPage? _parentFlyoutPage;
 
+    /// <summary>
+    /// Gets the current page navigation stack.
+    /// </summary>
     public IReadOnlyList<IView> NavigationStack { get; private set; } = new List<IView>();
 
+    /// <summary>
+    /// Gets the currently displayed page.
+    /// </summary>
     public IView CurrentPage => _currentPage ?? throw new InvalidOperationException("CurrentPage cannot be null");
 
+    /// <summary>
+    /// Gets the MAUI context used for handler resolution and service access.
+    /// </summary>
     public IMauiContext MauiContext => _mauiContext;
 
+    /// <summary>
+    /// Gets the Avalonia <see cref="Platform.NavigationView"/> control that hosts the navigation UI.
+    /// </summary>
     public NavigationView NavigationView => _navigationView ?? throw new InvalidOperationException("NavigationView is null");
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StackNavigationManager"/> class.
+    /// </summary>
+    /// <param name="mauiContext">The MAUI context used for handler resolution and service access.</param>
     public StackNavigationManager(IMauiContext mauiContext)
     {
         _mauiContext = mauiContext;

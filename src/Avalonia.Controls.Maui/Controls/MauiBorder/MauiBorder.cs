@@ -170,6 +170,7 @@ namespace Avalonia.Controls.Maui
             set => SetValue(StrokeMiterLimitProperty, value);
         }
 
+        /// <inheritdoc/>
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {
             base.OnPropertyChanged(change);
@@ -216,6 +217,7 @@ namespace Avalonia.Controls.Maui
             InvalidateShape();
         }
 
+        /// <inheritdoc/>
         protected override Size ArrangeOverride(Size finalSize)
         {
             var arrangedSize = base.ArrangeOverride(finalSize);
@@ -259,6 +261,7 @@ namespace Avalonia.Controls.Maui
             return arrangedSize;
         }
 
+        /// <inheritdoc/>
         public override void Render(DrawingContext context)
         {
             var bounds = new Rect(Bounds.Size);
@@ -342,6 +345,9 @@ namespace Avalonia.Controls.Maui
             return pen;
         }
 
+        /// <summary>
+        /// Invalidates the cached shape geometry, forcing the border to recalculate and re-render its shape.
+        /// </summary>
         public void InvalidateShape()
         {
             _backgroundGeometry = null;

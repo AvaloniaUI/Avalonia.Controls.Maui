@@ -4,10 +4,12 @@ using GraphicsSize = Microsoft.Maui.Graphics.Size;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="IScrollView"/>.</summary>
 public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
 {
     private EventHandler<ScrollChangedEventArgs>? _scrollChangedHandler;
 
+    /// <summary>Property mapper for <see cref="ScrollViewHandler"/>.</summary>
     public static IPropertyMapper<IScrollView, ScrollViewHandler> Mapper = new PropertyMapper<IScrollView, ScrollViewHandler>(ViewMapper)
     {
         [nameof(IScrollView.Content)] = MapContent,
@@ -16,31 +18,40 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
         [nameof(IScrollView.Orientation)] = MapOrientation,
     };
 
+    /// <summary>Command mapper for <see cref="ScrollViewHandler"/>.</summary>
     public static CommandMapper<IScrollView, ScrollViewHandler> CommandMapper = new(ViewCommandMapper)
     {
         [nameof(IScrollView.RequestScrollTo)] = MapRequestScrollTo,
     };
 
+    /// <summary>Initializes a new instance of <see cref="ScrollViewHandler"/>.</summary>
     public ScrollViewHandler() : base(Mapper, CommandMapper)
     {
 
     }
 
+    /// <summary>Initializes a new instance of <see cref="ScrollViewHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public ScrollViewHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="ScrollViewHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public ScrollViewHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override ScrollViewer CreatePlatformView()
     {
         return new ScrollViewer();
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(ScrollViewer platformView)
     {
         base.ConnectHandler(platformView);
@@ -48,6 +59,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
         platformView.ScrollChanged += _scrollChangedHandler;
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(ScrollViewer platformView)
     {
         base.DisconnectHandler(platformView);
@@ -68,6 +80,9 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
         }
     }
 
+    /// <summary>Maps the Content property to the platform view.</summary>
+    /// <param name="handler">The handler for the scroll view.</param>
+    /// <param name="scrollView">The virtual scroll view.</param>
     public static void MapContent(ScrollViewHandler handler, IScrollView scrollView)
     {
         if (handler.PlatformView is ScrollViewer platformView)
@@ -77,6 +92,9 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
         }
     }
 
+    /// <summary>Maps the HorizontalScrollBarVisibility property to the platform view.</summary>
+    /// <param name="handler">The handler for the scroll view.</param>
+    /// <param name="scrollView">The virtual scroll view.</param>
     public static void MapHorizontalScrollBarVisibility(ScrollViewHandler handler, IScrollView scrollView)
     {
         if (handler.PlatformView is ScrollViewer platformView)
@@ -86,6 +104,9 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
         }
     }
 
+    /// <summary>Maps the VerticalScrollBarVisibility property to the platform view.</summary>
+    /// <param name="handler">The handler for the scroll view.</param>
+    /// <param name="scrollView">The virtual scroll view.</param>
     public static void MapVerticalScrollBarVisibility(ScrollViewHandler handler, IScrollView scrollView)
     {
         if (handler.PlatformView is ScrollViewer platformView)
@@ -95,6 +116,9 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
         }
     }
 
+    /// <summary>Maps the Orientation property to the platform view.</summary>
+    /// <param name="handler">The handler for the scroll view.</param>
+    /// <param name="scrollView">The virtual scroll view.</param>
     public static void MapOrientation(ScrollViewHandler handler, IScrollView scrollView)
     {
         if (handler.PlatformView is ScrollViewer platformView)
@@ -104,6 +128,10 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
         }
     }
 
+    /// <summary>Maps the RequestScrollTo command to the platform view.</summary>
+    /// <param name="handler">The handler for the scroll view.</param>
+    /// <param name="scrollView">The virtual scroll view.</param>
+    /// <param name="args">The scroll-to request arguments.</param>
     public static void MapRequestScrollTo(ScrollViewHandler handler, IScrollView scrollView, object? args)
     {
         if (args is not ScrollToRequest request)
@@ -151,7 +179,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
     {
         TrySetScrollPosition(scrollView, request.HorizontalOffset, request.VerticalOffset);
     }
-    
+
     private static void TrySetScrollPosition(IScrollView scrollView, double scrollX, double scrollY)
     {
         // Updates the ScrollX and ScrollY properties on the ScrollView using reflection.

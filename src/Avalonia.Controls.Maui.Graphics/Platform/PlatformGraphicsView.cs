@@ -19,6 +19,10 @@ public class PlatformGraphicsView : Control
     private IGraphicsView? _graphicsView;
     private IDrawable? _drawable;
 
+    /// <summary>
+    /// Updates the drawable from the specified MAUI graphics view, triggering a re-render.
+    /// </summary>
+    /// <param name="graphicsView">The MAUI graphics view whose drawable should be rendered.</param>
     public void UpdateDrawable(IGraphicsView graphicsView)
     {
         _graphicsView = graphicsView;
@@ -26,6 +30,9 @@ public class PlatformGraphicsView : Control
         InvalidateVisual();
     }
 
+    /// <summary>
+    /// Triggers a re-render of the graphics view by posting an invalidation to the UI thread.
+    /// </summary>
     public new void InvalidateVisual()
     {
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
@@ -34,6 +41,7 @@ public class PlatformGraphicsView : Control
         });
     }
 
+    /// <inheritdoc/>
     public override void Render(DrawingContext context)
     {
         base.Render(context);

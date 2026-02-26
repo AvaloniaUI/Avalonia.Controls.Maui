@@ -5,6 +5,9 @@ using Avalonia.Interactivity;
 
 namespace Avalonia.Controls.Maui;
 
+/// <summary>
+/// An Avalonia templated control that implements MAUI's Stepper with increment and decrement buttons.
+/// </summary>
 public class Stepper : TemplatedControl
 {
     private Button? _plusButton;
@@ -50,6 +53,7 @@ public class Stepper : TemplatedControl
     /// </summary>
     public event EventHandler? ValueChanged;
 
+    /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);

@@ -20,13 +20,26 @@ using MauiControlsLinearGradientBrush = Microsoft.Maui.Controls.LinearGradientBr
 using MauiControlsRadialGradientBrush = Microsoft.Maui.Controls.RadialGradientBrush;
 namespace Avalonia.Controls.Maui;
 
+/// <summary>
+/// Provides extension methods for converting .NET MAUI graphics types to their Avalonia equivalents.
+/// </summary>
 public static class GraphicsExtensions
 {
+    /// <summary>
+    /// Converts a .NET MAUI <see cref="MauiColor"/> to an Avalonia <see cref="AvaloniaSolidColorBrush"/>.
+    /// </summary>
+    /// <param name="color">The .NET MAUI color to convert.</param>
+    /// <returns>A <see cref="AvaloniaSolidColorBrush"/> representing the color.</returns>
     public static AvaloniaSolidColorBrush ToPlatform(this MauiColor color)
     {
         return new AvaloniaSolidColorBrush(color.ToAvaloniaColor());
     }
 
+    /// <summary>
+    /// Converts a .NET MAUI <see cref="MauiColor"/> to an Avalonia <see cref="AvaloniaColor"/> struct.
+    /// </summary>
+    /// <param name="color">The .NET MAUI color to convert.</param>
+    /// <returns>An <see cref="AvaloniaColor"/> with equivalent ARGB channel values.</returns>
     public static AvaloniaColor ToAvaloniaColor(this MauiColor color)
     {
         return AvaloniaColor.FromArgb(
@@ -36,6 +49,11 @@ public static class GraphicsExtensions
             (byte)(color.Blue * 255));
     }
 
+    /// <summary>
+    /// Converts a nullable .NET MAUI <see cref="MauiPaint"/> to an Avalonia <see cref="AvaloniaIBrush"/>, supporting solid, linear gradient, and radial gradient paints.
+    /// </summary>
+    /// <param name="paint">The .NET MAUI paint to convert, or <c>null</c>.</param>
+    /// <returns>An Avalonia brush representing the paint, or <c>null</c> if the paint is <c>null</c> or not a supported type.</returns>
     public static AvaloniaIBrush? ToPlatform(this MauiPaint? paint)
     {
         if (paint is MauiSolidPaint solidPaint && solidPaint.Color != null)
@@ -56,6 +74,11 @@ public static class GraphicsExtensions
         return null;
     }
 
+    /// <summary>
+    /// Converts a .NET MAUI <see cref="MauiLineCap"/> to an Avalonia <see cref="AvaloniaPenLineCap"/>.
+    /// </summary>
+    /// <param name="lineCap">The .NET MAUI line cap to convert.</param>
+    /// <returns>The corresponding Avalonia <see cref="AvaloniaPenLineCap"/> value.</returns>
     public static AvaloniaPenLineCap ToPlatform(this MauiLineCap lineCap)
     {
         return lineCap switch
@@ -67,6 +90,11 @@ public static class GraphicsExtensions
         };
     }
 
+    /// <summary>
+    /// Converts a .NET MAUI <see cref="MauiLineJoin"/> to an Avalonia <see cref="AvaloniaPenLineJoin"/>.
+    /// </summary>
+    /// <param name="lineJoin">The .NET MAUI line join to convert.</param>
+    /// <returns>The corresponding Avalonia <see cref="AvaloniaPenLineJoin"/> value.</returns>
     public static AvaloniaPenLineJoin ToPlatform(this MauiLineJoin lineJoin)
     {
         return lineJoin switch
@@ -78,6 +106,11 @@ public static class GraphicsExtensions
         };
     }
 
+    /// <summary>
+    /// Converts a nullable .NET MAUI Controls <see cref="MauiControlsBrush"/> to an Avalonia <see cref="AvaloniaIBrush"/>, supporting solid color, linear gradient, and radial gradient brushes.
+    /// </summary>
+    /// <param name="brush">The .NET MAUI Controls brush to convert, or <c>null</c>.</param>
+    /// <returns>An Avalonia brush representing the MAUI brush, or <c>null</c> if the brush is <c>null</c>, empty, or not a supported type.</returns>
     public static AvaloniaIBrush? ToPlatform(this MauiControlsBrush? brush)
     {
         if (brush == null || brush.IsEmpty)
