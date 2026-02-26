@@ -81,7 +81,8 @@
     <ProjectReference Include="../Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj"
         PrivateAssets="all"
         OutputItemType="Analyzer"
-        ReferenceOutputAssembly="false" />
+        ReferenceOutputAssembly="false"
+        GlobalPropertiesToRemove="PublishAot" />
   </ItemGroup>
 
   <!-- Pack generator DLL into analyzers path -->

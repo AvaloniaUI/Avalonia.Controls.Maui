@@ -83,7 +83,8 @@
 		<!-- Source generator must be referenced directly when using ProjectReference (NuGet handles this automatically) -->
 		<ProjectReference Include="../../src/Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj"
 			OutputItemType="Analyzer"
-			ReferenceOutputAssembly="false" />
+			ReferenceOutputAssembly="false"
+			GlobalPropertiesToRemove="PublishAot" />
 	</ItemGroup>
 
 	<!-- Avalonia packages and bootstrap are now auto-added via the source generator and .props file -->
