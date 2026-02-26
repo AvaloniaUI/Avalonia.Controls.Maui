@@ -11,7 +11,7 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
-			#if NET
+			#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
 			 .UseAvaloniaApp()
              .UseAvaloniaGraphics()
 			 .UseAvaloniaMapsui()
