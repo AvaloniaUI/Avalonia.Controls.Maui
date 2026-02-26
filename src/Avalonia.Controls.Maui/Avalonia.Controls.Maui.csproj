@@ -35,6 +35,22 @@
   <ItemGroup>
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="build/Avalonia.Controls.Maui.targets" />
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.targets" />
+    <None Include="../Avalonia.Controls.Maui.props" Pack="true" PackagePath="build/Avalonia.Controls.Maui.props" />
+    <None Include="../Avalonia.Controls.Maui.props" Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.props" />
+  </ItemGroup>
+
+  <!-- Reference source generator project -->
+  <ItemGroup>
+    <ProjectReference Include="../Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj"
+        PrivateAssets="all"
+        OutputItemType="Analyzer"
+        ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <!-- Pack generator DLL into analyzers path -->
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="$(OutputPath)/../netstandard2.0/Avalonia.Controls.Maui.SourceGenerators.dll"
+        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <!-- Platform-specific file includes -->

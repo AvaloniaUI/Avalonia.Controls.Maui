@@ -1,0 +1,36 @@
+<Project>
+
+  <!-- Defaults -->
+  <PropertyGroup>
+    <AvaloniaControlsMauiGenerateBootstrap Condition="'$(AvaloniaControlsMauiGenerateBootstrap)' == ''">true</AvaloniaControlsMauiGenerateBootstrap>
+    <AvaloniaControlsMauiTheme Condition="'$(AvaloniaControlsMauiTheme)' == ''">Fluent</AvaloniaControlsMauiTheme>
+    <AvaloniaControlsMauiThemeVariant Condition="'$(AvaloniaControlsMauiThemeVariant)' == ''">Default</AvaloniaControlsMauiThemeVariant>
+    <AvaloniaControlsMauiIncludeInterFont Condition="'$(AvaloniaControlsMauiIncludeInterFont)' == ''">true</AvaloniaControlsMauiIncludeInterFont>
+  </PropertyGroup>
+
+  <!-- Pass properties to source generator -->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiGenerateBootstrap" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiTheme" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiThemeVariant" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiIncludeInterFont" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiProgramClass" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiAppClassName" />
+    <CompilerVisibleProperty Include="_MauiTargetPlatformIsAvalonia" />
+    <CompilerVisibleProperty Include="RootNamespace" />
+  </ItemGroup>
+
+  <!-- Auto-detect Avalonia platform (TFM with no platform suffix + UseMaui) -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == '' AND '$(UseMaui)' == 'true'">
+    <_MauiTargetPlatformIsAvalonia Condition="'$(_MauiTargetPlatformIsAvalonia)' == ''">true</_MauiTargetPlatformIsAvalonia>
+  </PropertyGroup>
+
+  <!-- Auto-add Avalonia packages for desktop TFM (AvaloniaVersion must be set by the consumer or Directory.Build.props) -->
+  <ItemGroup Condition="'$(_MauiTargetPlatformIsAvalonia)' == 'true' AND '$(AvaloniaControlsMauiGenerateBootstrap)' == 'true'">
+    <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" Condition="'$(AvaloniaControlsMauiTheme)' == 'Fluent'" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" Condition="'$(AvaloniaControlsMauiTheme)' == 'Simple'" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" Condition="'$(AvaloniaControlsMauiIncludeInterFont)' == 'true'" />
+  </ItemGroup>
+
+</Project>
