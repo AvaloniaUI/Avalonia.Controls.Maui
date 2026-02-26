@@ -184,6 +184,104 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Grid Tap Gesture -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Grid Tap Gesture" FontAttributes="Bold"/>
+                    <Label Text="TapGestureRecognizer on a Grid layout" FontSize="12" FontAttributes="Italic"/>
+
+                    <Grid x:Name="TapGrid"
+                          HeightRequest="150"
+                          BackgroundColor="LightSteelBlue"
+                          ColumnDefinitions="*,*"
+                          Padding="10">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnGridTapTapped" NumberOfTapsRequired="1" />
+                        </Grid.GestureRecognizers>
+                        <Label Text="Left"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"
+                               FontAttributes="Bold"/>
+                        <Label Text="Right"
+                               Grid.Column="1"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"
+                               FontAttributes="Bold"/>
+                    </Grid>
+                    <Label x:Name="GridTapCountLabel" Text="Grid Taps: 0" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Grid Pointer Gesture -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Grid Pointer Gesture" FontAttributes="Bold"/>
+                    <Label Text="PointerGestureRecognizer on a Grid with multiple cells" FontSize="12" FontAttributes="Italic"/>
+
+                    <Grid x:Name="PointerGrid"
+                          HeightRequest="150"
+                          BackgroundColor="Lavender"
+                          RowDefinitions="*,*"
+                          ColumnDefinitions="*,*"
+                          RowSpacing="2"
+                          ColumnSpacing="2">
+                        <Grid.GestureRecognizers>
+                            <PointerGestureRecognizer PointerEntered="OnGridPointerEntered"
+                                                      PointerExited="OnGridPointerExited"
+                                                      PointerMoved="OnGridPointerMoved" />
+                        </Grid.GestureRecognizers>
+                        <BoxView Color="CornflowerBlue" Grid.Row="0" Grid.Column="0" />
+                        <BoxView Color="MediumSeaGreen" Grid.Row="0" Grid.Column="1" />
+                        <BoxView Color="Coral" Grid.Row="1" Grid.Column="0" />
+                        <BoxView Color="MediumPurple" Grid.Row="1" Grid.Column="1" />
+                    </Grid>
+                    <Label x:Name="GridPointerStatusLabel" Text="Grid Pointer: Idle" HorizontalOptions="Center" />
+                    <Label x:Name="GridPointerPositionLabel" Text="Position: -" HorizontalOptions="Center" FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Grid Multiple Gestures -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Grid Multiple Gestures" FontAttributes="Bold"/>
+                    <Label Text="Tap + Pointer + Swipe on the same Grid" FontSize="12" FontAttributes="Italic"/>
+
+                    <Grid x:Name="MultiGestureGrid"
+                          HeightRequest="150"
+                          BackgroundColor="MistyRose"
+                          Padding="10">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnMultiGridTapped" NumberOfTapsRequired="1" />
+                            <PointerGestureRecognizer PointerEntered="OnMultiGridPointerEntered"
+                                                      PointerExited="OnMultiGridPointerExited" />
+                            <SwipeGestureRecognizer Direction="Left" Swiped="OnMultiGridSwiped" />
+                            <SwipeGestureRecognizer Direction="Right" Swiped="OnMultiGridSwiped" />
+                        </Grid.GestureRecognizers>
+                        <Label x:Name="MultiGestureGridLabel"
+                               Text="Tap, hover, or swipe!"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"
+                               FontAttributes="Bold"/>
+                    </Grid>
+                    <Label x:Name="MultiGestureStatusLabel" Text="Last Event: None" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -4,9 +4,10 @@ namespace ControlGallery.Pages;
 
 public partial class GesturesPage : ContentPage
 {
-    private int _singleTapCount = 0;
-    private int _doubleTapCount = 0;
-    
+    private int _singleTapCount;
+    private int _doubleTapCount;
+    private int _gridTapCount;
+
     // Pan gesture state
     private double _panX;
     private double _panY;
@@ -133,5 +134,68 @@ public partial class GesturesPage : ContentPage
             SwipeDirection.Down => Colors.LightYellow,
             _ => Colors.LightCyan
         };
+    }
+
+    // Grid Tap Gesture
+    private void OnGridTapTapped(object? sender, TappedEventArgs e)
+    {
+        _gridTapCount++;
+        GridTapCountLabel.Text = $"Grid Taps: {_gridTapCount}";
+
+        // Flash the grid background
+        TapGrid.BackgroundColor = Colors.SteelBlue;
+        Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(150), () =>
+        {
+            TapGrid.BackgroundColor = Colors.LightSteelBlue;
+        });
+    }
+
+    // Grid Pointer Gesture
+    private void OnGridPointerEntered(object? sender, PointerEventArgs e)
+    {
+        GridPointerStatusLabel.Text = "Grid Pointer: Entered";
+    }
+
+    private void OnGridPointerExited(object? sender, PointerEventArgs e)
+    {
+        GridPointerStatusLabel.Text = "Grid Pointer: Exited";
+        GridPointerPositionLabel.Text = "Position: -";
+    }
+
+    private void OnGridPointerMoved(object? sender, PointerEventArgs e)
+    {
+        GridPointerStatusLabel.Text = "Grid Pointer: Moving";
+        var pos = e.GetPosition(PointerGrid);
+        GridPointerPositionLabel.Text = pos.HasValue
+            ? $"Position: ({pos.Value.X:F0}, {pos.Value.Y:F0})"
+            : "Position: -";
+    }
+
+    // Grid Multiple Gestures
+    private void OnMultiGridTapped(object? sender, TappedEventArgs e)
+    {
+        MultiGestureStatusLabel.Text = "Last Event: Tapped";
+        MultiGestureGrid.BackgroundColor = Colors.PeachPuff;
+        Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(200), () =>
+        {
+            MultiGestureGrid.BackgroundColor = Colors.MistyRose;
+        });
+    }
+
+    private void OnMultiGridPointerEntered(object? sender, PointerEventArgs e)
+    {
+        MultiGestureStatusLabel.Text = "Last Event: Pointer Entered";
+        MultiGestureGrid.BackgroundColor = Colors.LavenderBlush;
+    }
+
+    private void OnMultiGridPointerExited(object? sender, PointerEventArgs e)
+    {
+        MultiGestureStatusLabel.Text = "Last Event: Pointer Exited";
+        MultiGestureGrid.BackgroundColor = Colors.MistyRose;
+    }
+
+    private void OnMultiGridSwiped(object? sender, SwipedEventArgs e)
+    {
+        MultiGestureStatusLabel.Text = $"Last Event: Swiped {e.Direction}";
     }
 }
