@@ -45,19 +45,32 @@
           DependsOnTargets="ResizetizeImages;_ReadResizetizeImagesOutputs">
     <ItemGroup>
       <_ResizetizerCollectedImages Include="$(_MauiIntermediateImages)**\*" Condition="Exists('$(_MauiIntermediateImages)')" />
+      <!-- Deduplicate: the glob can collect both absolute and relative paths for the same file -->
+      <_ResizetizerDeduped Remove="@(_ResizetizerDeduped)" />
+      <_ResizetizerDeduped Include="@(_ResizetizerCollectedImages->'%(Filename)%(Extension)')" />
+      <_ResizetizerDeduped Remove="@(_ResizetizerDeduped)" Condition="'@(_ResizetizerDeduped)' != '' AND '@(_ResizetizerDeduped)' == '%(Identity)'" KeepDuplicates="false" />
+    </ItemGroup>
+
+    <!-- Use only absolute-path entries to avoid duplicates -->
+    <RemoveDuplicates Inputs="@(_ResizetizerCollectedImages->'%(Filename)%(Extension)')">
+      <Output TaskParameter="Filtered" ItemName="_ResizetizerUniqueNames" />
+    </RemoveDuplicates>
+
+    <ItemGroup>
+      <_ResizetizerFiltered Include="$(_MauiIntermediateImages)%(_ResizetizerUniqueNames.Identity)" />
     </ItemGroup>
 
     <Message Text="Resizetizer intermediate path: $(_MauiIntermediateImages)" Importance="high" />
-    <Message Text="Collected MAUI Resizetizer images: @(_ResizetizerCollectedImages)" Importance="high" Condition="'@(_ResizetizerCollectedImages)' != ''" />
-    <Message Text="No Resizetizer images found" Importance="high" Condition="'@(_ResizetizerCollectedImages)' == ''" />
+    <Message Text="Collected MAUI Resizetizer images: @(_ResizetizerFiltered)" Importance="high" Condition="'@(_ResizetizerFiltered)' != ''" />
+    <Message Text="No Resizetizer images found" Importance="high" Condition="'@(_ResizetizerFiltered)' == ''" />
 
     <ItemGroup>
-      <AvaloniaResource Include="@(_ResizetizerCollectedImages)" Condition="'@(_ResizetizerCollectedImages)' != ''">
-        <Link>Images/%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</Link>
+      <AvaloniaResource Include="@(_ResizetizerFiltered)" Condition="'@(_ResizetizerFiltered)' != ''">
+        <Link>Images/%(_ResizetizerFiltered.Filename)%(_ResizetizerFiltered.Extension)</Link>
       </AvaloniaResource>
     </ItemGroup>
 
-    <Message Text="Converted MAUI Resizetizer images to Avalonia resources: @(_ResizetizerCollectedImages)" Importance="high" Condition="'@(_ResizetizerCollectedImages)' != ''" />
+    <Message Text="Converted MAUI Resizetizer images to Avalonia resources: @(_ResizetizerFiltered)" Importance="high" Condition="'@(_ResizetizerFiltered)' != ''" />
   </Target>
 
   <Target Name="ConvertMauiFontsToAvaloniaResources"
@@ -84,6 +97,17 @@
     </ItemGroup>
     <Message Text="Converted MAUI assets to Avalonia resources: @(MauiAsset)" Importance="high" />
   </Target>
+
+  <!-- Ensure Avalonia resources are registered as EmbeddedResource before PrepareResources
+       runs SplitResourcesByCulture. Without this, NuGet-consumer builds process EmbeddedResource
+       items before AddAvaloniaResources has added the Avalonia blob, so it never reaches Csc. -->
+  <PropertyGroup>
+    <PrepareResourcesDependsOn>
+      ConvertMauiImagesToAvaloniaResources;
+      AddAvaloniaResources;
+      $(PrepareResourcesDependsOn)
+    </PrepareResourcesDependsOn>
+  </PropertyGroup>
 
   <PropertyGroup>
     <EnableAvaloniaXamlCompilation Condition="'$(EnableAvaloniaXamlCompilation)' == ''">true</EnableAvaloniaXamlCompilation>

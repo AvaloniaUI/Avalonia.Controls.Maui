@@ -32,6 +32,21 @@
     <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
   </ItemGroup>
 
+  <!-- Platform-specific Avalonia packages (become nuspec dependency groups per TFM) -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == ''">
+    <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
+    <PackageReference Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
   <ItemGroup>
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="build/Avalonia.Controls.Maui.targets" />
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.targets" />
@@ -50,11 +65,16 @@
       <_PropsContent>$(_PropsContent.Replace('__AvaloniaVersionPlaceholder__', '$(AvaloniaVersion)'))</_PropsContent>
     </PropertyGroup>
     <WriteLinesToFile File="$(_PropsOutputFile)" Lines="$(_PropsContent)" Overwrite="true" WriteOnlyWhenDifferent="true" />
-    <ItemGroup>
-      <None Include="$(_PropsOutputFile)" Pack="true" PackagePath="build/Avalonia.Controls.Maui.props" Visible="false" />
-      <None Include="$(_PropsOutputFile)" Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.props" Visible="false" />
-    </ItemGroup>
   </Target>
+
+  <!-- Pack the generated props file. Declared statically so NuGet pack sees these items
+       during item collection (dynamic items added inside targets run too late for pack). -->
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="$(IntermediateOutputPath)Avalonia.Controls.Maui.props"
+        Pack="true" PackagePath="build/Avalonia.Controls.Maui.props" Visible="false" />
+    <None Include="$(IntermediateOutputPath)Avalonia.Controls.Maui.props"
+        Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.props" Visible="false" />
+  </ItemGroup>
 
   <!-- Reference source generator project -->
   <ItemGroup>
@@ -66,7 +86,7 @@
 
   <!-- Pack generator DLL into analyzers path -->
   <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <None Include="$(OutputPath)/../netstandard2.0/Avalonia.Controls.Maui.SourceGenerators.dll"
+    <None Include="../Avalonia.Controls.Maui.SourceGenerators/bin/$(Configuration)/netstandard2.0/Avalonia.Controls.Maui.SourceGenerators.dll"
         Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 

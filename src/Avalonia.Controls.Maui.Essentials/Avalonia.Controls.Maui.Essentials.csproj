@@ -15,4 +15,9 @@
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Microsoft.Maui.Core" Version="$(MauiVersion)" />
   </ItemGroup>
+
+  <ItemGroup Condition=" ('$(IsPackable)' == 'true')">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath=""
+      Visible="false" />
+  </ItemGroup>
 </Project>

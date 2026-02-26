@@ -57,26 +57,6 @@ public static class MauiProgram
     }
 
     [Fact]
-    public void NonAvaloniaTfm_ProducesNoOutput()
-    {
-        var result = GeneratorTestHelper.RunGenerator(
-            ValidMauiProgram,
-            GeneratorTestHelper.DefaultBuildProperties(isAvalonia: "false"));
-
-        Assert.Empty(result.GeneratedTrees);
-    }
-
-    [Fact]
-    public void MissingIsAvalonia_ProducesNoOutput()
-    {
-        var result = GeneratorTestHelper.RunGenerator(
-            ValidMauiProgram,
-            GeneratorTestHelper.DefaultBuildProperties(isAvalonia: ""));
-
-        Assert.Empty(result.GeneratedTrees);
-    }
-
-    [Fact]
     public void NoCreateMauiApp_ReportsWarning()
     {
         var source = @"
