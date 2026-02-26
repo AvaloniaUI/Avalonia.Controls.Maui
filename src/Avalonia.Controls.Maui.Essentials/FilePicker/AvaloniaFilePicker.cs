@@ -5,6 +5,9 @@ using MauiFilePickerFileType = Microsoft.Maui.Storage.FilePickerFileType;
 
 namespace Avalonia.Controls.Maui.Essentials;
 
+/// <summary>
+/// Implements IFilePicker using Avalonia's StorageProvider API to present native file picker dialogs on desktop and browser platforms.
+/// </summary>
 public class AvaloniaFilePicker : IFilePicker
 {
     readonly IAvaloniaEssentialsPlatformProvider _platformProvider;
@@ -14,6 +17,11 @@ public class AvaloniaFilePicker : IFilePicker
         _platformProvider = platformProvider;
     }
 
+    /// <summary>
+    /// Displays a file picker dialog that allows the user to select a single file.
+    /// </summary>
+    /// <param name="options">The options that configure the file picker, including title and allowed file types. Can be <c>null</c> for default behavior.</param>
+    /// <returns>A <see cref="FileResult"/> representing the selected file, or <c>null</c> if the user cancelled the dialog or no local path was available.</returns>
     public async Task<FileResult?> PickAsync(PickOptions? options)
     {
         var topLevel = _platformProvider.GetTopLevel()
@@ -29,6 +37,11 @@ public class AvaloniaFilePicker : IFilePicker
         return path is not null ? new FileResult(path) : null;
     }
 
+    /// <summary>
+    /// Displays a file picker dialog that allows the user to select multiple files.
+    /// </summary>
+    /// <param name="options">The options that configure the file picker, including title and allowed file types. Can be <c>null</c> for default behavior.</param>
+    /// <returns>A collection of FileResult objects representing the selected files, or an empty collection if the user cancelled the dialog.</returns>
     public async Task<IEnumerable<FileResult?>> PickMultipleAsync(PickOptions? options)
     {
         var topLevel = _platformProvider.GetTopLevel()

@@ -3,6 +3,9 @@ using Microsoft.Maui.Storage;
 
 namespace Avalonia.Controls.Maui.Essentials;
 
+/// <summary>
+/// Extension methods for configuring Avalonia-based Microsoft.Maui.Essentials services.
+/// </summary>
 public static class MauiEssentialsBuilderExtensions
 {
     /// <summary>
