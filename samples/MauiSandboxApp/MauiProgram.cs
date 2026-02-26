@@ -13,7 +13,7 @@ public static class MauiProgram
 			.UseMauiApp<App>()
 			#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
 			 .UseAvaloniaApp()
-             .UseAvaloniaGraphics()
+			 .UseAvaloniaGraphics()
 			 .UseAvaloniaMapsui()
 			 .UseAvaloniaCompatibility()
 			#endif

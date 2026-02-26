@@ -6,7 +6,6 @@
 		<Nullable>enable</Nullable>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<UseMaui>true</UseMaui>
-		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
 		<RootNamespace>SandboxApp</RootNamespace>
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 	</PropertyGroup>
