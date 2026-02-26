@@ -6,7 +6,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<UseMaui>true</UseMaui>
-		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
+		
 	</PropertyGroup>
 
     <PropertyGroup Label="AOT Validation">

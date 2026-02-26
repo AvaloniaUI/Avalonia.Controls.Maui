@@ -1,6 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Controls.Primitives;
+using Avalonia.Media;
 using Microsoft.Maui;
 using PlatformView = Avalonia.Controls.Maui.MauiButton;
 using MButton = Microsoft.Maui.Controls.Button;
@@ -29,12 +30,56 @@ public static class ButtonExtensions
     {
         if (button.Background != null)
         {
-            platformView.Background = button.Background.ToPlatform();
+            var brush = button.Background.ToPlatform();
+            platformView.Background = brush;
+            if (brush != null)
+                UpdateButtonBackgroundStates(platformView, brush);
         }
         else
         {
             platformView.ClearValue(TemplatedControl.BackgroundProperty);
+            ClearButtonBackgroundStates(platformView);
         }
+    }
+
+    private static void UpdateButtonBackgroundStates(PlatformView platformView, IBrush brush)
+    {
+        if (brush is SolidColorBrush solidBrush)
+        {
+            var baseColor = solidBrush.Color;
+            platformView.Resources["ButtonBackgroundPointerOver"] = new SolidColorBrush(LightenColor(baseColor, 0.15));
+            platformView.Resources["ButtonBackgroundPressed"] = new SolidColorBrush(DarkenColor(baseColor, 0.12));
+        }
+        else
+        {
+            // For non-solid brushes (gradients, etc.), use the same brush for all states
+            platformView.Resources["ButtonBackgroundPointerOver"] = brush;
+            platformView.Resources["ButtonBackgroundPressed"] = brush;
+        }
+    }
+
+    private static void ClearButtonBackgroundStates(PlatformView platformView)
+    {
+        platformView.Resources.Remove("ButtonBackgroundPointerOver");
+        platformView.Resources.Remove("ButtonBackgroundPressed");
+    }
+
+    private static Color LightenColor(Color color, double factor)
+    {
+        return Color.FromArgb(
+            color.A,
+            (byte)Math.Min(color.R + (255 - color.R) * factor, 255),
+            (byte)Math.Min(color.G + (255 - color.G) * factor, 255),
+            (byte)Math.Min(color.B + (255 - color.B) * factor, 255));
+    }
+
+    private static Color DarkenColor(Color color, double factor)
+    {
+        return Color.FromArgb(
+            color.A,
+            (byte)(color.R * (1 - factor)),
+            (byte)(color.G * (1 - factor)),
+            (byte)(color.B * (1 - factor)));
     }
     
     /// <summary>
@@ -130,11 +175,19 @@ public static class ButtonExtensions
 
         if (textStyle.TextColor != null)
         {
-            platformView.Foreground = textStyle.TextColor.ToPlatform();
+            var brush = textStyle.TextColor.ToPlatform();
+            platformView.Foreground = brush;
+            if (brush != null)
+            {
+                platformView.Resources["ButtonForegroundPointerOver"] = brush;
+                platformView.Resources["ButtonForegroundPressed"] = brush;
+            }
         }
         else
         {
             platformView.ClearValue(TemplatedControl.ForegroundProperty);
+            platformView.Resources.Remove("ButtonForegroundPointerOver");
+            platformView.Resources.Remove("ButtonForegroundPressed");
         }
     }
 

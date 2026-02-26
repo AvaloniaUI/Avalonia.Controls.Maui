@@ -4,7 +4,7 @@
 		<OutputType>Exe</OutputType>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Nullable>enable</Nullable>
-		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
+		
 		<UseMaui>true</UseMaui>
 		<RootNamespace>AlohaAI</RootNamespace>
 	</PropertyGroup>

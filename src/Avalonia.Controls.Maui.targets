@@ -43,8 +43,53 @@
   <Target Name="ConvertMauiImagesToAvaloniaResources"
           BeforeTargets="AddAvaloniaResources"
           DependsOnTargets="ResizetizeImages;_ReadResizetizeImagesOutputs">
+
+    <PropertyGroup>
+      <_AvMauiPlatformId>$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))</_AvMauiPlatformId>
+    </PropertyGroup>
+
+    <!-- Collect resizetizer images based on platform output structure.
+         On net11.0 (wpf mode), images are flat in the intermediate dir.
+         On Android, images are in drawable-mdpi/ (1x), drawable-hdpi/ (1.5x), etc. We pick 1x.
+         On iOS/macCatalyst, images are flat with @2x/@3x suffixes. We pick base (no suffix).
+         On Windows, images have .scale-NNN suffixes. We pick scale-100 (1x).
+         App icons (mipmap-* on Android, Assets.xcassets on iOS) are in subdirs and excluded
+         by the non-recursive glob. -->
     <ItemGroup>
-      <_ResizetizerCollectedImages Include="$(_MauiIntermediateImages)**\*" Condition="Exists('$(_MauiIntermediateImages)')" />
+      <!-- Clear any stale items from prior incremental builds or resizetizer output tracking -->
+      <_ResizetizerCollectedImages Remove="@(_ResizetizerCollectedImages)" />
+
+      <!-- Android: use drawable-mdpi (1x base resolution) -->
+      <_ResizetizerCollectedImages
+          Condition="'$(_AvMauiPlatformId)' == 'android' And Exists('$(_MauiIntermediateImages)')"
+          Include="$(_MauiIntermediateImages)drawable-mdpi\*"
+          Exclude="$(_MauiIntermediateImages)drawable-mdpi\*.xml;$(_MauiIntermediateImages)drawable-mdpi\*.json" />
+
+      <!-- iOS/macCatalyst: flat files in intermediate dir (non-recursive excludes xcassets subdirs) -->
+      <_ResizetizerCollectedImages
+          Condition="('$(_AvMauiPlatformId)' == 'ios' Or '$(_AvMauiPlatformId)' == 'maccatalyst') And Exists('$(_MauiIntermediateImages)')"
+          Include="$(_MauiIntermediateImages)*"
+          Exclude="$(_MauiIntermediateImages)*.xml;$(_MauiIntermediateImages)*.json" />
+
+      <!-- Windows: flat files with .scale-NNN suffix; keep only scale-100 (1x) -->
+      <_ResizetizerCollectedImages
+          Condition="$(_AvMauiPlatformId.Contains('windows')) And Exists('$(_MauiIntermediateImages)')"
+          Include="$(_MauiIntermediateImages)*.scale-100.*" />
+
+      <!-- Default/WPF (net11.0, net11.0-browser, etc.): flat files directly in intermediate dir -->
+      <_ResizetizerCollectedImages
+          Condition="'$(_AvMauiPlatformId)' != 'android' And '$(_AvMauiPlatformId)' != 'ios' And '$(_AvMauiPlatformId)' != 'maccatalyst' And !$(_AvMauiPlatformId.Contains('windows')) And Exists('$(_MauiIntermediateImages)')"
+          Include="$(_MauiIntermediateImages)*"
+          Exclude="$(_MauiIntermediateImages)*.xml;$(_MauiIntermediateImages)*.json" />
+
+      <!-- Remove @2x/@3x retina variants (iOS/macCatalyst) and any xcassets/platform artifacts
+           that may have been added by the resizetizer's output tracking -->
+      <_ResizetizerCollectedImages Remove="@(_ResizetizerCollectedImages)"
+          Condition="$([System.String]::new('%(Filename)').Contains('@'))" />
+      <_ResizetizerCollectedImages Remove="@(_ResizetizerCollectedImages)"
+          Condition="$([System.String]::new('%(Identity)').Contains('Assets.xcassets'))" />
+      <_ResizetizerCollectedImages Remove="@(_ResizetizerCollectedImages)"
+          Condition="'%(Extension)' == '.xml' Or '%(Extension)' == '.json'" />
     </ItemGroup>
 
     <Message Text="Resizetizer intermediate path: $(_MauiIntermediateImages)" Importance="high" />
@@ -53,7 +98,7 @@
 
     <ItemGroup>
       <AvaloniaResource Include="@(_ResizetizerCollectedImages)" Condition="'@(_ResizetizerCollectedImages)' != ''">
-        <Link>Images/%(_ResizetizerCollectedImages.Filename)%(_ResizetizerCollectedImages.Extension)</Link>
+        <Link>Images/%(Filename)%(Extension)</Link>
       </AvaloniaResource>
     </ItemGroup>
 
@@ -84,6 +129,17 @@
     </ItemGroup>
     <Message Text="Converted MAUI assets to Avalonia resources: @(MauiAsset)" Importance="high" />
   </Target>
+
+  <!-- Ensure Avalonia resources are registered as EmbeddedResource before PrepareResources
+       runs SplitResourcesByCulture. Without this, NuGet-consumer builds process EmbeddedResource
+       items before AddAvaloniaResources has added the Avalonia blob, so it never reaches Csc. -->
+  <PropertyGroup>
+    <PrepareResourcesDependsOn>
+      ConvertMauiImagesToAvaloniaResources;
+      AddAvaloniaResources;
+      $(PrepareResourcesDependsOn)
+    </PrepareResourcesDependsOn>
+  </PropertyGroup>
 
   <PropertyGroup>
     <EnableAvaloniaXamlCompilation Condition="'$(EnableAvaloniaXamlCompilation)' == ''">true</EnableAvaloniaXamlCompilation>
