@@ -63,6 +63,14 @@ public static class MauiAppBuilderExtensions
             [typeof(Microsoft.Maui.ApplicationModel.IAppInfo)]);
         setCurrentMethod?.Invoke(null, [new AvaloniaAppInfoImplementation()]);
 
+        // Set Avalonia SemanticScreenReader implementation to prevent NotImplementedInReferenceAssemblyException
+        // HACK: There is no public API to set the SemanticScreenReader implementation
+        // TODO: Remove reflection when possible or replace with UnsafeAccessor in .NET 10
+        var setDefaultMethod = typeof(Microsoft.Maui.Accessibility.SemanticScreenReader).GetMethod("SetDefault",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static,
+            [typeof(Microsoft.Maui.Accessibility.ISemanticScreenReader)]);
+        setDefaultMethod?.Invoke(null, [new AvaloniaSemanticScreenReaderImplementation()]);
+
         builder.Services.AddSingleton<Microsoft.Maui.Dispatching.IDispatcher>(services =>
         {
             var avaloniaDispatcher = Avalonia.Threading.Dispatcher.UIThread;
