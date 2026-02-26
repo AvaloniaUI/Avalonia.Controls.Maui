@@ -6,29 +6,4 @@
     <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">__AvaloniaVersionPlaceholder__</AvaloniaVersion>
   </PropertyGroup>
 
-  <!-- Defaults -->
-  <PropertyGroup>
-    <!-- Disable bootstrap generation on platform TFMs (Android, iOS, macCatalyst, Windows, etc.).
-         The desktop bootstrap (Main + StartWithClassicDesktopLifetime) only applies to the base TFM.
-         Platform TFMs have their own entry points and Avalonia lifecycle bootstrapping. -->
-    <AvaloniaControlsMauiGenerateBootstrap
-        Condition="'$(AvaloniaControlsMauiGenerateBootstrap)' == '' And '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' != ''">false</AvaloniaControlsMauiGenerateBootstrap>
-    <AvaloniaControlsMauiGenerateBootstrap Condition="'$(AvaloniaControlsMauiGenerateBootstrap)' == ''">true</AvaloniaControlsMauiGenerateBootstrap>
-    <AvaloniaControlsMauiTheme Condition="'$(AvaloniaControlsMauiTheme)' == ''">Fluent</AvaloniaControlsMauiTheme>
-    <AvaloniaControlsMauiThemeVariant Condition="'$(AvaloniaControlsMauiThemeVariant)' == ''">Default</AvaloniaControlsMauiThemeVariant>
-    <AvaloniaControlsMauiIncludeInterFont Condition="'$(AvaloniaControlsMauiIncludeInterFont)' == ''">true</AvaloniaControlsMauiIncludeInterFont>
-  </PropertyGroup>
-
-  <!-- Pass properties to source generator -->
-  <ItemGroup>
-    <CompilerVisibleProperty Include="AvaloniaControlsMauiGenerateBootstrap" />
-    <CompilerVisibleProperty Include="AvaloniaControlsMauiTheme" />
-    <CompilerVisibleProperty Include="AvaloniaControlsMauiThemeVariant" />
-    <CompilerVisibleProperty Include="AvaloniaControlsMauiIncludeInterFont" />
-    <CompilerVisibleProperty Include="AvaloniaControlsMauiProgramClass" />
-    <CompilerVisibleProperty Include="AvaloniaControlsMauiAppClassName" />
-    <CompilerVisibleProperty Include="RootNamespace" />
-  </ItemGroup>
-
-
 </Project>

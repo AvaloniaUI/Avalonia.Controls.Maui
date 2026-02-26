@@ -302,6 +302,22 @@ public static class ShellItemExtensions
         handler.UpdateTabAppearance(item);
     }
 
+    // All Fluent theme resource keys we may override for tab appearance
+    private static readonly string[] ThemeResourceKeys =
+    [
+        "TabItemHeaderSelectedPipeFill",
+        "TabItemHeaderForegroundSelected",
+        "TabItemHeaderForegroundSelectedPointerOver",
+        "TabItemHeaderForegroundSelectedPressed",
+        "TabItemHeaderForegroundUnselected",
+        "TabItemHeaderForegroundUnselectedPointerOver",
+        "TabItemHeaderForegroundUnselectedPressed",
+        "ThemeAccentBrush",
+        "ThemeAccentBrush2",
+        "ThemeAccentBrush3",
+        "ThemeAccentBrush4"
+    ];
+
     internal static void UpdateTabAppearanceInternal(this ShellItemHandler handler, ShellItem item)
     {
         if (handler._tabControl == null || item == null)
@@ -312,53 +328,79 @@ public static class ShellItemExtensions
         var unselectedColor = handler.GetResolvedProperty<Color?>(Microsoft.Maui.Controls.Shell.TabBarUnselectedColorProperty, item);
         var disabledColor = handler.GetResolvedProperty<Color?>(Microsoft.Maui.Controls.Shell.TabBarDisabledColorProperty, item);
 
-        var selectedIconBrush = (foregroundColor ?? titleColor)?.ToPlatform();
+        bool hasExplicitColors = foregroundColor != null || titleColor != null || unselectedColor != null;
+
+        // In MAUI, TabBarForegroundColor maps to the selection indicator and selected icon/text tint,
+        // NOT to a full background color. TabBarTitleColor overrides the selected text color specifically.
+        var accentBrush = foregroundColor?.ToPlatform();
         var selectedTextBrush = (titleColor ?? foregroundColor)?.ToPlatform();
-        var highlightBrush = (IBrush?)foregroundColor?.ToPlatform() ?? Brushes.Transparent;
+        var selectedIconBrush = (foregroundColor ?? titleColor)?.ToPlatform();
         var unselectedBrush = unselectedColor?.ToPlatform();
         var disabledBrush = disabledColor?.ToPlatform();
 
-        // Populate dynamic resources used by our custom Styles and the built-in themes
-        handler._tabControl.Resources["ShellTabSelectedBackground"] = highlightBrush;
-        handler._tabControl.Resources["ShellTabSelectedForeground"] = selectedTextBrush;
-        handler._tabControl.Resources["ShellTabHoverBackground"] = Brushes.Transparent;
-        handler._tabControl.Resources["ShellTabUnselectedForeground"] = unselectedBrush;
-
-        // Correct Avalonia theme resource keys for selection/accent
-        var resourceKeys = new[]
+        if (hasExplicitColors)
         {
-            "TabItemHeaderSelectedBackground",
-            "TabItemHeaderSelectedPointerOverBackground",
-            "TabItemHeaderPointerOverBackground",
-            "TabItemHeaderSelectedForeground",
-            "TabItemHeaderSelectedPipeFill",          // Fluent selection line
-            "ThemeAccentBrush",                       // Simple accent
-            "ThemeAccentBrush2",
-            "ThemeAccentBrush3",
-            "ThemeAccentBrush4"                        // Simple selected background fallback
-        };
+            // Override Fluent theme resources with MAUI-specified colors.
+            // Map TabBarForegroundColor to the selection indicator (pipe) and accent colors.
+            if (accentBrush != null)
+            {
+                handler._tabControl.Resources["TabItemHeaderSelectedPipeFill"] = accentBrush;
+                handler._tabControl.Resources["ThemeAccentBrush"] = accentBrush;
+                handler._tabControl.Resources["ThemeAccentBrush2"] = accentBrush;
+                handler._tabControl.Resources["ThemeAccentBrush3"] = accentBrush;
+                handler._tabControl.Resources["ThemeAccentBrush4"] = accentBrush;
+            }
 
+            // Map selected text color to all selected-state foreground resources
+            if (selectedTextBrush != null)
+            {
+                handler._tabControl.Resources["TabItemHeaderForegroundSelected"] = selectedTextBrush;
+                handler._tabControl.Resources["TabItemHeaderForegroundSelectedPointerOver"] = selectedTextBrush;
+                handler._tabControl.Resources["TabItemHeaderForegroundSelectedPressed"] = selectedTextBrush;
+            }
+
+            // Map unselected color to all unselected-state foreground resources
+            if (unselectedBrush != null)
+            {
+                handler._tabControl.Resources["TabItemHeaderForegroundUnselected"] = unselectedBrush;
+                handler._tabControl.Resources["TabItemHeaderForegroundUnselectedPointerOver"] = unselectedBrush;
+                handler._tabControl.Resources["TabItemHeaderForegroundUnselectedPressed"] = unselectedBrush;
+            }
+        }
+        else
+        {
+            // No explicit MAUI colors — clear any previous overrides so Fluent theme defaults apply
+            foreach (var key in ThemeResourceKeys)
+            {
+                handler._tabControl.Resources.Remove(key);
+            }
+        }
+
+        // Apply icon tint colors and clear direct text foreground overrides.
+        // Text foreground is handled by the Fluent theme through TextElement.Foreground
+        // inheritance from PART_LayoutRoot, using the resource keys we set above.
         foreach (var tabItemObj in handler._tabControl.Items)
         {
             if (tabItemObj is TabItem tabItem)
             {
-                foreach (var key in resourceKeys)
-                {
-                    if (key.Contains("Foreground")) tabItem.Resources[key] = selectedTextBrush;
-                    else tabItem.Resources[key] = highlightBrush;
-                }
-
+                IBrush? iconBrush;
                 if (!tabItem.IsEnabled)
-                    tabItem.ApplyColorsToTabItem(disabledBrush, disabledBrush);
+                    iconBrush = disabledBrush;
                 else if (tabItem.Tag == item.CurrentItem || tabItem.IsSelected)
-                    tabItem.ApplyColorsToTabItem(selectedTextBrush, selectedIconBrush);
+                    iconBrush = selectedIconBrush;
                 else
-                    tabItem.ApplyColorsToTabItem(unselectedBrush, unselectedBrush);
+                    iconBrush = unselectedBrush;
+
+                tabItem.ApplyIconColorsToTabItem(iconBrush);
             }
         }
     }
 
-    internal static void ApplyColorsToTabItem(this TabItem tabItem, IBrush? textBrush, IBrush? iconBrush)
+    /// <summary>
+    /// Applies icon tint color and clears any direct text foreground overrides on the tab header.
+    /// Text color is handled by the Fluent theme through TextElement.Foreground inheritance.
+    /// </summary>
+    internal static void ApplyIconColorsToTabItem(this TabItem tabItem, IBrush? iconBrush)
     {
         if (tabItem.Header is Panel panel)
         {
@@ -366,8 +408,8 @@ public static class ShellItemExtensions
             {
                 if (child is TextBlock textBlock)
                 {
-                    if (textBrush != null) textBlock.Foreground = textBrush;
-                    else textBlock.ClearValue(TextBlock.ForegroundProperty);
+                    // Clear direct foreground so Fluent theme TextElement.Foreground inheritance works
+                    textBlock.ClearValue(TextBlock.ForegroundProperty);
                 }
                 else if (child is Border border && border.Classes.Contains("shell-tab-header-icon"))
                 {
@@ -378,8 +420,7 @@ public static class ShellItemExtensions
         }
         else if (tabItem.Header is TextBlock tb)
         {
-            if (textBrush != null) tb.Foreground = textBrush;
-            else tb.ClearValue(TextBlock.ForegroundProperty);
+            tb.ClearValue(TextBlock.ForegroundProperty);
         }
     }
 

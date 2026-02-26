@@ -173,7 +173,7 @@ public partial class TabbedPage : ContentPage
             BarBackgroundColor = Color.FromArgb("#312E81"), // Indigo 900
             BarTextColor = Colors.White,
             SelectedTabColor = Color.FromArgb("#4338CA"), // Indigo 700
-            UnselectedTabColor = Color.FromArgb("#312E81") // Indigo 900 (Same as bar)
+            UnselectedTabColor = Color.FromArgb("#3b38a5")
         };
 
         var controlPage = new ContentPage
@@ -203,7 +203,7 @@ public partial class TabbedPage : ContentPage
             BarBackgroundColor = Colors.RoyalBlue,
             BarTextColor = Colors.White,
             SelectedTabColor = Colors.White,
-            UnselectedTabColor = Colors.RoyalBlue
+            UnselectedTabColor = Colors.White
         };
 
         tabbedPage.Children.Add(new ContentPage

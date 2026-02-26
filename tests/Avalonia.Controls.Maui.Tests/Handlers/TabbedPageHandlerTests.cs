@@ -118,7 +118,8 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(TabbedPage.BarTextColor));
 
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageBarTextColor"));
+            // BarTextColor is now mapped to Fluent theme foreground resources
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundSelected"));
         });
     }
 
@@ -159,12 +160,12 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
 
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(TabbedPage.BarTextColor));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageBarTextColor"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundSelected"));
 
             stub.BarTextColor = null;
             handler.UpdateValue(nameof(TabbedPage.BarTextColor));
 
-            Assert.False(handler.PlatformView.Resources.ContainsKey("TabbedPageBarTextColor"));
+            Assert.False(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundSelected"));
         });
     }
 
@@ -234,12 +235,13 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(TabbedPage.SelectedTabColor));
 
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageSelectedTabColor"));
+            // SelectedTabColor is now mapped to Fluent pipe fill and accent resources
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderSelectedPipeFill"));
         });
     }
 
-    [AvaloniaFact(DisplayName = "MapSelectedTabColor Sets Selected TabItem Background")]
-    public async Task MapSelectedTabColor_Sets_Selected_TabItem_Background()
+    [AvaloniaFact(DisplayName = "MapSelectedTabColor Sets Pipe Fill Resource")]
+    public async Task MapSelectedTabColor_Sets_Pipe_Fill_Resource()
     {
         EnsureHandlerCreated();
 
@@ -255,10 +257,9 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(TabbedPage.SelectedTabColor));
 
-            // First tab is selected by default
-            var selectedTab = handler.PlatformView.Items[0] as TabItem;
-            Assert.NotNull(selectedTab);
-            Assert.NotNull(selectedTab.Background);
+            // SelectedTabColor maps to pipe fill and selected foreground, not a tab background
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderSelectedPipeFill"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundSelected"));
         });
     }
 
@@ -277,12 +278,12 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
 
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(TabbedPage.SelectedTabColor));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageSelectedTabColor"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderSelectedPipeFill"));
 
             stub.SelectedTabColor = null;
             handler.UpdateValue(nameof(TabbedPage.SelectedTabColor));
 
-            Assert.False(handler.PlatformView.Resources.ContainsKey("TabbedPageSelectedTabColor"));
+            Assert.False(handler.PlatformView.Resources.ContainsKey("TabItemHeaderSelectedPipeFill"));
         });
     }
 
@@ -303,12 +304,13 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(TabbedPage.UnselectedTabColor));
 
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageUnselectedTabColor"));
+            // UnselectedTabColor is now mapped to Fluent unselected foreground resources
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundUnselected"));
         });
     }
 
-    [AvaloniaFact(DisplayName = "MapUnselectedTabColor Sets Unselected TabItem Background")]
-    public async Task MapUnselectedTabColor_Sets_Unselected_TabItem_Background()
+    [AvaloniaFact(DisplayName = "MapUnselectedTabColor Sets Unselected Foreground Resource")]
+    public async Task MapUnselectedTabColor_Sets_Unselected_Foreground_Resource()
     {
         EnsureHandlerCreated();
 
@@ -324,10 +326,8 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(TabbedPage.UnselectedTabColor));
 
-            // Second tab is unselected
-            var unselectedTab = handler.PlatformView.Items[1] as TabItem;
-            Assert.NotNull(unselectedTab);
-            Assert.NotNull(unselectedTab.Background);
+            // UnselectedTabColor maps to Fluent foreground resources, not direct Background
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundUnselected"));
         });
     }
 
@@ -346,12 +346,12 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
 
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(TabbedPage.UnselectedTabColor));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageUnselectedTabColor"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundUnselected"));
 
             stub.UnselectedTabColor = null;
             handler.UpdateValue(nameof(TabbedPage.UnselectedTabColor));
 
-            Assert.False(handler.PlatformView.Resources.ContainsKey("TabbedPageUnselectedTabColor"));
+            Assert.False(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundUnselected"));
         });
     }
 
@@ -618,11 +618,11 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             handler.UpdateValue(nameof(TabbedPage.SelectedTabColor));
             handler.UpdateValue(nameof(TabbedPage.UnselectedTabColor));
 
-            // Verify all resources are set
+            // Verify all resources are set (using new Fluent theme resource keys)
             Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageBarBackground"));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageBarTextColor"));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageSelectedTabColor"));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageUnselectedTabColor"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundSelected"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderSelectedPipeFill"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundUnselected"));
         });
     }
 

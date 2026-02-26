@@ -145,7 +145,8 @@ public class ShellItemHandlerTests : HandlerTestBase
         Assert.NotNull(background);
         Assert.Equal(Avalonia.Media.Colors.Red, background.Color);
 
-        var highlight = tabControl.Resources["ShellTabSelectedBackground"] as IBrush;
-        Assert.NotNull(highlight);
+        // TabBarForegroundColor maps to the selection indicator (pipe) and accent, not a background
+        var pipeFill = tabControl.Resources["TabItemHeaderSelectedPipeFill"] as IBrush;
+        Assert.NotNull(pipeFill);
     }
 }

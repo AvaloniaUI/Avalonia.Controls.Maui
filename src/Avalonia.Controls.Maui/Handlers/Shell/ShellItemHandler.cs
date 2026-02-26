@@ -65,15 +65,6 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
 
             _tabControl.SelectionChanged += OnTabSelectionChanged;
 
-            var selectedStyle = new Styling.Style(x => x.OfType<TabItem>().Class(":selected"));
-            selectedStyle.Setters.Add(new Styling.Setter(TabItem.BackgroundProperty, new Markup.Xaml.MarkupExtensions.DynamicResourceExtension("ShellTabSelectedBackground")));
-            selectedStyle.Setters.Add(new Styling.Setter(TabItem.ForegroundProperty, new Markup.Xaml.MarkupExtensions.DynamicResourceExtension("ShellTabSelectedForeground")));
-            _tabControl.Styles.Add(selectedStyle);
-
-            var hoverStyle = new Styling.Style(x => x.OfType<TabItem>().Class(":pointerover"));
-            hoverStyle.Setters.Add(new Styling.Setter(TabItem.BackgroundProperty, new Markup.Xaml.MarkupExtensions.DynamicResourceExtension("ShellTabHoverBackground")));
-            _tabControl.Styles.Add(hoverStyle);
-
             return _tabControl;
         }
         else
