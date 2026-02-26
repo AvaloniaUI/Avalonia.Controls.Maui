@@ -33,18 +33,16 @@
   </ItemGroup>
 
   <!-- Platform-specific Avalonia packages (become nuspec dependency groups per TFM) -->
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == ''">
-    <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-  </ItemGroup>
-
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
     <PackageReference Include="Avalonia.iOS" Version="$(AvaloniaVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <PackageReference Include="Avalonia.Android" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">
+    <PackageReference Include="Avalonia.Browser" Version="$(AvaloniaVersion)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -74,21 +72,6 @@
         Pack="true" PackagePath="build/Avalonia.Controls.Maui.props" Visible="false" />
     <None Include="$(IntermediateOutputPath)Avalonia.Controls.Maui.props"
         Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.props" Visible="false" />
-  </ItemGroup>
-
-  <!-- Reference source generator project -->
-  <ItemGroup>
-    <ProjectReference Include="../Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj"
-        PrivateAssets="all"
-        OutputItemType="Analyzer"
-        ReferenceOutputAssembly="false"
-        GlobalPropertiesToRemove="PublishAot" />
-  </ItemGroup>
-
-  <!-- Pack generator DLL into analyzers path -->
-  <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <None Include="../Avalonia.Controls.Maui.SourceGenerators/bin/$(Configuration)/netstandard2.0/Avalonia.Controls.Maui.SourceGenerators.dll"
-        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <!-- Platform-specific file includes -->
