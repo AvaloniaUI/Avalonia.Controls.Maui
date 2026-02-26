@@ -10,10 +10,17 @@ using System.Text;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>
+/// Avalonia handler for <see cref="IWindow"/>. Creates and manages an Avalonia <see cref="Avalonia.Controls.Window"/>
+/// for desktop application lifetimes.
+/// </summary>
 public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.Window>
 {
     static readonly AlertManager s_alertManager = new();
 
+    /// <summary>
+    /// Property mapper for <see cref="WindowHandler"/>.
+    /// </summary>
     public static IPropertyMapper<IWindow, WindowHandler> Mapper = new PropertyMapper<IWindow, WindowHandler>(ElementHandler.ElementMapper)
     {
         [nameof(IWindow.Title)] = mapTitle,
@@ -30,11 +37,20 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         [nameof(IWindow.FlowDirection)] = mapFlowDirection,
     };
 
+    /// <summary>
+    /// Command mapper for <see cref="WindowHandler"/>.
+    /// </summary>
     static CommandMapper<IWindow, WindowHandler> CommandMapper = new(ElementCommandMapper)
     {
         [nameof(IWindow.RequestDisplayDensity)] = MapRequestDisplayDensity,
     };
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.RequestDisplayDensity"/> command to return the current rendering scale.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="window">The associated <see cref="IWindow"/> instance.</param>
+    /// <param name="arg3">The associated command arguments.</param>
     private static void MapRequestDisplayDensity(WindowHandler handler, IWindow window, object? arg3)
     {
         if (arg3 is DisplayDensityRequest request)
@@ -44,16 +60,24 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="WindowHandler"/>.
+    /// </summary>
     public WindowHandler()
         : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Creates the Avalonia platform view for this handler.
+    /// </summary>
+    /// <returns>A new <see cref="MauiAvaloniaWindow"/> instance.</returns>
     protected override Avalonia.Controls.Window CreatePlatformElement()
     {
         return new MauiAvaloniaWindow();
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(Avalonia.Controls.Window platformView)
     {
         base.ConnectHandler(platformView);
@@ -74,6 +98,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         }
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(Avalonia.Controls.Window platformView)
     {
         var avWindow = (Window)platformView;
@@ -102,9 +127,15 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         DismissModalPage(animated);
     }
 
+    /// <summary>
+    /// Maps the Title property to the platform view.
+    /// </summary>
     static void mapTitle(WindowHandler handler, IWindow window) =>
         ((Window)handler.PlatformView).UpdateTitle(window);
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.Content"/> property to the platform view.
+    /// </summary>
     static void mapContent(WindowHandler handler, IWindow window)
     {
         var avWindow = GetMauiWindow(handler);
@@ -112,6 +143,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         avWindow.SetMainContent(content);
     }
 
+    /// <summary>
+    /// Maps the <see cref="Microsoft.Maui.Controls.Window.TitleBar"/> property to the platform view.
+    /// </summary>
     static void mapTitleBar(WindowHandler handler, IWindow window)
     {
         var avWindow = GetMauiWindow(handler);
@@ -120,18 +154,27 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         avWindow.SetTitleBar(controlsWindow?.TitleBar, handler.MauiContext);
     }
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.X"/> property to the platform view.
+    /// </summary>
     static void mapX(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
         avWindow.Position = new PixelPoint((int)window.X, avWindow.Position.Y);
     }
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.Y"/> property to the platform view.
+    /// </summary>
     static void mapY(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
         avWindow.Position = new PixelPoint(avWindow.Position.X, (int)window.Y);
     }
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.Width"/> property to the platform view.
+    /// </summary>
     static void mapWidth(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
@@ -141,6 +184,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             avWindow.Width = avWindow.ClientSize.Width;
     }
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.Height"/> property to the platform view.
+    /// </summary>
     static void mapHeight(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
@@ -150,6 +196,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             avWindow.Height = avWindow.ClientSize.Height;
     }
 
+    /// <summary>
+    /// Gets the Avalonia <see cref="Window"/> from the handler, ensuring <see cref="IMauiContext"/> is set.
+    /// </summary>
     static Window GetWindow(WindowHandler handler, IWindow window)
     {
         _ = handler.MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
@@ -157,6 +206,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         return (Window)handler.PlatformView;
     }
 
+    /// <summary>
+    /// Gets the <see cref="MauiAvaloniaWindow"/> from the handler, ensuring <see cref="IMauiContext"/> is set.
+    /// </summary>
     static MauiAvaloniaWindow GetMauiWindow(WindowHandler handler)
     {
         _ = handler.MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
@@ -186,6 +238,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         mauiWindow.DismissModal(animated);
     }
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.MaximumWidth"/> property to the platform view.
+    /// </summary>
     static void mapMaximumWidth(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
@@ -195,6 +250,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             avWindow.MaxWidth = window.MaximumWidth;
     }
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.MaximumHeight"/> property to the platform view.
+    /// </summary>
     static void mapMaximumHeight(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
@@ -204,6 +262,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             avWindow.MaxHeight = window.MaximumHeight;
     }
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.MinimumWidth"/> property to the platform view.
+    /// </summary>
     static void mapMinimumWidth(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
@@ -213,6 +274,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             avWindow.MinWidth = window.MinimumWidth;
     }
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.MinimumHeight"/> property to the platform view.
+    /// </summary>
     static void mapMinimumHeight(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
@@ -222,6 +286,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             avWindow.MinHeight = window.MinimumHeight;
     }
 
+    /// <summary>
+    /// Maps the <see cref="IWindow.FlowDirection"/> property to the platform view.
+    /// </summary>
     static void mapFlowDirection(WindowHandler handler, IWindow window)
     {
         var avWindow = (Window)handler.PlatformView;

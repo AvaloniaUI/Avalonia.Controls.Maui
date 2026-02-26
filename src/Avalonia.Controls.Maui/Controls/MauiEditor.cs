@@ -8,6 +8,9 @@ namespace Avalonia.Controls.Maui.Controls
     /// </summary>
     public class MauiEditor : TextBox
     {
+        /// <summary>
+        /// Occurs when the text selection changes.
+        /// </summary>
         public event EventHandler<Interactivity.RoutedEventArgs>? SelectionChanged;
 
         /// <summary>
@@ -23,6 +26,7 @@ namespace Avalonia.Controls.Maui.Controls
             SelectionForegroundBrush = Brushes.White;
         }
 
+        /// <inheritdoc/>
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {
             base.OnPropertyChanged(change);
@@ -35,6 +39,9 @@ namespace Avalonia.Controls.Maui.Controls
             }
         }
 
+        /// <summary>
+        /// Raises the <see cref="SelectionChanged"/> event.
+        /// </summary>
         public void RaiseSelectionChanged()
         {
             SelectionChanged?.Invoke(this, new Interactivity.RoutedEventArgs());

@@ -5,14 +5,17 @@ using PlatformView = Avalonia.Controls.MenuItem;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="IMenuBarItem"/>.</summary>
 public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformView>
 {
+    /// <summary>Property mapper for <see cref="MenuBarItemHandler"/>.</summary>
     public static IPropertyMapper<IMenuBarItem, MenuBarItemHandler> Mapper = new PropertyMapper<IMenuBarItem, MenuBarItemHandler>(ElementMapper)
     {
         [nameof(IMenuBarItem.Text)] = MapText,
         [nameof(IMenuBarItem.IsEnabled)] = MapIsEnabled,
     };
 
+    /// <summary>Command mapper for <see cref="MenuBarItemHandler"/>.</summary>
     public static CommandMapper<IMenuBarItem, MenuBarItemHandler> CommandMapper = new(ElementCommandMapper)
     {
         [nameof(MenuBarItemHandler.Add)] = MapAdd,
@@ -21,31 +24,43 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         [nameof(MenuBarItemHandler.Insert)] = MapInsert,
     };
 
+    /// <summary>Initializes a new instance of <see cref="MenuBarItemHandler"/>.</summary>
     public MenuBarItemHandler() : this(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="MenuBarItemHandler"/>.</summary>
+    /// <param name="mapper">The property mapper.</param>
+    /// <param name="commandMapper">The command mapper.</param>
     public MenuBarItemHandler(IPropertyMapper mapper, CommandMapper? commandMapper = null) : base(mapper, commandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformElement()
     {
         return new PlatformView();
     }
 
+    /// <summary>Maps the Text property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu bar item.</param>
     public static void MapText(MenuBarItemHandler handler, IMenuBarItem view)
     {
         if (handler is MenuBarItemHandler platformHandler)
             platformHandler.PlatformView.Header = view.Text;
     }
 
+    /// <summary>Maps the IsEnabled property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu bar item.</param>
     public static void MapIsEnabled(MenuBarItemHandler handler, IMenuBarItem view)
     {
         if (handler is MenuBarItemHandler platformHandler)
             platformHandler.PlatformView.IsEnabled = view.IsEnabled;
     }
 
+    /// <inheritdoc/>
     public override void SetVirtualView(IElement view)
     {
         base.SetVirtualView(view);
@@ -57,6 +72,10 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
+    /// <summary>Maps the Add command to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="layout">The menu bar item.</param>
+    /// <param name="arg">The command argument.</param>
     public static void MapAdd(MenuBarItemHandler handler, IMenuBarItem layout, object? arg)
     {
         if (arg is MenuBarItemHandlerUpdate args)
@@ -65,6 +84,10 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
+    /// <summary>Maps the Remove command to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="layout">The menu bar item.</param>
+    /// <param name="arg">The command argument.</param>
     public static void MapRemove(MenuBarItemHandler handler, IMenuBarItem layout, object? arg)
     {
         if (arg is MenuBarItemHandlerUpdate args)
@@ -73,6 +96,10 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
+    /// <summary>Maps the Insert command to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="layout">The menu bar item.</param>
+    /// <param name="arg">The command argument.</param>
     public static void MapInsert(MenuBarItemHandler handler, IMenuBarItem layout, object? arg)
     {
         if (arg is MenuBarItemHandlerUpdate args)
@@ -81,11 +108,17 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
+    /// <summary>Maps the Clear command to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="layout">The menu bar item.</param>
+    /// <param name="arg">The command argument.</param>
     public static void MapClear(MenuBarItemHandler handler, IMenuBarItem layout, object? arg)
     {
         handler.Clear();
     }
 
+    /// <summary>Adds a child element.</summary>
+    /// <param name="view">The menu element to add.</param>
     public void Add(IMenuElement view)
     {
         var platformView = view.ToPlatform(MauiContext!);
@@ -95,6 +128,8 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
+    /// <summary>Removes a child element.</summary>
+    /// <param name="view">The menu element to remove.</param>
     public void Remove(IMenuElement view)
     {
         if (view.Handler?.PlatformView is object platformView)
@@ -103,11 +138,15 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
+    /// <summary>Clears all child elements.</summary>
     public void Clear()
     {
         PlatformView.Items.Clear();
     }
 
+    /// <summary>Inserts a child element at the specified index.</summary>
+    /// <param name="index">The index at which to insert.</param>
+    /// <param name="view">The menu element to insert.</param>
     public void Insert(int index, IMenuElement view)
     {
         var platformView = view.ToPlatform(MauiContext!);
@@ -117,6 +156,7 @@ public partial class MenuBarItemHandler : ElementHandler<IMenuBarItem, PlatformV
         }
     }
 
+    /// <inheritdoc/>
     public override void OnDisconnectHandler(object platformView)
     {
         base.OnDisconnectHandler(platformView);

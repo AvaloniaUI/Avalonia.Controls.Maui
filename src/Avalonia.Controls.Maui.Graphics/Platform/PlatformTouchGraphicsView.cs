@@ -14,17 +14,27 @@ public class PlatformTouchGraphicsView : UserControl
     private bool _isTouching;
     private bool _isInBounds;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlatformTouchGraphicsView"/> class with an embedded <see cref="PlatformGraphicsView"/> for rendering.
+    /// </summary>
     public PlatformTouchGraphicsView()
     {
         Content = _platformGraphicsView = new PlatformGraphicsView();
     }
 
+    /// <summary>
+    /// Updates the drawable from the specified MAUI graphics view, triggering a re-render.
+    /// </summary>
+    /// <param name="graphicsView">The MAUI graphics view whose drawable should be rendered.</param>
     public void UpdateDrawable(IGraphicsView graphicsView)
     {
         _platformGraphicsView.UpdateDrawable(graphicsView);
         _graphicsView = graphicsView;
     }
 
+    /// <summary>
+    /// Triggers a re-render of the underlying graphics view.
+    /// </summary>
     public void InvalidateDrawable() => _platformGraphicsView.InvalidateVisual();
 
     private PointF[] GetViewPoints(PointerEventArgs e)
@@ -33,6 +43,7 @@ public class PlatformTouchGraphicsView : UserControl
         return [new PointF((float)point.X, (float)point.Y)];
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerEntered(PointerEventArgs e)
     {
         base.OnPointerEntered(e);
@@ -40,6 +51,7 @@ public class PlatformTouchGraphicsView : UserControl
         _graphicsView?.StartHoverInteraction(GetViewPoints(e));
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerExited(PointerEventArgs e)
     {
         base.OnPointerExited(e);
@@ -54,6 +66,7 @@ public class PlatformTouchGraphicsView : UserControl
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
@@ -65,6 +78,7 @@ public class PlatformTouchGraphicsView : UserControl
             _graphicsView?.DragInteraction(points);
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
@@ -73,6 +87,7 @@ public class PlatformTouchGraphicsView : UserControl
         _graphicsView?.StartInteraction(points);
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
@@ -85,6 +100,7 @@ public class PlatformTouchGraphicsView : UserControl
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
     {
         base.OnPointerCaptureLost(e);
@@ -95,7 +111,14 @@ public class PlatformTouchGraphicsView : UserControl
         }
     }
 
+    /// <summary>
+    /// Connects this view to the specified MAUI graphics view for receiving touch and hover events.
+    /// </summary>
+    /// <param name="graphicsView">The MAUI graphics view to connect to.</param>
     public void Connect(IGraphicsView graphicsView) => _graphicsView = graphicsView;
 
+    /// <summary>
+    /// Disconnects from the current MAUI graphics view, stopping touch and hover event forwarding.
+    /// </summary>
     public void Disconnect() => _graphicsView = null;
 }

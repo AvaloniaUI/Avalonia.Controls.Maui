@@ -24,72 +24,95 @@ public partial class MauiSearchBar : TemplatedControl
     private PathIcon? _clearIcon;
     private PathIcon? _searchIcon;
 
+    /// <summary>Defines the <see cref="Text"/> property.</summary>
     public static readonly StyledProperty<string> TextProperty =
         AvaloniaProperty.Register<MauiSearchBar, string>(nameof(Text), defaultValue: string.Empty);
 
+    /// <summary>Defines the <see cref="Placeholder"/> property.</summary>
     public static readonly StyledProperty<string> PlaceholderProperty =
         AvaloniaProperty.Register<MauiSearchBar, string>(nameof(Placeholder), defaultValue: string.Empty);
 
+    /// <summary>Defines the <see cref="PlaceholderForeground"/> property.</summary>
     public static readonly StyledProperty<IBrush?> PlaceholderForegroundProperty =
         AvaloniaProperty.Register<MauiSearchBar, IBrush?>(nameof(PlaceholderForeground));
 
+    /// <summary>Defines the <see cref="CancelButtonColor"/> property.</summary>
     public static readonly StyledProperty<IBrush?> CancelButtonColorProperty =
         AvaloniaProperty.Register<MauiSearchBar, IBrush?>(nameof(CancelButtonColor));
 
+    /// <summary>Defines the <see cref="IsReadOnly"/> property.</summary>
     public static readonly StyledProperty<bool> IsReadOnlyProperty =
         AvaloniaProperty.Register<MauiSearchBar, bool>(nameof(IsReadOnly), defaultValue: false);
 
+    /// <summary>Defines the <see cref="MaxLength"/> property.</summary>
     public static readonly StyledProperty<int> MaxLengthProperty =
         AvaloniaProperty.Register<MauiSearchBar, int>(nameof(MaxLength), defaultValue: 0);
 
+    /// <summary>Defines the <see cref="CharacterSpacing"/> property.</summary>
     public static readonly StyledProperty<double> CharacterSpacingProperty =
         AvaloniaProperty.Register<MauiSearchBar, double>(nameof(CharacterSpacing), defaultValue: 0.0);
 
+    /// <summary>Defines the <see cref="CursorPosition"/> property.</summary>
     public static readonly StyledProperty<int> CursorPositionProperty =
         AvaloniaProperty.Register<MauiSearchBar, int>(nameof(CursorPosition), defaultValue: 0);
 
+    /// <summary>Defines the <see cref="SelectionLength"/> property.</summary>
     public static readonly StyledProperty<int> SelectionLengthProperty =
         AvaloniaProperty.Register<MauiSearchBar, int>(nameof(SelectionLength), defaultValue: 0);
 
+    /// <summary>Defines the <see cref="HorizontalTextAlignment"/> property.</summary>
     public static readonly StyledProperty<AvaloniaTextAlignment> HorizontalTextAlignmentProperty =
         AvaloniaProperty.Register<MauiSearchBar, AvaloniaTextAlignment>(nameof(HorizontalTextAlignment), defaultValue: AvaloniaTextAlignment.Left);
 
+    /// <summary>Defines the <see cref="VerticalContentAlignment"/> property.</summary>
     public static readonly StyledProperty<VerticalAlignment> VerticalContentAlignmentProperty =
         AvaloniaProperty.Register<MauiSearchBar, VerticalAlignment>(nameof(VerticalContentAlignment), defaultValue: VerticalAlignment.Center);
 
+    /// <summary>Defines the <see cref="SearchIconColor"/> property.</summary>
     public static readonly StyledProperty<IBrush?> SearchIconColorProperty =
         AvaloniaProperty.Register<MauiSearchBar, IBrush?>(nameof(SearchIconColor));
 
+    /// <summary>Defines the <see cref="SearchIcon"/> property.</summary>
     public static readonly StyledProperty<object?> SearchIconProperty =
         AvaloniaProperty.Register<MauiSearchBar, object?>(nameof(SearchIcon));
 
+    /// <summary>Defines the <see cref="ClearIcon"/> property.</summary>
     public static readonly StyledProperty<object?> ClearIconProperty =
         AvaloniaProperty.Register<MauiSearchBar, object?>(nameof(ClearIcon));
 
+    /// <summary>Defines the <see cref="ClearCommand"/> property.</summary>
     public static readonly StyledProperty<System.Windows.Input.ICommand?> ClearCommandProperty =
         AvaloniaProperty.Register<MauiSearchBar, System.Windows.Input.ICommand?>(nameof(ClearCommand));
 
+    /// <summary>Defines the <see cref="ClearCommandParameter"/> property.</summary>
     public static readonly StyledProperty<object?> ClearCommandParameterProperty =
         AvaloniaProperty.Register<MauiSearchBar, object?>(nameof(ClearCommandParameter));
 
+    /// <summary>Defines the <see cref="IsClearEnabled"/> property.</summary>
     public static readonly StyledProperty<bool> IsClearEnabledProperty =
         AvaloniaProperty.Register<MauiSearchBar, bool>(nameof(IsClearEnabled), defaultValue: true);
 
+    /// <summary>Defines the <see cref="Keyboard"/> property.</summary>
     public static readonly StyledProperty<Keyboard?> KeyboardProperty =
         AvaloniaProperty.Register<MauiSearchBar, Keyboard?>(nameof(Keyboard));
 
+    /// <summary>Defines the <see cref="SearchBoxVisibility"/> property.</summary>
     public static readonly StyledProperty<SearchBoxVisibility> SearchBoxVisibilityProperty =
         AvaloniaProperty.Register<MauiSearchBar, SearchBoxVisibility>(nameof(SearchBoxVisibility), defaultValue: SearchBoxVisibility.Expanded);
 
+    /// <summary>Defines the <see cref="IsExpanded"/> property.</summary>
     public static readonly StyledProperty<bool> IsExpandedProperty =
         AvaloniaProperty.Register<MauiSearchBar, bool>(nameof(IsExpanded), defaultValue: true);
 
+    /// <summary>Defines the <see cref="QueryIconHelpText"/> property.</summary>
     public static readonly StyledProperty<string?> QueryIconHelpTextProperty =
         AvaloniaProperty.Register<MauiSearchBar, string?>(nameof(QueryIconHelpText));
 
+    /// <summary>Defines the <see cref="ClearIconHelpText"/> property.</summary>
     public static readonly StyledProperty<string?> ClearIconHelpTextProperty =
         AvaloniaProperty.Register<MauiSearchBar, string?>(nameof(ClearIconHelpText));
 
+    /// <summary>Defines the <see cref="ClearPlaceholderHelpText"/> property.</summary>
     public static readonly StyledProperty<string?> ClearPlaceholderHelpTextProperty =
         AvaloniaProperty.Register<MauiSearchBar, string?>(nameof(ClearPlaceholderHelpText));
 
@@ -312,10 +335,11 @@ public partial class MauiSearchBar : TemplatedControl
     /// </summary>
     public event EventHandler<TextChangedEventArgs>? TextChanged;
 
+    /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
-        
+
         if (_textBox != null)
         {
             _textBox.TextChanged -= OnTextBoxTextChanged;
@@ -371,6 +395,7 @@ public partial class MauiSearchBar : TemplatedControl
         // No code-behind assignment needed, local values would override bindings
     }
 
+    /// <inheritdoc/>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);

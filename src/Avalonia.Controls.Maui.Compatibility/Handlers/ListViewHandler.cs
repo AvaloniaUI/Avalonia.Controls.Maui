@@ -7,12 +7,18 @@ using System.Reflection;
 
 namespace Avalonia.Controls.Maui.Compatibility.Handlers;
 
+/// <summary>
+/// Avalonia handler for <see cref="Microsoft.Maui.Controls.ListView"/>.
+/// </summary>
 public class ListViewHandler : ViewHandler<Microsoft.Maui.Controls.ListView, MauiListView>
 {
     private static MethodInfo? _sendItemTappedMethod;
     private static MethodInfo? _sendCellAppearingMethod;
     private static MethodInfo? _sendCellDisappearingMethod;
 
+    /// <summary>
+    /// Property mapper for <see cref="ListViewHandler"/>.
+    /// </summary>
     public static IPropertyMapper<Microsoft.Maui.Controls.ListView, ListViewHandler> Mapper =
         new PropertyMapper<Microsoft.Maui.Controls.ListView, ListViewHandler>(ViewHandler.ViewMapper)
         {
@@ -37,25 +43,43 @@ public class ListViewHandler : ViewHandler<Microsoft.Maui.Controls.ListView, Mau
             [nameof(Microsoft.Maui.Controls.ListView.RefreshControlColor)] = MapRefreshControlColor,
         };
 
+    /// <summary>
+    /// Command mapper for <see cref="ListViewHandler"/>.
+    /// </summary>
     public static CommandMapper<Microsoft.Maui.Controls.ListView, ListViewHandler> CommandMapper =
         new(ViewCommandMapper)
         {
         };
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ListViewHandler"/> class.
+    /// </summary>
     public ListViewHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ListViewHandler"/> class with a custom property mapper.
+    /// </summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public ListViewHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ListViewHandler"/> class with custom mappers.
+    /// </summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public ListViewHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Creates the Avalonia platform view for this handler.
+    /// </summary>
     protected override MauiListView CreatePlatformView()
     {
         return new MauiListView(VirtualView.CachingStrategy)
@@ -64,6 +88,7 @@ public class ListViewHandler : ViewHandler<Microsoft.Maui.Controls.ListView, Mau
         };
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(MauiListView platformView)
     {
         base.ConnectHandler(platformView);
@@ -80,6 +105,7 @@ public class ListViewHandler : ViewHandler<Microsoft.Maui.Controls.ListView, Mau
         }
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(MauiListView platformView)
     {
         platformView.ListBox.SelectionChanged -= OnSelectionChanged;
@@ -176,88 +202,174 @@ public class ListViewHandler : ViewHandler<Microsoft.Maui.Controls.ListView, Mau
         }
     }
 
+    /// <inheritdoc/>
     public override bool NeedsContainer => false;
 
+    /// <summary>
+    /// Maps the ItemsSource property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapItemsSource(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateItemsSource(listView);
     }
 
+    /// <summary>
+    /// Maps the ItemTemplate property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapItemTemplate(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateItemTemplate(listView, handler);
     }
 
+    /// <summary>
+    /// Maps the SelectedItem property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapSelectedItem(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateSelectedItem(listView);
     }
 
+    /// <summary>
+    /// Maps the SelectionMode property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapSelectionMode(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateSelectionMode(listView);
     }
 
+    /// <summary>
+    /// Maps the Header property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapHeader(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateHeader(listView, handler);
     }
 
+    /// <summary>
+    /// Maps the HeaderTemplate property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapHeaderTemplate(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateHeaderTemplate(listView, handler);
     }
 
+    /// <summary>
+    /// Maps the Footer property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapFooter(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateFooter(listView, handler);
     }
 
+    /// <summary>
+    /// Maps the FooterTemplate property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapFooterTemplate(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateFooterTemplate(listView, handler);
     }
 
+    /// <summary>
+    /// Maps the SeparatorVisibility and SeparatorColor properties to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapSeparators(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateSeparators(listView, handler);
     }
 
+    /// <summary>
+    /// Maps the RowHeight and HasUnevenRows properties to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapRowHeight(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateRowHeight(listView);
     }
 
+    /// <summary>
+    /// Maps the IsGroupingEnabled property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapIsGroupingEnabled(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateIsGroupingEnabled(listView);
     }
 
+    /// <summary>
+    /// Maps the GroupHeaderTemplate property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapGroupHeaderTemplate(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateGroupHeaderTemplate(listView, handler);
     }
 
+    /// <summary>
+    /// Maps the HorizontalScrollBarVisibility property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapHorizontalScrollBarVisibility(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateHorizontalScrollBarVisibility(listView);
     }
 
+    /// <summary>
+    /// Maps the VerticalScrollBarVisibility property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapVerticalScrollBarVisibility(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateVerticalScrollBarVisibility(listView);
     }
 
+    /// <summary>
+    /// Maps the IsPullToRefreshEnabled property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapIsPullToRefreshEnabled(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdatePullToRefreshEnabled(listView);
     }
 
+    /// <summary>
+    /// Maps the IsRefreshing property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapIsRefreshing(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateIsRefreshing(listView);
     }
 
+    /// <summary>
+    /// Maps the RefreshControlColor property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the ListView.</param>
+    /// <param name="listView">The MAUI ListView virtual view.</param>
     public static void MapRefreshControlColor(ListViewHandler handler, Microsoft.Maui.Controls.ListView listView)
     {
         handler.PlatformView.UpdateRefreshControlColor(listView);

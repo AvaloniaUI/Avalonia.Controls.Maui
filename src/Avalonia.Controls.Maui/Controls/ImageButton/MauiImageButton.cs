@@ -12,13 +12,18 @@ namespace Avalonia.Controls.Maui;
 /// </summary>
 public class MauiImageButton : Button
 {
+    /// <summary>
+    /// Gets the style key override, resolving to the base <see cref="Button"/> type.
+    /// </summary>
     protected override Type StyleKeyOverride => typeof(Button);
     private Image? _image;
     private MauiAspect _aspect = MauiAspect.AspectFit;
 
+    /// <summary>Defines the <see cref="ImageSource"/> property.</summary>
     public static readonly StyledProperty<IImage?> ImageSourceProperty =
         AvaloniaProperty.Register<MauiImageButton, IImage?>(nameof(ImageSource));
 
+    /// <summary>Defines the <see cref="Aspect"/> property.</summary>
     public static readonly StyledProperty<MauiAspect> AspectProperty =
         AvaloniaProperty.Register<MauiImageButton, MauiAspect>(nameof(Aspect), MauiAspect.AspectFit);
 
@@ -28,17 +33,26 @@ public class MauiImageButton : Button
         AspectProperty.Changed.AddClassHandler<MauiImageButton>((button, e) => button.ApplyAspect(e.GetNewValue<MauiAspect>()));
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="MauiImageButton"/>.
+    /// </summary>
     public MauiImageButton()
     {
         InitializeContent();
     }
 
+    /// <summary>
+    /// Gets or sets the image displayed on the button.
+    /// </summary>
     public IImage? ImageSource
     {
         get => GetValue(ImageSourceProperty);
         set => SetValue(ImageSourceProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the aspect ratio mode for the image.
+    /// </summary>
     public MauiAspect Aspect
     {
         get => GetValue(AspectProperty);
@@ -67,6 +81,10 @@ public class MauiImageButton : Button
         _image.Source = ImageSource;
     }
 
+    /// <summary>
+    /// Updates the aspect ratio mode used to display the image.
+    /// </summary>
+    /// <param name="aspect">The aspect ratio mode to apply.</param>
     public void UpdateAspect(MauiAspect aspect)
     {
         if (!Aspect.Equals(aspect))
@@ -95,5 +113,9 @@ public class MauiImageButton : Button
         };
     }
 
+    /// <summary>
+    /// Gets the internal <see cref="Image"/> used to display the button image.
+    /// </summary>
+    /// <returns>The image control, or <c>null</c> if not initialized.</returns>
     public Image? GetImage() => _image;
 }

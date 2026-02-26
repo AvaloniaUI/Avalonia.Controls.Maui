@@ -12,6 +12,14 @@ using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui.Services;
 
+/// <summary>
+/// Avalonia implementation of <see cref="IImageSourceService"/> that loads images from URI-based sources with optional disk caching.
+/// </summary>
+/// <remarks>
+/// Supports HTTP/HTTPS and file URIs. When caching is enabled on the image source, downloaded images
+/// are persisted to a temporary directory and reused until the configured cache validity period expires.
+/// Concurrent requests for the same URI are coalesced to avoid duplicate downloads.
+/// </remarks>
 public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IUriImageSource>
 {
     private readonly ILogger<AvaloniaUriImageSourceService>? _logger;
@@ -29,6 +37,11 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvaloniaUriImageSourceService"/> class.
+    /// </summary>
+    /// <param name="logger">An optional logger for diagnostic messages during image loading and caching.</param>
+    /// <param name="httpClient">An optional <see cref="HttpClient"/> for downloading remote images. A default client is created if not provided.</param>
     public AvaloniaUriImageSourceService(ILogger<AvaloniaUriImageSourceService>? logger = null, HttpClient? httpClient = null)
     {
         _logger = logger;
@@ -39,6 +52,16 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         EnsureCacheDirectory();
     }
 
+    /// <summary>
+    /// Attempts to load a bitmap from the specified image source by casting it to <see cref="IUriImageSource"/>.
+    /// </summary>
+    /// <param name="imageSource">The image source to load. Must implement <see cref="IUriImageSource"/> to produce a result.</param>
+    /// <param name="scale">The display scale factor applied during image loading.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// if the source is not a URI image source.
+    /// </returns>
     public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
         IImageSource imageSource,
         float scale = 1,
@@ -52,6 +75,16 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
     }
 
+    /// <summary>
+    /// Loads a bitmap from the URI specified by the <see cref="IUriImageSource"/>, using disk caching when enabled.
+    /// </summary>
+    /// <param name="imageSource">The URI image source containing the target URI and caching configuration.</param>
+    /// <param name="scale">The display scale factor applied during image loading.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// if the URI is <see langword="null"/> or uses an unsupported scheme.
+    /// </returns>
     public async Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
         IUriImageSource imageSource,
         float scale = 1,

@@ -6,11 +6,22 @@ using MauiRect = Microsoft.Maui.Graphics.Rect;
 
 namespace Avalonia.Controls.Maui.Platform;
 
+/// <summary>
+/// Avalonia panel that delegates measure and arrange passes to MAUI's cross-platform layout system.
+/// </summary>
 public class LayoutPanel : Panel
 {
+    /// <summary>
+    /// Gets or sets the delegate invoked during the measure pass to compute the desired size using MAUI's cross-platform layout.
+    /// </summary>
     internal Func<double, double, MauiSize>? CrossPlatformMeasure { get; set; }
+
+    /// <summary>
+    /// Gets or sets the delegate invoked during the arrange pass to position children using MAUI's cross-platform layout.
+    /// </summary>
     internal Func<MauiRect, MauiSize>? CrossPlatformArrange { get; set; }
 
+    /// <inheritdoc/>
     protected override AvaloniaSize MeasureOverride(AvaloniaSize availableSize)
     {
         if (CrossPlatformMeasure == null)
@@ -29,6 +40,7 @@ public class LayoutPanel : Panel
         return new AvaloniaSize(width, height);
     }
 
+    /// <inheritdoc/>
     protected override AvaloniaSize ArrangeOverride(AvaloniaSize finalSize)
     {
         if (CrossPlatformArrange == null)

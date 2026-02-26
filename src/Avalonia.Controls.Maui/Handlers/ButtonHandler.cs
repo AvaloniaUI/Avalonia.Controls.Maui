@@ -11,11 +11,13 @@ using MButton = Microsoft.Maui.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="IButton"/>.</summary>
 public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
 {
     private CancellationTokenSource? _imageSourceCts;
     private ImageSourcePartLoader? _imageSourcePartLoader;
 
+    /// <summary>Property mapper for <see cref="ButtonHandler"/>.</summary>
     public static IPropertyMapper<IButton, ButtonHandler> Mapper = new PropertyMapper<IButton, ButtonHandler>(ViewHandler.ViewMapper)
     {
         // IText properties
@@ -44,27 +46,37 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         [nameof(IView.Shadow)] = MapButtonShadow,
     };
 
+    /// <summary>Command mapper for <see cref="ButtonHandler"/>.</summary>
     public static CommandMapper<IButton, ButtonHandler> CommandMapper = new(ViewCommandMapper);
 
+    /// <summary>Initializes a new instance of <see cref="ButtonHandler"/>.</summary>
     public ButtonHandler()
         : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="ButtonHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <see langword="null"/> to use the default.</param>
     public ButtonHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="ButtonHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <see langword="null"/> to use the default.</param>
+    /// <param name="commandMapper">The command mapper to use, or <see langword="null"/> to use the default.</param>
     public ButtonHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
-    // Shadow is applied directly to the PlatformView, so the button does not need
-    // a ContainerView wrapper just for shadow. This avoids a rendering issue where
-    // DropShadowEffect on a parent Panel causes the button content to disappear
-    // when the button's visual state changes (hover/pressed).
+    /// <summary>Gets a value indicating whether this handler requires a container view.</summary>
+    /// <remarks>
+    /// Shadow is applied directly to the PlatformView, so the button does not need
+    /// a ContainerView wrapper just for shadow. This avoids a rendering issue where
+    /// DropShadowEffect on a parent Panel causes the button content to disappear
+    /// when the button's visual state changes (hover/pressed).
+    /// </remarks>
     public override bool NeedsContainer
     {
         get
@@ -77,14 +89,19 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         }
     }
 
+    /// <summary>Gets the image source loader for loading button images.</summary>
     public ImageSourcePartLoader ImageSourceLoader =>
         _imageSourcePartLoader ??= new ImageSourcePartLoader(new ButtonImageSourcePartSetter(this));
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override MauiButton CreatePlatformView()
     {
         return new MauiButton();
     }
 
+    /// <summary>Maps the Shadow property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapButtonShadow(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is not IView view)
@@ -93,6 +110,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         Avalonia.Controls.Maui.Extensions.ViewExtensions.UpdateShadow(platformView, view);
     }
 
+    /// <summary>Maps the Background property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapBackground(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -101,6 +121,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.UpdateButtonBackground(handler.VirtualView);
     }
 
+    /// <summary>Maps the StrokeColor property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapStrokeColor(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -109,6 +132,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.UpdateStrokeColor(handler.VirtualView);
     }
 
+    /// <summary>Maps the StrokeThickness property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapStrokeThickness(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -117,6 +143,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.UpdateStrokeThickness(handler.VirtualView);
     }
 
+    /// <summary>Maps the CornerRadius property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapCornerRadius(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -125,6 +154,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.UpdateCornerRadius(handler.VirtualView);
     }
 
+    /// <summary>Maps the Text property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapText(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -133,6 +165,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.UpdateText(handler.VirtualView);
     }
 
+    /// <summary>Maps the TextColor property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapTextColor(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -141,6 +176,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.UpdateTextColor(handler.VirtualView);
     }
 
+    /// <summary>Maps the CharacterSpacing property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapCharacterSpacing(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -149,6 +187,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.UpdateCharacterSpacing(handler.VirtualView);
     }
 
+    /// <summary>Maps the Font property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapFont(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -158,6 +199,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.UpdateFont(handler.VirtualView, fontManager);
     }
 
+    /// <summary>Maps the Padding property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapPadding(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -165,7 +209,10 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
 
         platformView.UpdatePadding(handler.VirtualView);
     }
-    
+
+    /// <summary>Maps the ImageSource property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapImageSource(ButtonHandler handler, IButton button)
     {
         if (handler is not ButtonHandler buttonHandler || handler.VirtualView is null)
@@ -194,6 +241,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         buttonHandler._imageSourceCts = cts;
         _ = buttonHandler.LoadImageSourceAsync(imageSource, cts.Token);
     }
+    /// <summary>Maps the ContentLayout property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapContentLayout(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -211,6 +261,9 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         }
     }
 
+    /// <summary>Maps the LineBreakMode property to the platform view.</summary>
+    /// <param name="handler">The handler for the button.</param>
+    /// <param name="button">The virtual view.</param>
     public static void MapLineBreakMode(ButtonHandler handler, IButton button)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -219,15 +272,17 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.UpdateLineBreakMode(handler.VirtualView);
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
-        
+
         platformView.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
         platformView.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
         platformView.Click += OnClick;
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.RemoveHandler(InputElement.PointerPressedEvent, OnPointerPressed);
@@ -235,7 +290,7 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.Click -= OnClick;
         _imageSourceCts?.Cancel();
         _imageSourceCts = null;
-        
+
         base.DisconnectHandler(platformView);
     }
 
@@ -293,14 +348,18 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         }
     }
 
+    /// <summary>Image source part setter for <see cref="ButtonHandler"/>.</summary>
     partial class ButtonImageSourcePartSetter : ImageSourcePartSetter<ButtonHandler>
     {
+        /// <summary>Initializes a new instance of <see cref="ButtonImageSourcePartSetter"/>.</summary>
+        /// <param name="handler">The button handler.</param>
         public ButtonImageSourcePartSetter(ButtonHandler handler)
             : base(handler)
         {
         }
 
 #if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
+        /// <inheritdoc/>
         public override void SetImageSource(object? platformImage)
         {
             if (Handler?.PlatformView is PlatformView button)

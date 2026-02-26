@@ -6,6 +6,9 @@ using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui.Platform;
 
+/// <summary>
+/// Avalonia control that provides MAUI-style stack navigation with a navigation bar containing a back button, title, and toolbar items.
+/// </summary>
 public class NavigationView : DockPanel
 {
     private readonly TransitioningContentControl _contentControl;
@@ -88,6 +91,9 @@ public class NavigationView : DockPanel
         set => _navigationBar.Background = value;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="NavigationView"/> class, constructing the navigation bar, back button, title area, toolbar, and content host.
+    /// </summary>
     public NavigationView()
     {
         LastChildFill = true;

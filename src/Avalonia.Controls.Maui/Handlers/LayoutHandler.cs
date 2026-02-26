@@ -9,8 +9,14 @@ using System.Text;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>
+/// Avalonia handler for <see cref="ILayout"/>.
+/// </summary>
 public partial class LayoutHandler : ViewHandler<ILayout, Panel>
 {
+    /// <summary>
+    /// Property mapper for <see cref="LayoutHandler"/>.
+    /// </summary>
     public static IPropertyMapper<ILayout, LayoutHandler> Mapper = new PropertyMapper<ILayout, LayoutHandler>(ViewMapper)
     {
         [nameof(ILayout.Background)] = MapBackground,
@@ -18,6 +24,9 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         [nameof(IView.InputTransparent)] = MapInputTransparent,
     };
 
+    /// <summary>
+    /// Command mapper for <see cref="LayoutHandler"/>.
+    /// </summary>
     public static CommandMapper<ILayout, LayoutHandler> CommandMapper = new(ViewCommandMapper)
     {
         [nameof(LayoutHandler.Add)] = MapAdd,
@@ -28,15 +37,27 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         [nameof(LayoutHandler.UpdateZIndex)] = MapUpdateZIndex,
     };
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="LayoutHandler"/>.
+    /// </summary>
     public LayoutHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="LayoutHandler"/>.
+    /// </summary>
+    /// <param name="mapper">The property mapper to use, or <see langword="null"/> to use the default.</param>
+    /// <param name="commandMapper">The command mapper to use, or <see langword="null"/> to use the default.</param>
     public LayoutHandler(IPropertyMapper? mapper = null, CommandMapper? commandMapper = null)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Creates the Avalonia platform view for this handler.
+    /// </summary>
+    /// <returns>A new <see cref="Platform.LayoutPanel"/> instance configured with cross-platform layout delegates.</returns>
     protected override Panel CreatePlatformView()
     {
         return new Avalonia.Controls.Maui.Platform.LayoutPanel()
@@ -46,21 +67,42 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         };
     }
 
+    /// <summary>
+    /// Maps the Background property to the platform view.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="layout">The associated <see cref="ILayout"/> instance.</param>
     public static void MapBackground(LayoutHandler handler, ILayout layout)
     {
         ((LayoutHandler)handler).PlatformView?.UpdateBackground(layout);
     }
 
+    /// <summary>
+    /// Maps the <see cref="IView.InputTransparent"/> property to the platform view.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="layout">The associated <see cref="ILayout"/> instance.</param>
     public static void MapInputTransparent(LayoutHandler handler, ILayout layout)
     {
         // TODO: Implement InputTransparent
     }
 
+    /// <summary>
+    /// Maps the <see cref="ILayout.ClipsToBounds"/> property to the platform view.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="layout">The associated <see cref="ILayout"/> instance.</param>
     public static void MapClipsToBounds(LayoutHandler handler, ILayout layout)
     {
         ((LayoutHandler)handler).PlatformView?.UpdateClipsToBounds(layout);
     }
 
+    /// <summary>
+    /// Maps the Add command to add a child view to the layout.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="layout">The associated <see cref="ILayout"/> instance.</param>
+    /// <param name="arg">The <see cref="LayoutHandlerUpdate"/> containing the view to add.</param>
     public static void MapAdd(LayoutHandler handler, ILayout layout, object? arg)
     {
         if (arg is LayoutHandlerUpdate args)
@@ -69,6 +111,12 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <summary>
+    /// Maps the Remove command to remove a child view from the layout.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="layout">The associated <see cref="ILayout"/> instance.</param>
+    /// <param name="arg">The <see cref="LayoutHandlerUpdate"/> containing the view to remove.</param>
     public static void MapRemove(LayoutHandler handler, ILayout layout, object? arg)
     {
         if (arg is LayoutHandlerUpdate args)
@@ -77,6 +125,12 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <summary>
+    /// Maps the Insert command to insert a child view at a specific index in the layout.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="layout">The associated <see cref="ILayout"/> instance.</param>
+    /// <param name="arg">The <see cref="LayoutHandlerUpdate"/> containing the view and index.</param>
     public static void MapInsert(LayoutHandler handler, ILayout layout, object? arg)
     {
         if (arg is LayoutHandlerUpdate args)
@@ -85,11 +139,20 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <summary>
+    /// Maps the Clear command to remove all child views from the layout.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="layout">The associated <see cref="ILayout"/> instance.</param>
+    /// <param name="arg">The associated command arguments.</param>
     public static void MapClear(LayoutHandler handler, ILayout layout, object? arg)
     {
         handler.Clear();
     }
 
+    /// <summary>
+    /// Maps the Update command to replace a child view at a specific index in the layout.
+    /// </summary>
     static void MapUpdate(LayoutHandler handler, ILayout layout, object? arg)
     {
         if (arg is LayoutHandlerUpdate args)
@@ -98,6 +161,9 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <summary>
+    /// Maps the UpdateZIndex command to update the Z-index of a child view.
+    /// </summary>
     static void MapUpdateZIndex(LayoutHandler handler, ILayout layout, object? arg)
     {
         if (arg is IView view)
@@ -106,6 +172,10 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <summary>
+    /// Adds a child view to the layout's platform panel.
+    /// </summary>
+    /// <param name="child">The child view to add.</param>
     public void Add(IView child)
     {
         _ = PlatformView ?? throw new InvalidOperationException($"{nameof(PlatformView)} should have been set by base class.");
@@ -119,6 +189,11 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <summary>
+    /// Removes a child view from the layout's platform panel.
+    /// </summary>
+    /// <param name="index">The index of the child to remove.</param>
+    /// <param name="child">The child view to remove.</param>
     public void Remove(int index, IView child)
     {
         _ = PlatformView ?? throw new InvalidOperationException($"{nameof(PlatformView)} should have been set by base class.");
@@ -139,11 +214,19 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <summary>
+    /// Removes all child views from the layout's platform panel.
+    /// </summary>
     public void Clear()
     {
         PlatformView?.Children.Clear();
     }
 
+    /// <summary>
+    /// Inserts a child view at the specified index in the layout's platform panel.
+    /// </summary>
+    /// <param name="index">The index at which to insert the child.</param>
+    /// <param name="child">The child view to insert.</param>
     public void Insert(int index, IView child)
     {
         _ = PlatformView ?? throw new InvalidOperationException($"{nameof(PlatformView)} should have been set by base class.");
@@ -157,6 +240,11 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <summary>
+    /// Replaces the child view at the specified index in the layout's platform panel.
+    /// </summary>
+    /// <param name="index">The index of the child to replace.</param>
+    /// <param name="child">The new child view.</param>
     public void Update(int index, IView child)
     {
         _ = PlatformView ?? throw new InvalidOperationException($"{nameof(PlatformView)} should have been set by base class.");
@@ -171,6 +259,10 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <summary>
+    /// Updates the Z-index of a child view's platform control.
+    /// </summary>
+    /// <param name="child">The child view whose Z-index should be updated.</param>
     public void UpdateZIndex(IView child)
     {
         if (child?.Handler is IViewHandler viewHandler)
@@ -183,6 +275,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <inheritdoc/>
     public override void SetVirtualView(IView view)
     {
         base.SetVirtualView(view);
@@ -201,6 +294,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(Panel platformView)
     {
         base.ConnectHandler(platformView);
@@ -211,6 +305,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(Panel platformView)
     {
         base.DisconnectHandler(platformView);
@@ -221,6 +316,9 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         }
     }
 
+    /// <summary>
+    /// Gets the flow direction for the layout. Currently returns the input value unchanged.
+    /// </summary>
     internal static FlowDirection GetLayoutFlowDirection(FlowDirection flowDirection)
     {
         return flowDirection;

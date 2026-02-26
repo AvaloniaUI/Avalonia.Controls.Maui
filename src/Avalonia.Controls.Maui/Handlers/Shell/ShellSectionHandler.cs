@@ -8,8 +8,10 @@ using Avalonia.Controls.Maui.Extensions;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell;
 
+/// <summary>Avalonia handler for <see cref="ShellSection"/>.</summary>
 public partial class ShellSectionHandler : ElementHandler<ShellSection, AvaloniaControl>, IStackNavigation
 {
+    /// <summary>Property mapper for <see cref="ShellSectionHandler"/>.</summary>
     public static IPropertyMapper<ShellSection, ShellSectionHandler> Mapper =
         new PropertyMapper<ShellSection, ShellSectionHandler>(ElementHandler.ElementMapper)
         {
@@ -17,6 +19,7 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
             [nameof(ShellSection.Items)] = MapItems,
         };
 
+    /// <summary>Command mapper for <see cref="ShellSectionHandler"/>.</summary>
     public static CommandMapper<ShellSection, ShellSectionHandler> CommandMapper =
         new CommandMapper<ShellSection, ShellSectionHandler>(ElementHandler.ElementCommandMapper)
         {
@@ -28,15 +31,25 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
     Page? _currentPage;
     bool _isNavigating;
 
+    /// <summary>Default duration for content transitions.</summary>
     internal static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(250);
+
+    /// <summary>Duration for page slide push/pop transitions.</summary>
     internal static readonly TimeSpan PageSlideDuration = TimeSpan.FromMilliseconds(300);
+
+    /// <summary>Duration for modal presentation transitions.</summary>
     internal static readonly TimeSpan ModalTransitionDuration = TimeSpan.FromMilliseconds(400);
 
+    /// <summary>Initializes a new instance of <see cref="ShellSectionHandler"/>.</summary>
     public ShellSectionHandler() : base(Mapper, CommandMapper) { }
 
+    /// <summary>Initializes a new instance of <see cref="ShellSectionHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use.</param>
+    /// <param name="commandMapper">The command mapper to use.</param>
     public ShellSectionHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper) { }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override AvaloniaControl CreatePlatformElement()
     {
         _sectionContainer = new TransitioningContentControl
@@ -51,6 +64,7 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
         return _sectionContainer;
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(AvaloniaControl platformView)
     {
         base.ConnectHandler(platformView);
@@ -62,6 +76,7 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
         platformView.AttachedToVisualTree += OnAttachedToVisualTree;
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(AvaloniaControl platformView)
     {
         if (VirtualView is IShellSectionController sectionController)
@@ -81,12 +96,22 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
         SyncNavigationStack();
     }
 
+    /// <summary>Maps the CurrentItem property to the platform view.</summary>
+    /// <param name="handler">The shell section handler.</param>
+    /// <param name="section">The MAUI ShellSection virtual view.</param>
     public static void MapCurrentItem(ShellSectionHandler handler, ShellSection section)
         => handler.UpdateCurrentItem();
 
+    /// <summary>Maps the Items property to the platform view.</summary>
+    /// <param name="handler">The shell section handler.</param>
+    /// <param name="section">The MAUI ShellSection virtual view.</param>
     public static void MapItems(ShellSectionHandler handler, ShellSection section)
         => handler.UpdateCurrentItem();
 
+    /// <summary>Handles a navigation request command.</summary>
+    /// <param name="handler">The shell section handler.</param>
+    /// <param name="view">The stack navigation view.</param>
+    /// <param name="arg">The navigation request argument.</param>
     public static void RequestNavigation(ShellSectionHandler handler, IStackNavigation view, object? arg)
     {
         if (arg is NavigationRequest request)
@@ -148,6 +173,7 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
         }
     }
     
+    /// <summary>Synchronizes the internal navigation stack with the MAUI navigation stack and displays the top page.</summary>
     public void SyncNavigationStack()
     {
         if (_isNavigating || VirtualView == null || _sectionContainer == null)

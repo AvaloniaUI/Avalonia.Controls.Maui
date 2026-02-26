@@ -12,17 +12,40 @@ using Microsoft.Maui.ApplicationModel;
 
 namespace Avalonia.Controls.Maui.Platform;
 
+/// <summary>
+/// Abstract base class for Avalonia-based MAUI applications that bridges the Avalonia application lifecycle with the MAUI platform.
+/// </summary>
+/// <remarks>
+/// Subclasses must implement <see cref="CreateMauiApp"/> to provide the configured <see cref="MauiApp"/> instance.
+/// This class implements <see cref="IPlatformApplication"/> so that MAUI's platform services resolve against the Avalonia host.
+/// </remarks>
 public abstract class MauiAvaloniaApplication : Application, IPlatformApplication
 {
+    /// <summary>
+    /// Creates and returns the configured <see cref="MauiApp"/> instance for this application.
+    /// </summary>
+    /// <returns>A fully configured <see cref="MauiApp"/>.</returns>
     protected abstract MauiApp CreateMauiApp();
 
+    /// <summary>
+    /// Gets the current <see cref="MauiAvaloniaApplication"/> instance.
+    /// </summary>
     public static new MauiAvaloniaApplication Current => (MauiAvaloniaApplication)global::Avalonia.Application.Current!;
 
 
+    /// <summary>
+    /// Gets the main Avalonia <see cref="Window"/> created during application initialization.
+    /// </summary>
     public Window MainWindow { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets the application-level <see cref="IServiceProvider"/> resolved from the MAUI dependency injection container.
+    /// </summary>
     public IServiceProvider Services { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets the MAUI <see cref="IApplication"/> instance managed by this host.
+    /// </summary>
     public IApplication Application { get; protected set; } = null!;
 
 
@@ -31,6 +54,14 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
     /// </summary>
     protected IMauiContext? ApplicationContext { get; private set; }
 
+    /// <summary>
+    /// Bootstraps the MAUI application within the Avalonia framework initialization pipeline.
+    /// </summary>
+    /// <remarks>
+    /// This method creates the <see cref="MauiApp"/>, registers platform services, sets up the DI scope,
+    /// connects the MAUI <see cref="IApplication"/> to its handler, and creates the platform window or single-view content
+    /// depending on the active <see cref="Avalonia.Controls.ApplicationLifetimes"/> lifetime.
+    /// </remarks>
     public override void OnFrameworkInitializationCompleted()
     {
         IPlatformApplication.Current = this;

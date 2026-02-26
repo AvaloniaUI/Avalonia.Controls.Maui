@@ -11,11 +11,10 @@ using PlatformView = Avalonia.Controls.Maui.Platform.MauiCarouselView;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-/// <summary>
-/// Handler for MAUI CarouselView to Avalonia Carousel mapping
-/// </summary>
+/// <summary>Avalonia handler for <see cref="Microsoft.Maui.Controls.CarouselView"/>.</summary>
 public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.CarouselView, PlatformView>
 {
+    /// <summary>Property mapper for <see cref="CarouselViewHandler"/>.</summary>
     public static IPropertyMapper<Microsoft.Maui.Controls.CarouselView, CarouselViewHandler> Mapper =
         new PropertyMapper<Microsoft.Maui.Controls.CarouselView, CarouselViewHandler>(ViewHandler.ViewMapper)
         {
@@ -26,36 +25,46 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
             [nameof(Microsoft.Maui.Controls.CarouselView.Loop)] = MapLoop,
         };
 
+    /// <summary>Command mapper for <see cref="CarouselViewHandler"/>.</summary>
     public static CommandMapper<Microsoft.Maui.Controls.CarouselView, CarouselViewHandler> CommandMapper =
         new(ViewCommandMapper)
         {
         };
 
+    /// <summary>Initializes a new instance of <see cref="CarouselViewHandler"/>.</summary>
     public CarouselViewHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="CarouselViewHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public CarouselViewHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="CarouselViewHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public CarouselViewHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformView()
     {
         return new PlatformView();
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
         platformView.PropertyChanged += OnPlatformPropertyChanged;
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.PropertyChanged -= OnPlatformPropertyChanged;
@@ -79,6 +88,9 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
         }
     }
 
+    /// <summary>Maps the ItemsSource property to the platform view.</summary>
+    /// <param name="handler">The handler for the carousel view.</param>
+    /// <param name="carouselView">The virtual carousel view.</param>
     public static void MapItemsSource(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
         if (handler.PlatformView == null || handler.VirtualView == null)
@@ -87,6 +99,9 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
         handler.PlatformView.ItemsSource = carouselView.ItemsSource;
     }
 
+    /// <summary>Maps the ItemTemplate property to the platform view.</summary>
+    /// <param name="handler">The handler for the carousel view.</param>
+    /// <param name="carouselView">The virtual carousel view.</param>
     public static void MapItemTemplate(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
         if (handler.PlatformView == null || handler.VirtualView == null)
@@ -122,6 +137,9 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
         }
     }
 
+    /// <summary>Maps the CurrentItem property to the platform view.</summary>
+    /// <param name="handler">The handler for the carousel view.</param>
+    /// <param name="carouselView">The virtual carousel view.</param>
     public static void MapCurrentItem(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
         if (handler.PlatformView == null || carouselView.ItemsSource == null)
@@ -139,6 +157,9 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
         }
     }
 
+    /// <summary>Maps the Position property to the platform view.</summary>
+    /// <param name="handler">The handler for the carousel view.</param>
+    /// <param name="carouselView">The virtual carousel view.</param>
     public static void MapPosition(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
         if (handler.PlatformView == null)
@@ -147,6 +168,9 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
         handler.PlatformView.SelectedIndex = carouselView.Position;
     }
 
+    /// <summary>Maps the Loop property to the platform view.</summary>
+    /// <param name="handler">The handler for the carousel view.</param>
+    /// <param name="carouselView">The virtual carousel view.</param>
     public static void MapLoop(CarouselViewHandler handler, Microsoft.Maui.Controls.CarouselView carouselView)
     {
         if (handler.PlatformView == null)
@@ -155,5 +179,6 @@ public partial class CarouselViewHandler : ViewHandler<Microsoft.Maui.Controls.C
         handler.PlatformView.Loop = carouselView.Loop;
     }
 
+    /// <inheritdoc/>
     public override bool NeedsContainer => false;
 }

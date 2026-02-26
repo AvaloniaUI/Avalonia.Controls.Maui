@@ -23,28 +23,41 @@ public class FlyoutContainer : Panel
     private double _animTargetX;
     private bool _animShowScrim;
 
+    /// <summary>
+    /// The default width of the flyout panel in device-independent pixels.
+    /// </summary>
     public const double DefaultFlyoutWidth = 320;
+
     internal const double GestureEdgeThreshold = 50.0;
     internal const double GestureVelocityRatio = 1.0 / 3.0;
     internal static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(250);
-    
+
+    /// <summary>
+    /// Gets the current detail content control.
+    /// </summary>
     public Control? DetailContent => _detailContent;
-    
+
+    /// <summary>Defines the <see cref="IsFlyoutOpen"/> property.</summary>
     public static readonly StyledProperty<bool> IsFlyoutOpenProperty =
         AvaloniaProperty.Register<FlyoutContainer, bool>(nameof(IsFlyoutOpen), false);
-    
+
+    /// <summary>Defines the <see cref="FlyoutWidth"/> property.</summary>
     public static readonly StyledProperty<double> FlyoutWidthProperty =
         AvaloniaProperty.Register<FlyoutContainer, double>(nameof(FlyoutWidth), DefaultFlyoutWidth);
-    
+
+    /// <summary>Defines the <see cref="FlyoutBehavior"/> property.</summary>
     public static readonly StyledProperty<FlyoutBehavior> FlyoutBehaviorProperty =
         AvaloniaProperty.Register<FlyoutContainer, FlyoutBehavior>(nameof(FlyoutBehavior), FlyoutBehavior.Default);
-    
+
+    /// <summary>Defines the <see cref="FlyoutHeight"/> property.</summary>
     public static readonly StyledProperty<double> FlyoutHeightProperty =
         AvaloniaProperty.Register<FlyoutContainer, double>(nameof(FlyoutHeight), -1);
-    
+
+    /// <summary>Defines the <see cref="FlyoutBackdrop"/> property.</summary>
     public static readonly StyledProperty<IBrush?> FlyoutBackdropProperty =
         AvaloniaProperty.Register<FlyoutContainer, IBrush?>(nameof(FlyoutBackdrop));
-    
+
+    /// <summary>Defines the <see cref="IsGestureEnabled"/> property.</summary>
     public static readonly StyledProperty<bool> IsGestureEnabledProperty =
         AvaloniaProperty.Register<FlyoutContainer, bool>(nameof(IsGestureEnabled), true);
 
@@ -238,6 +251,7 @@ public class FlyoutContainer : Panel
         };
     }
 
+    /// <inheritdoc/>
     protected override Size MeasureOverride(Size availableSize)
     {
         var flyoutWidth = FlyoutWidth;
@@ -271,6 +285,7 @@ public class FlyoutContainer : Panel
         return availableSize;
     }
 
+    /// <inheritdoc/>
     protected override Size ArrangeOverride(Size finalSize)
     {
         var flyoutWidth = FlyoutWidth;

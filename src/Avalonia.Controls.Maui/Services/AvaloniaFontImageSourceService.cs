@@ -13,18 +13,33 @@ using AvaloniaFontManager = Avalonia.Controls.Maui.FontManager;
 
 namespace Avalonia.Controls.Maui.Services;
 
+/// <summary>
+/// Avalonia implementation of <see cref="IImageSourceService"/> that renders font glyphs as bitmap images.
+/// </summary>
+/// <remarks>
+/// The service uses Avalonia's text rendering pipeline to draw a single glyph onto a
+/// <see cref="RenderTargetBitmap"/>, applying the specified color, font family, weight, and style.
+/// </remarks>
 public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IFontImageSource>
 {
     private readonly ILogger<AvaloniaFontImageSourceService>? _logger;
     private readonly IFontManager? _fontManager;
     private const int DefaultSize = 100;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvaloniaFontImageSourceService"/> class.
+    /// </summary>
+    /// <param name="fontManager">An optional MAUI font manager used to resolve registered font families.</param>
+    /// <param name="logger">An optional logger for diagnostic messages during glyph rendering.</param>
     public AvaloniaFontImageSourceService(IFontManager? fontManager = null, ILogger<AvaloniaFontImageSourceService>? logger = null)
     {
         _fontManager = fontManager;
         _logger = logger;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvaloniaFontImageSourceService"/> class with no dependencies.
+    /// </summary>
     public AvaloniaFontImageSourceService()
     {
     }
@@ -42,6 +57,16 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
         return IPlatformApplication.Current?.Services?.GetService<IFontManager>();
     }
 
+    /// <summary>
+    /// Attempts to render a bitmap from the specified image source by casting it to <see cref="IFontImageSource"/>.
+    /// </summary>
+    /// <param name="imageSource">The image source to render. Must implement <see cref="IFontImageSource"/> to produce a result.</param>
+    /// <param name="scale">The display scale factor applied during glyph rendering.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the rendered glyph bitmap, or <see langword="null"/>
+    /// if the source is not a font image source.
+    /// </returns>
     public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
         IImageSource imageSource,
         float scale = 1,
@@ -55,6 +80,16 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
         return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
     }
 
+    /// <summary>
+    /// Renders the font glyph specified by the <see cref="IFontImageSource"/> into an Avalonia bitmap.
+    /// </summary>
+    /// <param name="imageSource">The font image source containing the glyph, font, and color information.</param>
+    /// <param name="scale">The display scale factor applied during glyph rendering.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the rendered glyph bitmap, or <see langword="null"/>
+    /// if the source or its glyph is <see langword="null"/> or empty.
+    /// </returns>
     public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
         IFontImageSource imageSource,
         float scale = 1,

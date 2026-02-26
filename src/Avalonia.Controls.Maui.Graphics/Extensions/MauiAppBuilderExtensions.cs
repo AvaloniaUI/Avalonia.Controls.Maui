@@ -1,5 +1,8 @@
 using Microsoft.Maui.Hosting;
 
+/// <summary>
+/// Provides extension methods for configuring Avalonia graphics services in a .NET MAUI application.
+/// </summary>
 public static class MauiAppBuilderExtensions
 {
     /// <summary>

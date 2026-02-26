@@ -13,16 +13,31 @@ using Avalonia.VisualTree;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell;
 
+/// <summary>Avalonia handler for <see cref="MauiShell"/>.</summary>
 public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 {
+    /// <summary>Default height for the navigation bar.</summary>
     internal const double DefaultBarHeight = 48;
+
+    /// <summary>Default spacing between flyout items.</summary>
     internal const double DefaultFlyoutSpacing = 4.0;
+
+    /// <summary>Default selection highlight color for flyout items.</summary>
     internal static readonly Color DefaultSelectionColor = Color.FromArgb(60, 0, 120, 215);
+
+    /// <summary>Selection color used during pointer interaction states.</summary>
     internal static readonly Color SelectionInteractionColor = Color.FromArgb(90, 0, 120, 215);
+
+    /// <summary>Default flyout background color for dark theme.</summary>
     internal static readonly Color DarkThemeFlyoutBackground = Color.Parse("#1F1F1F");
+
+    /// <summary>Default flyout background color for light theme.</summary>
     internal static readonly Color LightThemeFlyoutBackground = Colors.White;
+
+    /// <summary>Default duration for content transitions.</summary>
     internal static readonly TimeSpan DefaultTransitionDuration = TimeSpan.FromMilliseconds(250);
 
+    /// <summary>Property mapper for <see cref="ShellHandler"/>.</summary>
     public static IPropertyMapper<MauiShell, ShellHandler> Mapper =
         new PropertyMapper<MauiShell, ShellHandler>(ViewHandler.ViewMapper)
         {
@@ -66,44 +81,99 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [MauiShell.TabBarUnselectedColorProperty.PropertyName] = MapTabBarUnselectedColor,
         };
 
+    /// <summary>Command mapper for <see cref="ShellHandler"/>.</summary>
     public static CommandMapper<MauiShell, ShellHandler> CommandMapper =
         new CommandMapper<MauiShell, ShellHandler>(ViewHandler.ViewCommandMapper);
 
+    /// <summary>Strongly-typed accessor for the MAUI Shell virtual view.</summary>
     internal new MauiShell? VirtualView => (MauiShell?)base.VirtualView;
+
+    /// <summary>The flyout container that manages flyout open/close behavior.</summary>
     internal FlyoutContainer? _flyoutContainer;
+
+    /// <summary>Content control wrapping the flyout panel content.</summary>
     internal ContentControl? _flyoutContentControl;
+
+    /// <summary>Stack panel containing flyout item buttons.</summary>
     internal StackPanel? _flyoutPanel;
+
+    /// <summary>Scroll viewer wrapping the flyout items panel.</summary>
     internal ScrollViewer? _flyoutScrollViewer;
+
+    /// <summary>Dock panel container for the flyout pane layout.</summary>
     internal DockPanel? _flyoutPaneContainer;
+
+    /// <summary>Grid used as the root layout for the flyout pane.</summary>
     internal Grid? _flyoutGrid;
+
+    /// <summary>Content control for the flyout header.</summary>
     internal ContentControl? _flyoutHeaderControl;
+
+    /// <summary>Content control for the flyout footer.</summary>
     internal ContentControl? _flyoutFooterControl;
+
+    /// <summary>Main container dock panel holding the top bar and content area.</summary>
     internal DockPanel? _mainContainer;
+
+    /// <summary>Dock panel for the top navigation bar.</summary>
     internal DockPanel? _topBar;
+
+    /// <summary>Border used as the shadow below the top navigation bar.</summary>
     internal Border? _topBarShadow;
+
+    /// <summary>Hamburger menu button to toggle the flyout.</summary>
     internal Button? _hamburgerButton;
+
+    /// <summary>Back navigation button.</summary>
     internal Button? _backButton;
+
+    /// <summary>Text block displaying the page title.</summary>
     internal TextBlock? _titleTextBlock;
+
+    /// <summary>Content control for the custom title view.</summary>
     internal ContentControl? _titleViewControl;
+
+    /// <summary>Transitioning content control for the main page content.</summary>
     internal TransitioningContentControl? _mainContentControl;
+
+    /// <summary>Handler for the currently displayed shell item.</summary>
     internal ShellItemHandler? _currentItemHandler;
+
+    /// <summary>Index of the previously selected shell item for transition direction.</summary>
     internal int _previousItemIndex = -1;
+
+    /// <summary>Dictionary mapping shell items to their flyout buttons.</summary>
     internal Dictionary<ShellItem, Button> _flyoutItemButtons = new();
+
+    /// <summary>Search control displayed in the navigation bar.</summary>
     internal ShellSearchControl? _searchControl;
+
+    /// <summary>Currently active search handler.</summary>
     internal SearchHandler? _currentSearchHandler;
+
+    /// <summary>Currently tracked page for property change notifications.</summary>
     internal Page? _trackedPage;
+
+    /// <summary>Transitioning content control for modal page presentation.</summary>
     internal TransitioningContentControl? _modalContainer;
+
+    /// <summary>Currently displayed modal page.</summary>
     internal Page? _currentModalPage;
 
+    /// <summary>Initializes a new instance of <see cref="ShellHandler"/>.</summary>
     public ShellHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="ShellHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use.</param>
+    /// <param name="commandMapper">The command mapper to use.</param>
     public ShellHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override Panel CreatePlatformView()
     {
         _flyoutContainer = new FlyoutContainer
@@ -271,6 +341,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         return _flyoutContainer;
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(AvaloniaControl platformView)
     {
         base.ConnectHandler(platformView);
@@ -322,6 +393,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(AvaloniaControl platformView)
     {
         if (_flyoutContainer != null)
@@ -482,6 +554,9 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             this.UpdateBackgroundColor(VirtualView);
     }
 
+    /// <summary>Maps the CurrentItem property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapCurrentItem(ShellHandler handler, MauiShell shell)
     {
         if (handler.MauiContext != null)
@@ -490,179 +565,281 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
     }
 
+    /// <summary>Maps the FlyoutBehavior property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutBehavior(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutBehavior(shell);
     }
 
+    /// <summary>Maps the FlyoutIcon property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutIcon(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutIcon(shell);
     }
 
+    /// <summary>Maps the FlyoutIsPresented property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutIsPresented(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutIsPresented(shell);
     }
 
+    /// <summary>Maps the FlyoutWidth property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutWidth(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutWidth(shell);
     }
 
+    /// <summary>Maps the FlyoutBackground property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutBackground(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutBackground(shell);
     }
 
+    /// <summary>Maps the FlyoutBackgroundColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutBackgroundColor(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutBackground(shell);
     }
 
+    /// <summary>Maps the FlyoutContent property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutContent(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutContent(shell);
     }
 
+    /// <summary>Maps the FlyoutHeader property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutHeader(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutHeader(shell);
     }
 
+    /// <summary>Maps the FlyoutFooter property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutFooter(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutFooter(shell);
     }
 
+    /// <summary>Maps the Items property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapItems(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutItems(shell);
     }
 
+    /// <summary>Maps the ItemTemplate property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapItemTemplate(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutItems(shell);
     }
 
+    /// <summary>Maps the FlyoutHeight property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutHeight(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutHeight(shell);
     }
 
+    /// <summary>Maps the FlyoutBackgroundImage property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutBackgroundImage(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutBackgroundImage(shell);
         handler.UpdateFlyoutBackground(shell);
     }
 
+    /// <summary>Maps the FlyoutBackdrop property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutBackdrop(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutBackdrop(shell);
     }
 
+    /// <summary>Maps the FlyoutContentTemplate property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutContentTemplate(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutContent(shell);
     }
 
+    /// <summary>Maps the FlyoutHeaderBehavior property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutHeaderBehavior(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutHeaderBehavior(shell);
     }
 
+    /// <summary>Maps the FlyoutVerticalScrollMode property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapFlyoutVerticalScrollMode(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutVerticalScrollMode(shell);
     }
 
+    /// <summary>Maps the MenuItemTemplate property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapMenuItemTemplate(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutItems(shell);
     }
 
+    /// <summary>Maps the BackgroundColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapBackgroundColor(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateBackgroundColor(shell);
     }
 
+    /// <summary>Maps the ForegroundColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapForegroundColor(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateForegroundColor(shell);
     }
 
+    /// <summary>Maps the TitleColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapTitleColor(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateTitleColor(shell);
     }
 
+    /// <summary>Maps the DisabledColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapDisabledColor(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutItemsAppearance(shell);
     }
 
+    /// <summary>Maps the UnselectedColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapUnselectedColor(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateFlyoutItemsAppearance(shell);
     }
 
+    /// <summary>Maps the NavBarIsVisible property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapNavBarIsVisible(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateNavBarIsVisible(shell);
         handler.UpdateNavBarHasShadow(shell);
     }
 
+    /// <summary>Maps the NavBarHasShadow property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapNavBarHasShadow(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateNavBarHasShadow(shell);
     }
 
+    /// <summary>Maps the BackButtonBehavior property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapBackButtonBehavior(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateBackButtonBehavior(shell);
     }
 
+    /// <summary>Maps the TitleView property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapTitleView(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateTitleView(shell);
     }
 
+    /// <summary>Maps the TabBarIsVisible property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapTabBarIsVisible(ShellHandler handler, MauiShell shell)
     {
         if (shell.CurrentItem != null)
             handler._currentItemHandler?.UpdateTabBarVisibility(shell.CurrentItem);
     }
 
+    /// <summary>Maps the TabBarBackgroundColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapTabBarBackgroundColor(ShellHandler handler, MauiShell shell)
     {
         if (shell.CurrentItem != null)
             handler._currentItemHandler?.UpdateTabBarBackgroundColor(shell.CurrentItem);
     }
 
+    /// <summary>Maps the TabBarForegroundColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapTabBarForegroundColor(ShellHandler handler, MauiShell shell)
     {
         if (shell.CurrentItem != null)
             handler._currentItemHandler?.UpdateTabBarForegroundColor(shell.CurrentItem);
     }
 
+    /// <summary>Maps the TabBarTitleColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapTabBarTitleColor(ShellHandler handler, MauiShell shell)
     {
         if (shell.CurrentItem != null)
             handler._currentItemHandler?.UpdateTabBarTitleColor(shell.CurrentItem);
     }
 
+    /// <summary>Maps the TabBarDisabledColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapTabBarDisabledColor(ShellHandler handler, MauiShell shell)
     {
         if (shell.CurrentItem != null)
             handler._currentItemHandler?.UpdateTabBarDisabledColor(shell.CurrentItem);
     }
 
+    /// <summary>Maps the TabBarUnselectedColor property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapTabBarUnselectedColor(ShellHandler handler, MauiShell shell)
     {
         if (shell.CurrentItem != null)
             handler._currentItemHandler?.UpdateTabBarUnselectedColor(shell.CurrentItem);
     }
-    
+
+    /// <summary>Maps the SearchHandler property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapSearchHandler(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateSearchHandler(shell);

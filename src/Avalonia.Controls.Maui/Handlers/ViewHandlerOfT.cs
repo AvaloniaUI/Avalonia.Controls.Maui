@@ -8,6 +8,12 @@ using PlatformView = Avalonia.Controls.Control;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>
+/// Generic base Avalonia handler for <see cref="IView"/>. Maps a MAUI virtual view of type
+/// <typeparamref name="TVirtualView"/> to an Avalonia control of type <typeparamref name="TPlatformView"/>.
+/// </summary>
+/// <typeparam name="TVirtualView">The MAUI virtual view interface type.</typeparam>
+/// <typeparam name="TPlatformView">The Avalonia platform view type.</typeparam>
 public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHandler, IViewHandler
         where TVirtualView : class, IView
         where TPlatformView : PlatformView
@@ -15,32 +21,51 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
     private Avalonia.Controls.Maui.Platform.GestureManager? _gestureManager;
     private bool _isLoaded;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ViewHandler{TVirtualView, TPlatformView}"/> class.
+    /// </summary>
+    /// <param name="mapper">The property mapper to use for this handler.</param>
+    /// <param name="commandMapper">The command mapper to use for this handler.</param>
     protected ViewHandler(IPropertyMapper mapper, CommandMapper? commandMapper = null)
         : base(mapper, commandMapper)
     {
     }
 
+    /// <summary>
+    /// Gets the strongly-typed Avalonia platform view associated with this handler.
+    /// </summary>
     public new TPlatformView PlatformView
     {
         get => (TPlatformView?)base.PlatformView ?? throw new InvalidOperationException($"PlatformView cannot be null here");
         private protected set => base.PlatformView = value;
     }
 
+    /// <summary>
+    /// Gets the strongly-typed MAUI virtual view associated with this handler.
+    /// </summary>
     public new TVirtualView VirtualView
     {
         get => (TVirtualView?)base.VirtualView ?? throw new InvalidOperationException($"VirtualView cannot be null here");
         private protected set => base.VirtualView = value;
     }
 
+    /// <inheritdoc/>
     IView? IViewHandler.VirtualView => base.VirtualView;
 
+    /// <inheritdoc/>
     IElement? IElementHandler.VirtualView => base.VirtualView;
 
+    /// <inheritdoc/>
     object? IElementHandler.PlatformView => base.PlatformView;
 
+    /// <summary>
+    /// Sets the MAUI virtual view for this handler.
+    /// </summary>
+    /// <param name="view">The <see cref="IView"/> to associate with this handler.</param>
     public virtual void SetVirtualView(IView view) =>
         base.SetVirtualView(view);
 
+    /// <inheritdoc/>
     public sealed override void SetVirtualView(IElement view) =>
         SetVirtualView((IView)view);
 
@@ -89,17 +114,21 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         _gestureManager = null;
     }
 
+    /// <inheritdoc/>
     private protected override PlatformView OnCreatePlatformView()
     {
         return PlatformViewFactory?.Invoke(this) ?? CreatePlatformView();
     }
 
+    /// <inheritdoc/>
     public override void OnConnectHandler(object platformView) =>
         ConnectHandler((TPlatformView)platformView);
 
+    /// <inheritdoc/>
     public override void OnDisconnectHandler(object platformView) =>
         DisconnectHandler((TPlatformView)platformView);
 
+    /// <inheritdoc/>
     protected override void SetupContainer()
     {
         if (PlatformView == null)
@@ -110,6 +139,7 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         ContainerView = containerView;
     }
 
+    /// <inheritdoc/>
     protected override void RemoveContainer()
     {
         if (ContainerView is Avalonia.Controls.Maui.Platform.ContentView container && PlatformView != null)
@@ -120,6 +150,9 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         ContainerView = null;
     }
 
+    /// <summary>
+    /// Attaches event handlers to the platform view for lifecycle, focus, and bounds tracking.
+    /// </summary>
     private void AttachPlatformViewEvents(TPlatformView platformView)
     {
         platformView.AttachedToVisualTree += OnPlatformViewAttachedToVisualTree;
@@ -140,6 +173,9 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         }
     }
 
+    /// <summary>
+    /// Detaches event handlers from the platform view.
+    /// </summary>
     private void DetachPlatformViewEvents(TPlatformView platformView)
     {
         platformView.AttachedToVisualTree -= OnPlatformViewAttachedToVisualTree;

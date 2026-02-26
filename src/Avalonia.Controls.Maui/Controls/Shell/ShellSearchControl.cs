@@ -16,11 +16,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell
 {
+    /// <summary>
+    /// An Avalonia content control that wraps a MAUI SearchHandler, providing search bar UI with results overlay.
+    /// </summary>
     public class ShellSearchControl : ContentControl
     {
         private readonly MauiSearchHandler _mauiSearchHandler;
         private readonly IMauiContext _mauiContext;
-        
+
+        /// <summary>
+        /// Gets the underlying MAUI SearchHandler.
+        /// </summary>
         public MauiSearchHandler SearchHandler => _mauiSearchHandler;
 
         private MauiSearchBar? _searchBar;
@@ -29,6 +35,11 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
         private bool _isNavigating;
         private IDisposable? _clickObserver;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="ShellSearchControl"/> with the specified search handler and MAUI context.
+        /// </summary>
+        /// <param name="mauiSearchHandler">The MAUI search handler to wrap.</param>
+        /// <param name="mauiContext">The MAUI context for service resolution.</param>
         public ShellSearchControl(MauiSearchHandler mauiSearchHandler, IMauiContext mauiContext)
         {
             _mauiSearchHandler = mauiSearchHandler ?? throw new ArgumentNullException(nameof(mauiSearchHandler));
@@ -121,6 +132,7 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             UpdateHelpText();
         }
 
+        /// <inheritdoc/>
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {
             base.OnPropertyChanged(change);
@@ -131,6 +143,7 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             }
         }
 
+        /// <inheritdoc/>
         protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnAttachedToVisualTree(e);
@@ -138,6 +151,9 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             UpdateShowsResults();
         }
 
+        /// <summary>
+        /// Cleans up event handlers and resources associated with this control.
+        /// </summary>
         public void CleanUp()
         {
              if (_mauiSearchHandler != null)
@@ -678,17 +694,30 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
         }
     }
     
+    /// <summary>
+    /// Wraps a MAUI DataTemplate as an Avalonia IDataTemplate, enabling MAUI templates to be used in Avalonia controls.
+    /// </summary>
     public class MauiDataTemplateWrapper : IDataTemplate
     {
         private readonly DataTemplate _mauiTemplate;
         private readonly IMauiContext _mauiContext;
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="MauiDataTemplateWrapper"/> with the specified MAUI template and context.
+        /// </summary>
+        /// <param name="mauiTemplate">The MAUI data template to wrap.</param>
+        /// <param name="mauiContext">The MAUI context for handler creation.</param>
         public MauiDataTemplateWrapper(DataTemplate mauiTemplate, IMauiContext mauiContext)
         {
             _mauiTemplate = mauiTemplate;
             _mauiContext = mauiContext;
         }
 
+        /// <summary>
+        /// Builds an Avalonia control from the wrapped MAUI data template for the given data object.
+        /// </summary>
+        /// <param name="param">The data object to use as the binding context for the template.</param>
+        /// <returns>An Avalonia control rendered from the MAUI template.</returns>
         public AvaloniaControl Build(object? param)
         {
             var content = _mauiTemplate.CreateContent();
@@ -706,6 +735,11 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             return new TextBlock { Text = "Template Error" };
         }
 
+        /// <summary>
+        /// Returns whether this template can be applied to the specified data object.
+        /// </summary>
+        /// <param name="data">The data object to check.</param>
+        /// <returns>Always returns <see langword="true"/>.</returns>
         public bool Match(object? data) => true;
 
         private static void DetachFromVisualParent(AvaloniaControl control)
