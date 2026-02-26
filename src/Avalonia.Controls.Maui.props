@@ -8,6 +8,11 @@
 
   <!-- Defaults -->
   <PropertyGroup>
+    <!-- Disable bootstrap generation on platform TFMs (Android, iOS, macCatalyst, Windows, etc.).
+         The desktop bootstrap (Main + StartWithClassicDesktopLifetime) only applies to the base TFM.
+         Platform TFMs have their own entry points and Avalonia lifecycle bootstrapping. -->
+    <AvaloniaControlsMauiGenerateBootstrap
+        Condition="'$(AvaloniaControlsMauiGenerateBootstrap)' == '' And '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' != ''">false</AvaloniaControlsMauiGenerateBootstrap>
     <AvaloniaControlsMauiGenerateBootstrap Condition="'$(AvaloniaControlsMauiGenerateBootstrap)' == ''">true</AvaloniaControlsMauiGenerateBootstrap>
     <AvaloniaControlsMauiTheme Condition="'$(AvaloniaControlsMauiTheme)' == ''">Fluent</AvaloniaControlsMauiTheme>
     <AvaloniaControlsMauiThemeVariant Condition="'$(AvaloniaControlsMauiThemeVariant)' == ''">Default</AvaloniaControlsMauiThemeVariant>
