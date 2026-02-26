@@ -6,7 +6,7 @@
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 		<UseMaui>true</UseMaui>
-		<_MauiTargetPlatformIsAvalonia>True</_MauiTargetPlatformIsAvalonia>
+		
 		<NoWarn>$(NoWarn);IL3050;IL2070;IL2072</NoWarn>
 	</PropertyGroup>
 
