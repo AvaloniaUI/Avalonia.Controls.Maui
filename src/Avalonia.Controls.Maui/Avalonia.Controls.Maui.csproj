@@ -35,9 +35,26 @@
   <ItemGroup>
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="build/Avalonia.Controls.Maui.targets" />
     <None Include="../Avalonia.Controls.Maui.targets" Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.targets" />
-    <None Include="../Avalonia.Controls.Maui.props" Pack="true" PackagePath="build/Avalonia.Controls.Maui.props" />
-    <None Include="../Avalonia.Controls.Maui.props" Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.props" />
   </ItemGroup>
+
+  <!-- Generate a version-stamped .props file for the NuGet package.
+       This replaces the placeholder with the actual AvaloniaVersion used at build time,
+       so NuGet consumers get the correct default without needing to set AvaloniaVersion themselves. -->
+  <Target Name="_GenerateVersionStampedProps" BeforeTargets="Build;Pack" Condition="'$(DesignTimeBuild)' != 'true'">
+    <PropertyGroup>
+      <_PropsSourceFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../Avalonia.Controls.Maui.props'))</_PropsSourceFile>
+      <_PropsOutputFile>$(IntermediateOutputPath)Avalonia.Controls.Maui.props</_PropsOutputFile>
+    </PropertyGroup>
+    <PropertyGroup>
+      <_PropsContent>$([System.IO.File]::ReadAllText('$(_PropsSourceFile)'))</_PropsContent>
+      <_PropsContent>$(_PropsContent.Replace('__AvaloniaVersionPlaceholder__', '$(AvaloniaVersion)'))</_PropsContent>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(_PropsOutputFile)" Lines="$(_PropsContent)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <None Include="$(_PropsOutputFile)" Pack="true" PackagePath="build/Avalonia.Controls.Maui.props" Visible="false" />
+      <None Include="$(_PropsOutputFile)" Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.props" Visible="false" />
+    </ItemGroup>
+  </Target>
 
   <!-- Reference source generator project -->
   <ItemGroup>

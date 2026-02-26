@@ -1,5 +1,11 @@
 <Project>
 
+  <!-- Default Avalonia version: set to the version this package was built against.
+       Users can override by setting AvaloniaVersion before this props is imported. -->
+  <PropertyGroup>
+    <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">__AvaloniaVersionPlaceholder__</AvaloniaVersion>
+  </PropertyGroup>
+
   <!-- Defaults -->
   <PropertyGroup>
     <AvaloniaControlsMauiGenerateBootstrap Condition="'$(AvaloniaControlsMauiGenerateBootstrap)' == ''">true</AvaloniaControlsMauiGenerateBootstrap>
