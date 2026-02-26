@@ -31,11 +31,15 @@ builder.UseAvaloniaApp(useSingleViewLifetime: true);
 
 ## Application Setup
 
-Currently, Avalonia.Controls.Maui does not support Single Project MAUI applications; Your MAUI page/view code lives in a shared project, while each platform head configures Avalonia and bootstraps the MAUI app.
+There are two ways to set up your application to use Avalonia.Controls.Maui. 
 
-### Shared MAUI Project
+### Single Project
 
-Your MAUI `App`, pages, and views live in a shared class library. This library does not have to reference platform specific cod (Although it can support multiple target frameworks), nor does it need to reference Avalonia.Controls.Maui, it only needs to reference the core Microsoft.Maui.Controls libraries.
+You can add Avalonia.Desktop support directly to a Single Project .NET MAUI. Please refer to the [Avalonia.Controls.Maui.Desktop](https://github.com/AvaloniaUI/Avalonia.Controls.Maui/blob/main/src/Avalonia.Controls.Maui.Desktop/README.md).
+
+### Shared .NET MAUI Project
+
+Your .NET MAUI `App`, pages, and views live in a shared class library. This library does not have to reference platform specific cod (Although it can support multiple target frameworks), nor does it need to reference Avalonia.Controls.Maui, it only needs to reference the core Microsoft.Maui.Controls libraries.
 
 ### Avalonia Projects
 

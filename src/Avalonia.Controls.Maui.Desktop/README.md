@@ -2,7 +2,7 @@
 
 This package provides Avalonia.Controls.Maui support for .NET MAUI Single Project apps, adding Avalonia.Desktop support to apps that implement the single project build system.
 
-If you wish to build for Avalonia.Browser (WASM), or the other Avalonia target types, refer to the Avalonia.Controls.Maui documentation.
+If you wish to build for Avalonia.Browser (WASM), or the other Avalonia target types, refer to the [Avalonia.Controls.Maui](https://github.com/AvaloniaUI/Avalonia.Controls.Maui) documentation.
 
 ## Usage
 
