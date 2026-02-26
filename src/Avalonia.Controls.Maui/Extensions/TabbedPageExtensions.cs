@@ -12,11 +12,24 @@ namespace Avalonia.Controls.Maui.Extensions;
 /// </summary>
 public static class TabbedPageExtensions
 {
-    // Resource keys for tab bar styling (used by TabbedPage.axaml DynamicResource bindings)
+    // Resource key for tab bar strip background (used by TabbedPage.axaml DynamicResource binding)
     private const string BarBackgroundResourceKey = "TabbedPageBarBackground";
-    private const string BarTextColorResourceKey = "TabbedPageBarTextColor";
-    private const string SelectedTabColorResourceKey = "TabbedPageSelectedTabColor";
-    private const string UnselectedTabColorResourceKey = "TabbedPageUnselectedTabColor";
+
+    // Fluent theme resource keys we override for tab appearance
+    private static readonly string[] FluentThemeKeys =
+    [
+        "TabItemHeaderSelectedPipeFill",
+        "TabItemHeaderForegroundSelected",
+        "TabItemHeaderForegroundSelectedPointerOver",
+        "TabItemHeaderForegroundSelectedPressed",
+        "TabItemHeaderForegroundUnselected",
+        "TabItemHeaderForegroundUnselectedPointerOver",
+        "TabItemHeaderForegroundUnselectedPressed",
+        "ThemeAccentBrush",
+        "ThemeAccentBrush2",
+        "ThemeAccentBrush3",
+        "ThemeAccentBrush4"
+    ];
 
     /// <summary>
     /// Updates the tab bar background brush from the TabbedPage's BarBackground property.
@@ -71,109 +84,25 @@ public static class TabbedPageExtensions
     /// <summary>
     /// Updates the tab bar text color from the TabbedPage's BarTextColor property.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the BarTextColor value.</param>
-    /// <remarks>
-    /// This sets the text color for tab headers in the bar.
-    /// </remarks>
     public static void UpdateBarTextColor(this TabControl tabControl, TabbedPage tabbedPage)
     {
-        if (tabbedPage.BarTextColor != null)
-        {
-            var brush = new Media.SolidColorBrush(tabbedPage.BarTextColor.ToAvaloniaColor());
-            tabControl.Resources[BarTextColorResourceKey] = brush;
-
-            // Apply to all tab item headers
-            foreach (var item in tabControl.Items)
-            {
-                if (item is TabItem tabItem)
-                {
-                    tabItem.Foreground = brush;
-                }
-            }
-        }
-        else
-        {
-            tabControl.Resources.Remove(BarTextColorResourceKey);
-
-            foreach (var item in tabControl.Items)
-            {
-                if (item is TabItem tabItem)
-                {
-                    tabItem.ClearValue(TabItem.ForegroundProperty);
-                }
-            }
-        }
+        tabControl.UpdateTabColors(tabbedPage);
     }
 
     /// <summary>
     /// Updates the selected tab color from the TabbedPage's SelectedTabColor property.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the SelectedTabColor value.</param>
-    /// <remarks>
-    /// This applies a background color to the currently selected tab header.
-    /// </remarks>
     public static void UpdateSelectedTabColor(this TabControl tabControl, TabbedPage tabbedPage)
     {
-        if (tabbedPage.SelectedTabColor != null)
-        {
-            var brush = new Media.SolidColorBrush(tabbedPage.SelectedTabColor.ToAvaloniaColor());
-            tabControl.Resources[SelectedTabColorResourceKey] = brush;
-
-            // Apply to currently selected tab item
-            if (tabControl.SelectedItem is TabItem selectedTabItem)
-            {
-                selectedTabItem.Background = brush;
-            }
-        }
-        else
-        {
-            tabControl.Resources.Remove(SelectedTabColorResourceKey);
-
-            if (tabControl.SelectedItem is TabItem selectedTabItem)
-            {
-                selectedTabItem.ClearValue(TabItem.BackgroundProperty);
-            }
-        }
+        tabControl.UpdateTabColors(tabbedPage);
     }
 
     /// <summary>
     /// Updates the unselected tab color from the TabbedPage's UnselectedTabColor property.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the UnselectedTabColor value.</param>
-    /// <remarks>
-    /// This applies a background color to tabs that are not currently selected.
-    /// </remarks>
     public static void UpdateUnselectedTabColor(this TabControl tabControl, TabbedPage tabbedPage)
     {
-        if (tabbedPage.UnselectedTabColor != null)
-        {
-            var brush = new Media.SolidColorBrush(tabbedPage.UnselectedTabColor.ToAvaloniaColor());
-            tabControl.Resources[UnselectedTabColorResourceKey] = brush;
-
-            // Apply to all non-selected tab items
-            foreach (var item in tabControl.Items)
-            {
-                if (item is TabItem tabItem && tabItem != tabControl.SelectedItem)
-                {
-                    tabItem.Background = brush;
-                }
-            }
-        }
-        else
-        {
-            tabControl.Resources.Remove(UnselectedTabColorResourceKey);
-
-            foreach (var item in tabControl.Items)
-            {
-                if (item is TabItem tabItem && tabItem != tabControl.SelectedItem)
-                {
-                    tabItem.ClearValue(TabItem.BackgroundProperty);
-                }
-            }
-        }
+        tabControl.UpdateTabColors(tabbedPage);
     }
 
     /// <summary>
@@ -328,11 +257,13 @@ public static class TabbedPageExtensions
     }
 
     /// <summary>
-    /// Reapplies all tab colors from stored resources after tab items are rebuilt or selection changes.
+    /// Reapplies all tab colors after tab items are rebuilt or selection changes.
+    /// Uses Fluent theme resource overrides instead of direct property setting so that
+    /// all states (selected, hover, pressed) are handled correctly by the theme.
     /// </summary>
     public static void UpdateTabColors(this TabControl tabControl, TabbedPage tabbedPage)
     {
-        // Apply bar background resource (template will pick it up via DynamicResource)
+        // Apply bar background resource (template picks it up via DynamicResource)
         if (tabbedPage.BarBackground != null)
         {
             var brush = tabbedPage.BarBackground.ToPlatform();
@@ -343,32 +274,76 @@ public static class TabbedPageExtensions
         }
         else if (tabbedPage.BarBackgroundColor != null)
         {
-            var brush = new Media.SolidColorBrush(tabbedPage.BarBackgroundColor.ToAvaloniaColor());
-            tabControl.Resources[BarBackgroundResourceKey] = brush;
+            tabControl.Resources[BarBackgroundResourceKey] =
+                new Media.SolidColorBrush(tabbedPage.BarBackgroundColor.ToAvaloniaColor());
         }
 
-        // Apply selected tab color
-        if (tabbedPage.SelectedTabColor != null)
-        {
-            tabControl.UpdateSelectedTabColor(tabbedPage);
-        }
+        var selectedTabColor = tabbedPage.SelectedTabColor;
+        var unselectedTabColor = tabbedPage.UnselectedTabColor;
+        var barTextColor = tabbedPage.BarTextColor;
 
-        // Apply unselected tab color
-        if (tabbedPage.UnselectedTabColor != null)
-        {
-            tabControl.UpdateUnselectedTabColor(tabbedPage);
-        }
+        bool hasExplicitColors = selectedTabColor != null || unselectedTabColor != null || barTextColor != null;
 
-        // Apply text color
-        if (tabbedPage.BarTextColor != null)
+        if (hasExplicitColors)
         {
-            var textBrush = new Media.SolidColorBrush(tabbedPage.BarTextColor.ToAvaloniaColor());
-            foreach (var item in tabControl.Items)
+            // SelectedTabColor → pipe fill (selection indicator) and accent.
+            // On Android/iOS this is the indicator tint, not a full background.
+            if (selectedTabColor != null)
             {
-                if (item is TabItem tabItem)
+                var brush = new Media.SolidColorBrush(selectedTabColor.ToAvaloniaColor());
+                tabControl.Resources["TabItemHeaderSelectedPipeFill"] = brush;
+                tabControl.Resources["ThemeAccentBrush"] = brush;
+                tabControl.Resources["ThemeAccentBrush2"] = brush;
+                tabControl.Resources["ThemeAccentBrush3"] = brush;
+                tabControl.Resources["ThemeAccentBrush4"] = brush;
+
+                // Also use as selected text foreground when BarTextColor isn't set
+                if (barTextColor == null)
                 {
-                    tabItem.Foreground = textBrush;
+                    tabControl.Resources["TabItemHeaderForegroundSelected"] = brush;
+                    tabControl.Resources["TabItemHeaderForegroundSelectedPointerOver"] = brush;
+                    tabControl.Resources["TabItemHeaderForegroundSelectedPressed"] = brush;
                 }
+            }
+
+            // BarTextColor → all text foreground states
+            if (barTextColor != null)
+            {
+                var brush = new Media.SolidColorBrush(barTextColor.ToAvaloniaColor());
+                tabControl.Resources["TabItemHeaderForegroundSelected"] = brush;
+                tabControl.Resources["TabItemHeaderForegroundSelectedPointerOver"] = brush;
+                tabControl.Resources["TabItemHeaderForegroundSelectedPressed"] = brush;
+                tabControl.Resources["TabItemHeaderForegroundUnselected"] = brush;
+                tabControl.Resources["TabItemHeaderForegroundUnselectedPointerOver"] = brush;
+                tabControl.Resources["TabItemHeaderForegroundUnselectedPressed"] = brush;
+            }
+
+            // UnselectedTabColor → unselected foreground (overrides BarTextColor for unselected)
+            if (unselectedTabColor != null)
+            {
+                var brush = new Media.SolidColorBrush(unselectedTabColor.ToAvaloniaColor());
+                tabControl.Resources["TabItemHeaderForegroundUnselected"] = brush;
+                tabControl.Resources["TabItemHeaderForegroundUnselectedPointerOver"] = brush;
+                tabControl.Resources["TabItemHeaderForegroundUnselectedPressed"] = brush;
+            }
+        }
+        else
+        {
+            // No explicit colors — clear overrides so Fluent theme defaults apply
+            foreach (var key in FluentThemeKeys)
+            {
+                tabControl.Resources.Remove(key);
+            }
+        }
+
+        // Clear any direct foreground/background overrides on TabItems so
+        // Fluent theme resource inheritance handles all state transitions
+        foreach (var item in tabControl.Items)
+        {
+            if (item is TabItem tabItem)
+            {
+                tabItem.ClearValue(TabItem.ForegroundProperty);
+                tabItem.ClearValue(TabItem.BackgroundProperty);
             }
         }
     }

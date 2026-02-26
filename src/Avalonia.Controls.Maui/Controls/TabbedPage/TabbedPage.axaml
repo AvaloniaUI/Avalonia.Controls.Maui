@@ -61,12 +61,4 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
-    <Style Selector="TabControl.TabbedPage > TabItem:selected">
-        <Setter Property="Background" Value="Transparent" />
-    </Style>
-    
-    <Style Selector="TabControl.TabbedPage > TabItem:pointerover">
-        <Setter Property="Background" Value="Transparent" />
-    </Style>
-
 </Styles>
