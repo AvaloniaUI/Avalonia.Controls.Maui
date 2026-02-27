@@ -134,9 +134,19 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         if (PlatformView == null)
             return;
 
+        // Remember PlatformView's current parent and position so we can swap in the container
+        var parentPanel = PlatformView.Parent as Avalonia.Controls.Panel;
+        int index = parentPanel?.Children.IndexOf(PlatformView) ?? -1;
+
+        if (parentPanel != null && index >= 0)
+            parentPanel.Children.RemoveAt(index);
+
         var containerView = new Avalonia.Controls.Maui.Platform.ContentView();
         containerView.Children.Add(PlatformView);
         ContainerView = containerView;
+
+        if (parentPanel != null && index >= 0)
+            parentPanel.Children.Insert(Math.Min(index, parentPanel.Children.Count), containerView);
     }
 
     /// <inheritdoc/>
@@ -144,7 +154,17 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
     {
         if (ContainerView is Avalonia.Controls.Maui.Platform.ContentView container && PlatformView != null)
         {
+            // Remember the container's parent and position so we can swap PlatformView back in
+            var parentPanel = container.Parent as Avalonia.Controls.Panel;
+            int index = parentPanel?.Children.IndexOf(container) ?? -1;
+
+            if (parentPanel != null && index >= 0)
+                parentPanel.Children.RemoveAt(index);
+
             container.Children.Remove(PlatformView);
+
+            if (parentPanel != null && index >= 0)
+                parentPanel.Children.Insert(Math.Min(index, parentPanel.Children.Count), PlatformView);
         }
 
         ContainerView = null;

@@ -142,6 +142,7 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.NavigationPage, Avalonia.Controls.Maui.Handlers.NavigationViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.ContentView, Avalonia.Controls.Maui.Handlers.ContentViewHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.TemplatedView, Avalonia.Controls.Maui.Handlers.ContentViewHandler>();
+                handlers.AddHandler(typeof(Microsoft.Maui.IContentView), typeof(Avalonia.Controls.Maui.Handlers.ContentViewHandler));
                 handlers.AddHandler<Microsoft.Maui.Controls.ContentPresenter, Avalonia.Controls.Maui.Handlers.ContentPresenterHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Border, Avalonia.Controls.Maui.Handlers.BorderHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.Image, Avalonia.Controls.Maui.Handlers.ImageHandler>();
