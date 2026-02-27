@@ -1,5 +1,5 @@
 
-#if !ANDROID && !IOS && !WINDOWS && !MACOS && !MACCATALYST
+#if !ANDROID && !IOS && !MACOS && !MACCATALYST
 using Microsoft.Maui;
 
 namespace Avalonia.Controls.Maui.Handlers

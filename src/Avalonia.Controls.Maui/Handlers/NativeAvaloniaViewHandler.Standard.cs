@@ -1,5 +1,5 @@
 
-#if !ANDROID && !IOS && !WINDOWS && !MACOS && !MACCATALYST
+#if !ANDROID && !IOS && !MACOS && !MACCATALYST
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Controls;
 using AvaloniaControl = Avalonia.Controls.Control;
