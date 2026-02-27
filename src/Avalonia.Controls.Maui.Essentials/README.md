@@ -23,6 +23,7 @@ builder
 | MediaPicker | `Microsoft.Maui.Media` | Partial | Photo and video **picking** is supported. Camera capture (`CapturePhotoAsync`/`CaptureVideoAsync`) throws `NotSupportedException`. |
 | FileSystem | `Microsoft.Maui.Storage` | Implemented | `CacheDirectory`, `AppDataDirectory`, and app package file access via Avalonia's `avares://` asset loader. |
 | HapticFeedback | `Microsoft.Maui.Devices` | Stub | `IsSupported` returns `false`. `Perform()` is a no-op. Haptic feedback is not available on desktop platforms. |
+| Preferences | `Microsoft.Maui.Storage` | Implemented | Full support for all types (`string`, `int`, `bool`, `long`, `double`, `float`, `DateTime`, `DateTimeOffset`). Persists to a JSON file. Supports shared containers. |
 
 ## Not Implemented APIs
 

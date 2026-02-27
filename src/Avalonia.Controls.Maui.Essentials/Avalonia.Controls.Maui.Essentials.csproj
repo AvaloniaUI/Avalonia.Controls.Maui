@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>$(DotNetTfm)</TargetFrameworks>
+    <TargetFrameworks>$(DotNetTfm);$(DotNetTfm)-browser</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
@@ -12,9 +12,23 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
+  <!-- Browser target requires unsafe blocks for JSImport interop -->
+  <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Microsoft.Maui.Core" Version="$(MauiVersion)" />
+  </ItemGroup>
+
+  <!-- Browser: exclude default (file-based) implementations -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">
+    <Compile Remove="**/*.Default.cs" />
+  </ItemGroup>
+  <!-- Non-browser: exclude browser-specific implementations -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'browser'">
+    <Compile Remove="**/*.Browser.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" ('$(IsPackable)' == 'true')">

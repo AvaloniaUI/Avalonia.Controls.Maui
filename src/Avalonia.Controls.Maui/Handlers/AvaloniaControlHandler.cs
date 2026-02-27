@@ -77,7 +77,7 @@ namespace Avalonia.Controls.Maui.Handlers
         {
             OnAvaloniaControlDestroying(AvaloniaControl);
 
-            if (PlatformView is IAvaloniaControlHost host)
+            if (((IElementHandler)this).PlatformView is IAvaloniaControlHost host)
             {
                 host.SetControl(null);
             }
