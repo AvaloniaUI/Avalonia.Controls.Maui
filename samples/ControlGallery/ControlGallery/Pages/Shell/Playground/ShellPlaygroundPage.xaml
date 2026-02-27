@@ -3,6 +3,7 @@
        xmlns:local="clr-namespace:ControlGallery.Pages.ShellSamples.ShellPlayground"
        x:Class="ControlGallery.Pages.ShellSamples.ShellPlayground.ShellPlaygroundPage"
        x:DataType="local:ShellPlaygroundPage"
+       Shell.TabBarTitleColor="#FFB03CC2"
        Title="Shell"
        FlyoutBehavior="Flyout">
 

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.PreferencesPage"
+             Title="Preferences">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- String Preferences -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="String Preference"
+                           FontAttributes="Bold"/>
+                    <Entry x:Name="StringEntry"
+                           Placeholder="Enter a value"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Save"
+                                Clicked="OnSaveStringClicked"/>
+                        <Button Text="Load"
+                                Clicked="OnLoadStringClicked"/>
+                        <Button Text="Remove"
+                                Clicked="OnRemoveStringClicked"/>
+                    </HorizontalStackLayout>
+                    <Label x:Name="StringResultLabel"
+                           Text="Value: --"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Numeric Preferences -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Counter (int preference)"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Increment"
+                                Clicked="OnIncrementClicked"/>
+                        <Button Text="Reset"
+                                Clicked="OnResetCounterClicked"/>
+                    </HorizontalStackLayout>
+                    <Label x:Name="CounterLabel"
+                           Text="Count: 0"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Bool / Switch -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Boolean Preference"
+                           FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="Notifications enabled:"
+                               VerticalOptions="Center"/>
+                        <Switch x:Name="BoolSwitch"
+                                Toggled="OnBoolSwitchToggled"/>
+                    </HorizontalStackLayout>
+                    <Label x:Name="BoolResultLabel"
+                           Text="Stored: --"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- DateTime -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="DateTime Preference"
+                           FontAttributes="Bold"/>
+                    <Button Text="Save Current Time"
+                            Clicked="OnSaveDateTimeClicked"/>
+                    <Button Text="Load Saved Time"
+                            Clicked="OnLoadDateTimeClicked"/>
+                    <Label x:Name="DateTimeResultLabel"
+                           Text="Saved: --"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Shared Containers -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Shared Containers"
+                           FontAttributes="Bold"/>
+                    <Label Text="Same key stored in two containers:"
+                           FontSize="13"/>
+                    <Button Text="Save to Both"
+                            Clicked="OnSaveSharedClicked"/>
+                    <Label x:Name="SharedDefaultLabel"
+                           Text="Default: --"
+                           FontAttributes="Italic"/>
+                    <Label x:Name="SharedNamedLabel"
+                           Text="Named: --"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Clear All -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Danger Zone"
+                           FontAttributes="Bold"
+                           TextColor="Red"/>
+                    <Button Text="Clear All Preferences"
+                            TextColor="Red"
+                            Clicked="OnClearAllClicked"/>
+                    <Label x:Name="ClearResultLabel"
+                           Text=""
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -55,27 +55,4 @@ public partial class FilePickerPage : ContentPage
             FilePathLabel.Text = "Path: --";
         }
     }
-
-    private async void OnPickImagesClicked(object? sender, EventArgs e)
-    {
-        try
-        {
-            var result = await FilePicker.Default.PickAsync(PickOptions.Images);
-            if (result is not null)
-            {
-                FileNameLabel.Text = $"File: {result.FileName}";
-                FilePathLabel.Text = $"Path: {result.FullPath}";
-            }
-            else
-            {
-                FileNameLabel.Text = "File: (cancelled)";
-                FilePathLabel.Text = "Path: --";
-            }
-        }
-        catch (Exception ex)
-        {
-            FileNameLabel.Text = $"Error: {ex.Message}";
-            FilePathLabel.Text = "Path: --";
-        }
-    }
 }

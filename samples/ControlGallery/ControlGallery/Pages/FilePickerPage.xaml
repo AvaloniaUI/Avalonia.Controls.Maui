@@ -21,8 +21,6 @@
                             Clicked="OnPickSingleClicked"/>
                     <Button Text="Pick Multiple Files"
                             Clicked="OnPickMultipleClicked"/>
-                    <Button Text="Pick Images Only"
-                            Clicked="OnPickImagesClicked"/>
                     <Label x:Name="FileNameLabel"
                            Text="File: --"
                            FontAttributes="Italic"/>

@@ -87,6 +87,8 @@ public partial class MainPage : FlyoutPage
         [typeof(LifecycleEventsPage)] = () => new LifecycleEventsPage(),
         // Essentials
         [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
+        [typeof(PreferencesPage)] = () => new PreferencesPage(),
+        [typeof(FilePickerPage)] = () => new FilePickerPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
         // Embedding
@@ -248,6 +250,8 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Essentials", new List<SampleItem>
             {
+                new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
+                new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
             }),
 
@@ -274,8 +278,17 @@ public partial class MainPage : FlyoutPage
     {
         if (PageFactory.TryGetValue(pageType, out var factory))
         {
-            ((NavigationPage)Detail).Navigation.InsertPageBefore(factory(), ((NavigationPage)Detail).RootPage);
-            ((NavigationPage)Detail).Navigation.PopToRootAsync(animated: false);
+            var page = factory();
+
+            if (Detail is NavigationPage navPage)
+            {
+                navPage.Navigation.InsertPageBefore(page, navPage.RootPage);
+                navPage.Navigation.PopToRootAsync(animated: false);
+            }
+            else
+            {
+                Detail = new NavigationPage(page);
+            }
         }
     }
 }
