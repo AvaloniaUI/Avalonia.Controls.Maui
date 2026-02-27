@@ -45,6 +45,10 @@ namespace Avalonia.Controls.Maui.Handlers
         /// </summary>
         public TControl? AvaloniaControl { get; private set; }
 
+#if ANDROID
+        private Microsoft.Maui.Controls.VisualElement? _trackedParent;
+#endif
+
         /// <summary>
         /// Creates the Avalonia control instance. Override to customize construction.
         /// </summary>
@@ -78,6 +82,10 @@ namespace Avalonia.Controls.Maui.Handlers
                 host.SetControl(null);
             }
 
+#if ANDROID
+            TrackParentBackground(null);
+#endif
+
             AvaloniaControl = null;
         }
 
@@ -100,7 +108,24 @@ namespace Avalonia.Controls.Maui.Handlers
         }
 
         /// <summary>
+        /// Converts a MAUI <see cref="Microsoft.Maui.Graphics.Color"/> to an Avalonia <see cref="Avalonia.Media.SolidColorBrush"/>.
+        /// </summary>
+        /// <param name="color">The MAUI color to convert.</param>
+        /// <returns>An Avalonia solid color brush.</returns>
+        private static Avalonia.Media.SolidColorBrush ConvertColor(Microsoft.Maui.Graphics.Color color)
+        {
+            return new Avalonia.Media.SolidColorBrush(
+                new Avalonia.Media.Color(
+                    (byte)(color.Alpha * 255),
+                    (byte)(color.Red * 255),
+                    (byte)(color.Green * 255),
+                    (byte)(color.Blue * 255)));
+        }
+
+        /// <summary>
         /// Maps the Background property from the MAUI virtual view to the Avalonia host view.
+        /// On Android, if the view has no explicit background, walks the parent chain to find
+        /// the nearest ancestor with a background color and syncs it to the Avalonia view.
         /// </summary>
         /// <param name="handler">The handler instance.</param>
         /// <param name="view">The MAUI virtual view.</param>
@@ -109,20 +134,98 @@ namespace Avalonia.Controls.Maui.Handlers
             if (handler.PlatformView is not IAvaloniaControlHost host)
                 return;
 
-            if (view is Microsoft.Maui.Controls.View mauiView && mauiView.BackgroundColor is { } mauiColor)
+            if (view is Microsoft.Maui.Controls.View mauiView)
             {
-                var avBrush = new Avalonia.Media.SolidColorBrush(
-                    new Avalonia.Media.Color(
-                        (byte)(mauiColor.Alpha * 255),
-                        (byte)(mauiColor.Red * 255),
-                        (byte)(mauiColor.Green * 255),
-                        (byte)(mauiColor.Blue * 255)));
-                host.UpdateBackground(avBrush);
+                if (mauiView.BackgroundColor is { } color)
+                {
+#if ANDROID
+                    handler.TrackParentBackground(null);
+#endif
+                    host.UpdateBackground(ConvertColor(color));
+                    return;
+                }
+
+                if (!Microsoft.Maui.Controls.Brush.IsNullOrEmpty(mauiView.Background)
+                    && mauiView.Background is Microsoft.Maui.Controls.SolidColorBrush scb
+                    && scb.Color is { } brushColor)
+                {
+#if ANDROID
+                    handler.TrackParentBackground(null);
+#endif
+                    host.UpdateBackground(ConvertColor(brushColor));
+                    return;
+                }
+
+#if ANDROID
+                var (parentColor, parentElement) = ResolveParentBackground(mauiView);
+                handler.TrackParentBackground(parentElement);
+                host.UpdateBackground(parentColor != null ? ConvertColor(parentColor) : null);
+                return;
+#endif
             }
-            else
+
+#if ANDROID
+            handler.TrackParentBackground(null);
+#endif
+            host.UpdateBackground(null);
+        }
+
+#if ANDROID
+        /// <summary>
+        /// Walks the MAUI parent chain to find the nearest ancestor with a background color.
+        /// </summary>
+        /// <param name="view">The MAUI view to start searching from.</param>
+        /// <returns>A tuple of the resolved color (or null) and the parent element that owns it.</returns>
+        private static (Microsoft.Maui.Graphics.Color?, Microsoft.Maui.Controls.VisualElement?) ResolveParentBackground(Microsoft.Maui.Controls.View view)
+        {
+            var parent = view.Parent;
+            while (parent != null)
             {
-                host.UpdateBackground(null);
+                if (parent is Microsoft.Maui.Controls.VisualElement ve)
+                {
+                    if (ve.BackgroundColor is { } color)
+                        return (color, ve);
+
+                    if (!Microsoft.Maui.Controls.Brush.IsNullOrEmpty(ve.Background)
+                        && ve.Background is Microsoft.Maui.Controls.SolidColorBrush scb
+                        && scb.Color is { } brushColor)
+                        return (brushColor, ve);
+                }
+
+                parent = (parent as Microsoft.Maui.Controls.Element)?.Parent;
+            }
+
+            return (null, null);
+        }
+
+        /// <summary>
+        /// Subscribes to a parent element's PropertyChanged event to track background changes,
+        /// unsubscribing from any previously tracked parent.
+        /// </summary>
+        /// <param name="newParent">The new parent element to track, or null to stop tracking.</param>
+        private void TrackParentBackground(Microsoft.Maui.Controls.VisualElement? newParent)
+        {
+            if (_trackedParent == newParent)
+                return;
+
+            if (_trackedParent != null)
+                _trackedParent.PropertyChanged -= OnTrackedParentPropertyChanged;
+
+            _trackedParent = newParent;
+
+            if (_trackedParent != null)
+                _trackedParent.PropertyChanged += OnTrackedParentPropertyChanged;
+        }
+
+        private void OnTrackedParentPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName is nameof(Microsoft.Maui.Controls.VisualElement.BackgroundColor)
+                or nameof(Microsoft.Maui.Controls.VisualElement.Background))
+            {
+                if (VirtualView is TVirtualView view)
+                    MapBackground(this, view);
             }
         }
+#endif
     }
 }

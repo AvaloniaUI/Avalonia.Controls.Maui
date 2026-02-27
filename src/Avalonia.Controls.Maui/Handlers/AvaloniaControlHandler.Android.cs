@@ -40,23 +40,5 @@ namespace Avalonia.Controls.Maui.Handlers
             platformView.Dispose();
             base.DisconnectHandler(platformView);
         }
-
-        /// <summary>
-        /// Gets the desired size by measuring the hosted Avalonia control.
-        /// </summary>
-        /// <param name="widthConstraint">The maximum width constraint.</param>
-        /// <param name="heightConstraint">The maximum height constraint.</param>
-        /// <returns>The desired size of the hosted control.</returns>
-        public override Microsoft.Maui.Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
-        {
-            if (AvaloniaControl is Layoutable control)
-            {
-                control.Measure(new Size(widthConstraint, heightConstraint));
-                base.GetDesiredSize(control.DesiredSize.Width, control.DesiredSize.Height);
-                return new Microsoft.Maui.Graphics.Size(control.DesiredSize.Width, control.DesiredSize.Height);
-            }
-
-            return base.GetDesiredSize(widthConstraint, heightConstraint);
-        }
     }
 }
