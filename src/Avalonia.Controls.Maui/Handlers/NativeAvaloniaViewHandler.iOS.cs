@@ -29,7 +29,7 @@ namespace Avalonia.Controls.Maui.Handlers
         {
             base.ConnectHandler(platformView);
 
-            platformView.Content = VirtualView.Content as AvaloniaControl;
+            platformView.UpdateContent();
         }
 
         /// <summary>
@@ -51,6 +51,34 @@ namespace Avalonia.Controls.Maui.Handlers
         public static void MapContent(NativeAvaloniaViewHandler handler, AvaloniaView view)
         {
             handler.PlatformView?.UpdateContent();
+        }
+
+        /// <summary>
+        /// Maps the Background property from the AvaloniaView to the Avalonia content area background.
+        /// Converts MAUI's <see cref="Microsoft.Maui.Controls.Brush"/> to an Avalonia brush.
+        /// </summary>
+        /// <param name="handler">The handler that manages the connection between the AvaloniaView and the MauiAvaloniaView.</param>
+        /// <param name="view">The AvaloniaView instance whose background is being mapped.</param>
+        public static void MapBackground(NativeAvaloniaViewHandler handler, AvaloniaView view)
+        {
+            if (handler.PlatformView is null)
+                return;
+
+            var mauiColor = view.BackgroundColor;
+            if (mauiColor is not null)
+            {
+                var avBrush = new Avalonia.Media.SolidColorBrush(
+                    new Avalonia.Media.Color(
+                        (byte)(mauiColor.Alpha * 255),
+                        (byte)(mauiColor.Red * 255),
+                        (byte)(mauiColor.Green * 255),
+                        (byte)(mauiColor.Blue * 255)));
+                handler.PlatformView.UpdateBackground(avBrush);
+            }
+            else
+            {
+                handler.PlatformView.UpdateBackground(null);
+            }
         }
 
         /// <summary>

@@ -48,6 +48,7 @@ namespace Microsoft.Maui.Hosting
     public static Dictionary<string, string> DefaultBuildProperties(
         string rootNamespace = "TestApp",
         string generateBootstrap = "true",
+        string generateDesktopProgram = "true",
         string? theme = null,
         string? themeVariant = null,
         string? includeInterFont = null,
@@ -57,6 +58,7 @@ namespace Microsoft.Maui.Hosting
         var props = new Dictionary<string, string>
         {
             ["build_property.AvaloniaControlsMauiGenerateBootstrap"] = generateBootstrap,
+            ["build_property.AvaloniaControlsMauiGenerateDesktopProgram"] = generateDesktopProgram,
             ["build_property.RootNamespace"] = rootNamespace,
         };
 

@@ -14,7 +14,8 @@ namespace Avalonia.Controls.Maui.Handlers
         /// </summary>
         public static IPropertyMapper<AvaloniaView, NativeAvaloniaViewHandler> PropertyMapper = new PropertyMapper<AvaloniaView, NativeAvaloniaViewHandler>(Microsoft.Maui.Handlers.ViewHandler.ViewMapper)
         {
-            [nameof(AvaloniaView.Content)] = MapContent
+            [nameof(AvaloniaView.Content)] = MapContent,
+            [nameof(IView.Background)] = MapBackground
         };
 
         /// <summary>

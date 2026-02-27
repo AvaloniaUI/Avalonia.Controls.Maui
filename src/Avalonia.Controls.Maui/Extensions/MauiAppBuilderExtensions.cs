@@ -65,13 +65,11 @@ public static class MauiAppBuilderExtensions
         avaloniaBuilder.UseiOS();
 #elif WINDOWS10_0_19041_0_OR_GREATER
         avaloniaBuilder.UsePlatformDetect();
-
+#endif
         customizeBuilder?.Invoke(avaloniaBuilder);
 
+        MauiAvaloniaApplication.IsEmbeddingMode = true;
         avaloniaBuilder.SetupWithoutStarting();
-
-        SetAppInfoImplementation();
-#endif
 
         return builder
         .ConfigureMauiHandlers(handlers =>

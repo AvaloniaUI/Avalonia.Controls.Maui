@@ -9,6 +9,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
     public class MauiAvaloniaView : Avalonia.iOS.AvaloniaView
     {
         readonly AvaloniaView _mauiView;
+        readonly Avalonia.Controls.Border _backgroundBorder = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MauiAvaloniaView"/> class.
@@ -17,6 +18,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
         public MauiAvaloniaView(AvaloniaView mauiView)
         {
             _mauiView = mauiView;
+            Content = _backgroundBorder;
         }
 
         /// <summary>
@@ -24,7 +26,16 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
         /// </summary>
         public void UpdateContent()
         {
-            Content = _mauiView.Content as AvaloniaControl;
+            _backgroundBorder.Child = _mauiView.Content as AvaloniaControl;
+        }
+
+        /// <summary>
+        /// Updates the background of the Avalonia content area.
+        /// </summary>
+        /// <param name="brush">The Avalonia brush to use as the background, or <see langword="null"/> to use the default theme background.</param>
+        public void UpdateBackground(Avalonia.Media.IBrush? brush)
+        {
+            _backgroundBorder.Background = brush;
         }
     }
 }

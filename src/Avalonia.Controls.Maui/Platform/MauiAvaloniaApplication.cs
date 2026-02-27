@@ -22,6 +22,14 @@ namespace Avalonia.Controls.Maui.Platform;
 public abstract class MauiAvaloniaApplication : Application, IPlatformApplication
 {
     /// <summary>
+    /// Gets or sets a value indicating whether the application is running in embedding mode,
+    /// where MAUI is the host and Avalonia controls are embedded within MAUI views.
+    /// When <see langword="true"/>, <see cref="OnFrameworkInitializationCompleted"/> skips
+    /// the full MAUI bootstrap (which is handled by the native platform).
+    /// </summary>
+    internal static bool IsEmbeddingMode { get; set; }
+
+    /// <summary>
     /// Creates and returns the configured <see cref="MauiApp"/> instance for this application.
     /// </summary>
     /// <returns>A fully configured <see cref="MauiApp"/>.</returns>
@@ -64,6 +72,14 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
     /// </remarks>
     public override void OnFrameworkInitializationCompleted()
     {
+        // In embedding mode, MAUI is the host and handles its own bootstrap.
+        // Skip the full MAUI initialization to avoid a circular CreateMauiApp() call.
+        if (IsEmbeddingMode)
+        {
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
+
         IPlatformApplication.Current = this;
 
         Styles.Add(new ControlStyles());

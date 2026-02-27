@@ -5,6 +5,7 @@ namespace Avalonia.Controls.Maui.SourceGenerators;
 internal sealed class GeneratorOptions
 {
     public bool GenerateBootstrap { get; }
+    public bool GenerateDesktopProgram { get; }
     public string Theme { get; }
     public string ThemeVariant { get; }
     public bool IncludeInterFont { get; }
@@ -14,6 +15,7 @@ internal sealed class GeneratorOptions
 
     private GeneratorOptions(
         bool generateBootstrap,
+        bool generateDesktopProgram,
         string theme,
         string themeVariant,
         bool includeInterFont,
@@ -22,6 +24,7 @@ internal sealed class GeneratorOptions
         string rootNamespace)
     {
         GenerateBootstrap = generateBootstrap;
+        GenerateDesktopProgram = generateDesktopProgram;
         Theme = theme;
         ThemeVariant = themeVariant;
         IncludeInterFont = includeInterFont;
@@ -40,6 +43,7 @@ internal sealed class GeneratorOptions
             return null;
         }
 
+        globalOptions.TryGetValue("build_property.AvaloniaControlsMauiGenerateDesktopProgram", out var generateDesktopProgramStr);
         globalOptions.TryGetValue("build_property.AvaloniaControlsMauiTheme", out var theme);
         globalOptions.TryGetValue("build_property.AvaloniaControlsMauiThemeVariant", out var themeVariant);
         globalOptions.TryGetValue("build_property.AvaloniaControlsMauiIncludeInterFont", out var includeInterFontStr);
@@ -49,6 +53,7 @@ internal sealed class GeneratorOptions
 
         return new GeneratorOptions(
             generateBootstrap: true,
+            generateDesktopProgram: string.Equals(generateDesktopProgramStr, "true", System.StringComparison.OrdinalIgnoreCase),
             theme: string.IsNullOrEmpty(theme) ? "Fluent" : theme!,
             themeVariant: string.IsNullOrEmpty(themeVariant) ? "Default" : themeVariant!,
             includeInterFont: string.IsNullOrEmpty(includeInterFontStr) || string.Equals(includeInterFontStr, "true", System.StringComparison.OrdinalIgnoreCase),
