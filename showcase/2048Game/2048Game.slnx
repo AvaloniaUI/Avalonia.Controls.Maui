@@ -1,7 +1,6 @@
 <Solution>
   <Project Path="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
-  <Project Path="2048Game.AvaloniaMaui/2048Game.AvaloniaMaui.csproj" />
   <Project Path="2048Game.Browser/2048Game.Browser.csproj" />
   <Project Path="2048Game.Desktop/2048Game.Desktop.csproj" />
   <Project Path="2048Game.MauiNative/2048Game.MauiNative.csproj" />

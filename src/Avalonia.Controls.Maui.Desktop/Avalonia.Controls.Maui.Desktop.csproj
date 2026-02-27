@@ -14,19 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="../Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
     <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-  </ItemGroup>
-
-  <!-- Source generator -->
-  <ItemGroup>
-    <ProjectReference Include="../Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj"
-        PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false"
-        GlobalPropertiesToRemove="PublishAot" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <None Include="../Avalonia.Controls.Maui.SourceGenerators/bin/$(Configuration)/netstandard2.0/Avalonia.Controls.Maui.SourceGenerators.dll"
-        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <!-- Pack Desktop props -->

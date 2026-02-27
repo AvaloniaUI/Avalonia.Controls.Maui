@@ -67,9 +67,12 @@ public sealed class MauiAvaloniaBootstrapGenerator : IIncrementalGenerator
             var appSource = SourceGenerationHelper.GenerateAvaloniaApp(options, mauiProgramClass);
             ctx.AddSource($"{options.AppClassName}.g.cs", appSource);
 
-            // Generate Program
-            var programSource = SourceGenerationHelper.GenerateDesktopProgram(options);
-            ctx.AddSource("AvaloniaDesktopProgram.g.cs", programSource);
+            // Generate Program (only when desktop program generation is enabled)
+            if (options.GenerateDesktopProgram)
+            {
+                var programSource = SourceGenerationHelper.GenerateDesktopProgram(options);
+                ctx.AddSource("AvaloniaDesktopProgram.g.cs", programSource);
+            }
 
             ctx.ReportDiagnostic(Diagnostic.Create(
                 Diagnostics.BootstrapGenerated,

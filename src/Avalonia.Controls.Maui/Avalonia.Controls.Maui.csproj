@@ -29,8 +29,21 @@
     
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Labs.Gif" Version="11.2.0" />
     <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
+  </ItemGroup>
+
+  <!-- Source generator -->
+  <ItemGroup>
+    <ProjectReference Include="../Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj"
+        PrivateAssets="all" OutputItemType="Analyzer" ReferenceOutputAssembly="false"
+        GlobalPropertiesToRemove="PublishAot" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="../Avalonia.Controls.Maui.SourceGenerators/bin/$(Configuration)/netstandard2.0/Avalonia.Controls.Maui.SourceGenerators.dll"
+        Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
   <!-- Platform-specific Avalonia packages (become nuspec dependency groups per TFM) -->

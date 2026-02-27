@@ -37,6 +37,19 @@
                     CornerRadius="4"
                     Padding="4">
 
+                    <!-- Override TextBox theme resources so its background stays transparent in all states -->
+                    <Border.Resources>
+                        <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBackgroundDisabled" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent" />
+                        <SolidColorBrush x:Key="TextControlBorderBrushDisabled" Color="Transparent" />
+                        <Thickness x:Key="TextControlBorderThemeThicknessFocused">0</Thickness>
+                    </Border.Resources>
+
                     <Grid ColumnDefinitions="Auto,*,Auto,Auto">
 
                         <Button
@@ -103,9 +116,6 @@
                             Padding="4"
                             Margin="4,0"
                             IsVisible="False"
-                            IsEnabled="{TemplateBinding IsClearEnabled}"
-                            Command="{TemplateBinding ClearCommand}"
-                            CommandParameter="{TemplateBinding ClearCommandParameter}"
                             VerticalAlignment="Center"
                             AutomationProperties.Name="{TemplateBinding ClearIconHelpText}">
                             <Panel>

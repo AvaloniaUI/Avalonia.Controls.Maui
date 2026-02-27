@@ -87,8 +87,13 @@ public partial class MainPage : FlyoutPage
         [typeof(LifecycleEventsPage)] = () => new LifecycleEventsPage(),
         // Essentials
         [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
+        [typeof(PreferencesPage)] = () => new PreferencesPage(),
+        [typeof(FilePickerPage)] = () => new FilePickerPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
+        // Embedding
+        [typeof(AvaloniaEmbedPage)] = () => new AvaloniaEmbedPage(),
+        [typeof(MauiAvaloniaViewPage)] = () => new MauiAvaloniaViewPage(),
     };
 
     public ObservableCollection<SampleGroup> FilteredSamples { get; private set; } = new ObservableCollection<SampleGroup>();
@@ -245,9 +250,16 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Essentials", new List<SampleItem>
             {
+                new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
+                new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
             }),
 
+            new SampleGroup("Embedding", new List<SampleItem>
+            {
+                new("Avalonia Embed", "Embedding an Avalonia control in a MAUI app", typeof(AvaloniaEmbedPage)),
+                new("MAUI Avalonia View", "Create MAUI control with Avalonia", typeof(MauiAvaloniaViewPage))
+            }),
 
             new SampleGroup("Settings", new List<SampleItem>
             {
@@ -266,8 +278,17 @@ public partial class MainPage : FlyoutPage
     {
         if (PageFactory.TryGetValue(pageType, out var factory))
         {
-            ((NavigationPage)Detail).Navigation.InsertPageBefore(factory(), ((NavigationPage)Detail).RootPage);
-            ((NavigationPage)Detail).Navigation.PopToRootAsync(animated: false);
+            var page = factory();
+
+            if (Detail is NavigationPage navPage)
+            {
+                navPage.Navigation.InsertPageBefore(page, navPage.RootPage);
+                navPage.Navigation.PopToRootAsync(animated: false);
+            }
+            else
+            {
+                Detail = new NavigationPage(page);
+            }
         }
     }
 }

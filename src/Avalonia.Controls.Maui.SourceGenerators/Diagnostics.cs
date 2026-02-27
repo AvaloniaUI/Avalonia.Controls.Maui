@@ -23,7 +23,7 @@ internal static class Diagnostics
     public static readonly DiagnosticDescriptor BootstrapGenerated = new(
         id: "ACMSG003",
         title: "Bootstrap code generated",
-        messageFormat: "Generated Avalonia desktop bootstrap using '{0}.CreateMauiApp()'",
+        messageFormat: "Generated Avalonia bootstrap using '{0}.CreateMauiApp()'",
         category: "Avalonia.Controls.Maui",
         defaultSeverity: DiagnosticSeverity.Info,
         isEnabledByDefault: true);

@@ -22,6 +22,7 @@ public static class MauiEssentialsBuilderExtensions
         Microsoft.Maui.Storage.FilePicker.SetDefault(new AvaloniaFilePicker(platformProvider));
         Microsoft.Maui.Media.MediaPicker.SetDefault(new AvaloniaMediaPicker(platformProvider));
         Microsoft.Maui.Devices.HapticFeedback.SetDefault(new AvaloniaHapticFeedback());
+        Microsoft.Maui.Storage.Preferences.SetDefault(new AvaloniaPreferences());
         FileSystem.SetCurrent(new AvaloniaFileSystem());
 
         return builder;

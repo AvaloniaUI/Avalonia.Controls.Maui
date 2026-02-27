@@ -228,6 +228,36 @@ public static class SomeClass
     }
 
     [Fact]
+    public void BootstrapOnly_GeneratesOnlyAppClass()
+    {
+        var result = GeneratorTestHelper.RunGenerator(
+            ValidMauiProgram,
+            GeneratorTestHelper.DefaultBuildProperties(generateDesktopProgram: "false"));
+
+        // Should generate only the app class, not the desktop program
+        Assert.Single(result.GeneratedTrees);
+
+        var appFile = result.GeneratedTrees.FirstOrDefault(t => t.FilePath.Contains("AvaloniaApp.g.cs"));
+        Assert.NotNull(appFile);
+        var appText = appFile.GetText().ToString();
+        Assert.Contains("internal partial class AvaloniaApp : MauiAvaloniaApplication", appText);
+
+        var programFile = result.GeneratedTrees.FirstOrDefault(t => t.FilePath.Contains("AvaloniaDesktopProgram.g.cs"));
+        Assert.Null(programFile);
+    }
+
+    [Fact]
+    public void DesktopProgramWithoutBootstrap_ProducesNoOutput()
+    {
+        var result = GeneratorTestHelper.RunGenerator(
+            ValidMauiProgram,
+            GeneratorTestHelper.DefaultBuildProperties(generateBootstrap: "false", generateDesktopProgram: "true"));
+
+        // Bootstrap is the gate — without it, nothing is generated even if desktop program is requested
+        Assert.Empty(result.GeneratedTrees);
+    }
+
+    [Fact]
     public void NonStaticCreateMauiApp_IsIgnored()
     {
         var source = @"
