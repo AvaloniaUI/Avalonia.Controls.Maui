@@ -63,8 +63,6 @@ public static class MauiAppBuilderExtensions
         avaloniaBuilder.UseAndroid();
 #elif IOS || MACCATALYST
         avaloniaBuilder.UseiOS();
-#elif WINDOWS10_0_19041_0_OR_GREATER
-        avaloniaBuilder.UsePlatformDetect();
 #endif
         customizeBuilder?.Invoke(avaloniaBuilder);
 
