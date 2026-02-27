@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:EmbedApp.Views"
+             x:Class="EmbedApp.MainPage">
+    <VerticalStackLayout Padding="20" Spacing="20">
+        <Label Text="Avalonia Control Host Demo"
+               FontSize="24"
+               HorizontalOptions="Center" />
+        <views:CounterView Count="5" HeightRequest="200" />
+    </VerticalStackLayout>
+</ContentPage>

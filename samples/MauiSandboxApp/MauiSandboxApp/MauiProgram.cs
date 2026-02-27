@@ -1,6 +1,4 @@
-﻿using Avalonia.Controls.Maui.Maps.Mapsui;
-using Avalonia.Controls.Maui.Compatibility;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace MauiSandboxApp;
 
@@ -12,10 +10,9 @@ public static class MauiProgram
 		builder
 			.UseMauiApp<App>()
 			#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
-			 .UseAvaloniaApp()
-			 .UseAvaloniaGraphics()
-			 .UseAvaloniaMapsui()
-			 .UseAvaloniaCompatibility()
+			.UseAvaloniaApp()
+			#else
+			.UseAvaloniaEmbedding<AvaloniaApp>()
 			#endif
 			.ConfigureFonts(fonts =>
 			{
