@@ -22,6 +22,7 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 
 
 		<!-- Display name -->
@@ -47,8 +48,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg"
-			ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -66,28 +66,18 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug"
-			Version="$(MicrosoftExtensionsVersion)" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(MicrosoftExtensionsVersion)" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference
-			Include="../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
-		<ProjectReference
-			Include="../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
-		<ProjectReference
-			Include="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
-		<ProjectReference
-			Include="../../src/Avalonia.Controls.Maui.Maps.Mapsui/Avalonia.Controls.Maui.Maps.Mapsui.csproj" />
+		<ProjectReference Include="../../src/Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.csproj" />
 		<ProjectReference Include="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
 		<!-- Source generator must be referenced directly when using ProjectReference (NuGet handles this automatically) -->
-		<ProjectReference Include="../../src/Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj"
-			OutputItemType="Analyzer"
-			ReferenceOutputAssembly="false"
-			GlobalPropertiesToRemove="PublishAot" />
+		<ProjectReference Include="../../src/Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" GlobalPropertiesToRemove="PublishAot" />
 	</ItemGroup>
 
 	<!-- Avalonia packages and bootstrap are now auto-added via the source generator and .props file -->
 	<Import Condition="'$(TargetFramework)' == '$(DotNetTfm)'" Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.props" />
+	<Import Condition="'$(TargetFramework)' == '$(DotNetTfm)'" Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.props" />
 	<Import Condition="'$(TargetFramework)' == '$(DotNetTfm)'" Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.targets" />
 </Project>
