@@ -89,6 +89,9 @@ public partial class MainPage : FlyoutPage
         [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
+        // Embedding
+        [typeof(AvaloniaEmbedPage)] = () => new AvaloniaEmbedPage(),
+        [typeof(MauiAvaloniaViewPage)] = () => new MauiAvaloniaViewPage(),
     };
 
     public ObservableCollection<SampleGroup> FilteredSamples { get; private set; } = new ObservableCollection<SampleGroup>();
@@ -248,6 +251,11 @@ public partial class MainPage : FlyoutPage
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
             }),
 
+            new SampleGroup("Embedding", new List<SampleItem>
+            {
+                new("Avalonia Embed", "Embedding an Avalonia control in a MAUI app", typeof(AvaloniaEmbedPage)),
+                new("MAUI Avalonia View", "Create MAUI control with Avalonia", typeof(MauiAvaloniaViewPage))
+            }),
 
             new SampleGroup("Settings", new List<SampleItem>
             {

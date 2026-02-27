@@ -3,8 +3,8 @@
   <Project Path="../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui.Maps.Mapsui/Avalonia.Controls.Maui.Maps.Mapsui.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
-  <Project Path="ControlGallery.AvaloniaMaui/ControlGallery.AvaloniaMaui.csproj" />
   <Project Path="ControlGallery.Browser/ControlGallery.Browser.csproj" />
   <Project Path="ControlGallery.Desktop/ControlGallery.Desktop.csproj" />
   <Project Path="ControlGallery.NativeMaui/ControlGallery.NativeMaui.csproj" />

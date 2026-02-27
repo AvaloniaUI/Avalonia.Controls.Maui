@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using ControlGallery.Handlers;
+using ControlGallery.Views;
+using Microsoft.Extensions.Logging;
 
 namespace ControlGallery.NativeMaui;
 
@@ -9,6 +11,11 @@ public static class MauiProgram
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<MauiAppStub>()
+			.UseAvaloniaEmbedding<AvaloniaApp>()
+			.ConfigureMauiHandlers(handlers =>
+			{
+				handlers.AddHandler<CounterView, CounterViewHandler>();
+			})
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

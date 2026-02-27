@@ -44,7 +44,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" GlobalPropertiesToRemove="PublishAot" />
+	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
 	  <ProjectReference Include="../ControlGallery/ControlGallery.csproj" />
 	</ItemGroup>
+
+	<Import Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.props" />
+	<Import Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.targets" />
 
 </Project>
