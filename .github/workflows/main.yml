@@ -102,7 +102,7 @@ jobs:
 
     - name: Run Benchmark Tests
       run: |
-        dotnet run --project ${{github.workspace}}/samples/BenchmarkApp/BenchmarkApp.Desktop -- --run-all --output ${{github.workspace}}/artifacts/test-results/benchmark-results.xml
+        xvfb-run dotnet run --project ${{github.workspace}}/samples/BenchmarkApp/BenchmarkApp.Desktop -- --run-all --output ${{github.workspace}}/artifacts/test-results/benchmark-results.xml
       continue-on-error: true
 
     - name: Upload Benchmark Results
