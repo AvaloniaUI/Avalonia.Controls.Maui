@@ -24,7 +24,14 @@ public partial class MauiAppStub : Application
         {
             var placeholder = new ContentPage();
             var window = new Window(placeholder);
-            placeholder.Loaded += (_, _) => _ = RunAllBenchmarksAsync(window);
+            var started = false;
+            placeholder.Loaded += (_, _) =>
+            {
+                if (started)
+                    return;
+                started = true;
+                _ = RunAllBenchmarksAsync(window);
+            };
             return window;
         }
 
@@ -40,7 +47,14 @@ public partial class MauiAppStub : Application
         }
 
         var testWindow = new Window(testPage);
-        testPage.Loaded += (_, _) => _ = RunBenchmarkAsync(testWindow, testPage);
+        var benchmarkStarted = false;
+        testPage.Loaded += (_, _) =>
+        {
+            if (benchmarkStarted)
+                return;
+            benchmarkStarted = true;
+            _ = RunBenchmarkAsync(testWindow, testPage);
+        };
         return testWindow;
     }
 
