@@ -20,6 +20,10 @@ public static class BenchmarkRegistry
         Register<HandlerDisconnectLeakBenchmark>();
         Register<PageNavigationLeakBenchmark>();
         Register<RepeatedCreationLeakBenchmark>();
+        Register<ShellNavigationLeakBenchmark>();
+        Register<ImageSourceLeakBenchmark>();
+        Register<BindableLayoutLeakBenchmark>();
+        Register<ScrollViewLeakBenchmark>();
     }
 
     /// <summary>

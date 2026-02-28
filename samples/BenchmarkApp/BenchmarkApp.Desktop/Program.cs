@@ -13,7 +13,7 @@ class Program
     {
         var options = BenchmarkOptions.Parse(args);
 
-        if (options.ListTests || options.TestName is null)
+        if (options.ListTests || (options.TestName is null && !options.RunAll))
         {
             var tests = BenchmarkRegistry.GetTests();
             Console.WriteLine("Available benchmark tests:");
@@ -26,7 +26,7 @@ class Program
             return 0;
         }
 
-        if (BenchmarkRegistry.CreateTest(options.TestName) is null)
+        if (!options.RunAll && BenchmarkRegistry.CreateTest(options.TestName!) is null)
         {
             Console.Error.WriteLine($"Error: Unknown benchmark test '{options.TestName}'.");
             Console.Error.WriteLine("Use --list to see available tests.");

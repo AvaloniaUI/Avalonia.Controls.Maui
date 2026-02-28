@@ -34,6 +34,16 @@ public sealed class BenchmarkOptions
     public bool KeepOpen { get; private set; }
 
     /// <summary>
+    /// Gets the path to write JUnit XML results to, or <c>null</c> to skip XML output.
+    /// </summary>
+    public string? OutputPath { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether to run all registered benchmarks sequentially.
+    /// </summary>
+    public bool RunAll { get; private set; }
+
+    /// <summary>
     /// Parses command-line arguments and sets <see cref="Current"/>.
     /// </summary>
     public static BenchmarkOptions Parse(string[] args)
@@ -59,6 +69,12 @@ public sealed class BenchmarkOptions
                     break;
                 case "--keep-open":
                     options.KeepOpen = true;
+                    break;
+                case "--output" when i + 1 < args.Length:
+                    options.OutputPath = args[++i];
+                    break;
+                case "--run-all":
+                    options.RunAll = true;
                     break;
             }
         }

@@ -21,6 +21,14 @@ public partial class MauiAppStub : Application
     {
         var options = BenchmarkOptions.Current;
 
+        if (options.RunAll)
+        {
+            var placeholder = new ContentPage();
+            var window = new Window(placeholder);
+            placeholder.Loaded += (_, _) => _ = RunAllBenchmarksAsync(window);
+            return window;
+        }
+
         if (options.TestName is null)
         {
             return new Window(new ContentPage());
@@ -36,7 +44,58 @@ public partial class MauiAppStub : Application
         return new Window(testPage);
     }
 
-    private async Task RunBenchmarkAsync(BenchmarkTestPage testPage)
+    private static async Task RunAllBenchmarksAsync(Window window)
+    {
+        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
+            () => { },
+            Avalonia.Threading.DispatcherPriority.Background);
+
+        var options = BenchmarkOptions.Current;
+        var services = IPlatformApplication.Current!.Services;
+        var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger("Benchmark");
+        var tests = BenchmarkRegistry.GetTests();
+        var allResults = new List<BenchmarkTestResult>();
+        bool allPassed = true;
+
+        foreach (var (testName, (description, factory)) in tests)
+        {
+            logger.LogInformation("=== Running benchmark: {TestName} ===", testName);
+
+            var testPage = factory();
+            window.Page = testPage;
+
+            // Yield to let the page render.
+            await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
+                () => { },
+                Avalonia.Threading.DispatcherPriority.Background);
+
+            var (passed, results) = await RunTestIterationsAsync(testPage, testName, logger, options.Iterations);
+            allResults.AddRange(results);
+
+            if (!passed)
+            {
+                allPassed = false;
+            }
+        }
+
+        if (options.OutputPath is not null)
+        {
+            JUnitXmlWriter.Write(options.OutputPath, allResults);
+            logger.LogInformation("JUnit XML results written to {OutputPath}", options.OutputPath);
+        }
+
+        var exitCode = allPassed ? 0 : 1;
+
+        if (!options.KeepOpen)
+        {
+            if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.Shutdown(exitCode);
+            }
+        }
+    }
+
+    private static async Task RunBenchmarkAsync(BenchmarkTestPage testPage)
     {
         // Yield to let the Avalonia main loop start and render the window.
         await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
@@ -48,13 +107,36 @@ public partial class MauiAppStub : Application
         var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger("Benchmark");
         var testName = options.TestName ?? "Unknown";
 
-        bool allPassed = true;
+        var (allPassed, results) = await RunTestIterationsAsync(testPage, testName, logger, options.Iterations);
 
-        for (int i = 1; i <= options.Iterations; i++)
+        if (options.OutputPath is not null)
         {
-            if (options.Iterations > 1)
+            JUnitXmlWriter.Write(options.OutputPath, results);
+            logger.LogInformation("JUnit XML results written to {OutputPath}", options.OutputPath);
+        }
+
+        var exitCode = allPassed ? 0 : 1;
+
+        if (!options.KeepOpen)
+        {
+            if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                logger.LogInformation("--- Iteration {Iteration}/{Total} ---", i, options.Iterations);
+                desktop.Shutdown(exitCode);
+            }
+        }
+    }
+
+    private static async Task<(bool AllPassed, List<BenchmarkTestResult> Results)> RunTestIterationsAsync(
+        BenchmarkTestPage testPage, string testName, ILogger logger, int iterations)
+    {
+        bool allPassed = true;
+        var results = new List<BenchmarkTestResult>();
+
+        for (int i = 1; i <= iterations; i++)
+        {
+            if (iterations > 1)
+            {
+                logger.LogInformation("--- Iteration {Iteration}/{Total} ---", i, iterations);
             }
 
             var before = MemorySnapshot.Capture(forceGC: true);
@@ -95,16 +177,16 @@ public partial class MauiAppStub : Application
                     logger.LogInformation("  {Key}: {Value}", key, value);
                 }
             }
+
+            var displayName = iterations > 1 ? $"{testName} (iteration {i})" : testName;
+            results.Add(new BenchmarkTestResult(
+                displayName,
+                result.Passed,
+                result.FailureReason,
+                stopwatch.Elapsed.TotalSeconds,
+                allMetrics));
         }
 
-        var exitCode = allPassed ? 0 : 1;
-
-        if (!options.KeepOpen)
-        {
-            if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            {
-                desktop.Shutdown(exitCode);
-            }
-        }
+        return (allPassed, results);
     }
 }
