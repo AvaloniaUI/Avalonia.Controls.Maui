@@ -106,13 +106,40 @@ public class StackNavigationManager
             notifyPropertyChanged.PropertyChanged -= OnNavigationPagePropertyChanged;
         }
 
-        if (_currentMauiPage is INotifyPropertyChanged currentPageNotify)
+        if (_currentMauiPage != null)
         {
-            currentPageNotify.PropertyChanged -= OnCurrentPagePropertyChanged;
+            if (_currentMauiPage is INotifyPropertyChanged currentPageNotify)
+            {
+                currentPageNotify.PropertyChanged -= OnCurrentPagePropertyChanged;
+            }
+
+            if (_currentMauiPage.ToolbarItems is INotifyCollectionChanged toolbarItemsNotify)
+            {
+                toolbarItemsNotify.CollectionChanged -= OnToolbarItemsCollectionChanged;
+            }
         }
 
+        // Clean up toolbar item event subscriptions from the navigation view
         if (_navigationView != null)
         {
+            foreach (var child in _navigationView.ToolbarItemsContainer.Children)
+            {
+                if (child is Button btn && btn.DataContext is ToolbarItem item)
+                {
+                    btn.Click -= OnToolbarItemClicked;
+                    item.PropertyChanged -= OnToolbarItemPropertyChanged;
+                }
+            }
+
+            foreach (var child in _navigationView.ToolbarOverflowMenu.Items)
+            {
+                if (child is MenuItem menuItem && menuItem.DataContext is ToolbarItem item)
+                {
+                    menuItem.Click -= OnToolbarItemClicked;
+                    item.PropertyChanged -= OnToolbarItemPropertyChanged;
+                }
+            }
+
             _navigationView.BackButton.Click -= OnBackButtonClicked;
             _navigationView.HamburgerButton.Click -= OnHamburgerButtonClicked;
         }
