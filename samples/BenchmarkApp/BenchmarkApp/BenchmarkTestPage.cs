@@ -1,5 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls;
@@ -15,8 +14,10 @@ public abstract class BenchmarkTestPage : ContentPage
     /// <summary>
     /// Runs the benchmark and returns the result.
     /// </summary>
+    /// <param name="window">The window hosting the test page. Tests that need to swap the
+    /// window's page (e.g. to test <see cref="TabbedPage"/>) can use this.</param>
     /// <param name="logger">Logger for diagnostic output during the run.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The benchmark result indicating pass/fail and any collected metrics.</returns>
-    public abstract Task<BenchmarkResult> RunAsync(ILogger logger, CancellationToken cancellationToken);
+    public abstract Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken);
 }

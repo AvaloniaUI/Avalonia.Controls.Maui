@@ -1,5 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+
 
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
@@ -16,7 +15,7 @@ namespace BenchmarkApp.Tests;
 public class BindableLayoutLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
-    public override async Task<BenchmarkResult> RunAsync(ILogger logger, CancellationToken cancellationToken)
+    public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
     {
         var memBefore = MemorySnapshot.Capture(forceGC: true);
 

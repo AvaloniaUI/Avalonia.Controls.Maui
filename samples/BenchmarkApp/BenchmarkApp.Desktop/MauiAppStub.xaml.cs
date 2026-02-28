@@ -1,5 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+﻿
 
 using System.Diagnostics;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -40,8 +39,9 @@ public partial class MauiAppStub : Application
             return new Window(new ContentPage());
         }
 
-        testPage.Loaded += (_, _) => _ = RunBenchmarkAsync(testPage);
-        return new Window(testPage);
+        var testWindow = new Window(testPage);
+        testPage.Loaded += (_, _) => _ = RunBenchmarkAsync(testWindow, testPage);
+        return testWindow;
     }
 
     private static async Task RunAllBenchmarksAsync(Window window)
@@ -69,7 +69,7 @@ public partial class MauiAppStub : Application
                 () => { },
                 Avalonia.Threading.DispatcherPriority.Background);
 
-            var (passed, results) = await RunTestIterationsAsync(testPage, testName, logger, options.Iterations);
+            var (passed, results) = await RunTestIterationsAsync(window, testPage, testName, logger, options.Iterations);
             allResults.AddRange(results);
 
             if (!passed)
@@ -95,7 +95,7 @@ public partial class MauiAppStub : Application
         }
     }
 
-    private static async Task RunBenchmarkAsync(BenchmarkTestPage testPage)
+    private static async Task RunBenchmarkAsync(Window window, BenchmarkTestPage testPage)
     {
         // Yield to let the Avalonia main loop start and render the window.
         await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
@@ -107,7 +107,7 @@ public partial class MauiAppStub : Application
         var logger = services.GetRequiredService<ILoggerFactory>().CreateLogger("Benchmark");
         var testName = options.TestName ?? "Unknown";
 
-        var (allPassed, results) = await RunTestIterationsAsync(testPage, testName, logger, options.Iterations);
+        var (allPassed, results) = await RunTestIterationsAsync(window, testPage, testName, logger, options.Iterations);
 
         if (options.OutputPath is not null)
         {
@@ -127,7 +127,7 @@ public partial class MauiAppStub : Application
     }
 
     private static async Task<(bool AllPassed, List<BenchmarkTestResult> Results)> RunTestIterationsAsync(
-        BenchmarkTestPage testPage, string testName, ILogger logger, int iterations)
+        Window window, BenchmarkTestPage testPage, string testName, ILogger logger, int iterations)
     {
         bool allPassed = true;
         var results = new List<BenchmarkTestResult>();
@@ -142,7 +142,7 @@ public partial class MauiAppStub : Application
             var before = MemorySnapshot.Capture(forceGC: true);
             var stopwatch = Stopwatch.StartNew();
 
-            var result = await testPage.RunAsync(logger, CancellationToken.None);
+            var result = await testPage.RunAsync(window, logger, CancellationToken.None);
 
             stopwatch.Stop();
             var after = MemorySnapshot.Capture(forceGC: true);

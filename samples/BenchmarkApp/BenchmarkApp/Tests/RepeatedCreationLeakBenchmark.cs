@@ -1,5 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls;
@@ -13,7 +12,7 @@ namespace BenchmarkApp.Tests;
 public class RepeatedCreationLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
-    public override async Task<BenchmarkResult> RunAsync(ILogger logger, CancellationToken cancellationToken)
+    public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
     {
         const int batchCount = 50;
         const int controlsPerBatch = 10;

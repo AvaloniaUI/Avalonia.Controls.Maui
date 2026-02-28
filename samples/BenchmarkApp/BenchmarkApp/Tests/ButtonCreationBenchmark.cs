@@ -1,5 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
+
 
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
@@ -22,7 +21,7 @@ public class ButtonCreationBenchmark : BenchmarkTestPage
     }
 
     /// <inheritdoc/>
-    public override Task<BenchmarkResult> RunAsync(ILogger logger, CancellationToken cancellationToken)
+    public override Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
     {
         const int buttonCount = 100;
 
