@@ -142,6 +142,13 @@ public class StackNavigationManager
 
             _navigationView.BackButton.Click -= OnBackButtonClicked;
             _navigationView.HamburgerButton.Click -= OnHamburgerButtonClicked;
+
+            // Clear the content control to release any Avalonia controls held by
+            // in-flight transitions (the TransitioningContentControl keeps old
+            // content in a hidden presenter until a transition completes; if the
+            // NavigationPage is torn down mid-animation the reference is never
+            // released, preventing GC of the wrapped MAUI controls).
+            _navigationView.ClearContent();
         }
 
         if (_parentFlyoutPage != null)
@@ -158,6 +165,7 @@ public class StackNavigationManager
         _connected = false;
         _stackNavigation = null;
         _navigationView = null;
+        _currentPage = null;
         _currentMauiPage = null;
 
         _logger?.LogDebug("StackNavigationManager disconnected");
@@ -259,6 +267,19 @@ public class StackNavigationManager
         if (!initialNavigation && previousNavigationStackCount > newPageStack.Count)
         {
             isBackNavigation = true;
+
+            // Disconnect handlers of pages that were popped from the stack.
+            // Popped pages are no longer part of the MAUI visual tree and should
+            // have their handler event subscriptions cleaned up so that the
+            // Avalonia composition system (which may briefly retain composition
+            // visuals) does not prevent the MAUI controls from being collected.
+            for (int i = newPageStack.Count; i < previousNavigationStackCount; i++)
+            {
+                if (previousNavigationStack[i] is IView poppedView)
+                {
+                    poppedView.DisconnectHandlers();
+                }
+            }
         }
 
         // Unsubscribe from previous page's property changes
