@@ -89,7 +89,7 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
     /// <param name="handler">The handler.</param>
     /// <param name="view">The menu flyout sub-item.</param>
     public static void MapSource(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view) =>
-        MapSourceAsync(handler, view).FireAndForget(handler);
+        MapSourceAsync(handler, view).FireAndForget(handler.MauiContext?.Services?.CreateLogger<MenuFlyoutSubItemHandler>());
 
     /// <summary>Asynchronously maps the Source property to the platform view.</summary>
     /// <param name="handler">The handler.</param>

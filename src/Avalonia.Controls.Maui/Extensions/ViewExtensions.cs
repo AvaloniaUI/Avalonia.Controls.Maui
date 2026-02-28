@@ -510,7 +510,7 @@ public static class ViewExtensions
     /// Disposes the clip subscription for a platform view.
     /// </summary>
     /// <param name="control">The platform view.</param>
-    static void DisposeClipSubscription(PlatformView control)
+    internal static void DisposeClipSubscription(PlatformView control)
     {
         if (ClipSubscriptions.TryGetValue(control, out var disposable))
         {

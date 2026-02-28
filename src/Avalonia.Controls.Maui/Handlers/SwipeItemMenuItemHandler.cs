@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui;
 using PlatformView = Avalonia.Controls.Button;
@@ -133,7 +134,7 @@ public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuIte
     /// <param name="handler">The handler.</param>
     /// <param name="view">The virtual view.</param>
     public static void MapSource(SwipeItemMenuItemHandler handler, ISwipeItemMenuItem view) =>
-        MapSourceAsync(handler, view).FireAndForget(handler);
+        MapSourceAsync(handler, view).FireAndForget(handler.MauiContext?.Services?.CreateLogger<SwipeItemMenuItemHandler>());
 
     /// <summary>Maps the Source property to the platform view asynchronously.</summary>
     /// <param name="handler">The handler.</param>

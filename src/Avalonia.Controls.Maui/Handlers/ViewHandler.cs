@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
@@ -379,8 +380,9 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         {
             var provider = handler.GetRequiredService<IImageSourceServiceProvider>();
 
+            var logger = handler.MauiContext?.Services?.CreateLogger<ViewHandler>();
             platformView.UpdateBackgroundImageSourceAsync(image.ImageSource, provider)
-                .FireAndForget(handler);
+                .FireAndForget(logger);
         }
         else
         {

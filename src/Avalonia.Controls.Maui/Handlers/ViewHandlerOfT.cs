@@ -110,6 +110,7 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
     protected virtual void DisconnectHandler(TPlatformView platformView)
     {
         DetachPlatformViewEvents(platformView);
+        Extensions.ViewExtensions.DisposeClipSubscription(platformView);
         _gestureManager?.Dispose();
         _gestureManager = null;
     }
