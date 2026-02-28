@@ -1,0 +1,56 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+
+using System.Reflection;
+using BenchmarkApp.Tests;
+
+namespace BenchmarkApp;
+
+/// <summary>
+/// Registry of benchmark test pages. Tests are registered explicitly to support trimming and AOT.
+/// </summary>
+public static class BenchmarkRegistry
+{
+    private static readonly Dictionary<string, (string? Description, Func<BenchmarkTestPage> Factory)> Tests;
+
+    static BenchmarkRegistry()
+    {
+        Tests = new Dictionary<string, (string?, Func<BenchmarkTestPage>)>(StringComparer.OrdinalIgnoreCase);
+        Register<ButtonCreationBenchmark>();
+        Register<HandlerDisconnectLeakBenchmark>();
+        Register<PageNavigationLeakBenchmark>();
+        Register<RepeatedCreationLeakBenchmark>();
+    }
+
+    /// <summary>
+    /// Returns the names and descriptions of all registered benchmark tests.
+    /// </summary>
+    public static IReadOnlyDictionary<string, (string? Description, Func<BenchmarkTestPage> Factory)> GetTests() => Tests;
+
+    /// <summary>
+    /// Creates an instance of the benchmark test page with the given name.
+    /// </summary>
+    /// <param name="name">The benchmark test name (case-insensitive).</param>
+    /// <returns>The test page instance, or <c>null</c> if the name is not found.</returns>
+    public static BenchmarkTestPage? CreateTest(string name)
+    {
+        if (Tests.TryGetValue(name, out var entry))
+        {
+            return entry.Factory();
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Registers a benchmark test type. The type must have <see cref="BenchmarkTestAttribute"/>
+    /// and a parameterless constructor.
+    /// </summary>
+    private static void Register<T>()
+        where T : BenchmarkTestPage, new()
+    {
+        var attr = typeof(T).GetCustomAttribute<BenchmarkTestAttribute>()
+            ?? throw new InvalidOperationException($"{typeof(T).Name} is missing [BenchmarkTest] attribute.");
+        Tests[attr.Name] = (attr.Description, static () => new T());
+    }
+}
