@@ -28,6 +28,12 @@ public static class BenchmarkRegistry
         Register<CollectionViewLeakBenchmark>();
         Register<TabbedPageLeakBenchmark>();
         Register<ControlCreationPerformanceBenchmark>();
+        Register<AlohaTabBarNavigationLeakBenchmark>();
+        Register<PropertyChangedSubscriptionLeakBenchmark>();
+        Register<RichCardBindableLayoutLeakBenchmark>();
+        Register<DynamicChildCreationLeakBenchmark>();
+        Register<GradientAndShadowLeakBenchmark>();
+        Register<ShellRouteNavigationLeakBenchmark>();
     }
 
     /// <summary>

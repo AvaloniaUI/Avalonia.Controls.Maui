@@ -606,10 +606,12 @@ public static class ShellExtensions
         if (handler._currentItemHandler?.VirtualView != null)
         {
             handler._currentItemHandler.VirtualView.PropertyChanged -= handler.OnCurrentItemPropertyChanged;
-            if (handler._currentItemHandler.VirtualView.CurrentItem != null)
-            {
-                handler._currentItemHandler.VirtualView.CurrentItem.PropertyChanged -= handler.OnCurrentSectionPropertyChanged;
-            }
+        }
+
+        // Unsubscribe from previous section via tracked field
+        if (handler._trackedSection != null)
+        {
+            handler._trackedSection.PropertyChanged -= handler.OnCurrentSectionPropertyChanged;
         }
 
         int currentIndex = shell.Items.IndexOf(shell.CurrentItem);
@@ -628,10 +630,18 @@ public static class ShellExtensions
         if (handler._currentItemHandler?.VirtualView != null)
         {
             handler._currentItemHandler.VirtualView.PropertyChanged += handler.OnCurrentItemPropertyChanged;
-            if (handler._currentItemHandler.VirtualView.CurrentItem != null)
+
+            // Track the new section
+            handler._trackedSection = handler._currentItemHandler.VirtualView.CurrentItem;
+
+            if (handler._trackedSection != null)
             {
-                handler._currentItemHandler.VirtualView.CurrentItem.PropertyChanged += handler.OnCurrentSectionPropertyChanged;
+                handler._trackedSection.PropertyChanged += handler.OnCurrentSectionPropertyChanged;
             }
+        }
+        else
+        {
+            handler._trackedSection = null;
         }
 
         handler.UpdateTitle(shell);

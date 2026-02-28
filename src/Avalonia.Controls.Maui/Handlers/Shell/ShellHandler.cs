@@ -154,6 +154,9 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     /// <summary>Currently tracked page for property change notifications.</summary>
     internal Page? _trackedPage;
 
+    /// <summary>Currently tracked shell section for property change notifications.</summary>
+    internal ShellSection? _trackedSection;
+
     /// <summary>Transitioning content control for modal page presentation.</summary>
     internal TransitioningContentControl? _modalContainer;
 
@@ -411,6 +414,18 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         {
             _trackedPage.PropertyChanged -= OnCurrentPagePropertyChanged;
             _trackedPage = null;
+        }
+
+        // Clean up item/section PropertyChanged subscriptions
+        if (_currentItemHandler?.VirtualView != null)
+        {
+            _currentItemHandler.VirtualView.PropertyChanged -= OnCurrentItemPropertyChanged;
+        }
+
+        if (_trackedSection != null)
+        {
+            _trackedSection.PropertyChanged -= OnCurrentSectionPropertyChanged;
+            _trackedSection = null;
         }
 
         _currentItemHandler = null;
@@ -849,10 +864,21 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     {
         if (e.PropertyName == nameof(ShellItem.CurrentItem))
         {
-            // Subscribe to new section
-            if (sender is ShellItem item && item.CurrentItem != null)
+            if (sender is ShellItem item)
             {
-                item.CurrentItem.PropertyChanged += OnCurrentSectionPropertyChanged;
+                // Unsubscribe from previous section before subscribing to new one
+                // to prevent accumulating subscriptions and leaking handlers
+                if (_trackedSection != null)
+                {
+                    _trackedSection.PropertyChanged -= OnCurrentSectionPropertyChanged;
+                }
+
+                _trackedSection = item.CurrentItem;
+
+                if (_trackedSection != null)
+                {
+                    _trackedSection.PropertyChanged += OnCurrentSectionPropertyChanged;
+                }
             }
 
             if (VirtualView != null)
