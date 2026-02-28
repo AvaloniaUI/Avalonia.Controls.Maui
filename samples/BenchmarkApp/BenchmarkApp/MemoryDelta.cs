@@ -28,14 +28,31 @@ public readonly struct MemoryDelta
     public int Gen2Delta { get; }
 
     /// <summary>
+    /// Gets the change in process working set (total physical memory) in bytes.
+    /// </summary>
+    public long WorkingSetDelta { get; }
+
+    /// <summary>
+    /// Gets the change in process private memory in bytes.
+    /// </summary>
+    public long PrivateMemoryDelta { get; }
+
+    /// <summary>
+    /// Gets the estimated native-only memory growth in bytes (working set growth minus managed growth).
+    /// </summary>
+    public long EstimatedNativeGrowth => WorkingSetDelta - BytesDelta;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="MemoryDelta"/> struct.
     /// </summary>
-    public MemoryDelta(long bytesDelta, int gen0Delta, int gen1Delta, int gen2Delta)
+    public MemoryDelta(long bytesDelta, int gen0Delta, int gen1Delta, int gen2Delta, long workingSetDelta, long privateMemoryDelta)
     {
         BytesDelta = bytesDelta;
         Gen0Delta = gen0Delta;
         Gen1Delta = gen1Delta;
         Gen2Delta = gen2Delta;
+        WorkingSetDelta = workingSetDelta;
+        PrivateMemoryDelta = privateMemoryDelta;
     }
 
     /// <summary>
@@ -49,6 +66,9 @@ public readonly struct MemoryDelta
             ["Gen0Collections"] = Gen0Delta,
             ["Gen1Collections"] = Gen1Delta,
             ["Gen2Collections"] = Gen2Delta,
+            ["NativeWorkingSetDelta"] = WorkingSetDelta,
+            ["NativePrivateMemoryDelta"] = PrivateMemoryDelta,
+            ["EstimatedNativeGrowth"] = EstimatedNativeGrowth,
         };
     }
 }

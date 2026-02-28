@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls;
@@ -21,7 +22,7 @@ public class AlohaTabBarNavigationLeakBenchmark : BenchmarkTestPage
         var trackedObjects = new Dictionary<string, WeakReference<object>>();
         const int tabSwitchCycles = 20;
 
-        var cycleMemory = await BuildShellAndSwitchTabs(window, trackedObjects, tabSwitchCycles, logger, cancellationToken);
+        var (cycleMemory, cycleWorkingSet) = await BuildShellAndSwitchTabs(window, trackedObjects, tabSwitchCycles, logger, cancellationToken);
 
         // Force GC multiple times with delays
         GC.Collect();
@@ -67,9 +68,10 @@ public class AlohaTabBarNavigationLeakBenchmark : BenchmarkTestPage
         for (int i = 0; i < cycleMemory.Count; i++)
         {
             long delta = i > 0 ? cycleMemory[i] - cycleMemory[i - 1] : 0;
+            long wsDelta = i > 0 ? cycleWorkingSet[i] - cycleWorkingSet[i - 1] : 0;
             logger.LogInformation(
-                "  Cycle {Cycle}: {Memory:N0} bytes (delta: {Delta:+#,##0;-#,##0;0})",
-                i, cycleMemory[i], delta);
+                "  Cycle {Cycle}: {Memory:N0} bytes (delta: {Delta:+#,##0;-#,##0;0}), working set: {WorkingSet:N0} bytes (delta: {WsDelta:+#,##0;-#,##0;0})",
+                i, cycleMemory[i], delta, cycleWorkingSet[i], wsDelta);
         }
 
         var metrics = new Dictionary<string, object>
@@ -82,6 +84,9 @@ public class AlohaTabBarNavigationLeakBenchmark : BenchmarkTestPage
             ["FinalCycleMemoryBytes"] = finalCycleMemory,
             ["TotalMemoryGrowthBytes"] = totalGrowth,
             ["AvgGrowthPerCycleBytes"] = avgGrowthPerCycle,
+            ["BaselineWorkingSetBytes"] = cycleWorkingSet[0],
+            ["FinalCycleWorkingSetBytes"] = cycleWorkingSet[^1],
+            ["TotalWorkingSetGrowthBytes"] = cycleWorkingSet[^1] - cycleWorkingSet[0],
         };
 
         foreach (var (key, value) in memoryDelta.ToMetrics())
@@ -96,6 +101,13 @@ public class AlohaTabBarNavigationLeakBenchmark : BenchmarkTestPage
             return BenchmarkResult.Fail($"Objects leaked: {leakedNames}", metrics);
         }
 
+        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
+        {
+            return BenchmarkResult.Fail(
+                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
+                metrics);
+        }
+
         logger.LogInformation(
             "All {Count} objects collected after {Cycles} tab switch cycles. Memory growth: {Growth:N0} bytes total, {AvgGrowth:N0} bytes/cycle avg",
             trackedObjects.Count,
@@ -106,7 +118,7 @@ public class AlohaTabBarNavigationLeakBenchmark : BenchmarkTestPage
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private async Task<List<long>> BuildShellAndSwitchTabs(
+    private async Task<(List<long> ManagedMemory, List<long> WorkingSet)> BuildShellAndSwitchTabs(
         Window window,
         Dictionary<string, WeakReference<object>> trackedObjects,
         int cycles,
@@ -114,6 +126,7 @@ public class AlohaTabBarNavigationLeakBenchmark : BenchmarkTestPage
         CancellationToken cancellationToken)
     {
         var cycleMemory = new List<long>();
+        var cycleWorkingSet = new List<long>();
 
         // Create a Shell with TabBar matching AlohaAI's structure
         var shell = CreateAlohaStyleShell(trackedObjects);
@@ -127,6 +140,10 @@ public class AlohaTabBarNavigationLeakBenchmark : BenchmarkTestPage
         GC.WaitForPendingFinalizers();
         GC.Collect();
         cycleMemory.Add(GC.GetTotalMemory(false));
+        using (var proc = Process.GetCurrentProcess())
+        {
+            cycleWorkingSet.Add(proc.WorkingSet64);
+        }
 
         // Switch between tabs repeatedly (simulating user tapping through tabs)
         var tabBar = (TabBar)shell.Items[0];
@@ -149,6 +166,10 @@ public class AlohaTabBarNavigationLeakBenchmark : BenchmarkTestPage
             GC.WaitForPendingFinalizers();
             GC.Collect();
             cycleMemory.Add(GC.GetTotalMemory(false));
+            using (var proc = Process.GetCurrentProcess())
+            {
+                cycleWorkingSet.Add(proc.WorkingSet64);
+            }
         }
 
         // Tear down the shell
@@ -158,7 +179,7 @@ public class AlohaTabBarNavigationLeakBenchmark : BenchmarkTestPage
         window.Page = this;
         Content = new Label { Text = "TabBar navigation test complete" };
 
-        return cycleMemory;
+        return (cycleMemory, cycleWorkingSet);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

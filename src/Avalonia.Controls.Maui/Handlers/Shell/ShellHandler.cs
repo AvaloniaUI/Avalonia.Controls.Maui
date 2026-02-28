@@ -86,7 +86,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         new CommandMapper<MauiShell, ShellHandler>(ViewHandler.ViewCommandMapper);
 
     /// <summary>Strongly-typed accessor for the MAUI Shell virtual view.</summary>
-    internal new MauiShell? VirtualView => (MauiShell?)base.VirtualView;
+    internal new MauiShell? VirtualView => ((IElementHandler)this).VirtualView as MauiShell;
 
     /// <summary>The flyout container that manages flyout open/close behavior.</summary>
     internal FlyoutContainer? _flyoutContainer;

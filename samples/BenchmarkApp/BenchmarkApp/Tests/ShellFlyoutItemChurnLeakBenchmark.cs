@@ -69,6 +69,13 @@ public class ShellFlyoutItemChurnLeakBenchmark : BenchmarkTestPage
             return BenchmarkResult.Fail($"Objects leaked: {leakedNames}", metrics);
         }
 
+        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
+        {
+            return BenchmarkResult.Fail(
+                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
+                metrics);
+        }
+
         logger.LogInformation(
             "All {Count} Shell flyout churn objects collected after {Cycles} cycles",
             trackedObjects.Count,

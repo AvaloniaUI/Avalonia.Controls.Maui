@@ -81,6 +81,13 @@ public class DynamicChildCreationLeakBenchmark : BenchmarkTestPage
                 metrics);
         }
 
+        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
+        {
+            return BenchmarkResult.Fail(
+                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
+                metrics);
+        }
+
         logger.LogInformation(
             "Dynamic children: {Leaked}/{Total} objects survived after {Cycles} cycles (rate: {Rate:P1})",
             leaked.Count, totalTracked, cycles, leakRate);

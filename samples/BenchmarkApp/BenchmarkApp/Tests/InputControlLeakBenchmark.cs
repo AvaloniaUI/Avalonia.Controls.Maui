@@ -77,6 +77,14 @@ public class InputControlLeakBenchmark : BenchmarkTestPage
         logger.LogInformation(
             "All {Count} input control objects collected successfully",
             trackedObjects.Count);
+
+        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
+        {
+            return BenchmarkResult.Fail(
+                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
+                metrics);
+        }
+
         return BenchmarkResult.Pass(metrics);
     }
 

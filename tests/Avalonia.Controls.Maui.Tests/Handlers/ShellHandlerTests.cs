@@ -901,6 +901,23 @@ public partial class ShellHandlerTests : HandlerTestBase
         Assert.Equal("TestParameter", receivedParameter);
     }
 
+    [AvaloniaFact(DisplayName = "Shell VirtualView Returns Null After Disconnect")]
+    public async Task ShellVirtualViewReturnsNullAfterDisconnect()
+    {
+        var shell = CreateBasicShell();
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler.VirtualView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            ((IElementHandler)handler).DisconnectHandler();
+        });
+
+        Assert.Null(handler.VirtualView);
+    }
+
     [AvaloniaFact(DisplayName = "BackButtonBehavior Null Restores Default Behavior")]
     public async Task BackButtonBehaviorNullRestoresDefaultBehavior()
     {

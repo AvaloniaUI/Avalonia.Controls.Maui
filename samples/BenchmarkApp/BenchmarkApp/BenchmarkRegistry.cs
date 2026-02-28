@@ -62,6 +62,16 @@ public static class BenchmarkRegistry
         Register<PropertyMappingPerformanceBenchmark>();
         Register<LayoutPerformanceBenchmark>();
         Register<NavigationPerformanceBenchmark>();
+        Register<IdleRenderMemoryGrowthBenchmark>();
+        Register<ShellTabSwitchMemoryGrowthBenchmark>();
+        Register<CompositionVisualLeakBenchmark>();
+        Register<NavigationWithToolbarChurnBenchmark>();
+        Register<GestureDoubleTapCancellationLeakBenchmark>();
+        Register<ShellTabSwitchWithNavigationAndToolbarBenchmark>();
+        Register<ModalWithGesturesAndBindingsLeakBenchmark>();
+        Register<RefreshViewWithNavigationAndBindingChurnBenchmark>();
+        Register<CompoundPageLifecycleStressLeakBenchmark>();
+        Register<ShellNavigationWithModalsAndFlyoutBenchmark>();
     }
 
     /// <summary>

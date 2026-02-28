@@ -148,6 +148,13 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             sender is Microsoft.Maui.Controls.Window window &&
             window.Page is Page page)
         {
+            // Clear any stale modal overlays from the previous page.
+            // MAUI's ModalNavigationManager.ClearModalPages clears its internal
+            // stack without firing ModalPopped events, so our visual overlay
+            // stack must be cleaned up explicitly.
+            var mauiWindow = (MauiAvaloniaWindow)PlatformView;
+            mauiWindow.ClearAllModals();
+
             InstallModalTracker(page);
         }
     }

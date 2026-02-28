@@ -1,9 +1,11 @@
 
 
+using System.Diagnostics;
+
 namespace BenchmarkApp;
 
 /// <summary>
-/// Captures GC memory state at a point in time for before/after comparison.
+/// Captures GC memory state and process-level native memory at a point in time for before/after comparison.
 /// </summary>
 public readonly struct MemorySnapshot
 {
@@ -27,16 +29,28 @@ public readonly struct MemorySnapshot
     /// </summary>
     public int Gen2Collections { get; }
 
-    private MemorySnapshot(long totalMemory, int gen0, int gen1, int gen2)
+    /// <summary>
+    /// Gets the total physical memory (working set) used by the process in bytes.
+    /// </summary>
+    public long WorkingSet { get; }
+
+    /// <summary>
+    /// Gets the private memory committed to the process in bytes.
+    /// </summary>
+    public long PrivateMemory { get; }
+
+    private MemorySnapshot(long totalMemory, int gen0, int gen1, int gen2, long workingSet, long privateMemory)
     {
         TotalMemory = totalMemory;
         Gen0Collections = gen0;
         Gen1Collections = gen1;
         Gen2Collections = gen2;
+        WorkingSet = workingSet;
+        PrivateMemory = privateMemory;
     }
 
     /// <summary>
-    /// Captures the current GC memory state.
+    /// Captures the current GC memory state and process-level native memory.
     /// </summary>
     /// <param name="forceGC">If <c>true</c>, forces a full GC before capturing.</param>
     /// <returns>A snapshot of the current memory state.</returns>
@@ -49,11 +63,15 @@ public readonly struct MemorySnapshot
             GC.Collect();
         }
 
+        using var process = Process.GetCurrentProcess();
+
         return new MemorySnapshot(
             GC.GetTotalMemory(false),
             GC.CollectionCount(0),
             GC.CollectionCount(1),
-            GC.CollectionCount(2));
+            GC.CollectionCount(2),
+            process.WorkingSet64,
+            process.PrivateMemorySize64);
     }
 
     /// <summary>
@@ -67,6 +85,8 @@ public readonly struct MemorySnapshot
             TotalMemory - before.TotalMemory,
             Gen0Collections - before.Gen0Collections,
             Gen1Collections - before.Gen1Collections,
-            Gen2Collections - before.Gen2Collections);
+            Gen2Collections - before.Gen2Collections,
+            WorkingSet - before.WorkingSet,
+            PrivateMemory - before.PrivateMemory);
     }
 }
