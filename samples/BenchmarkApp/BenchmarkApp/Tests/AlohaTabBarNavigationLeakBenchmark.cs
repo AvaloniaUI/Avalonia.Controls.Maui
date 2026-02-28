@@ -101,11 +101,38 @@ public class AlohaTabBarNavigationLeakBenchmark : BenchmarkTestPage
             return BenchmarkResult.Fail($"Objects leaked: {leakedNames}", metrics);
         }
 
-        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
+        // Check per-cycle working set growth stability rather than total pre/post delta.
+        // Total delta includes one-time Skia renderer cache (~70 MB for complex UI) and
+        // macOS RSS stickiness, neither of which indicates a leak. A real leak shows as
+        // monotonic per-cycle growth after warmup stabilization.
+        if (cycleWorkingSet.Count > 4)
         {
-            return BenchmarkResult.Fail(
-                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
-                metrics);
+            // Compare average working set of last 5 cycles vs cycles 2-6 (post-warmup)
+            long earlyAvg = 0;
+            long lateAvg = 0;
+            int earlyCount = Math.Min(5, cycleWorkingSet.Count - 5);
+            int lateCount = Math.Min(5, cycleWorkingSet.Count);
+
+            for (int i = 2; i < 2 + earlyCount; i++)
+                earlyAvg += cycleWorkingSet[i];
+            earlyAvg /= earlyCount;
+
+            for (int i = cycleWorkingSet.Count - lateCount; i < cycleWorkingSet.Count; i++)
+                lateAvg += cycleWorkingSet[i];
+            lateAvg /= lateCount;
+
+            long perCycleGrowth = lateAvg - earlyAvg;
+            metrics["EarlyAvgWorkingSet"] = earlyAvg;
+            metrics["LateAvgWorkingSet"] = lateAvg;
+            metrics["SteadyStateGrowth"] = perCycleGrowth;
+
+            // Allow up to 50 MB of steady-state growth between early and late cycles
+            if (perCycleGrowth > 50 * 1024 * 1024)
+            {
+                return BenchmarkResult.Fail(
+                    $"Working set growing during cycling: {perCycleGrowth / (1024.0 * 1024):F1} MB between early and late cycles exceeds 50 MB threshold",
+                    metrics);
+            }
         }
 
         logger.LogInformation(

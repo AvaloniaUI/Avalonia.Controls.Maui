@@ -82,6 +82,13 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
         if (VirtualView is IShellSectionController sectionController)
             sectionController.NavigationRequested -= OnNavigationRequested;
 
+        // Clear section container content to release any in-flight transition resources
+        if (_sectionContainer != null)
+        {
+            _sectionContainer.PageTransition = null;
+            _sectionContainer.Content = null;
+        }
+
         platformView.AttachedToVisualTree -= OnAttachedToVisualTree;
         base.DisconnectHandler(platformView);
     }
@@ -282,8 +289,13 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
             transition = new CrossFade(DefaultTransitionDuration);
         }
 
+        // Clear old content without animation first to release any in-flight
+        // transition's hidden presenter content (see ShellExtensions.UpdateCurrentItem).
+        _sectionContainer.PageTransition = null;
+        _sectionContainer.Content = null;
+
         _sectionContainer.PageTransition = transition;
-        
+
         // Ensure focus is cleared before transition to avoid stale focus capturing input
         var topLevel = TopLevel.GetTopLevel(PlatformView);
         topLevel?.FocusManager?.ClearFocus();

@@ -22,6 +22,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     private readonly AImage _staticImage;
     private GifImage? _gifImage;
     private CancellationTokenSource? _loadCts;
+    private IDisposable? _currentImageResult;
 
     private static readonly ConcurrentDictionary<string, Uri?> AssetCache = new();
 
@@ -66,6 +67,27 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         var staticImage = _staticImage;
         grid.Children.Add(staticImage);
         return grid;
+    }
+
+    /// <inheritdoc/>
+    protected override void DisconnectHandler(AGrid platformView)
+    {
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
+        _loadCts = null;
+
+        _currentImageResult?.Dispose();
+        _currentImageResult = null;
+
+        _staticImage.Source = null;
+
+        if (_gifImage != null)
+        {
+            try { _gifImage.Source = null!; } catch { }
+            _gifImage = null;
+        }
+
+        base.DisconnectHandler(platformView);
     }
 
     /// <summary>Maps the Source property to the platform view.</summary>
@@ -267,20 +289,31 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
         if (provider.GetImageSourceService(GetImageSourceInterfaceType(source)) is IAvaloniaImageSourceService service)
         {
-            try 
+            try
             {
                 var result = await service.GetImageAsync(source, 1.0f, token);
-                if (token.IsCancellationRequested) return;
+                if (token.IsCancellationRequested)
+                {
+                    (result as IDisposable)?.Dispose();
+                    return;
+                }
+
+                var previousResult = _currentImageResult;
 
                 if (result?.Value is { } bitmap)
                 {
                     _staticImage.Source = bitmap;
                     _staticImage.IsVisible = true;
+                    _currentImageResult = result as IDisposable;
                 }
                 else
                 {
                     _staticImage.Source = null;
+                    _currentImageResult = null;
                 }
+
+                // Dispose previous image result after replacing to avoid displaying a disposed bitmap
+                previousResult?.Dispose();
             }
             catch (Exception ex)
             {
@@ -294,6 +327,8 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     {
         _staticImage.Source = null;
         _staticImage.IsVisible = false;
+        _currentImageResult?.Dispose();
+        _currentImageResult = null;
         if (_gifImage != null)
         {
             _gifImage.Source = null!;

@@ -617,13 +617,20 @@ public static class ShellExtensions
         int currentIndex = shell.Items.IndexOf(shell.CurrentItem);
         handler._previousItemIndex = currentIndex;
 
-        handler._mainContentControl.PageTransition = new CrossFade(ShellHandler.DefaultTransitionDuration);
-
         var itemHandler = shell.CurrentItem.ToHandler(handler.MauiContext);
         handler._currentItemHandler = itemHandler as ShellItemHandler;
 
         if (itemHandler?.PlatformView is AvaloniaControl control)
         {
+            // Clear old content without animation first to ensure any in-flight
+            // transition's hidden presenter releases its content reference.
+            // Without this, cancelled CrossFade transitions skip HideOldPresenter(),
+            // leaving old control trees alive and leaking native render resources.
+            var savedTransition = handler._mainContentControl.PageTransition;
+            handler._mainContentControl.PageTransition = null;
+            handler._mainContentControl.Content = null;
+            handler._mainContentControl.PageTransition = new CrossFade(ShellHandler.DefaultTransitionDuration);
+
             handler._mainContentControl.Content = control;
         }
 

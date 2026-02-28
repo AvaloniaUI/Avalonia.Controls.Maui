@@ -126,6 +126,13 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
             _tabControl.SelectionChanged -= OnTabSelectionChanged;
         }
 
+        // Clear content control to release any in-flight transition resources
+        if (_contentControl != null)
+        {
+            _contentControl.PageTransition = null;
+            _contentControl.Content = null;
+        }
+
         _currentSectionHandler = null;
 
         base.DisconnectHandler(platformView);

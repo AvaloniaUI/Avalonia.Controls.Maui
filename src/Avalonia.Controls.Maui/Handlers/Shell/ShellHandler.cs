@@ -430,6 +430,16 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         _currentItemHandler = null;
 
+        // Clear the main content control without animation to release any
+        // in-flight transition's hidden presenter content. Without this,
+        // cancelled CrossFade transitions retain old control trees and their
+        // associated native render resources (textures, surfaces, etc.).
+        if (_mainContentControl != null)
+        {
+            _mainContentControl.PageTransition = null;
+            _mainContentControl.Content = null;
+        }
+
         base.DisconnectHandler(platformView);
     }
 
