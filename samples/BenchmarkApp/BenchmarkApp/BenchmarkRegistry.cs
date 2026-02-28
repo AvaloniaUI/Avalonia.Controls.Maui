@@ -34,6 +34,16 @@ public static class BenchmarkRegistry
         Register<DynamicChildCreationLeakBenchmark>();
         Register<GradientAndShadowLeakBenchmark>();
         Register<ShellRouteNavigationLeakBenchmark>();
+        Register<DateTimePickerLeakBenchmark>();
+        Register<RadioButtonStepperLeakBenchmark>();
+        Register<ActivityIndicatorProgressBarLeakBenchmark>();
+        Register<ContentViewLeakBenchmark>();
+        Register<ShapeHandlerLeakBenchmark>();
+        Register<ImageButtonLeakBenchmark>();
+        Register<CompositeViewLeakBenchmark>();
+        Register<WebViewMiscLeakBenchmark>();
+        Register<MenuAndToolbarLeakBenchmark>();
+        Register<CompatibilityHandlerLeakBenchmark>();
     }
 
     /// <summary>
