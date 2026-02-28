@@ -1,7 +1,8 @@
-﻿
+
 
 using Avalonia;
 using Avalonia.Controls.Maui;
+using BenchmarkApp.Diagnostics;
 
 namespace BenchmarkApp;
 
@@ -32,7 +33,42 @@ class Program
             return 1;
         }
 
-        return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        if (options.GcDump)
+        {
+            var missing = DiagnosticsCollector.ValidateTools();
+            if (missing.Count > 0)
+            {
+                Console.Error.WriteLine("Required diagnostic tools are not installed:");
+                foreach (var tool in missing)
+                {
+                    Console.Error.WriteLine($"  {tool}");
+                    Console.Error.WriteLine($"    Install with: dotnet tool install -g {tool}");
+                }
+
+                return 1;
+            }
+
+            Directory.CreateDirectory(options.DiagnosticsOutputDir);
+        }
+
+        // Build a file name prefix from the test name and current timestamp.
+        var testLabel = options.RunAll ? "all" : options.TestName ?? "unknown";
+        var safeTestLabel = string.Join("_", testLabel.Split(Path.GetInvalidFileNameChars()));
+        var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        var filePrefix = $"{safeTestLabel}_{timestamp}";
+
+        var exitCode = BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+
+        // Collect GC dump after the app exits (captures post-shutdown heap state).
+        if (options.GcDump)
+        {
+            var gcDumpPath = Path.Combine(options.DiagnosticsOutputDir, $"{filePrefix}.gcdump");
+            Console.WriteLine($"Collecting GC dump...");
+            DiagnosticsCollector.CollectGcDump(gcDumpPath);
+            Console.WriteLine($"GC dump saved to {gcDumpPath}");
+        }
+
+        return exitCode;
     }
 
     public static AppBuilder BuildAvaloniaApp()

@@ -1,4 +1,4 @@
-﻿
+
 
 using System.Diagnostics;
 using Avalonia.Controls.ApplicationLifetimes;

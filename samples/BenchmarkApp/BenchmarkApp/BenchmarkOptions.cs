@@ -43,6 +43,16 @@ public sealed class BenchmarkOptions
     public bool RunAll { get; private set; }
 
     /// <summary>
+    /// Gets a value indicating whether to enable dotnet-gcdump collection after each test.
+    /// </summary>
+    public bool GcDump { get; private set; }
+
+    /// <summary>
+    /// Gets the output directory for diagnostic files (gcdump).
+    /// </summary>
+    public string DiagnosticsOutputDir { get; private set; } = "./diagnostics";
+
+    /// <summary>
     /// Parses command-line arguments and sets <see cref="Current"/>.
     /// </summary>
     public static BenchmarkOptions Parse(string[] args)
@@ -74,6 +84,12 @@ public sealed class BenchmarkOptions
                     break;
                 case "--run-all":
                     options.RunAll = true;
+                    break;
+                case "--gcdump":
+                    options.GcDump = true;
+                    break;
+                case "--diagnostics-output" when i + 1 < args.Length:
+                    options.DiagnosticsOutputDir = args[++i];
                     break;
             }
         }
