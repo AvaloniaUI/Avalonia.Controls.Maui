@@ -51,6 +51,17 @@ public static class BenchmarkRegistry
         Register<DataTemplateRecyclingLeakBenchmark>();
         Register<ModalPageLeakBenchmark>();
         Register<CarouselViewSourceChurnLeakBenchmark>();
+        Register<SwipeViewLeakBenchmark>();
+        Register<RefreshViewLeakBenchmark>();
+        Register<BorderIndicatorViewLeakBenchmark>();
+        Register<AlertDialogLeakBenchmark>();
+        Register<DispatcherTimerLeakBenchmark>();
+        Register<HandlerReconnectionLeakBenchmark>();
+        Register<BindingContextChurnLeakBenchmark>();
+        Register<GraphicsViewLeakBenchmark>();
+        Register<PropertyMappingPerformanceBenchmark>();
+        Register<LayoutPerformanceBenchmark>();
+        Register<NavigationPerformanceBenchmark>();
     }
 
     /// <summary>
