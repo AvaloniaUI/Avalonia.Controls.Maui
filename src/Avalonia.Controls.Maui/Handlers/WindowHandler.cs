@@ -3,9 +3,11 @@ using Avalonia.Controls;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.VisualTree;
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Platform;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace Avalonia.Controls.Maui.Handlers;
@@ -17,6 +19,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.Window>
 {
     static readonly AlertManager s_alertManager = new();
+    ModalAnimationTrackingNavigation? _modalTracker;
 
     /// <summary>
     /// Property mapper for <see cref="WindowHandler"/>.
@@ -95,6 +98,12 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             window.AlertManager.Subscribe();
             window.ModalPushed += OnModalPushed;
             window.ModalPopped += OnModalPopped;
+
+            // Install modal animation tracker to capture the animated flag
+            // that MAUI's ModalPushed/ModalPopped events don't carry.
+            _modalTracker = new ModalAnimationTrackingNavigation(window.Navigation);
+            InstallModalTracker(window.Page);
+            window.PropertyChanged += OnWindowPropertyChanged;
         }
     }
 
@@ -108,23 +117,63 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             window.AlertManager.Unsubscribe();
             window.ModalPushed -= OnModalPushed;
             window.ModalPopped -= OnModalPopped;
+            window.PropertyChanged -= OnWindowPropertyChanged;
         }
+
+        _modalTracker = null;
 
         base.DisconnectHandler(platformView);
     }
 
-    private void OnModalPushed(object? sender, Microsoft.Maui.Controls.ModalPushedEventArgs e)
+    private void OnModalPushed(object? sender, ModalPushedEventArgs e)
     {
-        var mode = Microsoft.Maui.Controls.Shell.GetPresentationMode(e.Modal);
-        bool animated = !mode.HasFlag(Microsoft.Maui.Controls.PresentationMode.NotAnimated);
+        bool animated = ModalAnimationTrackingNavigation.GetAnimated(e.Modal);
         PresentModalPage(e.Modal, animated);
+
+        // ModalNavigationManager.PushModalAsync overwrites modal.NavigationProxy.Inner
+        // with window.Navigation, bypassing our tracker. Re-install it so that
+        // PopModalAsync called from within the modal page is also tracked.
+        InstallModalTracker(e.Modal);
     }
 
-    private void OnModalPopped(object? sender, Microsoft.Maui.Controls.ModalPoppedEventArgs e)
+    private void OnModalPopped(object? sender, ModalPoppedEventArgs e)
     {
-        var mode = Microsoft.Maui.Controls.Shell.GetPresentationMode(e.Modal);
-        bool animated = !mode.HasFlag(Microsoft.Maui.Controls.PresentationMode.NotAnimated);
+        bool animated = ModalAnimationTrackingNavigation.GetAnimated(e.Modal);
         DismissModalPage(animated);
+    }
+
+    private void OnWindowPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(Microsoft.Maui.Controls.Window.Page) &&
+            sender is Microsoft.Maui.Controls.Window window &&
+            window.Page is Page page)
+        {
+            InstallModalTracker(page);
+        }
+    }
+
+    /// <summary>
+    /// Installs the modal animation tracker on the given page's NavigationProxy,
+    /// but only when the page is using the Window's navigation directly (non-Shell).
+    /// </summary>
+    private void InstallModalTracker(Page? page)
+    {
+        if (_modalTracker is null || page is null)
+            return;
+
+        var currentInner = page.NavigationProxy.Inner;
+
+        // Already installed
+        if (currentInner is ModalAnimationTrackingNavigation)
+            return;
+
+        // Only install if the current Inner is the Window's own navigation.
+        // Shell sets a different NavigationImplWrapper that we must not overwrite.
+        if (VirtualView is Microsoft.Maui.Controls.Window window &&
+            currentInner == window.Navigation)
+        {
+            page.NavigationProxy.Inner = _modalTracker;
+        }
     }
 
     /// <summary>
