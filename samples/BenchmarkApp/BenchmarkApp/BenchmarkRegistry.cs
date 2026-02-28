@@ -44,6 +44,13 @@ public static class BenchmarkRegistry
         Register<WebViewMiscLeakBenchmark>();
         Register<MenuAndToolbarLeakBenchmark>();
         Register<CompatibilityHandlerLeakBenchmark>();
+        Register<FlyoutPageLeakBenchmark>();
+        Register<ShellFlyoutItemChurnLeakBenchmark>();
+        Register<NavigationStackDepthLeakBenchmark>();
+        Register<ShellSearchHandlerLeakBenchmark>();
+        Register<DataTemplateRecyclingLeakBenchmark>();
+        Register<ModalPageLeakBenchmark>();
+        Register<CarouselViewSourceChurnLeakBenchmark>();
     }
 
     /// <summary>
