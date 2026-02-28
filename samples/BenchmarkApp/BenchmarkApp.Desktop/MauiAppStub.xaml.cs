@@ -92,6 +92,8 @@ public partial class MauiAppStub : Application
             }
         }
 
+        LogResultsSummary(logger, allResults);
+
         if (options.OutputPath is not null)
         {
             JUnitXmlWriter.Write(options.OutputPath, allResults);
@@ -123,6 +125,11 @@ public partial class MauiAppStub : Application
 
         var (allPassed, results) = await RunTestIterationsAsync(window, testPage, testName, logger, options.Iterations);
 
+        if (options.Iterations > 1)
+        {
+            LogResultsSummary(logger, results);
+        }
+
         if (options.OutputPath is not null)
         {
             JUnitXmlWriter.Write(options.OutputPath, results);
@@ -136,6 +143,25 @@ public partial class MauiAppStub : Application
             if (Avalonia.Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.Shutdown(exitCode);
+            }
+        }
+    }
+
+
+    private static void LogResultsSummary(ILogger logger, List<BenchmarkTestResult> results)
+    {
+        var passed = results.Count(r => r.Passed);
+        var failed = results.Count(r => !r.Passed);
+
+        logger.LogInformation("=== Benchmark Results ===");
+        logger.LogInformation("Total: {Total} | Passed: {Passed} | Failed: {Failed}", results.Count, passed, failed);
+
+        if (failed > 0)
+        {
+            logger.LogInformation("Failed tests:");
+            foreach (var result in results.Where(r => !r.Passed))
+            {
+                logger.LogError("  {TestName}: {Reason}", result.TestName, result.FailureReason ?? "Unknown");
             }
         }
     }
