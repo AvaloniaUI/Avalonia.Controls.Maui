@@ -77,6 +77,8 @@ public static class BenchmarkRegistry
         Register<ShellSectionSwitchLeakBenchmark>();
         Register<TransformCleanupLeakBenchmark>();
         Register<BorderShapeSubscriptionLeakBenchmark>();
+        Register<LayoutChildRemovalLeakBenchmark>();
+        Register<BorderStrokeShapeLeakBenchmark>();
     }
 
     /// <summary>

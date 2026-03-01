@@ -41,6 +41,16 @@ public partial class MainPage : ContentPage
 
         // Start attract mode animation when page appears
         this.Appearing += OnPageAppearing;
+        this.Disappearing += OnPageDisappearing;
+    }
+
+    private void OnPageDisappearing(object? sender, EventArgs e)
+    {
+        CurrentViewModel.TilesInitialized -= OnTilesInitialized;
+        CurrentViewModel.TileCreated -= OnTileCreated;
+        CurrentViewModel.MoveRequested -= OnMoveRequested;
+        this.Appearing -= OnPageAppearing;
+        this.Disappearing -= OnPageDisappearing;
     }
 
     private void OnPageAppearing(object? sender, EventArgs e)
@@ -58,22 +68,20 @@ public partial class MainPage : ContentPage
 
     private void InitializeBackgroundGrid()
     {
-        var emptyColor = Application.Current?.RequestedTheme == AppTheme.Dark
-            ? Color.FromArgb("#3c3a32")
-            : Color.FromArgb("#cdc1b4");
-
         for (int row = 0; row < 4; row++)
         {
             for (int col = 0; col < 4; col++)
             {
                 var emptyCell = new Border
                 {
-                    BackgroundColor = emptyColor,
                     HeightRequest = TileSize,
                     WidthRequest = TileSize,
                     StrokeShape = new RoundRectangle { CornerRadius = 5 },
                     Stroke = Colors.Transparent
                 };
+                emptyCell.SetAppThemeColor(Border.BackgroundColorProperty,
+                    Color.FromArgb("#cdc1b4"),
+                    Color.FromArgb("#3c3a32"));
                 Grid.SetRow(emptyCell, row);
                 Grid.SetColumn(emptyCell, col);
                 BackgroundGrid.Children.Add(emptyCell);
