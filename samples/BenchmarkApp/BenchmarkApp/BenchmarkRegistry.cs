@@ -73,6 +73,10 @@ public static class BenchmarkRegistry
         Register<CompoundPageLifecycleStressLeakBenchmark>();
         Register<ShellNavigationWithModalsAndFlyoutBenchmark>();
         Register<PlatformViewLeakBenchmark>();
+        Register<ShellItemSwitchLeakBenchmark>();
+        Register<ShellSectionSwitchLeakBenchmark>();
+        Register<TransformCleanupLeakBenchmark>();
+        Register<BorderShapeSubscriptionLeakBenchmark>();
     }
 
     /// <summary>

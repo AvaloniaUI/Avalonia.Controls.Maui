@@ -121,6 +121,11 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
 
         DetachPlatformViewEvents(platformView);
         Extensions.ViewExtensions.DisposeClipSubscription(platformView);
+
+        // Clear any TransformGroup created by UpdateTransformation() to release
+        // ScaleTransform, RotateTransform, and TranslateTransform objects.
+        platformView.RenderTransform = null;
+
         _gestureManager?.Dispose();
         _gestureManager = null;
     }

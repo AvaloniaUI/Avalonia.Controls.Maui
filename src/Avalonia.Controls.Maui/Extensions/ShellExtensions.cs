@@ -614,6 +614,10 @@ public static class ShellExtensions
             handler._trackedSection.PropertyChanged -= handler.OnCurrentSectionPropertyChanged;
         }
 
+        // Save old item handler before it gets overwritten — we will release
+        // its section handler's resources after clearing the content control.
+        var oldItemHandler = handler._currentItemHandler;
+
         int currentIndex = shell.Items.IndexOf(shell.CurrentItem);
         handler._previousItemIndex = currentIndex;
 
@@ -629,6 +633,19 @@ public static class ShellExtensions
             var savedTransition = handler._mainContentControl.PageTransition;
             handler._mainContentControl.PageTransition = null;
             handler._mainContentControl.Content = null;
+
+            // Release the old item's section handler resources (navigation stack,
+            // page references, event subscriptions) now that its platform view is
+            // detached from the visual tree. We only disconnect the section handler,
+            // not the ShellItemHandler itself, so the item can be re-activated later.
+            if (oldItemHandler != null
+                && oldItemHandler != handler._currentItemHandler
+                && oldItemHandler._currentSectionHandler != null)
+            {
+                oldItemHandler._currentSectionHandler.VirtualView?.Handler?.DisconnectHandler();
+                oldItemHandler._currentSectionHandler = null;
+            }
+
             handler._mainContentControl.PageTransition = new CrossFade(ShellHandler.DefaultTransitionDuration);
 
             handler._mainContentControl.Content = control;

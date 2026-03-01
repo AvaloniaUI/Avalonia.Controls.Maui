@@ -218,6 +218,29 @@ namespace Avalonia.Controls.Maui
         }
 
         /// <inheritdoc/>
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnDetachedFromVisualTree(e);
+            if (Shape is INotifyPropertyChanged notify)
+            {
+                notify.PropertyChanged -= OnShapePropertyChanged;
+            }
+        }
+
+        /// <inheritdoc/>
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            if (Shape is INotifyPropertyChanged notify)
+            {
+                // Remove-then-add guards against double subscription since
+                // OnPropertyChanged also subscribes when Shape is first set.
+                notify.PropertyChanged -= OnShapePropertyChanged;
+                notify.PropertyChanged += OnShapePropertyChanged;
+            }
+        }
+
+        /// <inheritdoc/>
         protected override Size ArrangeOverride(Size finalSize)
         {
             var arrangedSize = base.ArrangeOverride(finalSize);
