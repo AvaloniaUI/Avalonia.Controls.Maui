@@ -5,8 +5,7 @@ using System.Diagnostics;
 namespace BenchmarkApp.Diagnostics;
 
 /// <summary>
-/// Manages dotnet-gcdump subprocess lifecycle for benchmark diagnostics.
-/// All methods are synchronous and intended to be called from <c>Main</c>, outside the Avalonia event loop.
+/// Manages dotnet-gcdump and dotnet-trace subprocess lifecycles for benchmark diagnostics.
 /// </summary>
 public static class DiagnosticsCollector
 {
@@ -21,6 +20,22 @@ public static class DiagnosticsCollector
         if (!IsToolAvailable("dotnet-gcdump"))
         {
             missing.Add("dotnet-gcdump");
+        }
+
+        return missing;
+    }
+
+    /// <summary>
+    /// Validates that dotnet-trace is installed.
+    /// </summary>
+    /// <returns>A list of missing tool names, empty if all required tools are available.</returns>
+    public static List<string> ValidateTraceTools()
+    {
+        var missing = new List<string>();
+
+        if (!IsToolAvailable("dotnet-trace"))
+        {
+            missing.Add("dotnet-trace");
         }
 
         return missing;
@@ -57,6 +72,60 @@ public static class DiagnosticsCollector
         // Ensure pipe readers finish
         stdoutTask.Wait(TimeSpan.FromSeconds(5));
         stderrTask.Wait(TimeSpan.FromSeconds(5));
+    }
+
+    /// <summary>
+    /// Starts an EventPipe trace collection as a background process.
+    /// </summary>
+    /// <param name="outputPath">Path for the output .nettrace file.</param>
+    /// <returns>The trace process handle. Pass to <see cref="StopTrace"/> to end collection.</returns>
+    public static Process StartTrace(string outputPath)
+    {
+        var pid = Environment.ProcessId;
+
+        var psi = new ProcessStartInfo
+        {
+            FileName = "dotnet-trace",
+            ArgumentList =
+            {
+                "collect",
+                "-p", pid.ToString(),
+                "--providers", "Microsoft-Windows-DotNETRuntime",
+                "-o", outputPath,
+            },
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            RedirectStandardInput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true,
+        };
+
+        return Process.Start(psi)
+            ?? throw new InvalidOperationException("Failed to start dotnet-trace process.");
+    }
+
+    /// <summary>
+    /// Stops a running trace collection gracefully by closing its stdin,
+    /// which signals dotnet-trace to finish writing and exit.
+    /// </summary>
+    /// <param name="traceProcess">The process returned by <see cref="StartTrace"/>.</param>
+    public static void StopTrace(Process traceProcess)
+    {
+        try
+        {
+            // Closing stdin signals dotnet-trace to stop
+            traceProcess.StandardInput.Close();
+            traceProcess.WaitForExit(TimeSpan.FromMinutes(2));
+        }
+        finally
+        {
+            if (!traceProcess.HasExited)
+            {
+                traceProcess.Kill();
+            }
+
+            traceProcess.Dispose();
+        }
     }
 
     private static bool IsToolAvailable(string toolName)

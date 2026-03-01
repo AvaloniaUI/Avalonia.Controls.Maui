@@ -79,6 +79,18 @@ public static class BenchmarkRegistry
         Register<BorderShapeSubscriptionLeakBenchmark>();
         Register<LayoutChildRemovalLeakBenchmark>();
         Register<BorderStrokeShapeLeakBenchmark>();
+
+        // Phase 3: Enhanced leak detection tests
+        Register<FinalizerQueueGrowthBenchmark>();
+
+        // Phase 4: Soak/stress tests
+        Register<HandlerCreateDestroySoakBenchmark>();
+        Register<NavigationSoakBenchmark>();
+        Register<PropertyUpdateSoakBenchmark>();
+
+        // Phase 7: Render performance & event auditing
+        Register<LayoutThrashingBenchmark>();
+        Register<EventSubscriptionBalanceBenchmark>();
     }
 
     /// <summary>

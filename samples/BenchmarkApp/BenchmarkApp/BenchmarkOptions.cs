@@ -48,9 +48,19 @@ public sealed class BenchmarkOptions
     public bool GcDump { get; private set; }
 
     /// <summary>
-    /// Gets the output directory for diagnostic files (gcdump).
+    /// Gets the output directory for diagnostic files (gcdump, traces).
     /// </summary>
     public string DiagnosticsOutputDir { get; private set; } = "./diagnostics";
+
+    /// <summary>
+    /// Gets a value indicating whether to enable allocation tracking during test execution.
+    /// </summary>
+    public bool TrackAllocations { get; private set; }
+
+    /// <summary>
+    /// Gets a value indicating whether to collect an EventPipe trace during test execution.
+    /// </summary>
+    public bool Trace { get; private set; }
 
     /// <summary>
     /// Parses command-line arguments and sets <see cref="Current"/>.
@@ -90,6 +100,12 @@ public sealed class BenchmarkOptions
                     break;
                 case "--diagnostics-output" when i + 1 < args.Length:
                     options.DiagnosticsOutputDir = args[++i];
+                    break;
+                case "--track-allocations":
+                    options.TrackAllocations = true;
+                    break;
+                case "--trace":
+                    options.Trace = true;
                     break;
             }
         }

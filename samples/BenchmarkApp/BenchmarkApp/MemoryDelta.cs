@@ -3,7 +3,8 @@
 namespace BenchmarkApp;
 
 /// <summary>
-/// Represents the difference between two <see cref="MemorySnapshot"/> captures.
+/// Represents the difference between two <see cref="MemorySnapshot"/> captures,
+/// including heap generation details and thread pool state.
 /// </summary>
 public readonly struct MemoryDelta
 {
@@ -43,9 +44,93 @@ public readonly struct MemoryDelta
     public long EstimatedNativeGrowth => WorkingSetDelta - BytesDelta;
 
     /// <summary>
+    /// Gets the change in generation 0 heap size in bytes.
+    /// </summary>
+    public long Gen0HeapSizeDelta { get; }
+
+    /// <summary>
+    /// Gets the change in generation 1 heap size in bytes.
+    /// </summary>
+    public long Gen1HeapSizeDelta { get; }
+
+    /// <summary>
+    /// Gets the change in generation 2 heap size in bytes.
+    /// </summary>
+    public long Gen2HeapSizeDelta { get; }
+
+    /// <summary>
+    /// Gets the change in large object heap size in bytes.
+    /// </summary>
+    public long LargeObjectHeapSizeDelta { get; }
+
+    /// <summary>
+    /// Gets the change in pinned object heap size in bytes.
+    /// </summary>
+    public long PinnedObjectHeapSizeDelta { get; }
+
+    /// <summary>
+    /// Gets the change in the number of pinned objects.
+    /// </summary>
+    public long PinnedObjectsCountDelta { get; }
+
+    /// <summary>
+    /// Gets the change in fragmented bytes across all heaps.
+    /// </summary>
+    public long FragmentedBytesDelta { get; }
+
+    /// <summary>
+    /// Gets the change in promoted bytes.
+    /// </summary>
+    public long PromotedBytesDelta { get; }
+
+    /// <summary>
+    /// Gets the change in the number of objects waiting for finalization.
+    /// </summary>
+    public long FinalizationPendingCountDelta { get; }
+
+    /// <summary>
+    /// Gets the GC pause time percentage captured before the measured operation.
+    /// </summary>
+    public double GcPauseTimePercentageBefore { get; }
+
+    /// <summary>
+    /// Gets the GC pause time percentage captured after the measured operation.
+    /// </summary>
+    public double GcPauseTimePercentageAfter { get; }
+
+    /// <summary>
+    /// Gets the change in thread pool thread count.
+    /// </summary>
+    public int ThreadPoolThreadCountDelta { get; }
+
+    /// <summary>
+    /// Gets the change in pending thread pool work items.
+    /// </summary>
+    public long ThreadPoolPendingWorkItemsDelta { get; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="MemoryDelta"/> struct.
     /// </summary>
-    public MemoryDelta(long bytesDelta, int gen0Delta, int gen1Delta, int gen2Delta, long workingSetDelta, long privateMemoryDelta)
+    public MemoryDelta(
+        long bytesDelta,
+        int gen0Delta,
+        int gen1Delta,
+        int gen2Delta,
+        long workingSetDelta,
+        long privateMemoryDelta,
+        long gen0HeapSizeDelta,
+        long gen1HeapSizeDelta,
+        long gen2HeapSizeDelta,
+        long largeObjectHeapSizeDelta,
+        long pinnedObjectHeapSizeDelta,
+        long pinnedObjectsCountDelta,
+        long fragmentedBytesDelta,
+        long promotedBytesDelta,
+        long finalizationPendingCountDelta,
+        double gcPauseTimePercentageBefore,
+        double gcPauseTimePercentageAfter,
+        int threadPoolThreadCountDelta,
+        long threadPoolPendingWorkItemsDelta)
     {
         BytesDelta = bytesDelta;
         Gen0Delta = gen0Delta;
@@ -53,6 +138,19 @@ public readonly struct MemoryDelta
         Gen2Delta = gen2Delta;
         WorkingSetDelta = workingSetDelta;
         PrivateMemoryDelta = privateMemoryDelta;
+        Gen0HeapSizeDelta = gen0HeapSizeDelta;
+        Gen1HeapSizeDelta = gen1HeapSizeDelta;
+        Gen2HeapSizeDelta = gen2HeapSizeDelta;
+        LargeObjectHeapSizeDelta = largeObjectHeapSizeDelta;
+        PinnedObjectHeapSizeDelta = pinnedObjectHeapSizeDelta;
+        PinnedObjectsCountDelta = pinnedObjectsCountDelta;
+        FragmentedBytesDelta = fragmentedBytesDelta;
+        PromotedBytesDelta = promotedBytesDelta;
+        FinalizationPendingCountDelta = finalizationPendingCountDelta;
+        GcPauseTimePercentageBefore = gcPauseTimePercentageBefore;
+        GcPauseTimePercentageAfter = gcPauseTimePercentageAfter;
+        ThreadPoolThreadCountDelta = threadPoolThreadCountDelta;
+        ThreadPoolPendingWorkItemsDelta = threadPoolPendingWorkItemsDelta;
     }
 
     /// <summary>
@@ -69,6 +167,19 @@ public readonly struct MemoryDelta
             ["NativeWorkingSetDelta"] = WorkingSetDelta,
             ["NativePrivateMemoryDelta"] = PrivateMemoryDelta,
             ["EstimatedNativeGrowth"] = EstimatedNativeGrowth,
+            ["Gen0HeapSizeDelta"] = Gen0HeapSizeDelta,
+            ["Gen1HeapSizeDelta"] = Gen1HeapSizeDelta,
+            ["Gen2HeapSizeDelta"] = Gen2HeapSizeDelta,
+            ["LargeObjectHeapSizeDelta"] = LargeObjectHeapSizeDelta,
+            ["PinnedObjectHeapSizeDelta"] = PinnedObjectHeapSizeDelta,
+            ["PinnedObjectsCountDelta"] = PinnedObjectsCountDelta,
+            ["FragmentedBytesDelta"] = FragmentedBytesDelta,
+            ["PromotedBytesDelta"] = PromotedBytesDelta,
+            ["FinalizationPendingCountDelta"] = FinalizationPendingCountDelta,
+            ["GcPauseTimePercentageBefore"] = GcPauseTimePercentageBefore,
+            ["GcPauseTimePercentageAfter"] = GcPauseTimePercentageAfter,
+            ["ThreadPoolThreadCountDelta"] = ThreadPoolThreadCountDelta,
+            ["ThreadPoolPendingWorkItemsDelta"] = ThreadPoolPendingWorkItemsDelta,
         };
     }
 }

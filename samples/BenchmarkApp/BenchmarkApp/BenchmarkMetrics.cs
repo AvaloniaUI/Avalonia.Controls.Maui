@@ -46,6 +46,24 @@ public static class BenchmarkMetrics
         Meter.CreateHistogram<long>("benchmark.memory_delta", "bytes", "Memory delta per iteration");
 
     /// <summary>
+    /// Records the allocation rate in bytes per second when allocation tracking is enabled.
+    /// </summary>
+    public static readonly Histogram<double> AllocationRate =
+        Meter.CreateHistogram<double>("benchmark.allocation_rate", "bytes/s", "Allocation rate per iteration");
+
+    /// <summary>
+    /// Records the total bytes allocated during a benchmark iteration when allocation tracking is enabled.
+    /// </summary>
+    public static readonly Histogram<long> TotalAllocated =
+        Meter.CreateHistogram<long>("benchmark.total_allocated", "bytes", "Total allocated bytes per iteration");
+
+    /// <summary>
+    /// Records the number of pending thread pool work items per benchmark iteration.
+    /// </summary>
+    public static readonly Histogram<int> ThreadPoolPending =
+        Meter.CreateHistogram<int>("benchmark.threadpool_pending", "{items}", "Pending thread pool work items per iteration");
+
+    /// <summary>
     /// Records all instruments for a single benchmark iteration.
     /// </summary>
     /// <param name="testName">The name of the benchmark test.</param>

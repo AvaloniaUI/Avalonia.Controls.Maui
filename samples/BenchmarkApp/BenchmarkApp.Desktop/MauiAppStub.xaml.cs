@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using Avalonia.Controls.ApplicationLifetimes;
+using BenchmarkApp.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
@@ -171,12 +172,30 @@ public partial class MauiAppStub : Application
     {
         bool allPassed = true;
         var results = new List<BenchmarkTestResult>();
+        var options = BenchmarkOptions.Current;
+
+        // Start EventPipe trace if requested
+        Process? traceProcess = null;
+        if (options.Trace)
+        {
+            var tracePath = Path.Combine(options.DiagnosticsOutputDir, $"{testName}.nettrace");
+            logger.LogInformation("Starting EventPipe trace: {TracePath}", tracePath);
+            traceProcess = DiagnosticsCollector.StartTrace(tracePath);
+        }
 
         for (int i = 1; i <= iterations; i++)
         {
             if (iterations > 1)
             {
                 logger.LogInformation("--- Iteration {Iteration}/{Total} ---", i, iterations);
+            }
+
+            // Start allocation tracking if requested
+            AllocationTracker? allocationTracker = null;
+            if (options.TrackAllocations)
+            {
+                allocationTracker = new AllocationTracker();
+                allocationTracker.Start();
             }
 
             var before = MemorySnapshot.Capture(forceGC: true);
@@ -189,8 +208,28 @@ public partial class MauiAppStub : Application
             var memoryDelta = after.Compare(before);
             var elapsedMs = stopwatch.Elapsed.TotalMilliseconds;
 
+            // Stop allocation tracking and collect summary
+            AllocationSummary? allocationSummary = null;
+            if (allocationTracker is not null)
+            {
+                allocationSummary = allocationTracker.Stop();
+                allocationTracker.Dispose();
+            }
+
             // Record metrics for dotnet-counters
             BenchmarkMetrics.RecordIteration(testName, elapsedMs, memoryDelta.BytesDelta, result.Passed);
+
+            if (allocationSummary is { } allocSummary)
+            {
+                var tag = new KeyValuePair<string, object?>("benchmark.test", testName);
+                BenchmarkMetrics.AllocationRate.Record(allocSummary.AllocationRateBytesPerSecond, tag);
+                BenchmarkMetrics.TotalAllocated.Record(allocSummary.TotalAllocatedBytes, tag);
+            }
+
+            // Record thread pool pending items
+            BenchmarkMetrics.ThreadPoolPending.Record(
+                (int)memoryDelta.ThreadPoolPendingWorkItemsDelta,
+                new KeyValuePair<string, object?>("benchmark.test", testName));
 
             if (result.Passed)
             {
@@ -209,6 +248,15 @@ public partial class MauiAppStub : Application
                 allMetrics.TryAdd(key, value);
             }
 
+            // Merge allocation metrics if tracking was enabled
+            if (allocationSummary is { } allocMetrics)
+            {
+                foreach (var (key, value) in allocMetrics.ToMetrics())
+                {
+                    allMetrics.TryAdd(key, value);
+                }
+            }
+
             if (allMetrics.Count > 0)
             {
                 logger.LogInformation("Metrics:");
@@ -225,6 +273,13 @@ public partial class MauiAppStub : Application
                 result.FailureReason,
                 stopwatch.Elapsed.TotalSeconds,
                 allMetrics));
+        }
+
+        // Stop trace collection
+        if (traceProcess is not null)
+        {
+            logger.LogInformation("Stopping EventPipe trace...");
+            DiagnosticsCollector.StopTrace(traceProcess);
         }
 
         return (allPassed, results);

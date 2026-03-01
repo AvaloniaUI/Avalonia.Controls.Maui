@@ -51,6 +51,24 @@ class Program
             Directory.CreateDirectory(options.DiagnosticsOutputDir);
         }
 
+        if (options.Trace)
+        {
+            var missing = DiagnosticsCollector.ValidateTraceTools();
+            if (missing.Count > 0)
+            {
+                Console.Error.WriteLine("Required diagnostic tools are not installed:");
+                foreach (var tool in missing)
+                {
+                    Console.Error.WriteLine($"  {tool}");
+                    Console.Error.WriteLine($"    Install with: dotnet tool install -g {tool}");
+                }
+
+                return 1;
+            }
+
+            Directory.CreateDirectory(options.DiagnosticsOutputDir);
+        }
+
         // Build a file name prefix from the test name and current timestamp.
         var testLabel = options.RunAll ? "all" : options.TestName ?? "unknown";
         var safeTestLabel = string.Join("_", testLabel.Split(Path.GetInvalidFileNameChars()));
