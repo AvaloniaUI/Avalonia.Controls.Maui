@@ -36,7 +36,7 @@ public partial class DragAndDropPage : ContentPage
 
     private void OnMultiDragStarting(object? sender, DragStartingEventArgs e)
     {
-        if (sender is Element element && element.Parent is Border border)
+        if (sender is Border border)
         {
             var label = border.Content as Label;
             e.Data.Text = label?.Text ?? "Unknown";
