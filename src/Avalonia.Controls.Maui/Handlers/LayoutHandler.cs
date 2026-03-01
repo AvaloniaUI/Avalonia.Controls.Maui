@@ -320,7 +320,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
         // Avalonia compositor briefly retains the LayoutPanel (e.g. during an
         // in-flight TransitioningContentControl animation), the delegate targets
         // keep the entire MAUI control subtree alive and prevent garbage collection.
-        if (platformView is LayoutPanel layoutPanel)
+        if (platformView is Avalonia.Controls.Maui.Platform.LayoutPanel layoutPanel)
         {
             layoutPanel.CrossPlatformMeasure = null;
             layoutPanel.CrossPlatformArrange = null;
