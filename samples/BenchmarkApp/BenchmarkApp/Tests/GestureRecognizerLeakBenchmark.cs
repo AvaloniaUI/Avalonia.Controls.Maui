@@ -14,7 +14,6 @@ namespace BenchmarkApp.Tests;
 public class GestureRecognizerLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
-    /// <inheritdoc/>
     public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
     {
         var memBefore = MemorySnapshot.Capture(forceGC: true);
