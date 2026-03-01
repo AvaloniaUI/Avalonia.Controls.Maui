@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using AvaloniaControl = Avalonia.Controls.Control;
 using AvaloniaDragEventArgs = Avalonia.Input.DragEventArgs;
+using AvaloniaPinchGestureRecognizer = Avalonia.Input.PinchGestureRecognizer;
 using AvaloniaTopLevel = Avalonia.Controls.TopLevel;
 
 namespace Avalonia.Controls.Maui.Platform;
@@ -53,6 +54,7 @@ internal class GestureManager : IDisposable
         {
             UnsubscribeFromGestureEvents(control);
             TearDownDropHandlers(control);
+            TearDownPinchHandlers(control);
         }
 
         if (_view is View view && view.GetCompositeGestureRecognizers() is ObservableCollection<IGestureRecognizer> recognizers)
@@ -103,6 +105,7 @@ internal class GestureManager : IDisposable
             if (_view is View view)
             {
                 SetupDropHandlersIfNeeded(control, view);
+                SetupPinchHandlersIfNeeded(control, view);
             }
         }
 
@@ -133,6 +136,20 @@ internal class GestureManager : IDisposable
         else if (!hasDropRecognizers && _isDropSubscribed)
         {
             TearDownDropHandlers(control);
+        }
+
+        // Check if pinch recognizers were added or removed
+        bool hasPinchRecognizers = view.GetCompositeGestureRecognizers()
+            ?.OfType<Microsoft.Maui.Controls.PinchGestureRecognizer>()
+            .Any() == true;
+
+        if (hasPinchRecognizers && !_isPinchSubscribed)
+        {
+            SetupPinchHandlers(control);
+        }
+        else if (!hasPinchRecognizers && _isPinchSubscribed)
+        {
+            TearDownPinchHandlers(control);
         }
     }
 
@@ -171,6 +188,11 @@ internal class GestureManager : IDisposable
 
     // Drop gesture state
     private bool _isDropSubscribed;
+
+    // Pinch gesture state
+    private bool _isPinchSubscribed;
+    private bool _isPinchActive;
+    private double _previousPinchScale;
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
@@ -633,6 +655,108 @@ internal class GestureManager : IDisposable
         control.RemoveHandler(DragDrop.DragLeaveEvent, OnDragLeave);
         control.RemoveHandler(DragDrop.DropEvent, OnDrop);
         _isDropSubscribed = false;
+    }
+
+    private void SetupPinchHandlersIfNeeded(AvaloniaControl control, View view)
+    {
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null)
+            return;
+
+        bool hasPinchRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PinchGestureRecognizer>().Any();
+
+        if (hasPinchRecognizers)
+        {
+            SetupPinchHandlers(control);
+        }
+    }
+
+    private void SetupPinchHandlers(AvaloniaControl control)
+    {
+        if (_isPinchSubscribed)
+            return;
+
+        control.GestureRecognizers.Add(new AvaloniaPinchGestureRecognizer());
+        control.AddHandler(Gestures.PinchEvent, OnPinch, RoutingStrategies.Bubble);
+        control.AddHandler(Gestures.PinchEndedEvent, OnPinchEnded, RoutingStrategies.Bubble);
+        _isPinchSubscribed = true;
+    }
+
+    private void TearDownPinchHandlers(AvaloniaControl control)
+    {
+        if (!_isPinchSubscribed)
+            return;
+
+        control.RemoveHandler(Gestures.PinchEvent, OnPinch);
+        control.RemoveHandler(Gestures.PinchEndedEvent, OnPinchEnded);
+
+        _isPinchSubscribed = false;
+        _isPinchActive = false;
+        _previousPinchScale = 1.0;
+    }
+
+    private void OnPinch(object? sender, PinchEventArgs e)
+    {
+        if (_view is not View view)
+            return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null || recognizers.Count == 0)
+            return;
+
+        var pinchRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PinchGestureRecognizer>().ToList();
+        if (pinchRecognizers.Count == 0)
+            return;
+
+        var origin = e.ScaleOrigin;
+        double viewWidth = view.Width;
+        double viewHeight = view.Height;
+        var normalizedOrigin = new Microsoft.Maui.Graphics.Point(
+            viewWidth > 0 ? origin.X / viewWidth : 0,
+            viewHeight > 0 ? origin.Y / viewHeight : 0);
+
+        if (!_isPinchActive)
+        {
+            foreach (var recognizer in pinchRecognizers)
+            {
+                if (recognizer is IPinchGestureController controller)
+                    controller.SendPinchStarted(view, normalizedOrigin);
+            }
+            _isPinchActive = true;
+            _previousPinchScale = 1.0;
+        }
+
+        double delta = _previousPinchScale > 0 ? e.Scale / _previousPinchScale : e.Scale;
+        _previousPinchScale = e.Scale;
+
+        foreach (var recognizer in pinchRecognizers)
+        {
+            if (recognizer is IPinchGestureController controller)
+                controller.SendPinch(view, delta, normalizedOrigin);
+        }
+    }
+
+    private void OnPinchEnded(object? sender, PinchEndedEventArgs e)
+    {
+        if (!_isPinchActive)
+            return;
+
+        if (_view is not View view)
+            return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null || recognizers.Count == 0)
+            return;
+
+        var pinchRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PinchGestureRecognizer>().ToList();
+        foreach (var recognizer in pinchRecognizers)
+        {
+            if (recognizer is IPinchGestureController controller)
+                controller.SendPinchEnded(view);
+        }
+
+        _isPinchActive = false;
+        _previousPinchScale = 1.0;
     }
 
     private void OnDragEnter(object? sender, AvaloniaDragEventArgs e)
