@@ -630,21 +630,8 @@ public static class ShellExtensions
             // transition's hidden presenter releases its content reference.
             // Without this, cancelled CrossFade transitions skip HideOldPresenter(),
             // leaving old control trees alive and leaking native render resources.
-            var savedTransition = handler._mainContentControl.PageTransition;
             handler._mainContentControl.PageTransition = null;
             handler._mainContentControl.Content = null;
-
-            // Release the old item's section handler resources (navigation stack,
-            // page references, event subscriptions) now that its platform view is
-            // detached from the visual tree. We only disconnect the section handler,
-            // not the ShellItemHandler itself, so the item can be re-activated later.
-            if (oldItemHandler != null
-                && oldItemHandler != handler._currentItemHandler
-                && oldItemHandler._currentSectionHandler != null)
-            {
-                oldItemHandler._currentSectionHandler.VirtualView?.Handler?.DisconnectHandler();
-                oldItemHandler._currentSectionHandler = null;
-            }
 
             handler._mainContentControl.PageTransition = new CrossFade(ShellHandler.DefaultTransitionDuration);
 

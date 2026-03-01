@@ -74,6 +74,7 @@ public static class BenchmarkRegistry
         Register<ShellNavigationWithModalsAndFlyoutBenchmark>();
         Register<PlatformViewLeakBenchmark>();
         Register<ShellItemSwitchLeakBenchmark>();
+        Register<ShellContentNavigationBenchmark>();
         Register<ShellSectionSwitchLeakBenchmark>();
         Register<TransformCleanupLeakBenchmark>();
         Register<BorderShapeSubscriptionLeakBenchmark>();
