@@ -76,6 +76,20 @@ public partial class PageHandler : ViewHandler<Microsoft.Maui.Controls.Page, Ava
         }
     }
 
+    /// <inheritdoc/>
+    protected override void DisconnectHandler(Platform.ContentView platformView)
+    {
+        base.DisconnectHandler(platformView);
+
+        // Null the cross-platform layout delegate so the Avalonia ContentView
+        // does not hold a strong path back to the MAUI page.
+        // Note: We intentionally do NOT call platformView.Children.Clear() here
+        // because removing children from the panel fires DetachedFromVisualTree
+        // events on child controls, which cascades into premature MAUI Unloaded
+        // lifecycle events on controls whose handlers are still connected.
+        platformView.CrossPlatformLayout = null;
+    }
+
     /// <summary>
     /// Maps the <see cref="Microsoft.Maui.Controls.ContentPage.Content"/> property to the platform view.
     /// </summary>

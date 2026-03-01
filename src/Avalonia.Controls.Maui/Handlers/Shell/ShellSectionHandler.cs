@@ -89,6 +89,10 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
             _sectionContainer.Content = null;
         }
 
+        // Release page references held by the navigation stack
+        _navigationStack.Clear();
+        _currentPage = null;
+
         platformView.AttachedToVisualTree -= OnAttachedToVisualTree;
         base.DisconnectHandler(platformView);
     }

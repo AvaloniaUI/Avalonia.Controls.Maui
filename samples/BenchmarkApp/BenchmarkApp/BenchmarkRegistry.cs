@@ -72,6 +72,7 @@ public static class BenchmarkRegistry
         Register<RefreshViewWithNavigationAndBindingChurnBenchmark>();
         Register<CompoundPageLifecycleStressLeakBenchmark>();
         Register<ShellNavigationWithModalsAndFlyoutBenchmark>();
+        Register<PlatformViewLeakBenchmark>();
     }
 
     /// <summary>

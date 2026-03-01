@@ -428,7 +428,41 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             _trackedSection = null;
         }
 
+        // Disconnect the current item handler (cascades to ShellSectionHandler)
+        _currentItemHandler?.VirtualView?.Handler?.DisconnectHandler();
         _currentItemHandler = null;
+
+        // Unsubscribe flyout item PropertyChanged events and release button references
+        foreach (var kvp in _flyoutItemButtons)
+        {
+            kvp.Key.PropertyChanged -= OnFlyoutItemPropertyChanged;
+        }
+        _flyoutItemButtons.Clear();
+
+        // Clean up search handler subscription
+        if (_currentSearchHandler != null)
+        {
+            _currentSearchHandler.PropertyChanged -= OnSearchHandlerPropertyChanged;
+            _currentSearchHandler = null;
+        }
+        _searchControl = null;
+
+        // Unsubscribe button Click events
+        if (_backButton != null)
+            _backButton.Click -= OnBackButtonClick;
+        if (_hamburgerButton != null)
+            _hamburgerButton.Click -= OnHamburgerButtonClick;
+
+        // Clean up modal container
+        if (_modalContainer != null)
+        {
+            _modalContainer.PageTransition = null;
+            _modalContainer.Content = null;
+        }
+        _currentModalPage = null;
+
+        // Clear flyout panel children to release flyout item buttons from visual tree
+        _flyoutPanel?.Children.Clear();
 
         // Clear the main content control without animation to release any
         // in-flight transition's hidden presenter content. Without this,
