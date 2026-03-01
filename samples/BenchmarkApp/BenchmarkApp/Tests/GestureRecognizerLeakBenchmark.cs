@@ -14,6 +14,7 @@ namespace BenchmarkApp.Tests;
 public class GestureRecognizerLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
+    /// <inheritdoc/>
     public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
     {
         var memBefore = MemorySnapshot.Capture(forceGC: true);
@@ -50,11 +51,13 @@ public class GestureRecognizerLeakBenchmark : BenchmarkTestPage
         int panLeaked = leaked.Count(n => n.Contains("Pan"));
         int dragLeaked = leaked.Count(n => n.Contains("Drag"));
         int dropLeaked = leaked.Count(n => n.Contains("Drop"));
+        int pinchLeaked = leaked.Count(n => n.Contains("Pinch"));
+        int pointerLeaked = leaked.Count(n => n.Contains("Pointer"));
 
         var metrics = new Dictionary<string, object>
         {
-            ["ControlsTested"] = 5,
-            ["GestureRecognizersTested"] = 5,
+            ["ControlsTested"] = 7,
+            ["GestureRecognizersTested"] = 7,
             ["TotalObjectsTracked"] = trackedObjects.Count,
             ["ObjectsLeaked"] = leaked.Count,
             ["Tap.Leaked"] = tapLeaked > 0,
@@ -62,6 +65,8 @@ public class GestureRecognizerLeakBenchmark : BenchmarkTestPage
             ["Pan.Leaked"] = panLeaked > 0,
             ["Drag.Leaked"] = dragLeaked > 0,
             ["Drop.Leaked"] = dropLeaked > 0,
+            ["Pinch.Leaked"] = pinchLeaked > 0,
+            ["Pointer.Leaked"] = pointerLeaked > 0,
         };
 
         foreach (var (key, value) in memoryDelta.ToMetrics())
@@ -104,6 +109,8 @@ public class GestureRecognizerLeakBenchmark : BenchmarkTestPage
         CreatePanGestureControl(trackedObjects, layout);
         CreateDragGestureControl(trackedObjects, layout);
         CreateDropGestureControl(trackedObjects, layout);
+        CreatePinchGestureControl(trackedObjects, layout);
+        CreatePointerGestureControl(trackedObjects, layout);
 
         // Allow handlers to connect
         await Task.Delay(50, cancellationToken);
@@ -193,6 +200,40 @@ public class GestureRecognizerLeakBenchmark : BenchmarkTestPage
 
         trackedObjects["DropLabel"] = new WeakReference<object>(label);
         trackedObjects["DropGestureRecognizer"] = new WeakReference<object>(dropGesture);
+
+        layout.Children.Add(label);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void CreatePinchGestureControl(
+        Dictionary<string, WeakReference<object>> trackedObjects,
+        VerticalStackLayout layout)
+    {
+        var label = new Label { Text = "Pinch me", HeightRequest = 100 };
+        var pinchGesture = new PinchGestureRecognizer();
+        pinchGesture.PinchUpdated += (_, _) => { };
+        label.GestureRecognizers.Add(pinchGesture);
+
+        trackedObjects["PinchLabel"] = new WeakReference<object>(label);
+        trackedObjects["PinchGestureRecognizer"] = new WeakReference<object>(pinchGesture);
+
+        layout.Children.Add(label);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void CreatePointerGestureControl(
+        Dictionary<string, WeakReference<object>> trackedObjects,
+        VerticalStackLayout layout)
+    {
+        var label = new Label { Text = "Pointer me" };
+        var pointerGesture = new PointerGestureRecognizer();
+        pointerGesture.PointerEntered += (_, _) => { };
+        pointerGesture.PointerExited += (_, _) => { };
+        pointerGesture.PointerMoved += (_, _) => { };
+        label.GestureRecognizers.Add(pointerGesture);
+
+        trackedObjects["PointerLabel"] = new WeakReference<object>(label);
+        trackedObjects["PointerGestureRecognizer"] = new WeakReference<object>(pointerGesture);
 
         layout.Children.Add(label);
     }

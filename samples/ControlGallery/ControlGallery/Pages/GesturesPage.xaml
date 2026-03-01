@@ -184,6 +184,47 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Pinch Gesture -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Pinch Gesture" FontAttributes="Bold"/>
+                    <Label Text="PinchGestureRecognizer - pinch to scale the box (use touch)" FontSize="12" FontAttributes="Italic"/>
+
+                    <Border HeightRequest="200"
+                            StrokeThickness="1"
+                            Stroke="Gray"
+                            BackgroundColor="#F0F0F0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="10"/></Border.StrokeShape>
+                        <Grid HorizontalOptions="Fill" VerticalOptions="Fill">
+                            <Border x:Name="PinchBox"
+                                    HeightRequest="80"
+                                    WidthRequest="80"
+                                    StrokeThickness="0"
+                                    BackgroundColor="Teal"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Center">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <PinchGestureRecognizer PinchUpdated="OnPinchUpdated" />
+                                </Border.GestureRecognizers>
+                                <Label Text="Pinch me"
+                                       FontSize="10"
+                                       TextColor="White"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <Label x:Name="PinchStatusLabel" Text="Pinch: Idle" HorizontalOptions="Center" />
+                    <Label x:Name="PinchScaleLabel" Text="Scale: 1.0x" HorizontalOptions="Center" FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Grid Tap Gesture -->
             <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
                     Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"

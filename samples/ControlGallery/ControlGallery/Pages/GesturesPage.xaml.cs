@@ -12,6 +12,9 @@ public partial class GesturesPage : ContentPage
     private double _panX;
     private double _panY;
 
+    // Pinch gesture state
+    private double _pinchScale = 1.0;
+
     public GesturesPage()
     {
         InitializeComponent();
@@ -134,6 +137,33 @@ public partial class GesturesPage : ContentPage
             SwipeDirection.Down => Colors.LightYellow,
             _ => Colors.LightCyan
         };
+    }
+
+    // Pinch Gesture
+    private void OnPinchUpdated(object? sender, PinchGestureUpdatedEventArgs e)
+    {
+        switch (e.Status)
+        {
+            case GestureStatus.Started:
+                PinchStatusLabel.Text = "Pinch: Started";
+                break;
+
+            case GestureStatus.Running:
+                _pinchScale *= e.Scale;
+                _pinchScale = Math.Clamp(_pinchScale, 0.25, 4.0);
+                PinchBox.Scale = _pinchScale;
+                PinchStatusLabel.Text = $"Pinch: Scale={e.Scale:F2}, Origin=({e.ScaleOrigin.X:F2}, {e.ScaleOrigin.Y:F2})";
+                PinchScaleLabel.Text = $"Scale: {_pinchScale:F2}x";
+                break;
+
+            case GestureStatus.Completed:
+                PinchStatusLabel.Text = "Pinch: Completed";
+                break;
+
+            case GestureStatus.Canceled:
+                PinchStatusLabel.Text = "Pinch: Canceled";
+                break;
+        }
     }
 
     // Grid Tap Gesture
