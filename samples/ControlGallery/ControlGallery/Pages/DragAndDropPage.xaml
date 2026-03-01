@@ -260,6 +260,38 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- External File Drop -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="External File Drop" FontAttributes="Bold"/>
+                    <Label Text="Drag files from your file manager into the drop zone" FontSize="12" FontAttributes="Italic"/>
+
+                    <Border x:Name="FileDropTarget"
+                            BackgroundColor="LightGray"
+                            HeightRequest="120"
+                            StrokeThickness="2"
+                            Stroke="DarkGray"
+                            StrokeDashArray="4,2">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <DropGestureRecognizer DragOver="OnFileDragOver"
+                                                   DragLeave="OnFileDragLeave"
+                                                   Drop="OnFileDrop"/>
+                        </Border.GestureRecognizers>
+                        <Label x:Name="FileDropLabel"
+                               Text="Drop files here"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"/>
+                    </Border>
+                    <Label x:Name="FileDropStatus" Text="No files dropped" HorizontalOptions="Center" FontSize="12"/>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

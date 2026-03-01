@@ -110,4 +110,38 @@ public partial class DragAndDropPage : ContentPage
         ToggleDropRecognizer.AllowDrop = e.Value;
         ToggleStatus.Text = $"Status: AllowDrop = {e.Value}";
     }
+
+    // --- External File Drop ---
+
+    private void OnFileDragOver(object? sender, DragEventArgs e)
+    {
+        FileDropTarget.BackgroundColor = Colors.LightGreen;
+        FileDropLabel.Text = "Release to drop files!";
+        e.AcceptedOperation = DataPackageOperation.Copy;
+    }
+
+    private void OnFileDragLeave(object? sender, DragEventArgs e)
+    {
+        FileDropTarget.BackgroundColor = Colors.LightGray;
+        FileDropLabel.Text = "Drop files here";
+    }
+
+    private async void OnFileDrop(object? sender, DropEventArgs e)
+    {
+        FileDropTarget.BackgroundColor = Colors.LightBlue;
+
+        var text = await e.Data.GetTextAsync();
+        if (!string.IsNullOrEmpty(text))
+        {
+            var paths = text.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            var fileNames = paths.Select(p => System.IO.Path.GetFileName(p)).ToArray();
+            FileDropLabel.Text = string.Join(", ", fileNames);
+            FileDropStatus.Text = $"Dropped {paths.Length} file(s)";
+        }
+        else
+        {
+            FileDropLabel.Text = "(no data)";
+            FileDropStatus.Text = "Drop contained no text or file paths";
+        }
+    }
 }

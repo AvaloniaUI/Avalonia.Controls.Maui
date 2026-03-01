@@ -1,5 +1,6 @@
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -660,7 +661,7 @@ internal class GestureManager : IDisposable
         if (dropRecognizers.Count == 0)
             return;
 
-        var dataPackage = DragDropDataBridge.ActiveDataPackage ?? new DataPackage();
+        var dataPackage = GetOrCreateDataPackage(e.DataTransfer);
         var dragEventArgs = new Microsoft.Maui.Controls.DragEventArgs(dataPackage);
 
         foreach (var recognizer in dropRecognizers)
@@ -690,7 +691,7 @@ internal class GestureManager : IDisposable
         if (dropRecognizers.Count == 0)
             return;
 
-        var dataPackage = DragDropDataBridge.ActiveDataPackage ?? new DataPackage();
+        var dataPackage = GetOrCreateDataPackage(e.DataTransfer);
         var dragEventArgs = new Microsoft.Maui.Controls.DragEventArgs(dataPackage);
 
         foreach (var recognizer in dropRecognizers)
@@ -717,7 +718,7 @@ internal class GestureManager : IDisposable
         if (dropRecognizers.Count == 0)
             return;
 
-        var dataPackage = DragDropDataBridge.ActiveDataPackage ?? new DataPackage();
+        var dataPackage = GetOrCreateDataPackage(e.DataTransfer);
         var dataPackageView = dataPackage.View;
         var dropEventArgs = new DropEventArgs(dataPackageView);
 
@@ -728,6 +729,54 @@ internal class GestureManager : IDisposable
 
         e.DragEffects = dropEventArgs.Handled ? DragDropEffects.Copy : DragDropEffects.None;
         e.Handled = true;
+    }
+
+    private static DataPackage GetOrCreateDataPackage(IDataTransfer? dataTransfer)
+    {
+        // Use bridge data for in-app drags
+        if (DragDropDataBridge.ActiveDataPackage is { } bridgePackage)
+            return bridgePackage;
+
+        // For external drags (files from OS, etc.), populate from Avalonia's data transfer
+        var dataPackage = new DataPackage();
+
+        if (dataTransfer == null)
+            return dataPackage;
+
+        var text = dataTransfer.TryGetText();
+        if (!string.IsNullOrEmpty(text))
+        {
+            dataPackage.Text = text;
+        }
+
+        var files = dataTransfer.TryGetFiles();
+        if (files != null && files.Length > 0)
+        {
+            var filePaths = new List<string>();
+            foreach (var file in files)
+            {
+                var localPath = file.TryGetLocalPath();
+                if (localPath != null)
+                {
+                    filePaths.Add(localPath);
+                }
+                else
+                {
+                    filePaths.Add(file.Path.ToString());
+                }
+            }
+
+            // Store file paths as newline-separated text if no text was set
+            if (string.IsNullOrEmpty(dataPackage.Text))
+            {
+                dataPackage.Text = string.Join(Environment.NewLine, filePaths);
+            }
+
+            // Also store in properties for structured access
+            dataPackage.Properties["FilePaths"] = filePaths;
+        }
+
+        return dataPackage;
     }
 
     // --- Helpers ---
