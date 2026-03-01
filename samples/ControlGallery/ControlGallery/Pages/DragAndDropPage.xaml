@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.DragAndDropPage"
+             Title="Drag &amp; Drop">
+    <ContentPage.Resources>
+        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
+        <Color x:Key="SectionBorderDark">#444444</Color>
+        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
+        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Text Drag/Drop -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Drag and Drop" FontAttributes="Bold"/>
+                    <Label Text="Drag from source to target" FontSize="12" FontAttributes="Italic"/>
+
+                    <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                        <!-- Drag Source -->
+                        <Border BackgroundColor="CornflowerBlue"
+                                WidthRequest="120"
+                                HeightRequest="80"
+                                StrokeThickness="1"
+                                Stroke="Gray">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <DragGestureRecognizer DragStarting="OnDragStarting" DropCompleted="OnDropCompleted"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Drag Me"
+                                   TextColor="White"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Center"/>
+                        </Border>
+
+                        <Label Text="->"
+                               VerticalOptions="Center"
+                               FontSize="24"/>
+
+                        <!-- Drop Target -->
+                        <Border x:Name="DropTarget1"
+                                BackgroundColor="LightGray"
+                                WidthRequest="120"
+                                HeightRequest="80"
+                                StrokeThickness="2"
+                                Stroke="DarkGray">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <DropGestureRecognizer DragOver="OnDragOver1" Drop="OnDrop1"/>
+                            </Border.GestureRecognizers>
+                            <Label x:Name="DropLabel1"
+                                   Text="Drop Here"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Center"/>
+                        </Border>
+                    </HorizontalStackLayout>
+                    <Label x:Name="DragDropStatus1" Text="Status: Ready" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Multiple Sources -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Multiple Drag Sources" FontAttributes="Bold"/>
+                    <Label Text="Drag any colored box to the drop zone" FontSize="12" FontAttributes="Italic"/>
+
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Border BackgroundColor="Coral"
+                                WidthRequest="80" HeightRequest="60"
+                                StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <DragGestureRecognizer DragStarting="OnMultiDragStarting"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Red" TextColor="White" FontAttributes="Bold"
+                                   VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+
+                        <Border BackgroundColor="MediumSeaGreen"
+                                WidthRequest="80" HeightRequest="60"
+                                StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <DragGestureRecognizer DragStarting="OnMultiDragStarting"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Green" TextColor="White" FontAttributes="Bold"
+                                   VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+
+                        <Border BackgroundColor="MediumPurple"
+                                WidthRequest="80" HeightRequest="60"
+                                StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <DragGestureRecognizer DragStarting="OnMultiDragStarting"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Purple" TextColor="White" FontAttributes="Bold"
+                                   VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+                    </HorizontalStackLayout>
+
+                    <Border x:Name="MultiDropTarget"
+                            BackgroundColor="LightGray"
+                            HeightRequest="60"
+                            StrokeThickness="2"
+                            Stroke="DarkGray">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <DropGestureRecognizer Drop="OnMultiDrop"/>
+                        </Border.GestureRecognizers>
+                        <Label x:Name="MultiDropLabel"
+                               Text="Drop zone"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"/>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- DragOver Feedback -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="DragOver Feedback" FontAttributes="Bold"/>
+                    <Label Text="Drop zone changes color when hovering" FontSize="12" FontAttributes="Italic"/>
+
+                    <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                        <Border BackgroundColor="DarkSlateBlue"
+                                WidthRequest="100" HeightRequest="60"
+                                StrokeThickness="0">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <DragGestureRecognizer DragStarting="OnFeedbackDragStarting"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Drag Me" TextColor="White" FontAttributes="Bold"
+                                   VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+
+                        <Border x:Name="FeedbackDropTarget"
+                                BackgroundColor="LightGray"
+                                WidthRequest="150" HeightRequest="60"
+                                StrokeThickness="2"
+                                Stroke="DarkGray">
+                            <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <DropGestureRecognizer DragOver="OnFeedbackDragOver"
+                                                       DragLeave="OnFeedbackDragLeave"
+                                                       Drop="OnFeedbackDrop"/>
+                            </Border.GestureRecognizers>
+                            <Label x:Name="FeedbackDropLabel"
+                                   Text="Hover over me"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Center"/>
+                        </Border>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Cancel Drag -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Cancel Drag" FontAttributes="Bold"/>
+                    <Label Text="DragStarting handler sets Cancel=true" FontSize="12" FontAttributes="Italic"/>
+
+                    <Border BackgroundColor="IndianRed"
+                            HeightRequest="60"
+                            StrokeThickness="0">
+                        <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <DragGestureRecognizer DragStarting="OnCancelledDragStarting"/>
+                        </Border.GestureRecognizers>
+                        <Label Text="Try to drag (cancelled)"
+                               TextColor="White"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               HorizontalOptions="Center"/>
+                    </Border>
+                    <Label x:Name="CancelDragStatus" Text="Status: Not attempted" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- CanDrag/AllowDrop Toggles -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="CanDrag / AllowDrop Toggles" FontAttributes="Bold"/>
+                    <Label Text="Toggle properties dynamically" FontSize="12" FontAttributes="Italic"/>
+
+                    <HorizontalStackLayout Spacing="20" HorizontalOptions="Center">
+                        <VerticalStackLayout Spacing="5">
+                            <Border x:Name="ToggleDragSource"
+                                    BackgroundColor="Teal"
+                                    WidthRequest="100" HeightRequest="60"
+                                    StrokeThickness="0">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <DragGestureRecognizer x:Name="ToggleDragRecognizer"
+                                                           CanDrag="True"
+                                                           DragStarting="OnToggleDragStarting"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="Drag" TextColor="White" FontAttributes="Bold"
+                                       VerticalOptions="Center" HorizontalOptions="Center"/>
+                            </Border>
+                            <HorizontalStackLayout Spacing="5" HorizontalOptions="Center">
+                                <Label Text="CanDrag:" VerticalOptions="Center" FontSize="12"/>
+                                <Switch x:Name="CanDragSwitch" IsToggled="True" Toggled="OnCanDragToggled"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="5">
+                            <Border x:Name="ToggleDropTarget"
+                                    BackgroundColor="LightGray"
+                                    WidthRequest="100" HeightRequest="60"
+                                    StrokeThickness="2"
+                                    Stroke="DarkGray">
+                                <Border.StrokeShape><RoundRectangle CornerRadius="8"/></Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <DropGestureRecognizer x:Name="ToggleDropRecognizer"
+                                                           AllowDrop="True"
+                                                           Drop="OnToggleDrop"/>
+                                </Border.GestureRecognizers>
+                                <Label x:Name="ToggleDropLabel"
+                                       Text="Drop"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="Center"/>
+                            </Border>
+                            <HorizontalStackLayout Spacing="5" HorizontalOptions="Center">
+                                <Label Text="AllowDrop:" VerticalOptions="Center" FontSize="12"/>
+                                <Switch x:Name="AllowDropSwitch" IsToggled="True" Toggled="OnAllowDropToggled"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                    <Label x:Name="ToggleStatus" Text="Status: Ready" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -48,16 +48,20 @@ public class GestureRecognizerLeakBenchmark : BenchmarkTestPage
         int tapLeaked = leaked.Count(n => n.Contains("Tap"));
         int swipeLeaked = leaked.Count(n => n.Contains("Swipe"));
         int panLeaked = leaked.Count(n => n.Contains("Pan"));
+        int dragLeaked = leaked.Count(n => n.Contains("Drag"));
+        int dropLeaked = leaked.Count(n => n.Contains("Drop"));
 
         var metrics = new Dictionary<string, object>
         {
-            ["ControlsTested"] = 3,
-            ["GestureRecognizersTested"] = 3,
+            ["ControlsTested"] = 5,
+            ["GestureRecognizersTested"] = 5,
             ["TotalObjectsTracked"] = trackedObjects.Count,
             ["ObjectsLeaked"] = leaked.Count,
             ["Tap.Leaked"] = tapLeaked > 0,
             ["Swipe.Leaked"] = swipeLeaked > 0,
             ["Pan.Leaked"] = panLeaked > 0,
+            ["Drag.Leaked"] = dragLeaked > 0,
+            ["Drop.Leaked"] = dropLeaked > 0,
         };
 
         foreach (var (key, value) in memoryDelta.ToMetrics())
@@ -98,6 +102,8 @@ public class GestureRecognizerLeakBenchmark : BenchmarkTestPage
         CreateTapGestureControl(trackedObjects, layout);
         CreateSwipeGestureControl(trackedObjects, layout);
         CreatePanGestureControl(trackedObjects, layout);
+        CreateDragGestureControl(trackedObjects, layout);
+        CreateDropGestureControl(trackedObjects, layout);
 
         // Allow handlers to connect
         await Task.Delay(50, cancellationToken);
@@ -152,6 +158,41 @@ public class GestureRecognizerLeakBenchmark : BenchmarkTestPage
 
         trackedObjects["PanLabel"] = new WeakReference<object>(label);
         trackedObjects["PanGestureRecognizer"] = new WeakReference<object>(panGesture);
+
+        layout.Children.Add(label);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void CreateDragGestureControl(
+        Dictionary<string, WeakReference<object>> trackedObjects,
+        VerticalStackLayout layout)
+    {
+        var label = new Label { Text = "Drag me" };
+        var dragGesture = new DragGestureRecognizer();
+        dragGesture.DragStarting += (_, _) => { };
+        dragGesture.DropCompleted += (_, _) => { };
+        label.GestureRecognizers.Add(dragGesture);
+
+        trackedObjects["DragLabel"] = new WeakReference<object>(label);
+        trackedObjects["DragGestureRecognizer"] = new WeakReference<object>(dragGesture);
+
+        layout.Children.Add(label);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void CreateDropGestureControl(
+        Dictionary<string, WeakReference<object>> trackedObjects,
+        VerticalStackLayout layout)
+    {
+        var label = new Label { Text = "Drop here" };
+        var dropGesture = new DropGestureRecognizer();
+        dropGesture.DragOver += (_, _) => { };
+        dropGesture.DragLeave += (_, _) => { };
+        dropGesture.Drop += (_, _) => { };
+        label.GestureRecognizers.Add(dropGesture);
+
+        trackedObjects["DropLabel"] = new WeakReference<object>(label);
+        trackedObjects["DropGestureRecognizer"] = new WeakReference<object>(dropGesture);
 
         layout.Children.Add(label);
     }
