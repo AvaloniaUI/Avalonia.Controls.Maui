@@ -4,6 +4,8 @@
   </Folder>
   <Folder Name="/Samples/">
     <Project Path="samples/AvaloniaSandboxApp/AvaloniaSandboxApp.csproj" />
+    <Project Path="samples/BenchmarkApp/BenchmarkApp.Desktop/BenchmarkApp.Desktop.csproj" />
+    <Project Path="samples/BenchmarkApp/BenchmarkApp/BenchmarkApp.csproj" />
     <Project Path="samples/SandboxAppWasm/SandboxAppWasm.csproj" />
   </Folder>
   <Folder Name="/Samples/ControlGallery/">

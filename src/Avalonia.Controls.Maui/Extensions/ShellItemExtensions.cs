@@ -235,6 +235,11 @@ public static class ShellItemExtensions
             int currentIndex = item.Items.IndexOf(item.CurrentItem);
             handler._previousSectionIndex = currentIndex;
 
+            // Clear old content without animation first to release any in-flight
+            // transition's hidden presenter content (see ShellExtensions.UpdateCurrentItem).
+            handler._contentControl.PageTransition = null;
+            handler._contentControl.Content = null;
+
             handler._contentControl.PageTransition = new CrossFade(TimeSpan.FromMilliseconds(250));
             handler._contentControl.Content = control;
         }

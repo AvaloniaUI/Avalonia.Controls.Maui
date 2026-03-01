@@ -124,8 +124,18 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
         if (_tabControl != null)
         {
             _tabControl.SelectionChanged -= OnTabSelectionChanged;
+            _tabControl.Items.Clear();
         }
 
+        // Clear content control to release any in-flight transition resources
+        if (_contentControl != null)
+        {
+            _contentControl.PageTransition = null;
+            _contentControl.Content = null;
+        }
+
+        // Disconnect the current section handler to release its event subscriptions and page references
+        _currentSectionHandler?.VirtualView?.Handler?.DisconnectHandler();
         _currentSectionHandler = null;
 
         base.DisconnectHandler(platformView);

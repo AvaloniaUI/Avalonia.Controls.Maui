@@ -86,7 +86,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         new CommandMapper<MauiShell, ShellHandler>(ViewHandler.ViewCommandMapper);
 
     /// <summary>Strongly-typed accessor for the MAUI Shell virtual view.</summary>
-    internal new MauiShell? VirtualView => (MauiShell?)base.VirtualView;
+    internal new MauiShell? VirtualView => ((IElementHandler)this).VirtualView as MauiShell;
 
     /// <summary>The flyout container that manages flyout open/close behavior.</summary>
     internal FlyoutContainer? _flyoutContainer;
@@ -153,6 +153,9 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
     /// <summary>Currently tracked page for property change notifications.</summary>
     internal Page? _trackedPage;
+
+    /// <summary>Currently tracked shell section for property change notifications.</summary>
+    internal ShellSection? _trackedSection;
 
     /// <summary>Transitioning content control for modal page presentation.</summary>
     internal TransitioningContentControl? _modalContainer;
@@ -413,7 +416,63 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             _trackedPage = null;
         }
 
+        // Clean up item/section PropertyChanged subscriptions
+        if (_currentItemHandler?.VirtualView != null)
+        {
+            _currentItemHandler.VirtualView.PropertyChanged -= OnCurrentItemPropertyChanged;
+        }
+
+        if (_trackedSection != null)
+        {
+            _trackedSection.PropertyChanged -= OnCurrentSectionPropertyChanged;
+            _trackedSection = null;
+        }
+
+        // Disconnect the current item handler (cascades to ShellSectionHandler)
+        _currentItemHandler?.VirtualView?.Handler?.DisconnectHandler();
         _currentItemHandler = null;
+
+        // Unsubscribe flyout item PropertyChanged events and release button references
+        foreach (var kvp in _flyoutItemButtons)
+        {
+            kvp.Key.PropertyChanged -= OnFlyoutItemPropertyChanged;
+        }
+        _flyoutItemButtons.Clear();
+
+        // Clean up search handler subscription
+        if (_currentSearchHandler != null)
+        {
+            _currentSearchHandler.PropertyChanged -= OnSearchHandlerPropertyChanged;
+            _currentSearchHandler = null;
+        }
+        _searchControl = null;
+
+        // Unsubscribe button Click events
+        if (_backButton != null)
+            _backButton.Click -= OnBackButtonClick;
+        if (_hamburgerButton != null)
+            _hamburgerButton.Click -= OnHamburgerButtonClick;
+
+        // Clean up modal container
+        if (_modalContainer != null)
+        {
+            _modalContainer.PageTransition = null;
+            _modalContainer.Content = null;
+        }
+        _currentModalPage = null;
+
+        // Clear flyout panel children to release flyout item buttons from visual tree
+        _flyoutPanel?.Children.Clear();
+
+        // Clear the main content control without animation to release any
+        // in-flight transition's hidden presenter content. Without this,
+        // cancelled CrossFade transitions retain old control trees and their
+        // associated native render resources (textures, surfaces, etc.).
+        if (_mainContentControl != null)
+        {
+            _mainContentControl.PageTransition = null;
+            _mainContentControl.Content = null;
+        }
 
         base.DisconnectHandler(platformView);
     }
@@ -849,10 +908,21 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     {
         if (e.PropertyName == nameof(ShellItem.CurrentItem))
         {
-            // Subscribe to new section
-            if (sender is ShellItem item && item.CurrentItem != null)
+            if (sender is ShellItem item)
             {
-                item.CurrentItem.PropertyChanged += OnCurrentSectionPropertyChanged;
+                // Unsubscribe from previous section before subscribing to new one
+                // to prevent accumulating subscriptions and leaking handlers
+                if (_trackedSection != null)
+                {
+                    _trackedSection.PropertyChanged -= OnCurrentSectionPropertyChanged;
+                }
+
+                _trackedSection = item.CurrentItem;
+
+                if (_trackedSection != null)
+                {
+                    _trackedSection.PropertyChanged += OnCurrentSectionPropertyChanged;
+                }
             }
 
             if (VirtualView != null)

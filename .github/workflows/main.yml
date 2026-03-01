@@ -100,6 +100,20 @@ jobs:
         path: ${{github.workspace}}/artifacts/test-results/**/*.trx
         retention-days: 7
 
+    - name: Run Benchmark Tests
+      run: |
+        xvfb-run dotnet run --project ${{github.workspace}}/samples/BenchmarkApp/BenchmarkApp.Desktop -- --run-all --output ${{github.workspace}}/artifacts/test-results/benchmark-results.xml
+      continue-on-error: false
+
+    - name: Upload Benchmark Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: benchmark-results
+        path: ${{github.workspace}}/artifacts/test-results/benchmark-results.xml
+        if-no-files-found: ignore
+        retention-days: 7
+
     - name: Upload Render Test Images
       uses: actions/upload-artifact@v4
       if: always()

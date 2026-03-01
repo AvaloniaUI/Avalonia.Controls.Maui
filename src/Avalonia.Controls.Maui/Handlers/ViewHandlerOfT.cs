@@ -109,7 +109,23 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
     /// It disposes the gesture manager and can be overridden to perform additional cleanup logic.</remarks>
     protected virtual void DisconnectHandler(TPlatformView platformView)
     {
+        // Fire Unloaded before detaching events so MAUI's IsLoaded becomes false.
+        // Without this, Window.OnPageChanged sees IsLoaded==true and calls OnUnloaded()
+        // which is not implemented on non-platform targets, preventing DisconnectHandlers
+        // from ever running and leaving the old page tree permanently rooted.
+        if (_isLoaded)
+        {
+            _isLoaded = false;
+            TrySendUnloaded();
+        }
+
         DetachPlatformViewEvents(platformView);
+        Extensions.ViewExtensions.DisposeClipSubscription(platformView);
+
+        // Clear any TransformGroup created by UpdateTransformation() to release
+        // ScaleTransform, RotateTransform, and TranslateTransform objects.
+        platformView.RenderTransform = null;
+
         _gestureManager?.Dispose();
         _gestureManager = null;
     }

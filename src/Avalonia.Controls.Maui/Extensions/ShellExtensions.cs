@@ -606,32 +606,66 @@ public static class ShellExtensions
         if (handler._currentItemHandler?.VirtualView != null)
         {
             handler._currentItemHandler.VirtualView.PropertyChanged -= handler.OnCurrentItemPropertyChanged;
-            if (handler._currentItemHandler.VirtualView.CurrentItem != null)
-            {
-                handler._currentItemHandler.VirtualView.CurrentItem.PropertyChanged -= handler.OnCurrentSectionPropertyChanged;
-            }
         }
+
+        // Unsubscribe from previous section via tracked field
+        if (handler._trackedSection != null)
+        {
+            handler._trackedSection.PropertyChanged -= handler.OnCurrentSectionPropertyChanged;
+        }
+
+        // Save old item handler before it gets overwritten — we will release
+        // its section handler's resources after clearing the content control.
+        var oldItemHandler = handler._currentItemHandler;
 
         int currentIndex = shell.Items.IndexOf(shell.CurrentItem);
         handler._previousItemIndex = currentIndex;
-
-        handler._mainContentControl.PageTransition = new CrossFade(ShellHandler.DefaultTransitionDuration);
 
         var itemHandler = shell.CurrentItem.ToHandler(handler.MauiContext);
         handler._currentItemHandler = itemHandler as ShellItemHandler;
 
         if (itemHandler?.PlatformView is AvaloniaControl control)
         {
+            // Clear old content without animation first to ensure any in-flight
+            // transition's hidden presenter releases its content reference.
+            // Without this, cancelled CrossFade transitions skip HideOldPresenter(),
+            // leaving old control trees alive and leaking native render resources.
+            var savedTransition = handler._mainContentControl.PageTransition;
+            handler._mainContentControl.PageTransition = null;
+            handler._mainContentControl.Content = null;
+
+            // Release the old item's section handler resources (navigation stack,
+            // page references, event subscriptions) now that its platform view is
+            // detached from the visual tree. We only disconnect the section handler,
+            // not the ShellItemHandler itself, so the item can be re-activated later.
+            if (oldItemHandler != null
+                && oldItemHandler != handler._currentItemHandler
+                && oldItemHandler._currentSectionHandler != null)
+            {
+                oldItemHandler._currentSectionHandler.VirtualView?.Handler?.DisconnectHandler();
+                oldItemHandler._currentSectionHandler = null;
+            }
+
+            handler._mainContentControl.PageTransition = new CrossFade(ShellHandler.DefaultTransitionDuration);
+
             handler._mainContentControl.Content = control;
         }
 
         if (handler._currentItemHandler?.VirtualView != null)
         {
             handler._currentItemHandler.VirtualView.PropertyChanged += handler.OnCurrentItemPropertyChanged;
-            if (handler._currentItemHandler.VirtualView.CurrentItem != null)
+
+            // Track the new section
+            handler._trackedSection = handler._currentItemHandler.VirtualView.CurrentItem;
+
+            if (handler._trackedSection != null)
             {
-                handler._currentItemHandler.VirtualView.CurrentItem.PropertyChanged += handler.OnCurrentSectionPropertyChanged;
+                handler._trackedSection.PropertyChanged += handler.OnCurrentSectionPropertyChanged;
             }
+        }
+        else
+        {
+            handler._trackedSection = null;
         }
 
         handler.UpdateTitle(shell);

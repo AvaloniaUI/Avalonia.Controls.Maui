@@ -5,22 +5,51 @@
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="TabBarBackground">#18132A</Color>
+                    <Color x:Key="TabItemForeground">#80FFFFFF</Color>
+                    <Color x:Key="TabItemSelectedForeground">#FFFFFF</Color>
+                    <Color x:Key="TabItemHoverForeground">#C0FFFFFF</Color>
+                    <Color x:Key="TabItemSelectedBg">#405B8FD4</Color>
+                    <Color x:Key="TabItemHoverBg">#205B8FD4</Color>
+                    <Color x:Key="TabItemSelectedHoverBg">#505B8FD4</Color>
+                    <Color x:Key="TabItemPressedBg">#305B8FD4</Color>
+                    <Color x:Key="TabItemSelectedPressedBg">#605B8FD4</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <Color x:Key="TabBarBackground">#F0EEF5</Color>
+                    <Color x:Key="TabItemForeground">#80000000</Color>
+                    <Color x:Key="TabItemSelectedForeground">#000000</Color>
+                    <Color x:Key="TabItemHoverForeground">#C0000000</Color>
+                    <Color x:Key="TabItemSelectedBg">#405B8FD4</Color>
+                    <Color x:Key="TabItemHoverBg">#205B8FD4</Color>
+                    <Color x:Key="TabItemSelectedHoverBg">#505B8FD4</Color>
+                    <Color x:Key="TabItemPressedBg">#305B8FD4</Color>
+                    <Color x:Key="TabItemSelectedPressedBg">#605B8FD4</Color>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
 
         <!-- Pill-style tab bar for Shell TabBar -->
         <Style Selector="TabControl">
-            <Setter Property="Background" Value="#18132A" />
+            <Setter Property="Background" Value="{DynamicResource TabBarBackground}" />
             <Setter Property="CornerRadius" Value="20" />
             <Setter Property="Padding" Value="4,4" />
-            <Setter Property="Margin" Value="0,0,0,0" />
+            <Setter Property="Margin" Value="0,10,0,0" />
         </Style>
 
         <!-- TabItem: pill shape with rounded corners -->
         <Style Selector="TabItem">
             <Setter Property="MinHeight" Value="36" />
             <Setter Property="Padding" Value="16,6" />
-            <Setter Property="Foreground" Value="#80FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TabItemForeground}" />
             <Setter Property="FontSize" Value="13" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="CornerRadius" Value="16" />
@@ -38,30 +67,30 @@
 
         <!-- Selected tab: pill background -->
         <Style Selector="TabItem:selected">
-            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="{DynamicResource TabItemSelectedForeground}" />
         </Style>
         <Style Selector="TabItem:selected /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="#405B8FD4" />
+            <Setter Property="Background" Value="{DynamicResource TabItemSelectedBg}" />
         </Style>
 
         <!-- Pointer-over states -->
         <Style Selector="TabItem:pointerover /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="#205B8FD4" />
-            <Setter Property="TextElement.Foreground" Value="#C0FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource TabItemHoverBg}" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TabItemHoverForeground}" />
         </Style>
         <Style Selector="TabItem:selected:pointerover /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="#505B8FD4" />
-            <Setter Property="TextElement.Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource TabItemSelectedHoverBg}" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TabItemSelectedForeground}" />
         </Style>
 
         <!-- Pressed states -->
         <Style Selector="TabItem:pressed /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="#305B8FD4" />
-            <Setter Property="TextElement.Foreground" Value="#C0FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource TabItemPressedBg}" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TabItemHoverForeground}" />
         </Style>
         <Style Selector="TabItem:selected:pressed /template/ Border#PART_LayoutRoot">
-            <Setter Property="Background" Value="#605B8FD4" />
-            <Setter Property="TextElement.Foreground" Value="#FFFFFF" />
+            <Setter Property="Background" Value="{DynamicResource TabItemSelectedPressedBg}" />
+            <Setter Property="TextElement.Foreground" Value="{DynamicResource TabItemSelectedForeground}" />
         </Style>
 
         <!-- Tab header icon sizing -->

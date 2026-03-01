@@ -263,31 +263,54 @@ public class MauiAvaloniaWindow : Window, IDisposable
 
         var (modalContent, scrim) = _modalStack.Pop();
 
-        if (animated)
+        try
         {
-            var windowHeight = Bounds.Height > 0 ? Bounds.Height : ClientSize.Height;
-            if (windowHeight <= 0) windowHeight = 800;
-
-            var transform = new TranslateTransform(0, 0);
-            modalContent.RenderTransform = transform;
-
-            var duration = TimeSpan.FromMilliseconds(400);
-            var startTime = DateTime.Now;
-
-            while (DateTime.Now - startTime < duration)
+            if (animated)
             {
-                var progress = (DateTime.Now - startTime).TotalMilliseconds / duration.TotalMilliseconds;
-                progress = Math.Min(1.0, progress);
-                progress = 1 - Math.Pow(1 - progress, 3); // ease out cubic
+                var windowHeight = Bounds.Height > 0 ? Bounds.Height : ClientSize.Height;
+                if (windowHeight <= 0) windowHeight = 800;
 
-                transform.Y = windowHeight * progress;
-                scrim.Opacity = 1 - progress;
-                await Task.Delay(16);
+                var transform = new TranslateTransform(0, 0);
+                modalContent.RenderTransform = transform;
+
+                var duration = TimeSpan.FromMilliseconds(400);
+                var startTime = DateTime.Now;
+
+                while (DateTime.Now - startTime < duration)
+                {
+                    var progress = (DateTime.Now - startTime).TotalMilliseconds / duration.TotalMilliseconds;
+                    progress = Math.Min(1.0, progress);
+                    progress = 1 - Math.Pow(1 - progress, 3); // ease out cubic
+
+                    transform.Y = windowHeight * progress;
+                    scrim.Opacity = 1 - progress;
+                    await Task.Delay(16);
+                }
             }
         }
+        finally
+        {
+            _rootGrid.Children.Remove(modalContent);
+            _rootGrid.Children.Remove(scrim);
+        }
+    }
 
-        _rootGrid.Children.Remove(modalContent);
-        _rootGrid.Children.Remove(scrim);
+    /// <summary>
+    /// Removes all modal overlays from the visual tree and clears the modal stack.
+    /// </summary>
+    /// <remarks>
+    /// This is used when the window's page changes, because MAUI's ModalNavigationManager
+    /// clears its internal stack without firing ModalPopped events, leaving stale overlay
+    /// controls in the root grid.
+    /// </remarks>
+    public void ClearAllModals()
+    {
+        while (_modalStack.Count > 0)
+        {
+            var (modalContent, scrim) = _modalStack.Pop();
+            _rootGrid.Children.Remove(modalContent);
+            _rootGrid.Children.Remove(scrim);
+        }
     }
 
     /// <summary>

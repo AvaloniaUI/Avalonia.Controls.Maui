@@ -307,15 +307,18 @@ public class QuizOptionItem : BaseViewModel
             OnPropertyChanged(nameof(IndicatorColor));
             OnPropertyChanged(nameof(IndicatorStroke));
             OnPropertyChanged(nameof(IndicatorText));
+            OnPropertyChanged(nameof(IndicatorTextColor));
         }
     }
 
+    private static bool IsLightTheme => Application.Current?.RequestedTheme == AppTheme.Light;
+
     public Color BackgroundColor => State switch
     {
-        OptionState.Correct => Color.FromArgb("#CC1B3D2A"),
-        OptionState.Incorrect => Color.FromArgb("#CC3D1B1B"),
-        OptionState.Dimmed => Color.FromArgb("#AA1A1530"),
-        _ => Color.FromArgb("#DD1A1530")
+        OptionState.Correct => Color.FromArgb(IsLightTheme ? "#DDA5D6A7" : "#CC1B3D2A"),
+        OptionState.Incorrect => Color.FromArgb(IsLightTheme ? "#DDEF9A9A" : "#CC3D1B1B"),
+        OptionState.Dimmed => Color.FromArgb(IsLightTheme ? "#90FFFFFF" : "#AA1A1530"),
+        _ => Color.FromArgb(IsLightTheme ? "#E0FFFFFF" : "#DD1A1530")
     };
 
     public Color IndicatorColor => State switch
@@ -329,8 +332,14 @@ public class QuizOptionItem : BaseViewModel
     {
         OptionState.Correct => Color.FromArgb("#66BB6A"),
         OptionState.Incorrect => Color.FromArgb("#EF5350"),
-        OptionState.Dimmed => Color.FromArgb("#444444"),
-        _ => Color.FromArgb("#666666")
+        OptionState.Dimmed => Color.FromArgb(IsLightTheme ? "#CCCCCC" : "#444444"),
+        _ => Color.FromArgb(IsLightTheme ? "#AAAAAA" : "#666666")
+    };
+
+    public Color IndicatorTextColor => State switch
+    {
+        OptionState.Correct or OptionState.Incorrect => Colors.White,
+        _ => IsLightTheme ? Color.FromArgb("#555555") : Colors.White
     };
 
     public string IndicatorText => State switch

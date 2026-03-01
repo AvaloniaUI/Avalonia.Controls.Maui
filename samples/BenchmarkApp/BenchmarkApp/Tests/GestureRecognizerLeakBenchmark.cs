@@ -1,0 +1,174 @@
+
+
+using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Controls;
+
+namespace BenchmarkApp.Tests;
+
+/// <summary>
+/// Tests that controls with gesture recognizers don't leak after removal and handler disconnect.
+/// Gesture recognizers create bidirectional references; a missed cleanup leaks the entire control tree.
+/// </summary>
+[BenchmarkTest("GestureRecognizerLeak", Description = "Verifies controls with gesture recognizers are collected after disconnect")]
+public class GestureRecognizerLeakBenchmark : BenchmarkTestPage
+{
+    /// <inheritdoc/>
+    public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
+    {
+        var memBefore = MemorySnapshot.Capture(forceGC: true);
+
+        var trackedObjects = new Dictionary<string, WeakReference<object>>();
+
+        await CreateAndDestroyGestureControls(trackedObjects, cancellationToken);
+
+        // Force GC multiple times with delays
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        await Task.Delay(100, cancellationToken);
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+
+        var memAfter = MemorySnapshot.Capture(forceGC: false);
+        var memoryDelta = memAfter.Compare(memBefore);
+
+        // Check for survivors
+        var leaked = new List<string>();
+        foreach (var (name, weakRef) in trackedObjects)
+        {
+            if (weakRef.TryGetTarget(out _))
+            {
+                leaked.Add(name);
+            }
+        }
+
+        // Count gesture-specific leaks
+        int tapLeaked = leaked.Count(n => n.Contains("Tap"));
+        int swipeLeaked = leaked.Count(n => n.Contains("Swipe"));
+        int panLeaked = leaked.Count(n => n.Contains("Pan"));
+
+        var metrics = new Dictionary<string, object>
+        {
+            ["ControlsTested"] = 3,
+            ["GestureRecognizersTested"] = 3,
+            ["TotalObjectsTracked"] = trackedObjects.Count,
+            ["ObjectsLeaked"] = leaked.Count,
+            ["Tap.Leaked"] = tapLeaked > 0,
+            ["Swipe.Leaked"] = swipeLeaked > 0,
+            ["Pan.Leaked"] = panLeaked > 0,
+        };
+
+        foreach (var (key, value) in memoryDelta.ToMetrics())
+        {
+            metrics[key] = value;
+        }
+
+        if (leaked.Count > 0)
+        {
+            var leakedNames = string.Join(", ", leaked);
+            logger.LogWarning("Gesture recognizer leak detected: {LeakedObjects}", leakedNames);
+            return BenchmarkResult.Fail($"Objects leaked: {leakedNames}", metrics);
+        }
+
+        logger.LogInformation(
+            "All {Count} gesture recognizer objects collected successfully",
+            trackedObjects.Count);
+
+        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
+        {
+            return BenchmarkResult.Fail(
+                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
+                metrics);
+        }
+
+        return BenchmarkResult.Pass(metrics);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private async Task CreateAndDestroyGestureControls(
+        Dictionary<string, WeakReference<object>> trackedObjects,
+        CancellationToken cancellationToken)
+    {
+        var layout = new VerticalStackLayout();
+        Content = layout;
+
+        // Create controls with gesture recognizers
+        CreateTapGestureControl(trackedObjects, layout);
+        CreateSwipeGestureControl(trackedObjects, layout);
+        CreatePanGestureControl(trackedObjects, layout);
+
+        // Allow handlers to connect
+        await Task.Delay(50, cancellationToken);
+
+        // Tear down
+        TearDownGestureControls(layout);
+
+        Content = new Label { Text = "Gesture recognizer test complete" };
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void CreateTapGestureControl(
+        Dictionary<string, WeakReference<object>> trackedObjects,
+        VerticalStackLayout layout)
+    {
+        var label = new Label { Text = "Tap me" };
+        var tapGesture = new TapGestureRecognizer();
+        tapGesture.Tapped += (_, _) => { };
+        label.GestureRecognizers.Add(tapGesture);
+
+        trackedObjects["TapLabel"] = new WeakReference<object>(label);
+        trackedObjects["TapGestureRecognizer"] = new WeakReference<object>(tapGesture);
+
+        layout.Children.Add(label);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void CreateSwipeGestureControl(
+        Dictionary<string, WeakReference<object>> trackedObjects,
+        VerticalStackLayout layout)
+    {
+        var label = new Label { Text = "Swipe me" };
+        var swipeGesture = new SwipeGestureRecognizer { Direction = SwipeDirection.Right };
+        swipeGesture.Swiped += (_, _) => { };
+        label.GestureRecognizers.Add(swipeGesture);
+
+        trackedObjects["SwipeLabel"] = new WeakReference<object>(label);
+        trackedObjects["SwipeGestureRecognizer"] = new WeakReference<object>(swipeGesture);
+
+        layout.Children.Add(label);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void CreatePanGestureControl(
+        Dictionary<string, WeakReference<object>> trackedObjects,
+        VerticalStackLayout layout)
+    {
+        var label = new Label { Text = "Pan me", HeightRequest = 100 };
+        var panGesture = new PanGestureRecognizer();
+        panGesture.PanUpdated += (_, _) => { };
+        label.GestureRecognizers.Add(panGesture);
+
+        trackedObjects["PanLabel"] = new WeakReference<object>(label);
+        trackedObjects["PanGestureRecognizer"] = new WeakReference<object>(panGesture);
+
+        layout.Children.Add(label);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static void TearDownGestureControls(VerticalStackLayout layout)
+    {
+        foreach (var child in layout.Children)
+        {
+            if (child is View view)
+            {
+                view.GestureRecognizers.Clear();
+                view.Handler?.DisconnectHandler();
+            }
+        }
+
+        layout.Children.Clear();
+        layout.Handler?.DisconnectHandler();
+    }
+}

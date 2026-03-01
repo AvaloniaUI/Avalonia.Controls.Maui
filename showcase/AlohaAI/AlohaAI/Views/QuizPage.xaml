@@ -96,7 +96,7 @@
                                             WidthRequest="28" HeightRequest="28"
                                             VerticalOptions="Center" Margin="0,0,12,0">
                                         <Label Text="{Binding IndicatorText}" FontSize="12" FontAttributes="Bold"
-                                               TextColor="White" HorizontalOptions="Center"
+                                               TextColor="{Binding IndicatorTextColor}" HorizontalOptions="Center"
                                                VerticalOptions="Center" />
                                     </Border>
                                     <Label Grid.Column="1" Text="{Binding Text}" FontSize="15"

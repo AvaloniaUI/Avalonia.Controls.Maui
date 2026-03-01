@@ -219,6 +219,34 @@ public class NavigationView : DockPanel
     }
 
     /// <summary>
+    /// Clears the content control without animation, ensuring any in-flight transition's
+    /// old presenter content is released so that the referenced Avalonia controls (and their
+    /// MAUI handler back-references) can be garbage collected.
+    /// </summary>
+    public void ClearContent()
+    {
+        var savedTransition = _contentControl.PageTransition;
+        _contentControl.PageTransition = null;
+        _contentControl.Content = null;
+        _contentControl.PageTransition = savedTransition;
+        CurrentPage = null;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+
+        // When the NavigationView is removed from the visual tree (e.g. window.Page
+        // is replaced), immediately clear the TransitioningContentControl's content.
+        // The control uses two alternating presenters for animated transitions; if
+        // the NavigationView is detached mid-transition, the hidden presenter still
+        // holds a reference to the previous Avalonia control tree, whose child
+        // handlers keep the corresponding MAUI controls alive.
+        ClearContent();
+    }
+
+    /// <summary>
     /// Navigates to a new page with optional animation.
     /// </summary>
     /// <param name="page">The page to navigate to.</param>

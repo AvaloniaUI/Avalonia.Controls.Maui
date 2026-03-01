@@ -13,7 +13,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// </summary>
 internal class GestureManager : IDisposable
 {
-    private readonly IControlsView _view;
+    private IControlsView? _view;
     private object? _containerView;
     private object? _platformView;
     private object? _handler;
@@ -65,6 +65,9 @@ internal class GestureManager : IDisposable
 
     private void SetupGestureManager()
     {
+        if (_view == null)
+            return;
+
         var handler = _view.Handler;
 
         if (handler == null ||
@@ -470,6 +473,7 @@ internal class GestureManager : IDisposable
             _view.HandlerChanged -= OnHandlerChanged;
             _view.WindowChanged -= OnWindowChanged;
             _view.PlatformContainerViewChanged -= OnPlatformContainerViewChanged;
+            _view = null;
         }
     }
 }
