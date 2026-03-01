@@ -211,5 +211,7 @@ public class LessonDisplayItem
     public ICommand? TapCommand { get; set; }
     public string StatusColor => IsCompleted ? "#4CAF50" : "#555555";
     public string StatusBackground => IsCompleted ? "#4CAF50" : "Transparent";
-    public string TitleColor => IsCompleted ? "#AAAAAA" : "#FFFFFF";
+    public string TitleColor => IsCompleted
+        ? (Application.Current?.RequestedTheme == AppTheme.Light ? "#9A90A8" : "#AAAAAA")
+        : (Application.Current?.RequestedTheme == AppTheme.Light ? "#5B8FD4" : "#FFFFFF");
 }
