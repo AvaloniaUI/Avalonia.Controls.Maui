@@ -942,6 +942,128 @@ public partial class ShellHandlerTests : HandlerTestBase
         Assert.True(handler._backButton.IsEnabled);
     }
 
+    [AvaloniaFact(DisplayName = "Shell Navigating Between FlyoutItems Preserves Page Content")]
+    public async Task ShellNavigatingBetweenFlyoutItemsPreservesPageContent()
+    {
+        var page1 = new ContentPage { Title = "Page 1", Content = new MauiLabel { Text = "Content 1" } };
+        var page2 = new ContentPage { Title = "Page 2", Content = new MauiLabel { Text = "Content 2" } };
+        var page3 = new ContentPage { Title = "Page 3", Content = new MauiLabel { Text = "Content 3" } };
+
+        var shell = new Shell
+        {
+            WidthRequest = 800,
+            HeightRequest = 600,
+            Items =
+            {
+                new FlyoutItem
+                {
+                    Title = "Item 1",
+                    Items =
+                    {
+                        new ShellContent { Title = "Content 1", Content = page1 }
+                    }
+                },
+                new FlyoutItem
+                {
+                    Title = "Item 2",
+                    Items =
+                    {
+                        new ShellContent { Title = "Content 2", Content = page2 }
+                    }
+                },
+                new FlyoutItem
+                {
+                    Title = "Item 3",
+                    Items =
+                    {
+                        new ShellContent { Title = "Content 3", Content = page3 }
+                    }
+                }
+            }
+        };
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        // Verify initial state: Item 1 is current, its section has a handler
+        var section1 = ((ShellItem)shell.Items[0]).Items[0];
+        Assert.NotNull(section1.Handler);
+
+        // Switch to Item 2
+        await InvokeOnMainThreadAsync(() =>
+        {
+            shell.CurrentItem = shell.Items[1];
+            handler.UpdateValue(nameof(Shell.CurrentItem));
+        });
+
+        var section2 = ((ShellItem)shell.Items[1]).Items[0];
+        Assert.NotNull(section2.Handler);
+
+        // Switch to Item 3
+        await InvokeOnMainThreadAsync(() =>
+        {
+            shell.CurrentItem = shell.Items[2];
+            handler.UpdateValue(nameof(Shell.CurrentItem));
+        });
+
+        var section3 = ((ShellItem)shell.Items[2]).Items[0];
+        Assert.NotNull(section3.Handler);
+
+        // Switch back to Item 1 — page should still be there
+        await InvokeOnMainThreadAsync(() =>
+        {
+            shell.CurrentItem = shell.Items[0];
+            handler.UpdateValue(nameof(Shell.CurrentItem));
+        });
+
+        // The section handler should still be present and the page should be accessible
+        Assert.NotNull(section1.Handler);
+        Assert.Equal(page1, ((IShellContentController)section1.CurrentItem).Page);
+
+        // Switch back to Item 2 — page should still be there
+        await InvokeOnMainThreadAsync(() =>
+        {
+            shell.CurrentItem = shell.Items[1];
+            handler.UpdateValue(nameof(Shell.CurrentItem));
+        });
+
+        Assert.NotNull(section2.Handler);
+        Assert.Equal(page2, ((IShellContentController)section2.CurrentItem).Page);
+    }
+
+    [AvaloniaFact(DisplayName = "Shell Section Handler Stays Connected During FlyoutItem Switch")]
+    public async Task ShellSectionHandlerStaysConnectedDuringFlyoutItemSwitch()
+    {
+        var shell = CreateShellWithMultipleItems();
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        var section1 = ((ShellItem)shell.Items[0]).Items[0];
+        var initialHandler = section1.Handler;
+        Assert.NotNull(initialHandler);
+
+        // Switch to Item 2
+        await InvokeOnMainThreadAsync(() =>
+        {
+            shell.CurrentItem = shell.Items[1];
+            handler.UpdateValue(nameof(Shell.CurrentItem));
+        });
+
+        // Section 1's handler should NOT have been disconnected
+        Assert.NotNull(section1.Handler);
+        Assert.Same(initialHandler, section1.Handler);
+
+        // Switch back to Item 1
+        await InvokeOnMainThreadAsync(() =>
+        {
+            shell.CurrentItem = shell.Items[0];
+            handler.UpdateValue(nameof(Shell.CurrentItem));
+        });
+
+        // The same handler should still be there
+        Assert.NotNull(section1.Handler);
+        Assert.Same(initialHandler, section1.Handler);
+    }
+
     private Shell CreateShellWithNavigationStack()
     {
         var page1 = new ContentPage { Title = "Page 1" };
