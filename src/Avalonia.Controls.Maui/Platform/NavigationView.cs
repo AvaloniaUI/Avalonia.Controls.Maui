@@ -16,7 +16,7 @@ public class NavigationView : DockPanel
     private readonly TextBlock _titleTextBlock;
     private readonly Button _hamburgerButton;
     private readonly Button _backButton;
-    private readonly DockPanel _navigationBar;
+    private readonly NavigationBarPanel _navigationBar;
     private readonly Image _titleIconImage;
     private readonly StackPanel _titleStack;
     private readonly StackPanel _toolbarItemsContainer;
@@ -98,11 +98,10 @@ public class NavigationView : DockPanel
     {
         LastChildFill = true;
 
-        _navigationBar = new DockPanel
+        _navigationBar = new NavigationBarPanel
         {
             Height = 44,
-            Background = Brushes.Transparent, // Will be set by UpdateNavigationBarColors
-            LastChildFill = true
+            Background = Brushes.Transparent // Will be set by UpdateNavigationBarColors
         };
         DockPanel.SetDock(_navigationBar, Dock.Top);
 
@@ -119,8 +118,6 @@ public class NavigationView : DockPanel
             HorizontalContentAlignment = HorizontalAlignment.Center,
             VerticalContentAlignment = VerticalAlignment.Center
         };
-        DockPanel.SetDock(_hamburgerButton, Dock.Left);
-        _navigationBar.Children.Add(_hamburgerButton);
 
         _backButton = new Button
         {
@@ -135,8 +132,15 @@ public class NavigationView : DockPanel
             HorizontalContentAlignment = HorizontalAlignment.Center,
             VerticalContentAlignment = VerticalAlignment.Center
         };
-        DockPanel.SetDock(_backButton, Dock.Left);
-        _navigationBar.Children.Add(_backButton);
+
+        // Left buttons
+        var leftButtons = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        leftButtons.Children.Add(_hamburgerButton);
+        leftButtons.Children.Add(_backButton);
 
         _titleViewContainer = new ContentControl
         {
@@ -161,7 +165,8 @@ public class NavigationView : DockPanel
             FontWeight = Media.FontWeight.SemiBold,
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
-            TextAlignment = Media.TextAlignment.Center
+            TextAlignment = Media.TextAlignment.Center,
+            TextTrimming = Media.TextTrimming.CharacterEllipsis
         };
 
         // Stack for title icon and text
@@ -175,7 +180,11 @@ public class NavigationView : DockPanel
         _titleStack.Children.Add(_titleIconImage);
         _titleStack.Children.Add(_titleTextBlock);
 
-        var centerStack = new Panel();
+        var centerStack = new Panel
+        {
+            VerticalAlignment = VerticalAlignment.Center,
+            ClipToBounds = true
+        };
         centerStack.Children.Add(_titleStack);
         centerStack.Children.Add(_titleViewContainer);
 
@@ -186,11 +195,9 @@ public class NavigationView : DockPanel
             Spacing = 8,
             Margin = new Thickness(0, 0, 8, 0)
         };
-        DockPanel.SetDock(_toolbarItemsContainer, Dock.Right);
-        _navigationBar.Children.Add(_toolbarItemsContainer);
 
         _toolbarOverflowMenu = new ContextMenu();
-        
+
         _toolbarOverflowButton = new Button
         {
             Content = "...",
@@ -201,13 +208,16 @@ public class NavigationView : DockPanel
             BorderThickness = new Thickness(0),
             IsVisible = false // Hidden by default
         };
-        
+
         _toolbarOverflowButton.Click += (s, e) => _toolbarOverflowMenu.Open(_toolbarOverflowButton);
-        
+
         // Add overflow button to the container (at the end)
         _toolbarItemsContainer.Children.Add(_toolbarOverflowButton);
 
+        // Children order matters: left (0), center (1), right (2)
+        _navigationBar.Children.Add(leftButtons);
         _navigationBar.Children.Add(centerStack);
+        _navigationBar.Children.Add(_toolbarItemsContainer);
 
         _contentControl = new TransitioningContentControl
         {
@@ -267,6 +277,73 @@ public class NavigationView : DockPanel
         else
         {
             _contentControl.Content = page;
+        }
+    }
+
+    /// <summary>
+    /// Panel that lays out three children (left, center, right) where the center child is
+    /// page-centered but clamped so it never overlaps the left or right children.
+    /// </summary>
+    private sealed class NavigationBarPanel : Panel
+    {
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            if (Children.Count < 3)
+            {
+                return base.MeasureOverride(availableSize);
+            }
+
+            var left = Children[0];
+            var center = Children[1];
+            var right = Children[2];
+
+            // Measure left and right first to determine available space for center
+            left.Measure(availableSize);
+            right.Measure(availableSize);
+
+            double remainingWidth = Math.Max(0, availableSize.Width - left.DesiredSize.Width - right.DesiredSize.Width);
+            center.Measure(new Size(remainingWidth, availableSize.Height));
+
+            double height = Math.Max(Math.Max(left.DesiredSize.Height, center.DesiredSize.Height), right.DesiredSize.Height);
+            double width = left.DesiredSize.Width + center.DesiredSize.Width + right.DesiredSize.Width;
+
+            return new Size(
+                double.IsInfinity(availableSize.Width) ? width : availableSize.Width,
+                height);
+        }
+
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            if (Children.Count < 3)
+            {
+                return base.ArrangeOverride(finalSize);
+            }
+
+            var left = Children[0];
+            var center = Children[1];
+            var right = Children[2];
+
+            double leftWidth = left.DesiredSize.Width;
+            double rightWidth = right.DesiredSize.Width;
+            double centerWidth = center.DesiredSize.Width;
+
+            // Position left items at the left edge
+            left.Arrange(new Rect(0, 0, leftWidth, finalSize.Height));
+
+            // Position right items at the right edge
+            right.Arrange(new Rect(finalSize.Width - rightWidth, 0, rightWidth, finalSize.Height));
+
+            // Center title in the full width, but clamp to avoid overlapping left/right
+            double availableForCenter = Math.Max(0, finalSize.Width - leftWidth - rightWidth);
+            double actualCenterWidth = Math.Min(centerWidth, availableForCenter);
+            double idealX = (finalSize.Width - actualCenterWidth) / 2;
+            double minX = leftWidth;
+            double maxX = Math.Max(minX, finalSize.Width - rightWidth - actualCenterWidth);
+            double x = Math.Clamp(idealX, minX, maxX);
+
+            center.Arrange(new Rect(x, 0, actualCenterWidth, finalSize.Height));
+
+            return finalSize;
         }
     }
 }
