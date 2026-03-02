@@ -198,7 +198,8 @@ public partial class MainPage : FlyoutPage
                 new("Image", "Visual content display", typeof(ImagePage)),
                 new("ImageButton", "Interactive image button", typeof(ImageButtonPage)),
                 new("ListView", "Scrolling data items", typeof(ListViewPage)),
-                new("Map", "Interactive maps and pins", typeof(MapPage)),
+                // TODO: Re-enable when Map is ready
+                //new("Map", "Interactive maps and pins", typeof(MapPage)),
                 new("Picker", "Item selection dropdown", typeof(PickerPage)),
                 new("ProgressBar", "Visual progress status", typeof(ProgressBarPage)),
                 new("RadioButton", "Single-select option list", typeof(RadioButtonPage)),
