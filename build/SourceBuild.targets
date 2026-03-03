@@ -8,12 +8,63 @@
     (typically via Directory.Build.props.user).
   -->
 
+  <!--
+    When building from source, the NuGet Avalonia package's build infrastructure
+    (props/targets) is not available. Import the equivalent files from the source tree:
+      - AvaloniaBuildTasks.props: globs *.axaml into the AvaloniaXaml item group
+      - Avalonia.Generators.props: configures the XAML source generator (InitializeComponent)
+      - AvaloniaBuildTasks.targets: XAML compilation and resource embedding tasks
+    We also set AvaloniaBuildTasksLocation to the source-built Build.Tasks assembly.
+  -->
+  <PropertyGroup Condition="'$(AvaloniaSourcePath)' != ''">
+    <AvaloniaBuildTasksLocation>$(AvaloniaSourcePath)/src/Avalonia.Build.Tasks/bin/Debug/netstandard2.0/Avalonia.Build.Tasks.dll</AvaloniaBuildTasksLocation>
+    <EnableAvaloniaXamlCompilation Condition="'$(EnableAvaloniaXamlCompilation)' == ''">true</EnableAvaloniaXamlCompilation>
+    <AvaloniaUseCompiledBindingsByDefault Condition="'$(AvaloniaUseCompiledBindingsByDefault)' == ''">true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  <Import Project="$(AvaloniaSourcePath)/packages/Avalonia/AvaloniaBuildTasks.props"
+          Condition="'$(AvaloniaSourcePath)' != ''" />
+  <Import Project="$(AvaloniaSourcePath)/src/tools/Avalonia.Generators/Avalonia.Generators.props"
+          Condition="'$(AvaloniaSourcePath)' != ''" />
+  <Import Project="$(AvaloniaSourcePath)/packages/Avalonia/AvaloniaBuildTasks.targets"
+          Condition="'$(AvaloniaSourcePath)' != ''" />
+
   <Target Name="_ReplaceAvaloniaSourceReferences"
           BeforeTargets="CollectPackageReferences;ResolvePackageAssets"
           Condition="'$(AvaloniaSourcePath)' != ''">
     <ItemGroup>
-      <ProjectReference Include="$(AvaloniaSourcePath)/packages/Avalonia/Avalonia.csproj"
+      <!--
+        The Avalonia NuGet metapackage bundles Avalonia.Base, Avalonia.Controls, etc.
+        as ref assemblies. When building from source, the metapackage csproj is just an
+        empty shell whose transitive ProjectReferences don't flow. Reference the core
+        libraries directly instead.
+      -->
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Base/Avalonia.Base.csproj"
                         Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Controls/Avalonia.Controls.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Dialogs/Avalonia.Dialogs.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Markup/Avalonia.Markup/Avalonia.Markup.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Markup/Avalonia.Markup.Xaml/Avalonia.Markup.Xaml.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.OpenGL/Avalonia.OpenGL.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Metal/Avalonia.Metal.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Vulkan/Avalonia.Vulkan.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.MicroCom/Avalonia.MicroCom.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.DesignerSupport/Avalonia.DesignerSupport.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Remote.Protocol/Avalonia.Remote.Protocol.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/tools/Avalonia.Generators/Avalonia.Generators.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))"
+                        ReferenceOutputAssembly="false"
+                        PrivateAssets="all"
+                        OutputItemType="Analyzer" />
       <PackageReference Remove="Avalonia" />
 
       <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Themes.Fluent/Avalonia.Themes.Fluent.csproj"

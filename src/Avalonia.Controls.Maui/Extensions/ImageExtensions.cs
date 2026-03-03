@@ -3,7 +3,7 @@ using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Microsoft.Maui;
-using Avalonia.Labs.Gif;
+using Avalonia.Controls.Maui.Controls.Gif;
 
 namespace Avalonia.Controls.Maui.Platform;
 
