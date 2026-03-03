@@ -1,0 +1,6 @@
+<Solution>
+    <Project Path="../../src/Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj" />
+    <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+    <Project Path="../../src/Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.csproj" />
+    <Project Path="SurfingApp/SurfingApp.csproj" />
+</Solution>

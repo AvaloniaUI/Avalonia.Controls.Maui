@@ -91,6 +91,32 @@
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build_chatapp_desktop",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/showcase/ChatApp/ChatApp/ChatApp.csproj",
+                "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build_surfingapp_desktop",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/showcase/SurfingApp/SurfingApp/SurfingApp.csproj",
+                "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "problemMatcher": "$msCompile"
         }
     ]
 }
