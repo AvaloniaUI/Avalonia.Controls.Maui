@@ -308,6 +308,96 @@ public partial class ShellHandlerTests : HandlerTestBase
         // Additional checks could involve inspecting the visual tree for ShellSearchControl
     }
 
+    [AvaloniaFact(DisplayName = "Shell SearchHandler Renders Full Width Below NavBar")]
+    public async Task ShellSearchHandlerRendersFullWidthBelowNavBar()
+    {
+        var shell = CreateBasicShell();
+        var searchHandler = new SearchHandler { Placeholder = "Search..." };
+
+        var page = shell.Items[0].Items[0].Items[0].Content as ContentPage;
+        Assert.NotNull(page);
+
+        Shell.SetSearchHandler(page, searchHandler);
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler._mainContainer);
+        Assert.NotNull(handler._topBar);
+        Assert.NotNull(handler._searchHostControl);
+        Assert.NotNull(handler._searchControl);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            const double width = 800;
+            const double height = 600;
+
+            handler._mainContainer!.Measure(new Avalonia.Size(width, height));
+            handler._mainContainer.Arrange(new Avalonia.Rect(0, 0, width, height));
+        });
+
+        Assert.True(handler._searchHostControl.IsVisible);
+        Assert.Same(handler._searchHostControl, handler._searchControl.Parent);
+        Assert.Same(handler._mainContainer, handler._searchHostControl.Parent);
+
+        // Search row should be below nav bar and use full page width.
+        Assert.True(handler._searchHostControl.Bounds.Y >= handler._topBar.Bounds.Bottom);
+        Assert.InRange(Math.Abs(handler._searchHostControl.Bounds.Width - handler._mainContainer.Bounds.Width), 0, 1.0);
+    }
+
+    [AvaloniaFact(DisplayName = "Shell SearchHandler Shows Suggestions While Typing")]
+    public async Task ShellSearchHandlerShowsSuggestionsWhileTyping()
+    {
+        var shell = CreateBasicShell();
+        var searchHandler = new SuggestionsSearchHandler();
+
+        var page = shell.Items[0].Items[0].Items[0].Content as ContentPage;
+        Assert.NotNull(page);
+
+        Shell.SetSearchHandler(page, searchHandler);
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler._mainContainer);
+        Assert.NotNull(handler._mainContentControl);
+        Assert.NotNull(handler._searchHostControl);
+        Assert.NotNull(handler._searchControl);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            const double width = 800;
+            const double height = 600;
+
+            handler._mainContainer!.Measure(new Avalonia.Size(width, height));
+            handler._mainContainer.Arrange(new Avalonia.Rect(0, 0, width, height));
+        });
+
+        var panel = handler._searchControl.Content as Panel;
+        Assert.NotNull(panel);
+
+        var searchBar = panel.Children.OfType<MauiSearchBar>().FirstOrDefault();
+
+        Assert.NotNull(searchBar);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            searchBar!.Text = "na";
+        });
+
+        var overlayCanvas = panel.Children.OfType<Canvas>().FirstOrDefault();
+        var resultsOverlay = overlayCanvas?.Children.OfType<Border>().FirstOrDefault();
+        var resultsList = resultsOverlay?.Child as ListBox;
+
+        Assert.NotNull(resultsList);
+        Assert.NotNull(resultsOverlay);
+        Assert.Equal("na", searchHandler.Query);
+        Assert.True((resultsList.ItemsSource as System.Collections.IEnumerable)?.Cast<object>().Any() ?? false);
+        Assert.True(resultsOverlay.IsVisible);
+
+        // Suggestions must be able to render above page content.
+        Assert.False(handler._searchHostControl.ClipToBounds);
+        Assert.True(handler._searchHostControl.ZIndex > handler._mainContentControl.ZIndex);
+    }
+
     [AvaloniaFact(DisplayName = "Shell With ShellContent Creates Correctly")]
     public async Task ShellWithShellContentCreatesCorrectly()
     {
@@ -846,6 +936,44 @@ public partial class ShellHandlerTests : HandlerTestBase
         Assert.Equal("←", handler._backButton.Content);
     }
 
+    [AvaloniaFact(DisplayName = "Shell Title Remains Centered With Left Buttons Visible")]
+    public async Task ShellTitleRemainsCenteredWithLeftButtonsVisible()
+    {
+        var shell = CreateShellWithNavigationStack();
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler._topBar);
+        Assert.NotNull(handler._titleTextBlock);
+        Assert.NotNull(handler._hamburgerButton);
+        Assert.NotNull(handler._backButton);
+
+        var deltaFromCenter = await InvokeOnMainThreadAsync(() =>
+        {
+            handler._hamburgerButton!.IsVisible = true;
+            handler._backButton!.IsVisible = true;
+
+            const double arrangedWidth = 800;
+            handler._topBar!.Measure(new Avalonia.Size(arrangedWidth, MauiShellHandler.DefaultBarHeight));
+            handler._topBar.Arrange(new Avalonia.Rect(0, 0, arrangedWidth, MauiShellHandler.DefaultBarHeight));
+
+            var titleBounds = handler._titleTextBlock!.Bounds;
+            var titleCenterXLocal = titleBounds.X + (titleBounds.Width / 2);
+            var titleCenterYLocal = titleBounds.Y + (titleBounds.Height / 2);
+
+            var titleCenterInTopBar = handler._titleTextBlock.TranslatePoint(
+                new Avalonia.Point(titleCenterXLocal, titleCenterYLocal),
+                handler._topBar);
+
+            Assert.NotNull(titleCenterInTopBar);
+            var expectedCenterX = arrangedWidth / 2;
+
+            return Math.Abs(titleCenterInTopBar.Value.X - expectedCenterX);
+        });
+
+        Assert.InRange(deltaFromCenter, 0, 1.0);
+    }
+
     [AvaloniaFact(DisplayName = "BackButtonBehavior Command Executes When Clicked")]
     public async Task BackButtonBehaviorCommandExecutesWhenClicked()
     {
@@ -1099,5 +1227,36 @@ public partial class ShellHandlerTests : HandlerTestBase
         shellSection.Navigation.PushAsync(page2);
 
         return shell;
+    }
+
+    private sealed class SuggestionsSearchHandler : SearchHandler
+    {
+        private static readonly string[] Suggestions =
+        {
+            "Navigation",
+            "Styling",
+            "Structure",
+            "Colors"
+        };
+
+        public SuggestionsSearchHandler()
+        {
+            ShowsResults = true;
+        }
+
+        protected override void OnQueryChanged(string oldValue, string newValue)
+        {
+            base.OnQueryChanged(oldValue, newValue);
+
+            if (string.IsNullOrWhiteSpace(newValue))
+            {
+                ItemsSource = null;
+                return;
+            }
+
+            ItemsSource = Suggestions
+                .Where(x => x.Contains(newValue, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
     }
 }
