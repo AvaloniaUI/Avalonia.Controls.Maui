@@ -1,6 +1,6 @@
 # Architecture
 
-`Avalonia.Controls.Maui` replaces the .NET MAUI native rendering pipeline with Avalonia. Rather than drawing controls through platform-native APIs, every control is drawn by Avalonia using its own rendering engine, which runs consistently across all supported platforms.
+`Avalonia.Controls.Maui` replaces the .NET MAUI native rendering pipeline with Avalonia when using full hosting mode (`UseAvaloniaApp`). In this mode, controls are drawn by Avalonia's renderer instead of platform-native widgets. On overlapping MAUI-native targets, embedding mode (`UseAvaloniaEmbedding<TApp>`) is currently the conservative path.
 
 This document describes the design principles, package structure, integration model, handler system, rendering pipeline, lifecycle integration, font and image services, and build-time asset processing.
 
@@ -8,13 +8,11 @@ This document describes the design principles, package structure, integration mo
 
 The library is built on a small set of explicit constraints that shape every implementation decision.
 
-**No fork.** The library works against the official .NET MAUI NuGet packages. It does not maintain a fork of .NET MAUI.
+**No MAUI fork and no custom MAUI binaries.** Integration uses official .NET MAUI packages. Required upstream changes are expected to land in MAUI itself rather than in a private MAUI distribution.
 
-**No new target frameworks.** Apps do not add a new `<TargetFramework>` to use Avalonia rendering. The existing .NET MAUI target frameworks (`net-ios`, `net-android`, `net-maccatalyst`, `net-windows`) are used as-is, and Linux and browser targets use the same mechanism.
+**No type swizzling.** The project avoids IL rewriting/Mono.Cecil-style hacks. Integration is primarily through handler registration and DI, with a small reflection-based workaround where MAUI does not yet expose a public hook (`SemanticScreenReader.SetDefault`).
 
-**No type swizzling or runtime patching.** Integration happens exclusively through .NET MAUI's public handler registration and dependency injection APIs.
-
-**Single target.** Because all platform views are Avalonia controls, the library maintains one handler implementation for all platforms rather than separate implementations for Android, iOS, Windows, macOS, Linux, and WebAssembly. This makes the codebase significantly easier to maintain and new platform support straightforward to add.
+**Shared handler logic.** The goal is to keep one logical MAUI-to-Avalonia handler mapping and thin platform host layers, minimizing platform-specific divergence.
 
 **Upstream collaboration.** The team works closely with Microsoft's .NET MAUI engineers to identify and contribute the upstream changes that make this integration possible.
 
@@ -31,18 +29,18 @@ The library is distributed as a set of NuGet packages, each covering a distinct 
 | `Avalonia.Controls.Maui.Maps.Mapsui` | Map control powered by Mapsui |
 | `Avalonia.Controls.Maui.Desktop` | Metapackage that references the core package and runs source generation for desktop bootstrapping |
 
-## Platform support
+## Platform support (current)
 
-.NET MAUI natively targets Android, iOS, Mac Catalyst, and Windows. `Avalonia.Controls.Maui` extends this to Linux and WebAssembly, because Avalonia already runs on those platforms and all handler implementations are platform-agnostic.
+As of March 3, 2026, the practical support story is split between full hosting and embedding:
 
-| Platform | .NET MAUI built-in | Avalonia.Controls.Maui |
-|---|---|---|
-| Android | Yes | Yes |
-| iOS | Yes | Yes |
-| Mac Catalyst | Yes | Yes |
-| Windows | Yes | Yes |
-| Linux | No | Yes |
-| WebAssembly | No | Yes |
+| Platform/runtime | .NET MAUI built-in | Full hosting (`UseAvaloniaApp`) | Embedding (`UseAvaloniaEmbedding`) |
+|---|---|---|---|
+| Android (`net*-android`) | Yes | Overlap with MAUI native target; not the primary path yet | Yes |
+| iOS (`net*-ios`) | Yes | Overlap with MAUI native target; not the primary path yet | Yes |
+| Mac Catalyst (`net*-maccatalyst`) | Yes | Overlap with MAUI native target; not the primary path yet | Yes |
+| Windows WinUI (`net*-windows`) | Yes | WinUI path currently includes stub handlers | No (current handler is stub) |
+| Desktop generic (`net*` + `Avalonia.Desktop`) | No | Yes (Windows/macOS/Linux via Avalonia) | N/A |
+| Browser (`net*-browser`) | No | Yes (`useSingleViewLifetime: true`) | N/A |
 
 ## Integration model
 
@@ -107,7 +105,9 @@ public static void MapText(ButtonHandler handler, IButton button)
 
 ### Generic base handler
 
-Most handlers inherit from `AvaloniaControlHandler<TVirtualView, TControl>`, a generic base class that manages the lifecycle of the Avalonia control: creation, attachment to the host view, and cleanup. Platform-specific behavior is provided via partial class files (`.Android.cs`, `.iOS.cs`, `.Windows.cs`) that override how the host view is created and how the Avalonia control is attached to it.
+`AvaloniaControlHandler<TVirtualView, TControl>` is a reusable base for hosting a custom Avalonia control inside a MAUI handler. In the current codebase, built-in handlers generally inherit directly from `ViewHandler<TVirtualView, TPlatformView>`, while this base remains useful for extension scenarios.
+
+Platform-specific host behavior for this base is split via partial class files (`.Android.cs`, `.iOS.cs`, `.Standard.cs`, `.Windows.cs`).
 
 ```csharp
 public partial class AvaloniaControlHandler<TVirtualView, TControl>
@@ -154,10 +154,10 @@ The methods `PresentModal` and `DismissModal` manage the overlay stack, includin
 
 ### Rendering engine
 
-Avalonia currently renders using Skia. The team is working on a migration to Impeller, the GPU-first renderer developed by Google for Flutter. A .NET binding layer called NImpeller wraps Impeller's C API for use from .NET. When complete, this transition is expected to deliver smoother frame rates, lower VRAM usage, and improved performance on macOS compared to the Mac Catalyst approach.
+Current implementation uses Avalonia's Skia renderer. Impeller work is roadmap/active R&D from Avalonia's side and is not yet wired into this repository's runtime path.
 
 > [!NOTE]
-> The Impeller migration is in progress. Current builds use Skia. No changes to app code are required when the renderer transitions.
+> The repository currently renders with Skia. Treat Impeller statements as roadmap context unless corresponding runtime integration lands in source.
 
 ## Embedding mode
 
@@ -181,7 +181,7 @@ In addition to the full hosting mode, `Avalonia.Controls.Maui` supports an embed
 
 ### Animation ticker
 
-.NET MAUI drives animations through `ITicker`. The default implementation uses platform timers. `Avalonia.Controls.Maui` replaces it with `AvaloniaTicker`, which hooks into Avalonia's rendering loop. This synchronizes .NET MAUI animations with Avalonia's frame pipeline.
+.NET MAUI drives animations through `ITicker`. `Avalonia.Controls.Maui` replaces the default with `AvaloniaTicker`, which uses `DispatcherTimer` at `DispatcherPriority.Render` so callbacks execute on Avalonia's UI thread with render-priority scheduling.
 
 ### Theme changes
 
@@ -189,24 +189,30 @@ In addition to the full hosting mode, `Avalonia.Controls.Maui` supports an embed
 
 ### Lifecycle events
 
-`Avalonia.Controls.Maui` defines a set of custom lifecycle events through `AvaloniaLifecycle` that can be subscribed to via `ConfigureLifecycleEvents`:
+`Avalonia.Controls.Maui` defines custom lifecycle events through `AvaloniaLifecycle` that can be subscribed to via `ConfigureLifecycleEvents`.
+In current source, the bootstrap path actively raises `OnLaunching`, `OnLaunched`, and `OnWindowCreated` (desktop only):
 
 | Event | When it fires |
 |---|---|
 | `OnLaunching` | Before the .NET MAUI app is created |
 | `OnLaunched` | After the .NET MAUI app is created |
-| `OnMauiContextCreated` | After the window-scoped DI container is created |
-| `OnWindowCreated` | After the window handler is created |
+| `OnWindowCreated` | After the Avalonia window is created (desktop lifetime only) |
 
 ```csharp
 builder.ConfigureLifecycleEvents(events =>
 {
-    events.AddAvalonia(avalonia =>
+    events.AddWindows(avalonia =>
     {
         avalonia.OnLaunched((app, args) => Console.WriteLine("Launched"));
     });
 });
 ```
+
+`OnMauiContextCreated` exists as an internal event used by the host bootstrap and is not part of the public lifecycle-builder extension surface.
+
+Additional delegates (`OnActivated`, `OnClosed`, `OnVisibilityChanged`, `OnResumed`, `OnPlatformMessage`) are defined in `AvaloniaLifecycle` but are not currently raised by the bootstrap/window pipeline in this repository.
+
+For single-view lifetimes (for example browser), `OnWindowCreated` is not raised because there is no `Window` instance, only a root `Control`.
 
 ## Font system
 
@@ -266,3 +272,12 @@ AddAvaloniaResources
     ↓
 CoreCompile
 ```
+
+## Reference context
+
+This document aligns implementation details with:
+
+- https://avaloniaui.net/blog/avalonia-maui-progress-update
+- https://avaloniaui.net/blog/net-maui-is-coming-to-linux-and-the-browser-powered-by-avalonia
+
+Blog posts include roadmap/vision statements; source code in this repository is the implementation authority for current behavior.
