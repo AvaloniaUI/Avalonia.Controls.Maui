@@ -2,6 +2,17 @@
     <Import Project="Directory.Build.props.user"
             Condition="Exists('$(MSBuildThisFileDirectory)Directory.Build.props.user')" />
 
+    <!--
+        For MAUI source builds, disable the implicit package references that the
+        MAUI workload SDK adds via BundledVersions.targets (Microsoft.Maui.Controls,
+        Microsoft.Maui.Core, etc.). We replace these with ProjectReferences to
+        the local MAUI source tree in SourceBuild.targets instead.
+    -->
+    <PropertyGroup Condition="'$(MauiSourcePath)' != ''">
+        <DisableMauiImplicitPackageReferences>true</DisableMauiImplicitPackageReferences>
+        <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
+    </PropertyGroup>
+
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <IsPackable>false</IsPackable>
@@ -30,6 +41,9 @@
 
     <PropertyGroup>
         <MicrosoftExtensionsVersion>11.0.0-preview.1.26104.118</MicrosoftExtensionsVersion>
+        <SkiaSharpVersion>3.119.1</SkiaSharpVersion>
+        <HarfBuzzSharpVersion>8.3.1.2</HarfBuzzSharpVersion>
+        <MicroComVersion>0.11.0</MicroComVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net11.0'">

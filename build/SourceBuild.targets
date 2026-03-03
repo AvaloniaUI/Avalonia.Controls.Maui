@@ -65,6 +65,13 @@
                         ReferenceOutputAssembly="false"
                         PrivateAssets="all"
                         OutputItemType="Analyzer" />
+      <!--
+        MicroCom.Runtime is a NuGet dependency of Avalonia.MicroCom. It doesn't flow
+        transitively across repo boundaries, so add it explicitly.
+      -->
+      <PackageReference Include="MicroCom.Runtime"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))"
+                        Version="$(MicroComVersion)" />
       <PackageReference Remove="Avalonia" />
 
       <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Themes.Fluent/Avalonia.Themes.Fluent.csproj"
@@ -77,10 +84,21 @@
 
       <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Desktop/Avalonia.Desktop.csproj"
                         Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Desktop'))" />
+      <!--
+        HarfBuzzSharp is a NuGet dependency of Avalonia.HarfBuzz, which is pulled in
+        by Avalonia.Desktop. It doesn't flow transitively across repo boundaries.
+      -->
+      <PackageReference Include="HarfBuzzSharp"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Desktop'))
+                                OR @(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.HarfBuzz'))"
+                        Version="$(HarfBuzzSharpVersion)" />
       <PackageReference Remove="Avalonia.Desktop" />
 
       <ProjectReference Include="$(AvaloniaSourcePath)/src/Skia/Avalonia.Skia/Avalonia.Skia.csproj"
                         Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Skia'))" />
+      <PackageReference Include="SkiaSharp"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Skia'))"
+                        Version="$(SkiaSharpVersion)" />
       <PackageReference Remove="Avalonia.Skia" />
 
       <ProjectReference Include="$(AvaloniaSourcePath)/src/iOS/Avalonia.iOS/Avalonia.iOS.csproj"
@@ -116,6 +134,16 @@
   <Target Name="_ReplaceMauiSourceReferences"
           BeforeTargets="CollectPackageReferences;ResolvePackageAssets"
           Condition="'$(MauiSourcePath)' != ''">
+    <!--
+      Determine whether any MAUI packages are being replaced so we can add
+      the Microsoft.Extensions packages exactly once (avoiding NU1504 duplicates).
+    -->
+    <PropertyGroup>
+      <_NeedsMauiExtensions Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))
+                                    OR @(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls'))
+                                    OR @(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Core'))
+                                    OR @(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Maps'))">true</_NeedsMauiExtensions>
+    </PropertyGroup>
     <ItemGroup>
       <!--
         The Microsoft.Maui.Controls.Core NuGet package transitively pulls in
@@ -125,35 +153,36 @@
       -->
       <ProjectReference Include="$(MauiSourcePath)/src/Controls/src/Core/Controls.Core.csproj"
                         Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Controls/src/Xaml/Controls.Xaml.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))" />
       <ProjectReference Include="$(MauiSourcePath)/src/Core/src/Core.csproj"
                         Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))" />
       <ProjectReference Include="$(MauiSourcePath)/src/Graphics/src/Graphics/Graphics.csproj"
                         Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))" />
       <ProjectReference Include="$(MauiSourcePath)/src/Essentials/src/Essentials.csproj"
                         Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))" />
-      <!--
-        The MAUI NuGet packages also transitively bring in Microsoft.Extensions packages.
-        These NuGet-to-NuGet transitive dependencies don't flow when replaced with
-        ProjectReferences, so add them explicitly.
-      -->
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection"
-                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))"
-                        Version="$(MicrosoftExtensionsVersion)" />
-      <PackageReference Include="Microsoft.Extensions.Logging"
-                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))"
-                        Version="$(MicrosoftExtensionsVersion)" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"
-                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))"
-                        Version="$(MicrosoftExtensionsVersion)" />
-      <PackageReference Include="Microsoft.Extensions.Configuration"
-                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))"
-                        Version="$(MicrosoftExtensionsVersion)" />
-      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions"
-                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))"
-                        Version="$(MicrosoftExtensionsVersion)" />
       <PackageReference Remove="Microsoft.Maui.Controls.Core" />
 
+      <!--
+        The Microsoft.Maui.Controls NuGet metapackage wraps Microsoft.Maui.Controls.Core,
+        Microsoft.Maui.Controls.Xaml, XAML source generators and build infrastructure.
+        When building from source, replace it with the same set of direct ProjectReferences.
+      -->
+      <ProjectReference Include="$(MauiSourcePath)/src/Controls/src/Core/Controls.Core.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls'))" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Controls/src/Xaml/Controls.Xaml.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls'))" />
       <ProjectReference Include="$(MauiSourcePath)/src/Core/src/Core.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls'))" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Graphics/src/Graphics/Graphics.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls'))" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Essentials/src/Essentials.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls'))" />
+      <PackageReference Remove="Microsoft.Maui.Controls" />
+
+      <ProjectReference Include="$(MauiSourcePath)/src/Core/src/Core.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Core'))" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Essentials/src/Essentials.csproj"
                         Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Core'))" />
       <PackageReference Remove="Microsoft.Maui.Core" />
 
@@ -167,7 +196,39 @@
 
       <ProjectReference Include="$(MauiSourcePath)/src/Controls/Maps/src/Controls.Maps.csproj"
                         Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Maps'))" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Core/maps/src/Maps.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Maps'))" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Controls/src/Core/Controls.Core.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Maps'))" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Core/src/Core.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Maps'))" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Graphics/src/Graphics/Graphics.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Maps'))" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Essentials/src/Essentials.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Maps'))" />
       <PackageReference Remove="Microsoft.Maui.Controls.Maps" />
+
+      <!--
+        The MAUI NuGet packages transitively bring in Microsoft.Extensions packages.
+        These NuGet-to-NuGet transitive dependencies don't flow when replaced with
+        ProjectReferences, so add them explicitly. Added once using a flag to avoid
+        NU1504 duplicate PackageReference errors when multiple MAUI packages are present.
+      -->
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'"
+                        Version="$(MicrosoftExtensionsVersion)" />
+      <PackageReference Include="Microsoft.Extensions.Logging"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'"
+                        Version="$(MicrosoftExtensionsVersion)" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'"
+                        Version="$(MicrosoftExtensionsVersion)" />
+      <PackageReference Include="Microsoft.Extensions.Configuration"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'"
+                        Version="$(MicrosoftExtensionsVersion)" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'"
+                        Version="$(MicrosoftExtensionsVersion)" />
     </ItemGroup>
   </Target>
 
@@ -214,5 +275,46 @@
     <Delete Files="$(_MauiControlsIVTFile)" Condition="Exists('$(_MauiControlsIVTFile)')" />
     <Delete Files="$(_MauiEssentialsIVTFile)" Condition="Exists('$(_MauiEssentialsIVTFile)')" />
   </Target>
+
+  <!--
+    When building from MAUI source with UseMaui=true, the Microsoft.Maui.Controls
+    NuGet package's build infrastructure (global usings, XAML source generators,
+    XAML compilation targets) is not available because we replaced the PackageReference
+    with ProjectReferences. Import the equivalent build infrastructure from the MAUI
+    source tree's .buildtasks/ directory, which contains the same props/targets files
+    that are packed into the NuGet package.
+
+    The .buildtasks/ directory is generated by the MAUI build and must exist before
+    building Avalonia.Controls.Maui from source. It contains pre-built DLLs for the
+    XAML source generator (Microsoft.Maui.Controls.SourceGen.dll) and XamlC build
+    task (Microsoft.Maui.Controls.Build.Tasks.dll).
+
+    Import order:
+      1. Set EnableDefaultMauiItems properties (normally set in After.targets)
+      2. Import Globs.props: global usings + MauiXaml/MauiCss item definitions
+      3. Import Build.Tasks.targets: registers XamlC task, adds source generators,
+         imports Before.targets, and schedules After.targets via AfterMicrosoftNETSdkTargets
+  -->
+  <PropertyGroup Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'">
+    <EnableDefaultMauiItems Condition="'$(EnableDefaultMauiItems)' == ''">$(EnableDefaultItems)</EnableDefaultMauiItems>
+    <EnableDefaultXamlItems Condition="'$(EnableDefaultXamlItems)' == ''">$(EnableDefaultMauiItems)</EnableDefaultXamlItems>
+    <EnableDefaultCssItems Condition="'$(EnableDefaultCssItems)' == ''">$(EnableDefaultMauiItems)</EnableDefaultCssItems>
+    <EnableDefaultEmbeddedResourceItems Condition="'$(EnableDefaultEmbeddedResourceItems)' == ''">$(EnableDefaultMauiItems)</EnableDefaultEmbeddedResourceItems>
+  </PropertyGroup>
+
+  <Import Project="$(MauiSourcePath)/.buildtasks/Microsoft.Maui.Controls.Globs.props"
+          Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'" />
+
+  <Import Project="$(MauiSourcePath)/.buildtasks/Microsoft.Maui.Controls.Build.Tasks.targets"
+          Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'" />
+
+  <!--
+    The Microsoft.Maui.Resizetizer NuGet package provides image/font/asset
+    processing targets (ResizetizeImages, ProcessMauiFonts, etc.).
+    When building from source with UseMaui=true, import these from the MAUI
+    source tree instead.
+  -->
+  <Import Project="$(MauiSourcePath)/.buildtasks/Microsoft.Maui.Resizetizer.targets"
+          Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'" />
 
 </Project>

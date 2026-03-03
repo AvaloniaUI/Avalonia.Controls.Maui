@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Controls.Maui;
-using Avalonia.Controls.Maui.Maps.Mapsui;
 using Avalonia.Controls.Maui.Compatibility;
 using Avalonia.Controls.Maui.Essentials;
 using Microsoft.Maui;
@@ -29,7 +28,6 @@ public static class MauiProgram
              .UseAvaloniaCompatibility()
              .UseAvaloniaEssentials()
              .UseAvaloniaGraphics()
-             .UseAvaloniaMapsui()
              .ConfigureMauiHandlers(handlers =>
              {
                  handlers.AddHandler<CounterView, CounterViewHandler>();
