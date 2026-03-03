@@ -1,6 +1,6 @@
 # Avalonia.Controls.Maui.Essentials
 
-Avalonia.Controls.Maui.Essentials provides Avalonia-based implementations of [Microsoft.Maui.Essentials](https://learn.microsoft.com/en-us/dotnet/maui/platform-integration/) APIs. This allows MAUI apps running on Avalonia to use Essentials services.
+Avalonia.Controls.Maui.Essentials provides Avalonia-based implementations of [Microsoft.Maui.Essentials](https://learn.microsoft.com/en-us/dotnet/maui/platform-integration/) APIs. Internally, it generally uses Avalonia APIs for accessing services, unless they don't exist or are specific to platforms where that would not be applicable.
 
 ## Setup
 
@@ -27,4 +27,4 @@ builder
 
 ## Not Implemented APIs
 
-For APIs that have not been implemented in Microsoft.Maui.Essentials APIs, they will fall back to the default .NET MAUI standard implementations. These  may throw `NotImplementedException` as most of them are platform specific implementations. We are adding more support for the areas we can cover.
+For APIs that have not been implemented in Microsoft.Maui.Essentials APIs, they will fall back to the default .NET MAUI standard implementations. These will most likely throw `NotImplementedException` as most of them are platform specific implementations. We are adding more support for the areas we can cover.
