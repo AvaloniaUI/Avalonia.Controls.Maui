@@ -74,12 +74,17 @@
             PackagePath="" />
     </ItemGroup>
 
-    <!-- 
+    <!--
         This is here to support accessing MAUI internals while we work on
-        upstreaming changes needed in MAUI to support Avalonia.Controls.Maui. 
-        Remove this when no longer needed.     
+        upstreaming changes needed in MAUI to support Avalonia.Controls.Maui.
+        Remove this when no longer needed.
+
+        For NuGet builds (MauiSourcePath not set), we use IgnoresAccessChecksToGenerator
+        to bypass access checks at compile time.
+        For source builds (MauiSourcePath set), SourceBuild.targets writes
+        InternalsVisibleTo .cs files into the MAUI source directories instead.
     -->
-    <ItemGroup Condition="'$(AddMauiInternals)' == 'true'">
+    <ItemGroup Condition="'$(AddMauiInternals)' == 'true' AND '$(MauiSourcePath)' == ''">
         <IgnoresAccessChecksTo Include="Microsoft.Maui" />
         <IgnoresAccessChecksTo Include="Microsoft.Maui.Controls" />
         <IgnoresAccessChecksTo Include="Microsoft.Maui.Essentials" />

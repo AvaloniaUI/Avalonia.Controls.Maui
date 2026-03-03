@@ -137,11 +137,19 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
     }
 
     /// <inheritdoc/>
+#if MAUI_SOURCE_BUILD
+    private protected override void OnConnectHandler(object platformView) =>
+#else
     public override void OnConnectHandler(object platformView) =>
+#endif
         ConnectHandler((TPlatformView)platformView);
 
     /// <inheritdoc/>
+#if MAUI_SOURCE_BUILD
+    private protected override void OnDisconnectHandler(object platformView) =>
+#else
     public override void OnDisconnectHandler(object platformView) =>
+#endif
         DisconnectHandler((TPlatformView)platformView);
 
     /// <inheritdoc/>
