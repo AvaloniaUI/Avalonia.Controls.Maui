@@ -1,14 +1,52 @@
 # Avalonia.Controls.Maui
 
-Avalonia.Controls.Maui replaces .NET MAUI's native platform controls with Avalonia-drawn controls. This enables MAUI apps to run on platforms that MAUI doesn't natively support, such as Linux and WASM, while maintaining a consistent look across all platforms.
+Avalonia.Controls.Maui replaces .NET MAUI's native platform controls with Avalonia-drawn controls. This enables MAUI apps to run on platforms that MAUI doesn't natively support, such as Linux and WASM, as well as platforms Avalonia supports, such as macOS AppKit. All while maintaining a consistent look across all platforms.
 
 ## Getting Started
 
-Register the Avalonia handlers in your `MauiProgram.cs`:
+### Prerequisites
+
+- [.NET 11 SDK](https://dotnet.microsoft.com/download)
+- A .NET MAUI workload installed (`dotnet workload install maui`)
+- If using WASM, install `wasm-tools` (`dotnet workload install wasm-tools`)
+
+### Quick Start
+
+The fastest way to get started is with a MAUI single-project app using the `Avalonia.Controls.Maui.Desktop` package.
+
+For other cases, refer to our [docs](https://docs.avaloniaui.net).
+
+**1. Include the standard TFM and NuGet packages to your `.csproj`:**
+
+```xml
+<PropertyGroup>
+    <!-- Include the net11.0 TFM. -->
+    <TargetFrameworks>net11.0;net11.0-android;net11.0-ios;net11.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">
+        $(TargetFrameworks);net11.0-windows10.0.19041.0</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <UseMaui>true</UseMaui>
+    <SingleProject>true</SingleProject>
+</PropertyGroup>
+
+<ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+    <PackageReference Include="Avalonia.Controls.Maui" Version="..." />
+    <!-- 
+     Avalonia.Controls.Maui.Desktop includes Avalonia.Desktop, 
+     and will automatically set up the required Avalonia Application
+     and themes.
+     -->
+    <PackageReference Include="Avalonia.Controls.Maui.Desktop"
+                      Condition="'$(TargetFramework)' == 'net11.0'" Version="..." />
+</ItemGroup>
+```
+
+If you include the `Avalonia.Controls.Maui.Desktop` package, it will automatically create the Avalonia bootstrap code through its source generator. No manual Avalonia `Program.cs` or `AppBuilder` setup is needed for desktop.
+
+**2. Call `UseAvaloniaApp()` in your `MauiProgram.cs`:**
 
 ```csharp
-using Avalonia.Controls.Maui;
-
 public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
@@ -16,68 +54,82 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
-            .UseAvaloniaApp();
+// `UseAvaloniaApp()` replaces all MAUI controls with Avalonia-drawn equivalents.
+#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
+            .UseAvaloniaApp()
+#else
+// `UseAvaloniaEmbedding<AvaloniaApp>()` lets you embed Avalonia views inside the native MAUI shell.
+            .UseAvaloniaEmbedding<AvaloniaApp>()
+#endif
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+            });
 
         return builder.Build();
     }
 }
 ```
 
-If your application uses a single-view lifetime (e.g. for WASM), pass `useSingleViewLifetime: true`:
+That's it — run with `dotnet run` and your MAUI app renders with Avalonia.
 
-```csharp
-builder.UseAvaloniaApp(useSingleViewLifetime: true);
+### WASM / Browser
+
+Because the WASM target framework requires a different SDK, we can't reference it inside of the .NET MAUI Single Project application. Instead, we can create a separate browser project that references your MAUI library.
+
+**1. Create a browser `.csproj`:**
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+    <PropertyGroup>
+        <TargetFramework>net11.0-browser</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <UseMaui>true</UseMaui>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia.Controls.Maui" Version="..." />
+        <PackageReference Include="Avalonia.Browser" Version="..." />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="..." />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="..." />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="../YourMauiApp/YourMauiApp.csproj" />
+    </ItemGroup>
+</Project>
 ```
 
-## Application Setup
+Your MAUI code can live in a class library referenced by both the single-project app and the browser project. Alternatively, you can keep a single-project app and disable `OutputType Exe` for the `net11.0-browser` TFM.
 
-There are two ways to set up your application to use Avalonia.Controls.Maui. 
-
-### Single Project
-
-You can add Avalonia.Desktop support directly to a Single Project .NET MAUI. Please refer to the [Avalonia.Controls.Maui.Desktop](https://github.com/AvaloniaUI/Avalonia.Controls.Maui/blob/main/src/Avalonia.Controls.Maui.Desktop/README.md).
-
-### Shared .NET MAUI Project
-
-Your .NET MAUI `App`, pages, and views live in a shared class library. This library does not have to reference platform specific cod (Although it can support multiple target frameworks), nor does it need to reference Avalonia.Controls.Maui, it only needs to reference the core Microsoft.Maui.Controls libraries.
-
-### Avalonia Projects
-
-To create an Avalonia project and set up the templates, refer to our [Getting Started](https://docs.avaloniaui.net/docs/get-started/) docs.
-
-**App.axaml.cs** — Inherit from `MauiAvaloniaApplication` and override `CreateMauiApp`:
-
-**NOTE**: The Avalonia Application is not required to be an `axaml` document, you can create this from code-behind if you wish, but the templates default to it.
+**2. Add a `MauiProgram.cs` with `useSingleViewLifetime: true`:**
 
 ```csharp
-using Avalonia.Markup.Xaml;
-using Avalonia.Controls.Maui.Platform;
-using Microsoft.Maui.Hosting;
-
-public class App : MauiAvaloniaApplication
+public static class MauiProgram
 {
-    public override void Initialize()
+    public static MauiApp CreateMauiApp()
     {
-        AvaloniaXamlLoader.Load(this);
-    }
+        var builder = MauiApp.CreateBuilder();
+        builder
+            .UseMauiApp<MauiAppStub>()
+// Hint: useSingleViewLifetime also applies to Mobile platforms, like iOS/Android, and Mac Catalyst.
+#if BROWSER
+            .UseAvaloniaApp(useSingleViewLifetime: true)
+#endif
+            .ConfigureFonts(fonts =>
+            {
+                fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                ...
+            });
 
-    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+        return builder.Build();
+    }
 }
 ```
 
-## Supported Controls
-
-We are working on implementing more Avalonia-based controls for .NET MAUI. Currently, we have such controls as:
-
-- **Input**: Button, ImageButton, Entry, Editor, SearchBar, Picker, DatePicker, TimePicker, Stepper, Slider, CheckBox, RadioButton, Switch
-- **Display**: Label, Image, ProgressBar, ActivityIndicator, Border, BoxView
-- **Layout**: ContentView, ContentPresenter, ScrollView, Layout
-- **Collections**: CollectionView, CarouselView, IndicatorView, RefreshView, SwipeView
-- **Navigation**: NavigationPage, TabbedPage, FlyoutPage, Shell
-- **Shapes**: Line, Rectangle, Ellipse, Polygon, Polyline, Path, RoundRectangle
-- **Menus**: MenuBar, MenuFlyout, MenuFlyoutItem, MenuFlyoutSubItem, Toolbar
-
-Also check out [Avalonia.Controls.Maui.Compatibility](https://www.nuget.org/packages/Avalonia.Controls.Maui.Compatibility) and [Avalonia.Controls.Maui.Graphics](https://www.nuget.org/packages/Avalonia.Controls.Maui.Graphics).
+Browser apps use `useSingleViewLifetime: true` since WebAssembly runs in a single-view context.
 
 ## License
 
