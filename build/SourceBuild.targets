@@ -1,0 +1,91 @@
+<Project>
+
+  <!--
+    SourceBuild.targets - Replaces NuGet PackageReferences with ProjectReferences
+    to local Avalonia and/or MAUI source checkouts for source-level debugging.
+
+    Activated by setting AvaloniaSourcePath and/or MauiSourcePath properties
+    (typically via Directory.Build.props.user).
+  -->
+
+  <Target Name="_ReplaceAvaloniaSourceReferences"
+          BeforeTargets="CollectPackageReferences;ResolvePackageAssets"
+          Condition="'$(AvaloniaSourcePath)' != ''">
+    <ItemGroup>
+      <ProjectReference Include="$(AvaloniaSourcePath)/packages/Avalonia/Avalonia.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))" />
+      <PackageReference Remove="Avalonia" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Themes.Fluent/Avalonia.Themes.Fluent.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Themes.Fluent'))" />
+      <PackageReference Remove="Avalonia.Themes.Fluent" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Fonts.Inter/Avalonia.Fonts.Inter.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Fonts.Inter'))" />
+      <PackageReference Remove="Avalonia.Fonts.Inter" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Desktop/Avalonia.Desktop.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Desktop'))" />
+      <PackageReference Remove="Avalonia.Desktop" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Skia/Avalonia.Skia/Avalonia.Skia.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Skia'))" />
+      <PackageReference Remove="Avalonia.Skia" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/iOS/Avalonia.iOS/Avalonia.iOS.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.iOS'))" />
+      <PackageReference Remove="Avalonia.iOS" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Android/Avalonia.Android/Avalonia.Android.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Android'))" />
+      <PackageReference Remove="Avalonia.Android" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Browser/Avalonia.Browser/Avalonia.Browser.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Browser'))" />
+      <PackageReference Remove="Avalonia.Browser" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Headless/Avalonia.Headless/Avalonia.Headless.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Headless'))" />
+      <PackageReference Remove="Avalonia.Headless" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Headless/Avalonia.Headless.XUnit/Avalonia.Headless.XUnit.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Headless.XUnit'))" />
+      <PackageReference Remove="Avalonia.Headless.XUnit" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/HarfBuzz/Avalonia.HarfBuzz/Avalonia.HarfBuzz.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.HarfBuzz'))" />
+      <PackageReference Remove="Avalonia.HarfBuzz" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Themes.Simple/Avalonia.Themes.Simple.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Themes.Simple'))" />
+      <PackageReference Remove="Avalonia.Themes.Simple" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_ReplaceMauiSourceReferences"
+          BeforeTargets="CollectPackageReferences;ResolvePackageAssets"
+          Condition="'$(MauiSourcePath)' != ''">
+    <ItemGroup>
+      <ProjectReference Include="$(MauiSourcePath)/src/Controls/src/Core/Controls.Core.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))" />
+      <PackageReference Remove="Microsoft.Maui.Controls.Core" />
+
+      <ProjectReference Include="$(MauiSourcePath)/src/Core/src/Core.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Core'))" />
+      <PackageReference Remove="Microsoft.Maui.Core" />
+
+      <ProjectReference Include="$(MauiSourcePath)/src/Graphics/src/Graphics/Graphics.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Graphics'))" />
+      <PackageReference Remove="Microsoft.Maui.Graphics" />
+
+      <ProjectReference Include="$(MauiSourcePath)/src/Graphics/src/Graphics.Skia/Graphics.Skia.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Graphics.Skia'))" />
+      <PackageReference Remove="Microsoft.Maui.Graphics.Skia" />
+
+      <ProjectReference Include="$(MauiSourcePath)/src/Controls/Maps/src/Controls.Maps.csproj"
+                        Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Maps'))" />
+      <PackageReference Remove="Microsoft.Maui.Controls.Maps" />
+    </ItemGroup>
+  </Target>
+
+</Project>

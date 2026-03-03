@@ -1,8 +1,11 @@
 <Project>
+    <Import Project="Directory.Build.props.user"
+            Condition="Exists('$(MSBuildThisFileDirectory)Directory.Build.props.user')" />
+
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0062426-alpha</AvaloniaVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0062861-alpha</AvaloniaVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net11.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
         <BuildDirectory>$(MSBuildThisFileDirectory)/build/</BuildDirectory>
