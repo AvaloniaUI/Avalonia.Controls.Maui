@@ -42,9 +42,9 @@ public static class ShellExtensions
         }
         else
         {
-            handler._mainContainer.ClearValue(DockPanel.BackgroundProperty);
+            handler._mainContainer.ClearValue(Panel.BackgroundProperty);
             if (handler._topBar != null)
-                handler._topBar.ClearValue(DockPanel.BackgroundProperty);
+                handler._topBar.ClearValue(Panel.BackgroundProperty);
         }
     }
 
@@ -907,13 +907,6 @@ public static class ShellExtensions
         if (handler._titleViewControl == null || handler._topBar == null || shell == null || handler.MauiContext == null)
             return;
 
-        if (handler._searchControl != null && handler._searchControl.IsVisible)
-        {
-            handler._titleViewControl.IsVisible = false;
-            if (handler._titleTextBlock != null) handler._titleTextBlock.IsVisible = false;
-            return;
-        }
-
         var titleView = (shell.CurrentPage != null ? MauiShell.GetTitleView(shell.CurrentPage) : null)
             ?? MauiShell.GetTitleView(shell);
 
@@ -990,10 +983,16 @@ public static class ShellExtensions
             if (handler._searchControl != null)
             {
                 handler._searchControl.CleanUp();
-                handler._topBar.Children.Remove(handler._searchControl);
+                if (handler._searchHostControl != null)
+                {
+                    handler._searchHostControl.Content = null;
+                    handler._searchHostControl.IsVisible = false;
+                }
+
                 handler._searchControl = null;
             }
-                handler.UpdateTitleView(shell);
+
+            handler.UpdateTitleView(shell);
             return;
         }
 
@@ -1005,17 +1004,26 @@ public static class ShellExtensions
         if (handler._searchControl != null)
         {
             handler._searchControl.CleanUp();
-            handler._topBar.Children.Remove(handler._searchControl);
+            if (handler._searchHostControl != null)
+            {
+                handler._searchHostControl.Content = null;
+                handler._searchHostControl.IsVisible = false;
+            }
+
             handler._searchControl = null;
         }
 
         handler._searchControl = new ShellSearchControl(searchHandler, handler.MauiContext);
         handler._searchControl.HorizontalAlignment = HorizontalAlignment.Stretch;
+        handler._searchControl.VerticalAlignment = VerticalAlignment.Stretch;
 
-        handler._topBar.Children.Add(handler._searchControl);
+        if (handler._searchHostControl != null)
+        {
+            handler._searchHostControl.Content = handler._searchControl;
+            handler._searchHostControl.IsVisible = true;
+        }
 
-        if (handler._titleTextBlock != null) handler._titleTextBlock.IsVisible = false;
-        if (handler._titleViewControl != null) handler._titleViewControl.IsVisible = false;
+        handler.UpdateTitleView(shell);
     }
 
     /// <summary>

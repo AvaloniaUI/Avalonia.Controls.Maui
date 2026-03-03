@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -115,8 +116,14 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     /// <summary>Main container dock panel holding the top bar and content area.</summary>
     internal DockPanel? _mainContainer;
 
-    /// <summary>Dock panel for the top navigation bar.</summary>
-    internal DockPanel? _topBar;
+    /// <summary>Panel for the top navigation bar.</summary>
+    internal Panel? _topBar;
+
+    /// <summary>Left-aligned container for navigation buttons in the top bar.</summary>
+    internal StackPanel? _topBarLeftButtons;
+
+    /// <summary>Content host for the full-width search control row.</summary>
+    internal ContentControl? _searchHostControl;
 
     /// <summary>Border used as the shadow below the top navigation bar.</summary>
     internal Border? _topBarShadow;
@@ -260,11 +267,17 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             LastChildFill = true
         };
 
-        _topBar = new DockPanel
+        _topBar = new TopBarPanel
         {
             Height = DefaultBarHeight,
             [DockPanel.DockProperty] = Dock.Top,
             ZIndex = 1
+        };
+
+        _topBarLeftButtons = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            VerticalAlignment = VerticalAlignment.Center
         };
 
         _topBarShadow = new Border
@@ -284,13 +297,10 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             HorizontalContentAlignment = HorizontalAlignment.Center,
             VerticalContentAlignment = VerticalAlignment.Center,
             Background = Brushes.Transparent,
-            IsVisible = false,
-            [DockPanel.DockProperty] = Dock.Left
+            IsVisible = false
         };
         _backButton.Click += OnBackButtonClick;
-        
-        _topBar.Children.Add(_backButton);
-
+        _topBarLeftButtons.Children.Add(_backButton);
 
         _hamburgerButton = new Button
         {
@@ -300,19 +310,19 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             Height = 48,
             HorizontalContentAlignment = HorizontalAlignment.Center,
             VerticalContentAlignment = VerticalAlignment.Center,
-            Background = Brushes.Transparent,
-            [DockPanel.DockProperty] = Dock.Left
+            Background = Brushes.Transparent
         };
         _hamburgerButton.Click += OnHamburgerButtonClick;
-        _topBar.Children.Add(_hamburgerButton);
+        _topBarLeftButtons.Children.Add(_hamburgerButton);
 
         _titleViewControl = new ContentControl
         {
             IsVisible = false,
             VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Stretch
+            HorizontalAlignment = HorizontalAlignment.Center,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center
         };
-        _topBar.Children.Add(_titleViewControl);
 
         _titleTextBlock = new TextBlock
         {
@@ -320,10 +330,37 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             FontWeight = Media.FontWeight.SemiBold,
             VerticalAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Center,
-            Margin = new Thickness(8, 0),
+            TextAlignment = Media.TextAlignment.Center,
+            Margin = new Thickness(0),
             ZIndex = 0
         };
-        _topBar.Children.Add(_titleTextBlock);
+
+        _searchHostControl = new ContentControl
+        {
+            [DockPanel.DockProperty] = Dock.Top,
+            IsVisible = false,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            VerticalContentAlignment = VerticalAlignment.Stretch,
+            ClipToBounds = false,
+            ZIndex = 2
+        };
+
+        var centerHost = new Panel
+        {
+            VerticalAlignment = VerticalAlignment.Center,
+            ClipToBounds = true
+        };
+        centerHost.Children.Add(_titleTextBlock);
+        centerHost.Children.Add(_titleViewControl);
+
+        // Placeholder right host keeps a stable 3-child layout for centered clamping.
+        var rightHost = new Panel();
+
+        _topBar.Children.Add(_topBarLeftButtons);
+        _topBar.Children.Add(centerHost);
+        _topBar.Children.Add(rightHost);
 
         _mainContentControl = new TransitioningContentControl
         {
@@ -336,6 +373,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         _mainContainer.Children.Add(_topBar);
         _mainContainer.Children.Add(_topBarShadow);
+        _mainContainer.Children.Add(_searchHostControl);
         _mainContainer.Children.Add(_mainContentControl);
 
 
@@ -1131,6 +1169,75 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             unselectedStateStyle.Setters.Add(new Styling.Setter { Property = Border.BackgroundProperty, Value = Brushes.Transparent });
             unselectedStateStyle.Setters.Add(new Styling.Setter { Property = Border.BorderBrushProperty, Value = Brushes.Transparent });
             panel.Styles.Add(unselectedStateStyle);
+        }
+    }
+
+    /// <summary>
+    /// Lays out three children (left, center, right), keeping center page-centered while
+    /// clamping it to avoid overlap with side content.
+    /// </summary>
+    private sealed class TopBarPanel : Panel
+    {
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            if (Children.Count < 3)
+            {
+                return base.MeasureOverride(availableSize);
+            }
+
+            var left = Children[0];
+            var center = Children[1];
+            var right = Children[2];
+
+            left.Measure(availableSize);
+            right.Measure(availableSize);
+
+            double remainingWidth = Math.Max(0, availableSize.Width - left.DesiredSize.Width - right.DesiredSize.Width);
+            center.Measure(new Size(remainingWidth, availableSize.Height));
+
+            double height = Math.Max(Math.Max(left.DesiredSize.Height, center.DesiredSize.Height), right.DesiredSize.Height);
+            double width = left.DesiredSize.Width + center.DesiredSize.Width + right.DesiredSize.Width;
+
+            return new Size(
+                double.IsInfinity(availableSize.Width) ? width : availableSize.Width,
+                height);
+        }
+
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            if (Children.Count < 3)
+            {
+                return base.ArrangeOverride(finalSize);
+            }
+
+            var left = Children[0];
+            var center = Children[1];
+            var right = Children[2];
+
+            double panelHeight = finalSize.Height;
+
+            double leftWidth = left.DesiredSize.Width;
+            double leftHeight = left.DesiredSize.Height;
+            double leftY = (panelHeight - leftHeight) / 2;
+            left.Arrange(new Rect(0, leftY, leftWidth, leftHeight));
+
+            double rightWidth = right.DesiredSize.Width;
+            double rightHeight = right.DesiredSize.Height;
+            double rightY = (panelHeight - rightHeight) / 2;
+            right.Arrange(new Rect(finalSize.Width - rightWidth, rightY, rightWidth, rightHeight));
+
+            double centerWidth = center.DesiredSize.Width;
+            double centerHeight = center.DesiredSize.Height;
+
+            double centeredX = (finalSize.Width - centerWidth) / 2;
+            double minX = leftWidth;
+            double maxX = finalSize.Width - rightWidth - centerWidth;
+            double centerX = Math.Max(minX, Math.Min(centeredX, maxX));
+            double centerY = (panelHeight - centerHeight) / 2;
+
+            center.Arrange(new Rect(centerX, centerY, centerWidth, centerHeight));
+
+            return finalSize;
         }
     }
 }
