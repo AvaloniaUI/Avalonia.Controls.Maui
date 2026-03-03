@@ -1,14 +1,34 @@
 # Configuration and setup
 
-`Avalonia.Controls.Maui` replaces the .NET MAUI native rendering pipeline with Avalonia. Before your app can use Avalonia-drawn controls, fonts, or assets, you need to register the appropriate services in `MauiProgram.cs`. This is done by chaining a set of extension methods onto the `MauiAppBuilder` object in the `CreateMauiApp` method.
+`Avalonia.Controls.Maui` supports two setup modes:
+
+- Full hosting: MAUI controls are rendered through Avalonia (`UseAvaloniaApp`).
+- Embedding: only `AvaloniaView` is registered inside a MAUI-native app (`UseAvaloniaEmbedding<TApp>`).
+
+Before your app can use Avalonia-drawn controls, fonts, or assets, register the appropriate services in `MauiProgram.cs` by chaining extension methods on `MauiAppBuilder` inside `CreateMauiApp`.
 
 This document explains how to configure the app builder, register fonts and assets, and add custom control handlers.
 
 ## Configure the app builder
 
+### Choose a mode
+
+Use exactly one of the following entry points:
+
+```csharp
+// Full hosting mode
+builder.UseAvaloniaApp();
+
+// Embedding mode (MAUI-native host)
+builder.UseAvaloniaEmbedding<AvaloniaApp>();
+```
+
+> [!IMPORTANT]
+> `UseAvaloniaApp` and `UseAvaloniaEmbedding<TApp>` are mutually exclusive. Use one or the other in a single app.
+
 ### UseAvaloniaApp
 
-The `UseAvaloniaApp` method is required. It replaces the .NET MAUI native rendering pipeline with Avalonia, registering Avalonia-drawn handlers for all built-in .NET MAUI controls and setting up the Avalonia dispatcher, ticker, and font manager.
+`UseAvaloniaApp` is the required entry point for full hosting mode. It replaces MAUI handlers with Avalonia handlers and configures the Avalonia dispatcher, ticker, image services, and font services.
 
 ```csharp
 public static class MauiProgram
@@ -26,15 +46,29 @@ public static class MauiProgram
 }
 ```
 
-`UseAvaloniaApp` accepts an optional `useSingleViewLifetime` parameter. Set this to `true` for WebAssembly (WASM)/Browser targets and any platform that uses a single-view window model. For standard desktop targets, omit the parameter or pass `false`.
+`UseAvaloniaApp` accepts an optional `useSingleViewLifetime` parameter. Set this to `true` for WebAssembly/Browser targets (single-view lifetime). For standard desktop windowed lifetimes, omit it or pass `false`.
 
 ```csharp
 // WASM / Browser
 builder.UseAvaloniaApp(useSingleViewLifetime: true);
 ```
 
+On current source state, the `net*-windows` WinUI path is not production-ready. For Avalonia on Windows, prefer the base desktop TFM (`net11.0`) with full hosting.
+
 > [!IMPORTANT]
-> `UseAvaloniaApp` must be called before any other `Avalonia.Controls.Maui` extension method.
+> In full-hosting mode, call `UseAvaloniaApp` before optional package extensions such as `UseAvaloniaGraphics`, `UseAvaloniaCompatibility`, `UseAvaloniaEssentials`, or `UseAvaloniaMapsui`.
+
+### UseAvaloniaEmbedding
+
+`UseAvaloniaEmbedding<TApp>` registers only `AvaloniaView` so you can host Avalonia content inside a MAUI-native UI stack.
+
+```csharp
+builder
+    .UseMauiApp<App>()
+    .UseAvaloniaEmbedding<AvaloniaApp>();
+```
+
+Use embedding when incrementally adopting Avalonia in a MAUI-native app. On current source state, Windows embedding is a stub path and should not be treated as production-ready.
 
 ### UseAvaloniaGraphics
 
@@ -59,6 +93,8 @@ The `UseAvaloniaCompatibility` method registers Avalonia-based handlers for .NET
 | `TextCell`, `ImageCell`, `ViewCell`, `SwitchCell`, `EntryCell` | Custom `DataTemplate` cells |
 
 ```csharp
+using Avalonia.Controls.Maui.Compatibility;
+
 builder
     .UseMauiApp<App>()
     .UseAvaloniaApp()
@@ -70,9 +106,11 @@ builder
 
 ### UseAvaloniaEssentials
 
-The `UseAvaloniaEssentials` method registers Avalonia-based implementations of `Microsoft.Maui.Essentials` APIs. Without this call, Essentials APIs that depend on native platform implementations will throw a `PlatformNotSupportedException` on desktop and WASM targets.
+The `UseAvaloniaEssentials` method registers Avalonia-based implementations of `Microsoft.Maui.Essentials` APIs. Without this call, those APIs fall back to MAUI defaults, which typically throw platform-specific not-supported/not-implemented exceptions on desktop and browser targets.
 
 ```csharp
+using Avalonia.Controls.Maui.Essentials;
+
 builder
     .UseMauiApp<App>()
     .UseAvaloniaApp()
@@ -89,6 +127,19 @@ The following Essentials APIs are implemented:
 | `FileSystem` | `CacheDirectory`, `AppDataDirectory`, `avares://` asset loading |
 | `Preferences` | Full type support; persisted as JSON |
 | `HapticFeedback` | Stub implementation; `IsSupported` returns `false` |
+
+### UseAvaloniaMapsui
+
+If your app uses `Microsoft.Maui.Controls.Maps.Map`, install `Avalonia.Controls.Maui.Maps.Mapsui` and register its handler:
+
+```csharp
+using Avalonia.Controls.Maui.Maps.Mapsui;
+
+builder
+    .UseMauiApp<App>()
+    .UseAvaloniaApp()
+    .UseAvaloniaMapsui();
+```
 
 ### Full desktop example
 
@@ -168,14 +219,19 @@ At build time, `MauiFont` items are automatically converted to Avalonia embedded
 
 ### Consume registered fonts
 
-Registered fonts can be consumed by setting the `FontFamily` property on any control that displays text, using either the filename (without extension) or the alias:
+Registered fonts can be consumed by setting `FontFamily` to either:
+
+- the alias passed to `AddFont`, or
+- the exact registered filename (including extension).
+
+Prefer aliases for stability.
 
 ```xml
 <!-- Use the font alias -->
 <Label Text="Hello" FontFamily="OpenSansRegular" />
 
-<!-- Use the font filename without extension -->
-<Label Text="Hello" FontFamily="OpenSans-Regular" />
+<!-- Use the exact registered filename -->
+<Label Text="Hello" FontFamily="OpenSans-Regular.ttf" />
 ```
 
 The equivalent C# code is:
@@ -193,11 +249,11 @@ var label = new Label
 
 ### Images
 
-Images added to your project with the `MauiImage` build action are automatically resized at build time and embedded as Avalonia resources under `Images/` in the assembly. Add images to the project file with the desired base size for vector formats:
+Images added to your project with the `MauiImage` build action are automatically resized at build time and embedded as Avalonia resources under `Images/` in the assembly:
 
 ```xml
 <ItemGroup>
-  <MauiImage Include="Resources/Images/logo.svg" BaseSize="128,128" />
+  <MauiImage Include="Resources/Images/logo.png" />
   <MauiImage Include="Resources/Images/icon.png" />
 </ItemGroup>
 ```
@@ -205,7 +261,7 @@ Images added to your project with the `MauiImage` build action are automatically
 They can then be referenced in XAML by filename, the same way as in a standard .NET MAUI app:
 
 ```xml
-<Image Source="logo.svg" />
+<Image Source="logo.png" />
 <Image Source="icon.png" />
 ```
 
@@ -317,3 +373,12 @@ builder
         handlers.AddHandler<Microsoft.Maui.Controls.Button, MyButtonHandler>();
     });
 ```
+
+## Reference context
+
+This document aligns implementation details with:
+
+- https://avaloniaui.net/blog/avalonia-maui-progress-update
+- https://avaloniaui.net/blog/net-maui-is-coming-to-linux-and-the-browser-powered-by-avalonia
+
+Blog posts include roadmap and vision context. Source code in this repository is the implementation authority for current behavior.
