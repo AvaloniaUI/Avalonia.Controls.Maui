@@ -86,30 +86,6 @@
             "stopAtEntry": false
         },
         {
-            "name": "ChatApp Desktop",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build_chatapp_desktop",
-            "program": "${workspaceFolder}/showcase/ChatApp/ChatApp/bin/Debug/${config:dotnetTfm}/ChatApp.dll",
-            "args": [ 
-            ],
-            "cwd": "${workspaceFolder}/showcase/ChatApp/ChatApp/bin/Debug/${config:dotnetTfm}",
-            "console": "internalConsole",
-            "stopAtEntry": false
-        },
-        {
-            "name": "SurfingApp Desktop",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build_surfingapp_desktop",
-            "program": "${workspaceFolder}/showcase/SurfingApp/SurfingApp/bin/Debug/${config:dotnetTfm}/SurfingApp.dll",
-            "args": [ 
-            ],
-            "cwd": "${workspaceFolder}/showcase/SurfingApp/SurfingApp/bin/Debug/${config:dotnetTfm}",
-            "console": "internalConsole",
-            "stopAtEntry": false
-        },
-        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"
