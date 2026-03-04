@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Browser;
 using Avalonia.Controls;
 using Avalonia.Controls.Maui;

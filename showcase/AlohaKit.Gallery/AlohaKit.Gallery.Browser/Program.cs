@@ -1,11 +1,11 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Browser;
 using Avalonia.Controls;
 using Avalonia.Controls.Maui;
 using System;
 using System.Threading.Tasks;
 
-namespace AlohaKit.Gallery.Browser;
+namespace AlohaKit.Gallery;
 
 internal sealed partial class Program
 {

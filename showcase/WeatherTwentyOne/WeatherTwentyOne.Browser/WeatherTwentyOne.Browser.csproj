@@ -4,7 +4,6 @@
 		<OutputType>Exe</OutputType>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Nullable>enable</Nullable>
-		
 		<UseMaui>true</UseMaui>
 		<RootNamespace>WeatherTwentyOne</RootNamespace>
 	</PropertyGroup>
@@ -19,9 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
 	  <ProjectReference Include="../../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
-      <ProjectReference Include="../../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
 	  <ProjectReference Include="../WeatherTwentyOne/WeatherTwentyOne.csproj" />
 	</ItemGroup>
 

@@ -49,6 +49,28 @@
       <_HasAvaloniaHeadlessXUnit Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Headless.XUnit'))">true</_HasAvaloniaHeadlessXUnit>
       <_HasAvaloniaIOS Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.iOS'))">true</_HasAvaloniaIOS>
       <_HasAvaloniaAndroid Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Android'))">true</_HasAvaloniaAndroid>
+      <!--
+        Single-project MAUI apps (SingleProject=true + UseMaui=true) need direct Avalonia
+        source references. In NuGet mode, Avalonia types flow transitively from the
+        Avalonia.Controls.Maui NuGet package's dependencies. In source-build mode, the
+        dynamically-replaced ProjectReferences in Avalonia.Controls.Maui don't propagate
+        transitively, so we add them here by setting the same _Has* flags.
+
+        This covers both:
+        - Bootstrap-enabled projects (source generator produces AvaloniaApp/Program.g.cs)
+        - Custom bootstrap projects (hand-written Program.cs/AvaloniaApp.axaml.cs)
+      -->
+      <_IsMauiSingleProject Condition="'$(UseMaui)' == 'true' AND '$(SingleProject)' == 'true'">true</_IsMauiSingleProject>
+      <_HasAvalonia Condition="'$(_IsMauiSingleProject)' == 'true'
+                            AND '$(_HasAvalonia)' != 'true'">true</_HasAvalonia>
+      <_HasAvaloniaThemesFluent Condition="'$(_IsMauiSingleProject)' == 'true'
+                                        AND '$(_HasAvaloniaThemesFluent)' != 'true'">true</_HasAvaloniaThemesFluent>
+      <_HasAvaloniaFontsInter Condition="'$(_IsMauiSingleProject)' == 'true'
+                                      AND '$(_HasAvaloniaFontsInter)' != 'true'">true</_HasAvaloniaFontsInter>
+      <_HasAvaloniaDesktop Condition="'$(_IsMauiSingleProject)' == 'true'
+                                   AND '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == ''
+                                   AND '$(_HasAvaloniaDesktop)' != 'true'">true</_HasAvaloniaDesktop>
+
       <!-- Any Avalonia package needs transitive NuGet deps (MicroCom, SkiaSharp, HarfBuzzSharp) -->
       <_NeedsAvaloniaTransitiveDeps Condition="'$(_HasAvalonia)' == 'true'
                                             OR '$(_HasAvaloniaDesktop)' == 'true'
@@ -375,5 +397,35 @@
   -->
   <Import Project="$(MauiSourcePath)/.buildtasks/Microsoft.Maui.Resizetizer.targets"
           Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'" />
+
+  <!--
+    When building browser projects from Avalonia source, the Avalonia.Browser NuGet
+    package's build infrastructure (props/targets) isn't imported because the
+    PackageReference was replaced with a ProjectReference. Import them from the
+    source tree to get:
+      - Static web asset registration (avalonia.js, storage.js, sw.js)
+      - EmccFlags for WebGL2 support
+      - EmccExportedRuntimeMethod items (GL, PThread)
+      - Native SkiaSharp/HarfBuzzSharp static library references
+      - WasmBuildNative flag
+
+    Additionally, add SkiaSharp.NativeAssets.WebAssembly and HarfBuzzSharp.NativeAssets.WebAssembly
+    as direct PackageReferences. In NuGet mode these flow transitively through
+    Avalonia.Browser → Avalonia.Skia → SkiaSharp.NativeAssets.WebAssembly, but
+    ProjectReferences don't propagate conditional transitive NuGet dependencies.
+    These must be added at evaluation time (not in a target) so NuGet restore
+    discovers them and their buildTransitive props (which set SkiaSharpStaticLibraryPath
+    and HarfBuzzSharpStaticLibraryPath) get imported before Avalonia.Browser.targets
+    evaluates the NativeFileReference items.
+  -->
+  <ItemGroup Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">
+    <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.WebAssembly" Version="$(HarfBuzzSharpVersion)" />
+  </ItemGroup>
+
+  <Import Project="$(AvaloniaSourcePath)/src/Browser/Avalonia.Browser/build/Avalonia.Browser.props"
+          Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'" />
+  <Import Project="$(AvaloniaSourcePath)/src/Browser/Avalonia.Browser/build/Avalonia.Browser.targets"
+          Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'" />
 
 </Project>

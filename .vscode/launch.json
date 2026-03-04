@@ -2,18 +2,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Sandbox",
-            "type": "coreclr",
-            "request": "launch",
-            "preLaunchTask": "build_sandbox",
-            "program": "${workspaceFolder}/samples/SandboxApp/bin/Debug/${config:dotnetTfm}/SandboxApp.dll",
-            "args": [ 
-            ],
-            "cwd": "${workspaceFolder}/samples/SandboxApp/bin/Debug/${config:dotnetTfm}",
-            "console": "internalConsole",
-            "stopAtEntry": false
-        },
-        {
             "name": "ControlGallery Desktop",
             "type": "coreclr",
             "request": "launch",
