@@ -50,7 +50,7 @@ public class PageRenderTests : RenderTestBase
                 Width = width + 40,
                 Height = height + 40,
                 Title = testName,
-                SystemDecorations = SystemDecorations.None,
+                SystemDecorations = WindowDecorations.None,
                 Background = AvaloniaBrushes.White,
                 CanResize = false,
                 WindowStartupLocation = WindowStartupLocation.Manual
