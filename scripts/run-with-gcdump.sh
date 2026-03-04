@@ -6,7 +6,7 @@
 #   ./scripts/run-with-gcdump.sh <app-name> [-c Configuration] [-- app args...]
 #
 # Examples:
-#   ./scripts/run-with-gcdump.sh SandboxApp
+#   ./scripts/run-with-gcdump.sh MauiSandboxApp
 #   ./scripts/run-with-gcdump.sh AlohaAI
 #   ./scripts/run-with-gcdump.sh AlohaAI -c Release
 #   ./scripts/run-with-gcdump.sh BenchmarkApp -- --test AlohaTabBarNavigationLeak
@@ -26,9 +26,11 @@ DIAG_DIR="$REPO_ROOT/diagnostics"
 
 # ── App registry ──────────────────────────────────────────────────────────────
 # Parallel arrays (Bash 3.x compatible — no associative arrays on macOS default bash).
+# Apps marked with "multi" in APP_TFMS are multi-TFM single-project apps that
+# need -f net11.0 passed to dotnet build/msbuild.
 APP_NAMES=(
     # Samples
-    SandboxApp
+    MauiSandboxApp
     AvaloniaSandboxApp
     ControlGallery
     ControlsSample
@@ -42,16 +44,30 @@ APP_NAMES=(
 )
 
 APP_PROJECTS=(
-    samples/SandboxApp/SandboxApp.csproj
+    samples/MauiSandboxApp/MauiSandboxApp/MauiSandboxApp.csproj
     samples/AvaloniaSandboxApp/AvaloniaSandboxApp.csproj
-    samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj
-    samples/Controls.Sample/Controls.Sample.Desktop/Maui.Controls.Sample.Desktop.csproj
+    samples/ControlGallery/ControlGallery/ControlGallery.csproj
+    samples/Controls.Sample/Controls.Sample/Maui.Controls.Sample.csproj
     samples/BenchmarkApp/BenchmarkApp.Desktop/BenchmarkApp.Desktop.csproj
-    showcase/2048Game/2048Game.Desktop/2048Game.Desktop.csproj
-    showcase/AlohaKit.Gallery/AlohaKit.Gallery.Desktop/AlohaKit.Gallery.Desktop.csproj
-    showcase/AlohaAI/AlohaAI.Desktop/AlohaAI.Desktop.csproj
-    showcase/MauiPlanets/MauiPlanets.Desktop/MauiPlanets.Desktop.csproj
-    showcase/WeatherTwentyOne/WeatherTwentyOne.Desktop/WeatherTwentyOne.Desktop.csproj
+    showcase/2048Game/2048Game/2048Game.csproj
+    showcase/AlohaKit.Gallery/AlohaKit.Gallery/AlohaKit.Gallery.csproj
+    showcase/AlohaAI/AlohaAI/AlohaAI.csproj
+    showcase/MauiPlanets/MauiPlanets/MauiPlanets.csproj
+    showcase/WeatherTwentyOne/WeatherTwentyOne/WeatherTwentyOne.csproj
+)
+
+# "multi" = multi-TFM project, needs -f net11.0; "single" = single-TFM, no flag needed
+APP_TFMS=(
+    multi
+    single
+    multi
+    multi
+    single
+    multi
+    multi
+    multi
+    multi
+    multi
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -72,7 +88,7 @@ usage() {
     echo "  --help, -h  Show this help"
     echo ""
     echo "Examples:"
-    echo "  $0 SandboxApp"
+    echo "  $0 MauiSandboxApp"
     echo "  $0 AlohaAI -c Release"
     echo "  $0 BenchmarkApp -- --test AlohaTabBarNavigationLeak"
 }
@@ -90,6 +106,17 @@ find_project() {
     for i in "${!APP_NAMES[@]}"; do
         if [[ "${APP_NAMES[$i]}" == "$name" ]]; then
             echo "${APP_PROJECTS[$i]}"
+            return 0
+        fi
+    done
+    return 1
+}
+
+find_tfm() {
+    local name="$1"
+    for i in "${!APP_NAMES[@]}"; do
+        if [[ "${APP_NAMES[$i]}" == "$name" ]]; then
+            echo "${APP_TFMS[$i]}"
             return 0
         fi
     done
@@ -150,6 +177,13 @@ PROJECT=$(find_project "$APP_NAME") || {
 }
 
 PROJECT_PATH="$REPO_ROOT/$PROJECT"
+APP_TFM=$(find_tfm "$APP_NAME")
+
+# Build extra args for multi-TFM projects (need explicit -f net11.0)
+TFM_ARGS=()
+if [[ "$APP_TFM" == "multi" ]]; then
+    TFM_ARGS=(-f net11.0)
+fi
 
 if [[ ! -f "$PROJECT_PATH" ]]; then
     echo "ERROR: Project file not found: $PROJECT"
@@ -171,13 +205,13 @@ echo ""
 
 # Build the project
 echo "Building $APP_NAME ($BUILD_CONFIG)..."
-dotnet build "$PROJECT_PATH" -c "$BUILD_CONFIG" -v q --nologo
+dotnet build "$PROJECT_PATH" -c "$BUILD_CONFIG" "${TFM_ARGS[@]}" -v q --nologo
 echo ""
 
 # Resolve the compiled binary path via MSBuild so we run it directly.
 # 'dotnet run' spawns a child process — its PID is the CLI host, not the app,
 # so dotnet-gcdump would capture the wrong (MSBuild) process.
-TARGET_PATH=$(dotnet msbuild "$PROJECT_PATH" -getProperty:TargetPath -p:Configuration="$BUILD_CONFIG" -nologo 2>/dev/null | tr -d '[:space:]')
+TARGET_PATH=$(dotnet msbuild "$PROJECT_PATH" -getProperty:TargetPath -p:Configuration="$BUILD_CONFIG" "${TFM_ARGS[@]}" -nologo 2>/dev/null | tr -d '[:space:]')
 
 if [[ -z "$TARGET_PATH" || ! -f "$TARGET_PATH" ]]; then
     echo "ERROR: Could not determine build output path (got: '$TARGET_PATH')."
