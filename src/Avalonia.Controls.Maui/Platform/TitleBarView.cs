@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Chrome;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -28,6 +29,7 @@ public class TitleBarView : MauiView
     private readonly HashSet<Control> _passthroughControls = new();
     private Window? _attachedWindow;
     private Thickness _windowControlsMargin;
+    private TranslateTransform? _contentOffsetTransform;
 
     /// <summary>
     /// Gets or sets the MAUI context for converting views.
@@ -156,9 +158,10 @@ public class TitleBarView : MauiView
         if (_attachedWindow == null)
             return;
 
-        // Update margins when decoration state or offscreen margins change
+        // Update margins when decoration state, offscreen margins, or decoration margins change
         if (e.Property == Window.IsExtendedIntoWindowDecorationsProperty ||
-            e.Property == Window.OffScreenMarginProperty)
+            e.Property == Window.OffScreenMarginProperty ||
+            e.Property == Window.WindowDecorationMarginProperty)
         {
             UpdateWindowControlsMargin(_attachedWindow);
             InvalidateMeasure();
@@ -167,7 +170,8 @@ public class TitleBarView : MauiView
 
     /// <summary>
     /// Calculates the margin needed for platform-specific window controls.
-    /// Uses Avalonia's OffScreenMargin when available, with fallback defaults for system chrome.
+    /// Uses Avalonia's OffScreenMargin and WindowDecorationMargin when available,
+    /// with fallback defaults for system chrome.
     /// </summary>
     private void UpdateWindowControlsMargin(Window window)
     {
@@ -175,6 +179,7 @@ public class TitleBarView : MauiView
         if (!window.IsExtendedIntoWindowDecorations)
         {
             _windowControlsMargin = new Thickness(0);
+            UpdateContentOffsetTransform();
             InvalidateArrange();
             return;
         }
@@ -189,6 +194,21 @@ public class TitleBarView : MauiView
                 0,
                 offScreenMargin.Right > 0 ? offScreenMargin.Right + 8 : 0,
                 0);
+            UpdateContentOffsetTransform();
+            InvalidateArrange();
+            return;
+        }
+
+        // Check WindowDecorationMargin for left/right values (e.g. drawn decorations on X11/Win32)
+        var decorationMargin = window.WindowDecorationMargin;
+        if (decorationMargin.Left > 0 || decorationMargin.Right > 0)
+        {
+            _windowControlsMargin = new Thickness(
+                decorationMargin.Left > 0 ? decorationMargin.Left + 8 : 0,
+                0,
+                decorationMargin.Right > 0 ? decorationMargin.Right + 8 : 0,
+                0);
+            UpdateContentOffsetTransform();
             InvalidateArrange();
             return;
         }
@@ -205,7 +225,52 @@ public class TitleBarView : MauiView
             _windowControlsMargin = new Thickness(0, 0, 150, 0);
         }
 
+        UpdateContentOffsetTransform();
         InvalidateArrange();
+    }
+
+    /// <summary>
+    /// Updates the RenderTransform used to offset children for window controls.
+    /// </summary>
+    private void UpdateContentOffsetTransform()
+    {
+        var left = _windowControlsMargin.Left;
+        if (left > 0)
+        {
+            if (_contentOffsetTransform == null)
+            {
+                _contentOffsetTransform = new TranslateTransform(left, 0);
+            }
+            else
+            {
+                _contentOffsetTransform.X = left;
+            }
+        }
+        else
+        {
+            _contentOffsetTransform = null;
+        }
+
+        // Apply to the native root panel for the fallback path
+        _rootPanel.Margin = _windowControlsMargin;
+
+        // Apply transform to all current children for the MAUI content path
+        ApplyChildrenOffset();
+    }
+
+    /// <summary>
+    /// Applies the window controls offset RenderTransform to all children.
+    /// In Avalonia, RenderTransform affects both rendering and hit-testing.
+    /// </summary>
+    private void ApplyChildrenOffset()
+    {
+        foreach (var child in Children)
+        {
+            if (child is Control c)
+            {
+                c.RenderTransform = _contentOffsetTransform;
+            }
+        }
     }
 
     /// <inheritdoc />
@@ -245,9 +310,11 @@ public class TitleBarView : MauiView
         var inset = _windowControlsMargin.Left + _windowControlsMargin.Right;
         var adjustedWidth = Math.Max(0, finalSize.Width - inset);
 
-        // Pass offset bounds so MAUI positions children starting after the left window controls.
-        var bounds = new Microsoft.Maui.Graphics.Rect(
-            _windowControlsMargin.Left, 0, adjustedWidth, finalSize.Height);
+        // Arrange MAUI content at (0,0) with reduced width. The visual offset for
+        // window controls is applied via RenderTransform on children (see ApplyChildrenOffset).
+        // MAUI's CrossPlatformArrange treats bounds.X/Y as the view's position rather than
+        // a content origin offset, so we must handle the shift at the Avalonia level.
+        var bounds = new Microsoft.Maui.Graphics.Rect(0, 0, adjustedWidth, finalSize.Height);
 
         var widthConstraint = bounds.Width;
         var heightConstraint = bounds.Height;
@@ -259,6 +326,9 @@ public class TitleBarView : MauiView
         }
 
         layout.CrossPlatformArrange(bounds);
+
+        // Apply visual offset for window controls to all children
+        ApplyChildrenOffset();
 
         return finalSize;
     }
@@ -309,10 +379,13 @@ public class TitleBarView : MauiView
 
     /// <summary>
     /// Adds a control to the passthrough elements (won't trigger window drag).
+    /// Also marks the control with <see cref="WindowDecorationsElementRole.User"/>
+    /// so the platform hit-testing recognizes it as an interactive element.
     /// </summary>
     public void AddPassthroughElement(Control control)
     {
         _passthroughControls.Add(control);
+        WindowDecorationProperties.SetElementRole(control, WindowDecorationsElementRole.User);
     }
 
     /// <summary>
@@ -321,6 +394,7 @@ public class TitleBarView : MauiView
     public void RemovePassthroughElement(Control control)
     {
         _passthroughControls.Remove(control);
+        WindowDecorationProperties.SetElementRole(control, WindowDecorationsElementRole.None);
     }
 
     /// <summary>
@@ -328,6 +402,11 @@ public class TitleBarView : MauiView
     /// </summary>
     public void ClearPassthroughElements()
     {
+        foreach (var control in _passthroughControls)
+        {
+            WindowDecorationProperties.SetElementRole(control, WindowDecorationsElementRole.None);
+        }
+
         _passthroughControls.Clear();
     }
 
