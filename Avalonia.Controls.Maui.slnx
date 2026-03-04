@@ -6,11 +6,10 @@
     <Project Path="samples/AvaloniaSandboxApp/AvaloniaSandboxApp.csproj" />
     <Project Path="samples/BenchmarkApp/BenchmarkApp.Desktop/BenchmarkApp.Desktop.csproj" />
     <Project Path="samples/BenchmarkApp/BenchmarkApp/BenchmarkApp.csproj" />
-    <Project Path="samples/SandboxAppWasm/SandboxAppWasm.csproj" />
+
   </Folder>
   <Folder Name="/Samples/ControlGallery/">
     <Project Path="samples/ControlGallery/ControlGallery.Browser/ControlGallery.Browser.csproj" />
-    <Project Path="samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj" />
     <Project Path="samples/ControlGallery/ControlGallery/ControlGallery.csproj" />
   </Folder>
   <Folder Name="/Source/">
