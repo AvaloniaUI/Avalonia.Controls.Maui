@@ -64,6 +64,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<!-- Program.cs uses Avalonia.Desktop APIs (UsePlatformDetect) - only compile for desktop TFM -->
+		<Compile Remove="Program.cs" Condition="'$(TargetFramework)' != '$(DotNetTfm)'" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(MicrosoftExtensionsVersion)" />
 	</ItemGroup>

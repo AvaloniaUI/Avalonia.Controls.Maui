@@ -398,4 +398,34 @@
   <Import Project="$(MauiSourcePath)/.buildtasks/Microsoft.Maui.Resizetizer.targets"
           Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'" />
 
+  <!--
+    When building browser projects from Avalonia source, the Avalonia.Browser NuGet
+    package's build infrastructure (props/targets) isn't imported because the
+    PackageReference was replaced with a ProjectReference. Import them from the
+    source tree to get:
+      - Static web asset registration (avalonia.js, storage.js, sw.js)
+      - EmccFlags for WebGL2 support
+      - EmccExportedRuntimeMethod items (GL, PThread)
+      - Native SkiaSharp/HarfBuzzSharp static library references
+      - WasmBuildNative flag
+
+    Additionally, add SkiaSharp.NativeAssets.WebAssembly and HarfBuzzSharp.NativeAssets.WebAssembly
+    as direct PackageReferences. In NuGet mode these flow transitively through
+    Avalonia.Browser → Avalonia.Skia → SkiaSharp.NativeAssets.WebAssembly, but
+    ProjectReferences don't propagate conditional transitive NuGet dependencies.
+    These must be added at evaluation time (not in a target) so NuGet restore
+    discovers them and their buildTransitive props (which set SkiaSharpStaticLibraryPath
+    and HarfBuzzSharpStaticLibraryPath) get imported before Avalonia.Browser.targets
+    evaluates the NativeFileReference items.
+  -->
+  <ItemGroup Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">
+    <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.WebAssembly" Version="$(HarfBuzzSharpVersion)" />
+  </ItemGroup>
+
+  <Import Project="$(AvaloniaSourcePath)/src/Browser/Avalonia.Browser/build/Avalonia.Browser.props"
+          Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'" />
+  <Import Project="$(AvaloniaSourcePath)/src/Browser/Avalonia.Browser/build/Avalonia.Browser.targets"
+          Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'" />
+
 </Project>
