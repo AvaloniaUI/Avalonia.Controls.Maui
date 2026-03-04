@@ -29,7 +29,6 @@ public class TitleBarView : MauiView
     private readonly HashSet<Control> _passthroughControls = new();
     private Window? _attachedWindow;
     private Thickness _windowControlsMargin;
-    private TranslateTransform? _contentOffsetTransform;
 
     /// <summary>
     /// Gets or sets the MAUI context for converting views.
@@ -130,7 +129,8 @@ public class TitleBarView : MauiView
     {
         base.OnAttachedToVisualTree(e);
 
-        if (VisualRoot is Window window)
+        var window = this.FindAncestorOfType<Window>();
+        if (window != null)
         {
             _attachedWindow = window;
             _attachedWindow.PropertyChanged += OnWindowPropertyChanged;
@@ -179,7 +179,7 @@ public class TitleBarView : MauiView
         if (!window.IsExtendedIntoWindowDecorations)
         {
             _windowControlsMargin = new Thickness(0);
-            UpdateContentOffsetTransform();
+            _rootPanel.Margin = new Thickness(0);
             InvalidateArrange();
             return;
         }
@@ -194,7 +194,7 @@ public class TitleBarView : MauiView
                 0,
                 offScreenMargin.Right > 0 ? offScreenMargin.Right + 8 : 0,
                 0);
-            UpdateContentOffsetTransform();
+            _rootPanel.Margin = _windowControlsMargin;
             InvalidateArrange();
             return;
         }
@@ -208,15 +208,15 @@ public class TitleBarView : MauiView
                 0,
                 decorationMargin.Right > 0 ? decorationMargin.Right + 8 : 0,
                 0);
-            UpdateContentOffsetTransform();
+            _rootPanel.Margin = _windowControlsMargin;
             InvalidateArrange();
             return;
         }
 
         if (OperatingSystem.IsMacOS())
         {
-            // macOS: traffic light buttons are on the left (80px as used by MAUI)
-            _windowControlsMargin = new Thickness(80, 0, 0, 0);
+            // macOS: traffic light buttons are on the left (~78px)
+            _windowControlsMargin = new Thickness(78, 0, 0, 0);
         }
         else
         {
@@ -225,52 +225,8 @@ public class TitleBarView : MauiView
             _windowControlsMargin = new Thickness(0, 0, 150, 0);
         }
 
-        UpdateContentOffsetTransform();
-        InvalidateArrange();
-    }
-
-    /// <summary>
-    /// Updates the RenderTransform used to offset children for window controls.
-    /// </summary>
-    private void UpdateContentOffsetTransform()
-    {
-        var left = _windowControlsMargin.Left;
-        if (left > 0)
-        {
-            if (_contentOffsetTransform == null)
-            {
-                _contentOffsetTransform = new TranslateTransform(left, 0);
-            }
-            else
-            {
-                _contentOffsetTransform.X = left;
-            }
-        }
-        else
-        {
-            _contentOffsetTransform = null;
-        }
-
-        // Apply to the native root panel for the fallback path
         _rootPanel.Margin = _windowControlsMargin;
-
-        // Apply transform to all current children for the MAUI content path
-        ApplyChildrenOffset();
-    }
-
-    /// <summary>
-    /// Applies the window controls offset RenderTransform to all children.
-    /// In Avalonia, RenderTransform affects both rendering and hit-testing.
-    /// </summary>
-    private void ApplyChildrenOffset()
-    {
-        foreach (var child in Children)
-        {
-            if (child is Control c)
-            {
-                c.RenderTransform = _contentOffsetTransform;
-            }
-        }
+        InvalidateArrange();
     }
 
     /// <inheritdoc />
@@ -310,10 +266,9 @@ public class TitleBarView : MauiView
         var inset = _windowControlsMargin.Left + _windowControlsMargin.Right;
         var adjustedWidth = Math.Max(0, finalSize.Width - inset);
 
-        // Arrange MAUI content at (0,0) with reduced width. The visual offset for
-        // window controls is applied via RenderTransform on children (see ApplyChildrenOffset).
+        // Arrange MAUI content at (0,0) with the reduced width.
         // MAUI's CrossPlatformArrange treats bounds.X/Y as the view's position rather than
-        // a content origin offset, so we must handle the shift at the Avalonia level.
+        // a content origin offset, so we shift children at the Avalonia level below.
         var bounds = new Microsoft.Maui.Graphics.Rect(0, 0, adjustedWidth, finalSize.Height);
 
         var widthConstraint = bounds.Width;
@@ -327,8 +282,15 @@ public class TitleBarView : MauiView
 
         layout.CrossPlatformArrange(bounds);
 
-        // Apply visual offset for window controls to all children
-        ApplyChildrenOffset();
+        // Re-position children to account for the window controls offset.
+        // Since only the position changes (not size), Avalonia updates Bounds
+        // without re-triggering ArrangeOverride on the children.
+        var leftOffset = _windowControlsMargin.Left;
+        foreach (var child in Children)
+        {
+            var childBounds = child.Bounds;
+            child.Arrange(new Rect(childBounds.X + leftOffset, childBounds.Y, childBounds.Width, childBounds.Height));
+        }
 
         return finalSize;
     }
