@@ -4,13 +4,13 @@ namespace MauiSandboxApp;
 
 public static class MauiProgram
 {
-	public static MauiApp CreateMauiApp()
+	public static MauiApp CreateMauiApp(bool useSingleAppLifetime = false)
 	{
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
 			#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
-			.UseAvaloniaApp()
+			.UseAvaloniaApp(useSingleAppLifetime)
 			#else
 			.UseAvaloniaEmbedding<AvaloniaApp>()
 			#endif
