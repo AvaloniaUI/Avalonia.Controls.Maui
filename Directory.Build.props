@@ -1,8 +1,32 @@
 <Project>
+    <Import Project="Directory.Build.props.user"
+            Condition="Exists('$(MSBuildThisFileDirectory)Directory.Build.props.user')" />
+
+    <!--
+        For MAUI source builds, disable the implicit package references that the
+        MAUI workload SDK adds via BundledVersions.targets (Microsoft.Maui.Controls,
+        Microsoft.Maui.Core, etc.). We replace these with ProjectReferences to
+        the local MAUI source tree in SourceBuild.targets instead.
+    -->
+    <PropertyGroup Condition="'$(MauiSourcePath)' != ''">
+        <DisableMauiImplicitPackageReferences>true</DisableMauiImplicitPackageReferences>
+        <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
+    </PropertyGroup>
+
+    <!--
+        Mapsui NuGet packages depend on a specific Avalonia NuGet version. When building
+        Avalonia from source (AvaloniaSourcePath), these packages can't resolve their
+        Avalonia dependency, so skip building Mapsui-dependent projects entirely.
+    -->
+    <PropertyGroup>
+        <BuildMapsui Condition="'$(BuildMapsui)' == '' AND '$(AvaloniaSourcePath)' != ''">false</BuildMapsui>
+        <BuildMapsui Condition="'$(BuildMapsui)' == ''">true</BuildMapsui>
+    </PropertyGroup>
+
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0062426-alpha</AvaloniaVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0062861-alpha</AvaloniaVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net11.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
         <BuildDirectory>$(MSBuildThisFileDirectory)/build/</BuildDirectory>
@@ -27,6 +51,9 @@
 
     <PropertyGroup>
         <MicrosoftExtensionsVersion>11.0.0-preview.1.26104.118</MicrosoftExtensionsVersion>
+        <SkiaSharpVersion>3.119.1</SkiaSharpVersion>
+        <HarfBuzzSharpVersion>8.3.1.2</HarfBuzzSharpVersion>
+        <MicroComVersion>0.11.0</MicroComVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net11.0'">
@@ -71,12 +98,17 @@
             PackagePath="" />
     </ItemGroup>
 
-    <!-- 
+    <!--
         This is here to support accessing MAUI internals while we work on
-        upstreaming changes needed in MAUI to support Avalonia.Controls.Maui. 
-        Remove this when no longer needed.     
+        upstreaming changes needed in MAUI to support Avalonia.Controls.Maui.
+        Remove this when no longer needed.
+
+        For NuGet builds (MauiSourcePath not set), we use IgnoresAccessChecksToGenerator
+        to bypass access checks at compile time.
+        For source builds (MauiSourcePath set), SourceBuild.targets writes
+        InternalsVisibleTo .cs files into the MAUI source directories instead.
     -->
-    <ItemGroup Condition="'$(AddMauiInternals)' == 'true'">
+    <ItemGroup Condition="'$(AddMauiInternals)' == 'true' AND '$(MauiSourcePath)' == ''">
         <IgnoresAccessChecksTo Include="Microsoft.Maui" />
         <IgnoresAccessChecksTo Include="Microsoft.Maui.Controls" />
         <IgnoresAccessChecksTo Include="Microsoft.Maui.Essentials" />

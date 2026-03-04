@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Compatibility;
-using Avalonia.Controls.Maui.Maps.Mapsui;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
@@ -21,7 +20,6 @@ public static class MauiProgram
             .UseAvaloniaCompatibility()
             .UseAvaloniaEssentials()
             .UseAvaloniaGraphics()
-            .UseAvaloniaMapsui()
             .ConfigureMauiHandlers(handlers =>
              {
                  handlers.AddHandler<CounterView, CounterViewHandler>();

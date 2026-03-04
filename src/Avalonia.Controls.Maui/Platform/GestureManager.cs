@@ -677,8 +677,8 @@ internal class GestureManager : IDisposable
             return;
 
         control.GestureRecognizers.Add(new AvaloniaPinchGestureRecognizer());
-        control.AddHandler(Gestures.PinchEvent, OnPinch, RoutingStrategies.Bubble);
-        control.AddHandler(Gestures.PinchEndedEvent, OnPinchEnded, RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.PinchEvent, OnPinch, RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.PinchEndedEvent, OnPinchEnded, RoutingStrategies.Bubble);
         _isPinchSubscribed = true;
     }
 
@@ -687,8 +687,8 @@ internal class GestureManager : IDisposable
         if (!_isPinchSubscribed)
             return;
 
-        control.RemoveHandler(Gestures.PinchEvent, OnPinch);
-        control.RemoveHandler(Gestures.PinchEndedEvent, OnPinchEnded);
+        control.RemoveHandler(InputElement.PinchEvent, OnPinch);
+        control.RemoveHandler(InputElement.PinchEndedEvent, OnPinchEnded);
 
         _isPinchSubscribed = false;
         _isPinchActive = false;

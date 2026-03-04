@@ -7,7 +7,7 @@ using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Extensions.Logging;
-using Avalonia.Labs.Gif;
+using Avalonia.Controls.Maui.Controls.Gif;
 using Avalonia.Animation;
 using AImage = Avalonia.Controls.Image;
 using AGrid = Avalonia.Controls.Grid;
@@ -237,7 +237,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
         try
         {
-            _gifImage!.Source = gifUri;
+            _gifImage!.Source = GifStreamSource.FromUri(gifUri);
             await Task.Yield();
             
             _gifImage.IterationCount = shouldPlay

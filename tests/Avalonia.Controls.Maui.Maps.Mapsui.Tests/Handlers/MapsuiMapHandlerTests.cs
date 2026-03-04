@@ -1,12 +1,13 @@
 using Avalonia.Headless.XUnit;
-using Avalonia.Controls.Maui.Tests.Stubs;
+using Avalonia.Controls.Maui.Maps.Mapsui.Tests.Stubs;
+using Avalonia.Controls.Maui.Tests;
 using Microsoft.Maui.Maps;
 using Microsoft.Maui.Maps.Handlers;
 using Microsoft.Maui.Controls.Maps;
 using Avalonia.Controls.Maui.Maps.Mapsui.Handlers;
 using Location = Microsoft.Maui.Devices.Sensors.Location;
 
-namespace Avalonia.Controls.Maui.Tests.Handlers;
+namespace Avalonia.Controls.Maui.Maps.Mapsui.Tests.Handlers;
 
 public class MapsuiMapHandlerTests : HandlerTestBase<MapsuiMapHandler, MapStub>
 {

@@ -137,7 +137,11 @@ public partial class MenuBarHandler : ElementHandler<IMenuBar, PlatformView>
     }
 
     /// <inheritdoc/>
+#if MAUI_SOURCE_BUILD
+    private protected override void OnDisconnectHandler(object platformView)
+#else
     public override void OnDisconnectHandler(object platformView)
+#endif
     {
         base.OnDisconnectHandler(platformView);
         foreach (var item in VirtualView)

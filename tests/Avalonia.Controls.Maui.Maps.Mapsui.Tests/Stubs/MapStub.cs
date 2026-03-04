@@ -4,8 +4,9 @@ using System.Collections.ObjectModel;
 using Microsoft.Maui;
 using Microsoft.Maui.Maps;
 using Microsoft.Maui.Devices.Sensors;
+using Avalonia.Controls.Maui.Tests.Stubs;
 
-namespace Avalonia.Controls.Maui.Tests.Stubs;
+namespace Avalonia.Controls.Maui.Maps.Mapsui.Tests.Stubs;
 
 public class MapStub : StubBase, IMap
 {

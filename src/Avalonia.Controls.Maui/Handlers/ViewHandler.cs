@@ -238,7 +238,11 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     private protected abstract PlatformView OnCreatePlatformView();
 
     /// <inheritdoc/>
+#if MAUI_SOURCE_BUILD
+    private protected sealed override object OnCreatePlatformElement() =>
+#else
     public sealed override object OnCreatePlatformElement() =>
+#endif
         OnCreatePlatformView();
 
 
