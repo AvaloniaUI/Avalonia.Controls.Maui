@@ -1,12 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
 	<PropertyGroup>
 		<TargetFramework>$(DotNetTfm)-browser</TargetFramework>
 		<OutputType>Exe</OutputType>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Nullable>enable</Nullable>
-		
 		<UseMaui>true</UseMaui>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<RootNamespace>ControlGallery</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -23,11 +22,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="../../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
-		<ProjectReference Include="..\..\..\src\Avalonia.Controls.Maui.Compatibility\Avalonia.Controls.Maui.Compatibility.csproj" />
-		<ProjectReference Include="..\..\..\src\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
-		<ProjectReference Include="..\..\..\src\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
-		<ProjectReference Include="..\ControlGallery\ControlGallery.csproj" />
+		<ProjectReference Include="../../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+		<ProjectReference Include="../ControlGallery/ControlGallery.csproj" />
 	</ItemGroup>
 
 	<Import Project="$(MauiSrcDirectory)Avalonia.Controls.Maui.targets" />

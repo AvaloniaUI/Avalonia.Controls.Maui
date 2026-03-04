@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Browser;
 using Avalonia.Controls;
 using Avalonia.Controls.Maui;
@@ -14,5 +14,5 @@ internal sealed partial class Program
             .StartBrowserAppAsync("out");
 
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<AvaApp>();
+        => AppBuilder.Configure<AvaloniaApp>();
 }

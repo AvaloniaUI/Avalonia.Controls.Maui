@@ -17,5 +17,5 @@ public class AvaApp : MauiAvaloniaApplication
         AvaloniaXamlLoader.Load(this);
     }
 
-    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp(true);
 }
