@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Skip building when Avalonia is built from source (Mapsui NuGet depends on specific Avalonia version) -->
+  <PropertyGroup Condition="'$(BuildMapsui)' == 'false'">
+    <ExcludeFromBuild>true</ExcludeFromBuild>
+  </PropertyGroup>
+
   <PropertyGroup>
     <TargetFramework>$(DotNetTfm)</TargetFramework>
     <IsPackable>true</IsPackable>

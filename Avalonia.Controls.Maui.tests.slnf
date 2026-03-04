@@ -9,6 +9,7 @@
             "src\\Avalonia.Controls.Maui.Desktop\\Avalonia.Controls.Maui.Desktop.csproj",
             "src\\Avalonia.Controls.Maui.SourceGenerators\\Avalonia.Controls.Maui.SourceGenerators.csproj",
             "tests\\Avalonia.Controls.Maui.Tests\\Avalonia.Controls.Maui.Tests.csproj",
+            "tests\\Avalonia.Controls.Maui.Maps.Mapsui.Tests\\Avalonia.Controls.Maui.Maps.Mapsui.Tests.csproj",
             "tests\\Avalonia.Controls.Maui.SourceGenerators.Tests\\Avalonia.Controls.Maui.SourceGenerators.Tests.csproj",
             "tests\\Avalonia.Controls.Maui.RenderTests\\Avalonia.Controls.Maui.RenderTests.csproj",
             "tests\\Avalonia.Controls.Maui.Essentials.Tests\\Avalonia.Controls.Maui.Essentials.Tests.csproj"

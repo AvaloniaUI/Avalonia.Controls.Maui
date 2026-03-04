@@ -13,6 +13,16 @@
         <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
     </PropertyGroup>
 
+    <!--
+        Mapsui NuGet packages depend on a specific Avalonia NuGet version. When building
+        Avalonia from source (AvaloniaSourcePath), these packages can't resolve their
+        Avalonia dependency, so skip building Mapsui-dependent projects entirely.
+    -->
+    <PropertyGroup>
+        <BuildMapsui Condition="'$(BuildMapsui)' == '' AND '$(AvaloniaSourcePath)' != ''">false</BuildMapsui>
+        <BuildMapsui Condition="'$(BuildMapsui)' == ''">true</BuildMapsui>
+    </PropertyGroup>
+
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <IsPackable>false</IsPackable>

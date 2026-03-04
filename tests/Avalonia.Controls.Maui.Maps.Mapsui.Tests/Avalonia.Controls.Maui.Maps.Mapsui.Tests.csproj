@@ -1,5 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- Skip building when Avalonia is built from source (Mapsui NuGet depends on specific Avalonia version) -->
+  <PropertyGroup Condition="'$(BuildMapsui)' == 'false'">
+    <ExcludeFromBuild>true</ExcludeFromBuild>
+  </PropertyGroup>
+
   <PropertyGroup>
     <TargetFramework>$(DotNetTfm)</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -21,29 +26,17 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Headless" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Headless.XUnit" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.HarfBuzz" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" />
-    <!--
-      MAUI types are used directly in test code (HandlerTestBase, stubs, etc.).
-      In NuGet mode this flows transitively from the source project references,
-      but in source build mode transitive ProjectReferences across repo boundaries
-      don't flow reliably. Adding an explicit reference lets _ReplaceMauiSourceReferences
-      replace it with direct MAUI source ProjectReferences.
-    -->
-    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
+    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="$(MauiVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference
-      Include="../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
-    <ProjectReference
-      Include="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
-    <ProjectReference Include="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+    <ProjectReference Include="../Avalonia.Controls.Maui.Tests/Avalonia.Controls.Maui.Tests.csproj" />
+    <ProjectReference Include="../../src/Avalonia.Controls.Maui.Maps.Mapsui/Avalonia.Controls.Maui.Maps.Mapsui.csproj" />
   </ItemGroup>
-
 
   <ItemGroup>
     <Using Include="Xunit" />
