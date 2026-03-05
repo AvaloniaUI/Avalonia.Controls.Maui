@@ -486,5 +486,5 @@ $RECYCLE.BIN/
 # Source-build local overrides
 Directory.Build.props.user
 
-# Diagnostics folder
-diagnostics/
+# Diagnostics folder (root only)
+/diagnostics/
