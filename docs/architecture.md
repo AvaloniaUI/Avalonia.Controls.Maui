@@ -163,6 +163,8 @@ Current implementation uses Avalonia's Skia renderer. Impeller work is roadmap/a
 
 In addition to the full hosting mode, `Avalonia.Controls.Maui` supports an embedding mode where Avalonia content is placed inside a .NET MAUI app. In this mode, `UseAvaloniaEmbedding<TApp>` is called instead of `UseAvaloniaApp`, and only the `AvaloniaView` control and its handler are registered. This is useful for incrementally adopting Avalonia rendering in an existing .NET MAUI project.
 
+Embedding mode also enables wrapping Avalonia controls into .NET MAUI views, without needing the `AvaloniaView` wrapper, so they can be consumed directly in MAUI as native controls. This is done by creating a custom MAUI view backed by a `ViewHandler` that renders an Avalonia control.
+
 ```xml
 <!-- Inside a .NET MAUI page -->
 <AvaloniaView>
