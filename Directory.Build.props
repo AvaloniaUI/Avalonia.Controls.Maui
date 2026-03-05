@@ -72,6 +72,11 @@
     <PropertyGroup>
         <Version Condition="'$(Version)' == ''">$(MauiVersion)</Version>
         <Version Condition="'$(Version)' == ''">11.0.0</Version>
+         <!-- Pin PackageVersion here so platform SDKs (Android, iOS, browser) that                                         
+          override Version with ApplicationDisplayVersion don't cause NuGet restore
+          to see inconsistent PackageVersion values across TFMs. NuGet only derives
+          PackageVersion from Version when PackageVersion is unset. -->
+        <PackageVersion Condition="'$(PackageVersion)' == ''">$(Version)</PackageVersion>
     </PropertyGroup>
 
     <!-- Nuget Info -->
