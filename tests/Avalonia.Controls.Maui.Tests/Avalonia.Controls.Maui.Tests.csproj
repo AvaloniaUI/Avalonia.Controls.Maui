@@ -21,11 +21,19 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Headless" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Headless.XUnit" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.HarfBuzz" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Microsoft.Maui.Controls.Maps" Version="$(MauiVersion)" />
+    <!--
+      MAUI types are used directly in test code (HandlerTestBase, stubs, etc.).
+      In NuGet mode this flows transitively from the source project references,
+      but in source build mode transitive ProjectReferences across repo boundaries
+      don't flow reliably. Adding an explicit reference lets _ReplaceMauiSourceReferences
+      replace it with direct MAUI source ProjectReferences.
+    -->
+    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +41,6 @@
       Include="../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
     <ProjectReference
       Include="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
-    <ProjectReference Include="../../src/Avalonia.Controls.Maui.Maps.Mapsui/Avalonia.Controls.Maui.Maps.Mapsui.csproj" />
     <ProjectReference Include="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
   </ItemGroup>
 

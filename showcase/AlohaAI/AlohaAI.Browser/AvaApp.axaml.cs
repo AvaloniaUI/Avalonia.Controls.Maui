@@ -10,12 +10,12 @@ using System.Globalization;
 
 namespace AlohaAI.Browser;
 
-public class AvaApp : MauiAvaloniaApplication
+public class AvaloniaApp : MauiAvaloniaApplication
 {
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
 
-    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp(true);
 }

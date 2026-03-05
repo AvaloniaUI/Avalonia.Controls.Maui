@@ -5,6 +5,7 @@
     <_ResizetizerIsAvaloniaApp>True</_ResizetizerIsAvaloniaApp>
     <!-- Use 'wpf' platform type for Resizetizer so it generates images -->
     <ResizetizerPlatformType>wpf</ResizetizerPlatformType>
+    <_AvMauiTargetPlatformId>$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))</_AvMauiTargetPlatformId>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -13,6 +14,7 @@
     <ResizetizeDependsOnTargets>
       $(ResizetizeDependsOnTargets);
       ResizetizeCollectItems;
+      _RemoveUnsupportedMauiItems;
       ProcessMauiSplashScreens;
       _ReadResizetizeImagesOutputs;
     </ResizetizeDependsOnTargets>
@@ -39,6 +41,20 @@
       GenerateAvaloniaResources;
     </ProcessMauiFontsBeforeTargets>
   </PropertyGroup>
+
+  <Target Name="_RemoveUnsupportedMauiItems"
+          Condition="'$(_AvMauiTargetPlatformId)' == 'browser'">
+    <ItemGroup>
+      <MauiIcon Remove="@(MauiIcon)" />
+    </ItemGroup>
+    <RemoveDuplicates Inputs="@(MauiImage)">
+      <Output TaskParameter="Filtered" ItemName="_UniqueMauiImages" />
+    </RemoveDuplicates>
+    <ItemGroup>
+      <MauiImage Remove="@(MauiImage)" />
+      <MauiImage Include="@(_UniqueMauiImages)" />
+    </ItemGroup>
+  </Target>
 
   <Target Name="ConvertMauiImagesToAvaloniaResources"
           BeforeTargets="AddAvaloniaResources"

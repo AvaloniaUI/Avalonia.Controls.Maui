@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Chrome;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -128,7 +129,8 @@ public class TitleBarView : MauiView
     {
         base.OnAttachedToVisualTree(e);
 
-        if (VisualRoot is Window window)
+        var window = this.FindAncestorOfType<Window>();
+        if (window != null)
         {
             _attachedWindow = window;
             _attachedWindow.PropertyChanged += OnWindowPropertyChanged;
@@ -156,9 +158,10 @@ public class TitleBarView : MauiView
         if (_attachedWindow == null)
             return;
 
-        // Update margins when decoration state or offscreen margins change
+        // Update margins when decoration state, offscreen margins, or decoration margins change
         if (e.Property == Window.IsExtendedIntoWindowDecorationsProperty ||
-            e.Property == Window.OffScreenMarginProperty)
+            e.Property == Window.OffScreenMarginProperty ||
+            e.Property == Window.WindowDecorationMarginProperty)
         {
             UpdateWindowControlsMargin(_attachedWindow);
             InvalidateMeasure();
@@ -167,7 +170,8 @@ public class TitleBarView : MauiView
 
     /// <summary>
     /// Calculates the margin needed for platform-specific window controls.
-    /// Uses Avalonia's OffScreenMargin when available, with fallback defaults for system chrome.
+    /// Uses Avalonia's OffScreenMargin and WindowDecorationMargin when available,
+    /// with fallback defaults for system chrome.
     /// </summary>
     private void UpdateWindowControlsMargin(Window window)
     {
@@ -175,6 +179,7 @@ public class TitleBarView : MauiView
         if (!window.IsExtendedIntoWindowDecorations)
         {
             _windowControlsMargin = new Thickness(0);
+            _rootPanel.Margin = new Thickness(0);
             InvalidateArrange();
             return;
         }
@@ -189,14 +194,29 @@ public class TitleBarView : MauiView
                 0,
                 offScreenMargin.Right > 0 ? offScreenMargin.Right + 8 : 0,
                 0);
+            _rootPanel.Margin = _windowControlsMargin;
+            InvalidateArrange();
+            return;
+        }
+
+        // Check WindowDecorationMargin for left/right values (e.g. drawn decorations on X11/Win32)
+        var decorationMargin = window.WindowDecorationMargin;
+        if (decorationMargin.Left > 0 || decorationMargin.Right > 0)
+        {
+            _windowControlsMargin = new Thickness(
+                decorationMargin.Left > 0 ? decorationMargin.Left + 8 : 0,
+                0,
+                decorationMargin.Right > 0 ? decorationMargin.Right + 8 : 0,
+                0);
+            _rootPanel.Margin = _windowControlsMargin;
             InvalidateArrange();
             return;
         }
 
         if (OperatingSystem.IsMacOS())
         {
-            // macOS: traffic light buttons are on the left (80px as used by MAUI)
-            _windowControlsMargin = new Thickness(80, 0, 0, 0);
+            // macOS: traffic light buttons are on the left (~78px)
+            _windowControlsMargin = new Thickness(78, 0, 0, 0);
         }
         else
         {
@@ -205,6 +225,7 @@ public class TitleBarView : MauiView
             _windowControlsMargin = new Thickness(0, 0, 150, 0);
         }
 
+        _rootPanel.Margin = _windowControlsMargin;
         InvalidateArrange();
     }
 
@@ -245,9 +266,10 @@ public class TitleBarView : MauiView
         var inset = _windowControlsMargin.Left + _windowControlsMargin.Right;
         var adjustedWidth = Math.Max(0, finalSize.Width - inset);
 
-        // Pass offset bounds so MAUI positions children starting after the left window controls.
-        var bounds = new Microsoft.Maui.Graphics.Rect(
-            _windowControlsMargin.Left, 0, adjustedWidth, finalSize.Height);
+        // Arrange MAUI content at (0,0) with the reduced width.
+        // MAUI's CrossPlatformArrange treats bounds.X/Y as the view's position rather than
+        // a content origin offset, so we shift children at the Avalonia level below.
+        var bounds = new Microsoft.Maui.Graphics.Rect(0, 0, adjustedWidth, finalSize.Height);
 
         var widthConstraint = bounds.Width;
         var heightConstraint = bounds.Height;
@@ -259,6 +281,16 @@ public class TitleBarView : MauiView
         }
 
         layout.CrossPlatformArrange(bounds);
+
+        // Re-position children to account for the window controls offset.
+        // Since only the position changes (not size), Avalonia updates Bounds
+        // without re-triggering ArrangeOverride on the children.
+        var leftOffset = _windowControlsMargin.Left;
+        foreach (var child in Children)
+        {
+            var childBounds = child.Bounds;
+            child.Arrange(new Rect(childBounds.X + leftOffset, childBounds.Y, childBounds.Width, childBounds.Height));
+        }
 
         return finalSize;
     }
@@ -309,10 +341,13 @@ public class TitleBarView : MauiView
 
     /// <summary>
     /// Adds a control to the passthrough elements (won't trigger window drag).
+    /// Also marks the control with <see cref="WindowDecorationsElementRole.User"/>
+    /// so the platform hit-testing recognizes it as an interactive element.
     /// </summary>
     public void AddPassthroughElement(Control control)
     {
         _passthroughControls.Add(control);
+        WindowDecorationProperties.SetElementRole(control, WindowDecorationsElementRole.User);
     }
 
     /// <summary>
@@ -321,6 +356,7 @@ public class TitleBarView : MauiView
     public void RemovePassthroughElement(Control control)
     {
         _passthroughControls.Remove(control);
+        WindowDecorationProperties.SetElementRole(control, WindowDecorationsElementRole.None);
     }
 
     /// <summary>
@@ -328,6 +364,11 @@ public class TitleBarView : MauiView
     /// </summary>
     public void ClearPassthroughElements()
     {
+        foreach (var control in _passthroughControls)
+        {
+            WindowDecorationProperties.SetElementRole(control, WindowDecorationsElementRole.None);
+        }
+
         _passthroughControls.Clear();
     }
 

@@ -1,6 +1,8 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="AlohaAI.Browser.AvaApp">
+             x:Class="AlohaAI.Browser.AvaloniaApp"
+             Name="AlohaAI"
+             RequestedThemeVariant="Default">
 
     <Application.Resources>
         <ResourceDictionary>
@@ -42,7 +44,6 @@
             <Setter Property="Margin" Value="0,10,0,0" />
         </Style>
 
-        <!-- TabItem: pill shape with rounded corners -->
         <Style Selector="TabItem">
             <Setter Property="MinHeight" Value="36" />
             <Setter Property="Padding" Value="16,6" />
@@ -51,10 +52,9 @@
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="CornerRadius" Value="16" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Margin" Value="5,10,5,10" />
+            <Setter Property="Margin" Value="5,0,5,10" />
         </Style>
 
-        <!-- Hide the default pipe/accent indicator -->
         <Style Selector="TabItem /template/ Border#PART_SelectedPipe">
             <Setter Property="IsVisible" Value="False" />
         </Style>
@@ -62,7 +62,6 @@
             <Setter Property="IsVisible" Value="False" />
         </Style>
 
-        <!-- Selected tab: pill background -->
         <Style Selector="TabItem:selected">
             <Setter Property="Foreground" Value="{DynamicResource TabItemSelectedForeground}" />
         </Style>
@@ -70,7 +69,6 @@
             <Setter Property="Background" Value="{DynamicResource TabItemSelectedBg}" />
         </Style>
 
-        <!-- Pointer-over states -->
         <Style Selector="TabItem:pointerover /template/ Border#PART_LayoutRoot">
             <Setter Property="Background" Value="{DynamicResource TabItemHoverBg}" />
             <Setter Property="TextElement.Foreground" Value="{DynamicResource TabItemHoverForeground}" />
@@ -80,7 +78,6 @@
             <Setter Property="TextElement.Foreground" Value="{DynamicResource TabItemSelectedForeground}" />
         </Style>
 
-        <!-- Pressed states -->
         <Style Selector="TabItem:pressed /template/ Border#PART_LayoutRoot">
             <Setter Property="Background" Value="{DynamicResource TabItemPressedBg}" />
             <Setter Property="TextElement.Foreground" Value="{DynamicResource TabItemHoverForeground}" />
@@ -90,7 +87,6 @@
             <Setter Property="TextElement.Foreground" Value="{DynamicResource TabItemSelectedForeground}" />
         </Style>
 
-        <!-- Tab header icon sizing -->
         <Style Selector="TabItem Image.shell-tab-header-icon">
             <Setter Property="Width" Value="18" />
             <Setter Property="Height" Value="18" />

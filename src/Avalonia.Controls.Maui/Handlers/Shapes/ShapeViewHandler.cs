@@ -211,14 +211,22 @@ public abstract class ShapeViewHandler<TVirtualView, TPlatformView> : ShapeViewH
     }
 
     /// <inheritdoc/>
+#if MAUI_SOURCE_BUILD
+    private protected sealed override void OnConnectHandler(object platformView)
+#else
     public sealed override void OnConnectHandler(object platformView)
+#endif
     {
         base.OnConnectHandler(platformView);
         ConnectHandler((TPlatformView)platformView);
     }
 
     /// <inheritdoc/>
+#if MAUI_SOURCE_BUILD
+    private protected sealed override void OnDisconnectHandler(object platformView)
+#else
     public sealed override void OnDisconnectHandler(object platformView)
+#endif
     {
         DisconnectHandler((TPlatformView)platformView);
         base.OnDisconnectHandler(platformView);

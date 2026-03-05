@@ -1,7 +1,7 @@
 <Solution>
+  <Project Path="../../src/Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
   <Project Path="MauiPlanets.Browser/MauiPlanets.Browser.csproj" />
-  <Project Path="MauiPlanets.Desktop/MauiPlanets.Desktop.csproj" />
   <Project Path="MauiPlanets/MauiPlanets.csproj" />
 </Solution>

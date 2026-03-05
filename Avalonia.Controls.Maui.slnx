@@ -6,11 +6,9 @@
     <Project Path="samples/AvaloniaSandboxApp/AvaloniaSandboxApp.csproj" />
     <Project Path="samples/BenchmarkApp/BenchmarkApp.Desktop/BenchmarkApp.Desktop.csproj" />
     <Project Path="samples/BenchmarkApp/BenchmarkApp/BenchmarkApp.csproj" />
-    <Project Path="samples/SandboxAppWasm/SandboxAppWasm.csproj" />
   </Folder>
   <Folder Name="/Samples/ControlGallery/">
     <Project Path="samples/ControlGallery/ControlGallery.Browser/ControlGallery.Browser.csproj" />
-    <Project Path="samples/ControlGallery/ControlGallery.Desktop/ControlGallery.Desktop.csproj" />
     <Project Path="samples/ControlGallery/ControlGallery/ControlGallery.csproj" />
   </Folder>
   <Folder Name="/Source/">
@@ -25,6 +23,7 @@
   <Folder Name="/Tests/">
     <Project Path="tests/Avalonia.Controls.Maui.RenderTests/Avalonia.Controls.Maui.RenderTests.csproj" />
     <Project Path="tests/Avalonia.Controls.Maui.Tests/Avalonia.Controls.Maui.Tests.csproj" />
+    <Project Path="tests/Avalonia.Controls.Maui.Maps.Mapsui.Tests/Avalonia.Controls.Maui.Maps.Mapsui.Tests.csproj" />
     <Project Path="tests/Avalonia.Controls.Maui.Essentials.Tests/Avalonia.Controls.Maui.Essentials.Tests.csproj" />
     <Project Path="tests/Avalonia.Controls.Maui.SourceGenerators.Tests/Avalonia.Controls.Maui.SourceGenerators.Tests.csproj" />
   </Folder>

@@ -1,0 +1,4 @@
+<Project>
+  <Import Project="build/SourceBuild.targets"
+          Condition="'$(AvaloniaSourcePath)' != '' Or '$(MauiSourcePath)' != ''" />
+</Project>

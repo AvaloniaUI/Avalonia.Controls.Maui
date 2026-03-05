@@ -8,7 +8,7 @@ using Microsoft.Maui.Hosting;
 using System.Linq;
 using System.Globalization;
 
-namespace AlohaKit.Gallery.Browser;
+namespace AlohaKit.Gallery;
 
 public class AvaloniaApp : MauiAvaloniaApplication
 {
@@ -17,5 +17,5 @@ public class AvaloniaApp : MauiAvaloniaApplication
         AvaloniaXamlLoader.Load(this);
     }
 
-    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp(true);
 }

@@ -1,7 +1,8 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Chrome;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
-using Avalonia.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Platform;
 using System;
@@ -135,12 +136,12 @@ public class MauiAvaloniaWindow : Window, IDisposable
         // Remove existing TitleBar
         if (_titleBarView != null)
         {
+            WindowDecorationProperties.SetElementRole(_titleBarView, WindowDecorationsElementRole.None);
             _rootPanel.Children.Remove(_titleBarView);
             _titleBarView = null;
 
             // Reset window decorations when removing title bar
             ExtendClientAreaToDecorationsHint = false;
-            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.Default;
             ExtendClientAreaTitleBarHeightHint = -1;
         }
 
@@ -157,11 +158,13 @@ public class MauiAvaloniaWindow : Window, IDisposable
             _titleBarView.MauiContext = mauiContext;
             DockPanel.SetDock(_titleBarView, Dock.Top);
 
-            // Enable extended client area for custom title bar with drag support
-            // PreferSystemChrome keeps minimize/maximize/close buttons
+            // Enable extended client area for custom title bar
             ExtendClientAreaToDecorationsHint = true;
-            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome;
             ExtendClientAreaTitleBarHeightHint = 32; // Match TitleBarView height
+
+            // Mark the title bar view with the TitleBar role for platform hit-testing.
+            // The platform will handle window dragging and non-client area behavior.
+            WindowDecorationProperties.SetElementRole(_titleBarView, WindowDecorationsElementRole.TitleBar);
 
             // Insert at the beginning so it's at the top
             _rootPanel.Children.Insert(0, _titleBarView);

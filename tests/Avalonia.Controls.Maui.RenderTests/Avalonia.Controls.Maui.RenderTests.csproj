@@ -17,6 +17,14 @@
     <PackageReference Include="Avalonia.HarfBuzz" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Simple" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
+    <!--
+      MAUI types are used directly in test code (HandlerTestBase, stubs, etc.).
+      In NuGet mode this flows transitively from the source project references,
+      but in source build mode transitive ProjectReferences across repo boundaries
+      don't flow reliably. Adding an explicit reference lets _ReplaceMauiSourceReferences
+      replace it with direct MAUI source ProjectReferences.
+    -->
+    <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
 
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageReference Include="xunit.v3" Version="3.2.2" />

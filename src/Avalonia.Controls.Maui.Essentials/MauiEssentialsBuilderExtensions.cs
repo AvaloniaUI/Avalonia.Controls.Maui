@@ -1,8 +1,6 @@
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Storage;
 
-namespace Avalonia.Controls.Maui.Essentials;
-
 /// <summary>
 /// Extension methods for configuring Avalonia-based Microsoft.Maui.Essentials services.
 /// </summary>
@@ -16,14 +14,14 @@ public static class MauiEssentialsBuilderExtensions
     /// <returns>The updated MauiAppBuilder instance.</returns>
     public static MauiAppBuilder UseAvaloniaEssentials(this MauiAppBuilder builder)
     {
-        var platformProvider = new AvaloniaEssentialsPlatformProvider();
+        var platformProvider = new Avalonia.Controls.Maui.Essentials.AvaloniaEssentialsPlatformProvider();
 
-        Microsoft.Maui.Media.Screenshot.SetDefault(new AvaloniaScreenshot(platformProvider));
-        Microsoft.Maui.Storage.FilePicker.SetDefault(new AvaloniaFilePicker(platformProvider));
-        Microsoft.Maui.Media.MediaPicker.SetDefault(new AvaloniaMediaPicker(platformProvider));
-        Microsoft.Maui.Devices.HapticFeedback.SetDefault(new AvaloniaHapticFeedback());
-        Microsoft.Maui.Storage.Preferences.SetDefault(new AvaloniaPreferences());
-        FileSystem.SetCurrent(new AvaloniaFileSystem());
+        Microsoft.Maui.Media.Screenshot.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaScreenshot(platformProvider));
+        Microsoft.Maui.Storage.FilePicker.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaFilePicker(platformProvider));
+        Microsoft.Maui.Media.MediaPicker.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaMediaPicker(platformProvider));
+        Microsoft.Maui.Devices.HapticFeedback.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaHapticFeedback());
+        Microsoft.Maui.Storage.Preferences.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaPreferences());
+        FileSystem.SetCurrent(new Avalonia.Controls.Maui.Essentials.AvaloniaFileSystem());
 
         return builder;
     }
