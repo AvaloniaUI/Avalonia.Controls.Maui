@@ -92,6 +92,11 @@ public static class BenchmarkRegistry
         // Phase 7: Render performance & event auditing
         Register<LayoutThrashingBenchmark>();
         Register<EventSubscriptionBalanceBenchmark>();
+
+        // Phase 8: Targeted event subscription leak tests
+        Register<ShellHandlerFlyoutContentLeakBenchmark>();
+        Register<ShellFlyoutButtonClickLeakBenchmark>();
+        Register<NavigationViewDetachLeakBenchmark>();
     }
 
     /// <summary>

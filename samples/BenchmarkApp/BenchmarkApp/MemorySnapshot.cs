@@ -1,11 +1,13 @@
 
 
 using System.Diagnostics;
+using BenchmarkApp.Diagnostics;
 
 namespace BenchmarkApp;
 
 /// <summary>
-/// Captures GC memory state, heap generation details, and process-level native memory at a point in time for before/after comparison.
+/// Captures GC memory state, heap generation details, process-level native memory,
+/// and platform handle counts at a point in time for before/after comparison.
 /// </summary>
 public readonly struct MemorySnapshot
 {
@@ -99,6 +101,23 @@ public readonly struct MemorySnapshot
     /// </summary>
     public long ThreadPoolPendingWorkItems { get; }
 
+    /// <summary>
+    /// Gets the total virtual memory committed by the GC in bytes.
+    /// This is larger than <see cref="TotalMemory"/> because it includes GC bookkeeping,
+    /// free list regions, and segment overhead. Used for accurate native memory estimation.
+    /// </summary>
+    public long GcCommittedBytes { get; }
+
+    /// <summary>
+    /// Gets the total managed heap size in bytes (including fragmentation).
+    /// </summary>
+    public long GcHeapSizeBytes { get; }
+
+    /// <summary>
+    /// Gets the GDI and USER object handle counts (Windows only; zeroes on other platforms).
+    /// </summary>
+    public HandleCounts Handles { get; }
+
     private MemorySnapshot(
         long totalMemory,
         int gen0,
@@ -117,7 +136,10 @@ public readonly struct MemorySnapshot
         long finalizationPendingCount,
         double gcPauseTimePercentage,
         int threadPoolThreadCount,
-        long threadPoolPendingWorkItems)
+        long threadPoolPendingWorkItems,
+        long gcCommittedBytes,
+        long gcHeapSizeBytes,
+        HandleCounts handles)
     {
         TotalMemory = totalMemory;
         Gen0Collections = gen0;
@@ -137,10 +159,14 @@ public readonly struct MemorySnapshot
         GcPauseTimePercentage = gcPauseTimePercentage;
         ThreadPoolThreadCount = threadPoolThreadCount;
         ThreadPoolPendingWorkItems = threadPoolPendingWorkItems;
+        GcCommittedBytes = gcCommittedBytes;
+        GcHeapSizeBytes = gcHeapSizeBytes;
+        Handles = handles;
     }
 
     /// <summary>
-    /// Captures the current GC memory state, heap generation details, and process-level native memory.
+    /// Captures the current GC memory state, heap generation details, process-level native memory,
+    /// and platform handle counts.
     /// </summary>
     /// <param name="forceGC">If <c>true</c>, forces a full GC before capturing.</param>
     /// <returns>A snapshot of the current memory state.</returns>
@@ -182,7 +208,10 @@ public readonly struct MemorySnapshot
             gcInfo.FinalizationPendingCount,
             gcInfo.PauseTimePercentage,
             ThreadPool.ThreadCount,
-            ThreadPool.PendingWorkItemCount);
+            ThreadPool.PendingWorkItemCount,
+            gcInfo.TotalCommittedBytes,
+            gcInfo.HeapSizeBytes,
+            NativeResourceTracker.GetHandleCounts());
     }
 
     /// <summary>
@@ -211,6 +240,12 @@ public readonly struct MemorySnapshot
             before.GcPauseTimePercentage,
             GcPauseTimePercentage,
             ThreadPoolThreadCount - before.ThreadPoolThreadCount,
-            ThreadPoolPendingWorkItems - before.ThreadPoolPendingWorkItems);
+            ThreadPoolPendingWorkItems - before.ThreadPoolPendingWorkItems,
+            GcCommittedBytes - before.GcCommittedBytes,
+            GcHeapSizeBytes - before.GcHeapSizeBytes,
+            (int)Handles.GdiObjects - (int)before.Handles.GdiObjects,
+            (int)Handles.UserObjects - (int)before.Handles.UserObjects,
+            Handles.GdiObjectsPeak,
+            Handles.UserObjectsPeak);
     }
 }

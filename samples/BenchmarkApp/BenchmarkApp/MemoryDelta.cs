@@ -4,7 +4,7 @@ namespace BenchmarkApp;
 
 /// <summary>
 /// Represents the difference between two <see cref="MemorySnapshot"/> captures,
-/// including heap generation details and thread pool state.
+/// including heap generation details, native memory breakdown, and platform handle counts.
 /// </summary>
 public readonly struct MemoryDelta
 {
@@ -39,7 +39,17 @@ public readonly struct MemoryDelta
     public long PrivateMemoryDelta { get; }
 
     /// <summary>
-    /// Gets the estimated native-only memory growth in bytes (working set growth minus managed growth).
+    /// Gets the estimated native-only memory growth in bytes.
+    /// Calculated as <c>PrivateMemoryDelta - GcCommittedBytesDelta</c>, which is more
+    /// accurate than the working set approach because it subtracts the GC's total
+    /// committed virtual memory (including bookkeeping and segment overhead) rather
+    /// than just the live heap size.
+    /// </summary>
+    public long NativeMemoryEstimate => PrivateMemoryDelta - GcCommittedBytesDelta;
+
+    /// <summary>
+    /// Gets the legacy estimated native-only memory growth (working set minus managed).
+    /// Prefer <see cref="NativeMemoryEstimate"/> for more accurate results.
     /// </summary>
     public long EstimatedNativeGrowth => WorkingSetDelta - BytesDelta;
 
@@ -109,6 +119,36 @@ public readonly struct MemoryDelta
     public long ThreadPoolPendingWorkItemsDelta { get; }
 
     /// <summary>
+    /// Gets the change in GC committed virtual memory in bytes.
+    /// </summary>
+    public long GcCommittedBytesDelta { get; }
+
+    /// <summary>
+    /// Gets the change in total managed heap size (including fragmentation) in bytes.
+    /// </summary>
+    public long GcHeapSizeBytesDelta { get; }
+
+    /// <summary>
+    /// Gets the change in GDI object count (Windows only).
+    /// </summary>
+    public int GdiObjectDelta { get; }
+
+    /// <summary>
+    /// Gets the change in USER object count (Windows only).
+    /// </summary>
+    public int UserObjectDelta { get; }
+
+    /// <summary>
+    /// Gets the peak GDI object count observed during the snapshot window (Windows only).
+    /// </summary>
+    public uint GdiObjectsPeak { get; }
+
+    /// <summary>
+    /// Gets the peak USER object count observed during the snapshot window (Windows only).
+    /// </summary>
+    public uint UserObjectsPeak { get; }
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="MemoryDelta"/> struct.
     /// </summary>
     public MemoryDelta(
@@ -130,7 +170,13 @@ public readonly struct MemoryDelta
         double gcPauseTimePercentageBefore,
         double gcPauseTimePercentageAfter,
         int threadPoolThreadCountDelta,
-        long threadPoolPendingWorkItemsDelta)
+        long threadPoolPendingWorkItemsDelta,
+        long gcCommittedBytesDelta,
+        long gcHeapSizeBytesDelta,
+        int gdiObjectDelta,
+        int userObjectDelta,
+        uint gdiObjectsPeak,
+        uint userObjectsPeak)
     {
         BytesDelta = bytesDelta;
         Gen0Delta = gen0Delta;
@@ -151,6 +197,12 @@ public readonly struct MemoryDelta
         GcPauseTimePercentageAfter = gcPauseTimePercentageAfter;
         ThreadPoolThreadCountDelta = threadPoolThreadCountDelta;
         ThreadPoolPendingWorkItemsDelta = threadPoolPendingWorkItemsDelta;
+        GcCommittedBytesDelta = gcCommittedBytesDelta;
+        GcHeapSizeBytesDelta = gcHeapSizeBytesDelta;
+        GdiObjectDelta = gdiObjectDelta;
+        UserObjectDelta = userObjectDelta;
+        GdiObjectsPeak = gdiObjectsPeak;
+        UserObjectsPeak = userObjectsPeak;
     }
 
     /// <summary>
@@ -158,7 +210,7 @@ public readonly struct MemoryDelta
     /// </summary>
     public IReadOnlyDictionary<string, object> ToMetrics()
     {
-        return new Dictionary<string, object>
+        var metrics = new Dictionary<string, object>
         {
             ["MemoryBytesAllocated"] = BytesDelta,
             ["Gen0Collections"] = Gen0Delta,
@@ -167,6 +219,9 @@ public readonly struct MemoryDelta
             ["NativeWorkingSetDelta"] = WorkingSetDelta,
             ["NativePrivateMemoryDelta"] = PrivateMemoryDelta,
             ["EstimatedNativeGrowth"] = EstimatedNativeGrowth,
+            ["NativeMemoryEstimate"] = NativeMemoryEstimate,
+            ["GcCommittedBytesDelta"] = GcCommittedBytesDelta,
+            ["GcHeapSizeBytesDelta"] = GcHeapSizeBytesDelta,
             ["Gen0HeapSizeDelta"] = Gen0HeapSizeDelta,
             ["Gen1HeapSizeDelta"] = Gen1HeapSizeDelta,
             ["Gen2HeapSizeDelta"] = Gen2HeapSizeDelta,
@@ -181,5 +236,16 @@ public readonly struct MemoryDelta
             ["ThreadPoolThreadCountDelta"] = ThreadPoolThreadCountDelta,
             ["ThreadPoolPendingWorkItemsDelta"] = ThreadPoolPendingWorkItemsDelta,
         };
+
+        // Only include handle metrics on Windows (non-zero values)
+        if (GdiObjectDelta != 0 || UserObjectDelta != 0 || GdiObjectsPeak > 0)
+        {
+            metrics["GdiObjectDelta"] = GdiObjectDelta;
+            metrics["UserObjectDelta"] = UserObjectDelta;
+            metrics["GdiObjectsPeak"] = GdiObjectsPeak;
+            metrics["UserObjectsPeak"] = UserObjectsPeak;
+        }
+
+        return metrics;
     }
 }
