@@ -26,7 +26,7 @@
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0062909-alpha</AvaloniaVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.999-cibuild0062970-alpha</AvaloniaVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net11.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
         <BuildDirectory>$(MSBuildThisFileDirectory)/build/</BuildDirectory>
@@ -51,10 +51,31 @@
 
     <PropertyGroup>
         <MicrosoftExtensionsVersion>11.0.0-preview.1.26104.118</MicrosoftExtensionsVersion>
-        <SkiaSharpVersion>3.119.1</SkiaSharpVersion>
-        <HarfBuzzSharpVersion>8.3.1.2</HarfBuzzSharpVersion>
-        <MicroComVersion>0.11.0</MicroComVersion>
     </PropertyGroup>
+
+    <!--
+        SkiaSharp, HarfBuzzSharp, and MicroCom versions must match what Avalonia uses.
+        When AvaloniaSourcePath is set, read them directly from Avalonia's Directory.Packages.props
+        so they stay in sync automatically. Otherwise, fall back to hardcoded values for NuGet builds.
+    -->
+    <PropertyGroup Condition="'$(AvaloniaSourcePath)' != ''">
+        <_AvaloniaPackagesPropsPath>$(AvaloniaSourcePath)/Directory.Packages.props</_AvaloniaPackagesPropsPath>
+        <_AvaloniaPackagesPropsContent>$([System.IO.File]::ReadAllText('$(_AvaloniaPackagesPropsPath)'))</_AvaloniaPackagesPropsContent>
+        <SkiaSharpVersion>$([System.Text.RegularExpressions.Regex]::Match('$(_AvaloniaPackagesPropsContent)', 'Include="SkiaSharp" Version="([^"]+)"').Groups[1].Value)</SkiaSharpVersion>
+        <HarfBuzzSharpVersion>$([System.Text.RegularExpressions.Regex]::Match('$(_AvaloniaPackagesPropsContent)', 'Include="HarfBuzzSharp" Version="([^"]+)"').Groups[1].Value)</HarfBuzzSharpVersion>
+        <MicroComVersion>$([System.Text.RegularExpressions.Regex]::Match('$(_AvaloniaPackagesPropsContent)', 'Include="MicroCom\.Runtime" Version="([^"]+)"').Groups[1].Value)</MicroComVersion>
+        <_AvaloniaPackagesPropsContent />
+    </PropertyGroup>
+    <Target Name="_ValidateAvaloniaSourceVersions"
+            BeforeTargets="PrepareForBuild"
+            Condition="'$(AvaloniaSourcePath)' != ''">
+        <Error Text="Failed to read SkiaSharpVersion from $(AvaloniaSourcePath)/Directory.Packages.props"
+               Condition="'$(SkiaSharpVersion)' == ''" />
+        <Error Text="Failed to read HarfBuzzSharpVersion from $(AvaloniaSourcePath)/Directory.Packages.props"
+               Condition="'$(HarfBuzzSharpVersion)' == ''" />
+        <Error Text="Failed to read MicroComVersion from $(AvaloniaSourcePath)/Directory.Packages.props"
+               Condition="'$(MicroComVersion)' == ''" />
+    </Target>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net11.0'">
         <MauiVersion>11.0.0-preview.1.26107.1</MauiVersion>
@@ -72,6 +93,11 @@
     <PropertyGroup>
         <Version Condition="'$(Version)' == ''">$(MauiVersion)</Version>
         <Version Condition="'$(Version)' == ''">11.0.0</Version>
+         <!-- Pin PackageVersion here so platform SDKs (Android, iOS, browser) that                                         
+          override Version with ApplicationDisplayVersion don't cause NuGet restore
+          to see inconsistent PackageVersion values across TFMs. NuGet only derives
+          PackageVersion from Version when PackageVersion is unset. -->
+        <PackageVersion Condition="'$(PackageVersion)' == ''">$(Version)</PackageVersion>
     </PropertyGroup>
 
     <!-- Nuget Info -->

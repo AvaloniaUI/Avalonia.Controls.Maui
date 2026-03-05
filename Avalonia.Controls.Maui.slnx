@@ -6,7 +6,6 @@
     <Project Path="samples/AvaloniaSandboxApp/AvaloniaSandboxApp.csproj" />
     <Project Path="samples/BenchmarkApp/BenchmarkApp.Desktop/BenchmarkApp.Desktop.csproj" />
     <Project Path="samples/BenchmarkApp/BenchmarkApp/BenchmarkApp.csproj" />
-
   </Folder>
   <Folder Name="/Samples/ControlGallery/">
     <Project Path="samples/ControlGallery/ControlGallery.Browser/ControlGallery.Browser.csproj" />
