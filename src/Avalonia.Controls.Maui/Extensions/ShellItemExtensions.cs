@@ -43,7 +43,16 @@ public static class ShellItemExtensions
         handler._isUpdatingTabs = true;
         try
         {
-            handler._sectionPageMap?.Clear();
+            // Clear content from old wrapper pages to detach section platform views
+            // before TabbedPage replaces the Pages list during layout.
+            if (handler._sectionPageMap != null)
+            {
+                foreach (var oldPage in handler._sectionPageMap.Values)
+                {
+                    oldPage.Content = null;
+                }
+                handler._sectionPageMap.Clear();
+            }
 
             var sections = item is IShellItemController itemController
                 ? itemController.GetItems()
@@ -224,7 +233,9 @@ public static class ShellItemExtensions
             {
                 if (wrapperPage.Content != control)
                 {
-                    if (control.Parent != null && control.Parent != wrapperPage)
+                    // The control may be parented deep inside a ContentPresenter chain
+                    // (not directly to the wrapper page), so always detach if it has any parent.
+                    if (control.Parent != null)
                     {
                         control.DetachFromVisualTree();
                     }
