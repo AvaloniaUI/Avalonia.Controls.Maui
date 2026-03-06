@@ -1,4 +1,6 @@
 using Avalonia;
+using Avalonia.Controls.Presenters;
+using Avalonia.Data;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -92,6 +94,9 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
     /// <summary>The flyout container that manages flyout open/close behavior.</summary>
     internal DrawerPage? _flyoutContainer;
+
+    /// <summary>Style that prevents drawer content reflow during open/close animation.</summary>
+    internal Avalonia.Styling.Style? _paneMinWidthStyle;
 
     /// <summary>Content control wrapping the flyout panel content.</summary>
     internal ContentControl? _flyoutContentControl;

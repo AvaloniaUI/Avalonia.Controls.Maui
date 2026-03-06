@@ -313,10 +313,27 @@ public static class ShellExtensions
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
     public static void UpdateFlyoutWidth(this ShellHandler handler, MauiShell shell)
     {
-        if (handler._flyoutContainer != null && shell != null && shell.FlyoutWidth > 0)
+        if (handler._flyoutContainer == null || shell == null)
+            return;
+
+        double width = shell.FlyoutWidth > 0 ? shell.FlyoutWidth : 320;
+        handler._flyoutContainer.DrawerLength = width;
+
+        // Prevent drawer content from reflowing during open/close animation.
+        // The SplitView animates PART_PaneRoot's Width, which causes child content to
+        // re-layout at the shrinking width. Setting MinWidth on the pane presenter ensures
+        // content always lays out at full drawer width and is simply clipped.
+        if (handler._paneMinWidthStyle != null)
+            handler._flyoutContainer.Styles.Remove(handler._paneMinWidthStyle);
+
+        handler._paneMinWidthStyle = new Avalonia.Styling.Style(x =>
+            x.OfType<DrawerPage>()
+             .Template().OfType<SplitView>().Name("PART_SplitView")
+             .Template().OfType<Avalonia.Controls.Presenters.ContentPresenter>().Name("PART_PanePresenter"))
         {
-            handler._flyoutContainer.DrawerLength = shell.FlyoutWidth;
-        }
+            Setters = { new Avalonia.Styling.Setter(Layoutable.MinWidthProperty, width) }
+        };
+        handler._flyoutContainer.Styles.Add(handler._paneMinWidthStyle);
     }
 
     /// <summary>

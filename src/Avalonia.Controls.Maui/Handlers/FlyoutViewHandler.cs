@@ -1,7 +1,9 @@
-using System;
 using Microsoft.Maui;
 using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
+using Avalonia.Styling;
 using Microsoft.Maui.Platform;
 using PlatformView = Avalonia.Controls.DrawerPage;
 
@@ -10,6 +12,8 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>Avalonia handler for <see cref="IFlyoutView"/>.</summary>
 public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
 {
+    private Style? _paneMinWidthStyle;
+
     // Properties are set with priority because other mappers depend on them.
     private static readonly IPropertyMapper<IFlyoutView, FlyoutViewHandler> FlyoutLayoutMapper = new PropertyMapper<IFlyoutView, FlyoutViewHandler>()
     {
@@ -192,15 +196,34 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
         if (handler.PlatformView is not PlatformView platformView)
             return;
 
+        double width;
         if (flyoutView.FlyoutWidth > 0)
         {
-            platformView.DrawerLength = flyoutView.FlyoutWidth;
+            width = flyoutView.FlyoutWidth;
         }
-        else if (flyoutView.FlyoutWidth == -1)
+        else
         {
             // -1 means auto/match parent, use the default
-            platformView.DrawerLength = 320;
+            width = 320;
         }
+
+        platformView.DrawerLength = width;
+
+        // Prevent drawer content from reflowing during open/close animation.
+        // The SplitView animates PART_PaneRoot's Width, which causes child content to
+        // re-layout at the shrinking width. Setting MinWidth on the pane presenter ensures
+        // content always lays out at full drawer width and is simply clipped.
+        if (handler._paneMinWidthStyle != null)
+            platformView.Styles.Remove(handler._paneMinWidthStyle);
+
+        handler._paneMinWidthStyle = new Style(x =>
+            x.OfType<DrawerPage>()
+             .Template().OfType<SplitView>().Name("PART_SplitView")
+             .Template().OfType<ContentPresenter>().Name("PART_PanePresenter"))
+        {
+            Setters = { new Setter(Layoutable.MinWidthProperty, width) }
+        };
+        platformView.Styles.Add(handler._paneMinWidthStyle);
     }
 
     /// <summary>Maps the IsGestureEnabled property to the platform view.</summary>
