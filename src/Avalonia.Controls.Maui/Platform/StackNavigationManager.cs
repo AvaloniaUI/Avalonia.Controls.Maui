@@ -1,18 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Controls;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Handlers;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Platform;
 using AvaloniaContentPage = Avalonia.Controls.ContentPage;
 using AvaloniaNavigationPage = Avalonia.Controls.NavigationPage;
 using MauiPage = Microsoft.Maui.Controls.Page;
@@ -32,7 +29,7 @@ public class StackNavigationManager
     private IStackNavigation? _stackNavigation;
     private bool _connected;
     private bool _isNavigatingFromMaui;
-    private ILogger? _logger;
+    private readonly ILogger? _logger;
     private FlyoutPage? _parentFlyoutPage;
 
     /// <summary>
@@ -242,10 +239,7 @@ public class StackNavigationManager
         _logger?.LogDebug("NavigateTo: stack size {NewSize}, previous size {PreviousSize}, animated: {Animated}",
             newPageStack.Count, previousNavigationStackCount, request.Animated);
 
-        // Collect pages that were removed from the stack for deferred cleanup.
-        // We must NOT disconnect handlers here because the Avalonia NavigationPage
-        // pop transition animation is still running — disconnecting handlers would
-        // null out CrossPlatformLayout and corrupt the page's layout mid-animation.
+        // Collect pages that were removed from the stack for cleanup after navigation.
         List<IView>? poppedPages = null;
         if (!initialNavigation && previousNavigationStackCount > newPageStack.Count)
         {
@@ -257,7 +251,6 @@ public class StackNavigationManager
                     poppedPages.Add(poppedView);
                 }
             }
-
         }
 
         // Unsubscribe from previous page's property changes
@@ -361,31 +354,22 @@ public class StackNavigationManager
             }
 
             UpdateCurrentPageWrapper();
-            FireNavigationFinished();
-
-            // Defer handler disconnection for popped pages. The pop transition
-            // animation may still be running, so we disconnect after the wrappers
-            // are removed from the visual tree by the NavigationPage.
-            if (poppedPages != null)
-            {
-                DeferDisconnectHandlers(poppedPages);
-            }
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error during navigation");
+            throw;
+        }
+        finally
+        {
             FireNavigationFinished();
 
-            // Still disconnect on error to avoid leaks.
             if (poppedPages != null)
             {
                 foreach (var page in poppedPages)
                     page.DisconnectHandlers();
             }
-            throw;
-        }
-        finally
-        {
+
             _isNavigatingFromMaui = false;
         }
     }
@@ -395,7 +379,7 @@ public class StackNavigationManager
     /// Uses <see cref="AvaloniaNavigationPage.InsertPage"/> and <see cref="AvaloniaNavigationPage.RemovePage"/>
     /// which modify the stack without animation, so future back-navigation reveals the correct pages.
     /// </summary>
-    private void SyncNonTopPages(IList<IView> targetMauiStack)
+    private void SyncNonTopPages(List<IView> targetMauiStack)
     {
         if (_navigationPage == null) return;
 
@@ -404,33 +388,36 @@ public class StackNavigationManager
         for (int i = 0; i < targetMauiStack.Count; i++)
             targetWrapped.Add(GetAvaloniaContentPage(targetMauiStack[i], MauiContext));
 
+        var targetSet = new HashSet<AvaloniaContentPage>(targetWrapped);
+
         var avaloniaStack = _navigationPage.NavigationStack;
-        var avaloniaTop = avaloniaStack.Count > 0 ? avaloniaStack[avaloniaStack.Count - 1] : null;
+        var avaloniaTop = avaloniaStack.Count > 0 ? avaloniaStack[^1] : null;
 
         // Remove Avalonia pages (except the current top) that aren't in the target stack
         for (int i = avaloniaStack.Count - 1; i >= 0; i--)
         {
             var page = avaloniaStack[i];
-            if (page != avaloniaTop && !targetWrapped.Contains(page))
+            if (page != avaloniaTop && !targetSet.Contains(page))
                 _navigationPage.RemovePage(page);
         }
 
         // Re-read after removals
         avaloniaStack = _navigationPage.NavigationStack;
+        var avaloniaSet = new HashSet<Avalonia.Controls.Page>(avaloniaStack);
 
         // Insert missing pages at their correct positions.
         // Walk the target list and insert any page not yet present,
         // placing it before the next target page that IS in the Avalonia stack.
         for (int i = 0; i < targetWrapped.Count; i++)
         {
-            if (avaloniaStack.Contains(targetWrapped[i]))
+            if (avaloniaSet.Contains(targetWrapped[i]))
                 continue;
 
             // Find the next page in the target that already exists in the Avalonia stack
             Avalonia.Controls.Page? insertBefore = null;
             for (int j = i + 1; j < targetWrapped.Count; j++)
             {
-                if (avaloniaStack.Contains(targetWrapped[j]))
+                if (avaloniaSet.Contains(targetWrapped[j]))
                 {
                     insertBefore = targetWrapped[j];
                     break;
@@ -441,6 +428,7 @@ public class StackNavigationManager
             {
                 _navigationPage.InsertPage(targetWrapped[i], insertBefore);
                 avaloniaStack = _navigationPage.NavigationStack; // re-read after insert
+                avaloniaSet = new HashSet<Avalonia.Controls.Page>(avaloniaStack);
             }
         }
 
@@ -587,10 +575,6 @@ public class StackNavigationManager
         _stackNavigation?.NavigationFinished(NavigationStack);
     }
 
-    /// <summary>
-    /// Disconnects handlers for popped pages after their wrappers have been removed
-    /// from the visual tree by the NavigationPage's transition animation cleanup.
-    /// </summary>
     private static AvaloniaContentPage GetAvaloniaContentPage(IView mauiPage, IMauiContext mauiContext)
     {
         return (AvaloniaContentPage)mauiPage.ToPlatform(mauiContext);
@@ -599,40 +583,6 @@ public class StackNavigationManager
     private static AvaloniaContentPage? GetContentPageFromHandler(IView? view)
     {
         return view?.Handler?.PlatformView as AvaloniaContentPage;
-    }
-
-    private void DeferDisconnectHandlers(List<IView> poppedPages)
-    {
-        foreach (var page in poppedPages)
-        {
-            if (GetContentPageFromHandler(page) is { } contentPage)
-            {
-                // If the ContentPage is already detached from the visual tree
-                // (e.g., user-initiated pop where we delayed the MAUI sync
-                // until after the transition completed), disconnect immediately.
-                if (contentPage.Parent == null)
-                {
-                    page.DisconnectHandlers();
-                    continue;
-                }
-
-                // Wait for the ContentPage to be detached from the visual tree
-                // (happens when the NavigationPage sets from.Content = null
-                // after the transition animation completes).
-                void OnDetached(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
-                {
-                    contentPage.DetachedFromVisualTree -= OnDetached;
-                    page.DisconnectHandlers();
-                }
-
-                contentPage.DetachedFromVisualTree += OnDetached;
-            }
-            else
-            {
-                // No ContentPage from handler — disconnect immediately.
-                page.DisconnectHandlers();
-            }
-        }
     }
 
 }
