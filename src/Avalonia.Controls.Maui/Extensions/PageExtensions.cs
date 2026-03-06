@@ -76,7 +76,7 @@ public static class PageExtensions
         {
             platformView.Background = page.Background.ToPlatform();
         }
-        else if (page.BackgroundColor is not null)
+        else if (page.BackgroundColor?.IsDefault() == false)
         {
             platformView.Background = page.BackgroundColor.ToPlatform();
         }

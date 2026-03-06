@@ -134,18 +134,20 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
     /// <param name="page">The associated <see cref="MauiPage"/> instance.</param>
     public static void MapBackground(PageHandler handler, MauiPage page)
     {
-        var platformView = handler.PlatformView;
-        if (!page.Background?.IsEmpty ?? false)
+        if (handler.InnerContentView is { } contentView)
         {
-            platformView.Background = page.Background.ToPlatform();
-        }
-        else if (page.BackgroundColor is not null)
-        {
-            platformView.Background = page.BackgroundColor.ToPlatform();
-        }
-        else
-        {
-            platformView.ClearValue(Avalonia.Controls.Primitives.TemplatedControl.BackgroundProperty);
+            if (!page.Background?.IsEmpty ?? false)
+            {
+                contentView.Background = page.Background.ToPlatform();
+            }
+            else if (page.BackgroundColor?.IsDefault() == false)
+            {
+                contentView.Background = page.BackgroundColor.ToPlatform();
+            }
+            else
+            {
+                contentView.ClearValue(Avalonia.Controls.Primitives.TemplatedControl.BackgroundProperty);
+            }
         }
     }
 

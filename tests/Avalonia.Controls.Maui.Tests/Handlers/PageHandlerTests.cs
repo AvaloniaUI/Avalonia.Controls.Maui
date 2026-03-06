@@ -25,8 +25,8 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
             // First ensure background is set by triggering the mapping
             handler.UpdateValue(nameof(PageStub.Background));
             
-            Assert.NotNull(handler.PlatformView.Background);
-            var brush = Assert.IsType<SolidColorBrush>(handler.PlatformView.Background);
+            Assert.NotNull(handler.InnerContentView!.Background);
+            var brush = Assert.IsType<SolidColorBrush>(handler.InnerContentView!.Background);
             Assert.Equal(Media.Colors.Red, brush.Color);
         });
     }
@@ -54,8 +54,8 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
         {
             handler.UpdateValue(nameof(PageStub.Background));
 
-            Assert.NotNull(handler.PlatformView.Background);
-            Assert.IsType<LinearGradientBrush>(handler.PlatformView.Background);
+            Assert.NotNull(handler.InnerContentView!.Background);
+            Assert.IsType<LinearGradientBrush>(handler.InnerContentView!.Background);
         });
     }
 
@@ -79,7 +79,7 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
 
         await InvokeOnMainThreadAsync(() =>
         {
-            Assert.NotNull(handler.PlatformView.Background);
+            Assert.NotNull(handler.InnerContentView!.Background);
         });
 
         // Clear the background
@@ -91,7 +91,7 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
 
         await InvokeOnMainThreadAsync(() =>
         {
-            Assert.Null(handler.PlatformView.Background);
+            Assert.Null(handler.InnerContentView!.Background);
         });
     }
 
@@ -121,8 +121,8 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
             {
                 handler.UpdateValue(nameof(PageStub.Background));
 
-                Assert.NotNull(handler.PlatformView.Background);
-                var brush = Assert.IsType<Media.SolidColorBrush>(handler.PlatformView.Background);
+                Assert.NotNull(handler.InnerContentView!.Background);
+                var brush = Assert.IsType<Media.SolidColorBrush>(handler.InnerContentView!.Background);
                 Assert.Equal(avaloniaColor, brush.Color);
             });
         }
@@ -145,7 +145,7 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
         {
             handler.UpdateValue(nameof(PageStub.Background));
 
-            var brush = handler.PlatformView.Background as SolidColorBrush;
+            var brush = handler.InnerContentView!.Background as SolidColorBrush;
             Assert.NotNull(brush);
             Assert.Equal(Media.Colors.Red, brush.Color);
         });
@@ -160,7 +160,7 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
         // Verify updated value
         await InvokeOnMainThreadAsync(() =>
         {
-            var brush = handler.PlatformView.Background as SolidColorBrush;
+            var brush = handler.InnerContentView!.Background as SolidColorBrush;
             Assert.NotNull(brush);
             Assert.Equal(Media.Colors.Green, brush.Color);
         });
