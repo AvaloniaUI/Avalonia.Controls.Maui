@@ -12,7 +12,7 @@ using ScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility;
 using Stretch = Avalonia.Media.Stretch;
 using Avalonia.Animation;
 using Avalonia.Styling;
-using Avalonia.Controls.Maui.Controls.Shell;
+using Avalonia.Controls;
 
 namespace Avalonia.Controls.Maui.Extensions;
 
@@ -85,11 +85,11 @@ public static class ShellExtensions
         var backdrop = shell.FlyoutBackdrop;
         if (backdrop != null)
         {
-            handler._flyoutContainer.FlyoutBackdrop = backdrop.ToPlatform();
+            handler._flyoutContainer.BackdropBrush = backdrop.ToPlatform();
         }
         else
         {
-            handler._flyoutContainer.FlyoutBackdrop = null;
+            handler._flyoutContainer.BackdropBrush = null;
         }
     }
 
@@ -286,19 +286,19 @@ public static class ShellExtensions
         switch (shell.FlyoutBehavior)
         {
             case Microsoft.Maui.FlyoutBehavior.Disabled:
-                handler._flyoutContainer.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Disabled;
-                handler._flyoutContainer.IsFlyoutOpen = false;
+                handler._flyoutContainer.DrawerBehavior = DrawerBehavior.Disabled;
+                handler._flyoutContainer.IsOpen = false;
                 if (handler._hamburgerButton != null)
                     handler._hamburgerButton.IsVisible = false;
                 break;
             case Microsoft.Maui.FlyoutBehavior.Flyout:
-                handler._flyoutContainer.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Popover;
+                handler._flyoutContainer.DrawerBehavior = DrawerBehavior.Flyout;
                 if (handler._hamburgerButton != null)
                     handler._hamburgerButton.IsVisible = true;
                 break;
             case Microsoft.Maui.FlyoutBehavior.Locked:
-                handler._flyoutContainer.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Locked;
-                handler._flyoutContainer.IsFlyoutOpen = true;
+                handler._flyoutContainer.DrawerBehavior = DrawerBehavior.Locked;
+                handler._flyoutContainer.IsOpen = true;
                 if (handler._hamburgerButton != null)
                     handler._hamburgerButton.IsVisible = false;
                 break;
@@ -314,7 +314,7 @@ public static class ShellExtensions
     {
         if (handler._flyoutContainer != null && shell != null && shell.FlyoutWidth > 0)
         {
-            handler._flyoutContainer.FlyoutWidth = shell.FlyoutWidth;
+            handler._flyoutContainer.DrawerLength = shell.FlyoutWidth;
         }
     }
 
@@ -325,10 +325,7 @@ public static class ShellExtensions
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
     public static void UpdateFlyoutHeight(this ShellHandler handler, MauiShell shell)
     {
-        if (handler._flyoutContainer != null && shell != null && shell.FlyoutHeight > 0)
-        {
-            handler._flyoutContainer.FlyoutHeight = shell.FlyoutHeight;
-        }
+        // DrawerPage auto-sizes; FlyoutHeight is not supported.
     }
 
     /// <summary>
@@ -340,7 +337,7 @@ public static class ShellExtensions
     {
         if (handler._flyoutContainer != null && shell != null)
         {
-            handler._flyoutContainer.IsFlyoutOpen = shell.FlyoutIsPresented;
+            handler._flyoutContainer.IsOpen = shell.FlyoutIsPresented;
         }
     }
 

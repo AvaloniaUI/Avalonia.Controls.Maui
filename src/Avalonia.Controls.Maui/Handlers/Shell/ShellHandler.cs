@@ -9,7 +9,7 @@ using SolidColorBrush = Avalonia.Media.SolidColorBrush;
 using AvaloniaGrid = Avalonia.Controls.Grid;
 using MauiShell = Microsoft.Maui.Controls.Shell;
 using Avalonia.Controls.Maui.Extensions;
-using Avalonia.Controls.Maui.Controls.Shell;
+using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using MauiPage = Microsoft.Maui.Controls.Page;
 
@@ -91,7 +91,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     internal new MauiShell? VirtualView => ((IElementHandler)this).VirtualView as MauiShell;
 
     /// <summary>The flyout container that manages flyout open/close behavior.</summary>
-    internal FlyoutContainer? _flyoutContainer;
+    internal DrawerPage? _flyoutContainer;
 
     /// <summary>Content control wrapping the flyout panel content.</summary>
     internal ContentControl? _flyoutContentControl;
@@ -185,13 +185,27 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     }
 
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
-    protected override Panel CreatePlatformView()
+    protected override AvaloniaControl CreatePlatformView()
     {
-        _flyoutContainer = new FlyoutContainer
+        _flyoutContainer = new DrawerPage
         {
+            ContentTemplate = null,
+            DrawerTemplate = null,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch
         };
+
+        // Hide DrawerPage's built-in top bar since Shell has its own
+        _flyoutContainer.Styles.Add(new Avalonia.Styling.Style(x => x.OfType<DrawerPage>().Template().OfType<Border>().Name("PART_TopBar"))
+        {
+            Setters = { new Avalonia.Styling.Setter(Visual.IsVisibleProperty, false) }
+        });
+
+        // Hide DrawerPage's built-in pane toggle button since Shell has its own hamburger button
+        _flyoutContainer.Styles.Add(new Avalonia.Styling.Style(x => x.OfType<DrawerPage>().Template().OfType<Avalonia.Controls.Primitives.ToggleButton>().Name("PART_PaneButton"))
+        {
+            Setters = { new Avalonia.Styling.Setter(Visual.IsVisibleProperty, false) }
+        });
 
         _flyoutGrid = new AvaloniaGrid();
 
@@ -248,7 +262,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             Background = null
         };
 
-        _flyoutContainer.SetFlyoutContent(_flyoutContentControl);
+        _flyoutContainer.Drawer = _flyoutContentControl;
 
         // Ensure selection is updated when flyout content is attached to visual tree
         _flyoutContentControl.AttachedToVisualTree += (s, e) =>
@@ -378,9 +392,17 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         _mainContainer.Children.Add(_mainContentControl);
 
 
-        _flyoutContainer.SetDetailContent(_mainContainer);
+        _flyoutContainer.Content = _mainContainer;
 
-        return _flyoutContainer;
+        // Return a ContentPage hosting the DrawerPage so it can be placed
+        // inside an Avalonia NavigationPage (StackNavigationManager expects ContentPage).
+        return new Avalonia.Controls.ContentPage
+        {
+            Content = _flyoutContainer,
+            ContentTemplate = null,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            VerticalContentAlignment = VerticalAlignment.Stretch
+        };
     }
 
     /// <inheritdoc/>
@@ -390,8 +412,8 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         if (_flyoutContainer != null)
         {
-            _flyoutContainer.FlyoutOpened += OnFlyoutOpened;
-            _flyoutContainer.FlyoutClosed += OnFlyoutClosed;
+            _flyoutContainer.Opened += OnFlyoutOpened;
+            _flyoutContainer.Closed += OnFlyoutClosed;
         }
 
         if (VirtualView != null)
@@ -440,8 +462,8 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     {
         if (_flyoutContainer != null)
         {
-            _flyoutContainer.FlyoutOpened -= OnFlyoutOpened;
-            _flyoutContainer.FlyoutClosed -= OnFlyoutClosed;
+            _flyoutContainer.Opened -= OnFlyoutOpened;
+            _flyoutContainer.Closed -= OnFlyoutClosed;
         }
 
         if (VirtualView != null)
@@ -516,8 +538,11 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         base.DisconnectHandler(platformView);
     }
 
-    private void OnFlyoutOpened(object? sender, EventArgs e)
+    private void OnFlyoutOpened(object? sender, RoutedEventArgs e)
     {
+        if (e.Source != _flyoutContainer)
+            return;
+
         if (VirtualView != null)
         {
             VirtualView.FlyoutIsPresented = true;
@@ -531,8 +556,11 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
     }
 
-    private void OnFlyoutClosed(object? sender, EventArgs e)
+    private void OnFlyoutClosed(object? sender, RoutedEventArgs e)
     {
+        if (e.Source != _flyoutContainer)
+            return;
+
         if (VirtualView != null)
         {
             VirtualView.FlyoutIsPresented = false;
@@ -1065,7 +1093,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         if (VirtualView.FlyoutBehavior == Microsoft.Maui.FlyoutBehavior.Flyout && _flyoutContainer != null)
         {
-            _flyoutContainer.IsFlyoutOpen = false;
+            _flyoutContainer.IsOpen = false;
             VirtualView.FlyoutIsPresented = false;
         }
     }
@@ -1074,8 +1102,8 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     {
         if (VirtualView != null && _flyoutContainer != null)
         {
-            _flyoutContainer.IsFlyoutOpen = !_flyoutContainer.IsFlyoutOpen;
-            VirtualView.FlyoutIsPresented = _flyoutContainer.IsFlyoutOpen;
+            _flyoutContainer.IsOpen = !_flyoutContainer.IsOpen;
+            VirtualView.FlyoutIsPresented = _flyoutContainer.IsOpen;
         }
     }
 

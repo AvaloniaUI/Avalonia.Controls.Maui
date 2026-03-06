@@ -1,8 +1,9 @@
 using System;
 using Microsoft.Maui;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Microsoft.Maui.Platform;
-using PlatformView = Avalonia.Controls.Maui.Controls.Shell.FlyoutContainer;
+using PlatformView = Avalonia.Controls.DrawerPage;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -55,7 +56,11 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformView()
     {
-        return new PlatformView();
+        return new PlatformView
+        {
+            ContentTemplate = null,
+            DrawerTemplate = null
+        };
     }
 
     /// <inheritdoc/>
@@ -63,29 +68,37 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
     {
         base.ConnectHandler(platformView);
 
-        platformView.FlyoutOpened += OnFlyoutOpened;
-        platformView.FlyoutClosed += OnFlyoutClosed;
+        platformView.Opened += OnFlyoutOpened;
+        platformView.Closed += OnFlyoutClosed;
     }
 
     /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
-        platformView.FlyoutOpened -= OnFlyoutOpened;
-        platformView.FlyoutClosed -= OnFlyoutClosed;
+        platformView.Opened -= OnFlyoutOpened;
+        platformView.Closed -= OnFlyoutClosed;
 
         base.DisconnectHandler(platformView);
     }
 
-    private void OnFlyoutClosed(object? sender, EventArgs e)
+    private void OnFlyoutClosed(object? sender, RoutedEventArgs e)
     {
+        // Ignore routed events bubbling up from nested DrawerPages (e.g. Shell inside FlyoutPage)
+        if (e.Source != PlatformView)
+            return;
+
         if (VirtualView != null)
         {
             VirtualView.IsPresented = false;
         }
     }
 
-    private void OnFlyoutOpened(object? sender, EventArgs e)
+    private void OnFlyoutOpened(object? sender, RoutedEventArgs e)
     {
+        // Ignore routed events bubbling up from nested DrawerPages (e.g. Shell inside FlyoutPage)
+        if (e.Source != PlatformView)
+            return;
+
         if (VirtualView != null)
         {
             VirtualView.IsPresented = true;
@@ -106,11 +119,11 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
         if (flyoutView.Flyout != null)
         {
             var flyoutPlatformView = flyoutView.Flyout.ToPlatform(handler.MauiContext);
-            platformView.SetFlyoutContent(flyoutPlatformView as Control);
+            platformView.Drawer = flyoutPlatformView as Control;
         }
         else
         {
-            platformView.SetFlyoutContent(null);
+            platformView.Drawer = null;
         }
     }
 
@@ -128,11 +141,11 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
         if (flyoutView.Detail != null)
         {
             var detailPlatformView = flyoutView.Detail.ToPlatform(handler.MauiContext);
-            platformView.SetDetailContent(detailPlatformView as Control);
+            platformView.Content = detailPlatformView as Control;
         }
         else
         {
-            platformView.SetDetailContent(null);
+            platformView.Content = null;
         }
     }
 
@@ -144,7 +157,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
         if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        platformView.IsFlyoutOpen = flyoutView.IsPresented;
+        platformView.IsOpen = flyoutView.IsPresented;
     }
 
     /// <summary>Maps the FlyoutBehavior property to the platform view.</summary>
@@ -158,15 +171,15 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
         switch (flyoutView.FlyoutBehavior)
         {
             case Microsoft.Maui.FlyoutBehavior.Disabled:
-                platformView.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Disabled;
-                platformView.IsFlyoutOpen = false;
+                platformView.DrawerBehavior = DrawerBehavior.Disabled;
+                platformView.IsOpen = false;
                 break;
             case Microsoft.Maui.FlyoutBehavior.Flyout:
-                platformView.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Popover;
+                platformView.DrawerBehavior = DrawerBehavior.Flyout;
                 break;
             case Microsoft.Maui.FlyoutBehavior.Locked:
-                platformView.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Locked;
-                platformView.IsFlyoutOpen = true;
+                platformView.DrawerBehavior = DrawerBehavior.Locked;
+                platformView.IsOpen = true;
                 break;
         }
     }
@@ -181,12 +194,12 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
 
         if (flyoutView.FlyoutWidth > 0)
         {
-            platformView.FlyoutWidth = flyoutView.FlyoutWidth;
+            platformView.DrawerLength = flyoutView.FlyoutWidth;
         }
         else if (flyoutView.FlyoutWidth == -1)
         {
-            // -1 means auto/match parent, use a reasonable default
-            platformView.FlyoutWidth = PlatformView.DefaultFlyoutWidth;
+            // -1 means auto/match parent, use the default
+            platformView.DrawerLength = 320;
         }
     }
 

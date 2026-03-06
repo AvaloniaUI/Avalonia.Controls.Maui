@@ -1,5 +1,5 @@
 using Avalonia.Controls.Maui.Platform;
-using Avalonia.Controls.Maui.Controls.Shell;
+using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -16,6 +16,9 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public partial class ShellHandlerTests : HandlerTestBase
 {
+    private static DrawerPage? GetDrawerPage(MauiShellHandler handler) =>
+        (handler.PlatformView as Avalonia.Controls.ContentPage)?.Content as DrawerPage;
+
     [AvaloniaFact(DisplayName = "Shell Creates Platform View")]
     public async Task ShellCreatesPlatformView()
     {
@@ -24,7 +27,8 @@ public partial class ShellHandlerTests : HandlerTestBase
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
 
         Assert.NotNull(handler.PlatformView);
-        Assert.IsType<FlyoutContainer>(handler.PlatformView);
+        Assert.IsType<Avalonia.Controls.ContentPage>(handler.PlatformView);
+        Assert.NotNull(GetDrawerPage(handler));
     }
 
     [AvaloniaFact(DisplayName = "Shell With Items Creates Platform View")]
@@ -44,10 +48,10 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutBehavior = MauiFlyoutBehavior.Flyout;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Popover, flyoutContainer.FlyoutBehavior);
+        Assert.Equal(DrawerBehavior.Flyout, flyoutContainer.DrawerBehavior);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutBehavior Disabled Initializes Correctly")]
@@ -57,11 +61,11 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutBehavior = MauiFlyoutBehavior.Disabled;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Disabled, flyoutContainer.FlyoutBehavior);
-        Assert.False(flyoutContainer.IsFlyoutOpen);
+        Assert.Equal(DrawerBehavior.Disabled, flyoutContainer.DrawerBehavior);
+        Assert.False(flyoutContainer.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutBehavior Locked Initializes Correctly")]
@@ -71,10 +75,10 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutBehavior = MauiFlyoutBehavior.Locked;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Locked, flyoutContainer.FlyoutBehavior);
+        Assert.Equal(DrawerBehavior.Locked, flyoutContainer.DrawerBehavior);
         // In Locked mode, flyout is always visible (split mode) regardless of IsFlyoutOpen state
         // The visual position is controlled by IsSplitMode(), not IsFlyoutOpen
     }
@@ -87,10 +91,10 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutIsPresented = true;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.True(flyoutContainer.IsFlyoutOpen);
+        Assert.True(flyoutContainer.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutIsPresented False Closes Flyout")]
@@ -101,10 +105,10 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutIsPresented = false;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.False(flyoutContainer.IsFlyoutOpen);
+        Assert.False(flyoutContainer.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutWidth Initializes Correctly")]
@@ -114,10 +118,10 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutWidth = 400;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(400, flyoutContainer.FlyoutWidth);
+        Assert.Equal(400, flyoutContainer.DrawerLength);
     }
 
     [AvaloniaTheory(DisplayName = "FlyoutWidth Various Values")]
@@ -130,23 +134,23 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutWidth = width;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(width, flyoutContainer.FlyoutWidth);
+        Assert.Equal(width, flyoutContainer.DrawerLength);
     }
 
-    [AvaloniaFact(DisplayName = "FlyoutHeight Initializes Correctly")]
-    public async Task FlyoutHeightInitializesCorrectly()
+    [AvaloniaFact(DisplayName = "FlyoutHeight Does Not Crash")]
+    public async Task FlyoutHeightDoesNotCrash()
     {
         var shell = CreateBasicShell();
         shell.FlyoutHeight = 500;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
+        // DrawerPage auto-sizes; FlyoutHeight is a no-op
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(500, flyoutContainer.FlyoutHeight);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutBackground Color Initializes Correctly")]
@@ -638,9 +642,8 @@ public partial class ShellHandlerTests : HandlerTestBase
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
         var platformView = handler.PlatformView;
         
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
-        // DetailContent is now public
-        var mainContainer = flyoutContainer?.DetailContent as DockPanel;
+        var flyoutContainer = GetDrawerPage(handler);
+        var mainContainer = flyoutContainer?.Content as DockPanel;
         
         Assert.NotNull(mainContainer);
         var brush = mainContainer.Background as Avalonia.Media.SolidColorBrush;
@@ -727,7 +730,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutBackdrop = background;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
         
         Assert.NotNull(flyoutContainer);
         // Mapping check
@@ -735,31 +738,32 @@ public partial class ShellHandlerTests : HandlerTestBase
 
     // --- Consolidated Platform/Control tests ---
 
-    [AvaloniaFact(DisplayName = "FlyoutContainer Initial State is Closed")]
-    public void FlyoutContainerInitialStateIsClosed()
+    [AvaloniaFact(DisplayName = "DrawerPage Initial State is Closed")]
+    public void DrawerPageInitialStateIsClosed()
     {
-        var container = new FlyoutContainer();
-        Assert.False(container.IsFlyoutOpen);
+        var container = new DrawerPage();
+        Assert.False(container.IsOpen);
     }
 
-    [AvaloniaFact(DisplayName = "FlyoutContainer IsFlyoutOpen Property Verified")]
-    public void FlyoutContainerIsFlyoutOpenPropertyVerified()
+    [AvaloniaFact(DisplayName = "DrawerPage IsOpen Property Verified")]
+    public void DrawerPageIsOpenPropertyVerified()
     {
-        var container = new FlyoutContainer
+        var container = new DrawerPage
         {
-            IsFlyoutOpen = true
+            DrawerBehavior = DrawerBehavior.Flyout,
+            IsOpen = true
         };
-        Assert.True(container.IsFlyoutOpen);
+        Assert.True(container.IsOpen);
     }
 
-    [AvaloniaFact(DisplayName = "FlyoutContainer Locked Behavior Stays Open")]
-    public void FlyoutContainerLockedBehaviorStaysOpen()
+    [AvaloniaFact(DisplayName = "DrawerPage Locked Behavior Stays Open")]
+    public void DrawerPageLockedBehaviorStaysOpen()
     {
-        var container = new FlyoutContainer
+        var container = new DrawerPage
         {
-            FlyoutBehavior = Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Locked
+            DrawerBehavior = DrawerBehavior.Locked
         };
-        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Locked, container.FlyoutBehavior);
+        Assert.Equal(DrawerBehavior.Locked, container.DrawerBehavior);
     }
 
     [AvaloniaFact(DisplayName = "ShellSearchControl Initializes with SearchHandler Query")]
