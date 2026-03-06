@@ -16,23 +16,17 @@ namespace Avalonia.Controls.Maui.Extensions;
 /// </summary>
 public static class TabbedPageExtensions
 {
-    // Resource key for tab bar strip background (used by TabbedPage.axaml DynamicResource binding)
-    private const string BarBackgroundResourceKey = "TabbedPageBarBackground";
+    // Resource key for tab bar strip background (matches TabbedPage Fluent theme)
+    private const string BarBackgroundResourceKey = "TabbedPageTabStripBackground";
 
-    // Fluent theme resource keys we override for tab appearance
+    // TabbedPage Fluent theme resource keys we override for tab appearance.
+    // The indicator binds to $parent[TabItem].Foreground, so setting the selected
+    // foreground key controls both tab text and the selection indicator.
     private static readonly string[] FluentThemeKeys =
     [
-        "TabItemHeaderSelectedPipeFill",
-        "TabItemHeaderForegroundSelected",
-        "TabItemHeaderForegroundSelectedPointerOver",
-        "TabItemHeaderForegroundSelectedPressed",
-        "TabItemHeaderForegroundUnselected",
-        "TabItemHeaderForegroundUnselectedPointerOver",
-        "TabItemHeaderForegroundUnselectedPressed",
-        "ThemeAccentBrush",
-        "ThemeAccentBrush2",
-        "ThemeAccentBrush3",
-        "ThemeAccentBrush4"
+        "TabbedPageTabItemHeaderForegroundSelected",
+        "TabbedPageTabItemHeaderForegroundUnselected",
+        "TabbedPageTabItemHeaderForegroundDisabled"
     ];
 
     /// <summary>
@@ -275,40 +269,25 @@ public static class TabbedPageExtensions
 
         if (hasExplicitColors)
         {
+            // SelectedTabColor controls the selected tab text + indicator (indicator binds to TabItem.Foreground)
             if (selectedTabColor != null)
             {
                 var brush = new Media.SolidColorBrush(selectedTabColor.ToAvaloniaColor());
-                tabbedPage.Resources["TabItemHeaderSelectedPipeFill"] = brush;
-                tabbedPage.Resources["ThemeAccentBrush"] = brush;
-                tabbedPage.Resources["ThemeAccentBrush2"] = brush;
-                tabbedPage.Resources["ThemeAccentBrush3"] = brush;
-                tabbedPage.Resources["ThemeAccentBrush4"] = brush;
-
-                if (barTextColor == null)
-                {
-                    tabbedPage.Resources["TabItemHeaderForegroundSelected"] = brush;
-                    tabbedPage.Resources["TabItemHeaderForegroundSelectedPointerOver"] = brush;
-                    tabbedPage.Resources["TabItemHeaderForegroundSelectedPressed"] = brush;
-                }
+                tabbedPage.Resources["TabbedPageTabItemHeaderForegroundSelected"] = brush;
             }
 
+            // BarTextColor overrides both selected and unselected foreground
             if (barTextColor != null)
             {
                 var brush = new Media.SolidColorBrush(barTextColor.ToAvaloniaColor());
-                tabbedPage.Resources["TabItemHeaderForegroundSelected"] = brush;
-                tabbedPage.Resources["TabItemHeaderForegroundSelectedPointerOver"] = brush;
-                tabbedPage.Resources["TabItemHeaderForegroundSelectedPressed"] = brush;
-                tabbedPage.Resources["TabItemHeaderForegroundUnselected"] = brush;
-                tabbedPage.Resources["TabItemHeaderForegroundUnselectedPointerOver"] = brush;
-                tabbedPage.Resources["TabItemHeaderForegroundUnselectedPressed"] = brush;
+                tabbedPage.Resources["TabbedPageTabItemHeaderForegroundSelected"] = brush;
+                tabbedPage.Resources["TabbedPageTabItemHeaderForegroundUnselected"] = brush;
             }
 
             if (unselectedTabColor != null)
             {
                 var brush = new Media.SolidColorBrush(unselectedTabColor.ToAvaloniaColor());
-                tabbedPage.Resources["TabItemHeaderForegroundUnselected"] = brush;
-                tabbedPage.Resources["TabItemHeaderForegroundUnselectedPointerOver"] = brush;
-                tabbedPage.Resources["TabItemHeaderForegroundUnselectedPressed"] = brush;
+                tabbedPage.Resources["TabbedPageTabItemHeaderForegroundUnselected"] = brush;
             }
         }
         else

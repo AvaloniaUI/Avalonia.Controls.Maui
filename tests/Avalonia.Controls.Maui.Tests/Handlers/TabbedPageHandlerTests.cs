@@ -42,7 +42,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(MauiTabbedPage.BarBackgroundColor));
 
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageBarBackground"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabStripBackground"));
         });
     }
 
@@ -61,12 +61,12 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
 
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(MauiTabbedPage.BarBackgroundColor));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageBarBackground"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabStripBackground"));
 
             stub.BarBackgroundColor = null;
             handler.UpdateValue(nameof(MauiTabbedPage.BarBackgroundColor));
 
-            Assert.False(handler.PlatformView.Resources.ContainsKey("TabbedPageBarBackground"));
+            Assert.False(handler.PlatformView.Resources.ContainsKey("TabbedPageTabStripBackground"));
         });
     }
 
@@ -86,7 +86,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(MauiTabbedPage.BarTextColor));
 
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundSelected"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundSelected"));
         });
     }
 
@@ -105,12 +105,12 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
 
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(MauiTabbedPage.BarTextColor));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundSelected"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundSelected"));
 
             stub.BarTextColor = null;
             handler.UpdateValue(nameof(MauiTabbedPage.BarTextColor));
 
-            Assert.False(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundSelected"));
+            Assert.False(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundSelected"));
         });
     }
 
@@ -137,7 +137,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(MauiTabbedPage.BarBackground));
 
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageBarBackground"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabStripBackground"));
         });
     }
 
@@ -159,7 +159,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             handler.UpdateValue(nameof(MauiTabbedPage.BarBackground));
             handler.UpdateValue(nameof(MauiTabbedPage.BarBackgroundColor));
 
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageBarBackground"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabStripBackground"));
         });
     }
 
@@ -179,7 +179,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(MauiTabbedPage.SelectedTabColor));
 
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderSelectedPipeFill"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundSelected"));
         });
     }
 
@@ -198,12 +198,12 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
 
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(MauiTabbedPage.SelectedTabColor));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderSelectedPipeFill"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundSelected"));
 
             stub.SelectedTabColor = null;
             handler.UpdateValue(nameof(MauiTabbedPage.SelectedTabColor));
 
-            Assert.False(handler.PlatformView.Resources.ContainsKey("TabItemHeaderSelectedPipeFill"));
+            Assert.False(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundSelected"));
         });
     }
 
@@ -224,7 +224,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(MauiTabbedPage.UnselectedTabColor));
 
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundUnselected"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundUnselected"));
         });
     }
 
@@ -243,12 +243,12 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
 
             var handler = CreateHandler<TabbedPageHandler>(stub);
             handler.UpdateValue(nameof(MauiTabbedPage.UnselectedTabColor));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundUnselected"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundUnselected"));
 
             stub.UnselectedTabColor = null;
             handler.UpdateValue(nameof(MauiTabbedPage.UnselectedTabColor));
 
-            Assert.False(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundUnselected"));
+            Assert.False(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundUnselected"));
         });
     }
 
@@ -350,10 +350,9 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             handler.UpdateValue(nameof(MauiTabbedPage.SelectedTabColor));
             handler.UpdateValue(nameof(MauiTabbedPage.UnselectedTabColor));
 
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageBarBackground"));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundSelected"));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderSelectedPipeFill"));
-            Assert.True(handler.PlatformView.Resources.ContainsKey("TabItemHeaderForegroundUnselected"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabStripBackground"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundSelected"));
+            Assert.True(handler.PlatformView.Resources.ContainsKey("TabbedPageTabItemHeaderForegroundUnselected"));
         });
     }
 

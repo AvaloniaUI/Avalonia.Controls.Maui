@@ -143,12 +143,12 @@ public class ShellItemHandlerTests : HandlerTestBase
             handler.UpdateTabAppearance(item);
         });
 
-        var background = tabbedPage!.Resources["TabbedPageBarBackground"] as Avalonia.Media.SolidColorBrush;
+        var background = tabbedPage!.Resources["TabbedPageTabStripBackground"] as Avalonia.Media.SolidColorBrush;
         Assert.NotNull(background);
         Assert.Equal(Avalonia.Media.Colors.Red, background!.Color);
 
-        // TabBarForegroundColor maps to the selection indicator (pipe) and accent, not a background
-        var pipeFill = tabbedPage.Resources["TabItemHeaderSelectedPipeFill"] as IBrush;
-        Assert.NotNull(pipeFill);
+        // TabBarForegroundColor maps to the selected tab foreground (which also controls the indicator)
+        var selectedForeground = tabbedPage.Resources["TabbedPageTabItemHeaderForegroundSelected"] as IBrush;
+        Assert.NotNull(selectedForeground);
     }
 }

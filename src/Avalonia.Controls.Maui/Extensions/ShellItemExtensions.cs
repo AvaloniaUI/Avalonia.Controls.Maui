@@ -297,7 +297,7 @@ public static class ShellItemExtensions
         handler.UpdateTabAppearanceInternal(item);
     }
 
-    private const string TabbedPageBarBackgroundKey = "TabbedPageBarBackground";
+    private const string TabStripBackgroundKey = "TabbedPageTabStripBackground";
 
     /// <summary>
     /// Updates the tab bar background color.
@@ -317,9 +317,9 @@ public static class ShellItemExtensions
         }
 
         if (color != null)
-            handler._tabbedPage.Resources[TabbedPageBarBackgroundKey] = color.ToPlatform();
+            handler._tabbedPage.Resources[TabStripBackgroundKey] = color.ToPlatform();
         else
-            handler._tabbedPage.Resources.Remove(TabbedPageBarBackgroundKey);
+            handler._tabbedPage.Resources.Remove(TabStripBackgroundKey);
     }
 
     /// <summary>
@@ -362,20 +362,15 @@ public static class ShellItemExtensions
         handler.UpdateTabAppearance(item);
     }
 
-    // All Fluent theme resource keys we may override for tab appearance
+    // TabbedPage Fluent theme resource keys we may override for tab appearance.
+    // The TabbedPageTabItemTheme uses TabbedPage-prefixed keys (not generic TabItem keys).
+    // The indicator binds to $parent[TabItem].Foreground, so setting ForegroundSelected
+    // controls both the text and indicator color.
     private static readonly string[] ThemeResourceKeys =
     [
-        "TabItemHeaderSelectedPipeFill",
-        "TabItemHeaderForegroundSelected",
-        "TabItemHeaderForegroundSelectedPointerOver",
-        "TabItemHeaderForegroundSelectedPressed",
-        "TabItemHeaderForegroundUnselected",
-        "TabItemHeaderForegroundUnselectedPointerOver",
-        "TabItemHeaderForegroundUnselectedPressed",
-        "ThemeAccentBrush",
-        "ThemeAccentBrush2",
-        "ThemeAccentBrush3",
-        "ThemeAccentBrush4"
+        "TabbedPageTabItemHeaderForegroundSelected",
+        "TabbedPageTabItemHeaderForegroundUnselected",
+        "TabbedPageTabItemHeaderForegroundDisabled"
     ];
 
     internal static void UpdateTabAppearanceInternal(this ShellItemHandler handler, ShellItem item)
@@ -388,43 +383,34 @@ public static class ShellItemExtensions
         var unselectedColor = handler.GetResolvedProperty<Color?>(Microsoft.Maui.Controls.Shell.TabBarUnselectedColorProperty, item);
         var disabledColor = handler.GetResolvedProperty<Color?>(Microsoft.Maui.Controls.Shell.TabBarDisabledColorProperty, item);
 
-        bool hasExplicitColors = foregroundColor != null || titleColor != null || unselectedColor != null;
+        bool hasExplicitColors = foregroundColor != null || titleColor != null || unselectedColor != null || disabledColor != null;
 
-        // In MAUI, TabBarForegroundColor maps to the selection indicator and selected icon/text tint,
-        // NOT to a full background color. TabBarTitleColor overrides the selected text color specifically.
-        var accentBrush = foregroundColor?.ToPlatform();
-        var selectedTextBrush = (titleColor ?? foregroundColor)?.ToPlatform();
+        // In the TabbedPage Fluent theme, the selected indicator binds to TabItem.Foreground,
+        // which comes from TabbedPageTabItemHeaderForegroundSelected. Setting this single key
+        // controls both text and indicator color for the selected state.
+        var selectedBrush = (titleColor ?? foregroundColor)?.ToPlatform();
         var selectedIconBrush = (foregroundColor ?? titleColor)?.ToPlatform();
         var unselectedBrush = unselectedColor?.ToPlatform();
         var disabledBrush = disabledColor?.ToPlatform();
 
         if (hasExplicitColors)
         {
-            // Override Fluent theme resources with MAUI-specified colors.
-            // Map TabBarForegroundColor to the selection indicator (pipe) and accent colors.
-            if (accentBrush != null)
+            // Selected foreground controls both text and indicator (pipe) color
+            if (selectedBrush != null)
             {
-                handler._tabbedPage.Resources["TabItemHeaderSelectedPipeFill"] = accentBrush;
-                handler._tabbedPage.Resources["ThemeAccentBrush"] = accentBrush;
-                handler._tabbedPage.Resources["ThemeAccentBrush2"] = accentBrush;
-                handler._tabbedPage.Resources["ThemeAccentBrush3"] = accentBrush;
-                handler._tabbedPage.Resources["ThemeAccentBrush4"] = accentBrush;
+                handler._tabbedPage.Resources["TabbedPageTabItemHeaderForegroundSelected"] = selectedBrush;
             }
 
-            // Map selected text color to all selected-state foreground resources
-            if (selectedTextBrush != null)
-            {
-                handler._tabbedPage.Resources["TabItemHeaderForegroundSelected"] = selectedTextBrush;
-                handler._tabbedPage.Resources["TabItemHeaderForegroundSelectedPointerOver"] = selectedTextBrush;
-                handler._tabbedPage.Resources["TabItemHeaderForegroundSelectedPressed"] = selectedTextBrush;
-            }
-
-            // Map unselected color to all unselected-state foreground resources
+            // Unselected foreground
             if (unselectedBrush != null)
             {
-                handler._tabbedPage.Resources["TabItemHeaderForegroundUnselected"] = unselectedBrush;
-                handler._tabbedPage.Resources["TabItemHeaderForegroundUnselectedPointerOver"] = unselectedBrush;
-                handler._tabbedPage.Resources["TabItemHeaderForegroundUnselectedPressed"] = unselectedBrush;
+                handler._tabbedPage.Resources["TabbedPageTabItemHeaderForegroundUnselected"] = unselectedBrush;
+            }
+
+            // Disabled foreground
+            if (disabledBrush != null)
+            {
+                handler._tabbedPage.Resources["TabbedPageTabItemHeaderForegroundDisabled"] = disabledBrush;
             }
         }
         else
