@@ -11,6 +11,6 @@ public partial class App : Application
 
 	protected override Window CreateWindow(IActivationState? activationState)
 	{
-		return new Window(new MainPage()) { Width = 800, Height = 600, Title = "Maui Sandbox" };
+		return new Window(new AppShell()) { Width = 800, Height = 600, Title = "Maui Sandbox" };
 	}
 }
