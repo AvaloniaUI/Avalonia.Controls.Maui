@@ -236,6 +236,12 @@ public abstract partial class MauiView : Panel, ICrossPlatformLayoutBacking, IVi
         base.OnAttachedToVisualTree(e);
         _lifecycleEvent?.Invoke(this, EventArgs.Empty);
 
+        // Clear the measurement cache so the next ArrangeOverride will re-measure
+        // via CrossPlatformMeasure instead of using stale cached constraints.
+        // This is critical for NavigationPage pop transitions where the MauiView
+        // is detached from the visual tree and re-attached.
+        InvalidateConstraintsCache();
+
         if (_invalidateParentWhenMovedToWindow)
         {
             _invalidateParentWhenMovedToWindow = false;
