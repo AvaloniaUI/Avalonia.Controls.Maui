@@ -7,6 +7,7 @@ using Microsoft.Maui.Graphics;
 using MauiShellHandler = Avalonia.Controls.Maui.Handlers.Shell.ShellHandler;
 using MauiFlyoutBehavior = Microsoft.Maui.FlyoutBehavior;
 using MauiLabel = Microsoft.Maui.Controls.Label;
+using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 using Avalonia.Controls.Maui.Controls;
 using NSubstitute;
 using Avalonia.Controls.Maui.Handlers.Shell;
@@ -297,7 +298,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var searchHandler = new SearchHandler { Placeholder = "Search..." };
         
         // Setup SearchHandler on the current page
-        var page = shell.Items[0].Items[0].Items[0].Content as ContentPage;
+        var page = shell.Items[0].Items[0].Items[0].Content as MauiContentPage;
         Assert.NotNull(page);
         
         Shell.SetSearchHandler(page, searchHandler);
@@ -314,7 +315,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var shell = CreateBasicShell();
         var searchHandler = new SearchHandler { Placeholder = "Search..." };
 
-        var page = shell.Items[0].Items[0].Items[0].Content as ContentPage;
+        var page = shell.Items[0].Items[0].Items[0].Content as MauiContentPage;
         Assert.NotNull(page);
 
         Shell.SetSearchHandler(page, searchHandler);
@@ -350,7 +351,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var shell = CreateBasicShell();
         var searchHandler = new SuggestionsSearchHandler();
 
-        var page = shell.Items[0].Items[0].Items[0].Content as ContentPage;
+        var page = shell.Items[0].Items[0].Items[0].Content as MauiContentPage;
         Assert.NotNull(page);
 
         Shell.SetSearchHandler(page, searchHandler);
@@ -410,7 +411,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                 new ShellContent
                 {
                     Title = "Home",
-                    Content = new ContentPage { Title = "Home Page" }
+                    Content = new Microsoft.Maui.Controls.ContentPage { Title = "Home Page" }
                 }
             }
         };
@@ -438,7 +439,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                         new ShellContent
                         {
                             Title = "Home",
-                            Content = new ContentPage { Title = "Home Page" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Home Page" }
                         }
                     }
                 }
@@ -466,12 +467,12 @@ public partial class ShellHandlerTests : HandlerTestBase
                         new ShellContent
                         {
                             Title = "Tab 1",
-                            Content = new ContentPage { Title = "Tab 1 Page" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Tab 1 Page" }
                         },
                         new ShellContent
                         {
                             Title = "Tab 2",
-                            Content = new ContentPage { Title = "Tab 2 Page" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Tab 2 Page" }
                         }
                     }
                 }
@@ -537,7 +538,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var shell = CreateBasicShell();
         var searchHandler = new SearchHandler { Placeholder = "Test Search" };
         
-        var page = shell.Items[0].Items[0].Items[0].Content as ContentPage;
+        var page = shell.Items[0].Items[0].Items[0].Content as MauiContentPage;
         Shell.SetSearchHandler(page, searchHandler);
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
@@ -555,7 +556,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                 new ShellContent
                 {
                     Title = "Home",
-                    Content = new ContentPage { Title = "Home Page" }
+                    Content = new Microsoft.Maui.Controls.ContentPage { Title = "Home Page" }
                 }
             }
         };
@@ -579,7 +580,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                         new ShellContent
                         {
                             Title = "Content 1",
-                            Content = new ContentPage { Title = "Page 1" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" }
                         }
                     }
                 }
@@ -605,7 +606,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                         new ShellContent
                         {
                             Title = "Content 1",
-                            Content = new ContentPage { Title = "Page 1" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" }
                         }
                     }
                 },
@@ -617,7 +618,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                         new ShellContent
                         {
                             Title = "Content 2",
-                            Content = new ContentPage { Title = "Page 2" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2" }
                         }
                     }
                 }
@@ -1073,9 +1074,9 @@ public partial class ShellHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "Shell Navigating Between FlyoutItems Preserves Page Content")]
     public async Task ShellNavigatingBetweenFlyoutItemsPreservesPageContent()
     {
-        var page1 = new ContentPage { Title = "Page 1", Content = new MauiLabel { Text = "Content 1" } };
-        var page2 = new ContentPage { Title = "Page 2", Content = new MauiLabel { Text = "Content 2" } };
-        var page3 = new ContentPage { Title = "Page 3", Content = new MauiLabel { Text = "Content 3" } };
+        var page1 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1", Content = new MauiLabel { Text = "Content 1" } };
+        var page2 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2", Content = new MauiLabel { Text = "Content 2" } };
+        var page3 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 3", Content = new MauiLabel { Text = "Content 3" } };
 
         var shell = new Shell
         {
@@ -1194,8 +1195,8 @@ public partial class ShellHandlerTests : HandlerTestBase
 
     private Shell CreateShellWithNavigationStack()
     {
-        var page1 = new ContentPage { Title = "Page 1" };
-        var page2 = new ContentPage { Title = "Page 2" };
+        var page1 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" };
+        var page2 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2" };
 
         var shellSection = new ShellSection
         {

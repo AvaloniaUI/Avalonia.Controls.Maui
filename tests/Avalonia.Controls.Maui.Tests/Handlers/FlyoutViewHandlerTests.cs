@@ -129,10 +129,10 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
 
     private FlyoutPage CreateBasicFlyoutPage()
     {
-        var flyoutPage = new FlyoutPage
+        var flyoutPage = new Microsoft.Maui.Controls.FlyoutPage
         {
-            Flyout = new ContentPage { Title = "Menu" },
-            Detail = new ContentPage { Title = "Detail" },
+            Flyout = new Microsoft.Maui.Controls.ContentPage { Title = "Menu" },
+            Detail = new Microsoft.Maui.Controls.ContentPage { Title = "Detail" },
             WidthRequest = 800,
             HeightRequest = 600,
         };

@@ -11,7 +11,7 @@ public class ShellContentHandlerTests : HandlerTestBase
     {
         var content = new ShellContent
         {
-            Content = new ContentPage { Title = "Test Page" }
+            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Test Page" }
         };
 
         var handler = await CreateHandlerAsync<ShellContentHandler>(content);
@@ -23,7 +23,7 @@ public class ShellContentHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "ShellContent Content Mapping Works")]
     public async Task ShellContentContentMappingWorks()
     {
-        var page = new ContentPage { Title = "Main Page" };
+        var page = new Microsoft.Maui.Controls.ContentPage { Title = "Main Page" };
         var content = new ShellContent
         {
             Content = page

@@ -11,6 +11,7 @@ using Avalonia.Controls.Maui.Handlers.Shell;
 using Avalonia.Controls.Maui.Services;
 using Color = Microsoft.Maui.Graphics.Color;
 using VerticalAlignment = Avalonia.Layout.VerticalAlignment;
+using MauiPage = Microsoft.Maui.Controls.Page;
 
 namespace Avalonia.Controls.Maui.Extensions;
 
@@ -464,7 +465,7 @@ public static class ShellItemExtensions
         }
     }
 
-    internal static Page? GetCurrentPage(this ShellItemHandler handler, ShellItem item)
+    internal static MauiPage? GetCurrentPage(this ShellItemHandler handler, ShellItem item)
     {
         var shell = item.Parent as Microsoft.Maui.Controls.Shell;
         return shell?.CurrentPage;

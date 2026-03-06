@@ -3,6 +3,8 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Avalonia.Controls.Maui.Handlers.Shell;
 using Avalonia.Animation;
+using MauiPage = Microsoft.Maui.Controls.Page;
+using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -14,7 +16,7 @@ public class ShellSectionHandlerTests : HandlerTestBase
     {
         var section = new ShellSection
         {
-            Items = { new ShellContent { Content = new ContentPage() } }
+            Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } }
         };
 
         var handler = await CreateHandlerAsync<ShellSectionHandler>(section);
@@ -26,8 +28,8 @@ public class ShellSectionHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "Animated PresentationMode Sets PageTransition")]
     public async Task AnimatedPresentationModeSetsPageTransition()
     {
-        var page1 = new ContentPage { Title = "Page 1" };
-        var page2 = new ContentPage { Title = "Page 2" };
+        var page1 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" };
+        var page2 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2" };
         Shell.SetPresentationMode(page2, PresentationMode.Animated);
 
         var section = new ShellSection
@@ -42,7 +44,7 @@ public class ShellSectionHandlerTests : HandlerTestBase
 
         // Manually trigger navigation on the handler
         var stackNavigation = handler as IStackNavigation;
-        var request = new NavigationRequest(new List<Page> { page1, page2 }, true);
+        var request = new NavigationRequest(new List<MauiPage> { page1, page2 }, true);
         
         await InvokeOnMainThreadAsync(() =>
         {
@@ -60,8 +62,8 @@ public class ShellSectionHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "NotAnimated PresentationMode Sets Null Transition")]
     public async Task NotAnimatedPresentationModeSetsNullTransition()
     {
-        var page1 = new ContentPage { Title = "Page 1" };
-        var page2 = new ContentPage { Title = "Page 2" };
+        var page1 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" };
+        var page2 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2" };
         Shell.SetPresentationMode(page2, PresentationMode.NotAnimated);
 
         var section = new ShellSection
@@ -76,7 +78,7 @@ public class ShellSectionHandlerTests : HandlerTestBase
 
         // Manually trigger navigation
         var stackNavigation = handler as IStackNavigation;
-        var request = new NavigationRequest(new List<Page> { page1, page2 }, true);
+        var request = new NavigationRequest(new List<MauiPage> { page1, page2 }, true);
 
         await InvokeOnMainThreadAsync(() =>
         {
@@ -90,8 +92,8 @@ public class ShellSectionHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "Modal PresentationMode Sets Vertical Transition")]
     public async Task ModalPresentationModeSetsVerticalTransition()
     {
-        var page1 = new ContentPage { Title = "Page 1" };
-        var page2 = new ContentPage { Title = "Page 2" };
+        var page1 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" };
+        var page2 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2" };
         Shell.SetPresentationMode(page2, PresentationMode.Modal);
 
         var section = new ShellSection
@@ -106,7 +108,7 @@ public class ShellSectionHandlerTests : HandlerTestBase
 
         // Manually trigger navigation
         var stackNavigation = handler as IStackNavigation;
-        var request = new NavigationRequest(new List<Page> { page1, page2 }, true);
+        var request = new NavigationRequest(new List<MauiPage> { page1, page2 }, true);
 
         await InvokeOnMainThreadAsync(() =>
         {
@@ -124,8 +126,8 @@ public class ShellSectionHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "ShellSection CurrentItem Mapping Updates Content")]
     public async Task ShellSectionCurrentItemMappingUpdatesContent()
     {
-        var page1 = new ContentPage { Title = "Page 1" };
-        var page2 = new ContentPage { Title = "Page 2" };
+        var page1 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" };
+        var page2 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2" };
         var content1 = new ShellContent { Content = page1 };
         var content2 = new ShellContent { Content = page2 };
         
@@ -149,8 +151,8 @@ public class ShellSectionHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "Modal PresentationMode Sets Vertical Page Transition")]
     public async Task ModalPresentationModeSetsVerticalPageTransition()
     {
-        var page1 = new ContentPage { Title = "Page 1" };
-        var page2 = new ContentPage { Title = "Page 2" };
+        var page1 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" };
+        var page2 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2" };
         Shell.SetPresentationMode(page2, PresentationMode.Modal);
 
         var section = new ShellSection
@@ -162,7 +164,7 @@ public class ShellSectionHandlerTests : HandlerTestBase
         var control = handler.PlatformView as TransitioningContentControl;
 
         var stackNavigation = handler as IStackNavigation;
-        var request = new NavigationRequest(new List<Page> { page1, page2 }, true);
+        var request = new NavigationRequest(new List<MauiPage> { page1, page2 }, true);
 
         await InvokeOnMainThreadAsync(() =>
         {
@@ -178,8 +180,8 @@ public class ShellSectionHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "SyncNavigationStack Verification")]
     public async Task SyncNavigationStackVerification()
     {
-        var page1 = new ContentPage { Title = "Page 1" };
-        var page2 = new ContentPage { Title = "Page 2" };
+        var page1 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" };
+        var page2 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2" };
 
         var section = new ShellSection
         {

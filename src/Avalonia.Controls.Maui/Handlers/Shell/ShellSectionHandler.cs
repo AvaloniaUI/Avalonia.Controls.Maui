@@ -5,6 +5,7 @@ using Microsoft.Maui.Controls;
 using AvaloniaControl = Avalonia.Controls.Control;
 using MauiShell = Microsoft.Maui.Controls.Shell;
 using Avalonia.Controls.Maui.Extensions;
+using MauiPage = Microsoft.Maui.Controls.Page;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell;
 
@@ -27,8 +28,8 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
         };
 
     TransitioningContentControl? _sectionContainer;
-    readonly Stack<Page> _navigationStack = new();
-    Page? _currentPage;
+    readonly Stack<MauiPage> _navigationStack = new();
+    MauiPage? _currentPage;
     bool _isNavigating;
 
     /// <summary>Default duration for content transitions.</summary>
@@ -150,13 +151,13 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
             bool isPop = newCount < oldCount;
 
             // Capture the outgoing page before updating (needed for pop reverse animation)
-            Page? poppedPage = isPop ? _currentPage : null;
+            MauiPage? poppedPage = isPop ? _currentPage : null;
 
             // Update internal stack to match the request
             _navigationStack.Clear();
             foreach (var view in request.NavigationStack)
             {
-                if (view is Page page)
+                if (view is MauiPage page)
                     _navigationStack.Push(page);
             }
 
@@ -200,7 +201,7 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
         bool isPop = newCount < oldCount;
 
         // Capture the outgoing page before updating
-        Page? poppedPage = isPop ? _currentPage : null;
+        MauiPage? poppedPage = isPop ? _currentPage : null;
 
         // Sync internal stack
         _navigationStack.Clear();
@@ -208,7 +209,7 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
             _navigationStack.Push(page);
 
         // Determine top page
-        Page? topPage = _navigationStack.Count > 0 ? _navigationStack.Peek() : null;
+        MauiPage? topPage = _navigationStack.Count > 0 ? _navigationStack.Peek() : null;
 
         if (topPage == null && VirtualView.CurrentItem is IShellContentController cc)
             topPage = cc.GetOrCreateContent();
@@ -241,7 +242,7 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
         SyncNavigationStack();
     }
     
-    private void DisplayPage(Page page, bool isPush, bool isPop, Page? poppedPage)
+    private void DisplayPage(MauiPage page, bool isPush, bool isPop, MauiPage? poppedPage)
     {
         if (_sectionContainer == null || MauiContext == null)
             return;

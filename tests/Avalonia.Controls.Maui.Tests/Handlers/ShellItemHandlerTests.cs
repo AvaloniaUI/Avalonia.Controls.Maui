@@ -15,8 +15,8 @@ public class ShellItemHandlerTests : HandlerTestBase
         {
             Items = 
             { 
-                new ShellSection { Title = "Tab 1", Items = { new ShellContent { Content = new ContentPage() } } },
-                new ShellSection { Title = "Tab 2", Items = { new ShellContent { Content = new ContentPage() } } }
+                new ShellSection { Title = "Tab 1", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } },
+                new ShellSection { Title = "Tab 2", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } }
             }
         };
 
@@ -33,7 +33,7 @@ public class ShellItemHandlerTests : HandlerTestBase
     public async Task ShellItemWithSingleSectionCreatesTransitioningContentControl()
     {
         // A simple ShellContent should not show tabs
-        var item = new ShellContent { Content = new ContentPage() };
+        var item = new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() };
         var shellItem = new ShellItem { Items = { new ShellSection { Items = { item } } } };
         var shell = new Shell { Items = { shellItem } };
 
@@ -49,8 +49,8 @@ public class ShellItemHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "ShellItem CurrentItem Mapping Updates TabControl Selection")]
     public async Task ShellItemCurrentItemMappingUpdatesTabControlSelection()
     {
-        var section1 = new ShellSection { Title = "Tab 1", Items = { new ShellContent { Content = new ContentPage() } } };
-        var section2 = new ShellSection { Title = "Tab 2", Items = { new ShellContent { Content = new ContentPage() } } };
+        var section1 = new ShellSection { Title = "Tab 1", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } };
+        var section2 = new ShellSection { Title = "Tab 2", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } };
         
         var item = new FlyoutItem
         {
@@ -75,8 +75,8 @@ public class ShellItemHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "ShellItemHandler Synchronizes Item Removal")]
     public async Task ShellItemHandlerSynchronizesItemRemoval()
     {
-        var section1 = new ShellSection { Title = "Tab 1", Items = { new ShellContent { Content = new ContentPage() } } };
-        var section2 = new ShellSection { Title = "Tab 2", Items = { new ShellContent { Content = new ContentPage() } } };
+        var section1 = new ShellSection { Title = "Tab 1", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } };
+        var section2 = new ShellSection { Title = "Tab 2", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } };
         var item = new ShellItem { Items = { section1, section2 } };
         var shell = new Shell { Items = { item } };
 
@@ -100,8 +100,8 @@ public class ShellItemHandlerTests : HandlerTestBase
     public async Task AddingShellSectionsAtRuntimeUpdatesTabs()
     {
         // Start with 2 items to ensure we are in TabControl mode
-        var section1 = new ShellSection { Title = "Tab 1", Items = { new ShellContent { Content = new ContentPage() } } };
-        var section2 = new ShellSection { Title = "Tab 2", Items = { new ShellContent { Content = new ContentPage() } } };
+        var section1 = new ShellSection { Title = "Tab 1", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } };
+        var section2 = new ShellSection { Title = "Tab 2", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } };
         var item = new ShellItem { Items = { section1, section2 } };
         var shell = new Shell { Items = { item } };
 
@@ -110,7 +110,7 @@ public class ShellItemHandlerTests : HandlerTestBase
         Assert.NotNull(tabControl);
         Assert.Equal(2, tabControl.Items.Count);
         
-        var section3 = new ShellSection { Title = "Tab 3", Items = { new ShellContent { Content = new ContentPage() } } };
+        var section3 = new ShellSection { Title = "Tab 3", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } };
         await InvokeOnMainThreadAsync(() =>
         {
             item.Items.Add(section3);
@@ -123,8 +123,8 @@ public class ShellItemHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "Tab Appearance Colors Mapping Verified")]
     public async Task TabAppearanceColorsMappingVerified()
     {
-        var section1 = new ShellSection { Title = "Tab 1", Items = { new ShellContent { Content = new ContentPage() } } };
-        var section2 = new ShellSection { Title = "Tab 2", Items = { new ShellContent { Content = new ContentPage() } } };
+        var section1 = new ShellSection { Title = "Tab 1", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } };
+        var section2 = new ShellSection { Title = "Tab 2", Items = { new ShellContent { Content = new Microsoft.Maui.Controls.ContentPage() } } };
         var item = new ShellItem { Items = { section1, section2 } };
         var shell = new Shell { Items = { item } };
 

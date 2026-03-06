@@ -11,6 +11,7 @@ using MauiShell = Microsoft.Maui.Controls.Shell;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Controls.Shell;
 using Avalonia.VisualTree;
+using MauiPage = Microsoft.Maui.Controls.Page;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell;
 
@@ -159,7 +160,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     internal SearchHandler? _currentSearchHandler;
 
     /// <summary>Currently tracked page for property change notifications.</summary>
-    internal Page? _trackedPage;
+    internal MauiPage? _trackedPage;
 
     /// <summary>Currently tracked shell section for property change notifications.</summary>
     internal ShellSection? _trackedSection;
@@ -168,7 +169,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     internal TransitioningContentControl? _modalContainer;
 
     /// <summary>Currently displayed modal page.</summary>
-    internal Page? _currentModalPage;
+    internal MauiPage? _currentModalPage;
 
     /// <summary>Initializes a new instance of <see cref="ShellHandler"/>.</summary>
     public ShellHandler() : base(Mapper, CommandMapper)
