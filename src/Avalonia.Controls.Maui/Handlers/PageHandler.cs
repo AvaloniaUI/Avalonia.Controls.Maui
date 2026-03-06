@@ -195,11 +195,11 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
 
             if (page.ToolbarItems.Count > 0)
             {
-                contentPage.TopCommandBar = new ToolbarCommandBar(page.ToolbarItems);
+                AvaloniaNavigationPage.SetTopCommandBar(contentPage, new ToolbarCommandBar(page.ToolbarItems));
             }
             else
             {
-                contentPage.TopCommandBar = null;
+                AvaloniaNavigationPage.SetTopCommandBar(contentPage, null);
             }
 
             // Set TitleView as Header if available (takes highest precedence)
