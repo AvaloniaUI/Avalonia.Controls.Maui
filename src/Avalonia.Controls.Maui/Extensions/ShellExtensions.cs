@@ -1,6 +1,7 @@
 using Avalonia.Media;
 using Avalonia.Layout;
 using Avalonia.Controls.Maui.Services;
+using Avalonia.Controls.Maui.Controls;
 using Avalonia.Controls.Maui.Handlers.Shell;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -37,14 +38,14 @@ public static class ShellExtensions
         {
             handler._mainContainer.Background = color.ToPlatform();
 
-            if (handler._topBar != null)
-                handler._topBar.Background = color.ToPlatform();
+            if (handler._topBarBorder != null)
+                handler._topBarBorder.Background = color.ToPlatform();
         }
         else
         {
             handler._mainContainer.ClearValue(Panel.BackgroundProperty);
-            if (handler._topBar != null)
-                handler._topBar.ClearValue(Panel.BackgroundProperty);
+            if (handler._topBarBorder != null)
+                handler._topBarBorder.ClearValue(Border.BackgroundProperty);
         }
     }
 
@@ -100,13 +101,13 @@ public static class ShellExtensions
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
     public static void UpdateNavBarIsVisible(this ShellHandler handler, MauiShell shell)
     {
-        if (handler._topBar == null || shell == null)
+        if (handler._topBarBorder == null || shell == null)
             return;
 
         var isVisible = shell.CurrentPage != null && shell.CurrentPage.IsSet(MauiShell.NavBarIsVisibleProperty)
             ? MauiShell.GetNavBarIsVisible(shell.CurrentPage)
             : MauiShell.GetNavBarIsVisible(shell);
-        handler._topBar.IsVisible = isVisible;
+        handler._topBarBorder.IsVisible = isVisible;
     }
 
     /// <summary>
@@ -655,6 +656,7 @@ public static class ShellExtensions
         handler.UpdateTitle(shell);
         handler.UpdateSearchHandler(shell);
         handler.UpdateBackButtonBehavior(shell);
+        handler.UpdateToolbarItems(shell);
 
         handler.UpdateItemCheckedStates(shell);
         handler.UpdateFlyoutItemsAppearance(shell);
@@ -901,7 +903,7 @@ public static class ShellExtensions
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
     public static void UpdateTitleView(this ShellHandler handler, MauiShell shell)
     {
-        if (handler._titleViewControl == null || handler._topBar == null || shell == null || handler.MauiContext == null)
+        if (handler._titleViewControl == null || handler._topBarBorder == null || shell == null || handler.MauiContext == null)
             return;
 
         var titleView = (shell.CurrentPage != null ? MauiShell.GetTitleView(shell.CurrentPage) : null)
@@ -930,13 +932,32 @@ public static class ShellExtensions
     }
 
     /// <summary>
+    /// Updates the toolbar items displayed in the navigation bar's right-hand area.
+    /// </summary>
+    /// <param name="handler">The <see cref="ShellHandler"/> instance.</param>
+    /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
+    public static void UpdateToolbarItems(this ShellHandler handler, MauiShell shell)
+    {
+        if (handler._topBarRightHost == null || shell == null)
+            return;
+
+        handler._topBarRightHost.Children.Clear();
+
+        var page = shell.CurrentPage;
+        if (page != null && page.ToolbarItems.Count > 0)
+        {
+            handler._topBarRightHost.Children.Add(new ToolbarCommandBar(page.ToolbarItems));
+        }
+    }
+
+    /// <summary>
     /// Updates the SearchHandler of the current page.
     /// </summary>
     /// <param name="handler">The <see cref="ShellHandler"/> instance.</param>
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
     public static void UpdateSearchHandler(this ShellHandler handler, MauiShell shell)
     {
-        if (handler._topBar == null || shell == null || handler.MauiContext == null)
+        if (handler._topBarBorder == null || shell == null || handler.MauiContext == null)
             return;
 
         var page = shell.CurrentPage;

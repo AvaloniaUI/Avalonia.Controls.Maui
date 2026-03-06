@@ -292,6 +292,8 @@ public partial class MainPage : FlyoutPage
             {
                 Detail = new NavigationPage(page);
             }
+
+            IsPresented = false;
         }
     }
 }

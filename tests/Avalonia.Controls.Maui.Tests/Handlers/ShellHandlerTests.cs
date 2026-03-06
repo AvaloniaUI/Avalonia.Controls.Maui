@@ -941,8 +941,8 @@ public partial class ShellHandlerTests : HandlerTestBase
         Assert.Equal("←", handler._backButton.Content);
     }
 
-    [AvaloniaFact(DisplayName = "Shell Title Remains Centered With Left Buttons Visible")]
-    public async Task ShellTitleRemainsCenteredWithLeftButtonsVisible()
+    [AvaloniaFact(DisplayName = "Shell Title Is Left-Aligned After Navigation Buttons")]
+    public async Task ShellTitleIsLeftAlignedAfterNavigationButtons()
     {
         var shell = CreateShellWithNavigationStack();
 
@@ -953,7 +953,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         Assert.NotNull(handler._hamburgerButton);
         Assert.NotNull(handler._backButton);
 
-        var deltaFromCenter = await InvokeOnMainThreadAsync(() =>
+        var titleX = await InvokeOnMainThreadAsync(() =>
         {
             handler._hamburgerButton!.IsVisible = true;
             handler._backButton!.IsVisible = true;
@@ -962,21 +962,19 @@ public partial class ShellHandlerTests : HandlerTestBase
             handler._topBar!.Measure(new Avalonia.Size(arrangedWidth, MauiShellHandler.DefaultBarHeight));
             handler._topBar.Arrange(new Avalonia.Rect(0, 0, arrangedWidth, MauiShellHandler.DefaultBarHeight));
 
-            var titleBounds = handler._titleTextBlock!.Bounds;
-            var titleCenterXLocal = titleBounds.X + (titleBounds.Width / 2);
-            var titleCenterYLocal = titleBounds.Y + (titleBounds.Height / 2);
-
-            var titleCenterInTopBar = handler._titleTextBlock.TranslatePoint(
-                new Avalonia.Point(titleCenterXLocal, titleCenterYLocal),
+            // Title should be positioned after the left buttons, not centered
+            var titlePos = handler._titleTextBlock!.TranslatePoint(
+                new Avalonia.Point(0, 0),
                 handler._topBar);
 
-            Assert.NotNull(titleCenterInTopBar);
-            var expectedCenterX = arrangedWidth / 2;
-
-            return Math.Abs(titleCenterInTopBar.Value.X - expectedCenterX);
+            Assert.NotNull(titlePos);
+            return titlePos.Value.X;
         });
 
-        Assert.InRange(deltaFromCenter, 0, 1.0);
+        // Title should start after the left buttons (which have non-zero width)
+        // and should NOT be centered (center would be ~400 for 800px width)
+        Assert.True(titleX > 0, "Title should be positioned after left buttons");
+        Assert.True(titleX < 200, "Title should be left-aligned, not centered");
     }
 
     [AvaloniaFact(DisplayName = "BackButtonBehavior Command Executes When Clicked")]
