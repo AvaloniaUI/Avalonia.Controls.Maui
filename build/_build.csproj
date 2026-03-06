@@ -17,4 +17,8 @@
     <PackageReference Include="Semver" Version="3.0.0"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="DesktopShim.cs" />
+  </ItemGroup>
+
 </Project>

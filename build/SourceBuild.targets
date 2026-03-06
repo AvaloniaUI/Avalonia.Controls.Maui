@@ -71,6 +71,19 @@
                                    AND '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == ''
                                    AND '$(_HasAvaloniaDesktop)' != 'true'">true</_HasAvaloniaDesktop>
 
+      <!--
+        Avalonia.Desktop NuGet transitively depends on the Avalonia metapackage, Skia,
+        and HarfBuzz. When we replace the Desktop PackageReference with platform-specific
+        ProjectReferences + a compiled source file, we must ensure those base dependencies
+        are still present.
+      -->
+      <_HasAvalonia Condition="'$(_HasAvaloniaDesktop)' == 'true'
+                            AND '$(_HasAvalonia)' != 'true'">true</_HasAvalonia>
+      <_HasAvaloniaSkia Condition="'$(_HasAvaloniaDesktop)' == 'true'
+                                AND '$(_HasAvaloniaSkia)' != 'true'">true</_HasAvaloniaSkia>
+      <_HasAvaloniaHarfBuzz Condition="'$(_HasAvaloniaDesktop)' == 'true'
+                                    AND '$(_HasAvaloniaHarfBuzz)' != 'true'">true</_HasAvaloniaHarfBuzz>
+
       <!-- Any Avalonia package needs transitive NuGet deps (MicroCom, SkiaSharp, HarfBuzzSharp) -->
       <_NeedsAvaloniaTransitiveDeps Condition="'$(_HasAvalonia)' == 'true'
                                             OR '$(_HasAvaloniaDesktop)' == 'true'
@@ -84,6 +97,11 @@
                                             OR '$(_HasAvaloniaHeadlessXUnit)' == 'true'
                                             OR '$(_HasAvaloniaIOS)' == 'true'
                                             OR '$(_HasAvaloniaAndroid)' == 'true'">true</_NeedsAvaloniaTransitiveDeps>
+
+      <!-- Define platform constant for DesktopShim.cs so it only calls the current OS backend -->
+      <DefineConstants Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('osx'))">$(DefineConstants);AVALONIA_DESKTOP_OSX</DefineConstants>
+      <DefineConstants Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('windows'))">$(DefineConstants);AVALONIA_DESKTOP_WINDOWS</DefineConstants>
+      <DefineConstants Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('linux'))">$(DefineConstants);AVALONIA_DESKTOP_LINUX</DefineConstants>
     </PropertyGroup>
 
     <ItemGroup>
@@ -139,8 +157,26 @@
                         Condition="'$(_HasAvaloniaFontsInter)' == 'true'" />
       <PackageReference Remove="Avalonia.Fonts.Inter" />
 
-      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Desktop/Avalonia.Desktop.csproj"
-                        Condition="'$(_HasAvaloniaDesktop)' == 'true'" />
+      <!--
+        Avalonia.Desktop references X11 → FreeDesktop.AtSpi, which depends on a DBus
+        source generator that doesn't propagate correctly across repo boundaries.
+
+        Replace with: a shim providing UsePlatformDetect (from the build/ directory)
+        + only the platform backend needed for the current OS. Skia and HarfBuzz are
+        handled by their own _Has* flags above.
+
+        The shim uses AVALONIA_DESKTOP_OSX / _WINDOWS / _LINUX preprocessor defines
+        (set below) to conditionally compile only the current platform's backend call.
+      -->
+      <Compile Include="$(MSBuildThisFileDirectory)DesktopShim.cs"
+               Condition="'$(_HasAvaloniaDesktop)' == 'true'"
+               Link="SourceBuild/DesktopShim.cs" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Native/Avalonia.Native.csproj"
+                        Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('osx'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Windows/Avalonia.Win32/Avalonia.Win32.csproj"
+                        Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('windows'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.X11/Avalonia.X11.csproj"
+                        Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('linux'))" />
       <PackageReference Remove="Avalonia.Desktop" />
 
       <ProjectReference Include="$(AvaloniaSourcePath)/src/Skia/Avalonia.Skia/Avalonia.Skia.csproj"
@@ -427,5 +463,6 @@
           Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'" />
   <Import Project="$(AvaloniaSourcePath)/src/Browser/Avalonia.Browser/build/Avalonia.Browser.targets"
           Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'" />
+
 
 </Project>
