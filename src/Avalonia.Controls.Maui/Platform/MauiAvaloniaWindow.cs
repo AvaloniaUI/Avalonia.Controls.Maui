@@ -44,8 +44,12 @@ public class MauiAvaloniaWindow : Window, IDisposable
             LastChildFill = true
         };
 
-        // Use a Grid as root so modal overlays can sit on top of everything
-        _rootGrid = new Grid();
+        // Use a Grid as root so modal overlays can sit on top of everything.
+        // Tag as "OverlayWrapper" so AlertManager adds its overlay as a sibling
+        // instead of wrapping Window.Content in a new Grid — which would detach
+        // the entire visual tree and trigger spurious MAUI Unloaded/Loaded events
+        // that reset Shell state (e.g. hamburger button visibility).
+        _rootGrid = new Grid { Tag = "OverlayWrapper" };
         _rootGrid.Children.Add(_rootPanel);
 
         Content = _rootGrid;

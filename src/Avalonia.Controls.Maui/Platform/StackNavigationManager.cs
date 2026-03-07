@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using Avalonia.Animation;
 using Avalonia.Controls;
+using Avalonia.Controls.Maui.Animations;
 using Avalonia.Controls.Maui.Controls;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Handlers;
@@ -53,6 +55,11 @@ public class StackNavigationManager
     public AvaloniaNavigationPage NavigationPage => _navigationPage ?? throw new InvalidOperationException("NavigationPage is null");
 
     /// <summary>
+    /// Gets the stack navigation virtual view, if connected.
+    /// </summary>
+    protected IStackNavigation? StackNavigation => _stackNavigation;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="StackNavigationManager"/> class.
     /// </summary>
     /// <param name="mauiContext">The MAUI context used for handler resolution and service access.</param>
@@ -70,6 +77,9 @@ public class StackNavigationManager
         _connected = true;
         _stackNavigation = stackNavigation;
         _navigationPage = navigationPage;
+
+        // Apply page transition.
+        ApplyPageTransition();
 
         // Subscribe to Avalonia NavigationPage pop events to sync back to MAUI
         _navigationPage.Popped += OnAvaloniaPoppedPage;
@@ -155,6 +165,24 @@ public class StackNavigationManager
         {
             UpdateNavigationBarColors();
         }
+        else if (e.PropertyName == NavigationPageExtensions.PageTransitionProperty.PropertyName)
+        {
+            ApplyPageTransition();
+        }
+    }
+
+    private void ApplyPageTransition()
+    {
+        if (_navigationPage == null)
+            return;
+
+        IPageTransition? userTransition = null;
+        if (_stackNavigation is Microsoft.Maui.Controls.NavigationPage navPage)
+        {
+            userTransition = NavigationPageExtensions.GetPageTransition(navPage);
+        }
+
+        _navigationPage.PageTransition = userTransition ?? new MauiNavigationTransition();
     }
 
     private void OnCurrentPagePropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -284,7 +312,7 @@ public class StackNavigationManager
         }
 
         // Get the Avalonia ContentPage from the MAUI page's handler
-        var wrappedPage = GetAvaloniaContentPage(_currentPage, MauiContext);
+        var wrappedPage = WrapPage(_currentPage);
 
         // Determine what changed
         IView? previousTopPage = previousNavigationStackCount > 0
@@ -298,9 +326,7 @@ public class StackNavigationManager
         _isNavigatingFromMaui = true;
         try
         {
-            Avalonia.Animation.IPageTransition? transition = request.Animated
-                ? _navigationPage.PageTransition
-                : null;
+            Avalonia.Animation.IPageTransition? transition = ResolveTransition(request);
 
             if (initialNavigation)
             {
@@ -353,7 +379,7 @@ public class StackNavigationManager
                 await _navigationPage.ReplaceAsync(wrappedPage, transition);
             }
 
-            UpdateCurrentPageWrapper();
+            OnNavigationCompleted();
         }
         catch (Exception ex)
         {
@@ -386,7 +412,7 @@ public class StackNavigationManager
         // Build the target list of wrapped pages
         var targetWrapped = new List<AvaloniaContentPage>(targetMauiStack.Count);
         for (int i = 0; i < targetMauiStack.Count; i++)
-            targetWrapped.Add(GetAvaloniaContentPage(targetMauiStack[i], MauiContext));
+            targetWrapped.Add(WrapPage(targetMauiStack[i]));
 
         var targetSet = new HashSet<AvaloniaContentPage>(targetWrapped);
 
@@ -575,9 +601,34 @@ public class StackNavigationManager
         _stackNavigation?.NavigationFinished(NavigationStack);
     }
 
-    private static AvaloniaContentPage GetAvaloniaContentPage(IView mauiPage, IMauiContext mauiContext)
+    /// <summary>
+    /// Wraps a MAUI page as an Avalonia ContentPage. Override to customize page setup (e.g. hiding the navigation bar).
+    /// </summary>
+    /// <param name="mauiPage">The MAUI page to wrap.</param>
+    /// <returns>The Avalonia ContentPage.</returns>
+    protected virtual AvaloniaContentPage WrapPage(IView mauiPage)
     {
-        return (AvaloniaContentPage)mauiPage.ToPlatform(mauiContext);
+        return (AvaloniaContentPage)mauiPage.ToPlatform(MauiContext);
+    }
+
+    /// <summary>
+    /// Resolves the page transition to use for a navigation request.
+    /// Override to customize transition selection (e.g. based on PresentationMode).
+    /// </summary>
+    /// <param name="request">The navigation request.</param>
+    /// <returns>The transition to use, or <c>null</c> for no animation.</returns>
+    protected virtual Avalonia.Animation.IPageTransition? ResolveTransition(NavigationRequest request)
+    {
+        return request.Animated ? _navigationPage?.PageTransition : null;
+    }
+
+    /// <summary>
+    /// Called after navigation completes. Override to customize post-navigation behavior.
+    /// The base implementation updates toolbar, back button, and bar colors.
+    /// </summary>
+    protected virtual void OnNavigationCompleted()
+    {
+        UpdateCurrentPageWrapper();
     }
 
     private static AvaloniaContentPage? GetContentPageFromHandler(IView? view)
