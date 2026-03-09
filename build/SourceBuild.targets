@@ -384,7 +384,7 @@
       <_AvaloniaIVTLines Include="[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;Avalonia.Controls.Maui.Compatibility&quot;)]" />
 
       <_AvaloniaIVTLines Include="[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;Avalonia.Controls.Maui.Essentials&quot;)]" />
-      <_AvaloniaIVTLines Include="[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;Avalonia.Controls.Maui.Maps.Mapsui&quot;)]" />
+      <_AvaloniaIVTLines Include="[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;Avalonia.Controls.Maui.SkiaSharp.Views&quot;)]" />
     </ItemGroup>
     <WriteLinesToFile File="$(_MauiCoreIVTFile)"
                      Lines="@(_AvaloniaIVTLines)"

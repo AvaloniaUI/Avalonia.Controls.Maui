@@ -25,7 +25,6 @@ The library is distributed as a set of NuGet packages, each covering a distinct 
 | `Avalonia.Controls.Maui` | Core handlers for all built-in .NET MAUI controls, including `GraphicsView` and `Microsoft.Maui.Graphics` |
 | `Avalonia.Controls.Maui.Essentials` | Avalonia-based implementations of `Microsoft.Maui.Essentials` APIs |
 | `Avalonia.Controls.Maui.Compatibility` | Handlers for deprecated .NET MAUI controls (`Frame`, `ListView`, `TableView`) |
-| `Avalonia.Controls.Maui.Maps.Mapsui` | Map control powered by Mapsui |
 | `Avalonia.Controls.Maui.Desktop` | Metapackage that references the core package and runs source generation for desktop bootstrapping |
 
 ## Platform support (current)
