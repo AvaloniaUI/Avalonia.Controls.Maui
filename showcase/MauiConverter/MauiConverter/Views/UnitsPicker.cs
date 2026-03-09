@@ -12,7 +12,10 @@ class UnitsPicker : Picker
 
 	public UnitsPicker(string title)
 	{
+		// Title will show as headline in Avalonia.
+		#if IOS || MACCATALYST || ANDROID
 		Title = title;
+		#endif
 		TextColor = Colors.Black;
 		BackgroundColor = ColorConstants.LightestPurple;
 		SelectedIndexChanged += HandleSelectedIndexChanged;

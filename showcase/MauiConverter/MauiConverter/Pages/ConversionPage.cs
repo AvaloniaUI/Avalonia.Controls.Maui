@@ -100,7 +100,7 @@ class ConversionPage : BaseContentPage<ConversionViewModel>
 							static (ConversionViewModel vm) => vm.ConvertButtonCommand,
 							mode: BindingMode.OneTime)
 			}
-		}.Center();
+		}.FillHorizontal().CenterVertical().Paddings(left: 20, right: 20);
 	}
 
 	enum Row { UnitType, NumberToConvert, OriginalUnits, ConvertedUnits, ConvertedNumber, ConvertButton };
