@@ -197,7 +197,9 @@ public static class LabelTextBlockExtensions
         textBlock.UpdateTextPlainText(label);
     }
 
-    /// <summary>Updates the TextType property on the platform view, re-rendering text as plain or HTML.</summary>
+    /// <summary>
+    /// Updates the TextType property on the platform view, re-rendering text as plain or HTML.
+    /// </summary>
     /// <param name="textBlock">The Avalonia text block.</param>
     /// <param name="label">The MAUI label providing the text type.</param>
     public static void UpdateTextType(this AvaloniaTextBlock textBlock, ILabel label)
