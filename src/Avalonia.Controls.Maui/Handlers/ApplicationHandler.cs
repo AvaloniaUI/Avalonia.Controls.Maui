@@ -10,15 +10,27 @@ using Microsoft.Maui.Platform;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>
+/// Avalonia handler for <see cref="IApplication"/>.
+/// </summary>
 public partial class ApplicationHandler : ElementHandler<IApplication, Application>
 {
+    /// <summary>
+    /// The command key used to terminate the application.
+    /// </summary>
     public const string TerminateCommandKey = "Terminate";
 
+    /// <summary>
+    /// Property mapper for <see cref="ApplicationHandler"/>.
+    /// </summary>
     public static IPropertyMapper<IApplication, ApplicationHandler> Mapper = new PropertyMapper<IApplication, ApplicationHandler>(ElementMapper)
     {
         [nameof(IApplication.UserAppTheme)] = MapUserAppTheme,
     };
 
+    /// <summary>
+    /// Command mapper for <see cref="ApplicationHandler"/>.
+    /// </summary>
     public static CommandMapper<IApplication, ApplicationHandler> CommandMapper = new(ElementCommandMapper)
     {
         [TerminateCommandKey] = MapTerminate,
@@ -29,24 +41,43 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
 
     ILogger<ApplicationHandler>? _logger;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="ApplicationHandler"/>.
+    /// </summary>
     public ApplicationHandler()
         : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="ApplicationHandler"/>.
+    /// </summary>
+    /// <param name="mapper">The property mapper to use, or <see langword="null"/> to use the default.</param>
     public ApplicationHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="ApplicationHandler"/>.
+    /// </summary>
+    /// <param name="mapper">The property mapper to use, or <see langword="null"/> to use the default.</param>
+    /// <param name="commandMapper">The command mapper to use, or <see langword="null"/> to use the default.</param>
     public ApplicationHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Gets the logger instance for this handler.
+    /// </summary>
     ILogger? Logger =>
         _logger ??= MauiContext?.Services?.GetService<ILoggerFactory>()?.CreateLogger<ApplicationHandler>();
 
+    /// <summary>
+    /// Creates the Avalonia <see cref="Application"/> platform element for this handler.
+    /// </summary>
+    /// <returns>The Avalonia <see cref="Application"/> instance from the service provider.</returns>
     protected override Application CreatePlatformElement() =>
         MauiContext?.Services?.GetService<Application>() ?? throw new InvalidOperationException($"MauiContext did not have a valid application.");
 
@@ -135,15 +166,11 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
             {
                 AppTheme.Dark => ThemeVariant.Dark,
                 AppTheme.Light => ThemeVariant.Light,
-                AppTheme.Unspecified => ThemeVariant.Default, // Use system theme
+                AppTheme.Unspecified => null, // Use system theme
                 _ => null
             };
 
-            // Only update if different to avoid circular updates
-            if (avaloniaApp.RequestedThemeVariant != requestedTheme)
-            {
-                avaloniaApp.RequestedThemeVariant = requestedTheme;
-            }
+            avaloniaApp.RequestedThemeVariant = requestedTheme;
         }
     }
 }

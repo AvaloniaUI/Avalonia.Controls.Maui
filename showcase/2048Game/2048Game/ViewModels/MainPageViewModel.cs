@@ -395,8 +395,8 @@ namespace _2048Game.ViewModels
                 iBoard[tile.Row][tile.Column] = tile.Value;
             }
 
-            // Update score
-            if (moveResult.ScoreAdded > 0)
+            // Update score (skip during attract mode so demo play doesn't inflate the high score)
+            if (State != LevelState.AttractMode && moveResult.ScoreAdded > 0)
             {
                 iScore += moveResult.ScoreAdded;
                 AddedScore = $"+ {moveResult.ScoreAdded}";
@@ -405,10 +405,10 @@ namespace _2048Game.ViewModels
                 {
                     iBest = iScore;
                 }
-            }
 
-            Score = iScore.ToString();
-            BestScore = iBest.ToString();
+                Score = iScore.ToString();
+                BestScore = iBest.ToString();
+            }
 
             // Spawn new tile
             SpawnRandomTile();

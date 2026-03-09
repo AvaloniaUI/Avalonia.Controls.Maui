@@ -1,0 +1,71 @@
+{
+  "moduleId": "03-neural-networks",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "Why can a single perceptron NOT learn the XOR function?",
+      "options": [
+        "It doesn't have an activation function",
+        "It can only learn linearly separable patterns",
+        "It lacks a bias term",
+        "It processes data too slowly"
+      ],
+      "correctIndex": 1,
+      "explanation": "A single perceptron draws a linear decision boundary. XOR is not linearly separable — you need at least one hidden layer (a multi-layer perceptron) to learn it.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "MultipleChoice",
+      "question": "What is the primary purpose of backpropagation?",
+      "options": [
+        "To initialize the weights randomly",
+        "To compute the gradient of the loss with respect to each weight",
+        "To select the best activation function",
+        "To split data into training and test sets"
+      ],
+      "correctIndex": 1,
+      "explanation": "Backpropagation uses the chain rule to compute how the loss function changes with respect to each weight. These gradients are then used by gradient descent to update the weights.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "TrueFalse",
+      "question": "In a CNN, pooling layers increase the spatial dimensions of feature maps.",
+      "options": ["True", "False"],
+      "correctIndex": 1,
+      "explanation": "Pooling layers reduce (downsample) the spatial dimensions of feature maps, which decreases computation and helps the network become invariant to small translations in the input.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "What key advantage do Transformers have over RNNs?",
+      "options": [
+        "They use less memory",
+        "They require less training data",
+        "They process the entire sequence in parallel instead of sequentially",
+        "They don't need activation functions"
+      ],
+      "correctIndex": 2,
+      "explanation": "Transformers use self-attention to process all tokens in parallel, whereas RNNs must process tokens one at a time. This parallelism makes Transformers much faster to train on modern hardware.",
+      "xp": 5
+    },
+    {
+      "id": "q5",
+      "type": "MultipleChoice",
+      "question": "In the Transformer's self-attention mechanism, what do the Query, Key, and Value vectors represent?",
+      "options": [
+        "Input, hidden state, and output of the network",
+        "What a token is looking for, what a token contains, and the information it provides",
+        "Training data, validation data, and test data",
+        "Weights, biases, and activations"
+      ],
+      "correctIndex": 1,
+      "explanation": "In self-attention, Query represents what a token is searching for, Key represents what each token offers, and Value represents the actual information. Attention scores are computed from Q·K dot products and used to weight the Values.",
+      "xp": 5
+    }
+  ]
+}

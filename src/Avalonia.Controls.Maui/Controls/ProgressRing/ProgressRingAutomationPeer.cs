@@ -21,11 +21,14 @@ namespace Avalonia.Controls.Maui
         /// </summary>
         public new ProgressRing Owner => (ProgressRing)base.Owner;
 
+        /// <inheritdoc/>
         protected override string GetClassNameCore() => "ProgressRing";
 
+        /// <inheritdoc/>
         protected override AutomationControlType GetAutomationControlTypeCore() =>
             AutomationControlType.ProgressBar;
 
+        /// <inheritdoc/>
         protected override string GetNameCore()
         {
             var baseName = base.GetNameCore();

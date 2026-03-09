@@ -1,9 +1,9 @@
 <Solution>
-  <Project Path="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
-  <Project Path="ControlGallery.AvaloniaMaui/ControlGallery.AvaloniaMaui.csproj" />
   <Project Path="ControlGallery.Browser/ControlGallery.Browser.csproj" />
-  <Project Path="ControlGallery.Desktop/ControlGallery.Desktop.csproj" />
-  <Project Path="ControlGallery.NativeMaui/ControlGallery.NativeMaui.csproj" />
   <Project Path="ControlGallery/ControlGallery.csproj" />
 </Solution>

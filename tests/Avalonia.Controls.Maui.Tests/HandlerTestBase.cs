@@ -7,7 +7,7 @@ using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Primitives;
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MauiRect = Microsoft.Maui.Graphics.Rect;
 using MauiSize = Microsoft.Maui.Graphics.Size;
@@ -20,6 +20,7 @@ public abstract class HandlerTestBase : IAsyncDisposable
     private IServiceProvider? _servicesProvider;
     private IMauiContext? _mauiContext;
     private bool _isCreated;
+    private readonly List<IElementHandler> _handlers = new();
 
     protected void EnsureHandlerCreated(Action<MauiAppBuilder>? additionalCreationActions = null)
     {
@@ -75,6 +76,7 @@ public abstract class HandlerTestBase : IAsyncDisposable
         mauiContext ??= MauiContext;
 
         var handler = new THandler();
+        _handlers.Add(handler);
         InitializeViewHandler(view, handler, mauiContext);
 
         return handler;
@@ -222,10 +224,21 @@ public abstract class HandlerTestBase : IAsyncDisposable
         await Dispatcher.UIThread.InvokeAsync(action);
     }
 
-    public virtual ValueTask DisposeAsync()
+    public virtual async ValueTask DisposeAsync()
     {
+        foreach (var handler in _handlers)
+        {
+            if (handler is IViewHandler vh && vh.PlatformView != null)
+            {
+                await InvokeOnMainThreadAsync(() =>
+                {
+                    handler.DisconnectHandler();
+                });
+            }
+        }
+        _handlers.Clear();
+
         _mauiApp?.Dispose();
-        return ValueTask.CompletedTask;
     }
 
     // Simple context stub for testing

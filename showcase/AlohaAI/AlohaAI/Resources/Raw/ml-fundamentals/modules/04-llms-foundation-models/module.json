@@ -1,0 +1,11 @@
+{
+  "id": "04-llms-foundation-models",
+  "title": "LLMs & Foundation Models",
+  "description": "Discover how large language models work — from tokenization and attention to the difference between prompting and fine-tuning.",
+  "lessons": [
+    { "id": "what-are-llms", "title": "What Are LLMs?", "file": "what-are-llms.md", "xp": 10 },
+    { "id": "tokenization-attention", "title": "Tokenization & Attention", "file": "tokenization-attention.md", "xp": 15 },
+    { "id": "prompting-vs-finetuning", "title": "Prompting vs. Fine-Tuning", "file": "prompting-vs-finetuning.md", "xp": 15 }
+  ],
+  "quiz": "quiz.json"
+}

@@ -1,13 +1,6 @@
 <Solution>
-  <Project Path="../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.csproj" />
   <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
   <Project Path="AlohaKit.Gallery.Browser/AlohaKit.Gallery.Browser.csproj" />
-  <Project Path="AlohaKit.Gallery.Desktop/AlohaKit.Gallery.Desktop.csproj" />
-  <Project Path="AlohaKit.Gallery.Droid/AlohaKit.Gallery.Droid.csproj" />
-  <Project Path="AlohaKit.Gallery.iOS/AlohaKit.Gallery.iOS.csproj" />
-  <Project Path="AlohaKit.Gallery.Mac/AlohaKit.Gallery.Mac.csproj" />
-  <Project Path="AlohaKit.Gallery.WinUI/AlohaKit.Gallery.WinUI.csproj">
-    <Platform Project="x86" />
-  </Project>
   <Project Path="AlohaKit.Gallery/AlohaKit.Gallery.csproj" />
 </Solution>

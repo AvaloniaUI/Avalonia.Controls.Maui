@@ -13,7 +13,7 @@ public partial class TitleBarPage : ContentPage
         UpdateTitleBarInfo();
     }
 
-    private void OnSetSimpleTitleBar(object sender, EventArgs e)
+    private void OnSetSimpleTitleBar(object? sender, EventArgs e)
     {
         var window = Application.Current?.Windows.FirstOrDefault();
         if (window != null)
@@ -31,7 +31,7 @@ public partial class TitleBarPage : ContentPage
         }
     }
 
-    private void OnSetTitleBarWithIcon(object sender, EventArgs e)
+    private void OnSetTitleBarWithIcon(object? sender, EventArgs e)
     {
         var window = Application.Current?.Windows.FirstOrDefault();
         if (window != null)
@@ -50,7 +50,7 @@ public partial class TitleBarPage : ContentPage
         }
     }
 
-    private void OnSetTitleBarWithContent(object sender, EventArgs e)
+    private void OnSetTitleBarWithContent(object? sender, EventArgs e)
     {
         var window = Application.Current?.Windows.FirstOrDefault();
         if (window != null)
@@ -76,7 +76,7 @@ public partial class TitleBarPage : ContentPage
         }
     }
 
-    private void OnSetTitleBarWithButtons(object sender, EventArgs e)
+    private void OnSetTitleBarWithButtons(object? sender, EventArgs e)
     {
         var window = Application.Current?.Windows.FirstOrDefault();
         if (window != null)
@@ -123,7 +123,7 @@ public partial class TitleBarPage : ContentPage
         }
     }
 
-    private void OnHideTitleBar(object sender, EventArgs e)
+    private void OnHideTitleBar(object? sender, EventArgs e)
     {
         var window = Application.Current?.Windows.FirstOrDefault();
         if (window?.TitleBar is TitleBar titleBar)
@@ -133,7 +133,7 @@ public partial class TitleBarPage : ContentPage
         }
     }
 
-    private void OnShowTitleBar(object sender, EventArgs e)
+    private void OnShowTitleBar(object? sender, EventArgs e)
     {
         var window = Application.Current?.Windows.FirstOrDefault();
         if (window?.TitleBar is TitleBar titleBar)
@@ -143,7 +143,7 @@ public partial class TitleBarPage : ContentPage
         }
     }
 
-    private void OnRemoveTitleBar(object sender, EventArgs e)
+    private void OnRemoveTitleBar(object? sender, EventArgs e)
     {
         var window = Application.Current?.Windows.FirstOrDefault();
         if (window != null)

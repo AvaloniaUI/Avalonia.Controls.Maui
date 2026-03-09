@@ -1,0 +1,11 @@
+{
+  "id": "05-unsupervised-learning",
+  "title": "Unsupervised Learning",
+  "description": "Discover patterns in data without labels — clustering, dimensionality reduction, and anomaly detection",
+  "lessons": [
+    { "id": "01-clustering", "title": "Clustering Algorithms", "file": "01-clustering.md", "xp": 10 },
+    { "id": "02-dimensionality-reduction", "title": "Dimensionality Reduction", "file": "02-dimensionality-reduction.md", "xp": 15 },
+    { "id": "03-anomaly-detection", "title": "Anomaly Detection", "file": "03-anomaly-detection.md", "xp": 15 }
+  ],
+  "quiz": "quiz.json"
+}

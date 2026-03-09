@@ -1,0 +1,32 @@
+{
+  "id": "02-llm-security",
+  "title": "LLM Security Engineering",
+  "description": "Defend AI applications against prompt injection, data exfiltration, and tool abuse",
+  "lessons": [
+    {
+      "id": "01-prompt-injection",
+      "title": "Prompt Injection Attack Patterns",
+      "file": "01-prompt-injection.md",
+      "xp": 15
+    },
+    {
+      "id": "02-jailbreaking",
+      "title": "Jailbreaking & Bypass Techniques",
+      "file": "02-jailbreaking.md",
+      "xp": 15
+    },
+    {
+      "id": "03-data-exfiltration",
+      "title": "Data Exfiltration Prevention",
+      "file": "03-data-exfiltration.md",
+      "xp": 15
+    },
+    {
+      "id": "04-tool-sandboxing",
+      "title": "Tool Permission & Sandboxing",
+      "file": "04-tool-sandboxing.md",
+      "xp": 20
+    }
+  ],
+  "quiz": "quiz.json"
+}

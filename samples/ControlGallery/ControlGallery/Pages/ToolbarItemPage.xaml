@@ -26,10 +26,6 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="ToolbarItems"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
 
             <!-- Basic Actions (Primary) -->
             <Border Stroke="Gray" Padding="15">

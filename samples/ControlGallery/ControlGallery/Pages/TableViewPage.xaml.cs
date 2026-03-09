@@ -26,7 +26,7 @@ public partial class TableViewPage : ContentPage
         BindingContext = this;
     }
 
-    private void OnFlowDirectionToggled(object sender, ToggledEventArgs e)
+    private void OnFlowDirectionToggled(object? sender, ToggledEventArgs e)
     {
         if (RtlTableView != null && FlowDirectionLabel != null)
         {
@@ -35,7 +35,7 @@ public partial class TableViewPage : ContentPage
         }
     }
 
-    private void OnEntryCompleted(object sender, EventArgs e)
+    private void OnEntryCompleted(object? sender, EventArgs e)
     {
         if (sender is EntryCell cell)
         {
@@ -47,7 +47,7 @@ public partial class TableViewPage : ContentPage
     private int _appearingCount;
     private int _disappearingCount;
 
-    private void OnCellAppearing(object sender, EventArgs e)
+    private void OnCellAppearing(object? sender, EventArgs e)
     {
         _appearingCount++;
         if (sender is TextCell cell)
@@ -57,7 +57,7 @@ public partial class TableViewPage : ContentPage
         }
     }
 
-    private void OnCellDisappearing(object sender, EventArgs e)
+    private void OnCellDisappearing(object? sender, EventArgs e)
     {
         _disappearingCount++;
         if (sender is TextCell cell)
@@ -69,7 +69,7 @@ public partial class TableViewPage : ContentPage
 
     private readonly Random _random = new();
 
-    private void OnRandomizeHeightsClicked(object sender, EventArgs e)
+    private void OnRandomizeHeightsClicked(object? sender, EventArgs e)
     {
         var height1 = _random.Next(48, 120);
         var height2 = _random.Next(48, 120);
@@ -88,7 +88,7 @@ public partial class TableViewPage : ContentPage
         HeightStatusLabel.TextColor = Colors.Purple;
     }
 
-    private void OnViewCellTapped(object sender, EventArgs e)
+    private void OnViewCellTapped(object? sender, EventArgs e)
     {
         ContextStatusLabel.Text = "ViewCell Tapped!";
         ContextStatusLabel.TextColor = Colors.Magenta;

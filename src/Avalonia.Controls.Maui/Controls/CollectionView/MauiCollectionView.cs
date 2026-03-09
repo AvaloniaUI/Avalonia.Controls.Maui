@@ -1,18 +1,23 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using Microsoft.Maui.Controls;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using Avalonia.Controls.Maui.Extensions;
-using Avalonia.VisualTree;
 
 namespace Avalonia.Controls.Maui;
 
+/// <summary>
+/// Avalonia templated control that implements MAUI's CollectionView with support for selection, grouping, and virtualized scrolling.
+/// </summary>
 public class MauiCollectionView : TemplatedControl
 {
     private ItemsControl? _itemsControl;
@@ -23,101 +28,127 @@ public class MauiCollectionView : TemplatedControl
     private Panel? _rootPanel;
     private StackPanel? _mainContainer;
 
+    /// <summary>Defines the <see cref="ItemsSource"/> property.</summary>
     public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty =
         AvaloniaProperty.Register<MauiCollectionView, IEnumerable?>(nameof(ItemsSource));
 
+    /// <summary>Defines the <see cref="ItemTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> ItemTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(ItemTemplate));
 
+    /// <summary>Defines the <see cref="EmptyView"/> property.</summary>
     public static readonly StyledProperty<object?> EmptyViewProperty =
         AvaloniaProperty.Register<MauiCollectionView, object?>(nameof(EmptyView));
 
+    /// <summary>Defines the <see cref="EmptyViewTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> EmptyViewTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(EmptyViewTemplate));
 
+    /// <summary>Defines the <see cref="HorizontalScrollBarVisibility"/> property.</summary>
     public static readonly StyledProperty<ScrollBarVisibility> HorizontalScrollBarVisibilityProperty =
         AvaloniaProperty.Register<MauiCollectionView, ScrollBarVisibility>(
             nameof(HorizontalScrollBarVisibility),
             ScrollBarVisibility.Auto);
 
+    /// <summary>Defines the <see cref="VerticalScrollBarVisibility"/> property.</summary>
     public static readonly StyledProperty<ScrollBarVisibility> VerticalScrollBarVisibilityProperty =
         AvaloniaProperty.Register<MauiCollectionView, ScrollBarVisibility>(
             nameof(VerticalScrollBarVisibility),
             ScrollBarVisibility.Auto);
 
+    /// <summary>Defines the <see cref="SelectedItem"/> property.</summary>
     public static readonly StyledProperty<object?> SelectedItemProperty =
         AvaloniaProperty.Register<MauiCollectionView, object?>(
             nameof(SelectedItem),
             defaultBindingMode: Data.BindingMode.TwoWay);
 
+    /// <summary>Defines the <see cref="SelectionMode"/> property.</summary>
     public static readonly StyledProperty<SelectionMode> SelectionModeProperty =
         AvaloniaProperty.Register<MauiCollectionView, SelectionMode>(
             nameof(SelectionMode),
             SelectionMode.Single);
 
+    /// <summary>Defines the <see cref="ItemsLayout"/> property.</summary>
     public static readonly StyledProperty<IItemsLayout?> ItemsLayoutProperty =
         AvaloniaProperty.Register<MauiCollectionView, IItemsLayout?>(
             nameof(ItemsLayout),
             LinearItemsLayout.Vertical);
 
+    /// <summary>Defines the <see cref="IsGrouped"/> property.</summary>
     public static readonly StyledProperty<bool> IsGroupedProperty =
         AvaloniaProperty.Register<MauiCollectionView, bool>(nameof(IsGrouped), false);
 
+    /// <summary>Defines the <see cref="GroupHeaderTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> GroupHeaderTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(GroupHeaderTemplate));
 
+    /// <summary>Defines the <see cref="GroupFooterTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> GroupFooterTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(GroupFooterTemplate));
 
+    /// <summary>Defines the <see cref="Header"/> property.</summary>
     public static readonly StyledProperty<object?> HeaderProperty =
         AvaloniaProperty.Register<MauiCollectionView, object?>(nameof(Header));
 
+    /// <summary>Defines the <see cref="HeaderTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> HeaderTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(HeaderTemplate));
 
+    /// <summary>Defines the <see cref="Footer"/> property.</summary>
     public static readonly StyledProperty<object?> FooterProperty =
         AvaloniaProperty.Register<MauiCollectionView, object?>(nameof(Footer));
 
+    /// <summary>Defines the <see cref="FooterTemplate"/> property.</summary>
     public static readonly StyledProperty<IDataTemplate?> FooterTemplateProperty =
         AvaloniaProperty.Register<MauiCollectionView, IDataTemplate?>(nameof(FooterTemplate));
 
+    /// <summary>Defines the <see cref="SelectedItems"/> property.</summary>
     public static readonly StyledProperty<IList<object>?> SelectedItemsProperty =
         AvaloniaProperty.Register<MauiCollectionView, IList<object>?>(nameof(SelectedItems));
 
+    /// <summary>Defines the <see cref="ItemsUpdatingScrollMode"/> property.</summary>
     public static readonly StyledProperty<ItemsUpdatingScrollMode> ItemsUpdatingScrollModeProperty =
         AvaloniaProperty.Register<MauiCollectionView, ItemsUpdatingScrollMode>(
             nameof(ItemsUpdatingScrollMode),
             ItemsUpdatingScrollMode.KeepItemsInView);
 
+    /// <summary>Defines the <see cref="RemainingItemsThreshold"/> property.</summary>
     public static readonly StyledProperty<int> RemainingItemsThresholdProperty =
         AvaloniaProperty.Register<MauiCollectionView, int>(nameof(RemainingItemsThreshold), -1);
 
+    /// <summary>Occurs when the current selection changes.</summary>
     public event EventHandler? SelectionChanged;
+
+    /// <summary>Occurs when the user has scrolled close enough to the end of the items that the remaining items threshold has been reached.</summary>
     public event EventHandler? RemainingItemsThresholdReached;
+
+    /// <summary>Occurs when the scroll position changes within the underlying <see cref="ScrollViewer"/>.</summary>
+    public event EventHandler<ScrollChangedEventArgs>? ScrollChanged;
 
     static MauiCollectionView()
     {
         ItemsSourceProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnItemsSourceChanged(e));
-        EmptyViewProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.UpdateEmptyView());
-        EmptyViewTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.UpdateEmptyView());
-        ItemTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnItemTemplateChanged(e));
-        HorizontalScrollBarVisibilityProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnScrollBarVisibilityChanged());
-        VerticalScrollBarVisibilityProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnScrollBarVisibilityChanged());
+        EmptyViewProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateEmptyView());
+        EmptyViewTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateEmptyView());
+        ItemTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateItemTemplate());
+        HorizontalScrollBarVisibilityProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnScrollBarVisibilityChanged());
+        VerticalScrollBarVisibilityProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnScrollBarVisibilityChanged());
         ItemsLayoutProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnItemsLayoutChanged(e));
-        IsGroupedProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnGroupingChanged());
-        GroupHeaderTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnGroupingChanged());
-        GroupFooterTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnGroupingChanged());
+        IsGroupedProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnGroupingChanged());
+        GroupHeaderTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnGroupingChanged());
+        GroupFooterTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnGroupingChanged());
         SelectedItemProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnSelectedItemChanged(e));
-        HeaderProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.UpdateHeaderFooter());
-        HeaderTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.UpdateHeaderFooter());
-        FooterProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.UpdateHeaderFooter());
-        FooterTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.UpdateHeaderFooter());
-        RemainingItemsThresholdProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.UpdateRemainingItemsThreshold());
+        HeaderProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
+        HeaderTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
+        FooterProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
+        FooterTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="MauiCollectionView"/>.
+    /// </summary>
     public MauiCollectionView()
     {
-        // Create default template inline if not set from AXAML
         InitializeDefaultTemplate();
     }
 
@@ -131,7 +162,6 @@ public class MauiCollectionView : TemplatedControl
         };
         _itemsControl = new ItemsControl();
 
-        // Create a main container that holds header, items, and footer
         _mainContainer = new StackPanel { Orientation = Orientation.Vertical };
         _mainContainer.Children.Add(_itemsControl);
 
@@ -139,11 +169,13 @@ public class MauiCollectionView : TemplatedControl
         _scrollViewer.ScrollChanged += OnScrollViewerScrollChanged;
         _rootPanel.Children.Add(_scrollViewer);
 
-        // For TemplatedControl, add to both visual and logical children
         VisualChildren.Add(_rootPanel);
         LogicalChildren.Add(_rootPanel);
     }
 
+    /// <summary>
+    /// Gets or sets the data source for the collection view.
+    /// </summary>
     public IEnumerable? ItemsSource
     {
         get => GetValue(ItemsSourceProperty);
@@ -151,7 +183,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the item template.
+    /// Gets or sets the data template used to render each item in the collection.
     /// </summary>
     public IDataTemplate? ItemTemplate
     {
@@ -160,7 +192,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the empty view.
+    /// Gets or sets the content displayed when the items source is empty.
     /// </summary>
     public object? EmptyView
     {
@@ -169,7 +201,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the empty view template.
+    /// Gets or sets the data template used to render the empty view.
     /// </summary>
     public IDataTemplate? EmptyViewTemplate
     {
@@ -178,7 +210,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the horizontal scroll bar visibility.
+    /// Gets or sets the horizontal scroll bar visibility for the collection view.
     /// </summary>
     public ScrollBarVisibility HorizontalScrollBarVisibility
     {
@@ -187,7 +219,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the vertical scroll bar visibility.
+    /// Gets or sets the vertical scroll bar visibility for the collection view.
     /// </summary>
     public ScrollBarVisibility VerticalScrollBarVisibility
     {
@@ -196,7 +228,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the selected item.
+    /// Gets or sets the currently selected item.
     /// </summary>
     public object? SelectedItem
     {
@@ -205,7 +237,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the selection mode.
+    /// Gets or sets the selection behavior for the collection view.
     /// </summary>
     public SelectionMode SelectionMode
     {
@@ -214,7 +246,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the items layout.
+    /// Gets or sets the layout specification that determines how items are arranged in the collection.
     /// </summary>
     public IItemsLayout? ItemsLayout
     {
@@ -223,7 +255,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the data is grouped.
+    /// Gets or sets a value indicating whether items in the collection are grouped.
     /// </summary>
     public bool IsGrouped
     {
@@ -232,7 +264,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the group header template.
+    /// Gets or sets the data template used to render the header for each group.
     /// </summary>
     public IDataTemplate? GroupHeaderTemplate
     {
@@ -241,7 +273,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the group footer template.
+    /// Gets or sets the data template used to render the footer for each group.
     /// </summary>
     public IDataTemplate? GroupFooterTemplate
     {
@@ -250,7 +282,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the header content.
+    /// Gets or sets the content displayed at the top of the collection view.
     /// </summary>
     public object? Header
     {
@@ -259,7 +291,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the header template.
+    /// Gets or sets the data template used to render the header content.
     /// </summary>
     public IDataTemplate? HeaderTemplate
     {
@@ -268,7 +300,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the footer content.
+    /// Gets or sets the content displayed at the bottom of the collection view.
     /// </summary>
     public object? Footer
     {
@@ -277,7 +309,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the footer template.
+    /// Gets or sets the data template used to render the footer content.
     /// </summary>
     public IDataTemplate? FooterTemplate
     {
@@ -286,7 +318,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the selected items list.
+    /// Gets or sets the list of currently selected items when using multiple selection mode.
     /// </summary>
     public IList<object>? SelectedItems
     {
@@ -295,7 +327,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the items updating scroll mode.
+    /// Gets or sets the scroll behavior when items are updated in the collection.
     /// </summary>
     public ItemsUpdatingScrollMode ItemsUpdatingScrollMode
     {
@@ -304,7 +336,7 @@ public class MauiCollectionView : TemplatedControl
     }
 
     /// <summary>
-    /// Gets or sets the threshold of remaining items to trigger the event.
+    /// Gets or sets the number of items remaining before the <see cref="RemainingItemsThresholdReached"/> event fires.
     /// </summary>
     public int RemainingItemsThreshold
     {
@@ -312,16 +344,40 @@ public class MauiCollectionView : TemplatedControl
         set => SetValue(RemainingItemsThresholdProperty, value);
     }
 
+    /// <inheritdoc/>
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == ThemeVariantScope.ActualThemeVariantProperty)
+        {
+            OnThemeChanged();
+        }
+    }
+
+    private void OnThemeChanged()
+    {
+        if (_itemsControl == null)
+            return;
+
+        // When the theme changes, MAUI-created controls have explicit color values
+        // (not DynamicResource bindings), so we need to force recreation of all items
+        // by re-applying the template and refreshing the items source.
+        UpdateItemTemplate();
+        UpdateItemsSource();
+        UpdateHeaderFooter();
+        UpdateEmptyView();
+    }
+
+    /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
 
-        // Try to get parts from template if available
         var templateScrollViewer = e.NameScope.Find<ScrollViewer>("PART_ScrollViewer");
         var templateItemsControl = e.NameScope.Find<ItemsControl>("PART_ItemsControl");
         var templateRootPanel = e.NameScope.Find<Panel>("PART_RootPanel");
 
-        // Use template parts if found, otherwise keep the default ones
         if (templateRootPanel != null)
             _rootPanel = templateRootPanel;
         if (templateScrollViewer != null)
@@ -329,15 +385,8 @@ public class MauiCollectionView : TemplatedControl
         if (templateItemsControl != null)
             _itemsControl = templateItemsControl;
 
-        // Apply scrollbar visibility settings to the template's scroll viewer
         OnScrollBarVisibilityChanged();
-
         UpdateEmptyView();
-    }
-
-    private void OnItemTemplateChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-        UpdateItemTemplate();
     }
 
     private void UpdateItemTemplate()
@@ -347,7 +396,6 @@ public class MauiCollectionView : TemplatedControl
 
         if (IsGrouped && (GroupHeaderTemplate != null || GroupFooterTemplate != null))
         {
-            // Create a template selector that chooses between group header/footer and item templates
             var template = new FuncDataTemplate<object>((obj, _) =>
             {
                 Control? content = null;
@@ -366,19 +414,22 @@ public class MauiCollectionView : TemplatedControl
                     {
                         content = ItemTemplate.Build(groupItem.Data);
                     }
+
+                    // The ItemsControl sets DataContext to the GroupItem wrapper,
+                    // but templates expect the actual data object.
+                    if (content != null)
+                    {
+                        content.DataContext = groupItem.Data;
+                    }
                 }
                 else if (ItemTemplate != null)
                 {
                     content = ItemTemplate.Build(obj);
                 }
 
-                if (content == null)
-                {
-                    content = new TextBlock { Text = obj?.ToString() ?? string.Empty };
-                }
+                content ??= new TextBlock { Text = obj?.ToString() ?? string.Empty };
 
-                // Wrap content in a container that handles selection
-                return WrapItemForSelection(content, obj);
+                return WrapItemForSelection(content);
             });
 
             _itemsControl.ItemTemplate = template;
@@ -390,7 +441,7 @@ public class MauiCollectionView : TemplatedControl
                 var content = ItemTemplate.Build(obj);
                 if (content != null)
                 {
-                    return WrapItemForSelection(content, obj);
+                    return WrapItemForSelection(content);
                 }
 
                 return null;
@@ -399,7 +450,7 @@ public class MauiCollectionView : TemplatedControl
         }
     }
 
-    private Control WrapItemForSelection(Control content, object? dataContext)
+    private Control WrapItemForSelection(Control content)
     {
         return new SelectionContainer(this)
         {
@@ -422,7 +473,7 @@ public class MauiCollectionView : TemplatedControl
             var selectedItems = SelectedItems;
             if (selectedItems == null)
             {
-                selectedItems = new System.Collections.ObjectModel.ObservableCollection<object>();
+                selectedItems = new ObservableCollection<object>();
                 SelectedItems = selectedItems;
             }
 
@@ -442,20 +493,17 @@ public class MauiCollectionView : TemplatedControl
                     SelectedItem = actualData;
                 }
             }
-            // Fire event for SelectedItems changes
             SelectionChanged?.Invoke(this, EventArgs.Empty);
             UpdateSelectionVisuals();
         }
         else
         {
-            // Single selection, just set SelectedItem, event fires via OnSelectedItemChanged
             SelectedItem = actualData;
         }
     }
 
     private void OnSelectedItemChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        // Only fire if value actually changed (prevents feedback loops)
         if (Equals(e.OldValue, e.NewValue))
             return;
 
@@ -463,7 +511,6 @@ public class MauiCollectionView : TemplatedControl
         UpdateSelectionVisuals();
     }
 
-    // Track all item containers for reliable visual state updates
     private class SelectionContainer : Border
     {
         private readonly MauiCollectionView _owner;
@@ -500,11 +547,10 @@ public class MauiCollectionView : TemplatedControl
         protected override void OnDataContextChanged(EventArgs e)
         {
             base.OnDataContextChanged(e);
-            
+
             if (Child is Control content)
             {
-                // Verify if we need to update the binding context registration
-                if (this.GetVisualRoot() != null)
+                if (this.Parent != null)
                 {
                     _owner.UnregisterItemContainer(this);
                     _owner.RegisterItemContainer(this, content, DataContext);
@@ -551,15 +597,14 @@ public class MauiCollectionView : TemplatedControl
 
     private void UpdateSelectionVisuals()
     {
-        // Clean up dead references and update all live containers
         for (int i = _itemContainers.Count - 1; i >= 0; i--)
         {
             var info = _itemContainers[i];
-            if (info.Border.TryGetTarget(out var border) && 
+            if (info.Border.TryGetTarget(out var border) &&
                 info.Content.TryGetTarget(out var content) &&
                 info.DataContext.TryGetTarget(out var dataContext))
             {
-                if (border.IsVisible && border.GetVisualRoot() != null)
+                if (border.IsVisible && border.Parent != null)
                 {
                     bool isSelected = IsItemSelected(dataContext);
                     UpdateVisualState(content, isSelected);
@@ -567,7 +612,6 @@ public class MauiCollectionView : TemplatedControl
             }
             else
             {
-                // If any part of the container is dead, remove the entry
                 _itemContainers.RemoveAt(i);
             }
         }
@@ -577,7 +621,6 @@ public class MauiCollectionView : TemplatedControl
     {
         if (item == null) return false;
 
-        // Handle GroupItem wrapper
         if (item is GroupItem groupItem)
             item = groupItem.Data;
 
@@ -595,13 +638,10 @@ public class MauiCollectionView : TemplatedControl
 
     private void UpdateVisualState(Control content, bool isSelected)
     {
-        // Try to get the underlying MAUI view to trigger its VisualStateManager
         if (content.Tag is VisualElement mauiView)
         {
             VisualStateManager.GoToState(mauiView, isSelected ? "Selected" : "Normal");
 
-            // Manually sync background property to ensure visual update
-            // This covers cases where the handler might not automatically propagate the VSM change
             IBrush? brush = null;
 
             if (mauiView.Background is Microsoft.Maui.Controls.SolidColorBrush solidBrush)
@@ -631,8 +671,6 @@ public class MauiCollectionView : TemplatedControl
         }
         else
         {
-            // Fallback for native Avalonia controls or if Tag is missing
-            // Use pseudo class :selected for Avalonia styling
             ((IPseudoClasses)content.Classes).Set(":selected", isSelected);
         }
     }
@@ -651,17 +689,10 @@ public class MauiCollectionView : TemplatedControl
         if (_itemsControl == null)
             return;
 
-        // Update the ItemsControl's ItemsPanel based on the layout
         if (e.NewValue is GridItemsLayout gridLayout)
         {
-            // For grid layouts, use our custom GridLayoutPanel that handles spacing properly
-            // Configure ScrollViewer to disable scrolling in the cross-axis direction
-            // This ensures the width/height constraint flows through properly to children
-
             if (gridLayout.Orientation == ItemsLayoutOrientation.Vertical)
             {
-                // Vertical orientation: Span = number of columns
-                // Scrolls vertically, width is constrained to viewport
                 var gridPanel = new FuncTemplate<Panel?>(() => new GridLayoutPanel
                 {
                     Columns = gridLayout.Span,
@@ -671,8 +702,6 @@ public class MauiCollectionView : TemplatedControl
                 });
                 _itemsControl.ItemsPanel = gridPanel;
 
-                // Disable horizontal scrolling so width constraint is passed to children
-                // Use user's setting for vertical scrollbar, falling back to Auto if not set
                 if (_scrollViewer != null)
                 {
                     _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
@@ -681,8 +710,6 @@ public class MauiCollectionView : TemplatedControl
             }
             else
             {
-                // Horizontal orientation: Span = number of rows
-                // Scrolls horizontally, height is constrained to viewport
                 var gridPanel = new FuncTemplate<Panel?>(() => new GridLayoutPanel
                 {
                     Rows = gridLayout.Span,
@@ -692,8 +719,6 @@ public class MauiCollectionView : TemplatedControl
                 });
                 _itemsControl.ItemsPanel = gridPanel;
 
-                // Disable vertical scrolling so height constraint is passed to children
-                // Use user's setting for horizontal scrollbar, falling back to Auto if not set
                 if (_scrollViewer != null)
                 {
                     _scrollViewer.HorizontalScrollBarVisibility = HorizontalScrollBarVisibility;
@@ -703,8 +728,6 @@ public class MauiCollectionView : TemplatedControl
         }
         else if (e.NewValue is LinearItemsLayout linearLayout)
         {
-            // Use CollectionViewStackPanel for linear layouts - it constrains children
-            // to the cross-axis dimension, matching MAUI's CollectionView behavior
             var stackPanel = new FuncTemplate<Panel?>(() => new MauiCollectionViewStackPanel
             {
                 Orientation = linearLayout.Orientation == ItemsLayoutOrientation.Vertical
@@ -714,8 +737,6 @@ public class MauiCollectionView : TemplatedControl
             });
             _itemsControl.ItemsPanel = stackPanel;
 
-            // Configure ScrollViewer based on orientation
-            // Use user's setting for the scroll-axis scrollbar, falling back to Auto if not set
             if (_scrollViewer != null)
             {
                 if (linearLayout.Orientation == ItemsLayoutOrientation.Vertical)
@@ -734,13 +755,11 @@ public class MauiCollectionView : TemplatedControl
 
     private void OnItemsSourceChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        // Unsubscribe from old collection
         if (e.OldValue is INotifyCollectionChanged oldCollection)
         {
             oldCollection.CollectionChanged -= OnCollectionChanged;
         }
 
-        // Subscribe to new collection
         if (e.NewValue is INotifyCollectionChanged newCollection)
         {
             newCollection.CollectionChanged += OnCollectionChanged;
@@ -763,18 +782,15 @@ public class MauiCollectionView : TemplatedControl
 
         if (IsGrouped && ItemsSource is IEnumerable enumerable)
         {
-            // Flatten grouped data with headers and footers
-            var flattenedItems = new System.Collections.ObjectModel.ObservableCollection<object>();
+            var flattenedItems = new ObservableCollection<object>();
 
             foreach (var group in enumerable)
             {
-                // Add group header
                 if (GroupHeaderTemplate != null)
                 {
                     flattenedItems.Add(new GroupItem { Data = group, IsHeader = true });
                 }
 
-                // Add group items
                 if (group is IEnumerable groupItems)
                 {
                     foreach (var item in groupItems)
@@ -783,7 +799,6 @@ public class MauiCollectionView : TemplatedControl
                     }
                 }
 
-                // Add group footer
                 if (GroupFooterTemplate != null)
                 {
                     flattenedItems.Add(new GroupItem { Data = group, IsFooter = true });
@@ -800,6 +815,11 @@ public class MauiCollectionView : TemplatedControl
 
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (IsGrouped)
+        {
+            UpdateItemsSource();
+        }
+
         UpdateEmptyView();
     }
 
@@ -808,14 +828,12 @@ public class MauiCollectionView : TemplatedControl
         if (_rootPanel == null)
             return;
 
-        // Remove existing empty view if any
         if (_emptyView != null && _rootPanel.Children.Contains(_emptyView))
         {
             _rootPanel.Children.Remove(_emptyView);
             _emptyView = null;
         }
 
-        // Check if collection is empty
         bool isEmpty = ItemsSource == null || !ItemsSource.GetEnumerator().MoveNext();
 
         if (isEmpty && (EmptyView != null || EmptyViewTemplate != null))
@@ -839,15 +857,22 @@ public class MauiCollectionView : TemplatedControl
             }
         }
 
-        // Show/hide the scroll viewer based on whether we have items
         if (_scrollViewer != null)
         {
             _scrollViewer.IsVisible = !isEmpty;
         }
     }
 
+    /// <summary>
+    /// Gets the underlying <see cref="ItemsControl"/> used to display items.
+    /// </summary>
+    /// <returns>The <see cref="ItemsControl"/> instance, or <c>null</c> if the control has not been initialized.</returns>
     public ItemsControl? GetItemsControl() => _itemsControl;
 
+    /// <summary>
+    /// Gets the underlying <see cref="ScrollViewer"/> used for scrolling the collection.
+    /// </summary>
+    /// <returns>The <see cref="ScrollViewer"/> instance, or <c>null</c> if the control has not been initialized.</returns>
     public ScrollViewer? GetScrollViewer() => _scrollViewer;
 
     private void UpdateHeaderFooter()
@@ -855,21 +880,18 @@ public class MauiCollectionView : TemplatedControl
         if (_mainContainer == null)
             return;
 
-        // Remove existing header if any
         if (_headerView != null && _mainContainer.Children.Contains(_headerView))
         {
             _mainContainer.Children.Remove(_headerView);
             _headerView = null;
         }
 
-        // Remove existing footer if any
         if (_footerView != null && _mainContainer.Children.Contains(_footerView))
         {
             _mainContainer.Children.Remove(_footerView);
             _footerView = null;
         }
 
-        // Create header view
         if (Header != null || HeaderTemplate != null)
         {
             if (HeaderTemplate != null)
@@ -887,12 +909,10 @@ public class MauiCollectionView : TemplatedControl
 
             if (_headerView != null)
             {
-                // Insert at the beginning
                 _mainContainer.Children.Insert(0, _headerView);
             }
         }
 
-        // Create footer view
         if (Footer != null || FooterTemplate != null)
         {
             if (FooterTemplate != null)
@@ -910,16 +930,9 @@ public class MauiCollectionView : TemplatedControl
 
             if (_footerView != null)
             {
-                // Add at the end
                 _mainContainer.Children.Add(_footerView);
             }
         }
-    }
-
-    private void UpdateRemainingItemsThreshold()
-    {
-        // RemainingItemsThreshold is used with scroll events to trigger loading more items
-        // The actual check happens in OnScrollViewerScrollChanged
     }
 
     private void OnScrollViewerScrollChanged(object? sender, ScrollChangedEventArgs e)
@@ -948,8 +961,13 @@ public class MauiCollectionView : TemplatedControl
         }
     }
 
-    public event EventHandler<ScrollChangedEventArgs>? ScrollChanged;
-
+    /// <summary>
+    /// Scrolls the collection view to bring the specified item into view.
+    /// </summary>
+    /// <param name="item">The item to scroll to.</param>
+    /// <param name="group">The group that contains the item.</param>
+    /// <param name="position">The desired scroll position for the item.</param>
+    /// <param name="animate">Whether to animate the scroll operation.</param>
     public void ScrollTo(object item, object group, ScrollToPosition position = ScrollToPosition.MakeVisible, bool animate = true)
     {
         if (_itemsControl == null || _scrollViewer == null)
@@ -965,6 +983,13 @@ public class MauiCollectionView : TemplatedControl
         }, DispatcherPriority.Background);
     }
 
+    /// <summary>
+    /// Scrolls the collection view to bring the item at the specified index into view.
+    /// </summary>
+    /// <param name="index">The zero-based index of the item to scroll to.</param>
+    /// <param name="groupIndex">The zero-based index of the group that contains the item.</param>
+    /// <param name="position">The desired scroll position for the item.</param>
+    /// <param name="animate">Whether to animate the scroll operation.</param>
     public void ScrollTo(int index, int groupIndex, ScrollToPosition position = ScrollToPosition.MakeVisible, bool animate = true)
     {
         if (_itemsControl == null || _scrollViewer == null)
@@ -975,7 +1000,7 @@ public class MauiCollectionView : TemplatedControl
             if (index >= 0 && _itemsControl.ItemCount > index)
             {
                 Control? container = _itemsControl.ContainerFromIndex(index);
-                
+
                 if (container == null && _itemsControl.ItemsPanelRoot is Panel panel && panel.Children.Count > index)
                 {
                     container = panel.Children[index] as Control;
@@ -992,17 +1017,14 @@ public class MauiCollectionView : TemplatedControl
     private void ScrollToContainer(Control container, ScrollToPosition position, bool animate)
     {
         if (_scrollViewer == null) return;
-        var content = _scrollViewer.Content as Visual;
-        if (content == null) return;
+        if (_scrollViewer.Content is not Visual content) return;
 
         var transform = container.TransformToVisual(content);
         if (transform == null) return;
 
-        // Container top-left relative to the content
         var containerPos = transform.Value.Transform(new Point(0, 0));
         var containerRect = new Rect(containerPos, container.Bounds.Size);
 
-        // Current offset
         var currentOffset = _scrollViewer.Offset;
         var viewport = _scrollViewer.Viewport;
         var extent = _scrollViewer.Extent;
@@ -1027,11 +1049,10 @@ public class MauiCollectionView : TemplatedControl
                     break;
             }
         }
-        
-        // Horizontal Logic
+
         if (extent.Width > viewport.Width)
         {
-             switch (position)
+            switch (position)
             {
                 case ScrollToPosition.MakeVisible:
                     container.BringIntoView();
@@ -1048,13 +1069,12 @@ public class MauiCollectionView : TemplatedControl
             }
         }
 
-        // Clamp to valid range
         var maxX = Math.Max(0, extent.Width - viewport.Width);
         var maxY = Math.Max(0, extent.Height - viewport.Height);
-        
+
         var finalX = Math.Max(0, Math.Min(targetOffset.X, maxX));
         var finalY = Math.Max(0, Math.Min(targetOffset.Y, maxY));
-        
+
         _scrollViewer.Offset = new Vector(finalX, finalY);
     }
 }

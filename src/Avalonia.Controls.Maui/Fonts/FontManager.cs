@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Avalonia.Controls.Maui;
 
+/// <summary>
+/// Manages font resolution and conversion between MAUI and Avalonia font systems.
+/// </summary>
 public partial class FontManager : IFontManager
 {
     private readonly ConcurrentDictionary<string, global::Avalonia.Media.FontFamily> _fontFamilies = new();

@@ -9,10 +9,16 @@ namespace Avalonia.Controls.Maui.Platform;
 /// </summary>
 public class MauiAvaloniaContent : ContentControl, IDisposable
 {
+    /// <summary>
+    /// Initializes a new instance of <see cref="MauiAvaloniaContent"/>.
+    /// </summary>
     public MauiAvaloniaContent()
     {
     }
 
+    /// <summary>
+    /// Releases any resources held by this content container.
+    /// </summary>
     public void Dispose()
     {
     }

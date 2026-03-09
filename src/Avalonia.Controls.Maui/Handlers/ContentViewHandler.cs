@@ -11,32 +11,44 @@ using PlatformView = System.Object;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="IContentView"/>.</summary>
 public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Controls.Maui.Platform.ContentView>
 {
+    /// <summary>Property mapper for <see cref="ContentViewHandler"/>.</summary>
     public static IPropertyMapper<IContentView, ContentViewHandler> Mapper =
         new PropertyMapper<IContentView, ContentViewHandler>(ViewMapper)
         {
             [nameof(IContentView.Content)] = MapContent,
         };
 
+    /// <summary>Command mapper for <see cref="ContentViewHandler"/>.</summary>
     public static CommandMapper<IContentView, ContentViewHandler> CommandMapper =
         new(ViewCommandMapper);
 
+    /// <summary>Initializes a new instance of <see cref="ContentViewHandler"/>.</summary>
     public ContentViewHandler() : base(Mapper, CommandMapper)
     {
 
     }
 
+    /// <summary>Initializes a new instance of <see cref="ContentViewHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public ContentViewHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="ContentViewHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public ContentViewHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>Maps the Content property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="page">The virtual view.</param>
     public static void MapContent(ContentViewHandler handler, IContentView page)
     {
         if (handler.PlatformView is Avalonia.Controls.Maui.Platform.ContentView platformView)
@@ -45,6 +57,7 @@ public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Con
         }
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override Avalonia.Controls.Maui.Platform.ContentView CreatePlatformView()
     {
         if (VirtualView == null)
@@ -60,6 +73,7 @@ public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Con
         return view;
     }
 
+    /// <inheritdoc/>
     public override void SetVirtualView(IView view)
     {
         base.SetVirtualView(view);
@@ -68,5 +82,21 @@ public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Con
         _ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
 
         PlatformView.CrossPlatformLayout = VirtualView;
+    }
+
+    /// <inheritdoc/>
+    protected override void DisconnectHandler(Avalonia.Controls.Maui.Platform.ContentView platformView)
+    {
+        base.DisconnectHandler(platformView);
+
+        // Null the cross-platform layout delegate so the Avalonia ContentView
+        // does not hold a strong path back to the MAUI virtual view.
+        // Note: We intentionally do NOT call platformView.Children.Clear() here
+        // because removing children from the panel fires DetachedFromVisualTree
+        // events on child controls, which cascades into premature MAUI Unloaded
+        // lifecycle events on controls whose handlers are still connected.
+        // The children will be collected along with the platform view once
+        // the handler releases its reference.
+        platformView.CrossPlatformLayout = null;
     }
 }

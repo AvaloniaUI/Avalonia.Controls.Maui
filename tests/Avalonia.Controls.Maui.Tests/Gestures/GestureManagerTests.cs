@@ -160,6 +160,61 @@ namespace Avalonia.Controls.Maui.Tests.Gestures
             Assert.True(exited, "PointerExited failed");
         }
 
+        [AvaloniaFact(DisplayName = "PinchGestureRecognizer triggers PinchUpdated events")]
+        public async Task PinchGesture_Fires()
+        {
+            var label = new Microsoft.Maui.Controls.Label { Text = "Pinch Me", WidthRequest = 200, HeightRequest = 200 };
+            var statuses = new List<GestureStatus>();
+            var pinchGesture = new Microsoft.Maui.Controls.PinchGestureRecognizer();
+            pinchGesture.PinchUpdated += (s, e) => statuses.Add(e.Status);
+            label.GestureRecognizers.Add(pinchGesture);
+
+            var handler = await CreateHandlerAsync(label);
+            var platformView = handler.PlatformView!;
+
+            // Pinch event (fires Started + Running)
+            var pinchArgs = new PinchEventArgs(1.5, new Point(100, 100));
+            platformView.RaiseEvent(pinchArgs);
+
+            // Pinch ended (fires Completed)
+            var pinchEndedArgs = new PinchEndedEventArgs();
+            platformView.RaiseEvent(pinchEndedArgs);
+
+            Assert.Contains(GestureStatus.Started, statuses);
+            Assert.Contains(GestureStatus.Running, statuses);
+            Assert.Contains(GestureStatus.Completed, statuses);
+        }
+
+        [AvaloniaFact(DisplayName = "PinchGestureRecognizer computes correct scale deltas")]
+        public async Task PinchGesture_ScaleDelta_IsCorrect()
+        {
+            var label = new Microsoft.Maui.Controls.Label { Text = "Pinch Me", WidthRequest = 200, HeightRequest = 200 };
+            var scales = new List<double>();
+            var pinchGesture = new Microsoft.Maui.Controls.PinchGestureRecognizer();
+            pinchGesture.PinchUpdated += (s, e) =>
+            {
+                if (e.Status == GestureStatus.Running)
+                    scales.Add(e.Scale);
+            };
+            label.GestureRecognizers.Add(pinchGesture);
+
+            var handler = await CreateHandlerAsync(label);
+            var platformView = handler.PlatformView!;
+
+            // First pinch: cumulative scale 1.5 → delta = 1.5 / 1.0 = 1.5
+            platformView.RaiseEvent(new PinchEventArgs(1.5, new Point(100, 100)));
+
+            // Second pinch: cumulative scale 3.0 → delta = 3.0 / 1.5 = 2.0
+            platformView.RaiseEvent(new PinchEventArgs(3.0, new Point(100, 100)));
+
+            // End pinch
+            platformView.RaiseEvent(new PinchEndedEventArgs());
+
+            Assert.Equal(2, scales.Count);
+            Assert.Equal(1.5, scales[0], 3);
+            Assert.Equal(2.0, scales[1], 3);
+        }
+
         // --- Helpers ---
 
         private PointerPressedEventArgs CreatePointerPressedEventArgs(Visual target, Point point, int clickCount = 1)

@@ -1,0 +1,86 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="AlohaAI.Browser.AvaloniaApp"
+             Name="AlohaAI"
+             RequestedThemeVariant="Default">
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Dark">
+                    <!-- Tab strip background -->
+                    <SolidColorBrush x:Key="TabbedPageTabStripBackground" Color="#18132A" />
+                    <CornerRadius x:Key="TabbedPageTabStripCornerRadius">20</CornerRadius>
+                    <Thickness x:Key="TabbedPageTabStripPadding">4,4</Thickness>
+                    <Thickness x:Key="TabbedPageTabStripMargin">0,0,0,0</Thickness>
+
+                    <!-- Tab item foregrounds -->
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderForegroundUnselected" Color="#80FFFFFF" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderForegroundSelected" Color="#FFFFFF" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderForegroundDisabled" Color="#40FFFFFF" />
+
+                    <!-- Tab item backgrounds -->
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundUnselected" Color="Transparent" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundSelected" Color="#405B8FD4" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundUnselectedPointerOver" Color="#205B8FD4" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundSelectedPointerOver" Color="#505B8FD4" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundUnselectedPressed" Color="#305B8FD4" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundSelectedPressed" Color="#605B8FD4" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundDisabled" Color="Transparent" />
+
+                    <!-- Pill-shaped tab items -->
+                    <CornerRadius x:Key="TabbedPageTabItemHeaderCornerRadius">16</CornerRadius>
+                    <Thickness x:Key="TabbedPageTabItemHeaderPadding">16,6</Thickness>
+                    <Thickness x:Key="TabbedPageTabItemHeaderMargin">5,5,5,5</Thickness>
+                    <x:Double x:Key="TabbedPageTabItemHeaderMinHeight">36</x:Double>
+                    <x:Double x:Key="TabbedPageTabItemHeaderFontSize">13</x:Double>
+                    <x:Double x:Key="TabbedPageTabItemHeaderIconSize">18</x:Double>
+
+                    <!-- Hide the selection indicator (pill background replaces it) -->
+                    <x:Double x:Key="TabbedPageTabItemHeaderPipeThickness">0</x:Double>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <!-- Tab strip background -->
+                    <SolidColorBrush x:Key="TabbedPageTabStripBackground" Color="#F0EEF5" />
+                    <CornerRadius x:Key="TabbedPageTabStripCornerRadius">20</CornerRadius>
+                    <Thickness x:Key="TabbedPageTabStripPadding">4,4</Thickness>
+                    <Thickness x:Key="TabbedPageTabStripMargin">0,10,0,0</Thickness>
+
+                    <!-- Tab item foregrounds -->
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderForegroundUnselected" Color="#80000000" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderForegroundSelected" Color="#000000" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderForegroundDisabled" Color="#40000000" />
+
+                    <!-- Tab item backgrounds -->
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundUnselected" Color="Transparent" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundSelected" Color="#405B8FD4" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundUnselectedPointerOver" Color="#205B8FD4" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundSelectedPointerOver" Color="#505B8FD4" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundUnselectedPressed" Color="#305B8FD4" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundSelectedPressed" Color="#605B8FD4" />
+                    <SolidColorBrush x:Key="TabbedPageTabItemHeaderBackgroundDisabled" Color="Transparent" />
+
+                    <!-- Pill-shaped tab items -->
+                    <CornerRadius x:Key="TabbedPageTabItemHeaderCornerRadius">16</CornerRadius>
+                    <Thickness x:Key="TabbedPageTabItemHeaderPadding">16,6</Thickness>
+                    <Thickness x:Key="TabbedPageTabItemHeaderMargin">5,0,5,10</Thickness>
+                    <x:Double x:Key="TabbedPageTabItemHeaderMinHeight">36</x:Double>
+                    <x:Double x:Key="TabbedPageTabItemHeaderFontSize">13</x:Double>
+                    <x:Double x:Key="TabbedPageTabItemHeaderIconSize">18</x:Double>
+
+                    <!-- Hide the selection indicator (pill background replaces it) -->
+                    <x:Double x:Key="TabbedPageTabItemHeaderPipeThickness">0</x:Double>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+
+        <!-- Override font weight for TabbedPage tab items -->
+        <Style Selector="TabbedPage /template/ TabControl#PART_TabControl > TabItem">
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Application.Styles>
+</Application>

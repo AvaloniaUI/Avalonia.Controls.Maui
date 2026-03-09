@@ -1,0 +1,121 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ControlGallery.Pages.ShellSamples.ShellPlayground"
+             x:Class="ControlGallery.Pages.ShellSamples.ShellPlayground.ShellSearchPage"
+             Title="Shell SearchHandler">
+    
+    <Shell.SearchHandler>
+        <local:FeaturesSearchHandler x:Name="FeaturesSearch"
+            Placeholder="Search features..."
+            ShowsResults="True"
+            TextColor="DarkBlue" />
+    </Shell.SearchHandler>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Search Handler Customization" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="The search bar is located in the Navigation Bar above." FontSize="12" />
+                    
+                    <Button Text="Toggle Search Visibility" 
+                            Clicked="OnToggleSearchVisibility" />
+                    
+                    <Button Text="Clear Searchbox" 
+                            Clicked="OnClearSearch" />
+                    
+                    <Label x:Name="SearchResultLabel" Text="Search for: Navigation, Structure, Styling, Colors" 
+                           HorizontalOptions="Center" Margin="0,20" FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="ItemTemplate Customization" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="Customize the appearance of search result items at runtime." FontSize="12" />
+                    
+                    <Button Text="Use Custom ItemTemplate" 
+                            Clicked="OnSetCustomItemTemplate" />
+                    
+                    <Button Text="Reset to Default"
+                            Clicked="OnResetItemTemplate" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Styling Customization" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="Change the appearance of the search bar at runtime." FontSize="12" />
+                    
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="Red Text" Clicked="OnSetRedText" FontSize="12" />
+                        <Button Text="Reset Text" Clicked="OnResetText" FontSize="12" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="Green Placeholder" Clicked="OnSetGreenPlaceholder" FontSize="12" />
+                        <Button Text="Reset Placeholder" Clicked="OnResetPlaceholder" FontSize="12" />
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="Large Font" Clicked="OnSetLargeFont" FontSize="12" />
+                        <Button Text="Reset Font" Clicked="OnResetFont" FontSize="12" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Icon and Alignment" FontSize="18" FontAttributes="Bold" />
+                    
+                    <Label Text="Icons" FontSize="14" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <FlexLayout Wrap="Wrap" JustifyContent="Start">
+                        <Button Text="Animals" Clicked="OnSetCustomIcons" Margin="0,0,5,5" />
+                        <Button Text="Emoji" Clicked="OnSetEmojiIcon" Margin="0,0,5,5" />
+                        <Button Text="Reset" Clicked="OnResetIcons" Margin="0,0,5,5" />
+                    </FlexLayout>
+
+                    <Label Text="Text Alignment" FontSize="14" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <FlexLayout Wrap="Wrap" JustifyContent="Start">
+                        <Button Text="Start" Clicked="OnAlignStart" Margin="0,0,5,5" />
+                        <Button Text="Center" Clicked="OnAlignCenter" Margin="0,0,5,5" />
+                        <Button Text="End" Clicked="OnAlignEnd" Margin="0,0,5,5" />
+                    </FlexLayout>
+
+                    <Label Text="Clear Button &amp; Command" FontSize="14" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <FlexLayout Wrap="Wrap" JustifyContent="Start">
+                        <Button Text="Red Color" Clicked="OnSetRedCancel" Margin="0,0,5,5" />
+                        <Button Text="Clear Cmd" Clicked="OnSetClearCommand" Margin="0,0,5,5" />
+                        <Button Text="Reset" Clicked="OnResetCancel" Margin="0,0,5,5" />
+                    </FlexLayout>
+
+                    <Label Text="Spacing" FontSize="14" FontAttributes="Bold" Margin="0,5,0,0"/>
+                    <FlexLayout Wrap="Wrap" JustifyContent="Start">
+                        <Button Text="Spacing" Clicked="OnSetSpacing" Margin="0,0,5,5" />
+                        <Button Text="Reset" Clicked="OnResetSpacing" Margin="0,0,5,5" />
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

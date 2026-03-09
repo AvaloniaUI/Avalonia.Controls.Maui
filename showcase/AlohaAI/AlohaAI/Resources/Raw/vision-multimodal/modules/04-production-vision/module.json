@@ -1,0 +1,32 @@
+{
+  "id": "04-production-vision",
+  "title": "Production Vision Systems",
+  "description": "End-to-end deployment patterns for robust computer vision products",
+  "lessons": [
+    {
+      "id": "01-gpu-serving",
+      "title": "GPU-Accelerated Serving Pipelines",
+      "file": "01-gpu-serving.md",
+      "xp": 15
+    },
+    {
+      "id": "02-edge-inference",
+      "title": "Edge & Mobile Vision Inference",
+      "file": "02-edge-inference.md",
+      "xp": 15
+    },
+    {
+      "id": "03-drift-monitoring",
+      "title": "Monitoring Visual Domain Drift",
+      "file": "03-drift-monitoring.md",
+      "xp": 15
+    },
+    {
+      "id": "04-privacy-redaction",
+      "title": "Privacy-Aware Processing & Redaction",
+      "file": "04-privacy-redaction.md",
+      "xp": 10
+    }
+  ],
+  "quiz": "quiz.json"
+}

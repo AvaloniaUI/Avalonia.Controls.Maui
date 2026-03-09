@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.AvaloniaEmbedPage"
+             xmlns:maui="clr-namespace:Avalonia.Controls.Maui.Controls;assembly=Avalonia.Controls.Maui"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
+             Title="Avalonia Embed Page">
+             <Grid Margin="10" RowDefinitions="Auto, *">
+                <Label LineBreakMode="WordWrap"
+                    Text="This is an example of hosting an Avalonia control within a .NET MAUI application using the AvaloniaControlHost." />
+                <maui:AvaloniaView Grid.Row="1"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Fill">
+                    <controls:EmbedDemoControl />
+                </maui:AvaloniaView>
+             </Grid>
+</ContentPage>

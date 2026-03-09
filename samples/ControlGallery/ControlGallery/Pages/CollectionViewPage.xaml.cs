@@ -43,6 +43,18 @@ public partial class CollectionViewPage : ContentPage
         }
     }
 
+    // Selected item for SelectionChangedCommand demo
+    private string? _selectionCommandSelectedItem;
+    public string? SelectionCommandSelectedItem
+    {
+        get => _selectionCommandSelectedItem;
+        set
+        {
+            _selectionCommandSelectedItem = value;
+            OnPropertyChanged();
+        }
+    }
+
     // Empty view items using observable collection for dynamic updates
     public ObservableCollection<string> EmptyViewItems { get; } = new();
 

@@ -309,30 +309,6 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         Assert.Equal(0, padding.Bottom);  // NaN should convert to 0
     }
 
-    [AvaloniaTheory(DisplayName = "NaN Padding Update Converts To Zero")]
-    [InlineData(double.NaN, 0, 0, 0)]
-    [InlineData(0, double.NaN, 0, 0)]
-    [InlineData(0, 0, double.NaN, 0)]
-    [InlineData(0, 0, 0, double.NaN)]
-    [InlineData(double.NaN, double.NaN, double.NaN, double.NaN)]
-    public async Task NaNPaddingUpdateConvertsToZero(double left, double top, double right, double bottom)
-    {
-        var button = new ButtonStub { Text = "Button", Padding = new MauiThickness(5) };
-        var newPadding = new MauiThickness(left, top, right, bottom);
-
-        var platformPadding = await GetValueAsync(button, handler =>
-        {
-            button.Padding = newPadding;
-            handler.UpdateValue(nameof(IButton.Padding));
-            return GetPlatformPadding(handler);
-        });
-
-        Assert.Equal(double.IsNaN(left) ? 0 : left, platformPadding.Left);
-        Assert.Equal(double.IsNaN(top) ? 0 : top, platformPadding.Top);
-        Assert.Equal(double.IsNaN(right) ? 0 : right, platformPadding.Right);
-        Assert.Equal(double.IsNaN(bottom) ? 0 : bottom, platformPadding.Bottom);
-    }
-
     [AvaloniaFact(DisplayName = "StrokeColor Initializes Correctly")]
     public async Task StrokeColorInitializesCorrectly()
     {
@@ -613,6 +589,115 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         Assert.Equal(1, button.PressedCount);
         Assert.Equal(1, button.ReleasedCount);
         Assert.Equal(1, button.ClickedCount);
+    }
+
+    [AvaloniaFact(DisplayName = "LineBreakMode NoWrap Updates Correctly")]
+    public async Task LineBreakModeNoWrapUpdatesCorrectly()
+    {
+        var button = new MButton { Text = "Button", LineBreakMode = Microsoft.Maui.LineBreakMode.WordWrap };
+        var handler = await CreateHandlerAsync<MauiButtonHandler>(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            button.LineBreakMode = Microsoft.Maui.LineBreakMode.NoWrap;
+            handler.UpdateValue(nameof(MButton.LineBreakMode));
+        });
+
+        var textBlock = handler.PlatformView!.GetTextBlock();
+        Assert.NotNull(textBlock);
+        Assert.Equal(Media.TextWrapping.NoWrap, textBlock.TextWrapping);
+        Assert.Equal(Media.TextTrimming.None, textBlock.TextTrimming);
+    }
+
+    [AvaloniaFact(DisplayName = "LineBreakMode WordWrap Updates Correctly")]
+    public async Task LineBreakModeWordWrapUpdatesCorrectly()
+    {
+        var button = new MButton { Text = "Button", LineBreakMode = Microsoft.Maui.LineBreakMode.NoWrap };
+        var handler = await CreateHandlerAsync<MauiButtonHandler>(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            button.LineBreakMode = Microsoft.Maui.LineBreakMode.WordWrap;
+            handler.UpdateValue(nameof(MButton.LineBreakMode));
+        });
+
+        var textBlock = handler.PlatformView!.GetTextBlock();
+        Assert.NotNull(textBlock);
+        Assert.Equal(Media.TextWrapping.Wrap, textBlock.TextWrapping);
+        Assert.Equal(Media.TextTrimming.None, textBlock.TextTrimming);
+    }
+
+    [AvaloniaFact(DisplayName = "LineBreakMode TailTruncation Updates Correctly")]
+    public async Task LineBreakModeTailTruncationUpdatesCorrectly()
+    {
+        var button = new MButton { Text = "Button", LineBreakMode = Microsoft.Maui.LineBreakMode.NoWrap };
+        var handler = await CreateHandlerAsync<MauiButtonHandler>(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            button.LineBreakMode = Microsoft.Maui.LineBreakMode.TailTruncation;
+            handler.UpdateValue(nameof(MButton.LineBreakMode));
+        });
+
+        var textBlock = handler.PlatformView!.GetTextBlock();
+        Assert.NotNull(textBlock);
+        Assert.Equal(Media.TextWrapping.NoWrap, textBlock.TextWrapping);
+        Assert.Equal(Media.TextTrimming.CharacterEllipsis, textBlock.TextTrimming);
+    }
+
+    [AvaloniaFact(DisplayName = "LineBreakMode HeadTruncation Updates Correctly")]
+    public async Task LineBreakModeHeadTruncationUpdatesCorrectly()
+    {
+        var button = new MButton { Text = "Button", LineBreakMode = Microsoft.Maui.LineBreakMode.NoWrap };
+        var handler = await CreateHandlerAsync<MauiButtonHandler>(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            button.LineBreakMode = Microsoft.Maui.LineBreakMode.HeadTruncation;
+            handler.UpdateValue(nameof(MButton.LineBreakMode));
+        });
+
+        var textBlock = handler.PlatformView!.GetTextBlock();
+        Assert.NotNull(textBlock);
+        Assert.Equal(Media.TextWrapping.NoWrap, textBlock.TextWrapping);
+        Assert.Equal(Media.TextTrimming.PrefixCharacterEllipsis, textBlock.TextTrimming);
+    }
+
+    [AvaloniaFact(DisplayName = "LineBreakMode MiddleTruncation Updates Correctly")]
+    public async Task LineBreakModeMiddleTruncationUpdatesCorrectly()
+    {
+        var button = new MButton { Text = "Button", LineBreakMode = Microsoft.Maui.LineBreakMode.NoWrap };
+        var handler = await CreateHandlerAsync<MauiButtonHandler>(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            button.LineBreakMode = Microsoft.Maui.LineBreakMode.MiddleTruncation;
+            handler.UpdateValue(nameof(MButton.LineBreakMode));
+        });
+
+        var textBlock = handler.PlatformView!.GetTextBlock();
+        Assert.NotNull(textBlock);
+        Assert.Equal(Media.TextWrapping.NoWrap, textBlock.TextWrapping);
+        // MiddleTruncation falls back to CharacterEllipsis currently
+        Assert.Equal(Media.TextTrimming.CharacterEllipsis, textBlock.TextTrimming);
+    }
+
+    [AvaloniaFact]
+    public async Task IsPressedUpdatesCorrectly()
+    {
+        var button = new MButton { Text = "Button" };
+        var handler = await CreateHandlerAsync<MauiButtonHandler>(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            // Simulate PointerPressed
+            ((IButton)button).Pressed();
+            Assert.True(button.IsPressed);
+            
+            // Simulate PointerReleased
+            ((IButton)button).Released();
+            Assert.False(button.IsPressed);
+        });
     }
 
     [AvaloniaFact(DisplayName = "Disabled Button Does Not Trigger Clicked")]

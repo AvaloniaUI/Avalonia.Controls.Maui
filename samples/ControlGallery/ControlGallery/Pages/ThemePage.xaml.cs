@@ -6,7 +6,7 @@ using Microsoft.Maui.Controls;
 
 namespace ControlGallery.Pages;
 
-public partial class ThemePage : ContentPage, INotifyPropertyChanged
+public partial class ThemePage : ContentPage
 {
     private string _currentTheme = "Unknown";
 
@@ -66,8 +66,6 @@ public partial class ThemePage : ContentPage, INotifyPropertyChanged
         };
     }
 
-    protected override void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        base.OnPropertyChanged(propertyName);
-    }
+
+
 }

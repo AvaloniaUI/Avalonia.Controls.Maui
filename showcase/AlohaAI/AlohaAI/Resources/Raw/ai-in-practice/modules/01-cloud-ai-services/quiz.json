@@ -1,0 +1,66 @@
+{
+  "moduleId": "01-cloud-ai-services",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "What is the primary benefit of using cloud AI services instead of training models from scratch?",
+      "options": [
+        "You get exclusive access to proprietary algorithms",
+        "You can use pre-trained models via APIs without managing infrastructure",
+        "Cloud models are always more accurate than custom models",
+        "Cloud services are always free to use"
+      ],
+      "correctIndex": 1,
+      "explanation": "Cloud AI services provide pre-trained models accessible through APIs, eliminating the need to manage GPUs, datasets, and training infrastructure.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "Embeddings convert text into numerical vectors that capture semantic meaning, allowing you to find similar documents by meaning rather than exact keywords.",
+      "options": ["True", "False"],
+      "correctIndex": 0,
+      "explanation": "Embeddings represent text as high-dimensional vectors where semantically similar texts are close together in vector space, enabling semantic search.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "In the RAG (Retrieval-Augmented Generation) pattern, what is the correct order of steps?",
+      "options": [
+        "Generate → Search → Retrieve",
+        "Search relevant documents → Feed them to the LLM → Generate a grounded answer",
+        "Train a custom model → Deploy it → Query it",
+        "Embed the question → Store the answer → Return cached result"
+      ],
+      "correctIndex": 1,
+      "explanation": "RAG works by first retrieving relevant documents via search, then augmenting the LLM prompt with those documents, and finally generating an answer grounded in real data.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "Which API parameter controls how creative or deterministic a language model's responses are?",
+      "options": [
+        "MaxTokens",
+        "Temperature",
+        "DeploymentName",
+        "Stop sequences"
+      ],
+      "correctIndex": 1,
+      "explanation": "Temperature controls randomness — lower values (near 0) produce more focused, deterministic output, while higher values add creativity and variation.",
+      "xp": 5
+    },
+    {
+      "id": "q5",
+      "type": "TrueFalse",
+      "question": "Prompt Flow in Azure AI Studio allows you to visually design and test LLM workflows by connecting nodes.",
+      "options": ["True", "False"],
+      "correctIndex": 0,
+      "explanation": "Prompt Flow provides a visual interface for building LLM pipelines by connecting nodes for embedding, search, LLM calls, and Python functions.",
+      "xp": 5
+    }
+  ]
+}

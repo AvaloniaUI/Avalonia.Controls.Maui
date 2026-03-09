@@ -12,17 +12,48 @@ using Microsoft.Maui.ApplicationModel;
 
 namespace Avalonia.Controls.Maui.Platform;
 
+/// <summary>
+/// Abstract base class for Avalonia-based MAUI applications that bridges the Avalonia application lifecycle with the MAUI platform.
+/// </summary>
+/// <remarks>
+/// Subclasses must implement <see cref="CreateMauiApp"/> to provide the configured <see cref="MauiApp"/> instance.
+/// This class implements <see cref="IPlatformApplication"/> so that MAUI's platform services resolve against the Avalonia host.
+/// </remarks>
 public abstract class MauiAvaloniaApplication : Application, IPlatformApplication
 {
+    /// <summary>
+    /// Gets or sets a value indicating whether the application is running in embedding mode,
+    /// where MAUI is the host and Avalonia controls are embedded within MAUI views.
+    /// When <see langword="true"/>, <see cref="OnFrameworkInitializationCompleted"/> skips
+    /// the full MAUI bootstrap (which is handled by the native platform).
+    /// </summary>
+    internal static bool IsEmbeddingMode { get; set; }
+
+    /// <summary>
+    /// Creates and returns the configured <see cref="MauiApp"/> instance for this application.
+    /// </summary>
+    /// <returns>A fully configured <see cref="MauiApp"/>.</returns>
     protected abstract MauiApp CreateMauiApp();
 
+    /// <summary>
+    /// Gets the current <see cref="MauiAvaloniaApplication"/> instance.
+    /// </summary>
     public static new MauiAvaloniaApplication Current => (MauiAvaloniaApplication)global::Avalonia.Application.Current!;
 
 
+    /// <summary>
+    /// Gets the main Avalonia <see cref="Window"/> created during application initialization.
+    /// </summary>
     public Window MainWindow { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets the application-level <see cref="IServiceProvider"/> resolved from the MAUI dependency injection container.
+    /// </summary>
     public IServiceProvider Services { get; protected set; } = null!;
 
+    /// <summary>
+    /// Gets the MAUI <see cref="IApplication"/> instance managed by this host.
+    /// </summary>
     public IApplication Application { get; protected set; } = null!;
 
 
@@ -31,8 +62,24 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
     /// </summary>
     protected IMauiContext? ApplicationContext { get; private set; }
 
+    /// <summary>
+    /// Bootstraps the MAUI application within the Avalonia framework initialization pipeline.
+    /// </summary>
+    /// <remarks>
+    /// This method creates the <see cref="MauiApp"/>, registers platform services, sets up the DI scope,
+    /// connects the MAUI <see cref="IApplication"/> to its handler, and creates the platform window or single-view content
+    /// depending on the active <see cref="Avalonia.Controls.ApplicationLifetimes"/> lifetime.
+    /// </remarks>
     public override void OnFrameworkInitializationCompleted()
     {
+        // In embedding mode, MAUI is the host and handles its own bootstrap.
+        // Skip the full MAUI initialization to avoid a circular CreateMauiApp() call.
+        if (IsEmbeddingMode)
+        {
+            base.OnFrameworkInitializationCompleted();
+            return;
+        }
+
         IPlatformApplication.Current = this;
 
         Styles.Add(new ControlStyles());
@@ -78,7 +125,7 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
 
     private Control CreatePlatformContent()
     {
-        var mauiContext = new MauiContext(Services);
+        var mauiContext = MakeAvaloniaWindowScope(ApplicationContext!);
 
         Services.InvokeLifecycleEvents<AvaloniaLifecycle.OnMauiContextCreated>(del => del(mauiContext));
 
@@ -96,21 +143,31 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
 
     private MauiAvaloniaWindow CreatePlatformWindow()
     {
-
-        var mauiContext = new MauiContext(Services);
+        var mauiContext = MakeAvaloniaWindowScope(ApplicationContext!);
 
         Services.InvokeLifecycleEvents<AvaloniaLifecycle.OnMauiContextCreated>(del => del(mauiContext));
 
         var activationState = new ActivationState(mauiContext);
         var window = Application.CreateWindow(activationState);
 
-        var test = window.ToPlatform(mauiContext);
         var avaloniaWindow = window.ToPlatform(mauiContext) as MauiAvaloniaWindow
             ?? throw new InvalidOperationException($"The window handler for {window.GetType().FullName} must be a {nameof(MauiAvaloniaWindow)}");
 
         Services.InvokeLifecycleEvents<AvaloniaLifecycle.OnWindowCreated>(del => del(avaloniaWindow));
 
         return avaloniaWindow;
+    }
+
+    /// <summary>
+    /// Creates a window-scoped MauiContext with a proper DI scope.
+    /// </summary>
+    private static IMauiContext MakeAvaloniaWindowScope(IMauiContext mauiContext)
+    {
+        var scope = mauiContext.Services.CreateScope();
+        var scopedContext = new MauiContext(scope.ServiceProvider);
+        scopedContext.SetWindowScope(scope);
+        scopedContext.InitializeScopedServices();
+        return scopedContext;
     }
 
     /// <summary>

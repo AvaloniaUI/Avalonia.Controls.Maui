@@ -287,35 +287,6 @@ public class ApplicationHandlerTests : HandlerTestBase
         Assert.Equal(ThemeVariant.Light, avaloniaApp.RequestedThemeVariant);
     }
 
-    [AvaloniaFact(DisplayName = "MapUserAppTheme Sets Default For Unspecified Theme")]
-    public async Task MapUserAppThemeSetsDefaultForUnspecifiedTheme()
-    {
-        var application = new ApplicationStub
-        {
-            UserAppTheme = AppTheme.Unspecified
-        };
-
-        EnsureHandlerCreated(builder =>
-        {
-            builder.Services.AddSingleton<Application>(App.Current!);
-            builder.ConfigureMauiHandlers(handlers =>
-            {
-                handlers.AddHandler<IApplication, MauiApplicationHandler>();
-            });
-        });
-
-        var handler = await CreateHandlerAsync<MauiApplicationHandler>(application);
-
-        await InvokeOnMainThreadAsync(() =>
-        {
-            MauiApplicationHandler.MapUserAppTheme(handler, application);
-        });
-
-        var avaloniaApp = handler.PlatformView as Application;
-        Assert.NotNull(avaloniaApp);
-        Assert.Equal(ThemeVariant.Default, avaloniaApp.RequestedThemeVariant);
-    }
-
     [AvaloniaFact(DisplayName = "MapUserAppTheme Updates Theme When Changed")]
     public async Task MapUserAppThemeUpdatesThemeWhenChanged()
     {

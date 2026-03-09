@@ -2,11 +2,17 @@
   "solution": {
     "path": "Avalonia.Controls.Maui.slnx",
     "projects": [
-            "src\\Avalonia.Controls.Maui.Graphics\\Avalonia.Controls.Maui.Graphics.csproj",
+
+            "src\\Avalonia.Controls.Maui.Compatibility\\Avalonia.Controls.Maui.Compatibility.csproj",
+            "src\\Avalonia.Controls.Maui.Essentials\\Avalonia.Controls.Maui.Essentials.csproj",
             "src\\Avalonia.Controls.Maui\\Avalonia.Controls.Maui.csproj",
-            "tests\\Avalonia.Controls.Maui.Essentials.Tests\\Avalonia.Controls.Maui.Essentials.Tests.csproj",
+            "src\\Avalonia.Controls.Maui.Desktop\\Avalonia.Controls.Maui.Desktop.csproj",
+            "src\\Avalonia.Controls.Maui.SourceGenerators\\Avalonia.Controls.Maui.SourceGenerators.csproj",
             "tests\\Avalonia.Controls.Maui.Tests\\Avalonia.Controls.Maui.Tests.csproj",
-            "tests\\Avalonia.Controls.Maui.RenderTests\\Avalonia.Controls.Maui.RenderTests.csproj"
+            "tests\\Avalonia.Controls.Maui.Maps.Mapsui.Tests\\Avalonia.Controls.Maui.Maps.Mapsui.Tests.csproj",
+            "tests\\Avalonia.Controls.Maui.SourceGenerators.Tests\\Avalonia.Controls.Maui.SourceGenerators.Tests.csproj",
+            "tests\\Avalonia.Controls.Maui.RenderTests\\Avalonia.Controls.Maui.RenderTests.csproj",
+            "tests\\Avalonia.Controls.Maui.Essentials.Tests\\Avalonia.Controls.Maui.Essentials.Tests.csproj"
         ]
 
     }

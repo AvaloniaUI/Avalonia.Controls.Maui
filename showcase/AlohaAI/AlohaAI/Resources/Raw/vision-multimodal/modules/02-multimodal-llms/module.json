@@ -1,0 +1,32 @@
+{
+  "id": "02-multimodal-llms",
+  "title": "Multimodal Large Language Models",
+  "description": "Use VLMs for image+text reasoning and build visual understanding features",
+  "lessons": [
+    {
+      "id": "01-clip-foundations",
+      "title": "CLIP: Connecting Vision & Language",
+      "file": "01-clip-foundations.md",
+      "xp": 15
+    },
+    {
+      "id": "02-visual-qa",
+      "title": "Visual Question Answering Systems",
+      "file": "02-visual-qa.md",
+      "xp": 15
+    },
+    {
+      "id": "03-multimodal-embeddings",
+      "title": "Multimodal Embeddings & Search",
+      "file": "03-multimodal-embeddings.md",
+      "xp": 15
+    },
+    {
+      "id": "04-visual-agents",
+      "title": "Visual Tool Use & Multimodal Agents",
+      "file": "04-visual-agents.md",
+      "xp": 20
+    }
+  ],
+  "quiz": "quiz.json"
+}

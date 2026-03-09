@@ -7,10 +7,6 @@
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="16">
-            <Label Text="Polygon Samples"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
 
             <Border Stroke="Gray"
                     Padding="12">
@@ -68,6 +64,74 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="FillRule"
+                           FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="20">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="EvenOdd"
+                                   FontSize="12"
+                                   TextColor="Gray" />
+                            <Polygon Points="60,10 90,90 10,40 110,40 30,90"
+                                     Fill="#60A5FA"
+                                     Stroke="#1E3A8A"
+                                     StrokeThickness="2"
+                                     FillRule="EvenOdd" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Nonzero"
+                                   FontSize="12"
+                                   TextColor="Gray" />
+                            <Polygon Points="60,10 90,90 10,40 110,40 30,90"
+                                     Fill="#60A5FA"
+                                     Stroke="#1E3A8A"
+                                     StrokeThickness="2"
+                                     FillRule="Nonzero" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="StrokeMiterLimit"
+                           FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="20">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Limit = 1"
+                                   FontSize="12"
+                                   TextColor="Gray" />
+                            <Polygon Points="20,80 70,10 120,80"
+                                     Stroke="#EF4444"
+                                     StrokeThickness="10"
+                                     StrokeLineJoin="Miter"
+                                     StrokeMiterLimit="1"
+                                     Fill="Transparent" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Limit = 10"
+                                   FontSize="12"
+                                   TextColor="Gray" />
+                            <Polygon Points="20,80 70,10 120,80"
+                                     Stroke="#22C55E"
+                                     StrokeThickness="10"
+                                     StrokeLineJoin="Miter"
+                                     StrokeMiterLimit="10"
+                                     Fill="Transparent" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

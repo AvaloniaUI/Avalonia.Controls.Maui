@@ -8,52 +8,6 @@
              Title="RadioButton">
     <ContentPage.Resources>
         
-        <!-- Custom ControlTemplate -->
-        <ControlTemplate x:Key="CustomRadioButtonTemplate" x:DataType="RadioButton">
-            <Grid ColumnDefinitions="Auto,*"
-                  ColumnSpacing="10"
-                  Padding="0">
-                <Grid WidthRequest="24"
-                      HeightRequest="24"
-                      VerticalOptions="Center">
-                    <Ellipse x:Name="Outer"
-                             Stroke="{Binding BorderColor, Source={RelativeSource TemplatedParent}}"
-                             StrokeThickness="{Binding BorderWidth, Source={RelativeSource TemplatedParent}}"
-                             Fill="Transparent"
-                             WidthRequest="24"
-                             HeightRequest="24"/>
-                    <Ellipse x:Name="Inner"
-                             Fill="{Binding TextColor, Source={RelativeSource TemplatedParent}}"
-                             WidthRequest="12"
-                             HeightRequest="12"
-                             HorizontalOptions="Center"
-                             VerticalOptions="Center"
-                             IsVisible="False"/>
-                </Grid>
-                <ContentPresenter Grid.Column="1"
-                                  VerticalOptions="Center"/>
-
-                <VisualStateManager.VisualStateGroups>
-                    <VisualStateGroup Name="TemplateCheckStates">
-                        <VisualState Name="Checked">
-                            <VisualState.Setters>
-                                <Setter TargetName="Inner"
-                                        Property="IsVisible"
-                                        Value="True"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                        <VisualState Name="Unchecked">
-                            <VisualState.Setters>
-                                <Setter TargetName="Inner"
-                                        Property="IsVisible"
-                                        Value="False"/>
-                            </VisualState.Setters>
-                        </VisualState>
-                    </VisualStateGroup>
-                </VisualStateManager.VisualStateGroups>
-            </Grid>
-        </ControlTemplate>
-
         <!-- Card-style template from MAUI docs -->
         <ControlTemplate x:Key="CardRadioButtonTemplate">
             <Border Stroke="#F3F2F1"
@@ -113,10 +67,6 @@
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="20">
-            <Label Text="RadioButton"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
 
             <!-- Basic String Content -->
             <Border Stroke="Gray"
@@ -391,31 +341,6 @@
                             </HorizontalStackLayout>
                         </RadioButton.Content>
                     </RadioButton>
-                </VerticalStackLayout>
-            </Border>
-
-            <!-- Custom ControlTemplate -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Custom ControlTemplate"
-                           FontAttributes="Bold"/>
-                    <RadioButton Content="Custom A"
-                                 GroupName="custom"
-                                 ControlTemplate="{StaticResource CustomRadioButtonTemplate}"
-                                 BorderColor="DodgerBlue"
-                                 BorderWidth="2"
-                                 TextColor="DodgerBlue"
-                                 IsChecked="True"/>
-                    <RadioButton Content="Custom B"
-                                 GroupName="custom"
-                                 ControlTemplate="{StaticResource CustomRadioButtonTemplate}"
-                                 BorderColor="DodgerBlue"
-                                 BorderWidth="2"
-                                 TextColor="DodgerBlue"/>
                 </VerticalStackLayout>
             </Border>
 

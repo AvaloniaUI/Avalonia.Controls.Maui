@@ -1,0 +1,46 @@
+{
+  "moduleId": "01-mlops-foundations",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "What is the main problem Feature Stores solve?",
+      "options": [
+        "Model training speed",
+        "Training-Serving Skew \u2014 ensuring consistent features between training and inference",
+        "GPU allocation",
+        "Model compression"
+      ],
+      "correctIndex": 1,
+      "explanation": "Feature stores provide a single source of truth for features, ensuring the exact same transformations are used during training and real-time serving.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "DVC (Data Version Control) allows you to version control large datasets similar to how Git versions code.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 0,
+      "explanation": "DVC tracks large files, datasets, and model artifacts alongside your Git repository without storing them directly in Git.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "CI/CD for ML models differs from traditional CI/CD because:",
+      "options": [
+        "It only runs on weekends",
+        "It must validate data quality, model performance, and behavioral tests \u2014 not just code correctness",
+        "It doesn't use Git",
+        "It's always manual"
+      ],
+      "correctIndex": 1,
+      "explanation": "ML CI/CD includes data validation, model evaluation metrics, bias checks, and regression tests beyond standard code testing.",
+      "xp": 5
+    }
+  ]
+}

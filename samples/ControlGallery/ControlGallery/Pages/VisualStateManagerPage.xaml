@@ -34,9 +34,6 @@
     
     <ScrollView>
         <VerticalStackLayout Spacing="20" Padding="20">
-            <Label Text="Visual States" 
-                   Style="{StaticResource Headline}" />
-
             <!-- Common States -->
             <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
                     StrokeThickness="1"

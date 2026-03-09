@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <!-- Set to your local Avalonia repo path to build from source -->
+    <!-- <AvaloniaSourcePath>$(MSBuildThisFileDirectory)../avalonia</AvaloniaSourcePath> -->
+
+    <!-- Set to your local MAUI repo path to build from source -->
+    <!-- <MauiSourcePath>$(MSBuildThisFileDirectory)../maui</MauiSourcePath> -->
+  </PropertyGroup>
+</Project>

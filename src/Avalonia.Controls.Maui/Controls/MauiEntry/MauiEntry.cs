@@ -25,20 +25,8 @@ public class MauiEntry : TextBox
     }
 
     /// <summary>
-    /// Defines the <see cref="PlaceholderForeground"/> property.
+    /// Occurs when the text selection changes.
     /// </summary>
-    public static readonly StyledProperty<IBrush?> PlaceholderForegroundProperty =
-        AvaloniaProperty.Register<MauiEntry, IBrush?>(nameof(PlaceholderForeground));
-
-    /// <summary>
-    /// Gets or sets the brush used to draw the placeholder text.
-    /// </summary>
-    public IBrush? PlaceholderForeground
-    {
-        get => GetValue(PlaceholderForegroundProperty);
-        set => SetValue(PlaceholderForegroundProperty, value);
-    }
-
     public event EventHandler<Interactivity.RoutedEventArgs>? SelectionChanged;
 
     /// <summary>
@@ -71,6 +59,7 @@ public class MauiEntry : TextBox
         private set => SetAndRaise(IsClearButtonVisibleProperty, ref _isClearButtonVisible, value);
     }
 
+    /// <inheritdoc/>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);
@@ -97,6 +86,9 @@ public class MauiEntry : TextBox
                                && IsFocused;
     }
 
+    /// <summary>
+    /// Raises the <see cref="SelectionChanged"/> event.
+    /// </summary>
     public void RaiseSelectionChanged()
     {
         SelectionChanged?.Invoke(this, new Interactivity.RoutedEventArgs());

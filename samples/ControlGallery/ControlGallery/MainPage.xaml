@@ -3,7 +3,7 @@
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			xmlns:local="clr-namespace:ControlGallery"
 			x:DataType="local:MainPage"
-			FlyoutLayoutBehavior="Split"
+			FlyoutLayoutBehavior="Popover"
 			x:Class="ControlGallery.MainPage">
 	<FlyoutPage.Flyout>
 		<ContentPage
@@ -16,14 +16,38 @@
 						   BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
 						   Margin="6"/>
 
-				<TableView Grid.Row="1"
-					x:Name="MenuTableView"
-					Intent="Menu"
+				<CollectionView Grid.Row="1"
+					x:Name="MenuCollectionView"
+					ItemsSource="{Binding FilteredSamples}"
+					IsGrouped="True"
+					SelectionMode="Single"
+					SelectionChanged="OnMenuSelectionChanged"
 					BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}">
-					<TableView.Root>
-						<!-- Items will be populated in code-behind -->
-					</TableView.Root>
-				</TableView>
+					<CollectionView.GroupHeaderTemplate>
+						<DataTemplate x:DataType="local:SampleGroup">
+							<Label Text="{Binding Name}"
+								   FontSize="14"
+								   FontAttributes="Bold"
+								   Padding="16,12,16,4"
+								   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+						</DataTemplate>
+					</CollectionView.GroupHeaderTemplate>
+					<CollectionView.ItemTemplate>
+						<DataTemplate x:DataType="local:SampleItem">
+							<Grid Padding="16,8">
+								<VerticalStackLayout Spacing="2">
+									<Label Text="{Binding Title}"
+										   FontSize="16"
+										   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
+									<Label Text="{Binding Detail}"
+										   FontSize="13"
+										   Opacity="0.7"
+										   TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
+								</VerticalStackLayout>
+							</Grid>
+						</DataTemplate>
+					</CollectionView.ItemTemplate>
+				</CollectionView>
 			</Grid>
 		</ContentPage>
 	</FlyoutPage.Flyout>

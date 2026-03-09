@@ -29,6 +29,18 @@ public interface IAvaloniaImageSourceService : IImageSourceService
 /// </summary>
 public static class ImageSourceServiceExtensions
 {
+    /// <summary>
+    /// Retrieves an image from the specified image source service, delegating to
+    /// <see cref="IAvaloniaImageSourceService"/> when the service supports Avalonia.
+    /// </summary>
+    /// <param name="service">The image source service to invoke.</param>
+    /// <param name="imageSource">The image source describing the image to load.</param>
+    /// <param name="scale">The display scale factor applied during image loading.</param>
+    /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>
+    /// An <see cref="IImageSourceServiceResult"/> containing the loaded image, or <see langword="null"/>
+    /// if the service does not implement <see cref="IAvaloniaImageSourceService"/>.
+    /// </returns>
     public static async Task<IImageSourceServiceResult?> GetImageAsync(
         this IImageSourceService service,
         IImageSource imageSource,

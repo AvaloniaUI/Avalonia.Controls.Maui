@@ -1,0 +1,8 @@
+{
+  "modules": [
+    "01-mlops-foundations",
+    "02-serving-scaling",
+    "03-edge-mobile",
+    "04-monitoring-improvement"
+  ]
+}

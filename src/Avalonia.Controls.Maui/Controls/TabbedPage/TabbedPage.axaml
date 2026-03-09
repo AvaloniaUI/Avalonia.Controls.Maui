@@ -16,7 +16,7 @@
                         <!-- Tab Strip with Background Border -->
                         <Border x:Name="PART_TabStripBackground"
                                 DockPanel.Dock="Top"
-                                Background="{DynamicResource TabbedPageBarBackground}">
+                                Background="{DynamicResource TabbedPageTabStripBackground}">
                             <ItemsPresenter Name="PART_ItemsPresenter"
                                             ItemsPanel="{TemplateBinding ItemsPanel}" />
                         </Border>
@@ -59,14 +59,6 @@
         <Setter Property="Padding" Value="12,0" />
         <Setter Property="MinHeight" Value="48" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-
-    <Style Selector="TabControl.TabbedPage > TabItem:selected">
-        <Setter Property="Background" Value="Transparent" />
-    </Style>
-    
-    <Style Selector="TabControl.TabbedPage > TabItem:pointerover">
-        <Setter Property="Background" Value="Transparent" />
     </Style>
 
 </Styles>

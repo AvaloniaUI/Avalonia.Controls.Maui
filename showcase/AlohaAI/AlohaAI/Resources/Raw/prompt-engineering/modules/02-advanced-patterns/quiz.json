@@ -1,0 +1,60 @@
+{
+  "moduleId": "02-advanced-patterns",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "What does Chain-of-Thought prompting encourage the model to do?",
+      "options": [
+        "Generate shorter responses",
+        "Show its reasoning step by step",
+        "Use external tools",
+        "Memorize the conversation"
+      ],
+      "correctIndex": 1,
+      "explanation": "Chain-of-Thought prompting asks the model to 'think step by step,' which improves accuracy on complex reasoning tasks.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "The ReAct pattern combines reasoning and acting in an alternating loop.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 0,
+      "explanation": "ReAct (Reason + Act) alternates between thinking about what to do and taking actions (like calling tools), then observing results.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "Why is prompt versioning important in production?",
+      "options": [
+        "It makes prompts longer",
+        "It enables rollback, A/B testing, and regression tracking",
+        "It reduces costs",
+        "It is required by law"
+      ],
+      "correctIndex": 1,
+      "explanation": "Versioning prompts lets teams track changes, compare performance across versions, and roll back if a new prompt degrades quality.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "Task decomposition involves:",
+      "options": [
+        "Making the prompt shorter",
+        "Breaking a complex task into smaller, manageable sub-tasks",
+        "Using multiple models simultaneously",
+        "Removing all context from the prompt"
+      ],
+      "correctIndex": 1,
+      "explanation": "Decomposition breaks complex problems into simpler steps the LLM can handle individually, then combines results.",
+      "xp": 5
+    }
+  ]
+}

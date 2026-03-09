@@ -1,0 +1,239 @@
+namespace ControlGallery.Pages.ShellSamples.ShellPlayground
+{
+    public partial class ShellSearchPage : ContentPage
+    {
+        public ShellSearchPage()
+        {
+            InitializeComponent();
+
+            FeaturesSearch.ItemTemplate = new DataTemplate(() =>
+            {
+                var label = new Label { Padding = new Thickness(5) };
+                label.SetBinding(Label.TextProperty, static (Feature f) => f.Name);
+                return label;
+            });
+        }
+
+        private void OnToggleSearchVisibility(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.SearchBoxVisibility = handler.SearchBoxVisibility == SearchBoxVisibility.Hidden 
+                    ? SearchBoxVisibility.Expanded 
+                    : SearchBoxVisibility.Hidden;
+            }
+        }
+
+        private void OnClearSearch(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.Query = string.Empty;
+            }
+        }
+
+        private void OnSetCustomItemTemplate(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.ItemTemplate = new DataTemplate(() =>
+                {
+                    var grid = new Grid
+                    {
+                        ColumnDefinitions = new ColumnDefinitionCollection
+                        {
+                            new ColumnDefinition { Width = GridLength.Auto },
+                            new ColumnDefinition { Width = GridLength.Star }
+                        },
+                        Padding = new Thickness(10),
+                        ColumnSpacing = 10
+                    };
+
+                    var icon = new Image
+                    {
+                        Source = "dotnet_bot.png",
+                        WidthRequest = 32,
+                        HeightRequest = 32,
+                        VerticalOptions = LayoutOptions.Center
+                    };
+
+                    var label = new Label
+                    {
+                        FontAttributes = FontAttributes.Bold,
+                        FontSize = 16,
+                        VerticalOptions = LayoutOptions.Center
+                    };
+                    label.SetBinding(Label.TextProperty, static (Feature f) => f.Name);
+
+                    grid.Add(icon, 0, 0);
+                    grid.Add(label, 1, 0);
+
+                    return grid;
+                });
+            }
+        }
+
+        private void OnResetItemTemplate(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.ItemTemplate = null;
+            }
+        }
+
+        private void OnSetRedText(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.TextColor = Colors.Red;
+        }
+
+        private void OnResetText(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.TextColor = null;
+        }
+
+        private void OnSetGreenPlaceholder(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.PlaceholderColor = Colors.Green;
+        }
+
+        private void OnResetPlaceholder(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.PlaceholderColor = null;
+        }
+
+        private void OnSetLargeFont(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.FontSize = 24;
+        }
+
+        private void OnResetFont(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.FontSize = -1; // Default
+        }
+
+        private void OnSetCustomIcons(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.QueryIcon = "bear.png";
+                handler.ClearIcon = "paw.png";
+            }
+        }
+
+        private void OnSetEmojiIcon(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.QueryIcon = new FontImageSource
+                {
+                    Glyph = "🔍",
+                    Color = Colors.Blue,
+                    Size = 16
+                };
+                handler.ClearIcon = new FontImageSource
+                {
+                    Glyph = "❌",
+                    Color = Colors.Red,
+                    Size = 16
+                };
+            }
+        }
+
+        private void OnResetIcons(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.QueryIcon = null;
+                handler.ClearIcon = null;
+            }
+        }
+
+        private void OnAlignCenter(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.HorizontalTextAlignment = TextAlignment.Center;
+                handler.VerticalTextAlignment = TextAlignment.Center;
+            }
+        }
+
+        private void OnAlignStart(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.HorizontalTextAlignment = TextAlignment.Start;
+                handler.VerticalTextAlignment = TextAlignment.Start;
+            }
+        }
+
+        private void OnAlignEnd(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.HorizontalTextAlignment = TextAlignment.End;
+                handler.VerticalTextAlignment = TextAlignment.End;
+            }
+        }
+
+        private void OnSetRedCancel(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null) handler.CancelButtonColor = Colors.Red;
+        }
+
+        private void OnSetClearCommand(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.ClearPlaceholderCommand = new Command(() => DisplayAlert("Clear", "Clear command executed", "OK"));
+                handler.ClearPlaceholderEnabled = true;
+            }
+        }
+
+        private void OnResetCancel(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.CancelButtonColor = null;
+                handler.ClearPlaceholderCommand = null;
+                handler.ClearPlaceholderEnabled = true; // Default
+            }
+        }
+
+        private void OnSetSpacing(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.CharacterSpacing = 10;
+            }
+        }
+
+        private void OnResetSpacing(object sender, EventArgs e)
+        {
+            var handler = Shell.GetSearchHandler(this);
+            if (handler != null)
+            {
+                handler.CharacterSpacing = 0;
+            }
+        }
+    }
+}

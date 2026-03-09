@@ -1,0 +1,72 @@
+{
+  "moduleId": "02-mcp",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "What problem does the Model Context Protocol (MCP) primarily solve?",
+      "options": [
+        "It trains AI models to be more accurate",
+        "It standardizes how AI applications connect to tools and data sources",
+        "It replaces HTTP as the main web protocol",
+        "It provides a database for storing AI model weights"
+      ],
+      "correctIndex": 1,
+      "explanation": "MCP is an open protocol that creates a universal standard for connecting AI applications to external tools and data sources, eliminating the need for custom integrations.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "MultipleChoice",
+      "question": "In MCP architecture, what is the role of the Host?",
+      "options": [
+        "It exposes tools and resources to clients",
+        "It handles the JSON-RPC wire protocol",
+        "It is the user-facing application that manages clients and enforces security policies",
+        "It stores the AI model's training data"
+      ],
+      "correctIndex": 2,
+      "explanation": "The Host is the application the user interacts with (e.g., an IDE or chat interface). It manages one or more MCP clients and enforces security policies and user consent.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "TrueFalse",
+      "question": "MCP Resources are model-controlled and allow the AI to perform actions with side effects.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Resources are application-controlled and read-only — they provide context to the AI without side effects. Tools are the model-controlled primitive that can perform actions.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "Which wire format does MCP use for communication between clients and servers?",
+      "options": [
+        "GraphQL",
+        "Protocol Buffers (protobuf)",
+        "JSON-RPC 2.0",
+        "XML-RPC"
+      ],
+      "correctIndex": 2,
+      "explanation": "MCP uses JSON-RPC 2.0 as its message format, which supports requests (with an id), responses, and one-way notifications.",
+      "xp": 5
+    },
+    {
+      "id": "q5",
+      "type": "TrueFalse",
+      "question": "An MCP client can connect to multiple servers simultaneously through a single connection.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Each MCP client maintains a 1:1 connection with a single server. A host application can manage multiple clients to connect to multiple servers, but each client-server pair is a separate connection.",
+      "xp": 5
+    }
+  ]
+}

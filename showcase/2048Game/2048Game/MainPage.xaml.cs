@@ -41,6 +41,16 @@ public partial class MainPage : ContentPage
 
         // Start attract mode animation when page appears
         this.Appearing += OnPageAppearing;
+        this.Disappearing += OnPageDisappearing;
+    }
+
+    private void OnPageDisappearing(object? sender, EventArgs e)
+    {
+        CurrentViewModel.TilesInitialized -= OnTilesInitialized;
+        CurrentViewModel.TileCreated -= OnTileCreated;
+        CurrentViewModel.MoveRequested -= OnMoveRequested;
+        this.Appearing -= OnPageAppearing;
+        this.Disappearing -= OnPageDisappearing;
     }
 
     private void OnPageAppearing(object? sender, EventArgs e)
@@ -51,29 +61,27 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void AttractMode_Tapped(object sender, TappedEventArgs e)
+    private void AttractMode_Tapped(object? sender, TappedEventArgs e)
     {
         CurrentViewModel.NewGameCommand.Execute(null);
     }
 
     private void InitializeBackgroundGrid()
     {
-        var emptyColor = Application.Current?.RequestedTheme == AppTheme.Dark
-            ? Color.FromArgb("#3c3a32")
-            : Color.FromArgb("#cdc1b4");
-
         for (int row = 0; row < 4; row++)
         {
             for (int col = 0; col < 4; col++)
             {
                 var emptyCell = new Border
                 {
-                    BackgroundColor = emptyColor,
                     HeightRequest = TileSize,
                     WidthRequest = TileSize,
                     StrokeShape = new RoundRectangle { CornerRadius = 5 },
                     Stroke = Colors.Transparent
                 };
+                emptyCell.SetAppThemeColor(Border.BackgroundColorProperty,
+                    Color.FromArgb("#cdc1b4"),
+                    Color.FromArgb("#3c3a32"));
                 Grid.SetRow(emptyCell, row);
                 Grid.SetColumn(emptyCell, col);
                 BackgroundGrid.Children.Add(emptyCell);
@@ -306,7 +314,7 @@ public partial class MainPage : ContentPage
         await tileView.ScaleToAsync(1.0, 50, Easing.CubicIn);
     }
 
-    void MainPageViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    void MainPageViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         var bindingContext = (MainPageViewModel)BindingContext;
 
@@ -334,7 +342,7 @@ public partial class MainPage : ContentPage
     }
 
     private SwipeDirection? swipedDirection;
-    private void PanGestureRecognizer_PanUpdated(object sender, PanUpdatedEventArgs e)
+    private void PanGestureRecognizer_PanUpdated(object? sender, PanUpdatedEventArgs e)
     {
         if (_isAnimating) return;
 
@@ -388,7 +396,7 @@ public partial class MainPage : ContentPage
         CurrentViewModel.RequestMove(direction);
     }
 
-    void UndoButton_Clicked(System.Object sender, System.EventArgs e)
+    void UndoButton_Clicked(object? sender, System.EventArgs e)
     {
         if (CurrentViewModel.CanUndo)
         {
@@ -396,29 +404,29 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private void DebugButton_Clicked(object sender, EventArgs e)
+    private void DebugButton_Clicked(object? sender, EventArgs e)
     {
         DebugMenuBorder.IsVisible = true;
     }
 
-    private void DebugMenuClose_Clicked(object sender, EventArgs e)
+    private void DebugMenuClose_Clicked(object? sender, EventArgs e)
     {
         DebugMenuBorder.IsVisible = false;
     }
 
-    private void DebugShowGameOver_Clicked(object sender, EventArgs e)
+    private void DebugShowGameOver_Clicked(object? sender, EventArgs e)
     {
         DebugMenuBorder.IsVisible = false;
         CurrentViewModel.SetStateForDebug(Enums.LevelState.GameOver);
     }
 
-    private void DebugShowWin_Clicked(object sender, EventArgs e)
+    private void DebugShowWin_Clicked(object? sender, EventArgs e)
     {
         DebugMenuBorder.IsVisible = false;
         CurrentViewModel.SetStateForDebug(Enums.LevelState.Complete);
     }
 
-    private void GameContainer_SizeChanged(object sender, EventArgs e)
+    private void GameContainer_SizeChanged(object? sender, EventArgs e)
     {
         const double originalWidth = 340.0;
         const double originalHeight = 336.0;

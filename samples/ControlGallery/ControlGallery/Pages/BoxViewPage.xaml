@@ -10,10 +10,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="BoxView"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
 
             <!-- Basic Colors -->
             <Border Stroke="Gray"
@@ -91,6 +87,69 @@
                                 HeightRequest="70"
                                 Grid.Row="1"
                                 Grid.Column="3"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Background Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Background Colors"
+                           FontAttributes="Bold"/>
+                    <Grid ColumnDefinitions="*,*,*,*"
+                          ColumnSpacing="10">
+                        <BoxView WidthRequest="70" HeightRequest="70" Grid.Column="0">
+                                <BoxView.Background>
+                                        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                                                <GradientStop Color="#080510" Offset="0.0" />
+                                                <GradientStop Color="#1B0D3D" Offset="0.25" />
+                                                <GradientStop Color="#3A1D7A" Offset="0.50" />
+                                                <GradientStop Color="#6B3FA0" Offset="0.70" />
+                                                <GradientStop Color="#B85A6A" Offset="0.85" />
+                                                <GradientStop Color="#E8734F" Offset="1.0" />
+                                        </LinearGradientBrush>
+                                </BoxView.Background>
+                        </BoxView>
+                        <BoxView WidthRequest="70" HeightRequest="70" Grid.Column="1">
+                                <BoxView.Background>
+                                        <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                                                <GradientStop Color="#FF6B6B" Offset="0.0" />
+                                                <GradientStop Color="#4ECDC4" Offset="0.25" />
+                                                <GradientStop Color="#45B7D1" Offset="0.50" />
+                                                <GradientStop Color="#FFA07A" Offset="0.70" />
+                                                <GradientStop Color="#98D8C8" Offset="0.85" />
+                                                <GradientStop Color="#F7DC6F" Offset="1.0" />
+                                        </RadialGradientBrush>
+                                </BoxView.Background>
+                        </BoxView>
+                        <BoxView WidthRequest="70" HeightRequest="70" Grid.Column="2">
+                                <BoxView.Background>
+                                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                                <GradientStop Color="#FF6B6B" Offset="0.0" />
+                                                <GradientStop Color="#4ECDC4" Offset="0.25" />
+                                                <GradientStop Color="#45B7D1" Offset="0.50" />
+                                                <GradientStop Color="#FFA07A" Offset="0.70" />
+                                                <GradientStop Color="#98D8C8" Offset="0.85" />
+                                                <GradientStop Color="#F7DC6F" Offset="1.0" />
+                                        </LinearGradientBrush>
+                                </BoxView.Background>
+                        </BoxView>
+                        <BoxView WidthRequest="70" HeightRequest="70" Grid.Column="3">
+                                <BoxView.Background>
+                                        <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                                                <GradientStop Color="#080510" Offset="0.0" />
+                                                <GradientStop Color="#1B0D3D" Offset="0.25" />
+                                                <GradientStop Color="#3A1D7A" Offset="0.50" />
+                                                <GradientStop Color="#6B3FA0" Offset="0.70" />
+                                                <GradientStop Color="#B85A6A" Offset="0.85" />
+                                                <GradientStop Color="#E8734F" Offset="1.0" />
+                                        </RadialGradientBrush>
+                                </BoxView.Background>
+                        </BoxView>
                     </Grid>
                 </VerticalStackLayout>
             </Border>

@@ -38,12 +38,12 @@ public partial class GraphicsViewPage : ContentPage
         return Application.Current?.RequestedTheme == AppTheme.Dark ? Color.FromRgb(200, 200, 200) : Color.FromRgb(80, 80, 80);
     }
 
-    private void OnInvalidateClicked(object sender, EventArgs e)
+    private void OnInvalidateClicked(object? sender, EventArgs e)
     {
         basicGraphicsView.Invalidate();
     }
 
-    private void OnStartInteraction(object sender, TouchEventArgs e)
+    private void OnStartInteraction(object? sender, TouchEventArgs e)
     {
         var point = e.Touches.FirstOrDefault();
         InteractiveDrawable.StartDrawing(point);
@@ -51,7 +51,7 @@ public partial class GraphicsViewPage : ContentPage
         interactiveGraphicsView.Invalidate();
     }
 
-    private void OnDragInteraction(object sender, TouchEventArgs e)
+    private void OnDragInteraction(object? sender, TouchEventArgs e)
     {
         var point = e.Touches.FirstOrDefault();
         InteractiveDrawable.AddPoint(point);
@@ -59,13 +59,13 @@ public partial class GraphicsViewPage : ContentPage
         interactiveGraphicsView.Invalidate();
     }
 
-    private void OnEndInteraction(object sender, TouchEventArgs e)
+    private void OnEndInteraction(object? sender, TouchEventArgs e)
     {
         InteractiveDrawable.EndDrawing();
         InteractionLabel.Text = "Touch or drag to draw";
     }
 
-    private void OnClearClicked(object sender, EventArgs e)
+    private void OnClearClicked(object? sender, EventArgs e)
     {
         InteractiveDrawable.Clear();
         interactiveGraphicsView.Invalidate();
