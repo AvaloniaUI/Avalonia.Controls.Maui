@@ -7,7 +7,7 @@
     <IsAotCompatible>true</IsAotCompatible>
     <AddMauiInternals>true</AddMauiInternals>
     <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
-    <PackageDescription>Avalonia.Controls.Maui.SkiaSharp.Views provides an implementation of SkiaSharp.Views.Maui.Core, using Avalonia-based implementations.</PackageDescription>
+    <PackageDescription>Avalonia.Controls.Maui.SkiaSharp.Views provides an implementation of SkiaSharp.Views.Maui.Controls, using Avalonia-based implementations.</PackageDescription>
     <SignAssembly>true</SignAssembly>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
