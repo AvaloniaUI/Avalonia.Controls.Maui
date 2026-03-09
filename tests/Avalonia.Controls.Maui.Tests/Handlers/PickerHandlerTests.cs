@@ -126,7 +126,7 @@ public partial class PickerHandlerTests : HandlerTestBase<MauiPickerHandler, Pic
         Assert.Equal(expectedAlignment, platformAlignment);
     }
 
-    [AvaloniaTheory(DisplayName = "Vertical Text Alignment Initializes Correctly", Skip = "https://github.com/AvaloniaUI/Avalonia/issues/10658")]
+    [AvaloniaTheory(DisplayName = "Vertical Text Alignment Initializes Correctly")]
     [InlineData(TextAlignment.Start)]
     [InlineData(TextAlignment.Center)]
     [InlineData(TextAlignment.End)]

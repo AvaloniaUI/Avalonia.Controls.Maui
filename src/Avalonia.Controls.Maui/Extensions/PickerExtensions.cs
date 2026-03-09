@@ -31,7 +31,13 @@ public static class PickerExtensions
     /// <param name="picker">The .NET MAUI view providing alignment values.</param>
     public static void UpdateVerticalTextAlignment(this MauiComboBox platformView, IPicker picker)
     {
-        // TODO: Vertical Text Alignment is not directly supported in Avalonia TextBox yet.
+        platformView.VerticalContentAlignment = picker.VerticalTextAlignment switch
+        {
+            TextAlignment.Start => global::Avalonia.Layout.VerticalAlignment.Top,
+            TextAlignment.Center => global::Avalonia.Layout.VerticalAlignment.Center,
+            TextAlignment.End => global::Avalonia.Layout.VerticalAlignment.Bottom,
+            _ => platformView.VerticalContentAlignment
+        };
     }
 
     /// <summary>
@@ -137,11 +143,13 @@ public static class PickerExtensions
         }
         else
         {
-            platformView.SelectedIndex = targetIndex;
-
             if (platformView.ItemsSource is IList list && targetIndex < list.Count)
             {
                 platformView.SelectedItem = list[targetIndex];
+            }
+            else
+            {
+                platformView.SelectedIndex = targetIndex;
             }
         }
     }

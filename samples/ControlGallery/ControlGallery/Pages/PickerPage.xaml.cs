@@ -32,6 +32,12 @@ public partial class PickerPage : ContentPage
         UpdateSelectedLabel(ItemPickerControl, SelectedItemLabelControl);
         UpdateSelectedLabel(BasicPickerControl, SelectedFruitLabelControl);
         UpdateAlignmentLabel();
+
+        if (VerticalAlignmentPickerControl is not null)
+        {
+            VerticalAlignmentPickerControl.SelectedIndex = 1;
+            VerticalAlignmentPickerControl.VerticalTextAlignment = TextAlignment.Center;
+        }
         UpdateVerticalAlignmentLabel();
     }
 
