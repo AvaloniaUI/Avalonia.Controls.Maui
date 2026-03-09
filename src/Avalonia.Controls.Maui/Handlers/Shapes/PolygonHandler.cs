@@ -59,8 +59,9 @@ public partial class PolygonHandler : ShapeViewHandler<Polygon, PlatformView>
     /// <param name="polygon">The polygon.</param>
     public static void MapFillRule(IShapeViewHandler handler, Microsoft.Maui.Controls.Shapes.Polygon polygon)
     {
-        // Avalonia Polygon doesn't have a FillRule property
-        // FillRule is determined by the PathGeometry used internally
-        // We cannot easily set it on the shape itself
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateFillRule(polygon);
+        }
     }
 }

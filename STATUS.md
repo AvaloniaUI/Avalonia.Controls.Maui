@@ -267,7 +267,7 @@ Displays an ellipse or circle.
 | StrokeDashOffset | ✅ Implemented |
 | StrokeLineCap | ✅ Implemented |
 | StrokeLineJoin | ✅ Implemented |
-| StrokeMiterLimit | ⏳ TODO |
+| StrokeMiterLimit | ✅ Implemented |
 
 ---
 
@@ -676,7 +676,7 @@ Displays curves and complex shapes.
 | StrokeDashOffset | ✅ Implemented |
 | StrokeLineCap | ✅ Implemented |
 | StrokeLineJoin | ✅ Implemented |
-| StrokeMitterLimit | ⏳ TODO |
+| StrokeMiterLimit | ✅ Implemented |
 
 ---
 
@@ -719,7 +719,7 @@ Displays a polygon.
 | Property | Status |
 |----------|--------|
 | Points | ✅ Implemented |
-| FillRule | ⏳ TODO |
+| FillRule | ✅ Implemented |
 | Fill | ✅ Implemented |
 | Stroke | ✅ Implemented |
 | StrokeThickness | ✅ Implemented |
@@ -727,7 +727,7 @@ Displays a polygon.
 | StrokeDashOffset | ✅ Implemented |
 | StrokeLineCap | ✅ Implemented |
 | StrokeLineJoin | ✅ Implemented |
-| StrokeMiterLimit | ⏳ TODO |
+| StrokeMiterLimit | ✅ Implemented |
 
 ---
 
@@ -740,7 +740,7 @@ Displays a series of connected straight lines.
 | Property | Status |
 |----------|--------|
 | Points | ✅ Implemented |
-| FillRule | ⏳ TODO |
+| FillRule | ✅ Implemented |
 | Fill | ✅ Implemented |
 | Stroke | ✅ Implemented |
 | StrokeThickness | ✅ Implemented |
@@ -748,6 +748,7 @@ Displays a series of connected straight lines.
 | StrokeDashOffset | ✅ Implemented |
 | StrokeLineCap | ✅ Implemented |
 | StrokeLineJoin | ✅ Implemented |
+| StrokeMiterLimit | ✅ Implemented |
 
 ---
 
@@ -812,7 +813,7 @@ Displays a rectangle or square.
 | StrokeDashOffset | ✅ Implemented |
 | StrokeLineCap | ✅ Implemented |
 | StrokeLineJoin | ✅ Implemented |
-| StrokeMiterLimit | ⏳ TODO |
+| StrokeMiterLimit | ✅ Implemented |
 
 ---
 
