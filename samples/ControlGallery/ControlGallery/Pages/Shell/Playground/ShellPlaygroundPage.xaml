@@ -21,10 +21,6 @@
         <Tab Title="Home" Route="main">
             <ShellContent Title="Home" ContentTemplate="{DataTemplate local:ShellFlyoutPage}" />
         </Tab>
-
-        <Tab Title="Flyout" Route="flyout">
-            <ShellContent Title="Flyout" Route="flyout" ContentTemplate="{DataTemplate local:ShellFlyoutPage}" />
-        </Tab>
         
         <Tab Title="Tabs" Route="tabs">
             <ShellContent Title="Tabs" Route="tabs" ContentTemplate="{DataTemplate local:ShellTabsPage}" />

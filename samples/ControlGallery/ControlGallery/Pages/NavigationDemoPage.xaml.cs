@@ -1,3 +1,7 @@
+using Avalonia.Animation;
+using Avalonia.Controls.Maui;
+using Avalonia.Controls.Maui.Animations;
+
 namespace ControlGallery.Pages;
 
 public partial class NavigationDemoPage : ContentPage
@@ -21,6 +25,61 @@ public partial class NavigationDemoPage : ContentPage
         if (Navigation?.NavigationStack != null)
         {
             StackInfoLabel.Text = $"Stack depth: {Navigation.NavigationStack.Count}";
+        }
+    }
+
+    // Page Transitions
+    private void OnSetDefaultTransition(object? sender, EventArgs e)
+    {
+        if (Parent is NavigationPage navPage)
+        {
+            NavigationPageExtensions.SetPageTransition(navPage, null);
+            CurrentTransitionLabel.Text = "Current: Default";
+        }
+    }
+
+    private void OnSetSlideTransition(object? sender, EventArgs e)
+    {
+        if (Parent is NavigationPage navPage)
+        {
+            NavigationPageExtensions.SetPageTransition(navPage, new PageSlide(TimeSpan.FromMilliseconds(300)));
+            CurrentTransitionLabel.Text = "Current: Simple Slide (300ms)";
+        }
+    }
+
+    private void OnSetCrossFadeTransition(object? sender, EventArgs e)
+    {
+        if (Parent is NavigationPage navPage)
+        {
+            NavigationPageExtensions.SetPageTransition(navPage, new CrossFade(TimeSpan.FromMilliseconds(300)));
+            CurrentTransitionLabel.Text = "Current: Cross Fade (300ms)";
+        }
+    }
+
+    private void OnSetFastTransition(object? sender, EventArgs e)
+    {
+        if (Parent is NavigationPage navPage)
+        {
+            NavigationPageExtensions.SetPageTransition(navPage, new MauiNavigationTransition(TimeSpan.FromMilliseconds(150)));
+            CurrentTransitionLabel.Text = "Current: Fast (150ms)";
+        }
+    }
+
+    private void OnSetSlowTransition(object? sender, EventArgs e)
+    {
+        if (Parent is NavigationPage navPage)
+        {
+            NavigationPageExtensions.SetPageTransition(navPage, new MauiNavigationTransition(TimeSpan.FromMilliseconds(800)));
+            CurrentTransitionLabel.Text = "Current: Slow (800ms)";
+        }
+    }
+
+    private void OnSetNoTransition(object? sender, EventArgs e)
+    {
+        if (Parent is NavigationPage navPage)
+        {
+            NavigationPageExtensions.SetPageTransition(navPage, new PageSlide(TimeSpan.Zero));
+            CurrentTransitionLabel.Text = "Current: No Animation";
         }
     }
 

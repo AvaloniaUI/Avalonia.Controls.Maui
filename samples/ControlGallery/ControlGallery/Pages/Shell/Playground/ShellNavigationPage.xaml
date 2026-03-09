@@ -11,6 +11,32 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
+                    <Label Text="Page Transitions" FontSize="18" FontAttributes="Bold" />
+                    <Label Text="Change the push/pop transition animation for Shell navigation." FontSize="12" />
+                    <Label x:Name="CurrentTransitionLabel"
+                           Text="Current: Default"
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
+                    <Button Text="Default (Parallax)"
+                            Clicked="OnSetDefaultTransition" />
+                    <Button Text="Simple Slide"
+                            Clicked="OnSetSlideTransition" />
+                    <Button Text="Cross Fade"
+                            Clicked="OnSetCrossFadeTransition" />
+                    <Button Text="Fast (150ms)"
+                            Clicked="OnSetFastTransition" />
+                    <Button Text="Slow (800ms)"
+                            Clicked="OnSetSlowTransition" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
                     <Label Text="Navigation Routes" FontSize="18" FontAttributes="Bold" />
                     <Label Text="Demonstrates different ways to navigate." FontSize="12" />
                     

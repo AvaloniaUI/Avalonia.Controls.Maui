@@ -3,11 +3,12 @@ using Avalonia.Controls.Maui.Platform;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
+using AvaloniaNavigationPage = Avalonia.Controls.NavigationPage;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
 /// <summary>Avalonia handler for <see cref="IStackNavigationView"/>.</summary>
-public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, NavigationView>
+public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, AvaloniaNavigationPage>
 {
     private StackNavigationManager? _navigationManager;
     private ILogger<NavigationViewHandler>? _logger;
@@ -49,27 +50,24 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, N
         _logger ??= MauiContext?.Services?.GetService<ILoggerFactory>()?.CreateLogger<NavigationViewHandler>();
 
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
-    protected override NavigationView CreatePlatformView()
+    protected override AvaloniaNavigationPage CreatePlatformView()
     {
         _navigationManager = CreateNavigationManager();
 
         if (VirtualView == null)
         {
-            throw new InvalidOperationException($"{nameof(VirtualView)} must be set to create a NavigationView");
+            throw new InvalidOperationException($"{nameof(VirtualView)} must be set to create a NavigationPage");
         }
 
-        var view = new NavigationView
-        {
-            CrossPlatformLayout = VirtualView
-        };
+        var page = new AvaloniaNavigationPage();
 
-        Logger?.LogDebug("Created NavigationView platform control");
+        Logger?.LogDebug("Created AvaloniaNavigationPage platform control");
 
-        return view;
+        return page;
     }
 
     /// <inheritdoc/>
-    protected override void ConnectHandler(NavigationView platformView)
+    protected override void ConnectHandler(AvaloniaNavigationPage platformView)
     {
         base.ConnectHandler(platformView);
         _navigationManager?.Connect(VirtualView, platformView);
@@ -81,14 +79,14 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, N
         {
             var navStack = navPage.Navigation.NavigationStack.Cast<IView>().ToList();
             var initialRequest = new NavigationRequest(navStack, animated: false);
-            _navigationManager?.NavigateTo(initialRequest);
+            _ = _navigationManager?.NavigateTo(initialRequest);
         }
 
         Logger?.LogDebug("Connected NavigationViewHandler");
     }
 
     /// <inheritdoc/>
-    protected override void DisconnectHandler(NavigationView platformView)
+    protected override void DisconnectHandler(AvaloniaNavigationPage platformView)
     {
         _navigationManager?.Disconnect(VirtualView, platformView);
         base.DisconnectHandler(platformView);
@@ -102,19 +100,18 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, N
 
         _ = PlatformView ?? throw new InvalidOperationException($"{nameof(PlatformView)} should have been set by base class.");
         _ = VirtualView ?? throw new InvalidOperationException($"{nameof(VirtualView)} should have been set by base class.");
-
-        PlatformView.CrossPlatformLayout = VirtualView;
     }
 
     /// <summary>Maps the RequestNavigation command to the platform view.</summary>
     /// <param name="handler">The handler for the navigation view.</param>
     /// <param name="stackNavigation">The stack navigation interface.</param>
     /// <param name="args">The navigation request arguments.</param>
-    public static void RequestNavigation(NavigationViewHandler handler, IStackNavigation stackNavigation, object? args)
+    public static async void RequestNavigation(NavigationViewHandler handler, IStackNavigation stackNavigation, object? args)
     {
         if (handler is NavigationViewHandler platformHandler && args is NavigationRequest navigationRequest)
         {
-            platformHandler._navigationManager?.NavigateTo(navigationRequest);
+            if (platformHandler._navigationManager != null)
+                await platformHandler._navigationManager.NavigateTo(navigationRequest);
         }
         else
         {

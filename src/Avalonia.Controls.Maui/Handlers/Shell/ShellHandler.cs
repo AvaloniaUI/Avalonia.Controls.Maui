@@ -1,4 +1,6 @@
 using Avalonia;
+using Avalonia.Controls.Presenters;
+using Avalonia.Data;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -9,8 +11,9 @@ using SolidColorBrush = Avalonia.Media.SolidColorBrush;
 using AvaloniaGrid = Avalonia.Controls.Grid;
 using MauiShell = Microsoft.Maui.Controls.Shell;
 using Avalonia.Controls.Maui.Extensions;
-using Avalonia.Controls.Maui.Controls.Shell;
+using Avalonia.Interactivity;
 using Avalonia.VisualTree;
+using MauiPage = Microsoft.Maui.Controls.Page;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell;
 
@@ -90,7 +93,10 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     internal new MauiShell? VirtualView => ((IElementHandler)this).VirtualView as MauiShell;
 
     /// <summary>The flyout container that manages flyout open/close behavior.</summary>
-    internal FlyoutContainer? _flyoutContainer;
+    internal DrawerPage? _flyoutContainer;
+
+    /// <summary>Style that prevents drawer content reflow during open/close animation.</summary>
+    internal Avalonia.Styling.Style? _paneMinWidthStyle;
 
     /// <summary>Content control wrapping the flyout panel content.</summary>
     internal ContentControl? _flyoutContentControl;
@@ -116,11 +122,14 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     /// <summary>Main container dock panel holding the top bar and content area.</summary>
     internal DockPanel? _mainContainer;
 
-    /// <summary>Panel for the top navigation bar.</summary>
-    internal Panel? _topBar;
+    /// <summary>DockPanel for the top navigation bar layout (matching DrawerPage inner DockPanel).</summary>
+    internal DockPanel? _topBar;
 
-    /// <summary>Left-aligned container for navigation buttons in the top bar.</summary>
-    internal StackPanel? _topBarLeftButtons;
+    /// <summary>Border wrapping the top bar that uses the NavigationBarBackground resource.</summary>
+    internal Border? _topBarBorder;
+
+    /// <summary>Right-aligned container for toolbar items in the top bar.</summary>
+    internal Panel? _topBarRightHost;
 
     /// <summary>Content host for the full-width search control row.</summary>
     internal ContentControl? _searchHostControl;
@@ -159,7 +168,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     internal SearchHandler? _currentSearchHandler;
 
     /// <summary>Currently tracked page for property change notifications.</summary>
-    internal Page? _trackedPage;
+    internal MauiPage? _trackedPage;
 
     /// <summary>Currently tracked shell section for property change notifications.</summary>
     internal ShellSection? _trackedSection;
@@ -168,7 +177,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     internal TransitioningContentControl? _modalContainer;
 
     /// <summary>Currently displayed modal page.</summary>
-    internal Page? _currentModalPage;
+    internal MauiPage? _currentModalPage;
 
     /// <summary>Initializes a new instance of <see cref="ShellHandler"/>.</summary>
     public ShellHandler() : base(Mapper, CommandMapper)
@@ -184,13 +193,27 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     }
 
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
-    protected override Panel CreatePlatformView()
+    protected override AvaloniaControl CreatePlatformView()
     {
-        _flyoutContainer = new FlyoutContainer
+        _flyoutContainer = new DrawerPage
         {
+            ContentTemplate = null,
+            DrawerTemplate = null,
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch
         };
+
+        // Hide DrawerPage's built-in top bar since Shell has its own
+        _flyoutContainer.Styles.Add(new Avalonia.Styling.Style(x => x.OfType<DrawerPage>().Template().OfType<Border>().Name("PART_TopBar"))
+        {
+            Setters = { new Avalonia.Styling.Setter(Visual.IsVisibleProperty, false) }
+        });
+
+        // Hide DrawerPage's built-in pane toggle button since Shell has its own hamburger button
+        _flyoutContainer.Styles.Add(new Avalonia.Styling.Style(x => x.OfType<DrawerPage>().Template().OfType<Avalonia.Controls.Primitives.ToggleButton>().Name("PART_PaneButton"))
+        {
+            Setters = { new Avalonia.Styling.Setter(Visual.IsVisibleProperty, false) }
+        });
 
         _flyoutGrid = new AvaloniaGrid();
 
@@ -247,7 +270,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             Background = null
         };
 
-        _flyoutContainer.SetFlyoutContent(_flyoutContentControl);
+        _flyoutContainer.Drawer = _flyoutContentControl;
 
         // Ensure selection is updated when flyout content is attached to visual tree
         _flyoutContentControl.AttachedToVisualTree += (s, e) =>
@@ -267,73 +290,121 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             LastChildFill = true
         };
 
-        _topBar = new TopBarPanel
+        // Inner DockPanel matching DrawerPage's inner DockPanel inside PART_TopBar.
+        _topBar = new DockPanel
         {
+            HorizontalAlignment = HorizontalAlignment.Stretch
+        };
+
+        // Border matching DrawerPage PART_TopBar: Height=48, Padding=5.
+        // Content area inside is 38px tall; buttons stretch to fill it.
+        _topBarBorder = new Border
+        {
+            Child = _topBar,
+            Padding = new Thickness(5),
             Height = DefaultBarHeight,
             [DockPanel.DockProperty] = Dock.Top,
             ZIndex = 1
         };
-
-        _topBarLeftButtons = new StackPanel
+        // Bind background to NavigationBarBackground DynamicResource
+        _topBarBorder.Styles.Add(new Avalonia.Styling.Style(x => x.OfType<Border>())
         {
-            Orientation = Orientation.Horizontal,
-            VerticalAlignment = VerticalAlignment.Center
-        };
+            Setters = { new Avalonia.Styling.Setter(Border.BackgroundProperty, new Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("NavigationBarBackground")) }
+        });
 
         _topBarShadow = new Border
         {
-            Height = 1,
-            Background = new SolidColorBrush(Color.FromArgb(50, 0, 0, 0)),
+            Height = 4,
             IsVisible = false,
+            IsHitTestVisible = false,
             [DockPanel.DockProperty] = Dock.Top
         };
+        _topBarShadow.Background = new Avalonia.Media.LinearGradientBrush
+        {
+            StartPoint = new RelativePoint(0, 0, RelativeUnit.Relative),
+            EndPoint = new RelativePoint(0, 1, RelativeUnit.Relative),
+            GradientStops =
+            {
+                new Avalonia.Media.GradientStop(Color.FromArgb(12, 0, 0, 0), 0),
+                new Avalonia.Media.GradientStop(Color.FromArgb(0, 0, 0, 0), 1)
+            }
+        };
 
+        // Back button: Button > Panel > PathIcon — exactly matching DrawerPage PART_PaneButton structure
         _backButton = new Button
         {
-            Content = "←",
-            FontSize = 20,
-            Width = 48,
-            Height = 48,
-            HorizontalContentAlignment = HorizontalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center,
+            Content = new Panel
+            {
+                Children =
+                {
+                    new PathIcon
+                    {
+                        Data = Avalonia.Media.StreamGeometry.Parse("M12.7347,4.20949 C13.0332,3.92233 13.508,3.93153 13.7952,4.23005 C14.0823,4.52857 14.0731,5.00335 13.7746,5.29051 L5.50039,13.25 L24.2532,13.25 C24.6674,13.25 25.0032,13.5858 25.0032,13.9999982 C25.0032,14.4142 24.6674,14.75 24.2532,14.75 L5.50137,14.75 L13.7746,22.7085 C14.0731,22.9957 14.0823,23.4705 13.7952,23.769 C13.508,24.0675 13.0332,24.0767 12.7347,23.7896 L3.30673,14.7202 C2.89776,14.3268 2.89776,13.6723 3.30673,13.2788 L12.7347,4.20949 Z"),
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center
+                    }
+                }
+            },
             Background = Brushes.Transparent,
+            [DockPanel.DockProperty] = Dock.Left,
             IsVisible = false
         };
         _backButton.Click += OnBackButtonClick;
-        _topBarLeftButtons.Children.Add(_backButton);
 
+        // Hamburger button: Button > Panel > PathIcon — exactly matching DrawerPage PART_PaneButton structure
         _hamburgerButton = new Button
         {
-            Content = "☰",
-            FontSize = 20,
-            Width = 48,
-            Height = 48,
-            HorizontalContentAlignment = HorizontalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center,
-            Background = Brushes.Transparent
+            Content = new Panel
+            {
+                Children =
+                {
+                    new PathIcon
+                    {
+                        Data = Avalonia.Media.StreamGeometry.Parse("M3 17h18a1 1 0 0 1 .117 1.993L21 19H3a1 1 0 0 1-.117-1.993L3 17h18H3Zm0-6 18-.002a1 1 0 0 1 .117 1.993l-.117.007L3 13a1 1 0 0 1-.117-1.993L3 11l18-.002L3 11Zm0-6h18a1 1 0 0 1 .117 1.993L21 7H3a1 1 0 0 1-.117-1.993L3 5h18H3Z"),
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center
+                    }
+                }
+            },
+            Background = Brushes.Transparent,
+            [DockPanel.DockProperty] = Dock.Left
         };
         _hamburgerButton.Click += OnHamburgerButtonClick;
-        _topBarLeftButtons.Children.Add(_hamburgerButton);
+
+        // Disabled button style matching DrawerPage
+        var disabledButtonBg = new Avalonia.Styling.Style(x => x.OfType<Button>().Class(":disabled").Template().OfType<Avalonia.Controls.Presenters.ContentPresenter>().Name("PART_ContentPresenter"))
+        {
+            Setters = { new Avalonia.Styling.Setter(Avalonia.Controls.Presenters.ContentPresenter.BackgroundProperty, Brushes.Transparent) }
+        };
+        // Apply NavigationBarForeground to PathIcon via style
+        var pathIconForegroundStyle = new Avalonia.Styling.Style(x => x.OfType<PathIcon>())
+        {
+            Setters = { new Avalonia.Styling.Setter(Avalonia.Controls.Primitives.TemplatedControl.ForegroundProperty, new Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("NavigationBarForeground")) }
+        };
 
         _titleViewControl = new ContentControl
         {
             IsVisible = false,
             VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            HorizontalContentAlignment = HorizontalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
             VerticalContentAlignment = VerticalAlignment.Center
         };
 
+        // Title matching DrawerPage PART_TitlePresenter
         _titleTextBlock = new TextBlock
         {
-            FontSize = 18,
-            FontWeight = Media.FontWeight.SemiBold,
+            FontSize = 16,
+            FontWeight = Avalonia.Media.FontWeight.SemiBold,
             VerticalAlignment = VerticalAlignment.Center,
-            HorizontalAlignment = HorizontalAlignment.Center,
-            TextAlignment = Media.TextAlignment.Center,
-            Margin = new Thickness(0),
-            ZIndex = 0
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Margin = new Thickness(8, 0, 0, 0)
         };
+        // Bind title foreground to NavigationBarForeground resource
+        _titleTextBlock.Styles.Add(new Avalonia.Styling.Style(x => x.OfType<TextBlock>())
+        {
+            Setters = { new Avalonia.Styling.Setter(TextBlock.ForegroundProperty, new Avalonia.Markup.Xaml.MarkupExtensions.DynamicResourceExtension("NavigationBarForeground")) }
+        });
 
         _searchHostControl = new ContentControl
         {
@@ -350,17 +421,28 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         var centerHost = new Panel
         {
             VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
             ClipToBounds = true
         };
         centerHost.Children.Add(_titleTextBlock);
         centerHost.Children.Add(_titleViewControl);
 
-        // Placeholder right host keeps a stable 3-child layout for centered clamping.
-        var rightHost = new Panel();
+        // Right host for toolbar items
+        _topBarRightHost = new Panel
+        {
+            VerticalAlignment = VerticalAlignment.Stretch,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            [DockPanel.DockProperty] = Dock.Right
+        };
 
-        _topBar.Children.Add(_topBarLeftButtons);
+        _topBar.Children.Add(_backButton);
+        _topBar.Children.Add(_hamburgerButton);
+        _topBar.Children.Add(_topBarRightHost);
         _topBar.Children.Add(centerHost);
-        _topBar.Children.Add(rightHost);
+
+        // Apply styles to the top bar
+        _topBar.Styles.Add(disabledButtonBg);
+        _topBar.Styles.Add(pathIconForegroundStyle);
 
         _mainContentControl = new TransitioningContentControl
         {
@@ -371,15 +453,23 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             VerticalContentAlignment = VerticalAlignment.Stretch
         };
 
-        _mainContainer.Children.Add(_topBar);
+        _mainContainer.Children.Add(_topBarBorder);
         _mainContainer.Children.Add(_topBarShadow);
         _mainContainer.Children.Add(_searchHostControl);
         _mainContainer.Children.Add(_mainContentControl);
 
 
-        _flyoutContainer.SetDetailContent(_mainContainer);
+        _flyoutContainer.Content = _mainContainer;
 
-        return _flyoutContainer;
+        // Return a ContentPage hosting the DrawerPage so it can be placed
+        // inside an Avalonia NavigationPage (StackNavigationManager expects ContentPage).
+        return new Avalonia.Controls.ContentPage
+        {
+            Content = _flyoutContainer,
+            ContentTemplate = null,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            VerticalContentAlignment = VerticalAlignment.Stretch
+        };
     }
 
     /// <inheritdoc/>
@@ -389,8 +479,8 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         if (_flyoutContainer != null)
         {
-            _flyoutContainer.FlyoutOpened += OnFlyoutOpened;
-            _flyoutContainer.FlyoutClosed += OnFlyoutClosed;
+            _flyoutContainer.Opened += OnFlyoutOpened;
+            _flyoutContainer.Closed += OnFlyoutClosed;
         }
 
         if (VirtualView != null)
@@ -439,8 +529,8 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     {
         if (_flyoutContainer != null)
         {
-            _flyoutContainer.FlyoutOpened -= OnFlyoutOpened;
-            _flyoutContainer.FlyoutClosed -= OnFlyoutClosed;
+            _flyoutContainer.Opened -= OnFlyoutOpened;
+            _flyoutContainer.Closed -= OnFlyoutClosed;
         }
 
         if (VirtualView != null)
@@ -515,8 +605,11 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         base.DisconnectHandler(platformView);
     }
 
-    private void OnFlyoutOpened(object? sender, EventArgs e)
+    private void OnFlyoutOpened(object? sender, RoutedEventArgs e)
     {
+        if (e.Source != _flyoutContainer)
+            return;
+
         if (VirtualView != null)
         {
             VirtualView.FlyoutIsPresented = true;
@@ -530,8 +623,11 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
     }
 
-    private void OnFlyoutClosed(object? sender, EventArgs e)
+    private void OnFlyoutClosed(object? sender, RoutedEventArgs e)
     {
+        if (e.Source != _flyoutContainer)
+            return;
+
         if (VirtualView != null)
         {
             VirtualView.FlyoutIsPresented = false;
@@ -1064,7 +1160,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         if (VirtualView.FlyoutBehavior == Microsoft.Maui.FlyoutBehavior.Flyout && _flyoutContainer != null)
         {
-            _flyoutContainer.IsFlyoutOpen = false;
+            _flyoutContainer.IsOpen = false;
             VirtualView.FlyoutIsPresented = false;
         }
     }
@@ -1073,14 +1169,14 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     {
         if (VirtualView != null && _flyoutContainer != null)
         {
-            _flyoutContainer.IsFlyoutOpen = !_flyoutContainer.IsFlyoutOpen;
-            VirtualView.FlyoutIsPresented = _flyoutContainer.IsFlyoutOpen;
+            _flyoutContainer.IsOpen = !_flyoutContainer.IsOpen;
+            VirtualView.FlyoutIsPresented = _flyoutContainer.IsOpen;
         }
     }
 
     private async void OnBackButtonClick(object? sender, Interactivity.RoutedEventArgs e)
     {
-        var topLevel = _topBar != null ? TopLevel.GetTopLevel(_topBar) : null;
+        var topLevel = _topBarBorder != null ? TopLevel.GetTopLevel(_topBarBorder) : null;
         
         if (topLevel != null)
         {
@@ -1169,75 +1265,6 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             unselectedStateStyle.Setters.Add(new Styling.Setter { Property = Border.BackgroundProperty, Value = Brushes.Transparent });
             unselectedStateStyle.Setters.Add(new Styling.Setter { Property = Border.BorderBrushProperty, Value = Brushes.Transparent });
             panel.Styles.Add(unselectedStateStyle);
-        }
-    }
-
-    /// <summary>
-    /// Lays out three children (left, center, right), keeping center page-centered while
-    /// clamping it to avoid overlap with side content.
-    /// </summary>
-    private sealed class TopBarPanel : Panel
-    {
-        protected override Size MeasureOverride(Size availableSize)
-        {
-            if (Children.Count < 3)
-            {
-                return base.MeasureOverride(availableSize);
-            }
-
-            var left = Children[0];
-            var center = Children[1];
-            var right = Children[2];
-
-            left.Measure(availableSize);
-            right.Measure(availableSize);
-
-            double remainingWidth = Math.Max(0, availableSize.Width - left.DesiredSize.Width - right.DesiredSize.Width);
-            center.Measure(new Size(remainingWidth, availableSize.Height));
-
-            double height = Math.Max(Math.Max(left.DesiredSize.Height, center.DesiredSize.Height), right.DesiredSize.Height);
-            double width = left.DesiredSize.Width + center.DesiredSize.Width + right.DesiredSize.Width;
-
-            return new Size(
-                double.IsInfinity(availableSize.Width) ? width : availableSize.Width,
-                height);
-        }
-
-        protected override Size ArrangeOverride(Size finalSize)
-        {
-            if (Children.Count < 3)
-            {
-                return base.ArrangeOverride(finalSize);
-            }
-
-            var left = Children[0];
-            var center = Children[1];
-            var right = Children[2];
-
-            double panelHeight = finalSize.Height;
-
-            double leftWidth = left.DesiredSize.Width;
-            double leftHeight = left.DesiredSize.Height;
-            double leftY = (panelHeight - leftHeight) / 2;
-            left.Arrange(new Rect(0, leftY, leftWidth, leftHeight));
-
-            double rightWidth = right.DesiredSize.Width;
-            double rightHeight = right.DesiredSize.Height;
-            double rightY = (panelHeight - rightHeight) / 2;
-            right.Arrange(new Rect(finalSize.Width - rightWidth, rightY, rightWidth, rightHeight));
-
-            double centerWidth = center.DesiredSize.Width;
-            double centerHeight = center.DesiredSize.Height;
-
-            double centeredX = (finalSize.Width - centerWidth) / 2;
-            double minX = leftWidth;
-            double maxX = finalSize.Width - rightWidth - centerWidth;
-            double centerX = Math.Max(minX, Math.Min(centeredX, maxX));
-            double centerY = (panelHeight - centerHeight) / 2;
-
-            center.Arrange(new Rect(centerX, centerY, centerWidth, centerHeight));
-
-            return finalSize;
         }
     }
 }

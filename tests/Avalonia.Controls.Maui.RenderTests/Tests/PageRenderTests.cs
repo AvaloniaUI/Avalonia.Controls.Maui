@@ -6,6 +6,8 @@ using Avalonia.Threading;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
+using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
+using MauiPage = Microsoft.Maui.Controls.Page;
 
 using AvaloniaBrushes = Avalonia.Media.Brushes;
 
@@ -16,7 +18,7 @@ public class PageRenderTests : RenderTestBase
     /// <summary>
     /// Renders a Page to a PNG file. Page is not a View, so we need a separate render method.
     /// </summary>
-    private async Task RenderPageToFile(Page page, Action<IViewHandler>? setupPlatformView = null, [CallerMemberName] string testName = "")
+    private async Task RenderPageToFile(MauiPage page, Action<IViewHandler>? setupPlatformView = null, [CallerMemberName] string testName = "")
     {
         EnsureHandlerCreated();
 
@@ -82,7 +84,7 @@ public class PageRenderTests : RenderTestBase
     [AvaloniaFact]
     public async Task Render_Page_BackgroundColor()
     {
-        var page = new ContentPage
+        var page = new MauiContentPage
         {
             BackgroundColor = Colors.Red,
             WidthRequest = 200,
@@ -96,7 +98,7 @@ public class PageRenderTests : RenderTestBase
     [AvaloniaFact]
     public async Task Render_Page_Background_SolidBrush()
     {
-        var page = new ContentPage
+        var page = new MauiContentPage
         {
             Background = new SolidPaint(Colors.Blue),
             WidthRequest = 200,
@@ -110,7 +112,7 @@ public class PageRenderTests : RenderTestBase
     [AvaloniaFact]
     public async Task Render_Page_GradientBackground()
     {
-        var page = new ContentPage
+        var page = new MauiContentPage
         {
             Background = new LinearGradientPaint(
                 new PaintGradientStop[]
@@ -131,7 +133,7 @@ public class PageRenderTests : RenderTestBase
     [AvaloniaFact]
     public async Task Render_Page_NoBackground()
     {
-        var page = new ContentPage
+        var page = new MauiContentPage
         {
             WidthRequest = 200,
             HeightRequest = 200
@@ -144,7 +146,7 @@ public class PageRenderTests : RenderTestBase
     [AvaloniaFact]
     public async Task Render_Page_BackgroundColor_Cleared()
     {
-        var page = new ContentPage
+        var page = new MauiContentPage
         {
             BackgroundColor = Colors.Green,
             WidthRequest = 200,
@@ -155,7 +157,7 @@ public class PageRenderTests : RenderTestBase
         {
             // Clear the background color after the handler has applied it
             page.BackgroundColor = null;
-            handler.UpdateValue(nameof(Page.Background));
+            handler.UpdateValue(nameof(MauiPage.Background));
         });
         CompareImages();
     }
@@ -163,7 +165,7 @@ public class PageRenderTests : RenderTestBase
     [AvaloniaFact]
     public async Task Render_Page_Background_Cleared()
     {
-        var page = new ContentPage
+        var page = new MauiContentPage
         {
             Background = new SolidPaint(Colors.Purple),
             WidthRequest = 200,
@@ -174,7 +176,7 @@ public class PageRenderTests : RenderTestBase
         {
             // Clear the brush background after the handler has applied it
             page.Background = null;
-            handler.UpdateValue(nameof(Page.Background));
+            handler.UpdateValue(nameof(MauiPage.Background));
         });
         CompareImages();
     }

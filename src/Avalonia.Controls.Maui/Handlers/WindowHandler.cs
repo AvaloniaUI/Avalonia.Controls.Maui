@@ -5,6 +5,7 @@ using Avalonia.VisualTree;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Platform;
+using MauiPage = Microsoft.Maui.Controls.Page;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -93,6 +94,10 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             mauiWindow.SetMauiContext(MauiContext);
         }
 
+        // Track Avalonia window size/position changes
+        platformView.Resized += OnAvaloniaWindowResized;
+        platformView.PositionChanged += OnAvaloniaWindowPositionChanged;
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             window.AlertManager.Subscribe();
@@ -112,6 +117,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     {
         var avWindow = (Window)platformView;
 
+        platformView.Resized -= OnAvaloniaWindowResized;
+        platformView.PositionChanged -= OnAvaloniaWindowPositionChanged;
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             window.AlertManager.Unsubscribe();
@@ -125,7 +133,32 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         base.DisconnectHandler(platformView);
     }
 
-    private void OnModalPushed(object? sender, ModalPushedEventArgs e)
+    private void OnAvaloniaWindowResized(object? sender, WindowResizedEventArgs e)
+    {
+        UpdateVirtualViewFrame();
+    }
+
+    private void OnAvaloniaWindowPositionChanged(object? sender, PixelPointEventArgs e)
+    {
+        UpdateVirtualViewFrame();
+    }
+
+    private void UpdateVirtualViewFrame()
+    {
+        if (VirtualView is null)
+            return;
+
+        var avWindow = PlatformView;
+        var pos = avWindow.Position;
+        var size = avWindow.ClientSize;
+        var scaling = avWindow.RenderScaling;
+
+        VirtualView.FrameChanged(new Microsoft.Maui.Graphics.Rect(
+            pos.X / scaling, pos.Y / scaling,
+            size.Width, size.Height));
+    }
+
+    private void OnModalPushed(object? sender, Microsoft.Maui.Controls.ModalPushedEventArgs e)
     {
         bool animated = ModalAnimationTrackingNavigation.GetAnimated(e.Modal);
         PresentModalPage(e.Modal, animated);
@@ -136,7 +169,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         InstallModalTracker(e.Modal);
     }
 
-    private void OnModalPopped(object? sender, ModalPoppedEventArgs e)
+    private void OnModalPopped(object? sender, Microsoft.Maui.Controls.ModalPoppedEventArgs e)
     {
         bool animated = ModalAnimationTrackingNavigation.GetAnimated(e.Modal);
         DismissModalPage(animated);
@@ -146,7 +179,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     {
         if (e.PropertyName == nameof(Microsoft.Maui.Controls.Window.Page) &&
             sender is Microsoft.Maui.Controls.Window window &&
-            window.Page is Page page)
+            window.Page is MauiPage page)
         {
             // Clear any stale modal overlays from the previous page.
             // MAUI's ModalNavigationManager.ClearModalPages clears its internal
@@ -163,7 +196,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     /// Installs the modal animation tracker on the given page's NavigationProxy,
     /// but only when the page is using the Window's navigation directly (non-Shell).
     /// </summary>
-    private void InstallModalTracker(Page? page)
+    private void InstallModalTracker(MauiPage? page)
     {
         if (_modalTracker is null || page is null)
             return;

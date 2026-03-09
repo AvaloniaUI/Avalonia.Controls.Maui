@@ -16,7 +16,7 @@
                         <!-- Tab Strip with Background Border -->
                         <Border x:Name="PART_TabStripBackground"
                                 DockPanel.Dock="Top"
-                                Background="{DynamicResource TabbedPageBarBackground}">
+                                Background="{DynamicResource TabbedPageTabStripBackground}">
                             <ItemsPresenter Name="PART_ItemsPresenter"
                                             ItemsPanel="{TemplateBinding ItemsPanel}" />
                         </Border>

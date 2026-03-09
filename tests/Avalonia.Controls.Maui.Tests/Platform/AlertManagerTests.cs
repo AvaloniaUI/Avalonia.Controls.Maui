@@ -19,7 +19,7 @@ namespace Avalonia.Controls.Maui.Tests.Platform
         {
             EnsureHandlerCreated();
             
-            var page = new ContentPage();
+            var page = new Microsoft.Maui.Controls.ContentPage();
             var window = new MauiWindow(page);
             var windowHandler = await CreateHandlerAsync<MauiWindowHandler>(window);
             
@@ -82,7 +82,7 @@ namespace Avalonia.Controls.Maui.Tests.Platform
         {
             EnsureHandlerCreated();
             
-            var page = new ContentPage();
+            var page = new Microsoft.Maui.Controls.ContentPage();
             var window = new MauiWindow(page);
             var windowHandler = await CreateHandlerAsync<MauiWindowHandler>(window);
             
@@ -137,7 +137,7 @@ namespace Avalonia.Controls.Maui.Tests.Platform
         {
             EnsureHandlerCreated();
             
-            var page = new ContentPage();
+            var page = new Microsoft.Maui.Controls.ContentPage();
             var window = new MauiWindow(page);
             var windowHandler = await CreateHandlerAsync<MauiWindowHandler>(window);
             

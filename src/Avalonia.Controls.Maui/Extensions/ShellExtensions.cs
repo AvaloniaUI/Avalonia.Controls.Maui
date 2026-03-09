@@ -1,6 +1,7 @@
 using Avalonia.Media;
 using Avalonia.Layout;
 using Avalonia.Controls.Maui.Services;
+using Avalonia.Controls.Maui.Controls;
 using Avalonia.Controls.Maui.Handlers.Shell;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -12,7 +13,7 @@ using ScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility;
 using Stretch = Avalonia.Media.Stretch;
 using Avalonia.Animation;
 using Avalonia.Styling;
-using Avalonia.Controls.Maui.Controls.Shell;
+using Avalonia.Controls;
 
 namespace Avalonia.Controls.Maui.Extensions;
 
@@ -37,14 +38,14 @@ public static class ShellExtensions
         {
             handler._mainContainer.Background = color.ToPlatform();
 
-            if (handler._topBar != null)
-                handler._topBar.Background = color.ToPlatform();
+            if (handler._topBarBorder != null)
+                handler._topBarBorder.Background = color.ToPlatform();
         }
         else
         {
             handler._mainContainer.ClearValue(Panel.BackgroundProperty);
-            if (handler._topBar != null)
-                handler._topBar.ClearValue(Panel.BackgroundProperty);
+            if (handler._topBarBorder != null)
+                handler._topBarBorder.ClearValue(Border.BackgroundProperty);
         }
     }
 
@@ -85,11 +86,11 @@ public static class ShellExtensions
         var backdrop = shell.FlyoutBackdrop;
         if (backdrop != null)
         {
-            handler._flyoutContainer.FlyoutBackdrop = backdrop.ToPlatform();
+            handler._flyoutContainer.BackdropBrush = backdrop.ToPlatform();
         }
         else
         {
-            handler._flyoutContainer.FlyoutBackdrop = null;
+            handler._flyoutContainer.BackdropBrush = null;
         }
     }
 
@@ -100,13 +101,13 @@ public static class ShellExtensions
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
     public static void UpdateNavBarIsVisible(this ShellHandler handler, MauiShell shell)
     {
-        if (handler._topBar == null || shell == null)
+        if (handler._topBarBorder == null || shell == null)
             return;
 
         var isVisible = shell.CurrentPage != null && shell.CurrentPage.IsSet(MauiShell.NavBarIsVisibleProperty)
             ? MauiShell.GetNavBarIsVisible(shell.CurrentPage)
             : MauiShell.GetNavBarIsVisible(shell);
-        handler._topBar.IsVisible = isVisible;
+        handler._topBarBorder.IsVisible = isVisible;
     }
 
     /// <summary>
@@ -286,19 +287,19 @@ public static class ShellExtensions
         switch (shell.FlyoutBehavior)
         {
             case Microsoft.Maui.FlyoutBehavior.Disabled:
-                handler._flyoutContainer.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Disabled;
-                handler._flyoutContainer.IsFlyoutOpen = false;
+                handler._flyoutContainer.DrawerBehavior = DrawerBehavior.Disabled;
+                handler._flyoutContainer.IsOpen = false;
                 if (handler._hamburgerButton != null)
                     handler._hamburgerButton.IsVisible = false;
                 break;
             case Microsoft.Maui.FlyoutBehavior.Flyout:
-                handler._flyoutContainer.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Popover;
+                handler._flyoutContainer.DrawerBehavior = DrawerBehavior.Flyout;
                 if (handler._hamburgerButton != null)
                     handler._hamburgerButton.IsVisible = true;
                 break;
             case Microsoft.Maui.FlyoutBehavior.Locked:
-                handler._flyoutContainer.FlyoutBehavior = Controls.Shell.FlyoutBehavior.Locked;
-                handler._flyoutContainer.IsFlyoutOpen = true;
+                handler._flyoutContainer.DrawerBehavior = DrawerBehavior.Locked;
+                handler._flyoutContainer.IsOpen = true;
                 if (handler._hamburgerButton != null)
                     handler._hamburgerButton.IsVisible = false;
                 break;
@@ -312,10 +313,27 @@ public static class ShellExtensions
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
     public static void UpdateFlyoutWidth(this ShellHandler handler, MauiShell shell)
     {
-        if (handler._flyoutContainer != null && shell != null && shell.FlyoutWidth > 0)
+        if (handler._flyoutContainer == null || shell == null)
+            return;
+
+        double width = shell.FlyoutWidth > 0 ? shell.FlyoutWidth : 320;
+        handler._flyoutContainer.DrawerLength = width;
+
+        // Prevent drawer content from reflowing during open/close animation.
+        // The SplitView animates PART_PaneRoot's Width, which causes child content to
+        // re-layout at the shrinking width. Setting MinWidth on the pane presenter ensures
+        // content always lays out at full drawer width and is simply clipped.
+        if (handler._paneMinWidthStyle != null)
+            handler._flyoutContainer.Styles.Remove(handler._paneMinWidthStyle);
+
+        handler._paneMinWidthStyle = new Avalonia.Styling.Style(x =>
+            x.OfType<DrawerPage>()
+             .Template().OfType<SplitView>().Name("PART_SplitView")
+             .Template().OfType<Avalonia.Controls.Presenters.ContentPresenter>().Name("PART_PanePresenter"))
         {
-            handler._flyoutContainer.FlyoutWidth = shell.FlyoutWidth;
-        }
+            Setters = { new Avalonia.Styling.Setter(Layoutable.MinWidthProperty, width) }
+        };
+        handler._flyoutContainer.Styles.Add(handler._paneMinWidthStyle);
     }
 
     /// <summary>
@@ -325,10 +343,7 @@ public static class ShellExtensions
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
     public static void UpdateFlyoutHeight(this ShellHandler handler, MauiShell shell)
     {
-        if (handler._flyoutContainer != null && shell != null && shell.FlyoutHeight > 0)
-        {
-            handler._flyoutContainer.FlyoutHeight = shell.FlyoutHeight;
-        }
+        // DrawerPage auto-sizes; FlyoutHeight is not supported.
     }
 
     /// <summary>
@@ -340,7 +355,7 @@ public static class ShellExtensions
     {
         if (handler._flyoutContainer != null && shell != null)
         {
-            handler._flyoutContainer.IsFlyoutOpen = shell.FlyoutIsPresented;
+            handler._flyoutContainer.IsOpen = shell.FlyoutIsPresented;
         }
     }
 
@@ -658,6 +673,7 @@ public static class ShellExtensions
         handler.UpdateTitle(shell);
         handler.UpdateSearchHandler(shell);
         handler.UpdateBackButtonBehavior(shell);
+        handler.UpdateToolbarItems(shell);
 
         handler.UpdateItemCheckedStates(shell);
         handler.UpdateFlyoutItemsAppearance(shell);
@@ -904,7 +920,7 @@ public static class ShellExtensions
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
     public static void UpdateTitleView(this ShellHandler handler, MauiShell shell)
     {
-        if (handler._titleViewControl == null || handler._topBar == null || shell == null || handler.MauiContext == null)
+        if (handler._titleViewControl == null || handler._topBarBorder == null || shell == null || handler.MauiContext == null)
             return;
 
         var titleView = (shell.CurrentPage != null ? MauiShell.GetTitleView(shell.CurrentPage) : null)
@@ -933,13 +949,32 @@ public static class ShellExtensions
     }
 
     /// <summary>
+    /// Updates the toolbar items displayed in the navigation bar's right-hand area.
+    /// </summary>
+    /// <param name="handler">The <see cref="ShellHandler"/> instance.</param>
+    /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
+    public static void UpdateToolbarItems(this ShellHandler handler, MauiShell shell)
+    {
+        if (handler._topBarRightHost == null || shell == null)
+            return;
+
+        handler._topBarRightHost.Children.Clear();
+
+        var page = shell.CurrentPage;
+        if (page != null && page.ToolbarItems.Count > 0)
+        {
+            handler._topBarRightHost.Children.Add(new ToolbarCommandBar(page.ToolbarItems));
+        }
+    }
+
+    /// <summary>
     /// Updates the SearchHandler of the current page.
     /// </summary>
     /// <param name="handler">The <see cref="ShellHandler"/> instance.</param>
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
     public static void UpdateSearchHandler(this ShellHandler handler, MauiShell shell)
     {
-        if (handler._topBar == null || shell == null || handler.MauiContext == null)
+        if (handler._topBarBorder == null || shell == null || handler.MauiContext == null)
             return;
 
         var page = shell.CurrentPage;

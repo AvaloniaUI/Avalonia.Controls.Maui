@@ -1,5 +1,6 @@
 using Microsoft.Maui.Controls;
 using Avalonia.Controls.Maui.Handlers.Shell;
+using MauiPage = Microsoft.Maui.Controls.Page;
 
 namespace Avalonia.Controls.Maui.Extensions;
 
@@ -19,13 +20,13 @@ public static class ShellContentExtensions
             return;
 
         // Get the actual page content
-        Page? page = null;
+        MauiPage? page = null;
 
         if (shellContent is IShellContentController contentController)
         {
             page = contentController.GetOrCreateContent();
         }
-        else if (shellContent.Content is Page contentPage)
+        else if (shellContent.Content is MauiPage contentPage)
         {
             page = contentPage;
         }

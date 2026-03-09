@@ -11,6 +11,9 @@ using Avalonia.Controls.Maui.Handlers.Shell;
 using Avalonia.Controls.Maui.Services;
 using Color = Microsoft.Maui.Graphics.Color;
 using VerticalAlignment = Avalonia.Layout.VerticalAlignment;
+using MauiPage = Microsoft.Maui.Controls.Page;
+using AvaloniaTabbedPage = Avalonia.Controls.TabbedPage;
+using AvaloniaContentPage = Avalonia.Controls.ContentPage;
 
 namespace Avalonia.Controls.Maui.Extensions;
 
@@ -31,7 +34,7 @@ public static class ShellItemExtensions
 
         handler._showTabs = handler.ShouldShowTabs(item);
 
-        if (handler._tabControl == null)
+        if (handler._tabbedPage == null)
         {
             handler.UpdateCurrentItem(item);
             return;
@@ -40,30 +43,51 @@ public static class ShellItemExtensions
         handler._isUpdatingTabs = true;
         try
         {
-            handler._tabControl.Items.Clear();
+            // Clear content from old wrapper pages to detach section platform views
+            // before TabbedPage replaces the Pages list during layout.
+            if (handler._sectionPageMap != null)
+            {
+                foreach (var oldPage in handler._sectionPageMap.Values)
+                {
+                    oldPage.Content = null;
+                }
+                handler._sectionPageMap.Clear();
+            }
 
             var sections = item is IShellItemController itemController
                 ? itemController.GetItems()
                 : item.Items;
+
+            var pages = new List<Avalonia.Controls.Page>();
+            int selectedIndex = -1;
+            int index = 0;
 
             foreach (var section in sections)
             {
                 if (!section.IsVisible)
                     continue;
 
-                var tabItem = new TabItem
+                var wrapperPage = new AvaloniaContentPage
                 {
-                    Header = handler.CreateTabHeader(section),
-                    Tag = section
+                    Header = handler.CreateTabHeader(section)
                 };
 
-                handler._tabControl.Items.Add(tabItem);
+                handler._sectionPageMap![section] = wrapperPage;
+                pages.Add(wrapperPage);
 
-                // Set selected if current
                 if (section == item.CurrentItem)
                 {
-                    handler._tabControl.SelectedItem = tabItem;
+                    selectedIndex = index;
                 }
+
+                index++;
+            }
+
+            handler._tabbedPage.Pages = pages;
+
+            if (selectedIndex >= 0)
+            {
+                handler._tabbedPage.SelectedIndex = selectedIndex;
             }
         }
         finally
@@ -203,31 +227,25 @@ public static class ShellItemExtensions
         if (platformHandler?.PlatformView is not Control control)
             return;
 
-        if (handler._showTabs && handler._tabControl != null)
+        if (handler._showTabs && handler._tabbedPage != null && handler._sectionPageMap != null)
         {
-            TabItem? targetTab = null;
-            foreach (var tabItemObj in handler._tabControl.Items)
+            if (handler._sectionPageMap.TryGetValue(item.CurrentItem, out var wrapperPage))
             {
-                if (tabItemObj is TabItem tabItem && tabItem.Tag == item.CurrentItem)
+                if (wrapperPage.Content != control)
                 {
-                    targetTab = tabItem;
-                    break;
-                }
-            }
-
-            if (targetTab != null)
-            {
-                if (targetTab.Content != control)
-                {
-                    if (control.Parent != null && control.Parent != targetTab)
+                    // The control may be parented deep inside a ContentPresenter chain
+                    // (not directly to the wrapper page), so always detach if it has any parent.
+                    if (control.Parent != null)
                     {
                         control.DetachFromVisualTree();
                     }
-                    targetTab.Content = control;
+                    wrapperPage.Content = control;
                 }
 
-                if (handler._tabControl.SelectedItem != targetTab)
-                    handler._tabControl.SelectedItem = targetTab;
+                // Find the index of this wrapper page in the Pages list
+                var pageIndex = handler._tabbedPage.Pages?.IndexOf(wrapperPage) ?? -1;
+                if (pageIndex >= 0 && handler._tabbedPage.SelectedIndex != pageIndex)
+                    handler._tabbedPage.SelectedIndex = pageIndex;
             }
         }
         else if (handler._contentControl != null)
@@ -252,7 +270,7 @@ public static class ShellItemExtensions
     /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateTabBarVisibility(this ShellItemHandler handler, ShellItem item)
     {
-        if (handler._tabControl == null || item == null)
+        if (handler._tabbedPage == null || item == null)
             return;
 
         var shell = item.Parent as Microsoft.Maui.Controls.Shell;
@@ -263,9 +281,9 @@ public static class ShellItemExtensions
         var isVisible = currentPage == null || Microsoft.Maui.Controls.Shell.GetTabBarIsVisible(currentPage);
 
         if (isVisible)
-            handler._tabControl.Classes.Remove("hide-tabstrip");
+            handler._tabbedPage.Classes.Remove("hide-tabstrip");
         else
-            handler._tabControl.Classes.Add("hide-tabstrip");
+            handler._tabbedPage.Classes.Add("hide-tabstrip");
     }
 
     /// <summary>
@@ -279,6 +297,8 @@ public static class ShellItemExtensions
         handler.UpdateTabAppearanceInternal(item);
     }
 
+    private const string TabStripBackgroundKey = "TabbedPageTabStripBackground";
+
     /// <summary>
     /// Updates the tab bar background color.
     /// </summary>
@@ -286,7 +306,7 @@ public static class ShellItemExtensions
     /// <param name="item">The <see cref="ShellItem"/> instance to update from.</param>
     public static void UpdateTabBarBackgroundColor(this ShellItemHandler handler, ShellItem item)
     {
-        if (handler._tabControl == null || item == null)
+        if (handler._tabbedPage == null || item == null)
             return;
 
         var color = handler.GetResolvedProperty<Color?>(Microsoft.Maui.Controls.Shell.TabBarBackgroundColorProperty, item);
@@ -297,9 +317,9 @@ public static class ShellItemExtensions
         }
 
         if (color != null)
-            handler._tabControl.Background = color.ToPlatform();
+            handler._tabbedPage.Resources[TabStripBackgroundKey] = color.ToPlatform();
         else
-            handler._tabControl.ClearValue(TabControl.BackgroundProperty);
+            handler._tabbedPage.Resources.Remove(TabStripBackgroundKey);
     }
 
     /// <summary>
@@ -342,25 +362,20 @@ public static class ShellItemExtensions
         handler.UpdateTabAppearance(item);
     }
 
-    // All Fluent theme resource keys we may override for tab appearance
+    // TabbedPage Fluent theme resource keys we may override for tab appearance.
+    // The TabbedPageTabItemTheme uses TabbedPage-prefixed keys (not generic TabItem keys).
+    // The indicator binds to $parent[TabItem].Foreground, so setting ForegroundSelected
+    // controls both the text and indicator color.
     private static readonly string[] ThemeResourceKeys =
     [
-        "TabItemHeaderSelectedPipeFill",
-        "TabItemHeaderForegroundSelected",
-        "TabItemHeaderForegroundSelectedPointerOver",
-        "TabItemHeaderForegroundSelectedPressed",
-        "TabItemHeaderForegroundUnselected",
-        "TabItemHeaderForegroundUnselectedPointerOver",
-        "TabItemHeaderForegroundUnselectedPressed",
-        "ThemeAccentBrush",
-        "ThemeAccentBrush2",
-        "ThemeAccentBrush3",
-        "ThemeAccentBrush4"
+        "TabbedPageTabItemHeaderForegroundSelected",
+        "TabbedPageTabItemHeaderForegroundUnselected",
+        "TabbedPageTabItemHeaderForegroundDisabled"
     ];
 
     internal static void UpdateTabAppearanceInternal(this ShellItemHandler handler, ShellItem item)
     {
-        if (handler._tabControl == null || item == null)
+        if (handler._tabbedPage == null || item == null)
             return;
 
         var foregroundColor = handler.GetResolvedProperty<Color?>(Microsoft.Maui.Controls.Shell.TabBarForegroundColorProperty, item);
@@ -368,43 +383,34 @@ public static class ShellItemExtensions
         var unselectedColor = handler.GetResolvedProperty<Color?>(Microsoft.Maui.Controls.Shell.TabBarUnselectedColorProperty, item);
         var disabledColor = handler.GetResolvedProperty<Color?>(Microsoft.Maui.Controls.Shell.TabBarDisabledColorProperty, item);
 
-        bool hasExplicitColors = foregroundColor != null || titleColor != null || unselectedColor != null;
+        bool hasExplicitColors = foregroundColor != null || titleColor != null || unselectedColor != null || disabledColor != null;
 
-        // In MAUI, TabBarForegroundColor maps to the selection indicator and selected icon/text tint,
-        // NOT to a full background color. TabBarTitleColor overrides the selected text color specifically.
-        var accentBrush = foregroundColor?.ToPlatform();
-        var selectedTextBrush = (titleColor ?? foregroundColor)?.ToPlatform();
+        // In the TabbedPage Fluent theme, the selected indicator binds to TabItem.Foreground,
+        // which comes from TabbedPageTabItemHeaderForegroundSelected. Setting this single key
+        // controls both text and indicator color for the selected state.
+        var selectedBrush = (titleColor ?? foregroundColor)?.ToPlatform();
         var selectedIconBrush = (foregroundColor ?? titleColor)?.ToPlatform();
         var unselectedBrush = unselectedColor?.ToPlatform();
         var disabledBrush = disabledColor?.ToPlatform();
 
         if (hasExplicitColors)
         {
-            // Override Fluent theme resources with MAUI-specified colors.
-            // Map TabBarForegroundColor to the selection indicator (pipe) and accent colors.
-            if (accentBrush != null)
+            // Selected foreground controls both text and indicator (pipe) color
+            if (selectedBrush != null)
             {
-                handler._tabControl.Resources["TabItemHeaderSelectedPipeFill"] = accentBrush;
-                handler._tabControl.Resources["ThemeAccentBrush"] = accentBrush;
-                handler._tabControl.Resources["ThemeAccentBrush2"] = accentBrush;
-                handler._tabControl.Resources["ThemeAccentBrush3"] = accentBrush;
-                handler._tabControl.Resources["ThemeAccentBrush4"] = accentBrush;
+                handler._tabbedPage.Resources["TabbedPageTabItemHeaderForegroundSelected"] = selectedBrush;
             }
 
-            // Map selected text color to all selected-state foreground resources
-            if (selectedTextBrush != null)
-            {
-                handler._tabControl.Resources["TabItemHeaderForegroundSelected"] = selectedTextBrush;
-                handler._tabControl.Resources["TabItemHeaderForegroundSelectedPointerOver"] = selectedTextBrush;
-                handler._tabControl.Resources["TabItemHeaderForegroundSelectedPressed"] = selectedTextBrush;
-            }
-
-            // Map unselected color to all unselected-state foreground resources
+            // Unselected foreground
             if (unselectedBrush != null)
             {
-                handler._tabControl.Resources["TabItemHeaderForegroundUnselected"] = unselectedBrush;
-                handler._tabControl.Resources["TabItemHeaderForegroundUnselectedPointerOver"] = unselectedBrush;
-                handler._tabControl.Resources["TabItemHeaderForegroundUnselectedPressed"] = unselectedBrush;
+                handler._tabbedPage.Resources["TabbedPageTabItemHeaderForegroundUnselected"] = unselectedBrush;
+            }
+
+            // Disabled foreground
+            if (disabledBrush != null)
+            {
+                handler._tabbedPage.Resources["TabbedPageTabItemHeaderForegroundDisabled"] = disabledBrush;
             }
         }
         else
@@ -412,37 +418,38 @@ public static class ShellItemExtensions
             // No explicit MAUI colors — clear any previous overrides so Fluent theme defaults apply
             foreach (var key in ThemeResourceKeys)
             {
-                handler._tabControl.Resources.Remove(key);
+                handler._tabbedPage.Resources.Remove(key);
             }
         }
 
-        // Apply icon tint colors and clear direct text foreground overrides.
+        // Apply icon tint colors to wrapper page headers.
         // Text foreground is handled by the Fluent theme through TextElement.Foreground
         // inheritance from PART_LayoutRoot, using the resource keys we set above.
-        foreach (var tabItemObj in handler._tabControl.Items)
+        if (handler._sectionPageMap != null)
         {
-            if (tabItemObj is TabItem tabItem)
+            foreach (var kvp in handler._sectionPageMap)
             {
+                var section = kvp.Key;
+                var wrapperPage = kvp.Value;
+
                 IBrush? iconBrush;
-                if (!tabItem.IsEnabled)
-                    iconBrush = disabledBrush;
-                else if (tabItem.Tag == item.CurrentItem || tabItem.IsSelected)
+                if (section == item.CurrentItem)
                     iconBrush = selectedIconBrush;
                 else
                     iconBrush = unselectedBrush;
 
-                tabItem.ApplyIconColorsToTabItem(iconBrush);
+                wrapperPage.ApplyIconColorsToPage(iconBrush);
             }
         }
     }
 
     /// <summary>
-    /// Applies icon tint color and clears any direct text foreground overrides on the tab header.
+    /// Applies icon tint color and clears any direct text foreground overrides on the page header.
     /// Text color is handled by the Fluent theme through TextElement.Foreground inheritance.
     /// </summary>
-    internal static void ApplyIconColorsToTabItem(this TabItem tabItem, IBrush? iconBrush)
+    internal static void ApplyIconColorsToPage(this AvaloniaContentPage page, IBrush? iconBrush)
     {
-        if (tabItem.Header is Panel panel)
+        if (page.Header is Panel panel)
         {
             foreach (var child in panel.Children)
             {
@@ -458,13 +465,13 @@ public static class ShellItemExtensions
                 }
             }
         }
-        else if (tabItem.Header is TextBlock tb)
+        else if (page.Header is TextBlock tb)
         {
             tb.ClearValue(TextBlock.ForegroundProperty);
         }
     }
 
-    internal static Page? GetCurrentPage(this ShellItemHandler handler, ShellItem item)
+    internal static MauiPage? GetCurrentPage(this ShellItemHandler handler, ShellItem item)
     {
         var shell = item.Parent as Microsoft.Maui.Controls.Shell;
         return shell?.CurrentPage;

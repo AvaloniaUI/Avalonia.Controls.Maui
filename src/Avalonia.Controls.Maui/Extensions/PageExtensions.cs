@@ -4,11 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using AvaloniaPanel = Avalonia.Controls.Panel;
+using MauiPage = Microsoft.Maui.Controls.Page;
 
 namespace Avalonia.Controls.Maui.Extensions;
 
 /// <summary>
-/// Extension methods for <see cref="Page" />.
+/// Extension methods for <see cref="MauiPage" />.
 /// </summary>
 public static class PageExtensions
 {
@@ -18,7 +19,7 @@ public static class PageExtensions
     /// <param name="platformView">The platform view to update.</param>
     /// <param name="page">The MAUI page containing the background image source.</param>
     /// <param name="mauiContext">The MAUI context.</param>
-    public static void UpdateBackgroundImageSource(this AvaloniaPanel platformView, Page page, IMauiContext? mauiContext)
+    public static void UpdateBackgroundImageSource(this AvaloniaPanel platformView, MauiPage page, IMauiContext? mauiContext)
     {
         if (mauiContext == null)
             return;
@@ -69,13 +70,13 @@ public static class PageExtensions
     /// </summary>
     /// <param name="platformView">The platform view to update.</param>
     /// <param name="page">The MAUI page containing the background.</param>
-    public static void UpdateBackground(this AvaloniaPanel platformView, Page page)
+    public static void UpdateBackground(this AvaloniaPanel platformView, MauiPage page)
     {
         if (!page.Background?.IsEmpty ?? false)
         {
             platformView.Background = page.Background.ToPlatform();
         }
-        else if (page.BackgroundColor is not null)
+        else if (page.BackgroundColor?.IsDefault() == false)
         {
             platformView.Background = page.BackgroundColor.ToPlatform();
         }

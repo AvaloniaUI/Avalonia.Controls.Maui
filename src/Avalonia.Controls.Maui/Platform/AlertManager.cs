@@ -2,6 +2,7 @@ using Avalonia.Animation;
 using Avalonia.Threading;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Internals;
+using MauiPage = Microsoft.Maui.Controls.Page;
 
 namespace Avalonia.Controls.Maui.Platform;
 
@@ -11,7 +12,7 @@ internal class AlertManager
     {
         readonly Dictionary<Control, OverlayHelper> _helpers = new();
 
-        public void OnAlertRequested(Page sender, AlertArguments arguments)
+        public void OnAlertRequested(MauiPage sender, AlertArguments arguments)
         {
             var overlayHelper = GetOverlayHelper(sender);
             if (overlayHelper is null)
@@ -23,7 +24,7 @@ internal class AlertManager
             overlayHelper.HandleAlert(arguments);
         }
 
-        public void OnActionSheetRequested(Page sender, ActionSheetArguments arguments)
+        public void OnActionSheetRequested(MauiPage sender, ActionSheetArguments arguments)
         {
             var overlayHelper = GetOverlayHelper(sender);
             if (overlayHelper is null)
@@ -35,7 +36,7 @@ internal class AlertManager
             overlayHelper.HandleActionSheet(arguments);
         }
 
-        public void OnPromptRequested(Page sender, PromptArguments arguments)
+        public void OnPromptRequested(MauiPage sender, PromptArguments arguments)
         {
             var overlayHelper = GetOverlayHelper(sender);
             if (overlayHelper is null)
@@ -47,13 +48,13 @@ internal class AlertManager
             overlayHelper.HandlePrompt(arguments);
         }
 
-        public void OnPageBusy(Page sender, bool enabled)
+        public void OnPageBusy(MauiPage sender, bool enabled)
         {
             var overlayHelper = GetOverlayHelper(sender);
             overlayHelper?.SetBusy(enabled);
         }
 
-        OverlayHelper? GetOverlayHelper(Page sender)
+        OverlayHelper? GetOverlayHelper(MauiPage sender)
         {
             var platformHost = GetPlatformHost(sender);
             if (platformHost is null)
@@ -71,7 +72,7 @@ internal class AlertManager
         /// Gets the platform host control that can contain overlays.
         /// For desktop apps, this is a Window.
         /// </summary>
-        static Control? GetPlatformHost(Page? page)
+        static Control? GetPlatformHost(MauiPage? page)
         {
             var platformView = page?.Window?.Handler?.PlatformView;
 

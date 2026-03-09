@@ -6,7 +6,7 @@ using Avalonia.Styling;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using AvaloniaControl = Avalonia.Controls.Control;
-using AvaloniaSelectionChangedEventArgs = Avalonia.Controls.SelectionChangedEventArgs;
+using AvaloniaTabbedPage = Avalonia.Controls.TabbedPage;
 using Avalonia.Controls.Maui.Extensions;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell;
@@ -27,8 +27,11 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
     public static CommandMapper<ShellItem, ShellItemHandler> CommandMapper =
         new CommandMapper<ShellItem, ShellItemHandler>(ElementHandler.ElementCommandMapper);
 
-    /// <summary>Tab control used when multiple shell sections are displayed as tabs.</summary>
-    internal TabControl? _tabControl;
+    /// <summary>Tabbed page used when multiple shell sections are displayed as tabs.</summary>
+    internal AvaloniaTabbedPage? _tabbedPage;
+
+    /// <summary>Maps shell sections to their wrapper content pages for tab display.</summary>
+    internal Dictionary<ShellSection, Avalonia.Controls.ContentPage>? _sectionPageMap;
 
     /// <summary>Content control used when a single section is displayed without tabs.</summary>
     internal TransitioningContentControl? _contentControl;
@@ -66,25 +69,25 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
 
         if (_showTabs)
         {
-            // Create tab control for multiple sections
-            _tabControl = new TabControl
+            // Create TabbedPage for multiple sections
+            _tabbedPage = new AvaloniaTabbedPage
             {
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = VerticalAlignment.Stretch,
-                TabStripPlacement = Dock.Top,
-                Padding = new Thickness(0)
+                TabPlacement = Avalonia.Controls.TabPlacement.Bottom
             };
 
-            // Style to hide the tab strip (ItemsPresenter) when "hide-tabstrip" class is set
+            _sectionPageMap = new Dictionary<ShellSection, Avalonia.Controls.ContentPage>();
+
+            // Style to hide the tab strip when "hide-tabstrip" class is set.
+            // TabbedPage template chain: TabbedPage -> TabControl#PART_TabControl -> Border#PART_TabStrip
             var hideTabStripStyle = new Styling.Style(x =>
-                x.OfType<TabControl>().Class("hide-tabstrip").Template().OfType<ItemsPresenter>());
+                x.OfType<AvaloniaTabbedPage>().Class("hide-tabstrip").Template().OfType<TabControl>().Template().OfType<ItemsPresenter>());
             hideTabStripStyle.Setters.Add(
                 new Styling.Setter(AvaloniaControl.IsVisibleProperty, false));
-            _tabControl.Styles.Add(hideTabStripStyle);
+            _tabbedPage.Styles.Add(hideTabStripStyle);
 
-            _tabControl.SelectionChanged += OnTabSelectionChanged;
+            _tabbedPage.SelectionChanged += OnTabSelectionChanged;
 
-            return _tabControl;
+            return _tabbedPage;
         }
         else
         {
@@ -121,10 +124,11 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
             itemController.ItemsCollectionChanged -= OnItemsCollectionChanged;
         }
 
-        if (_tabControl != null)
+        if (_tabbedPage != null)
         {
-            _tabControl.SelectionChanged -= OnTabSelectionChanged;
-            _tabControl.Items.Clear();
+            _tabbedPage.SelectionChanged -= OnTabSelectionChanged;
+            _tabbedPage.Pages = new List<Avalonia.Controls.Page>();
+            _sectionPageMap?.Clear();
         }
 
         // Clear content control to release any in-flight transition resources
@@ -171,37 +175,32 @@ public partial class ShellItemHandler : ElementHandler<ShellItem, AvaloniaContro
             this.UpdateTabs(VirtualView);
     }
 
-    private void OnTabSelectionChanged(object? sender, AvaloniaSelectionChangedEventArgs e)
+    private void OnTabSelectionChanged(object? sender, Avalonia.Controls.PageSelectionChangedEventArgs e)
     {
         if (_isUpdatingTabs)
             return;
 
-        if (e.AddedItems.Count > 0)
+        if (_tabbedPage != null && VirtualView != null)
         {
-            var selectedItem = e.AddedItems[0];
-            ShellSection? section = null;
+            var selectedIndex = _tabbedPage.SelectedIndex;
 
-            if (selectedItem is TabItem tabItem && VirtualView != null && _tabControl != null)
+            // Find the corresponding ShellSection from visible sections
+            var sections = VirtualView is IShellItemController itemController2
+                ? itemController2.GetItems()
+                : VirtualView.Items;
+
+            var visibleSections = sections.Where(s => s.IsVisible).ToList();
+
+            if (selectedIndex >= 0 && selectedIndex < visibleSections.Count)
             {
-                // Find the section associated with this TabItem (Store it in Tag or just match by index)
-                var index = _tabControl.Items.IndexOf(tabItem);
-                if (index >= 0 && index < VirtualView.Items.Count)
+                var section = visibleSections[selectedIndex];
+                if (VirtualView is IShellItemController itemController)
                 {
-                    section = VirtualView.Items[index];
+                    itemController.ProposeSection(section, true);
                 }
             }
-            else if (selectedItem is ShellSection s)
-            {
-                section = s;
-            }
 
-            if (section != null && VirtualView is IShellItemController itemController)
-            {
-                itemController.ProposeSection(section, true);
-            }
-
-            if (VirtualView != null)
-                this.UpdateTabAppearance(VirtualView);
+            this.UpdateTabAppearance(VirtualView);
         }
     }
 }

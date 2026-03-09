@@ -1,8 +1,7 @@
-using Avalonia.Controls.Maui.Controls.Shell;
+using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Microsoft.Maui.Controls;
 using MauiFlyoutBehavior = Microsoft.Maui.FlyoutBehavior;
-using AvaloniaFlyoutBehavior = Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior;
 using FlyoutViewHandler = Avalonia.Controls.Maui.Handlers.FlyoutViewHandler;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
@@ -17,7 +16,7 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
         var handler = await CreateHandlerAsync<FlyoutViewHandler>(flyoutPage);
 
         Assert.NotNull(handler.PlatformView);
-        Assert.IsType<FlyoutContainer>(handler.PlatformView);
+        Assert.IsType<DrawerPage>(handler.PlatformView);
     }
 
     [AvaloniaFact(DisplayName = "Popover Behavior Maps Correctly")]
@@ -27,10 +26,10 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
         flyoutPage.FlyoutLayoutBehavior = FlyoutLayoutBehavior.Popover;
 
         var handler = await CreateHandlerAsync<FlyoutViewHandler>(flyoutPage);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var drawerPage = handler.PlatformView as DrawerPage;
 
-        Assert.NotNull(flyoutContainer);
-        Assert.Equal(AvaloniaFlyoutBehavior.Popover, flyoutContainer.FlyoutBehavior);
+        Assert.NotNull(drawerPage);
+        Assert.Equal(DrawerBehavior.Flyout, drawerPage.DrawerBehavior);
     }
 
     [AvaloniaFact(DisplayName = "Locked Behavior Maps Correctly")]
@@ -40,10 +39,10 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
         flyoutPage.FlyoutLayoutBehavior = FlyoutLayoutBehavior.Split;
 
         var handler = await CreateHandlerAsync<FlyoutViewHandler>(flyoutPage);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var drawerPage = handler.PlatformView as DrawerPage;
 
-        Assert.NotNull(flyoutContainer);
-        Assert.Equal(AvaloniaFlyoutBehavior.Locked, flyoutContainer.FlyoutBehavior);
+        Assert.NotNull(drawerPage);
+        Assert.Equal(DrawerBehavior.Locked, drawerPage.DrawerBehavior);
     }
 
     [AvaloniaFact(DisplayName = "IsPresented True Opens Flyout")]
@@ -54,10 +53,10 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
         flyoutPage.IsPresented = true;
 
         var handler = await CreateHandlerAsync<FlyoutViewHandler>(flyoutPage);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var drawerPage = handler.PlatformView as DrawerPage;
 
-        Assert.NotNull(flyoutContainer);
-        Assert.True(flyoutContainer.IsFlyoutOpen);
+        Assert.NotNull(drawerPage);
+        Assert.True(drawerPage.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "IsPresented False Closes Flyout")]
@@ -68,10 +67,10 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
         flyoutPage.IsPresented = false;
 
         var handler = await CreateHandlerAsync<FlyoutViewHandler>(flyoutPage);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var drawerPage = handler.PlatformView as DrawerPage;
 
-        Assert.NotNull(flyoutContainer);
-        Assert.False(flyoutContainer.IsFlyoutOpen);
+        Assert.NotNull(drawerPage);
+        Assert.False(drawerPage.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutWidth Defaults Correctly")]
@@ -80,10 +79,10 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
         var flyoutPage = CreateBasicFlyoutPage();
 
         var handler = await CreateHandlerAsync<FlyoutViewHandler>(flyoutPage);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var drawerPage = handler.PlatformView as DrawerPage;
 
-        Assert.NotNull(flyoutContainer);
-        Assert.Equal(FlyoutContainer.DefaultFlyoutWidth, flyoutContainer.FlyoutWidth);
+        Assert.NotNull(drawerPage);
+        Assert.Equal(320, drawerPage.DrawerLength);
     }
 
     [AvaloniaFact(DisplayName = "Flyout Content Is Set")]
@@ -92,11 +91,10 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
         var flyoutPage = CreateBasicFlyoutPage();
 
         var handler = await CreateHandlerAsync<FlyoutViewHandler>(flyoutPage);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var drawerPage = handler.PlatformView as DrawerPage;
 
-        Assert.NotNull(flyoutContainer);
-        // FlyoutContainer should have children: scrim + flyout content + detail content
-        Assert.True(flyoutContainer.Children.Count >= 2);
+        Assert.NotNull(drawerPage);
+        Assert.NotNull(drawerPage.Drawer);
     }
 
     [AvaloniaFact(DisplayName = "Detail Content Is Set")]
@@ -105,34 +103,38 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
         var flyoutPage = CreateBasicFlyoutPage();
 
         var handler = await CreateHandlerAsync<FlyoutViewHandler>(flyoutPage);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var drawerPage = handler.PlatformView as DrawerPage;
 
-        Assert.NotNull(flyoutContainer);
-        Assert.NotNull(flyoutContainer.DetailContent);
+        Assert.NotNull(drawerPage);
+        Assert.NotNull(drawerPage.Content);
     }
 
-    [AvaloniaFact(DisplayName = "SetFlyoutContent With Same Content Preserves Transform")]
-    public void SetFlyoutContentWithSameContentPreservesTransform()
+    [AvaloniaFact(DisplayName = "SetDrawer With Same Content Is Idempotent")]
+    public void SetDrawerWithSameContentIsIdempotent()
     {
-        var container = new FlyoutContainer();
+        var drawerPage = new DrawerPage
+        {
+            ContentTemplate = null,
+            DrawerTemplate = null
+        };
         var flyoutPanel = new Avalonia.Controls.Panel();
 
-        container.SetFlyoutContent(flyoutPanel);
-        var childCountAfterFirst = container.Children.Count;
+        drawerPage.Drawer = flyoutPanel;
+        var drawerAfterFirst = drawerPage.Drawer;
 
-        // Setting the same content again should be a no-op
-        container.SetFlyoutContent(flyoutPanel);
-        var childCountAfterSecond = container.Children.Count;
+        // Setting the same content again should keep it
+        drawerPage.Drawer = flyoutPanel;
+        var drawerAfterSecond = drawerPage.Drawer;
 
-        Assert.Equal(childCountAfterFirst, childCountAfterSecond);
+        Assert.Same(drawerAfterFirst, drawerAfterSecond);
     }
 
     private FlyoutPage CreateBasicFlyoutPage()
     {
-        var flyoutPage = new FlyoutPage
+        var flyoutPage = new Microsoft.Maui.Controls.FlyoutPage
         {
-            Flyout = new ContentPage { Title = "Menu" },
-            Detail = new ContentPage { Title = "Detail" },
+            Flyout = new Microsoft.Maui.Controls.ContentPage { Title = "Menu" },
+            Detail = new Microsoft.Maui.Controls.ContentPage { Title = "Detail" },
             WidthRequest = 800,
             HeightRequest = 600,
         };

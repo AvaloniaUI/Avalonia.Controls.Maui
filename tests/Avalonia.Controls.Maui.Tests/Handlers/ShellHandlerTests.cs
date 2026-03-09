@@ -1,5 +1,5 @@
 using Avalonia.Controls.Maui.Platform;
-using Avalonia.Controls.Maui.Controls.Shell;
+using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -7,6 +7,7 @@ using Microsoft.Maui.Graphics;
 using MauiShellHandler = Avalonia.Controls.Maui.Handlers.Shell.ShellHandler;
 using MauiFlyoutBehavior = Microsoft.Maui.FlyoutBehavior;
 using MauiLabel = Microsoft.Maui.Controls.Label;
+using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 using Avalonia.Controls.Maui.Controls;
 using NSubstitute;
 using Avalonia.Controls.Maui.Handlers.Shell;
@@ -15,6 +16,9 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public partial class ShellHandlerTests : HandlerTestBase
 {
+    private static DrawerPage? GetDrawerPage(MauiShellHandler handler) =>
+        (handler.PlatformView as Avalonia.Controls.ContentPage)?.Content as DrawerPage;
+
     [AvaloniaFact(DisplayName = "Shell Creates Platform View")]
     public async Task ShellCreatesPlatformView()
     {
@@ -23,7 +27,8 @@ public partial class ShellHandlerTests : HandlerTestBase
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
 
         Assert.NotNull(handler.PlatformView);
-        Assert.IsType<FlyoutContainer>(handler.PlatformView);
+        Assert.IsType<Avalonia.Controls.ContentPage>(handler.PlatformView);
+        Assert.NotNull(GetDrawerPage(handler));
     }
 
     [AvaloniaFact(DisplayName = "Shell With Items Creates Platform View")]
@@ -43,10 +48,10 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutBehavior = MauiFlyoutBehavior.Flyout;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Popover, flyoutContainer.FlyoutBehavior);
+        Assert.Equal(DrawerBehavior.Flyout, flyoutContainer.DrawerBehavior);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutBehavior Disabled Initializes Correctly")]
@@ -56,11 +61,11 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutBehavior = MauiFlyoutBehavior.Disabled;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Disabled, flyoutContainer.FlyoutBehavior);
-        Assert.False(flyoutContainer.IsFlyoutOpen);
+        Assert.Equal(DrawerBehavior.Disabled, flyoutContainer.DrawerBehavior);
+        Assert.False(flyoutContainer.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutBehavior Locked Initializes Correctly")]
@@ -70,10 +75,10 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutBehavior = MauiFlyoutBehavior.Locked;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Locked, flyoutContainer.FlyoutBehavior);
+        Assert.Equal(DrawerBehavior.Locked, flyoutContainer.DrawerBehavior);
         // In Locked mode, flyout is always visible (split mode) regardless of IsFlyoutOpen state
         // The visual position is controlled by IsSplitMode(), not IsFlyoutOpen
     }
@@ -86,10 +91,10 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutIsPresented = true;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.True(flyoutContainer.IsFlyoutOpen);
+        Assert.True(flyoutContainer.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutIsPresented False Closes Flyout")]
@@ -100,10 +105,10 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutIsPresented = false;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.False(flyoutContainer.IsFlyoutOpen);
+        Assert.False(flyoutContainer.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutWidth Initializes Correctly")]
@@ -113,10 +118,10 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutWidth = 400;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(400, flyoutContainer.FlyoutWidth);
+        Assert.Equal(400, flyoutContainer.DrawerLength);
     }
 
     [AvaloniaTheory(DisplayName = "FlyoutWidth Various Values")]
@@ -129,23 +134,23 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutWidth = width;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(width, flyoutContainer.FlyoutWidth);
+        Assert.Equal(width, flyoutContainer.DrawerLength);
     }
 
-    [AvaloniaFact(DisplayName = "FlyoutHeight Initializes Correctly")]
-    public async Task FlyoutHeightInitializesCorrectly()
+    [AvaloniaFact(DisplayName = "FlyoutHeight Does Not Crash")]
+    public async Task FlyoutHeightDoesNotCrash()
     {
         var shell = CreateBasicShell();
         shell.FlyoutHeight = 500;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
 
+        // DrawerPage auto-sizes; FlyoutHeight is a no-op
         Assert.NotNull(flyoutContainer);
-        Assert.Equal(500, flyoutContainer.FlyoutHeight);
     }
 
     [AvaloniaFact(DisplayName = "FlyoutBackground Color Initializes Correctly")]
@@ -297,7 +302,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var searchHandler = new SearchHandler { Placeholder = "Search..." };
         
         // Setup SearchHandler on the current page
-        var page = shell.Items[0].Items[0].Items[0].Content as ContentPage;
+        var page = shell.Items[0].Items[0].Items[0].Content as MauiContentPage;
         Assert.NotNull(page);
         
         Shell.SetSearchHandler(page, searchHandler);
@@ -314,7 +319,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var shell = CreateBasicShell();
         var searchHandler = new SearchHandler { Placeholder = "Search..." };
 
-        var page = shell.Items[0].Items[0].Items[0].Content as ContentPage;
+        var page = shell.Items[0].Items[0].Items[0].Content as MauiContentPage;
         Assert.NotNull(page);
 
         Shell.SetSearchHandler(page, searchHandler);
@@ -350,7 +355,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var shell = CreateBasicShell();
         var searchHandler = new SuggestionsSearchHandler();
 
-        var page = shell.Items[0].Items[0].Items[0].Content as ContentPage;
+        var page = shell.Items[0].Items[0].Items[0].Content as MauiContentPage;
         Assert.NotNull(page);
 
         Shell.SetSearchHandler(page, searchHandler);
@@ -410,7 +415,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                 new ShellContent
                 {
                     Title = "Home",
-                    Content = new ContentPage { Title = "Home Page" }
+                    Content = new Microsoft.Maui.Controls.ContentPage { Title = "Home Page" }
                 }
             }
         };
@@ -438,7 +443,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                         new ShellContent
                         {
                             Title = "Home",
-                            Content = new ContentPage { Title = "Home Page" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Home Page" }
                         }
                     }
                 }
@@ -466,12 +471,12 @@ public partial class ShellHandlerTests : HandlerTestBase
                         new ShellContent
                         {
                             Title = "Tab 1",
-                            Content = new ContentPage { Title = "Tab 1 Page" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Tab 1 Page" }
                         },
                         new ShellContent
                         {
                             Title = "Tab 2",
-                            Content = new ContentPage { Title = "Tab 2 Page" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Tab 2 Page" }
                         }
                     }
                 }
@@ -537,7 +542,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         var shell = CreateBasicShell();
         var searchHandler = new SearchHandler { Placeholder = "Test Search" };
         
-        var page = shell.Items[0].Items[0].Items[0].Content as ContentPage;
+        var page = shell.Items[0].Items[0].Items[0].Content as MauiContentPage;
         Shell.SetSearchHandler(page, searchHandler);
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
@@ -555,7 +560,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                 new ShellContent
                 {
                     Title = "Home",
-                    Content = new ContentPage { Title = "Home Page" }
+                    Content = new Microsoft.Maui.Controls.ContentPage { Title = "Home Page" }
                 }
             }
         };
@@ -579,7 +584,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                         new ShellContent
                         {
                             Title = "Content 1",
-                            Content = new ContentPage { Title = "Page 1" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" }
                         }
                     }
                 }
@@ -605,7 +610,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                         new ShellContent
                         {
                             Title = "Content 1",
-                            Content = new ContentPage { Title = "Page 1" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" }
                         }
                     }
                 },
@@ -617,7 +622,7 @@ public partial class ShellHandlerTests : HandlerTestBase
                         new ShellContent
                         {
                             Title = "Content 2",
-                            Content = new ContentPage { Title = "Page 2" }
+                            Content = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2" }
                         }
                     }
                 }
@@ -637,9 +642,8 @@ public partial class ShellHandlerTests : HandlerTestBase
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
         var platformView = handler.PlatformView;
         
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
-        // DetailContent is now public
-        var mainContainer = flyoutContainer?.DetailContent as DockPanel;
+        var flyoutContainer = GetDrawerPage(handler);
+        var mainContainer = flyoutContainer?.Content as DockPanel;
         
         Assert.NotNull(mainContainer);
         var brush = mainContainer.Background as Avalonia.Media.SolidColorBrush;
@@ -726,7 +730,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         shell.FlyoutBackdrop = background;
 
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
-        var flyoutContainer = handler.PlatformView as FlyoutContainer;
+        var flyoutContainer = GetDrawerPage(handler);
         
         Assert.NotNull(flyoutContainer);
         // Mapping check
@@ -734,31 +738,32 @@ public partial class ShellHandlerTests : HandlerTestBase
 
     // --- Consolidated Platform/Control tests ---
 
-    [AvaloniaFact(DisplayName = "FlyoutContainer Initial State is Closed")]
-    public void FlyoutContainerInitialStateIsClosed()
+    [AvaloniaFact(DisplayName = "DrawerPage Initial State is Closed")]
+    public void DrawerPageInitialStateIsClosed()
     {
-        var container = new FlyoutContainer();
-        Assert.False(container.IsFlyoutOpen);
+        var container = new DrawerPage();
+        Assert.False(container.IsOpen);
     }
 
-    [AvaloniaFact(DisplayName = "FlyoutContainer IsFlyoutOpen Property Verified")]
-    public void FlyoutContainerIsFlyoutOpenPropertyVerified()
+    [AvaloniaFact(DisplayName = "DrawerPage IsOpen Property Verified")]
+    public void DrawerPageIsOpenPropertyVerified()
     {
-        var container = new FlyoutContainer
+        var container = new DrawerPage
         {
-            IsFlyoutOpen = true
+            DrawerBehavior = DrawerBehavior.Flyout,
+            IsOpen = true
         };
-        Assert.True(container.IsFlyoutOpen);
+        Assert.True(container.IsOpen);
     }
 
-    [AvaloniaFact(DisplayName = "FlyoutContainer Locked Behavior Stays Open")]
-    public void FlyoutContainerLockedBehaviorStaysOpen()
+    [AvaloniaFact(DisplayName = "DrawerPage Locked Behavior Stays Open")]
+    public void DrawerPageLockedBehaviorStaysOpen()
     {
-        var container = new FlyoutContainer
+        var container = new DrawerPage
         {
-            FlyoutBehavior = Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Locked
+            DrawerBehavior = DrawerBehavior.Locked
         };
-        Assert.Equal(Avalonia.Controls.Maui.Controls.Shell.FlyoutBehavior.Locked, container.FlyoutBehavior);
+        Assert.Equal(DrawerBehavior.Locked, container.DrawerBehavior);
     }
 
     [AvaloniaFact(DisplayName = "ShellSearchControl Initializes with SearchHandler Query")]
@@ -936,8 +941,8 @@ public partial class ShellHandlerTests : HandlerTestBase
         Assert.Equal("←", handler._backButton.Content);
     }
 
-    [AvaloniaFact(DisplayName = "Shell Title Remains Centered With Left Buttons Visible")]
-    public async Task ShellTitleRemainsCenteredWithLeftButtonsVisible()
+    [AvaloniaFact(DisplayName = "Shell Title Is Left-Aligned After Navigation Buttons")]
+    public async Task ShellTitleIsLeftAlignedAfterNavigationButtons()
     {
         var shell = CreateShellWithNavigationStack();
 
@@ -948,7 +953,7 @@ public partial class ShellHandlerTests : HandlerTestBase
         Assert.NotNull(handler._hamburgerButton);
         Assert.NotNull(handler._backButton);
 
-        var deltaFromCenter = await InvokeOnMainThreadAsync(() =>
+        var titleX = await InvokeOnMainThreadAsync(() =>
         {
             handler._hamburgerButton!.IsVisible = true;
             handler._backButton!.IsVisible = true;
@@ -957,21 +962,19 @@ public partial class ShellHandlerTests : HandlerTestBase
             handler._topBar!.Measure(new Avalonia.Size(arrangedWidth, MauiShellHandler.DefaultBarHeight));
             handler._topBar.Arrange(new Avalonia.Rect(0, 0, arrangedWidth, MauiShellHandler.DefaultBarHeight));
 
-            var titleBounds = handler._titleTextBlock!.Bounds;
-            var titleCenterXLocal = titleBounds.X + (titleBounds.Width / 2);
-            var titleCenterYLocal = titleBounds.Y + (titleBounds.Height / 2);
-
-            var titleCenterInTopBar = handler._titleTextBlock.TranslatePoint(
-                new Avalonia.Point(titleCenterXLocal, titleCenterYLocal),
+            // Title should be positioned after the left buttons, not centered
+            var titlePos = handler._titleTextBlock!.TranslatePoint(
+                new Avalonia.Point(0, 0),
                 handler._topBar);
 
-            Assert.NotNull(titleCenterInTopBar);
-            var expectedCenterX = arrangedWidth / 2;
-
-            return Math.Abs(titleCenterInTopBar.Value.X - expectedCenterX);
+            Assert.NotNull(titlePos);
+            return titlePos.Value.X;
         });
 
-        Assert.InRange(deltaFromCenter, 0, 1.0);
+        // Title should start after the left buttons (which have non-zero width)
+        // and should NOT be centered (center would be ~400 for 800px width)
+        Assert.True(titleX > 0, "Title should be positioned after left buttons");
+        Assert.True(titleX < 200, "Title should be left-aligned, not centered");
     }
 
     [AvaloniaFact(DisplayName = "BackButtonBehavior Command Executes When Clicked")]
@@ -1073,9 +1076,9 @@ public partial class ShellHandlerTests : HandlerTestBase
     [AvaloniaFact(DisplayName = "Shell Navigating Between FlyoutItems Preserves Page Content")]
     public async Task ShellNavigatingBetweenFlyoutItemsPreservesPageContent()
     {
-        var page1 = new ContentPage { Title = "Page 1", Content = new MauiLabel { Text = "Content 1" } };
-        var page2 = new ContentPage { Title = "Page 2", Content = new MauiLabel { Text = "Content 2" } };
-        var page3 = new ContentPage { Title = "Page 3", Content = new MauiLabel { Text = "Content 3" } };
+        var page1 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1", Content = new MauiLabel { Text = "Content 1" } };
+        var page2 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2", Content = new MauiLabel { Text = "Content 2" } };
+        var page3 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 3", Content = new MauiLabel { Text = "Content 3" } };
 
         var shell = new Shell
         {
@@ -1194,8 +1197,8 @@ public partial class ShellHandlerTests : HandlerTestBase
 
     private Shell CreateShellWithNavigationStack()
     {
-        var page1 = new ContentPage { Title = "Page 1" };
-        var page2 = new ContentPage { Title = "Page 2" };
+        var page1 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 1" };
+        var page2 = new Microsoft.Maui.Controls.ContentPage { Title = "Page 2" };
 
         var shellSection = new ShellSection
         {

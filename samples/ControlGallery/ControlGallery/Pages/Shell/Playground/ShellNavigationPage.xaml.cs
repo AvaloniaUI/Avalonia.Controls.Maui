@@ -1,3 +1,7 @@
+using Avalonia.Animation;
+using Avalonia.Controls.Maui;
+using Avalonia.Controls.Maui.Animations;
+
 namespace ControlGallery.Pages.ShellSamples.ShellPlayground
 {
     public partial class ShellNavigationPage : ContentPage
@@ -102,6 +106,57 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
             }
 
             await Navigation.PushAsync(page);
+        }
+
+        // Page Transitions
+        private void OnSetDefaultTransition(object? sender, EventArgs e)
+        {
+            var shell = this.GetShell();
+            if (shell != null)
+            {
+                NavigationPageExtensions.SetPageTransition(shell, null);
+                CurrentTransitionLabel.Text = "Current: Default";
+            }
+        }
+
+        private void OnSetSlideTransition(object? sender, EventArgs e)
+        {
+            var shell = this.GetShell();
+            if (shell != null)
+            {
+                NavigationPageExtensions.SetPageTransition(shell, new PageSlide(TimeSpan.FromMilliseconds(300)));
+                CurrentTransitionLabel.Text = "Current: Simple Slide (300ms)";
+            }
+        }
+
+        private void OnSetCrossFadeTransition(object? sender, EventArgs e)
+        {
+            var shell = this.GetShell();
+            if (shell != null)
+            {
+                NavigationPageExtensions.SetPageTransition(shell, new CrossFade(TimeSpan.FromMilliseconds(300)));
+                CurrentTransitionLabel.Text = "Current: Cross Fade (300ms)";
+            }
+        }
+
+        private void OnSetFastTransition(object? sender, EventArgs e)
+        {
+            var shell = this.GetShell();
+            if (shell != null)
+            {
+                NavigationPageExtensions.SetPageTransition(shell, new MauiNavigationTransition(TimeSpan.FromMilliseconds(150)));
+                CurrentTransitionLabel.Text = "Current: Fast (150ms)";
+            }
+        }
+
+        private void OnSetSlowTransition(object? sender, EventArgs e)
+        {
+            var shell = this.GetShell();
+            if (shell != null)
+            {
+                NavigationPageExtensions.SetPageTransition(shell, new MauiNavigationTransition(TimeSpan.FromMilliseconds(800)));
+                CurrentTransitionLabel.Text = "Current: Slow (800ms)";
+            }
         }
 
         private void OnBackButtonBehaviorChanged(object sender, EventArgs e)
