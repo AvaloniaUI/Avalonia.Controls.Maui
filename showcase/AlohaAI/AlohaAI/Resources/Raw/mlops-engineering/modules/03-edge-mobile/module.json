@@ -1,0 +1,32 @@
+{
+  "id": "03-edge-mobile",
+  "title": "Edge & Mobile AI Deployment",
+  "description": "Bring AI capabilities to mobile devices and edge hardware",
+  "lessons": [
+    {
+      "id": "01-quantization",
+      "title": "Model Quantization & Compression",
+      "file": "01-quantization.md",
+      "xp": 15
+    },
+    {
+      "id": "02-on-device-inference",
+      "title": "On-Device Inference: CoreML, ONNX, TensorRT",
+      "file": "02-on-device-inference.md",
+      "xp": 15
+    },
+    {
+      "id": "03-hybrid-patterns",
+      "title": "Hybrid Edge-Cloud Inference Patterns",
+      "file": "03-hybrid-patterns.md",
+      "xp": 15
+    },
+    {
+      "id": "04-offline-first-ai",
+      "title": "Offline-First AI for Mobile Apps",
+      "file": "04-offline-first-ai.md",
+      "xp": 15
+    }
+  ],
+  "quiz": "quiz.json"
+}

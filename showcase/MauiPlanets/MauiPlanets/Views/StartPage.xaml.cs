@@ -32,7 +32,7 @@ public partial class StartPage : ContentPage
         parentAnimation.Commit(this, "TransitionAnimation", 16, 3000, null, null);
     }
 
-    async void ExploreNow_Clicked(System.Object sender, System.EventArgs e)
+    async void ExploreNow_Clicked(object? sender, System.EventArgs e)
     {
         if (Application.Current?.Windows.FirstOrDefault() is Window window)
         {

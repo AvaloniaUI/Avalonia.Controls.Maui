@@ -1,0 +1,14 @@
+<Project>
+
+  <!-- Enable bootstrap (app class) on all TFMs.
+       Desktop program (Main entry point) is only for the base TFM — platform TFMs
+       have their own entry points. Theme defaults and CompilerVisibleProperty items
+       are declared in the Core package props. -->
+  <PropertyGroup>
+    <AvaloniaControlsMauiGenerateBootstrap Condition="'$(AvaloniaControlsMauiGenerateBootstrap)' == ''">true</AvaloniaControlsMauiGenerateBootstrap>
+    <AvaloniaControlsMauiGenerateDesktopProgram
+        Condition="'$(AvaloniaControlsMauiGenerateDesktopProgram)' == '' And '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' != ''">false</AvaloniaControlsMauiGenerateDesktopProgram>
+    <AvaloniaControlsMauiGenerateDesktopProgram Condition="'$(AvaloniaControlsMauiGenerateDesktopProgram)' == ''">true</AvaloniaControlsMauiGenerateDesktopProgram>
+  </PropertyGroup>
+
+</Project>

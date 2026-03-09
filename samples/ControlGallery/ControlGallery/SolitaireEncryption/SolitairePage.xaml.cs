@@ -9,7 +9,7 @@ public partial class SolitairePage : ContentPage
         InitializeComponent();
     }
 
-    public async void EncryptClicked(object sender, EventArgs e)
+    public async void EncryptClicked(object? sender, EventArgs e)
     {
         if (!ValidInputs())
         {
@@ -20,7 +20,7 @@ public partial class SolitairePage : ContentPage
         ciphertext.Text = ps.Encrypt(plaintext.Text).Pad5();
     }
 
-    public async void DecryptClicked(object sender, EventArgs e)
+    public async void DecryptClicked(object? sender, EventArgs e)
     {
         if (!ValidInputs())
         {

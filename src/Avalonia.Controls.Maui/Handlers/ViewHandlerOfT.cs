@@ -8,6 +8,12 @@ using PlatformView = Avalonia.Controls.Control;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>
+/// Generic base Avalonia handler for <see cref="IView"/>. Maps a MAUI virtual view of type
+/// <typeparamref name="TVirtualView"/> to an Avalonia control of type <typeparamref name="TPlatformView"/>.
+/// </summary>
+/// <typeparam name="TVirtualView">The MAUI virtual view interface type.</typeparam>
+/// <typeparam name="TPlatformView">The Avalonia platform view type.</typeparam>
 public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHandler, IViewHandler
         where TVirtualView : class, IView
         where TPlatformView : PlatformView
@@ -15,32 +21,51 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
     private Avalonia.Controls.Maui.Platform.GestureManager? _gestureManager;
     private bool _isLoaded;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ViewHandler{TVirtualView, TPlatformView}"/> class.
+    /// </summary>
+    /// <param name="mapper">The property mapper to use for this handler.</param>
+    /// <param name="commandMapper">The command mapper to use for this handler.</param>
     protected ViewHandler(IPropertyMapper mapper, CommandMapper? commandMapper = null)
         : base(mapper, commandMapper)
     {
     }
 
+    /// <summary>
+    /// Gets the strongly-typed Avalonia platform view associated with this handler.
+    /// </summary>
     public new TPlatformView PlatformView
     {
         get => (TPlatformView?)base.PlatformView ?? throw new InvalidOperationException($"PlatformView cannot be null here");
         private protected set => base.PlatformView = value;
     }
 
+    /// <summary>
+    /// Gets the strongly-typed MAUI virtual view associated with this handler.
+    /// </summary>
     public new TVirtualView VirtualView
     {
         get => (TVirtualView?)base.VirtualView ?? throw new InvalidOperationException($"VirtualView cannot be null here");
         private protected set => base.VirtualView = value;
     }
 
+    /// <inheritdoc/>
     IView? IViewHandler.VirtualView => base.VirtualView;
 
+    /// <inheritdoc/>
     IElement? IElementHandler.VirtualView => base.VirtualView;
 
+    /// <inheritdoc/>
     object? IElementHandler.PlatformView => base.PlatformView;
 
+    /// <summary>
+    /// Sets the MAUI virtual view for this handler.
+    /// </summary>
+    /// <param name="view">The <see cref="IView"/> to associate with this handler.</param>
     public virtual void SetVirtualView(IView view) =>
         base.SetVirtualView(view);
 
+    /// <inheritdoc/>
     public sealed override void SetVirtualView(IElement view) =>
         SetVirtualView((IView)view);
 
@@ -84,42 +109,111 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
     /// It disposes the gesture manager and can be overridden to perform additional cleanup logic.</remarks>
     protected virtual void DisconnectHandler(TPlatformView platformView)
     {
+        // Fire Unloaded before detaching events so MAUI's IsLoaded becomes false.
+        // Without this, Window.OnPageChanged sees IsLoaded==true and calls OnUnloaded()
+        // which is not implemented on non-platform targets, preventing DisconnectHandlers
+        // from ever running and leaving the old page tree permanently rooted.
+        if (_isLoaded)
+        {
+            _isLoaded = false;
+            TrySendUnloaded();
+        }
+
         DetachPlatformViewEvents(platformView);
+        Extensions.ViewExtensions.DisposeClipSubscription(platformView);
+
+        // Clear any TransformGroup created by UpdateTransformation() to release
+        // ScaleTransform, RotateTransform, and TranslateTransform objects.
+        platformView.RenderTransform = null;
+
         _gestureManager?.Dispose();
         _gestureManager = null;
     }
 
+    /// <inheritdoc/>
     private protected override PlatformView OnCreatePlatformView()
     {
         return PlatformViewFactory?.Invoke(this) ?? CreatePlatformView();
     }
 
+    /// <inheritdoc/>
+#if MAUI_SOURCE_BUILD
+    private protected override void OnConnectHandler(object platformView) =>
+#else
     public override void OnConnectHandler(object platformView) =>
+#endif
         ConnectHandler((TPlatformView)platformView);
 
+    /// <inheritdoc/>
+#if MAUI_SOURCE_BUILD
+    private protected override void OnDisconnectHandler(object platformView) =>
+#else
     public override void OnDisconnectHandler(object platformView) =>
+#endif
         DisconnectHandler((TPlatformView)platformView);
 
+    /// <inheritdoc/>
     protected override void SetupContainer()
     {
         if (PlatformView == null)
             return;
 
+        // Remember PlatformView's current parent and position so we can swap in the container
+        var parentPanel = PlatformView.Parent as Avalonia.Controls.Panel;
+        int index = parentPanel?.Children.IndexOf(PlatformView) ?? -1;
+
+        if (parentPanel != null && index >= 0)
+            parentPanel.Children.RemoveAt(index);
+
         var containerView = new Avalonia.Controls.Maui.Platform.ContentView();
         containerView.Children.Add(PlatformView);
         ContainerView = containerView;
+
+        // Move margin from PlatformView to ContainerView. The ContainerView is the control
+        // in the parent's visual tree, so it must carry the margin for correct layout.
+        // Without this, the PlatformView's margin offsets it inside the ContainerView,
+        // causing misalignment with Clip/Shadow applied to the ContainerView.
+        if (PlatformView.Margin != default)
+        {
+            containerView.Margin = PlatformView.Margin;
+            PlatformView.Margin = new Avalonia.Thickness(0);
+        }
+
+        if (parentPanel != null && index >= 0)
+            parentPanel.Children.Insert(Math.Min(index, parentPanel.Children.Count), containerView);
     }
 
+    /// <inheritdoc/>
     protected override void RemoveContainer()
     {
         if (ContainerView is Avalonia.Controls.Maui.Platform.ContentView container && PlatformView != null)
         {
+            // Move margin back from ContainerView to PlatformView
+            if (container.Margin != default)
+            {
+                PlatformView.Margin = container.Margin;
+                container.Margin = new Avalonia.Thickness(0);
+            }
+
+            // Remember the container's parent and position so we can swap PlatformView back in
+            var parentPanel = container.Parent as Avalonia.Controls.Panel;
+            int index = parentPanel?.Children.IndexOf(container) ?? -1;
+
+            if (parentPanel != null && index >= 0)
+                parentPanel.Children.RemoveAt(index);
+
             container.Children.Remove(PlatformView);
+
+            if (parentPanel != null && index >= 0)
+                parentPanel.Children.Insert(Math.Min(index, parentPanel.Children.Count), PlatformView);
         }
 
         ContainerView = null;
     }
 
+    /// <summary>
+    /// Attaches event handlers to the platform view for lifecycle, focus, and bounds tracking.
+    /// </summary>
     private void AttachPlatformViewEvents(TPlatformView platformView)
     {
         platformView.AttachedToVisualTree += OnPlatformViewAttachedToVisualTree;
@@ -128,7 +222,7 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         platformView.LostFocus += OnPlatformViewLostFocus;
         platformView.PropertyChanged += OnPlatformViewPropertyChanged;
 
-        if (platformView.GetVisualRoot() != null)
+        if (platformView.Parent != null)
         {
             _isLoaded = true;
             TrySendLoaded();
@@ -140,6 +234,9 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         }
     }
 
+    /// <summary>
+    /// Detaches event handlers from the platform view.
+    /// </summary>
     private void DetachPlatformViewEvents(TPlatformView platformView)
     {
         platformView.AttachedToVisualTree -= OnPlatformViewAttachedToVisualTree;

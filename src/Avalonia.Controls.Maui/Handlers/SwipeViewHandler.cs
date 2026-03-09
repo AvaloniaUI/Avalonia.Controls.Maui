@@ -4,11 +4,10 @@ using PlatformView = Avalonia.Controls.Maui.Swipe;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-/// <summary>
-/// Handler for .NET MAUI SwipeView to Avalonia.Labs Swipe mapping
-/// </summary>
+/// <summary>Avalonia handler for <see cref="ISwipeView"/>.</summary>
 public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>
 {
+    /// <summary>Property mapper for <see cref="SwipeViewHandler"/>.</summary>
     public static IPropertyMapper<ISwipeView, SwipeViewHandler> Mapper =
         new PropertyMapper<ISwipeView, SwipeViewHandler>(ViewHandler.ViewMapper)
         {
@@ -21,6 +20,7 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>
             [nameof(ISwipeView.Threshold)] = MapThreshold,
         };
 
+    /// <summary>Command mapper for <see cref="SwipeViewHandler"/>.</summary>
     public static CommandMapper<ISwipeView, SwipeViewHandler> CommandMapper =
         new(ViewCommandMapper)
         {
@@ -28,25 +28,33 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>
             [nameof(ISwipeView.RequestClose)] = MapRequestClose,
         };
 
+    /// <summary>Initializes a new instance of <see cref="SwipeViewHandler"/>.</summary>
     public SwipeViewHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="SwipeViewHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public SwipeViewHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="SwipeViewHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public SwipeViewHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformView()
     {
         return new PlatformView();
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
@@ -56,6 +64,7 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>
         platformView.ExecuteRequested += OnExecuteRequested;
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.SwipeStarted -= OnSwipeStarted;
@@ -64,49 +73,74 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>
         platformView.ExecuteRequested -= OnExecuteRequested;
         base.DisconnectHandler(platformView);
     }
-    
+
+    /// <summary>Maps the Background property to the platform view.</summary>
+    /// <param name="handler">The handler for the swipe view.</param>
+    /// <param name="swipeView">The virtual swipe view.</param>
     public static void MapBackground(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateBackground(swipeView);
     }
 
+    /// <summary>Maps the Content property to the platform view.</summary>
+    /// <param name="handler">The handler for the swipe view.</param>
+    /// <param name="swipeView">The virtual swipe view.</param>
     public static void MapContent(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateContent(swipeView, handler.MauiContext);
     }
 
+    /// <summary>Maps the LeftItems property to the platform view.</summary>
+    /// <param name="handler">The handler for the swipe view.</param>
+    /// <param name="swipeView">The virtual swipe view.</param>
     public static void MapLeftItems(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateLeftItems(swipeView, handler.MauiContext);
     }
 
+    /// <summary>Maps the RightItems property to the platform view.</summary>
+    /// <param name="handler">The handler for the swipe view.</param>
+    /// <param name="swipeView">The virtual swipe view.</param>
     public static void MapRightItems(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateRightItems(swipeView, handler.MauiContext);
     }
 
+    /// <summary>Maps the TopItems property to the platform view.</summary>
+    /// <param name="handler">The handler for the swipe view.</param>
+    /// <param name="swipeView">The virtual swipe view.</param>
     public static void MapTopItems(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateTopItems(swipeView, handler.MauiContext);
     }
 
+    /// <summary>Maps the BottomItems property to the platform view.</summary>
+    /// <param name="handler">The handler for the swipe view.</param>
+    /// <param name="swipeView">The virtual swipe view.</param>
     public static void MapBottomItems(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateBottomItems(swipeView, handler.MauiContext);
     }
 
+    /// <summary>Maps the Threshold property to the platform view.</summary>
+    /// <param name="handler">The handler for the swipe view.</param>
+    /// <param name="swipeView">The virtual swipe view.</param>
     public static void MapThreshold(SwipeViewHandler handler, ISwipeView swipeView)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.UpdateThreshold(swipeView);
     }
 
+    /// <summary>Maps the RequestOpen command to the platform view.</summary>
+    /// <param name="handler">The handler for the swipe view.</param>
+    /// <param name="swipeView">The virtual swipe view.</param>
+    /// <param name="args">The open request arguments.</param>
     public static void MapRequestOpen(SwipeViewHandler handler, ISwipeView swipeView, object? args)
     {
         if (handler.PlatformView is PlatformView platformView && args is SwipeViewOpenRequest request)
@@ -124,12 +158,16 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>
         }
     }
 
+    /// <summary>Maps the RequestClose command to the platform view.</summary>
+    /// <param name="handler">The handler for the swipe view.</param>
+    /// <param name="swipeView">The virtual swipe view.</param>
+    /// <param name="args">The close request arguments.</param>
     public static void MapRequestClose(SwipeViewHandler handler, ISwipeView swipeView, object? args)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.SetSwipeState(SwipeState.Hidden, animated: true);
     }
-    
+
     private void OnSwipeStarted(object? sender, SwipeStartedEventArgs e)
     {
         if (VirtualView == null) return;

@@ -14,7 +14,7 @@ using Avalonia.Threading;
 namespace Avalonia.Controls.Maui.Platform;
 
 /// <summary>
-/// Custom Avalonia control for MAUI CarouselView with swipe gesture support
+/// Avalonia content control that implements a MAUI CarouselView with swipe gesture and keyboard navigation support.
 /// </summary>
 public class MauiCarouselView : ContentControl
 {
@@ -27,26 +27,44 @@ public class MauiCarouselView : ContentControl
     private const double SwipeThreshold = 80; // Threshold to commit to transition
     private const double AnimationDuration = 250; // milliseconds
 
+    /// <summary>
+    /// Defines the <see cref="ItemsSource"/> property.
+    /// </summary>
     public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty =
         AvaloniaProperty.Register<MauiCarouselView, IEnumerable?>(nameof(ItemsSource));
 
+    /// <summary>
+    /// Defines the <see cref="ItemTemplate"/> property.
+    /// </summary>
     public static readonly StyledProperty<IDataTemplate?> ItemTemplateProperty =
         AvaloniaProperty.Register<MauiCarouselView, IDataTemplate?>(nameof(ItemTemplate));
 
+    /// <summary>
+    /// Defines the <see cref="SelectedIndex"/> property.
+    /// </summary>
     public static readonly StyledProperty<int> SelectedIndexProperty =
         AvaloniaProperty.Register<MauiCarouselView, int>(
             nameof(SelectedIndex),
             defaultValue: 0,
             defaultBindingMode: global::Avalonia.Data.BindingMode.TwoWay);
 
+    /// <summary>
+    /// Defines the <see cref="CurrentItem"/> property.
+    /// </summary>
     public static readonly StyledProperty<object?> CurrentItemProperty =
         AvaloniaProperty.Register<MauiCarouselView, object?>(
             nameof(CurrentItem),
             defaultBindingMode: global::Avalonia.Data.BindingMode.TwoWay);
 
+    /// <summary>
+    /// Defines the <see cref="Loop"/> property.
+    /// </summary>
     public static readonly StyledProperty<bool> LoopProperty =
         AvaloniaProperty.Register<MauiCarouselView, bool>(nameof(Loop), defaultValue: false);
 
+    /// <summary>
+    /// Registers property change handlers for <see cref="ItemsSourceProperty"/>, <see cref="ItemTemplateProperty"/>, and <see cref="SelectedIndexProperty"/>.
+    /// </summary>
     static MauiCarouselView()
     {
         ItemsSourceProperty.Changed.AddClassHandler<MauiCarouselView>((cv, e) => cv.OnItemsSourceChanged(e));
@@ -54,6 +72,9 @@ public class MauiCarouselView : ContentControl
         SelectedIndexProperty.Changed.AddClassHandler<MauiCarouselView>((cv, e) => cv.OnSelectedIndexChanged(e));
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MauiCarouselView"/> class and sets up pointer and keyboard event handlers.
+    /// </summary>
     public MauiCarouselView()
     {
         // Set a default minimum size to ensure the control gets layout space
@@ -80,36 +101,54 @@ public class MauiCarouselView : ContentControl
         PointerWheelChanged += OnPointerWheelChanged;
     }
 
+    /// <summary>
+    /// Gets or sets the collection of items to display in the carousel.
+    /// </summary>
     public IEnumerable? ItemsSource
     {
         get => GetValue(ItemsSourceProperty);
         set => SetValue(ItemsSourceProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the data template used to render each item in the carousel.
+    /// </summary>
     public IDataTemplate? ItemTemplate
     {
         get => GetValue(ItemTemplateProperty);
         set => SetValue(ItemTemplateProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the zero-based index of the currently selected item in the carousel.
+    /// </summary>
     public int SelectedIndex
     {
         get => GetValue(SelectedIndexProperty);
         set => SetValue(SelectedIndexProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the data object of the currently displayed item.
+    /// </summary>
     public object? CurrentItem
     {
         get => GetValue(CurrentItemProperty);
         set => SetValue(CurrentItemProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the carousel wraps around when reaching the first or last item.
+    /// </summary>
     public bool Loop
     {
         get => GetValue(LoopProperty);
         set => SetValue(LoopProperty, value);
     }
 
+    /// <summary>
+    /// Advances the carousel to the next item, wrapping to the first item if <see cref="Loop"/> is enabled.
+    /// </summary>
     public void Next()
     {
         var items = GetItemsList();
@@ -126,6 +165,9 @@ public class MauiCarouselView : ContentControl
         }
     }
 
+    /// <summary>
+    /// Moves the carousel to the previous item, wrapping to the last item if <see cref="Loop"/> is enabled.
+    /// </summary>
     public void Previous()
     {
         var items = GetItemsList();
@@ -142,6 +184,7 @@ public class MauiCarouselView : ContentControl
         }
     }
 
+    /// <inheritdoc/>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
     {
         base.OnPropertyChanged(change);

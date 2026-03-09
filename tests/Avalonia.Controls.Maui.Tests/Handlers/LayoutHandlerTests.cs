@@ -537,6 +537,34 @@ public class LayoutHandlerTests : HandlerTestBase<MauiLayoutHandler, LayoutStub>
         Assert.Equal(3, count);
     }
 
+    [AvaloniaFact(DisplayName = "Layout RemoveAt Updates Panel Children Count")]
+    public async Task LayoutRemoveAtUpdatesPanelChildrenCount()
+    {
+        var layout = new LayoutStub();
+        layout.Add(new BoxViewStub { Color = Colors.Red });
+        layout.Add(new BoxViewStub { Color = Colors.Green });
+        layout.Add(new BoxViewStub { Color = Colors.Blue });
+
+        var (panelCountBefore, panelCountAfter) = await GetValueAsync(layout, handler =>
+        {
+            if (handler.PlatformView is Panel panel)
+            {
+                var before = panel.Children.Count;
+
+                // Simulate the disconnected-handler case that occurs during BindableLayout reset:
+                // pass a view with no handler, so the index-based fallback is used
+                var disconnectedChild = new BoxViewStub { Color = Colors.Yellow };
+                handler.Remove(0, disconnectedChild);
+
+                return (before, panel.Children.Count);
+            }
+            return (-1, -1);
+        });
+
+        Assert.Equal(3, panelCountBefore);
+        Assert.Equal(2, panelCountAfter);
+    }
+
     #endregion
 
     #region Background Color Tests

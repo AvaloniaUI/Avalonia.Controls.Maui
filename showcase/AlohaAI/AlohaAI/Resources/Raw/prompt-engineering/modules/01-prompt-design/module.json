@@ -1,0 +1,32 @@
+{
+  "id": "01-prompt-design",
+  "title": "Prompt Design Fundamentals",
+  "description": "Core prompt patterns, control techniques, and reusable templates for reliable LLM outputs",
+  "lessons": [
+    {
+      "id": "01-prompt-anatomy",
+      "title": "Anatomy of a Good Prompt",
+      "file": "01-prompt-anatomy.md",
+      "xp": 10
+    },
+    {
+      "id": "02-system-instructions",
+      "title": "System vs User Instructions",
+      "file": "02-system-instructions.md",
+      "xp": 10
+    },
+    {
+      "id": "03-few-shot-prompting",
+      "title": "Few-Shot & Role Prompting",
+      "file": "03-few-shot-prompting.md",
+      "xp": 15
+    },
+    {
+      "id": "04-structured-outputs",
+      "title": "Structured Outputs with JSON Schemas",
+      "file": "04-structured-outputs.md",
+      "xp": 15
+    }
+  ],
+  "quiz": "quiz.json"
+}

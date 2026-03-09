@@ -3,217 +3,135 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Platform;
+using AvaloniaContentPage = Avalonia.Controls.ContentPage;
+using AvaloniaTabbedPage = Avalonia.Controls.TabbedPage;
 using AvaloniaImage = Avalonia.Controls.Image;
+using MauiTabbedPage = Microsoft.Maui.Controls.TabbedPage;
+using MauiPage = Microsoft.Maui.Controls.Page;
 
 namespace Avalonia.Controls.Maui.Extensions;
 
 /// <summary>
-/// Extension methods for mapping <see cref="TabbedPage"/> properties to Avalonia <see cref="TabControl"/>.
+/// Extension methods for mapping <see cref="MauiTabbedPage"/> properties to Avalonia <see cref="AvaloniaTabbedPage"/>.
 /// </summary>
 public static class TabbedPageExtensions
 {
-    // Resource keys for tab bar styling (used by TabbedPage.axaml DynamicResource bindings)
-    private const string BarBackgroundResourceKey = "TabbedPageBarBackground";
-    private const string BarTextColorResourceKey = "TabbedPageBarTextColor";
-    private const string SelectedTabColorResourceKey = "TabbedPageSelectedTabColor";
-    private const string UnselectedTabColorResourceKey = "TabbedPageUnselectedTabColor";
+    // Resource key for tab bar strip background (matches TabbedPage Fluent theme)
+    private const string BarBackgroundResourceKey = "TabbedPageTabStripBackground";
+
+    // TabbedPage Fluent theme resource keys we override for tab appearance.
+    // The indicator binds to $parent[TabItem].Foreground, so setting the selected
+    // foreground key controls both tab text and the selection indicator.
+    private static readonly string[] FluentThemeKeys =
+    [
+        "TabbedPageTabItemHeaderForegroundSelected",
+        "TabbedPageTabItemHeaderForegroundUnselected",
+        "TabbedPageTabItemHeaderForegroundDisabled"
+    ];
 
     /// <summary>
     /// Updates the tab bar background brush from the TabbedPage's BarBackground property.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the BarBackground value.</param>
-    /// <remarks>
-    /// This property affects the tab bar strip area via DynamicResource binding.
-    /// </remarks>
-    public static void UpdateBarBackground(this TabControl tabControl, TabbedPage tabbedPage)
+    /// <param name="tabbedPage">The Avalonia TabbedPage to update.</param>
+    /// <param name="mauiTabbedPage">The MAUI TabbedPage containing the BarBackground value.</param>
+    public static void UpdateBarBackground(this AvaloniaTabbedPage tabbedPage, MauiTabbedPage mauiTabbedPage)
     {
-        if (tabbedPage.BarBackground != null)
+        if (mauiTabbedPage.BarBackground != null)
         {
-            var brush = tabbedPage.BarBackground.ToPlatform();
+            var brush = mauiTabbedPage.BarBackground.ToPlatform();
             if (brush != null)
             {
-                tabControl.Resources[BarBackgroundResourceKey] = brush;
+                tabbedPage.Resources[BarBackgroundResourceKey] = brush;
             }
         }
         else
         {
-            tabControl.Resources.Remove(BarBackgroundResourceKey);
+            tabbedPage.Resources.Remove(BarBackgroundResourceKey);
         }
     }
 
     /// <summary>
     /// Updates the tab bar background color from the TabbedPage's BarBackgroundColor property.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the BarBackgroundColor value.</param>
-    /// <remarks>
-    /// If BarBackground is set, it takes precedence over BarBackgroundColor.
-    /// This property affects the tab bar strip area via DynamicResource binding.
-    /// </remarks>
-    public static void UpdateBarBackgroundColor(this TabControl tabControl, TabbedPage tabbedPage)
+    /// <param name="tabbedPage">The Avalonia TabbedPage to update.</param>
+    /// <param name="mauiTabbedPage">The MAUI TabbedPage containing the BarBackgroundColor value.</param>
+    public static void UpdateBarBackgroundColor(this AvaloniaTabbedPage tabbedPage, MauiTabbedPage mauiTabbedPage)
     {
         // BarBackground takes precedence
-        if (tabbedPage.BarBackground != null)
+        if (mauiTabbedPage.BarBackground != null)
             return;
 
-        if (tabbedPage.BarBackgroundColor != null)
+        if (mauiTabbedPage.BarBackgroundColor != null)
         {
-            var brush = new Media.SolidColorBrush(tabbedPage.BarBackgroundColor.ToAvaloniaColor());
-            tabControl.Resources[BarBackgroundResourceKey] = brush;
+            var brush = new Media.SolidColorBrush(mauiTabbedPage.BarBackgroundColor.ToAvaloniaColor());
+            tabbedPage.Resources[BarBackgroundResourceKey] = brush;
         }
         else
         {
-            tabControl.Resources.Remove(BarBackgroundResourceKey);
+            tabbedPage.Resources.Remove(BarBackgroundResourceKey);
         }
     }
 
     /// <summary>
     /// Updates the tab bar text color from the TabbedPage's BarTextColor property.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the BarTextColor value.</param>
-    /// <remarks>
-    /// This sets the text color for tab headers in the bar.
-    /// </remarks>
-    public static void UpdateBarTextColor(this TabControl tabControl, TabbedPage tabbedPage)
+    public static void UpdateBarTextColor(this AvaloniaTabbedPage tabbedPage, MauiTabbedPage mauiTabbedPage)
     {
-        if (tabbedPage.BarTextColor != null)
-        {
-            var brush = new Media.SolidColorBrush(tabbedPage.BarTextColor.ToAvaloniaColor());
-            tabControl.Resources[BarTextColorResourceKey] = brush;
-
-            // Apply to all tab item headers
-            foreach (var item in tabControl.Items)
-            {
-                if (item is TabItem tabItem)
-                {
-                    tabItem.Foreground = brush;
-                }
-            }
-        }
-        else
-        {
-            tabControl.Resources.Remove(BarTextColorResourceKey);
-
-            foreach (var item in tabControl.Items)
-            {
-                if (item is TabItem tabItem)
-                {
-                    tabItem.ClearValue(TabItem.ForegroundProperty);
-                }
-            }
-        }
+        tabbedPage.UpdateTabColors(mauiTabbedPage);
     }
 
     /// <summary>
     /// Updates the selected tab color from the TabbedPage's SelectedTabColor property.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the SelectedTabColor value.</param>
-    /// <remarks>
-    /// This applies a background color to the currently selected tab header.
-    /// </remarks>
-    public static void UpdateSelectedTabColor(this TabControl tabControl, TabbedPage tabbedPage)
+    public static void UpdateSelectedTabColor(this AvaloniaTabbedPage tabbedPage, MauiTabbedPage mauiTabbedPage)
     {
-        if (tabbedPage.SelectedTabColor != null)
-        {
-            var brush = new Media.SolidColorBrush(tabbedPage.SelectedTabColor.ToAvaloniaColor());
-            tabControl.Resources[SelectedTabColorResourceKey] = brush;
-
-            // Apply to currently selected tab item
-            if (tabControl.SelectedItem is TabItem selectedTabItem)
-            {
-                selectedTabItem.Background = brush;
-            }
-        }
-        else
-        {
-            tabControl.Resources.Remove(SelectedTabColorResourceKey);
-
-            if (tabControl.SelectedItem is TabItem selectedTabItem)
-            {
-                selectedTabItem.ClearValue(TabItem.BackgroundProperty);
-            }
-        }
+        tabbedPage.UpdateTabColors(mauiTabbedPage);
     }
 
     /// <summary>
     /// Updates the unselected tab color from the TabbedPage's UnselectedTabColor property.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the UnselectedTabColor value.</param>
-    /// <remarks>
-    /// This applies a background color to tabs that are not currently selected.
-    /// </remarks>
-    public static void UpdateUnselectedTabColor(this TabControl tabControl, TabbedPage tabbedPage)
+    public static void UpdateUnselectedTabColor(this AvaloniaTabbedPage tabbedPage, MauiTabbedPage mauiTabbedPage)
     {
-        if (tabbedPage.UnselectedTabColor != null)
-        {
-            var brush = new Media.SolidColorBrush(tabbedPage.UnselectedTabColor.ToAvaloniaColor());
-            tabControl.Resources[UnselectedTabColorResourceKey] = brush;
-
-            // Apply to all non-selected tab items
-            foreach (var item in tabControl.Items)
-            {
-                if (item is TabItem tabItem && tabItem != tabControl.SelectedItem)
-                {
-                    tabItem.Background = brush;
-                }
-            }
-        }
-        else
-        {
-            tabControl.Resources.Remove(UnselectedTabColorResourceKey);
-
-            foreach (var item in tabControl.Items)
-            {
-                if (item is TabItem tabItem && tabItem != tabControl.SelectedItem)
-                {
-                    tabItem.ClearValue(TabItem.BackgroundProperty);
-                }
-            }
-        }
+        tabbedPage.UpdateTabColors(mauiTabbedPage);
     }
 
     /// <summary>
     /// Updates the tab items to reflect the TabbedPage's Children collection.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the children pages.</param>
+    /// <param name="tabbedPage">The Avalonia TabbedPage to update.</param>
+    /// <param name="mauiTabbedPage">The MAUI TabbedPage containing the children pages.</param>
     /// <param name="mauiContext">The MAUI context for converting pages to platform views.</param>
-    public static void UpdateChildren(this TabControl tabControl, TabbedPage tabbedPage, IMauiContext? mauiContext)
+    public static void UpdateChildren(this AvaloniaTabbedPage tabbedPage, MauiTabbedPage mauiTabbedPage, IMauiContext? mauiContext)
     {
         if (mauiContext == null)
             return;
 
-        tabControl.Items.Clear();
+        var pages = new List<Avalonia.Controls.Page>();
 
-        foreach (var page in tabbedPage.Children)
+        foreach (var page in mauiTabbedPage.Children)
         {
-            var tabItem = new TabItem
-            {
-                Header = CreateTabHeader(page, mauiContext),
-                Content = page.ToPlatform(mauiContext)
-            };
-
-            tabControl.Items.Add(tabItem);
+            var wrappedPage = (AvaloniaContentPage)page.ToPlatform(mauiContext);
+            wrappedPage.Header = CreateTabHeader(page, mauiContext);
+            pages.Add(wrappedPage);
         }
 
+        tabbedPage.Pages = pages;
+
         // Reapply bar and tab colors after rebuilding items
-        UpdateTabColors(tabControl, tabbedPage);
+        UpdateTabColors(tabbedPage, mauiTabbedPage);
 
         // Apply SelectedItem if set
-        tabControl.UpdateSelectedItem(tabbedPage);
+        tabbedPage.UpdateSelectedItem(mauiTabbedPage);
     }
 
     /// <summary>
     /// Creates a tab header from a page, including icon if available.
     /// </summary>
-    private static object CreateTabHeader(Page page, IMauiContext mauiContext)
+    private static object CreateTabHeader(MauiPage page, IMauiContext mauiContext)
     {
         var title = page.Title ?? "Tab";
-        
+
         // If no icon, just return the title
         if (page.IconImageSource == null)
             return title;
@@ -277,16 +195,16 @@ public static class TabbedPageExtensions
     /// <summary>
     /// Updates the selected tab to match the TabbedPage's CurrentPage property.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the CurrentPage value.</param>
-    public static void UpdateCurrentPage(this TabControl tabControl, TabbedPage tabbedPage)
+    /// <param name="tabbedPage">The Avalonia TabbedPage to update.</param>
+    /// <param name="mauiTabbedPage">The MAUI TabbedPage containing the CurrentPage value.</param>
+    public static void UpdateCurrentPage(this AvaloniaTabbedPage tabbedPage, MauiTabbedPage mauiTabbedPage)
     {
-        if (tabbedPage.CurrentPage != null)
+        if (mauiTabbedPage.CurrentPage != null)
         {
-            var index = tabbedPage.Children.IndexOf(tabbedPage.CurrentPage);
-            if (index >= 0 && index != tabControl.SelectedIndex)
+            var index = mauiTabbedPage.Children.IndexOf(mauiTabbedPage.CurrentPage);
+            if (index >= 0 && index != tabbedPage.SelectedIndex)
             {
-                tabControl.SelectedIndex = index;
+                tabbedPage.SelectedIndex = index;
             }
         }
     }
@@ -294,81 +212,89 @@ public static class TabbedPageExtensions
     /// <summary>
     /// Updates the selected tab to match the TabbedPage's SelectedItem property.
     /// </summary>
-    /// <param name="tabControl">The Avalonia TabControl to update.</param>
-    /// <param name="tabbedPage">The MAUI TabbedPage containing the SelectedItem value.</param>
-    /// <remarks>
-    /// SelectedItem is inherited from MultiPage&lt;T&gt; and represents the data object
-    /// when using ItemsSource, or the Page when using Children directly.
-    /// </remarks>
-    public static void UpdateSelectedItem(this TabControl tabControl, TabbedPage tabbedPage)
+    /// <param name="tabbedPage">The Avalonia TabbedPage to update.</param>
+    /// <param name="mauiTabbedPage">The MAUI TabbedPage containing the SelectedItem value.</param>
+    public static void UpdateSelectedItem(this AvaloniaTabbedPage tabbedPage, MauiTabbedPage mauiTabbedPage)
     {
-        var selectedItem = tabbedPage.SelectedItem;
+        var selectedItem = mauiTabbedPage.SelectedItem;
         if (selectedItem == null)
             return;
 
-        // When using ItemsSource, SelectedItem is the data object
-        // When using Children, SelectedItem is the Page itself
-        if (tabbedPage.ItemsSource != null)
+        if (mauiTabbedPage.ItemsSource != null)
         {
-            var itemsList = tabbedPage.ItemsSource.Cast<object>().ToList();
+            var itemsList = mauiTabbedPage.ItemsSource.Cast<object>().ToList();
             var index = itemsList.IndexOf(selectedItem);
-            if (index >= 0 && index != tabControl.SelectedIndex)
+            if (index >= 0 && index != tabbedPage.SelectedIndex)
             {
-                tabControl.SelectedIndex = index;
+                tabbedPage.SelectedIndex = index;
             }
         }
         else if (selectedItem is Page page)
         {
-            var index = tabbedPage.Children.IndexOf(page);
-            if (index >= 0 && index != tabControl.SelectedIndex)
+            var index = mauiTabbedPage.Children.IndexOf(page);
+            if (index >= 0 && index != tabbedPage.SelectedIndex)
             {
-                tabControl.SelectedIndex = index;
+                tabbedPage.SelectedIndex = index;
             }
         }
     }
 
     /// <summary>
-    /// Reapplies all tab colors from stored resources after tab items are rebuilt or selection changes.
+    /// Reapplies all tab colors after tab items are rebuilt or selection changes.
+    /// Uses Fluent theme resource overrides instead of direct property setting so that
+    /// all states (selected, hover, pressed) are handled correctly by the theme.
     /// </summary>
-    public static void UpdateTabColors(this TabControl tabControl, TabbedPage tabbedPage)
+    public static void UpdateTabColors(this AvaloniaTabbedPage tabbedPage, MauiTabbedPage mauiTabbedPage)
     {
-        // Apply bar background resource (template will pick it up via DynamicResource)
-        if (tabbedPage.BarBackground != null)
+        // Apply bar background resource
+        if (mauiTabbedPage.BarBackground != null)
         {
-            var brush = tabbedPage.BarBackground.ToPlatform();
+            var brush = mauiTabbedPage.BarBackground.ToPlatform();
             if (brush != null)
             {
-                tabControl.Resources[BarBackgroundResourceKey] = brush;
+                tabbedPage.Resources[BarBackgroundResourceKey] = brush;
             }
         }
-        else if (tabbedPage.BarBackgroundColor != null)
+        else if (mauiTabbedPage.BarBackgroundColor != null)
         {
-            var brush = new Media.SolidColorBrush(tabbedPage.BarBackgroundColor.ToAvaloniaColor());
-            tabControl.Resources[BarBackgroundResourceKey] = brush;
+            tabbedPage.Resources[BarBackgroundResourceKey] =
+                new Media.SolidColorBrush(mauiTabbedPage.BarBackgroundColor.ToAvaloniaColor());
         }
 
-        // Apply selected tab color
-        if (tabbedPage.SelectedTabColor != null)
-        {
-            tabControl.UpdateSelectedTabColor(tabbedPage);
-        }
+        var selectedTabColor = mauiTabbedPage.SelectedTabColor;
+        var unselectedTabColor = mauiTabbedPage.UnselectedTabColor;
+        var barTextColor = mauiTabbedPage.BarTextColor;
 
-        // Apply unselected tab color
-        if (tabbedPage.UnselectedTabColor != null)
-        {
-            tabControl.UpdateUnselectedTabColor(tabbedPage);
-        }
+        bool hasExplicitColors = selectedTabColor != null || unselectedTabColor != null || barTextColor != null;
 
-        // Apply text color
-        if (tabbedPage.BarTextColor != null)
+        if (hasExplicitColors)
         {
-            var textBrush = new Media.SolidColorBrush(tabbedPage.BarTextColor.ToAvaloniaColor());
-            foreach (var item in tabControl.Items)
+            // SelectedTabColor controls the selected tab text + indicator (indicator binds to TabItem.Foreground)
+            if (selectedTabColor != null)
             {
-                if (item is TabItem tabItem)
-                {
-                    tabItem.Foreground = textBrush;
-                }
+                var brush = new Media.SolidColorBrush(selectedTabColor.ToAvaloniaColor());
+                tabbedPage.Resources["TabbedPageTabItemHeaderForegroundSelected"] = brush;
+            }
+
+            // BarTextColor overrides both selected and unselected foreground
+            if (barTextColor != null)
+            {
+                var brush = new Media.SolidColorBrush(barTextColor.ToAvaloniaColor());
+                tabbedPage.Resources["TabbedPageTabItemHeaderForegroundSelected"] = brush;
+                tabbedPage.Resources["TabbedPageTabItemHeaderForegroundUnselected"] = brush;
+            }
+
+            if (unselectedTabColor != null)
+            {
+                var brush = new Media.SolidColorBrush(unselectedTabColor.ToAvaloniaColor());
+                tabbedPage.Resources["TabbedPageTabItemHeaderForegroundUnselected"] = brush;
+            }
+        }
+        else
+        {
+            foreach (var key in FluentThemeKeys)
+            {
+                tabbedPage.Resources.Remove(key);
             }
         }
     }

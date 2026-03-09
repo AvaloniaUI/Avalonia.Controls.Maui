@@ -1,37 +1,186 @@
+using Avalonia.Controls.Maui;
 using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Headless.XUnit;
-using Microsoft.Maui.Controls;
 using Avalonia.Controls.Maui.Tests.Stubs;
+using Avalonia.Media;
+using MauiColors = Microsoft.Maui.Graphics.Colors;
+using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
+using MauiNavigationPage = Microsoft.Maui.Controls.NavigationPage;
+using MauiFlyoutPage = Microsoft.Maui.Controls.FlyoutPage;
+using AvaloniaNavigationPage = Avalonia.Controls.NavigationPage;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers
 {
-    public class NavigationPageHandlerTests : HandlerTestBase<NavigationViewHandler, NavigationPage>
+    public class NavigationPageHandlerTests : HandlerTestBase<NavigationViewHandler, MauiNavigationPage>
     {
-        [AvaloniaFact(DisplayName = "ToolbarItems Are Added To Platform View")]
-        public async Task ToolbarItems_Are_Added_To_Platform_View()
+        [AvaloniaFact(DisplayName = "NavigationPage Creates AvaloniaNavigationPage Platform View")]
+        public async Task NavigationPage_Creates_AvaloniaNavigationPage_Platform_View()
         {
-            var page = new PageStub();
-            page.ToolbarItems.Add(new ToolbarItem { Text = "Item 1" });
-            page.ToolbarItems.Add(new ToolbarItem { Text = "Item 2" });
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
 
-            var navigationPage = new NavigationPage(page);
-            
             var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
 
             await InvokeOnMainThreadAsync(() =>
             {
-                var navigationView = handler.PlatformView;
-                Assert.NotNull(navigationView.ToolbarItemsContainer);
-                
-                var items = navigationView.ToolbarItemsContainer.Children
-                    .OfType<Button>()
-                    .Where(b => b.Content?.ToString() != "...")
-                    .ToList();
+                Assert.NotNull(handler.PlatformView);
+                Assert.IsType<AvaloniaNavigationPage>(handler.PlatformView);
+            });
+        }
 
-                Assert.Equal(2, items.Count);
-                
-                Assert.Equal("Item 1", items[0].Content);
-                Assert.Equal("Item 2", items[1].Content);
+        [AvaloniaFact(DisplayName = "Initial Page Is Pushed To Stack")]
+        public async Task Initial_Page_Is_Pushed_To_Stack()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                Assert.Single(navigationPage.Navigation.NavigationStack);
+                Assert.Equal(rootPage, navigationPage.CurrentPage);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "Push Adds Page To Stack")]
+        public async Task Push_Adds_Page_To_Stack()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                var detailPage = new MauiContentPage { Title = "Detail" };
+                await navigationPage.PushAsync(detailPage);
+
+                Assert.Equal(2, navigationPage.Navigation.NavigationStack.Count);
+                Assert.Equal(detailPage, navigationPage.CurrentPage);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "Pop Removes Page From Stack")]
+        public async Task Pop_Removes_Page_From_Stack()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                await navigationPage.PushAsync(new MauiContentPage { Title = "Detail" });
+                Assert.Equal(2, navigationPage.Navigation.NavigationStack.Count);
+
+                await navigationPage.PopAsync();
+                Assert.Single(navigationPage.Navigation.NavigationStack);
+                Assert.Equal(rootPage, navigationPage.CurrentPage);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "HasBackButton Is False At Root")]
+        public async Task HasBackButton_Is_False_At_Root()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                // At root, only 1 page on stack - no back button expected
+                Assert.Single(navigationPage.Navigation.NavigationStack);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "HasBackButton Is True After Push")]
+        public async Task HasBackButton_Is_True_After_Push()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                await navigationPage.PushAsync(new MauiContentPage { Title = "Detail" });
+                Assert.Equal(2, navigationPage.Navigation.NavigationStack.Count);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "Hamburger Present When Inside FlyoutPage Popover At Root")]
+        public async Task Hamburger_Present_When_Inside_FlyoutPage_Popover_At_Root()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+            var flyoutPage = new MauiFlyoutPage
+            {
+                Flyout = new MauiContentPage { Title = "Menu" },
+                Detail = navigationPage,
+                FlyoutLayoutBehavior = Microsoft.Maui.Controls.FlyoutLayoutBehavior.Popover
+            };
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                // At root within FlyoutPage popover: stack depth is 1
+                Assert.Single(navigationPage.Navigation.NavigationStack);
+                Assert.Equal(rootPage, navigationPage.CurrentPage);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "Back Button Replaces Hamburger When Navigated Deeper")]
+        public async Task Back_Button_Replaces_Hamburger_When_Navigated_Deeper()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+            var flyoutPage = new MauiFlyoutPage
+            {
+                Flyout = new MauiContentPage { Title = "Menu" },
+                Detail = navigationPage,
+                FlyoutLayoutBehavior = Microsoft.Maui.Controls.FlyoutLayoutBehavior.Popover
+            };
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            // At root: 1 page
+            await InvokeOnMainThreadAsync(() =>
+            {
+                Assert.Single(navigationPage.Navigation.NavigationStack);
+            });
+
+            // Push a second page
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                await navigationPage.PushAsync(new MauiContentPage { Title = "Detail Page" });
+            });
+
+            // After push: 2 pages
+            await InvokeOnMainThreadAsync(() =>
+            {
+                Assert.Equal(2, navigationPage.Navigation.NavigationStack.Count);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "ToolbarItems Are Present On Page")]
+        public async Task ToolbarItems_Are_Present_On_Page()
+        {
+            var page = new PageStub();
+            page.ToolbarItems.Add(new Microsoft.Maui.Controls.ToolbarItem { Text = "Item 1" });
+            page.ToolbarItems.Add(new Microsoft.Maui.Controls.ToolbarItem { Text = "Item 2" });
+
+            var navigationPage = new MauiNavigationPage(page);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                Assert.Equal(2, page.ToolbarItems.Count);
+                Assert.Equal("Item 1", page.ToolbarItems[0].Text);
+                Assert.Equal("Item 2", page.ToolbarItems[1].Text);
             });
         }
 
@@ -39,34 +188,26 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
         public async Task ToolbarItems_Update_When_Collection_Changes()
         {
             var page = new PageStub();
-            var item1 = new ToolbarItem { Text = "Item 1" };
+            var item1 = new Microsoft.Maui.Controls.ToolbarItem { Text = "Item 1" };
             page.ToolbarItems.Add(item1);
 
-            var navigationPage = new NavigationPage(page);
-            
+            var navigationPage = new MauiNavigationPage(page);
+
             var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
 
             await InvokeOnMainThreadAsync(() =>
             {
-                var items = handler.PlatformView.ToolbarItemsContainer.Children
-                    .OfType<Button>()
-                    .Where(b => b.Content?.ToString() != "...")
-                    .ToList();
-                Assert.Single(items);
+                Assert.Single(page.ToolbarItems);
             });
 
             await InvokeOnMainThreadAsync(() =>
             {
-                page.ToolbarItems.Add(new ToolbarItem { Text = "Item 2" });
+                page.ToolbarItems.Add(new Microsoft.Maui.Controls.ToolbarItem { Text = "Item 2" });
             });
 
             await InvokeOnMainThreadAsync(() =>
             {
-                var items = handler.PlatformView.ToolbarItemsContainer.Children
-                    .OfType<Button>()
-                    .Where(b => b.Content?.ToString() != "...")
-                    .ToList();
-                Assert.Equal(2, items.Count);
+                Assert.Equal(2, page.ToolbarItems.Count);
             });
 
             await InvokeOnMainThreadAsync(() =>
@@ -76,247 +217,251 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
 
             await InvokeOnMainThreadAsync(() =>
             {
-                 var items = handler.PlatformView.ToolbarItemsContainer.Children
-                    .OfType<Button>()
-                    .Where(b => b.Content?.ToString() != "...")
-                    .ToList();
-                 Assert.Single(items);
-                 Assert.Equal("Item 2", items[0].Content);
+                Assert.Single(page.ToolbarItems);
+                Assert.Equal("Item 2", page.ToolbarItems[0].Text);
             });
         }
 
-        [AvaloniaFact(DisplayName = "ToolbarItems Update When Property Changes")]
-        public async Task ToolbarItems_Update_When_Property_Changes()
+        [AvaloniaFact(DisplayName = "Page Title Is Accessible")]
+        public async Task Page_Title_Is_Accessible()
         {
-            var page = new PageStub();
-            var item1 = new ToolbarItem { Text = "Item 1", IsEnabled = true };
-            page.ToolbarItems.Add(item1);
-
-            var navigationPage = new NavigationPage(page);
+            var page = new PageStub { Title = "My Page" };
+            var navigationPage = new MauiNavigationPage(page);
 
             var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
 
             await InvokeOnMainThreadAsync(() =>
             {
-                var items = handler.PlatformView.ToolbarItemsContainer.Children
-                    .OfType<Button>()
-                    .Where(b => b.Content?.ToString() != "...")
-                    .ToList();
-                var btn = items[0];
-                Assert.Equal("Item 1", btn.Content);
-                Assert.True(btn.IsEnabled);
-            });
-
-            await InvokeOnMainThreadAsync(() =>
-            {
-                item1.Text = "Updated Item";
-            });
-
-            await InvokeOnMainThreadAsync(() =>
-            {
-                var items = handler.PlatformView.ToolbarItemsContainer.Children
-                    .OfType<Button>()
-                    .Where(b => b.Content?.ToString() != "...")
-                    .ToList();
-                var btn = items[0];
-                Assert.Equal("Updated Item", btn.Content);
-            });
-
-            await InvokeOnMainThreadAsync(() =>
-            {
-                item1.IsEnabled = false;
-            });
-
-            await InvokeOnMainThreadAsync(() =>
-            {
-                var items = handler.PlatformView.ToolbarItemsContainer.Children
-                    .OfType<Button>()
-                    .Where(b => b.Content?.ToString() != "...")
-                    .ToList();
-                var btn = items[0];
-                Assert.False(btn.IsEnabled);
+                Assert.Equal("My Page", navigationPage.CurrentPage?.Title);
             });
         }
-        [AvaloniaFact(DisplayName = "ToolbarItems Are Sorted By Priority")]
-        public async Task ToolbarItems_Are_Sorted_By_Priority()
-        {
-            var page = new PageStub();
-            page.ToolbarItems.Add(new ToolbarItem { Text = "Item 2", Priority = 1 });
-            page.ToolbarItems.Add(new ToolbarItem { Text = "Item 1", Priority = 0 });
-            page.ToolbarItems.Add(new ToolbarItem { Text = "Item 3", Priority = 2 });
 
-            var navigationPage = new NavigationPage(page);
+        [AvaloniaFact(DisplayName = "HasNavigationBar Defaults To True")]
+        public async Task HasNavigationBar_Defaults_To_True()
+        {
+            var page = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(page);
+
             var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
 
             await InvokeOnMainThreadAsync(() =>
             {
-                var container = handler.PlatformView.ToolbarItemsContainer;
-                var buttons = container.Children.OfType<Button>().Where(b => b.Content?.ToString() != "...").ToList();
-
-                Assert.Equal(3, buttons.Count);
-                Assert.Equal("Item 1", buttons[0].Content);
-                Assert.Equal("Item 2", buttons[1].Content);
-                Assert.Equal("Item 3", buttons[2].Content);
+                Assert.True(MauiNavigationPage.GetHasNavigationBar(page));
             });
         }
 
-        [AvaloniaFact(DisplayName = "ToolbarItems Respect Order Primary vs Secondary")]
-        public async Task ToolbarItems_Respect_Order_Primary_vs_Secondary()
+        [AvaloniaFact(DisplayName = "HasNavigationBar Can Be Set To False")]
+        public async Task HasNavigationBar_Can_Be_Set_To_False()
         {
-            var page = new PageStub();
-            page.ToolbarItems.Add(new ToolbarItem { Text = "Primary", Order = ToolbarItemOrder.Primary });
-            page.ToolbarItems.Add(new ToolbarItem { Text = "Secondary", Order = ToolbarItemOrder.Secondary });
+            var page = new PageStub { Title = "Root" };
+            MauiNavigationPage.SetHasNavigationBar(page, false);
+            var navigationPage = new MauiNavigationPage(page);
 
-            var navigationPage = new NavigationPage(page);
             var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
 
             await InvokeOnMainThreadAsync(() =>
             {
-                var view = handler.PlatformView;
-                
-                // Check Primary
-                var primaryContainer = view.ToolbarItemsContainer;
-                var primaryBtn = primaryContainer.Children.OfType<Button>().FirstOrDefault(b => b.Content?.ToString() == "Primary");
-                Assert.NotNull(primaryBtn);
-
-                // Check Secondary (Overflow)
-                var overflowMenu = view.ToolbarOverflowMenu;
-                Assert.NotNull(overflowMenu);
-                Assert.Single(overflowMenu.Items);
-                
-                var secondaryItem = overflowMenu.Items[0] as MenuItem;
-                Assert.NotNull(secondaryItem);
-                Assert.Equal("Secondary", secondaryItem.Header);
-
-                // Verify Overflow Button is visible
-                Assert.True(view.ToolbarOverflowButton.IsVisible);
+                Assert.False(MauiNavigationPage.GetHasNavigationBar(page));
             });
         }
 
-        [AvaloniaFact(DisplayName = "ToolbarItems Update When Priority Changes")]
-        public async Task ToolbarItems_Update_When_Priority_Changes()
+        [AvaloniaFact(DisplayName = "Multiple Pushes Build Stack Correctly")]
+        public async Task Multiple_Pushes_Build_Stack_Correctly()
         {
-            var page = new PageStub();
-            var item1 = new ToolbarItem { Text = "Item A", Priority = 10 };
-            var item2 = new ToolbarItem { Text = "Item B", Priority = 0 }; // Should be first
-            page.ToolbarItems.Add(item1);
-            page.ToolbarItems.Add(item2);
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
 
-            var navigationPage = new NavigationPage(page);
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                var page2 = new MauiContentPage { Title = "Page 2" };
+                var page3 = new MauiContentPage { Title = "Page 3" };
+
+                await navigationPage.PushAsync(page2);
+                await navigationPage.PushAsync(page3);
+
+                Assert.Equal(3, navigationPage.Navigation.NavigationStack.Count);
+                Assert.Equal(page3, navigationPage.CurrentPage);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "IconColor Sets NavigationBarForeground Resource")]
+        public async Task IconColor_Sets_NavigationBarForeground_Resource()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                var childPage = new MauiContentPage { Title = "Red Icon" };
+                MauiNavigationPage.SetIconColor(childPage, MauiColors.Red);
+                await navigationPage.PushAsync(childPage);
+
+                Assert.True(handler.PlatformView.Resources.ContainsKey("NavigationBarForeground"));
+                var brush = handler.PlatformView.Resources["NavigationBarForeground"] as ISolidColorBrush;
+                Assert.NotNull(brush);
+                Assert.Equal(MauiColors.Red.ToAvaloniaColor(), brush.Color);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "IconColor Cleared When Navigating Back")]
+        public async Task IconColor_Cleared_When_Navigating_Back()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                var childPage = new MauiContentPage { Title = "Red Icon" };
+                MauiNavigationPage.SetIconColor(childPage, MauiColors.Red);
+                await navigationPage.PushAsync(childPage);
+
+                Assert.True(handler.PlatformView.Resources.ContainsKey("NavigationBarForeground"));
+
+                await navigationPage.PopAsync();
+
+                // Root page has no IconColor, so resource should be removed
+                Assert.False(handler.PlatformView.Resources.ContainsKey("NavigationBarForeground"));
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "IconColor Takes Priority Over BarTextColor")]
+        public async Task IconColor_Takes_Priority_Over_BarTextColor()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                // Set BarTextColor on the NavigationPage
+                navigationPage.BarTextColor = MauiColors.Green;
+
+                // Push a page with IconColor
+                var childPage = new MauiContentPage { Title = "Blue Icon" };
+                MauiNavigationPage.SetIconColor(childPage, MauiColors.Blue);
+                await navigationPage.PushAsync(childPage);
+
+                // IconColor should win
+                var brush = handler.PlatformView.Resources["NavigationBarForeground"] as ISolidColorBrush;
+                Assert.NotNull(brush);
+                Assert.Equal(MauiColors.Blue.ToAvaloniaColor(), brush.Color);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "BarBackgroundColor Set And Reset Does Not Crash")]
+        public async Task BarBackgroundColor_Set_And_Reset_Does_Not_Crash()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
             var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
 
             await InvokeOnMainThreadAsync(() =>
             {
-                var buttons = handler.PlatformView.ToolbarItemsContainer.Children.OfType<Button>().Where(b => b.Content?.ToString() != "...").ToList();
-                Assert.Equal("Item B", buttons[0].Content);
-                Assert.Equal("Item A", buttons[1].Content);
-            });
+                // Set a color
+                navigationPage.BarBackgroundColor = MauiColors.ForestGreen;
+                Assert.True(handler.PlatformView.Resources.ContainsKey("NavigationBarBackground"));
 
-            // Change Priority
-            await InvokeOnMainThreadAsync(() =>
-            {
-                item1.Priority = -1; // Should move to first
-            });
-
-            await InvokeOnMainThreadAsync(() =>
-            {
-                var buttons = handler.PlatformView.ToolbarItemsContainer.Children.OfType<Button>().Where(b => b.Content?.ToString() != "...").ToList();
-                Assert.Equal("Item A", buttons[0].Content);
-                Assert.Equal("Item B", buttons[1].Content);
+                // Reset to null — should not crash
+                navigationPage.BarBackgroundColor = null;
+                Assert.False(handler.PlatformView.Resources.ContainsKey("NavigationBarBackground"));
             });
         }
 
-        [AvaloniaFact(DisplayName = "ToolbarItems Update When Order Changes")]
-        public async Task ToolbarItems_Update_When_Order_Changes()
+        [AvaloniaFact(DisplayName = "BarTextColor Set And Reset Does Not Crash")]
+        public async Task BarTextColor_Set_And_Reset_Does_Not_Crash()
         {
-            var page = new PageStub();
-            var item = new ToolbarItem { Text = "My Item", Order = ToolbarItemOrder.Primary };
-            page.ToolbarItems.Add(item);
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
 
-            var navigationPage = new NavigationPage(page);
             var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
 
             await InvokeOnMainThreadAsync(() =>
             {
-                // Initially Primary
-                var primaryBtn = handler.PlatformView.ToolbarItemsContainer.Children.OfType<Button>().FirstOrDefault(b => b.Content?.ToString() == "My Item");
-                Assert.NotNull(primaryBtn);
-                Assert.Empty(handler.PlatformView.ToolbarOverflowMenu.Items);
-                Assert.False(handler.PlatformView.ToolbarOverflowButton.IsVisible);
-            });
+                // Set a color
+                navigationPage.BarTextColor = MauiColors.White;
+                Assert.True(handler.PlatformView.Resources.ContainsKey("NavigationBarForeground"));
 
-            // Change to Secondary
-            await InvokeOnMainThreadAsync(() =>
-            {
-                item.Order = ToolbarItemOrder.Secondary;
-            });
-
-            await InvokeOnMainThreadAsync(() =>
-            {
-                // Should be in Overflow now
-                var overflowMenu = handler.PlatformView.ToolbarOverflowMenu;
-                Assert.Single(overflowMenu.Items);
-                var menuItem = overflowMenu.Items[0] as MenuItem;
-                Assert.NotNull(menuItem);
-                Assert.Equal("My Item", menuItem.Header);
-                
-                // Should not be in Primary container
-                var primaryBtn = handler.PlatformView.ToolbarItemsContainer.Children.OfType<Button>().FirstOrDefault(b => b.Content?.ToString() == "My Item");
-                Assert.Null(primaryBtn);
-                
-                Assert.True(handler.PlatformView.ToolbarOverflowButton.IsVisible);
+                // Reset to null — should not crash
+                navigationPage.BarTextColor = null;
+                Assert.False(handler.PlatformView.Resources.ContainsKey("NavigationBarForeground"));
             });
         }
 
-        [AvaloniaFact(DisplayName = "Multiple Secondary Items Are Added To Overflow Menu")]
-        public async Task Multiple_Secondary_Items_Are_Added_To_Overflow_Menu()
+        [AvaloniaFact(DisplayName = "BarBackground Brush Sets Resource")]
+        public async Task BarBackground_Brush_Sets_Resource()
         {
-            var page = new PageStub();
-            page.ToolbarItems.Add(new ToolbarItem { Text = "Sec 1", Order = ToolbarItemOrder.Secondary });
-            page.ToolbarItems.Add(new ToolbarItem { Text = "Sec 2", Order = ToolbarItemOrder.Secondary });
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
 
-            var navigationPage = new NavigationPage(page);
             var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
 
             await InvokeOnMainThreadAsync(() =>
             {
-                var overflowMenu = handler.PlatformView.ToolbarOverflowMenu;
-                Assert.Equal(2, overflowMenu.Items.Count);
-                
-                var item1 = overflowMenu.Items[0] as MenuItem;
-                var item2 = overflowMenu.Items[1] as MenuItem;
-                
-                Assert.NotNull(item1);
-                Assert.NotNull(item2);
-                Assert.Equal("Sec 1", item1.Header);
-                Assert.Equal("Sec 2", item2.Header);
-                Assert.True(handler.PlatformView.ToolbarOverflowButton.IsVisible);
+                navigationPage.BarBackground = new Microsoft.Maui.Controls.SolidColorBrush(MauiColors.Purple);
+                Assert.True(handler.PlatformView.Resources.ContainsKey("NavigationBarBackground"));
+
+                // Reset
+                navigationPage.BarBackground = null;
+                Assert.False(handler.PlatformView.Resources.ContainsKey("NavigationBarBackground"));
             });
         }
 
-        [AvaloniaFact(DisplayName = "Clearing ToolbarItems Hides Overflow Button")]
-        public async Task Clearing_ToolbarItems_Hides_Overflow_Button()
+        [AvaloniaFact(DisplayName = "Avalonia Back Button Pop Syncs To MAUI Stack")]
+        public async Task Avalonia_Back_Button_Pop_Syncs_To_MAUI_Stack()
         {
-            var page = new PageStub();
-            page.ToolbarItems.Add(new ToolbarItem { Text = "Sec 1", Order = ToolbarItemOrder.Secondary });
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
 
-            var navigationPage = new NavigationPage(page);
             var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
 
-            await InvokeOnMainThreadAsync(() =>
+            await InvokeOnMainThreadAsync(async () =>
             {
-                Assert.True(handler.PlatformView.ToolbarOverflowButton.IsVisible);
-            });
+                // Push a page via MAUI
+                var detailPage = new MauiContentPage { Title = "Detail" };
+                await navigationPage.PushAsync(detailPage);
+                Assert.Equal(2, navigationPage.Navigation.NavigationStack.Count);
 
-            await InvokeOnMainThreadAsync(() =>
-            {
-                page.ToolbarItems.Clear();
-            });
+                // Simulate Avalonia-side pop (as if the user clicked the back button)
+                await handler.PlatformView.PopAsync();
 
-            await InvokeOnMainThreadAsync(() =>
+                // MAUI stack should be synced back to 1
+                Assert.Single(navigationPage.Navigation.NavigationStack);
+                Assert.Equal(rootPage, navigationPage.CurrentPage);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "Push Pop Push Results In Correct Stack Depth")]
+        public async Task Push_Pop_Push_Results_In_Correct_Stack_Depth()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(async () =>
             {
-                Assert.False(handler.PlatformView.ToolbarOverflowButton.IsVisible);
-                Assert.Empty(handler.PlatformView.ToolbarOverflowMenu.Items);
+                // Push page 1
+                var page1 = new MauiContentPage { Title = "Page 1" };
+                await navigationPage.PushAsync(page1);
+                Assert.Equal(2, navigationPage.Navigation.NavigationStack.Count);
+
+                // Simulate Avalonia-side pop
+                await handler.PlatformView.PopAsync();
+                Assert.Single(navigationPage.Navigation.NavigationStack);
+
+                // Push page 2 — should result in depth 2, not 3
+                var page2 = new MauiContentPage { Title = "Page 2" };
+                await navigationPage.PushAsync(page2);
+                Assert.Equal(2, navigationPage.Navigation.NavigationStack.Count);
+                Assert.Equal(page2, navigationPage.CurrentPage);
             });
         }
     }

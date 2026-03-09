@@ -8,10 +8,12 @@ using System.Threading.Tasks;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="ISlider"/>.</summary>
 public class SliderHandler : ViewHandler<ISlider, PlatformView>
 {
     private CancellationTokenSource? _thumbImageCts;
 
+    /// <summary>Property mapper for <see cref="SliderHandler"/>.</summary>
     public static IPropertyMapper<ISlider, SliderHandler> Mapper = new PropertyMapper<ISlider, SliderHandler>(ViewHandler.ViewMapper)
     {
         [nameof(ISlider.Maximum)] = MapMaximum,
@@ -23,37 +25,48 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
         [nameof(ISlider.Value)] = MapValue,
     };
 
+    /// <summary>Command mapper for <see cref="SliderHandler"/>.</summary>
     public static CommandMapper<ISlider, SliderHandler> CommandMapper = new(ViewCommandMapper)
     {
     };
 
+    /// <summary>Initializes a new instance of <see cref="SliderHandler"/>.</summary>
     public SliderHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="SliderHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <see langword="null"/> to use the default.</param>
     public SliderHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="SliderHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <see langword="null"/> to use the default.</param>
+    /// <param name="commandMapper">The command mapper to use, or <see langword="null"/> to use the default.</param>
     public SliderHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformView()
     {
         return new PlatformView();
     }
 
+    /// <summary>Gets a value indicating whether this handler requires a container view.</summary>
     public override bool NeedsContainer => false;
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(PlatformView platformView)
     {
         platformView.PropertyChanged += OnSliderPropertyChanged;
         base.ConnectHandler(platformView);
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.PropertyChanged -= OnSliderPropertyChanged;
@@ -62,6 +75,9 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
         base.DisconnectHandler(platformView);
     }
 
+    /// <summary>Maps the Minimum property to the platform view.</summary>
+    /// <param name="handler">The handler for the slider.</param>
+    /// <param name="slider">The virtual view.</param>
     public static void MapMinimum(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
@@ -70,6 +86,9 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
         }
     }
 
+    /// <summary>Maps the Maximum property to the platform view.</summary>
+    /// <param name="handler">The handler for the slider.</param>
+    /// <param name="slider">The virtual view.</param>
     public static void MapMaximum(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
@@ -78,6 +97,9 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
         }
     }
 
+    /// <summary>Maps the Value property to the platform view.</summary>
+    /// <param name="handler">The handler for the slider.</param>
+    /// <param name="slider">The virtual view.</param>
     public static void MapValue(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
@@ -86,6 +108,9 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
         }
     }
 
+    /// <summary>Maps the MinimumTrackColor property to the platform view.</summary>
+    /// <param name="handler">The handler for the slider.</param>
+    /// <param name="slider">The virtual view.</param>
     public static void MapMinimumTrackColor(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
@@ -94,6 +119,9 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
         }
     }
 
+    /// <summary>Maps the MaximumTrackColor property to the platform view.</summary>
+    /// <param name="handler">The handler for the slider.</param>
+    /// <param name="slider">The virtual view.</param>
     public static void MapMaximumTrackColor(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
@@ -102,6 +130,9 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
         }
     }
 
+    /// <summary>Maps the ThumbColor property to the platform view.</summary>
+    /// <param name="handler">The handler for the slider.</param>
+    /// <param name="slider">The virtual view.</param>
     public static void MapThumbColor(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)
@@ -110,6 +141,9 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
         }
     }
 
+    /// <summary>Maps the ThumbImageSource property to the platform view.</summary>
+    /// <param name="handler">The handler for the slider.</param>
+    /// <param name="slider">The virtual view.</param>
     public static void MapThumbImageSource(SliderHandler handler, ISlider slider)
     {
         if (handler.PlatformView is PlatformView platformView)

@@ -31,7 +31,7 @@ public partial class ImageButtonPage : ContentPage
     }
 
     // ImageButton event handlers
-    private void OnImageButtonClicked(object sender, EventArgs e)
+    private void OnImageButtonClicked(object? sender, EventArgs e)
     {
         _imageButtonClickCount++;
         ImageButtonClickCountLabel.Text = $"ImageButton click count: {_imageButtonClickCount}";
@@ -43,45 +43,45 @@ public partial class ImageButtonPage : ContentPage
     }
 
     // ImageButton Pressed and Released event handlers
-    private void OnImageButton1Pressed(object sender, EventArgs e)
+    private void OnImageButton1Pressed(object? sender, EventArgs e)
     {
-        var imageButton = (ImageButton)sender;
+        var imageButton = (ImageButton)sender!;
         imageButton.BackgroundColor = Colors.DarkBlue;
         imageButton.Scale = 0.95;
     }
 
-    private void OnImageButton1Released(object sender, EventArgs e)
+    private void OnImageButton1Released(object? sender, EventArgs e)
     {
-        var imageButton = (ImageButton)sender;
+        var imageButton = (ImageButton)sender!;
         imageButton.BackgroundColor = Colors.LightBlue;
         imageButton.Scale = 1.0;
     }
 
-    private void OnImageButton2Pressed(object sender, EventArgs e)
+    private void OnImageButton2Pressed(object? sender, EventArgs e)
     {
-        var imageButton = (ImageButton)sender;
+        var imageButton = (ImageButton)sender!;
         imageButton.BackgroundColor = Colors.DarkGreen;
         imageButton.BorderWidth = 4;
     }
 
-    private void OnImageButton2Released(object sender, EventArgs e)
+    private void OnImageButton2Released(object? sender, EventArgs e)
     {
-        var imageButton = (ImageButton)sender;
+        var imageButton = (ImageButton)sender!;
         imageButton.BackgroundColor = Colors.LightGreen;
         imageButton.BorderWidth = 2;
     }
 
-    private void OnImageButton3Pressed(object sender, EventArgs e)
+    private void OnImageButton3Pressed(object? sender, EventArgs e)
     {
-        var imageButton = (ImageButton)sender;
+        var imageButton = (ImageButton)sender!;
         imageButton.BackgroundColor = Colors.DarkRed;
         imageButton.Scale = 0.9;
         imageButton.Rotation = 5;
     }
 
-    private void OnImageButton3Released(object sender, EventArgs e)
+    private void OnImageButton3Released(object? sender, EventArgs e)
     {
-        var imageButton = (ImageButton)sender;
+        var imageButton = (ImageButton)sender!;
         imageButton.BackgroundColor = Colors.LightCoral;
         imageButton.Scale = 1.0;
         imageButton.Rotation = 0;

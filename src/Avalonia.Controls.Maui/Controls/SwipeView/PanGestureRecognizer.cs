@@ -18,11 +18,20 @@ public class PanGestureRecognizer : GestureRecognizer
     private Visual? _visual;
     private Visual? _parent;
 
+    /// <summary>
+    /// Occurs during the pan gesture lifecycle, including started, running, and completed states.
+    /// </summary>
     public event EventHandler<PanUpdatedEventArgs>? OnPan;
 
+    /// <summary>
+    /// Gets or sets the allowed pan directions for this gesture recognizer.
+    /// </summary>
     public PanDirection Direction { get; set; } =
         PanDirection.Left | PanDirection.Right | PanDirection.Up | PanDirection.Down;
 
+    /// <summary>
+    /// Gets or sets the minimum distance in pixels the pointer must move before the gesture starts.
+    /// </summary>
     public float Threshold { get; set; } = 5;
 
     /// <inheritdoc />

@@ -34,7 +34,6 @@
     <Color x:Key="GameTextLightDark">#faf8ef</Color>
     <Color x:Key="LogoGoldDark">#f2b179</Color>
     <Color x:Key="ButtonColorDark">#d4a43a</Color>
-
     <!-- Legacy keys for compatibility -->
     <Color x:Key="GameBackground">#faf8ef</Color>
     <Color x:Key="BoardBackground">#bbada0</Color>

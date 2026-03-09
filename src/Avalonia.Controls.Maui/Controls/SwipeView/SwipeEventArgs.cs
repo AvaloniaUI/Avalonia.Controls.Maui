@@ -17,11 +17,20 @@ public class OpenRequestedEventArgs : RoutedEventArgs
     /// </summary>
     public bool Cancel { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="OpenRequestedEventArgs"/> with the specified swipe direction.
+    /// </summary>
+    /// <param name="openSwipeItem">The direction in which the swipe is being opened.</param>
     public OpenRequestedEventArgs(OpenSwipeItem openSwipeItem)
     {
         OpenSwipeItem = openSwipeItem;
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="OpenRequestedEventArgs"/> with the specified routed event and swipe direction.
+    /// </summary>
+    /// <param name="routedEvent">The routed event associated with this event args.</param>
+    /// <param name="openSwipeItem">The direction in which the swipe is being opened.</param>
     public OpenRequestedEventArgs(RoutedEvent? routedEvent, OpenSwipeItem openSwipeItem) : base(routedEvent)
     {
         OpenSwipeItem = openSwipeItem;
@@ -38,10 +47,17 @@ public class CloseRequestedEventArgs : RoutedEventArgs
     /// </summary>
     public bool Cancel { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="CloseRequestedEventArgs"/>.
+    /// </summary>
     public CloseRequestedEventArgs()
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="CloseRequestedEventArgs"/> with the specified routed event.
+    /// </summary>
+    /// <param name="routedEvent">The routed event associated with this event args.</param>
     public CloseRequestedEventArgs(RoutedEvent? routedEvent) : base(routedEvent)
     {
     }
@@ -57,11 +73,20 @@ public class SwipeStartedEventArgs : RoutedEventArgs
     /// </summary>
     public SwipeDirection SwipeDirection { get; }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="SwipeStartedEventArgs"/> with the specified swipe direction.
+    /// </summary>
+    /// <param name="swipeDirection">The direction of the swipe gesture.</param>
     public SwipeStartedEventArgs(SwipeDirection swipeDirection)
     {
         SwipeDirection = swipeDirection;
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="SwipeStartedEventArgs"/> with the specified routed event and swipe direction.
+    /// </summary>
+    /// <param name="routedEvent">The routed event associated with this event args.</param>
+    /// <param name="swipeDirection">The direction of the swipe gesture.</param>
     public SwipeStartedEventArgs(RoutedEvent? routedEvent, SwipeDirection swipeDirection) : base(routedEvent)
     {
         SwipeDirection = swipeDirection;
@@ -83,6 +108,11 @@ public class SwipeChangingEventArgs : EventArgs
     /// </summary>
     public double Offset { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="SwipeChangingEventArgs"/> with the specified direction and offset.
+    /// </summary>
+    /// <param name="swipeDirection">The direction of the swipe gesture.</param>
+    /// <param name="offset">The current offset of the swipe in pixels.</param>
     public SwipeChangingEventArgs(SwipeDirection swipeDirection, double offset)
     {
         SwipeDirection = swipeDirection;
@@ -105,12 +135,23 @@ public class SwipeEndedEventArgs : RoutedEventArgs
     /// </summary>
     public bool IsOpen { get; }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="SwipeEndedEventArgs"/> with the specified direction and open state.
+    /// </summary>
+    /// <param name="swipeDirection">The direction of the swipe gesture.</param>
+    /// <param name="isOpen">Whether the swipe items remain visible after the gesture completes.</param>
     public SwipeEndedEventArgs(SwipeDirection swipeDirection, bool isOpen)
     {
         SwipeDirection = swipeDirection;
         IsOpen = isOpen;
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="SwipeEndedEventArgs"/> with the specified routed event, direction, and open state.
+    /// </summary>
+    /// <param name="routedEvent">The routed event associated with this event args.</param>
+    /// <param name="swipeDirection">The direction of the swipe gesture.</param>
+    /// <param name="isOpen">Whether the swipe items remain visible after the gesture completes.</param>
     public SwipeEndedEventArgs(RoutedEvent? routedEvent, SwipeDirection swipeDirection, bool isOpen) : base(routedEvent)
     {
         SwipeDirection = swipeDirection;

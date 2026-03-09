@@ -1,0 +1,8 @@
+{
+  "modules": [
+    "01-image-generation",
+    "02-video-generation",
+    "03-audio-generation",
+    "04-content-safety"
+  ]
+}

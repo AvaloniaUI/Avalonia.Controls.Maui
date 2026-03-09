@@ -10,11 +10,13 @@ using PlatformView = Avalonia.Controls.Maui.MauiImageButton;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="IImageButton"/>.</summary>
 public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>
 {
     private CancellationTokenSource? _imageSourceCts;
     private ImageSourcePartLoader? _imageSourcePartLoader;
 
+    /// <summary>Property mapper for <see cref="ImageButtonHandler"/>.</summary>
     public static IPropertyMapper<IImageButton, ImageButtonHandler> Mapper = new PropertyMapper<IImageButton, ImageButtonHandler>(ViewHandler.ViewMapper)
     {
         // IImage properties
@@ -31,32 +33,44 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         [nameof(IButtonStroke.CornerRadius)] = MapCornerRadius,
     };
 
+    /// <summary>Command mapper for <see cref="ImageButtonHandler"/>.</summary>
     public static CommandMapper<IImageButton, ImageButtonHandler> CommandMapper = new(ViewCommandMapper);
 
+    /// <summary>Initializes a new instance of <see cref="ImageButtonHandler"/>.</summary>
     public ImageButtonHandler()
         : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="ImageButtonHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public ImageButtonHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="ImageButtonHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public ImageButtonHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>Gets the image source part loader for this handler.</summary>
     public virtual ImageSourcePartLoader SourceLoader =>
         _imageSourcePartLoader ??= new ImageSourcePartLoader(new ImageButtonImageSourcePartSetter(this));
-        
 
+
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override MauiImageButton CreatePlatformView()
     {
         return new MauiImageButton();
     }
 
+    /// <summary>Maps the Background property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="imageButton">The virtual view.</param>
     public static void MapBackground(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -65,6 +79,9 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         platformView.UpdateImageButtonBackground(handler.VirtualView);
     }
 
+    /// <summary>Maps the StrokeColor property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="imageButton">The virtual view.</param>
     public static void MapStrokeColor(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -73,6 +90,9 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         platformView.UpdateStrokeColor(handler.VirtualView);
     }
 
+    /// <summary>Maps the StrokeThickness property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="imageButton">The virtual view.</param>
     public static void MapStrokeThickness(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -81,6 +101,9 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         platformView.UpdateStrokeThickness(handler.VirtualView);
     }
 
+    /// <summary>Maps the CornerRadius property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="imageButton">The virtual view.</param>
     public static void MapCornerRadius(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -89,6 +112,9 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         platformView.UpdateCornerRadius(handler.VirtualView);
     }
 
+    /// <summary>Maps the Padding property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="imageButton">The virtual view.</param>
     public static void MapPadding(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -97,6 +123,9 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         platformView.UpdatePadding(handler.VirtualView);
     }
 
+    /// <summary>Maps the Aspect property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="imageButton">The virtual view.</param>
     public static void MapAspect(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler.PlatformView is not PlatformView platformView || handler.VirtualView is null)
@@ -105,6 +134,9 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         platformView.UpdateAspect(handler.VirtualView);
     }
 
+    /// <summary>Maps the ImageSource property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="imageButton">The virtual view.</param>
     public static void MapImageSource(ImageButtonHandler handler, IImageButton imageButton)
     {
         if (handler is not ImageButtonHandler imageButtonHandler || handler.VirtualView is null)
@@ -129,6 +161,7 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         _ = imageButtonHandler.LoadImageSourceAsync(imageSource, cts.Token);
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
@@ -138,6 +171,7 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         platformView.Click += OnClick;
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.RemoveHandler(InputElement.PointerPressedEvent, OnPointerPressed);

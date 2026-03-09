@@ -1,0 +1,60 @@
+{
+  "moduleId": "02-multimodal-llms",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "TrueFalse",
+      "question": "CLIP is trained by predicting the next pixel in an image.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 1,
+      "explanation": "CLIP is trained using contrastive learning \u2014 matching images with their text descriptions, not predicting pixels.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "MultipleChoice",
+      "question": "What allows an LLM to 'see' an image?",
+      "options": [
+        "Converting the image to ASCII art",
+        "A vision encoder that creates embeddings mapped to the LLM's token space",
+        "Retraining the LLM from scratch on pixels",
+        "Describing the image in text first"
+      ],
+      "correctIndex": 1,
+      "explanation": "A vision encoder (like ViT) processes the image into embeddings that are projected into the LLM's input space alongside text tokens.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "Multimodal embeddings enable:",
+      "options": [
+        "Only text search",
+        "Searching images using text queries and vice versa",
+        "Only image classification",
+        "Only video generation"
+      ],
+      "correctIndex": 1,
+      "explanation": "Multimodal embeddings place images and text in the same vector space, enabling cross-modal search and retrieval.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "A multimodal agent can:",
+      "options": [
+        "Only process text",
+        "See images, reason about them, and take actions using tools",
+        "Only generate images",
+        "Only transcribe audio"
+      ],
+      "correctIndex": 1,
+      "explanation": "Multimodal agents combine vision understanding with tool use \u2014 they can analyze screenshots, read documents, and take actions based on visual input.",
+      "xp": 5
+    }
+  ]
+}

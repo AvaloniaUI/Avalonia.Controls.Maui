@@ -592,8 +592,8 @@ Capture a screenshot of the current screen.
 
 | Member | Type | Status |
 |--------|------|--------|
-| IsCaptureSupported | Property | ⏳ TODO |
-| CaptureAsync() | Method | ⏳ TODO |
+| IsCaptureSupported | Property | ✅ Implemented |
+| CaptureAsync() | Method | ✅ Implemented |
 
 ### Supporting Types
 

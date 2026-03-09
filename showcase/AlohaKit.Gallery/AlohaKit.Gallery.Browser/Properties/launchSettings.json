@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "MauiPlanets.Browser": {
+    "AlohaKit.Gallery.Browser": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {

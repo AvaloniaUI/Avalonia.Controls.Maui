@@ -1,0 +1,32 @@
+{
+  "id": "02-video-generation",
+  "title": "Video Generation Workflows",
+  "description": "Create production pipelines for short-form generated video content",
+  "lessons": [
+    {
+      "id": "01-text-to-video",
+      "title": "Text-to-Video & Image-to-Video",
+      "file": "01-text-to-video.md",
+      "xp": 15
+    },
+    {
+      "id": "02-temporal-consistency",
+      "title": "Temporal Consistency & Coherence",
+      "file": "02-temporal-consistency.md",
+      "xp": 15
+    },
+    {
+      "id": "03-upscaling-post",
+      "title": "Upscaling & Post-Processing Pipelines",
+      "file": "03-upscaling-post.md",
+      "xp": 10
+    },
+    {
+      "id": "04-cost-optimization",
+      "title": "Cost-Aware Video Generation at Scale",
+      "file": "04-cost-optimization.md",
+      "xp": 15
+    }
+  ],
+  "quiz": "quiz.json"
+}

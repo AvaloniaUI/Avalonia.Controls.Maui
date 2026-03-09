@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:AlohaAI.ViewModels"
+             x:Class="AlohaAI.Views.PathDetailPage"
+             x:Name="ThisPage"
+             x:DataType="vm:PathDetailViewModel"
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
+             Shell.NavBarVisibilityAnimationEnabled="False"
+             Shell.TabBarIsVisible="False"
+             BackgroundColor="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}"
+             SafeAreaEdges="None">
+    <Grid Margin="0,0,0,-0" SafeAreaEdges="None">
+        <!-- Purple background -->
+        <BoxView InputTransparent="True">
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientTop_Dark}, Light={StaticResource GradientTop_Light}}" Offset="0.0" />
+                    <GradientStop Color="{AppThemeBinding Dark={StaticResource PageBg_Dark}, Light={StaticResource PageBg_Light}}" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <!-- Header image fading out -->
+        <Grid HeightRequest="260" VerticalOptions="Start" InputTransparent="True">
+            <Image Source="{Binding HeaderImage}" Aspect="AspectFill" />
+            <BoxView>
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                        <GradientStop Color="#00000000" Offset="0.0" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayMid_Dark}, Light={StaticResource GradientOverlayMid_Light}}" Offset="0.5" />
+                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GradientOverlayEnd_Dark}, Light={StaticResource GradientOverlayEnd_Light}}" Offset="1.0" />
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
+        </Grid>
+
+        <ScrollView VerticalScrollBarVisibility="Always">
+            <VerticalStackLayout x:Name="MainContent" Spacing="0" Padding="0,0,0,0">
+
+                <!-- Back button -->
+                <Border BackgroundColor="{AppThemeBinding Dark={StaticResource OverlayBg_Dark}, Light={StaticResource OverlayBg_Light}}" StrokeShape="RoundRectangle 12"
+                        Stroke="Transparent" WidthRequest="36" HeightRequest="36"
+                        HorizontalOptions="Start" VerticalOptions="Start" Margin="16,70,0,0">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding GoBackCommand}" />
+                    </Border.GestureRecognizers>
+                    <Path Data="M14,5 L6,12 L14,19" Stroke="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" StrokeThickness="2"
+                          StrokeLineCap="Round" StrokeLineJoin="Round"
+                          Aspect="Uniform" HeightRequest="14" WidthRequest="14"
+                          HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+
+                <!-- Title section -->
+                <VerticalStackLayout Padding="20,10,20,0" Spacing="6">
+                    <Label Text="{Binding Title}" FontSize="28" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
+                    <Label Text="{Binding PathDescription}" FontSize="15" TextColor="{AppThemeBinding Dark=#AABBCC, Light=#6E6580}"
+                           MaxLines="2" LineBreakMode="TailTruncation" />
+                </VerticalStackLayout>
+
+                <!-- Progress -->
+                <Label Text="{Binding OverallProgressText}" FontSize="13" TextColor="{AppThemeBinding Dark=#8899AA, Light=#6E6580}"
+                       Padding="20,20,20,8" HorizontalTextAlignment="End" />
+
+                <!-- Modules list -->
+                <VerticalStackLayout Padding="12,0,12,20" Spacing="16"
+                                      BindableLayout.ItemsSource="{Binding Modules}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:ModuleDisplayItem">
+                            <Border StrokeShape="RoundRectangle 16" StrokeThickness="0.5" Padding="0"
+                                    BackgroundColor="{AppThemeBinding Dark={StaticResource ModuleCardBg_Dark}, Light={StaticResource ModuleCardBg_Light}}">
+                                <Border.Stroke>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="{AppThemeBinding Dark={StaticResource InputBorder_Dark}, Light={StaticResource InputBorder_Light}}" Offset="0.0" />
+                                        <GradientStop Color="{AppThemeBinding Dark={StaticResource GlassBorderEnd_Dark}, Light={StaticResource GlassBorderEnd_Light}}" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Border.Stroke>
+                                <VerticalStackLayout Spacing="0">
+                                    <!-- Module Header -->
+                                    <Grid Padding="16,14" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <Border WidthRequest="34" HeightRequest="34"
+                                                StrokeShape="RoundRectangle 17"
+                                                BackgroundColor="#305B8FD4" Stroke="Transparent"
+                                                VerticalOptions="Center">
+                                            <Label Text="{Binding ModuleNumber}" FontSize="15" FontAttributes="Bold"
+                                                   TextColor="#7EB4F0" HorizontalOptions="Center" VerticalOptions="Center" />
+                                        </Border>
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
+                                            <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Dark={StaticResource TextPrimary_Dark}, Light={StaticResource TextPrimary_Light}}" />
+                                            <Label Text="{Binding Description}" FontSize="13" TextColor="{AppThemeBinding Dark=#778899, Light=#6E6580}"
+                                                   MaxLines="1" LineBreakMode="TailTruncation" />
+                                        </VerticalStackLayout>
+                                        <Label Grid.Column="2" Text="{Binding ProgressText}" FontSize="13"
+                                               FontAttributes="Bold" TextColor="#7EB4F0" VerticalOptions="Center" />
+                                    </Grid>
+
+                                    <!-- Separator -->
+                                    <BoxView HeightRequest="0.5" Color="{AppThemeBinding Dark=#18FFFFFF, Light=#18000000}" />
+
+                                    <!-- Lessons -->
+                                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Lessons}" Spacing="0"
+                                                         Padding="16,4,16,4">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="vm:LessonDisplayItem">
+                                                <Border BackgroundColor="Transparent" StrokeThickness="0" Padding="0,12">
+                                                    <Border.GestureRecognizers>
+                                                        <TapGestureRecognizer
+                                                            Command="{Binding TapCommand}"
+                                                            CommandParameter="{Binding .}" />
+                                                    </Border.GestureRecognizers>
+                                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                                                        <Label Text="{Binding Title}" FontSize="15"
+                                                               TextColor="{Binding TitleColor}" VerticalOptions="Center" />
+                                                        <Label Grid.Column="1" Text="›" FontSize="18"
+                                                               TextColor="{AppThemeBinding Dark=#556677, Light=#9A90A8}" VerticalOptions="Center" />
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </VerticalStackLayout>
+
+                                    <!-- Quiz Button -->
+                                    <Border IsVisible="{Binding HasQuiz}" BackgroundColor="{StaticResource Secondary}"
+                                            StrokeShape="RoundRectangle 12" Stroke="Transparent"
+                                            Padding="0,12" Margin="16,4,16,14" HeightRequest="44">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding QuizCommand}"
+                                                CommandParameter="{Binding Id}" />
+                                        </Border.GestureRecognizers>
+                                        <Label Text="Take Quiz" FontSize="16" FontAttributes="Bold"
+                                               TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

@@ -13,9 +13,6 @@
     
     <ScrollView>
         <VerticalStackLayout Spacing="20" Padding="20">
-            <Label Text="Triggers" 
-                   Style="{StaticResource Headline}" />
-
             <!-- Property Trigger -->
             <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
                     StrokeThickness="1"

@@ -1,0 +1,12 @@
+{
+  "id": "02-mcp",
+  "title": "Model Context Protocol (MCP)",
+  "description": "Understand MCP architecture — how clients, servers, and hosts enable AI tool integration",
+  "lessons": [
+    { "id": "01-what-is-mcp", "title": "What is MCP?", "file": "01-what-is-mcp.md", "xp": 10 },
+    { "id": "02-mcp-architecture", "title": "MCP Architecture", "file": "02-mcp-architecture.md", "xp": 15 },
+    { "id": "03-mcp-tools-resources", "title": "Tools & Resources", "file": "03-mcp-tools-resources.md", "xp": 15 },
+    { "id": "04-building-mcp-server", "title": "Building an MCP Server", "file": "04-building-mcp-server.md", "xp": 20 }
+  ],
+  "quiz": "quiz.json"
+}

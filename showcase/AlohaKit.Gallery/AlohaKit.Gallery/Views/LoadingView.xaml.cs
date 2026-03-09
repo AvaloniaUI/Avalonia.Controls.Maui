@@ -9,17 +9,17 @@ public partial class LoadingView : ContentPage
         UpdateColors();
     }
 
-    void OnBackgroundColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnBackgroundColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnShadowColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnShadowColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }

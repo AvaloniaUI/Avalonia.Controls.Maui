@@ -10,8 +10,10 @@ using PlatformView = Avalonia.Controls.MenuItem;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="IMenuFlyoutItem"/>.</summary>
 public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, PlatformView>
 {
+    /// <summary>Property mapper for <see cref="MenuFlyoutItemHandler"/>.</summary>
     public static IPropertyMapper<IMenuFlyoutItem, MenuFlyoutItemHandler> Mapper = new PropertyMapper<IMenuFlyoutItem, MenuFlyoutItemHandler>(ElementMapper)
     {
         [nameof(IMenuFlyoutSubItem.Text)] = MapText,
@@ -20,25 +22,30 @@ public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, Pla
         [nameof(IMenuElement.IsEnabled)] = MapIsEnabled
     };
 
+    /// <summary>Command mapper for <see cref="MenuFlyoutItemHandler"/>.</summary>
     public static CommandMapper<IMenuFlyoutItem, MenuFlyoutItemHandler> CommandMapper = new(ElementCommandMapper)
     {
     };
 
+    /// <summary>Initializes a new instance of <see cref="MenuFlyoutItemHandler"/>.</summary>
     public MenuFlyoutItemHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformElement()
     {
         return new PlatformView();
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
         platformView.Click += OnClicked;
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         base.DisconnectHandler(platformView);
@@ -50,15 +57,25 @@ public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, Pla
         VirtualView.Clicked();
     }
 
+    /// <summary>Maps the Text property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu flyout item.</param>
     public static void MapText(MenuFlyoutItemHandler handler, IMenuFlyoutItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.Header = view.Text;
     }
 
+    /// <summary>Maps the Source property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu flyout item.</param>
     public static void MapSource(MenuFlyoutItemHandler handler, IMenuFlyoutItem view) =>
-        MapSourceAsync(handler, view).FireAndForget(handler);
+        MapSourceAsync(handler, view).FireAndForget(handler.MauiContext?.Services?.CreateLogger<MenuFlyoutItemHandler>());
 
+    /// <summary>Asynchronously maps the Source property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu flyout item.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static async Task MapSourceAsync(MenuFlyoutItemHandler handler, IMenuFlyoutItem view)
     {
         if (handler.PlatformView is not PlatformView platformView)
@@ -108,6 +125,9 @@ public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, Pla
         }
     }
 
+    /// <summary>Maps the KeyboardAccelerators property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu flyout item.</param>
     public static void MapKeyboardAccelerators(MenuFlyoutItemHandler handler, IMenuFlyoutItem view)
     {
         if (handler.PlatformView is not PlatformView platformView)
@@ -178,6 +198,9 @@ public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, Pla
         return Avalonia.Input.Key.None;
     }
 
+    /// <summary>Maps the IsEnabled property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu flyout item.</param>
     public static void MapIsEnabled(MenuFlyoutItemHandler handler, IMenuFlyoutItem view)
     {
         if (handler.PlatformView is PlatformView platformView)

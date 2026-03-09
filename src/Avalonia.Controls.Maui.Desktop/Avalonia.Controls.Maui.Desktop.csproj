@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>$(DotNetTfm)</TargetFramework>
+    <IsPackable>true</IsPackable>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <NoWarn>$(NoWarn);CS0618;CS8002;NU5128</NoWarn>
+    <IsAotCompatible>true</IsAotCompatible>
+    <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
+    <PackageDescription>.NET MAUI Desktop platform support for Avalonia.Controls.Maui.</PackageDescription>
+    <SignAssembly>true</SignAssembly>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+    <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+  </ItemGroup>
+
+  <!-- Pack Desktop props -->
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)Avalonia.Controls.Maui.Desktop.props"
+        Pack="true" PackagePath="build/Avalonia.Controls.Maui.Desktop.props" Visible="false" />
+    <None Include="$(MSBuildThisFileDirectory)Avalonia.Controls.Maui.Desktop.props"
+        Pack="true" PackagePath="buildTransitive/Avalonia.Controls.Maui.Desktop.props" Visible="false" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="" Visible="false" />
+  </ItemGroup>
+</Project>

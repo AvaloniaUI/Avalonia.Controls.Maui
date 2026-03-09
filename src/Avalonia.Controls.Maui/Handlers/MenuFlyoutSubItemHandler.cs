@@ -10,8 +10,10 @@ using PlatformView = Avalonia.Controls.MenuItem;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="IMenuFlyoutSubItem"/>.</summary>
 public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubItem, PlatformView>
 {
+    /// <summary>Property mapper for <see cref="MenuFlyoutSubItemHandler"/>.</summary>
     public static IPropertyMapper<IMenuFlyoutSubItem, MenuFlyoutSubItemHandler> Mapper = new PropertyMapper<IMenuFlyoutSubItem, MenuFlyoutSubItemHandler>(ElementMapper)
     {
         [nameof(IMenuFlyoutSubItem.Text)] = MapText,
@@ -20,6 +22,7 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         [nameof(IMenuFlyoutSubItem.IsEnabled)] = MapIsEnabled,
     };
 
+    /// <summary>Command mapper for <see cref="MenuFlyoutSubItemHandler"/>.</summary>
     public static CommandMapper<IMenuFlyoutSubItem, MenuFlyoutSubItemHandler> CommandMapper = new(ElementCommandMapper)
     {
         [nameof(MenuFlyoutSubItemHandler.Add)] = MapAdd,
@@ -28,25 +31,32 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         [nameof(MenuFlyoutSubItemHandler.Insert)] = MapInsert,
     };
 
+    /// <summary>Initializes a new instance of <see cref="MenuFlyoutSubItemHandler"/>.</summary>
     public MenuFlyoutSubItemHandler() : this(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="MenuFlyoutSubItemHandler"/>.</summary>
+    /// <param name="mapper">The property mapper.</param>
+    /// <param name="commandMapper">The command mapper.</param>
     public MenuFlyoutSubItemHandler(IPropertyMapper mapper, CommandMapper? commandMapper = null) : base(mapper, commandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformElement()
     {
         return new PlatformView();
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
         platformView.Click += OnClicked;
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         if (VirtualView is not null)
@@ -66,15 +76,25 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         VirtualView.Clicked();
     }
 
+    /// <summary>Maps the Text property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu flyout sub-item.</param>
     public static void MapText(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.Header = view.Text;
     }
 
+    /// <summary>Maps the Source property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu flyout sub-item.</param>
     public static void MapSource(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view) =>
-        MapSourceAsync(handler, view).FireAndForget(handler);
+        MapSourceAsync(handler, view).FireAndForget(handler.MauiContext?.Services?.CreateLogger<MenuFlyoutSubItemHandler>());
 
+    /// <summary>Asynchronously maps the Source property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu flyout sub-item.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public static async Task MapSourceAsync(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
     {
         if (handler.PlatformView is not PlatformView platformView)
@@ -124,6 +144,9 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
+    /// <summary>Maps the KeyboardAccelerators property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu flyout sub-item.</param>
     public static void MapKeyboardAccelerators(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
     {
         if (handler.PlatformView is not PlatformView platformView)
@@ -194,12 +217,16 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         return Avalonia.Input.Key.None;
     }
 
+    /// <summary>Maps the IsEnabled property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The menu flyout sub-item.</param>
     public static void MapIsEnabled(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
     {
         if (handler.PlatformView is PlatformView platformView)
             platformView.IsEnabled = view.IsEnabled;
     }
 
+    /// <inheritdoc/>
     public override void SetVirtualView(IElement view)
     {
         base.SetVirtualView(view);
@@ -211,6 +238,10 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
+    /// <summary>Maps the Add command to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="layout">The menu element.</param>
+    /// <param name="arg">The command argument.</param>
     public static void MapAdd(MenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
     {
         if (arg is MenuFlyoutSubItemHandlerUpdate args)
@@ -219,6 +250,10 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
+    /// <summary>Maps the Remove command to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="layout">The menu element.</param>
+    /// <param name="arg">The command argument.</param>
     public static void MapRemove(MenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
     {
         if (arg is MenuFlyoutSubItemHandlerUpdate args)
@@ -227,6 +262,10 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
+    /// <summary>Maps the Insert command to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="layout">The menu element.</param>
+    /// <param name="arg">The command argument.</param>
     public static void MapInsert(MenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
     {
         if (arg is MenuFlyoutSubItemHandlerUpdate args)
@@ -235,11 +274,17 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
+    /// <summary>Maps the Clear command to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="layout">The menu element.</param>
+    /// <param name="arg">The command argument.</param>
     public static void MapClear(MenuFlyoutSubItemHandler handler, IMenuElement layout, object? arg)
     {
         handler.Clear();
     }
 
+    /// <summary>Adds a child element.</summary>
+    /// <param name="view">The menu element to add.</param>
     public void Add(IMenuElement view)
     {
         var platformView = view.ToPlatform(MauiContext!);
@@ -249,6 +294,8 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
+    /// <summary>Removes a child element.</summary>
+    /// <param name="view">The menu element to remove.</param>
     public void Remove(IMenuElement view)
     {
         if (view.Handler?.PlatformView is object platformView)
@@ -257,11 +304,15 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         }
     }
 
+    /// <summary>Clears all child elements.</summary>
     public void Clear()
     {
         PlatformView.Items.Clear();
     }
 
+    /// <summary>Inserts a child element at the specified index.</summary>
+    /// <param name="index">The index at which to insert.</param>
+    /// <param name="view">The menu element to insert.</param>
     public void Insert(int index, IMenuElement view)
     {
         var platformView = view.ToPlatform(MauiContext!);

@@ -8,10 +8,6 @@
              Title="ContentView">
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            <Label Text="ContentView"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
 
             <Border Stroke="Gray" Padding="10">
                 <Border.StrokeShape>

@@ -3,8 +3,17 @@ using Microsoft.Maui.Graphics;
 
 namespace Avalonia.Controls.Maui.Extensions;
 
+/// <summary>
+/// Provides extension methods for converting .NET MAUI <see cref="Paint"/> types to Avalonia brush types.
+/// </summary>
 public static class PaintExtensions
 {
+    /// <summary>
+    /// Converts a .NET MAUI <see cref="Paint"/> to an Avalonia <see cref="global::Avalonia.Media.IBrush"/>, supporting
+    /// <see cref="SolidPaint"/>, <see cref="LinearGradientPaint"/>, and <see cref="RadialGradientPaint"/>.
+    /// </summary>
+    /// <param name="paint">The .NET MAUI paint to convert.</param>
+    /// <returns>An Avalonia brush representing the paint, or <c>null</c> if the paint type is not supported or the input is <c>null</c>.</returns>
     public static global::Avalonia.Media.IBrush ToAvaloniaBrush(this Paint paint)
     {
         if (paint is null)

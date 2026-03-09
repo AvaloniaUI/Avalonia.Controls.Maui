@@ -8,7 +8,7 @@ public partial class CaptchaView : ContentPage
 		UpdateColors();
 	}
 
-	void OnTextColorEntryTextChanged(object sender, TextChangedEventArgs e)
+	void OnTextColorEntryTextChanged(object? sender, TextChangedEventArgs e)
 	{
 		UpdateColors();
 	}

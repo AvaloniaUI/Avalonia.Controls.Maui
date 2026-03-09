@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="../../src/Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+  <Project Path="MauiSandboxApp.Browser/MauiSandboxApp.Browser.csproj" />
+  <Project Path="MauiSandboxApp/MauiSandboxApp.csproj" />
+</Solution>

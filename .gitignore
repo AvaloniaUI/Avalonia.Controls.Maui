@@ -482,3 +482,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Source-build local overrides
+Directory.Build.props.user
+
+# Diagnostics folder (root only)
+/diagnostics/

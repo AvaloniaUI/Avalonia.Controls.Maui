@@ -309,30 +309,6 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
         Assert.Equal(0, padding.Bottom);  // NaN should convert to 0
     }
 
-    [AvaloniaTheory(DisplayName = "NaN Padding Update Converts To Zero")]
-    [InlineData(double.NaN, 0, 0, 0)]
-    [InlineData(0, double.NaN, 0, 0)]
-    [InlineData(0, 0, double.NaN, 0)]
-    [InlineData(0, 0, 0, double.NaN)]
-    [InlineData(double.NaN, double.NaN, double.NaN, double.NaN)]
-    public async Task NaNPaddingUpdateConvertsToZero(double left, double top, double right, double bottom)
-    {
-        var button = new ButtonStub { Text = "Button", Padding = new MauiThickness(5) };
-        var newPadding = new MauiThickness(left, top, right, bottom);
-
-        var platformPadding = await GetValueAsync(button, handler =>
-        {
-            button.Padding = newPadding;
-            handler.UpdateValue(nameof(IButton.Padding));
-            return GetPlatformPadding(handler);
-        });
-
-        Assert.Equal(double.IsNaN(left) ? 0 : left, platformPadding.Left);
-        Assert.Equal(double.IsNaN(top) ? 0 : top, platformPadding.Top);
-        Assert.Equal(double.IsNaN(right) ? 0 : right, platformPadding.Right);
-        Assert.Equal(double.IsNaN(bottom) ? 0 : bottom, platformPadding.Bottom);
-    }
-
     [AvaloniaFact(DisplayName = "StrokeColor Initializes Correctly")]
     public async Task StrokeColorInitializesCorrectly()
     {

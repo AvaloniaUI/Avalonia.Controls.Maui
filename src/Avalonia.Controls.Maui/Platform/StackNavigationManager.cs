@@ -1,36 +1,68 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using Avalonia.Controls;
-using Avalonia.Controls.Maui.Extensions;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using Avalonia.Animation;
+using Avalonia.Controls;
+using Avalonia.Controls.Maui.Animations;
+using Avalonia.Controls.Maui.Controls;
+using Avalonia.Controls.Maui.Extensions;
+using Avalonia.Controls.Maui.Handlers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Platform;
+using AvaloniaContentPage = Avalonia.Controls.ContentPage;
+using AvaloniaNavigationPage = Avalonia.Controls.NavigationPage;
+using MauiPage = Microsoft.Maui.Controls.Page;
+using MauiElement = Microsoft.Maui.Controls.Element;
 
 namespace Avalonia.Controls.Maui.Platform;
 
+/// <summary>
+/// Manages stack-based navigation for MAUI NavigationPage, coordinating page transitions and toolbar updates within an Avalonia <see cref="AvaloniaNavigationPage"/>.
+/// </summary>
 public class StackNavigationManager
 {
     private readonly IMauiContext _mauiContext;
     private IView? _currentPage;
-    private Page? _currentMauiPage;
-    private NavigationView? _navigationView = null!;
+    private MauiPage? _currentMauiPage;
+    private AvaloniaNavigationPage? _navigationPage;
     private IStackNavigation? _stackNavigation;
     private bool _connected;
-    private ILogger? _logger;
+    private bool _isNavigatingFromMaui;
+    private readonly ILogger? _logger;
+    private FlyoutPage? _parentFlyoutPage;
 
+    /// <summary>
+    /// Gets the current page navigation stack.
+    /// </summary>
     public IReadOnlyList<IView> NavigationStack { get; private set; } = new List<IView>();
 
+    /// <summary>
+    /// Gets the currently displayed page.
+    /// </summary>
     public IView CurrentPage => _currentPage ?? throw new InvalidOperationException("CurrentPage cannot be null");
 
+    /// <summary>
+    /// Gets the MAUI context used for handler resolution and service access.
+    /// </summary>
     public IMauiContext MauiContext => _mauiContext;
 
-    public NavigationView NavigationView => _navigationView ?? throw new InvalidOperationException("NavigationView is null");
+    /// <summary>
+    /// Gets the Avalonia <see cref="AvaloniaNavigationPage"/> control that hosts the navigation UI.
+    /// </summary>
+    public AvaloniaNavigationPage NavigationPage => _navigationPage ?? throw new InvalidOperationException("NavigationPage is null");
 
+    /// <summary>
+    /// Gets the stack navigation virtual view, if connected.
+    /// </summary>
+    protected IStackNavigation? StackNavigation => _stackNavigation;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StackNavigationManager"/> class.
+    /// </summary>
+    /// <param name="mauiContext">The MAUI context used for handler resolution and service access.</param>
     public StackNavigationManager(IMauiContext mauiContext)
     {
         _mauiContext = mauiContext;
@@ -38,13 +70,19 @@ public class StackNavigationManager
     }
 
     /// <summary>
-    /// Connects the navigation manager to the navigation view and virtual view.
+    /// Connects the navigation manager to the navigation page and virtual view.
     /// </summary>
-    public virtual void Connect(IStackNavigation stackNavigation, NavigationView navigationView)
+    public virtual void Connect(IStackNavigation stackNavigation, AvaloniaNavigationPage navigationPage)
     {
         _connected = true;
         _stackNavigation = stackNavigation;
-        _navigationView = navigationView;
+        _navigationPage = navigationPage;
+
+        // Apply page transition.
+        ApplyPageTransition();
+
+        // Subscribe to Avalonia NavigationPage pop events to sync back to MAUI
+        _navigationPage.Popped += OnAvaloniaPoppedPage;
 
         // Subscribe to property changes on NavigationPage to track TitleView changes
         if (stackNavigation is INotifyPropertyChanged notifyPropertyChanged)
@@ -52,8 +90,20 @@ public class StackNavigationManager
             notifyPropertyChanged.PropertyChanged += OnNavigationPagePropertyChanged;
         }
 
-        // Wire up back button click
-        _navigationView.BackButton.Click += OnBackButtonClicked;
+        // Detect FlyoutPage parent for hamburger button visibility
+        if (stackNavigation is Microsoft.Maui.Controls.NavigationPage navPage)
+        {
+            _parentFlyoutPage = FindParentFlyoutPage(navPage);
+            if (_parentFlyoutPage != null)
+            {
+                _parentFlyoutPage.PropertyChanged += OnParentFlyoutPagePropertyChanged;
+            }
+            else
+            {
+                // Parent may not be set yet; listen for late parenting
+                navPage.ParentChanged += OnNavigationPageParentChanged;
+            }
+        }
 
         _logger?.LogDebug("StackNavigationManager connected");
     }
@@ -61,26 +111,43 @@ public class StackNavigationManager
     /// <summary>
     /// Disconnects the navigation manager.
     /// </summary>
-    public virtual void Disconnect(IStackNavigation stackNavigation, NavigationView navigationView)
+    public virtual void Disconnect(IStackNavigation stackNavigation, AvaloniaNavigationPage navigationPage)
     {
+        navigationPage.Popped -= OnAvaloniaPoppedPage;
+
         if (stackNavigation is INotifyPropertyChanged notifyPropertyChanged)
         {
             notifyPropertyChanged.PropertyChanged -= OnNavigationPagePropertyChanged;
         }
 
-        if (_currentMauiPage is INotifyPropertyChanged currentPageNotify)
+        if (_currentMauiPage != null)
         {
-            currentPageNotify.PropertyChanged -= OnCurrentPagePropertyChanged;
+            if (_currentMauiPage is INotifyPropertyChanged currentPageNotify)
+            {
+                currentPageNotify.PropertyChanged -= OnCurrentPagePropertyChanged;
+            }
+
+            if (_currentMauiPage.ToolbarItems is INotifyCollectionChanged toolbarItemsNotify)
+            {
+                toolbarItemsNotify.CollectionChanged -= OnToolbarItemsCollectionChanged;
+            }
         }
 
-        if (_navigationView != null)
+        if (_parentFlyoutPage != null)
         {
-            _navigationView.BackButton.Click -= OnBackButtonClicked;
+            _parentFlyoutPage.PropertyChanged -= OnParentFlyoutPagePropertyChanged;
+            _parentFlyoutPage = null;
+        }
+
+        if (stackNavigation is Microsoft.Maui.Controls.NavigationPage navPage)
+        {
+            navPage.ParentChanged -= OnNavigationPageParentChanged;
         }
 
         _connected = false;
         _stackNavigation = null;
-        _navigationView = null;
+        _navigationPage = null;
+        _currentPage = null;
         _currentMauiPage = null;
 
         _logger?.LogDebug("StackNavigationManager disconnected");
@@ -88,39 +155,105 @@ public class StackNavigationManager
 
     private void OnNavigationPagePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        // When CurrentPage or navigation bar properties change, update the display
-        if (e.PropertyName == nameof(NavigationPage.CurrentPage) ||
-            e.PropertyName == nameof(NavigationPage.BarBackgroundColor) ||
-            e.PropertyName == nameof(NavigationPage.BarTextColor))
+        if (e.PropertyName == nameof(Microsoft.Maui.Controls.NavigationPage.CurrentPage))
         {
-            UpdateTitleView();
+            UpdateCurrentPageWrapper();
         }
+        else if (e.PropertyName == nameof(Microsoft.Maui.Controls.NavigationPage.BarBackgroundColor) ||
+                 e.PropertyName == nameof(Microsoft.Maui.Controls.NavigationPage.BarTextColor) ||
+                 e.PropertyName == nameof(Microsoft.Maui.Controls.NavigationPage.BarBackground))
+        {
+            UpdateNavigationBarColors();
+        }
+        else if (e.PropertyName == NavigationPageExtensions.PageTransitionProperty.PropertyName)
+        {
+            ApplyPageTransition();
+        }
+    }
+
+    private void ApplyPageTransition()
+    {
+        if (_navigationPage == null)
+            return;
+
+        IPageTransition? userTransition = null;
+        if (_stackNavigation is Microsoft.Maui.Controls.NavigationPage navPage)
+        {
+            userTransition = NavigationPageExtensions.GetPageTransition(navPage);
+        }
+
+        _navigationPage.PageTransition = userTransition ?? new MauiNavigationTransition();
     }
 
     private void OnCurrentPagePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        // When TitleView property changes on the current page, update the display
-        if (e.PropertyName == "TitleView" || e.PropertyName == "Title")
+        if (e.PropertyName is "TitleView" or "Title" or "TitleIconImageSource" or "IconColor")
         {
-            UpdateTitleView();
+            UpdateCurrentPageWrapper();
         }
     }
 
-    private async void OnBackButtonClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void OnParentFlyoutPagePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (_stackNavigation is NavigationPage navigationPage)
+        if (e.PropertyName == nameof(FlyoutPage.FlyoutLayoutBehavior))
         {
-            _logger?.LogDebug("Back button clicked, popping page");
-            await navigationPage.PopAsync();
+            UpdateBackButton();
+        }
+    }
+
+    private void OnNavigationPageParentChanged(object? sender, EventArgs e)
+    {
+        if (sender is Microsoft.Maui.Controls.NavigationPage navPage)
+        {
+            navPage.ParentChanged -= OnNavigationPageParentChanged;
+
+            _parentFlyoutPage = FindParentFlyoutPage(navPage);
+            if (_parentFlyoutPage != null)
+            {
+                _parentFlyoutPage.PropertyChanged += OnParentFlyoutPagePropertyChanged;
+                UpdateBackButton();
+            }
+        }
+    }
+
+    private static FlyoutPage? FindParentFlyoutPage(MauiPage page)
+    {
+        var parent = page.Parent;
+        while (parent != null)
+        {
+            if (parent is FlyoutPage fp)
+                return fp;
+            parent = (parent as MauiElement)?.Parent;
+        }
+        return null;
+    }
+
+    private void OnToolbarItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        UpdateCurrentPageWrapper();
+    }
+
+    private async void OnAvaloniaPoppedPage(object? sender, Avalonia.Controls.NavigationEventArgs e)
+    {
+        // If this pop was initiated by us (via NavigateTo), MAUI already knows about it.
+        if (_isNavigatingFromMaui)
+            return;
+
+        // User-initiated pop (back button, swipe gesture, etc.)
+        // Route through MAUI so it updates its own navigation stack.
+        if (_stackNavigation is Microsoft.Maui.Controls.NavigationPage mauiNavPage)
+        {
+            _logger?.LogDebug("User-initiated back navigation detected, syncing to MAUI");
+            await mauiNavPage.PopAsync();
         }
     }
 
     /// <summary>
     /// Navigates to the requested navigation stack state.
     /// </summary>
-    public virtual void NavigateTo(NavigationRequest request)
+    public virtual async Task NavigateTo(NavigationRequest request)
     {
-        if (!_connected || _navigationView == null)
+        if (!_connected || _navigationPage == null)
         {
             _logger?.LogWarning("NavigateTo called but manager is not connected");
             return;
@@ -134,11 +267,18 @@ public class StackNavigationManager
         _logger?.LogDebug("NavigateTo: stack size {NewSize}, previous size {PreviousSize}, animated: {Animated}",
             newPageStack.Count, previousNavigationStackCount, request.Animated);
 
-        // Determine if this is a back navigation
-        bool isBackNavigation = false;
+        // Collect pages that were removed from the stack for cleanup after navigation.
+        List<IView>? poppedPages = null;
         if (!initialNavigation && previousNavigationStackCount > newPageStack.Count)
         {
-            isBackNavigation = true;
+            poppedPages = new List<IView>();
+            for (int i = newPageStack.Count; i < previousNavigationStackCount; i++)
+            {
+                if (previousNavigationStack[i] is IView poppedView)
+                {
+                    poppedPages.Add(poppedView);
+                }
+            }
         }
 
         // Unsubscribe from previous page's property changes
@@ -160,7 +300,7 @@ public class StackNavigationManager
         }
 
         // Subscribe to new page's property changes
-        _currentMauiPage = _currentPage as Page;
+        _currentMauiPage = _currentPage as MauiPage;
         if (_currentMauiPage is INotifyPropertyChanged newPageNotify)
         {
             newPageNotify.PropertyChanged += OnCurrentPagePropertyChanged;
@@ -171,461 +311,291 @@ public class StackNavigationManager
             newToolbarItemsNotify.CollectionChanged += OnToolbarItemsCollectionChanged;
         }
 
-        // Convert the MAUI IView to an Avalonia Control
-        var platformPage = _currentPage.ToPlatform(MauiContext);
-        if (platformPage is not Control control)
-        {
-            throw new InvalidOperationException($"Page must be converted to Avalonia Control, got {platformPage?.GetType().Name}");
-        }
+        // Get the Avalonia ContentPage from the MAUI page's handler
+        var wrappedPage = WrapPage(_currentPage);
+
+        // Determine what changed
+        IView? previousTopPage = previousNavigationStackCount > 0
+            ? previousNavigationStack[previousNavigationStackCount - 1]
+            : null;
+        bool topPageChanged = !ReferenceEquals(_currentPage, previousTopPage);
 
         // Update the navigation stack
         NavigationStack = newPageStack;
 
-        // Navigate to the new page
+        _isNavigatingFromMaui = true;
         try
         {
-            _navigationView.NavigateToPage(control, isBackNavigation);
-            _navigationView.CurrentPage = _currentPage;
+            Avalonia.Animation.IPageTransition? transition = ResolveTransition(request);
 
-            // Update TitleView for the current page
-            UpdateTitleView();
+            if (initialNavigation)
+            {
+                await _navigationPage.PushAsync(wrappedPage, transition);
+            }
+            else if (!topPageChanged)
+            {
+                // Stack changed but the visible page is the same (e.g., InsertPageBefore,
+                // RemovePage on a non-top page). Silently sync the Avalonia stack so
+                // future back-navigation reveals the correct pages.
+                SyncNonTopPages(newPageStack);
+            }
+            else if (previousNavigationStackCount > newPageStack.Count)
+            {
+                // Back navigation — stack shrunk.
+                // First sync pages below the new top so PopToPageAsync can find it.
+                SyncNonTopPages(newPageStack);
 
-            // Update ToolbarItems for the current page
-            UpdateToolbarItems();
+                // Check if Avalonia already shows the correct page (e.g. user-initiated
+                // back button pop already completed the Avalonia-side navigation).
+                var avaloniaStack = _navigationPage.NavigationStack;
+                bool alreadyAtTarget = avaloniaStack.Count > 0
+                    && ReferenceEquals(avaloniaStack[avaloniaStack.Count - 1], wrappedPage)
+                    && avaloniaStack.Count == newPageStack.Count;
 
-            // Fire navigation finished after the transition
-            // In Avalonia, we can listen to TransitionCompleted event
-            // but for now we'll fire immediately
-            FireNavigationFinished();
+                if (alreadyAtTarget)
+                {
+                    // Avalonia stack is already correct — skip redundant pop to avoid
+                    // disrupting an in-progress transition animation.
+                    _logger?.LogDebug("Avalonia stack already matches target, skipping pop");
+                }
+                else if (_navigationPage.NavigationStack.Contains(wrappedPage))
+                {
+                    await _navigationPage.PopToPageAsync(wrappedPage, transition);
+                }
+                else
+                {
+                    // Target page isn't in the Avalonia stack (edge case) — replace instead.
+                    await _navigationPage.ReplaceAsync(wrappedPage, transition);
+                }
+            }
+            else if (newPageStack.Count > previousNavigationStackCount)
+            {
+                // Forward navigation — stack grew.
+                await _navigationPage.PushAsync(wrappedPage, transition);
+            }
+            else
+            {
+                // Same depth, different page — replace.
+                await _navigationPage.ReplaceAsync(wrappedPage, transition);
+            }
+
+            OnNavigationCompleted();
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Error during navigation");
-            FireNavigationFinished();
             throw;
         }
-    }
-
-    private void UpdateTitleView()
-    {
-        if (_navigationView == null || _stackNavigation == null)
-            return;
-
-        // Get the TitleView from the current page or NavigationPage
-        View? titleView = null;
-        string? title = null;
-        bool hasNavigationBar = true;
-        ImageSource? titleIconImageSource = null;
-
-        if (_stackNavigation is NavigationPage navigationPage)
+        finally
         {
-            // Check current page first
-            if (navigationPage.CurrentPage is Page currentPage)
+            FireNavigationFinished();
+
+            if (poppedPages != null)
             {
-                titleView = NavigationPage.GetTitleView(currentPage);
-                title = currentPage.Title;
-                hasNavigationBar = NavigationPage.GetHasNavigationBar(currentPage);
-                titleIconImageSource = NavigationPage.GetTitleIconImageSource(currentPage);
+                foreach (var page in poppedPages)
+                    page.DisconnectHandlers();
             }
 
-            // Fall back to NavigationPage itself if no page-specific TitleView
-            if (titleView == null && title == null)
-            {
-                titleView = NavigationPage.GetTitleView(navigationPage);
-                title = navigationPage.Title;
-            }
-
-            // Update navigation bar colors from MAUI theme
-            UpdateNavigationBarColors(navigationPage);
-        }
-
-        // Update navigation bar visibility
-        _navigationView.IsNavigationBarVisible = hasNavigationBar;
-
-        // Convert and set the TitleView or Title text
-        if (titleView != null)
-        {
-            var platformTitleView = titleView.ToPlatform(MauiContext);
-            _navigationView.TitleViewContainer.Content = platformTitleView;
-            _navigationView.TitleViewContainer.IsVisible = true;
-            _navigationView.TitleTextBlock.IsVisible = false;
-            _navigationView.TitleIconImage.IsVisible = false;
-            _logger?.LogDebug("Updated TitleView: {TitleViewType}", titleView.GetType().Name);
-        }
-        else
-        {
-            _navigationView.TitleViewContainer.Content = null;
-            _navigationView.TitleViewContainer.IsVisible = false;
-            _navigationView.TitleTextBlock.Text = title ?? string.Empty;
-            _navigationView.TitleTextBlock.IsVisible = !string.IsNullOrEmpty(title);
-
-            // Update title icon
-            UpdateTitleIcon(titleIconImageSource);
-
-            _logger?.LogDebug("Updated Title: {Title}", title);
-        }
-
-        // Update back button visibility
-        UpdateBackButton();
-    }
-
-    private void UpdateNavigationBarColors(NavigationPage navigationPage)
-    {
-        // Update bar background - prefer BarBackground (Brush) over BarBackgroundColor
-        if (navigationPage.BarBackground != null && !navigationPage.BarBackground.IsEmpty)
-        {
-            _navigationView!.NavigationBarBackground = navigationPage.BarBackground.ToPlatform();
-        }
-        else if (navigationPage.BarBackgroundColor != null)
-        {
-            var color = navigationPage.BarBackgroundColor;
-            _navigationView!.NavigationBarBackground = new Avalonia.Media.SolidColorBrush(
-                Avalonia.Media.Color.FromArgb(
-                    (byte)(color.Alpha * 255),
-                    (byte)(color.Red * 255),
-                    (byte)(color.Green * 255),
-                    (byte)(color.Blue * 255)
-                )
-            );
-        }
-        else
-        {
-            // Default color
-            _navigationView!.NavigationBarBackground = new Avalonia.Media.SolidColorBrush(
-                Avalonia.Media.Color.Parse("#F0F0F0")
-            );
-        }
-
-        // Update bar text color
-        if (navigationPage.BarTextColor != null)
-        {
-            var textColor = navigationPage.BarTextColor;
-            var avaloniaColor = Avalonia.Media.Color.FromArgb(
-                (byte)(textColor.Alpha * 255),
-                (byte)(textColor.Red * 255),
-                (byte)(textColor.Green * 255),
-                (byte)(textColor.Blue * 255)
-            );
-            _navigationView.TitleTextBlock.Foreground = new Avalonia.Media.SolidColorBrush(avaloniaColor);
-            _navigationView.BackButton.Foreground = new Avalonia.Media.SolidColorBrush(avaloniaColor);
-        }
-        else
-        {
-            // Default text color (black)
-            var defaultBrush = Avalonia.Media.Brushes.Black;
-            _navigationView.TitleTextBlock.Foreground = defaultBrush;
-            _navigationView.BackButton.Foreground = defaultBrush;
+            _isNavigatingFromMaui = false;
         }
     }
 
-    private async void UpdateTitleIcon(ImageSource? titleIconImageSource)
+    /// <summary>
+    /// Silently syncs the Avalonia NavigationPage's non-top pages to match the MAUI stack.
+    /// Uses <see cref="AvaloniaNavigationPage.InsertPage"/> and <see cref="AvaloniaNavigationPage.RemovePage"/>
+    /// which modify the stack without animation, so future back-navigation reveals the correct pages.
+    /// </summary>
+    private void SyncNonTopPages(List<IView> targetMauiStack)
     {
-        if (_navigationView == null)
-            return;
+        if (_navigationPage == null) return;
 
-        if (titleIconImageSource == null)
+        // Build the target list of wrapped pages
+        var targetWrapped = new List<AvaloniaContentPage>(targetMauiStack.Count);
+        for (int i = 0; i < targetMauiStack.Count; i++)
+            targetWrapped.Add(WrapPage(targetMauiStack[i]));
+
+        var targetSet = new HashSet<AvaloniaContentPage>(targetWrapped);
+
+        var avaloniaStack = _navigationPage.NavigationStack;
+        var avaloniaTop = avaloniaStack.Count > 0 ? avaloniaStack[^1] : null;
+
+        // Remove Avalonia pages (except the current top) that aren't in the target stack
+        for (int i = avaloniaStack.Count - 1; i >= 0; i--)
         {
-            _navigationView.TitleIconImage.Source = null;
-            _navigationView.TitleIconImage.IsVisible = false;
-            return;
+            var page = avaloniaStack[i];
+            if (page != avaloniaTop && !targetSet.Contains(page))
+                _navigationPage.RemovePage(page);
         }
 
-        try
-        {
-            var imageSourceServiceProvider = MauiContext.Services.GetService<IImageSourceServiceProvider>();
-            var service = imageSourceServiceProvider?.GetImageSourceService(titleIconImageSource.GetType());
+        // Re-read after removals
+        avaloniaStack = _navigationPage.NavigationStack;
+        var avaloniaSet = new HashSet<Avalonia.Controls.Page>(avaloniaStack);
 
-            if (service is Avalonia.Controls.Maui.Services.IAvaloniaImageSourceService avaloniaService)
+        // Insert missing pages at their correct positions.
+        // Walk the target list and insert any page not yet present,
+        // placing it before the next target page that IS in the Avalonia stack.
+        for (int i = 0; i < targetWrapped.Count; i++)
+        {
+            if (avaloniaSet.Contains(targetWrapped[i]))
+                continue;
+
+            // Find the next page in the target that already exists in the Avalonia stack
+            Avalonia.Controls.Page? insertBefore = null;
+            for (int j = i + 1; j < targetWrapped.Count; j++)
             {
-                var result = await avaloniaService.GetImageAsync(titleIconImageSource, 1.0f);
-                if (result?.Value is Avalonia.Media.Imaging.Bitmap bitmap)
+                if (avaloniaSet.Contains(targetWrapped[j]))
                 {
-                    _navigationView.TitleIconImage.Source = bitmap;
-                    _navigationView.TitleIconImage.IsVisible = true;
-                    _logger?.LogDebug("Updated TitleIconImageSource");
-                }
-                else
-                {
-                    _navigationView.TitleIconImage.Source = null;
-                    _navigationView.TitleIconImage.IsVisible = false;
-                }
-            }
-            else
-            {
-                _navigationView.TitleIconImage.Source = null;
-                _navigationView.TitleIconImage.IsVisible = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error loading TitleIconImageSource");
-            _navigationView.TitleIconImage.Source = null;
-            _navigationView.TitleIconImage.IsVisible = false;
-        }
-    }
-
-    private void UpdateBackButton()
-    {
-        if (_navigationView == null || _stackNavigation == null)
-            return;
-
-        // Show back button if navigation stack has more than 1 page
-        bool showBackButton = NavigationStack.Count > 1;
-        string? backButtonTitle = null;
-        Microsoft.Maui.Graphics.Color? iconColor = null;
-
-        if (_stackNavigation is NavigationPage navigationPage && navigationPage.CurrentPage is Page currentPage)
-        {
-            // Check if page explicitly sets HasBackButton
-            showBackButton = showBackButton && NavigationPage.GetHasBackButton(currentPage);
-
-            // Get the IconColor from the current page
-            iconColor = NavigationPage.GetIconColor(currentPage);
-
-            // Get the BackButtonTitle from the previous page (the one we'd go back to)
-            // Use the MAUI navigation stack directly to ensure we get the correct Page objects
-            var mauiNavStack = navigationPage.Navigation?.NavigationStack;
-            if (mauiNavStack != null && mauiNavStack.Count > 1)
-            {
-                var previousPage = mauiNavStack[mauiNavStack.Count - 2];
-                backButtonTitle = NavigationPage.GetBackButtonTitle(previousPage);
-                _logger?.LogDebug("Previous page: {PageType}, BackButtonTitle: {Title}",
-                    previousPage?.GetType().Name, backButtonTitle);
-            }
-        }
-
-        _navigationView.BackButton.IsVisible = showBackButton;
-
-        // Update back button content - show title if available, otherwise show arrow
-        if (!string.IsNullOrEmpty(backButtonTitle))
-        {
-            _navigationView.BackButton.Content = $"← {backButtonTitle}";
-        }
-        else
-        {
-            _navigationView.BackButton.Content = "←";
-        }
-
-        // Update back button icon color if specified
-        if (iconColor != null)
-        {
-            _navigationView.BackButton.Foreground = new Avalonia.Media.SolidColorBrush(
-                Avalonia.Media.Color.FromArgb(
-                    (byte)(iconColor.Alpha * 255),
-                    (byte)(iconColor.Red * 255),
-                    (byte)(iconColor.Green * 255),
-                    (byte)(iconColor.Blue * 255)
-                )
-            );
-        }
-        // Note: If iconColor is null, the color will be set by UpdateNavigationBarColors based on BarTextColor
-
-        _logger?.LogDebug("Back button visible: {IsVisible}, title: {Title}, iconColor: {IconColor}", showBackButton, backButtonTitle, iconColor);
-    }
-
-    private void OnToolbarItemsCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-    {
-        UpdateToolbarItems();
-    }
-
-    private void UpdateToolbarItems()
-    {
-        if (_navigationView == null || _currentMauiPage == null)
-            return;
-
-        // Unsubscribe from previous items
-        if (_navigationView.ToolbarItemsContainer.Children.Count > 0)
-        {
-             foreach (var child in _navigationView.ToolbarItemsContainer.Children)
-             {
-                 if (child is Button btn && btn.DataContext is ToolbarItem item)
-                 {
-                     btn.Click -= OnToolbarItemClicked;
-                     item.PropertyChanged -= OnToolbarItemPropertyChanged;
-                 }
-             }
-        }
-        
-        if (_navigationView.ToolbarOverflowMenu.Items.Count > 0)
-        {
-             foreach (var child in _navigationView.ToolbarOverflowMenu.Items)
-             {
-                 if (child is MenuItem menuItem && menuItem.DataContext is ToolbarItem item)
-                 {
-                     menuItem.Click -= OnToolbarItemClicked;
-                     item.PropertyChanged -= OnToolbarItemPropertyChanged;
-                 }
-             }
-        }
-
-        // Clear items but keep the overflow button
-        var overflowButton = _navigationView.ToolbarOverflowButton;
-        _navigationView.ToolbarItemsContainer.Children.Clear();
-        _navigationView.ToolbarItemsContainer.Children.Add(overflowButton);
-        _navigationView.ToolbarOverflowMenu.Items.Clear();
-
-        // Sort items by Priority
-        var sortedItems = _currentMauiPage.ToolbarItems.OrderBy(i => i.Priority).ToList();
-
-        foreach (var item in sortedItems)
-        {
-            if (item.Order == ToolbarItemOrder.Secondary)
-            {
-                var menuItem = new MenuItem
-                {
-                    Header = item.Text,
-                    IsEnabled = item.IsEnabled,
-                    DataContext = item
-                };
-                
-                menuItem.Click += OnToolbarItemClicked;
-                
-                // Subscribe to property changes
-                item.PropertyChanged += OnToolbarItemPropertyChanged;
-                
-                _navigationView.ToolbarOverflowMenu.Items.Add(menuItem);
-            }
-            else
-            {
-                var button = new Button
-                {
-                    Content = item.Text,
-                    IsEnabled = item.IsEnabled,
-                    Background = Avalonia.Media.Brushes.Transparent,
-                    BorderThickness = new Thickness(0),
-                    Padding = new Thickness(8, 0),
-                    DataContext = item
-                };
-                
-                button.Click += OnToolbarItemClicked;
-
-                // Subscribe to property changes
-                item.PropertyChanged += OnToolbarItemPropertyChanged;
-
-                if (item.IconImageSource != null)
-                {
-                    UpdateToolbarItemIcon(button, item);
-                }
-
-                // Add before the overflow button
-                _navigationView.ToolbarItemsContainer.Children.Insert(_navigationView.ToolbarItemsContainer.Children.Count - 1, button);
-            }
-        }
-
-        _navigationView.ToolbarOverflowButton.IsVisible = _navigationView.ToolbarOverflowMenu.Items.Count > 0;
-    }
-
-    private void OnToolbarItemClicked(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-    {
-        if (sender is Control control && control.DataContext is ToolbarItem item && item is IMenuItemController controller)
-        {
-            controller.Activate();
-        }
-    }
-
-    private void OnToolbarItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (sender is ToolbarItem item && _navigationView != null)
-        {
-            // If Order or Priority changes, we need to rebuild the toolbar to ensure correct sorting/placement
-            if (e.PropertyName == nameof(ToolbarItem.Order) ||
-                e.PropertyName == nameof(ToolbarItem.Priority))
-            {
-                UpdateToolbarItems();
-                return;
-            }
-
-            // Find the button associated with this item
-            Button? button = null;
-            foreach (var child in _navigationView.ToolbarItemsContainer.Children)
-            {
-                if (child is Button btn && btn.DataContext == item)
-                {
-                    button = btn;
+                    insertBefore = targetWrapped[j];
                     break;
                 }
             }
 
-            if (button != null)
+            if (insertBefore != null)
             {
-                if (e.PropertyName == ToolbarItem.TextProperty.PropertyName)
+                _navigationPage.InsertPage(targetWrapped[i], insertBefore);
+                avaloniaStack = _navigationPage.NavigationStack; // re-read after insert
+                avaloniaSet = new HashSet<Avalonia.Controls.Page>(avaloniaStack);
+            }
+        }
+
+        _logger?.LogDebug("SyncNonTopPages: Avalonia stack depth now {Depth}", _navigationPage.StackDepth);
+    }
+
+    /// <summary>
+    /// Updates the current page wrapper's navigation properties (title, toolbar, back button, colors).
+    /// Override to customize or suppress this behavior (e.g. in Shell where the Shell manages the toolbar).
+    /// </summary>
+    protected virtual void UpdateCurrentPageWrapper()
+    {
+        if (_navigationPage == null || _stackNavigation == null || _currentPage == null)
+            return;
+
+        // Update the ContentPage's navigation properties
+        if (GetContentPageFromHandler(_currentPage) is { } wrapper)
+        {
+            PageHandler.UpdateNavigationProperties(wrapper, _currentPage);
+        }
+
+        // Update back button
+        UpdateBackButton();
+
+        // Update navigation bar colors
+        UpdateNavigationBarColors();
+    }
+
+    private void UpdateBackButton()
+    {
+        if (_navigationPage == null || _stackNavigation == null)
+            return;
+
+        bool showBackButton = NavigationStack.Count > 1;
+        bool showHamburger = false;
+
+        if (_stackNavigation is Microsoft.Maui.Controls.NavigationPage navigationPage &&
+            navigationPage.CurrentPage is MauiPage currentPage)
+        {
+            showBackButton = showBackButton && Microsoft.Maui.Controls.NavigationPage.GetHasBackButton(currentPage);
+
+            // Get back button title from previous page
+            var mauiNavStack = navigationPage.Navigation?.NavigationStack;
+            if (mauiNavStack != null && mauiNavStack.Count > 1)
+            {
+                var previousPage = mauiNavStack[mauiNavStack.Count - 2];
+                var backButtonTitle = Microsoft.Maui.Controls.NavigationPage.GetBackButtonTitle(previousPage);
+                if (!string.IsNullOrEmpty(backButtonTitle))
                 {
-                    button.Content = item.Text;
-                }
-                else if (e.PropertyName == ToolbarItem.IsEnabledProperty.PropertyName)
-                {
-                    button.IsEnabled = item.IsEnabled;
-                }
-                else if (e.PropertyName == ToolbarItem.IconImageSourceProperty.PropertyName)
-                {
-                    UpdateToolbarItemIcon(button, item);
+                    // Set back button content on the current ContentPage
+                    if (GetContentPageFromHandler(_currentPage!) is { } wrapper)
+                    {
+                        AvaloniaNavigationPage.SetBackButtonContent(wrapper, $"\u2190 {backButtonTitle}");
+                    }
                 }
             }
-            // For secondary items (MenuItems), they might be in the overflow menu
-            // We could find them and update them similarly, but basic properties are bound.
-            // Text updates for MenuItems need handling if not bound directly (Avalonia MenuItem Header is distinct)
-             else
+        }
+
+        // Determine hamburger button visibility
+        if (_parentFlyoutPage != null && NavigationStack.Count <= 1)
+        {
+            showHamburger = _parentFlyoutPage.ShouldShowToolbarButton();
+        }
+
+        // At root with flyout parent: show hamburger as back button content
+        if (showHamburger && GetContentPageFromHandler(_currentPage!) is { } rootWrapper)
+        {
+            AvaloniaNavigationPage.SetBackButtonContent(rootWrapper, "\u2630");
+            AvaloniaNavigationPage.SetHasBackButton(rootWrapper, true);
+            _navigationPage.IsBackButtonVisible = true;
+
+            // Wire hamburger click behavior via the NavigationPage's back button event
+            _navigationPage.PageNavigationSystemBackButtonPressed -= OnHamburgerBackPressed;
+            _navigationPage.AddHandler(
+                Avalonia.Controls.Page.PageNavigationSystemBackButtonPressedEvent,
+                OnHamburgerBackPressed);
+        }
+        else
+        {
+            _navigationPage.IsBackButtonVisible = showBackButton;
+
+            if (!showBackButton && GetContentPageFromHandler(_currentPage!) is { } currentWrapper)
             {
-                 foreach (var child in _navigationView.ToolbarOverflowMenu.Items)
-                 {
-                     if (child is MenuItem menuItem && menuItem.DataContext == item)
-                     {
-                        if (e.PropertyName == ToolbarItem.TextProperty.PropertyName)
-                        {
-                            menuItem.Header = item.Text;
-                        }
-                        else if (e.PropertyName == ToolbarItem.IsEnabledProperty.PropertyName)
-                        {
-                            menuItem.IsEnabled = item.IsEnabled;
-                        }
-                        break;
-                     }
-                 }
+                AvaloniaNavigationPage.SetHasBackButton(currentWrapper, false);
             }
+        }
+
+        _logger?.LogDebug("Back button visible: {IsVisible}, hamburger: {HamburgerVisible}",
+            showBackButton, showHamburger);
+    }
+
+    private void UpdateNavigationBarColors()
+    {
+        if (_navigationPage == null || _stackNavigation is not Microsoft.Maui.Controls.NavigationPage navigationPage)
+            return;
+
+        // Update bar background — prefer BarBackground (Brush) over BarBackgroundColor
+        if (navigationPage.BarBackground != null && !navigationPage.BarBackground.IsEmpty)
+        {
+            _navigationPage.Resources["NavigationBarBackground"] = navigationPage.BarBackground.ToPlatform();
+        }
+        else if (navigationPage.BarBackgroundColor is { } barBgColor)
+        {
+            _navigationPage.Resources["NavigationBarBackground"] = new Avalonia.Media.SolidColorBrush(
+                barBgColor.ToAvaloniaColor());
+        }
+        else
+        {
+            _navigationPage.Resources.Remove("NavigationBarBackground");
+        }
+
+        // Update bar foreground color.
+        // Per-page IconColor takes highest priority (matches MAUI's NavigationPageToolbar.GetIconColor).
+        // Then BarTextColor if explicitly set by the user (not the theme default).
+        var iconColor = _currentMauiPage != null
+            ? Microsoft.Maui.Controls.NavigationPage.GetIconColor(_currentMauiPage)
+            : null;
+
+        if (iconColor != null)
+        {
+            _navigationPage.Resources["NavigationBarForeground"] = new Avalonia.Media.SolidColorBrush(
+                iconColor.ToAvaloniaColor());
+        }
+        else if (navigationPage.BarTextColor is { } barTextColor)
+        {
+            _navigationPage.Resources["NavigationBarForeground"] = new Avalonia.Media.SolidColorBrush(
+                barTextColor.ToAvaloniaColor());
+        }
+        else
+        {
+            _navigationPage.Resources.Remove("NavigationBarForeground");
         }
     }
 
-    private async void UpdateToolbarItemIcon(Button button, ToolbarItem item)
+    private void OnHamburgerBackPressed(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (item.IconImageSource == null)
+        // Only handle as hamburger when at root of stack
+        if (_parentFlyoutPage != null && NavigationStack.Count <= 1)
         {
-            button.Content = item.Text;
-            return;
-        }
-
-        try
-        {
-            var imageSourceServiceProvider = MauiContext.Services.GetService<IImageSourceServiceProvider>();
-            var service = imageSourceServiceProvider?.GetImageSourceService(item.IconImageSource.GetType());
-
-            if (service is Avalonia.Controls.Maui.Services.IAvaloniaImageSourceService avaloniaService)
-            {
-                var result = await avaloniaService.GetImageAsync(item.IconImageSource, 1.0f);
-                if (result?.Value is Avalonia.Media.Imaging.Bitmap bitmap)
-                {
-                    var image = new Image
-                    {
-                        Source = bitmap,
-                        Width = 20,
-                        Height = 20
-                    };
-                    button.Content = image;
-                    ToolTip.SetTip(button, item.Text);
-                }
-                else
-                {
-                     button.Content = item.Text;
-                }
-            }
-            else
-            {
-                 button.Content = item.Text;
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger?.LogError(ex, "Error loading ToolbarItem Icon");
-            button.Content = item.Text;
+            _parentFlyoutPage.IsPresented = !_parentFlyoutPage.IsPresented;
+            e.Handled = true;
         }
     }
 
@@ -634,4 +604,40 @@ public class StackNavigationManager
         _logger?.LogDebug("Navigation finished, stack size: {StackSize}", NavigationStack.Count);
         _stackNavigation?.NavigationFinished(NavigationStack);
     }
+
+    /// <summary>
+    /// Wraps a MAUI page as an Avalonia ContentPage. Override to customize page setup (e.g. hiding the navigation bar).
+    /// </summary>
+    /// <param name="mauiPage">The MAUI page to wrap.</param>
+    /// <returns>The Avalonia ContentPage.</returns>
+    protected virtual AvaloniaContentPage WrapPage(IView mauiPage)
+    {
+        return (AvaloniaContentPage)mauiPage.ToPlatform(MauiContext);
+    }
+
+    /// <summary>
+    /// Resolves the page transition to use for a navigation request.
+    /// Override to customize transition selection (e.g. based on PresentationMode).
+    /// </summary>
+    /// <param name="request">The navigation request.</param>
+    /// <returns>The transition to use, or <c>null</c> for no animation.</returns>
+    protected virtual Avalonia.Animation.IPageTransition? ResolveTransition(NavigationRequest request)
+    {
+        return request.Animated ? _navigationPage?.PageTransition : null;
+    }
+
+    /// <summary>
+    /// Called after navigation completes. Override to customize post-navigation behavior.
+    /// The base implementation updates toolbar, back button, and bar colors.
+    /// </summary>
+    protected virtual void OnNavigationCompleted()
+    {
+        UpdateCurrentPageWrapper();
+    }
+
+    private static AvaloniaContentPage? GetContentPageFromHandler(IView? view)
+    {
+        return view?.Handler?.PlatformView as AvaloniaContentPage;
+    }
+
 }

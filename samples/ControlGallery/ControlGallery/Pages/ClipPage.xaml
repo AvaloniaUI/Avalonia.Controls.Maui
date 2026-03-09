@@ -7,10 +7,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="Clip Samples"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
 
             <!-- Ellipse Clip -->
             <Border Stroke="Gray"

@@ -20,10 +20,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="24">
 
-            <Label Text="Shadow Samples"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
 
             <!-- Soft Card Shadow -->
             <Border Stroke="Gray"

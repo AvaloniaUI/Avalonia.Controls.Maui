@@ -32,6 +32,29 @@ public static class RadioButtonExtensions
     /// <param name="radioButton">The cross-platform radio button.</param>
     public static void UpdateContent(this PlatformView platformView, Avalonia.Controls.Maui.Handlers.RadioButtonHandler handler, IRadioButton radioButton)
     {
+        // Handle null content
+        if (radioButton.Content is null)
+        {
+            platformView.ShowIndicator = true;
+            platformView.Content = null;
+            return;
+        }
+
+        // Handle string content — always use Avalonia's built-in radio indicator
+        // rather than MAUI's default ControlTemplate visual tree which may not render correctly.
+        if (radioButton.Content is string text)
+        {
+            platformView.ShowIndicator = true;
+            platformView.Content = text;
+
+            if (radioButton.CharacterSpacing != 0)
+            {
+                platformView.UpdateCharacterSpacing(radioButton);
+            }
+
+            return;
+        }
+
         // Check if a custom ControlTemplate is applied
         bool hasControlTemplate = false;
         if (radioButton is TemplatedView templatedView)
@@ -44,31 +67,8 @@ public static class RadioButtonExtensions
         {
             _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
             platformView.Content = (Control)presentedView.ToPlatform(handler.MauiContext);
-            // Hide default visuals only if there's an explicit ControlTemplate
+            // Hide Avalonia's indicator only if there's a custom ControlTemplate
             platformView.ShowIndicator = !hasControlTemplate;
-            return;
-        }
-
-        // Regular content without PresentedContent, show the default visuals
-        platformView.ShowIndicator = true;
-
-        if (radioButton.Content is null)
-        {
-            platformView.Content = null;
-            return;
-        }
-
-        // Handle string content
-        if (radioButton.Content is string text)
-        {
-            platformView.Content = text;
-            
-            // Apply CharacterSpacing if needed
-            if (radioButton.CharacterSpacing != 0)
-            {
-                platformView.UpdateCharacterSpacing(radioButton);
-            }
-
             return;
         }
 
@@ -77,9 +77,11 @@ public static class RadioButtonExtensions
         {
             _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
             platformView.Content = (Control)contentView.ToPlatform(handler.MauiContext);
+            platformView.ShowIndicator = true;
             return;
         }
 
+        platformView.ShowIndicator = true;
         platformView.Content = radioButton.Content;
     }
 
