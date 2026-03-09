@@ -461,7 +461,11 @@ public class StackNavigationManager
         _logger?.LogDebug("SyncNonTopPages: Avalonia stack depth now {Depth}", _navigationPage.StackDepth);
     }
 
-    private void UpdateCurrentPageWrapper()
+    /// <summary>
+    /// Updates the current page wrapper's navigation properties (title, toolbar, back button, colors).
+    /// Override to customize or suppress this behavior (e.g. in Shell where the Shell manages the toolbar).
+    /// </summary>
+    protected virtual void UpdateCurrentPageWrapper()
     {
         if (_navigationPage == null || _stackNavigation == null || _currentPage == null)
             return;
