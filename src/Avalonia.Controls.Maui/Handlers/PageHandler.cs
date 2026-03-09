@@ -140,7 +140,7 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
             {
                 contentView.Background = page.Background.ToPlatform();
             }
-            else if (page.BackgroundColor?.IsDefault() == false)
+            else if (page.BackgroundColor is { } bgColor && !Microsoft.Maui.Controls.ControlsColorExtensions.IsDefault(bgColor))
             {
                 contentView.Background = page.BackgroundColor.ToPlatform();
             }
