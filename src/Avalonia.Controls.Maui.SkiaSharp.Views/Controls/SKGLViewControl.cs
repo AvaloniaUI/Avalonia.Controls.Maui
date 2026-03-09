@@ -177,7 +177,13 @@ public class SKGLViewControl : Control
         _touchId++;
         var args = CreateTouchArgs(e, SKTouchAction.Pressed, true);
         if (TouchAction?.Invoke(args) == true || args.Handled)
+        {
+            e.Pointer.Capture(this);
             e.Handled = true;
+            // Prevent ancestor gesture recognizers (e.g. SwipeGestureRecognizer on
+            // NavigationPage) from stealing capture during fast drags.
+            e.PreventGestureRecognition();
+        }
     }
 
     /// <inheritdoc/>
@@ -189,6 +195,9 @@ public class SKGLViewControl : Control
 
         var props = e.GetCurrentPoint(this).Properties;
         var inContact = props.IsLeftButtonPressed || props.IsMiddleButtonPressed || props.IsRightButtonPressed;
+        if (!inContact)
+            return;
+
         var args = CreateTouchArgs(e, SKTouchAction.Moved, inContact);
         if (TouchAction?.Invoke(args) == true || args.Handled)
             e.Handled = true;
@@ -201,31 +210,8 @@ public class SKGLViewControl : Control
         if (!_enableTouchEvents)
             return;
 
+        e.Pointer.Capture(null);
         var args = CreateTouchArgs(e, SKTouchAction.Released, false);
-        if (TouchAction?.Invoke(args) == true || args.Handled)
-            e.Handled = true;
-    }
-
-    /// <inheritdoc/>
-    protected override void OnPointerEntered(PointerEventArgs e)
-    {
-        base.OnPointerEntered(e);
-        if (!_enableTouchEvents)
-            return;
-
-        var args = CreateTouchArgs(e, SKTouchAction.Entered, false);
-        if (TouchAction?.Invoke(args) == true || args.Handled)
-            e.Handled = true;
-    }
-
-    /// <inheritdoc/>
-    protected override void OnPointerExited(PointerEventArgs e)
-    {
-        base.OnPointerExited(e);
-        if (!_enableTouchEvents)
-            return;
-
-        var args = CreateTouchArgs(e, SKTouchAction.Exited, false);
         if (TouchAction?.Invoke(args) == true || args.Handled)
             e.Handled = true;
     }
