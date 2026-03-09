@@ -26,7 +26,6 @@ jobs:
               - 'src/Avalonia.Controls.Maui/**'
               - 'src/Avalonia.Controls.Maui.Compatibility/**'
               - 'src/Avalonia.Controls.Maui.Essentials/**'
-              - 'src/Avalonia.Controls.Maui.Graphics/**'
               - 'Directory.*.props'
               - 'Directory.*.targets'
               - 'global.json'

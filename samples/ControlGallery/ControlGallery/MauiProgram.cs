@@ -15,7 +15,6 @@ public static class MauiProgram
 			.UseAvaloniaApp(useSingleAppLifetime)
 			.UseAvaloniaCompatibility()
 			.UseAvaloniaEssentials()
-			.UseAvaloniaGraphics()
 			#else
 			.UseAvaloniaEmbedding<AvaloniaApp>()
 			#endif

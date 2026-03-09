@@ -17,7 +17,6 @@ public static class MauiProgram
             #else
             .UseAvaloniaEmbedding<AvaloniaApp>()
             #endif
-            .UseAvaloniaGraphics()
             .UseAvaloniaEssentials()
             .ConfigureFonts(fonts =>
             {
