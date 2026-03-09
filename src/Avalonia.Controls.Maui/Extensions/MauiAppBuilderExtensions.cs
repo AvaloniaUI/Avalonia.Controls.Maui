@@ -194,6 +194,7 @@ public static class MauiAppBuilderExtensions
                 handlers.AddHandler<Microsoft.Maui.Controls.TitleBar, Avalonia.Controls.Maui.Handlers.TitleBarHandler>();
                 handlers.AddHandler<Microsoft.Maui.Controls.WebView, Avalonia.Controls.Maui.Handlers.WebViewHandler>();
                 handlers.AddHandler(typeof(Avalonia.Controls.Maui.Controls.AvaloniaView), typeof(Avalonia.Controls.Maui.Handlers.AvaloniaViewHandler));
+                handlers.AddHandler<Microsoft.Maui.Controls.GraphicsView, Avalonia.Controls.Maui.Handlers.GraphicsViewHandler>();
             })
             .ConfigureImageSources();
     }

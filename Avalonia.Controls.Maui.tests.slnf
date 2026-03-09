@@ -2,7 +2,7 @@
   "solution": {
     "path": "Avalonia.Controls.Maui.slnx",
     "projects": [
-            "src\\Avalonia.Controls.Maui.Graphics\\Avalonia.Controls.Maui.Graphics.csproj",
+
             "src\\Avalonia.Controls.Maui.Compatibility\\Avalonia.Controls.Maui.Compatibility.csproj",
             "src\\Avalonia.Controls.Maui.Essentials\\Avalonia.Controls.Maui.Essentials.csproj",
             "src\\Avalonia.Controls.Maui\\Avalonia.Controls.Maui.csproj",

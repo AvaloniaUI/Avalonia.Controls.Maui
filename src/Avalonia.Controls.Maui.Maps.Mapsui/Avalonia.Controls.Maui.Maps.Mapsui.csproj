@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Avalonia.Controls.Maui\Avalonia.Controls.Maui.csproj" />
-    <ProjectReference Include="..\Avalonia.Controls.Maui.Graphics\Avalonia.Controls.Maui.Graphics.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition=" ('$(IsPackable)' == 'true')">

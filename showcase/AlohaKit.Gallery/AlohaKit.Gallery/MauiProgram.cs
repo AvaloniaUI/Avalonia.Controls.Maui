@@ -14,7 +14,6 @@ public static class MauiProgram
 			#else
 			.UseAvaloniaEmbedding<AvaloniaApp>()
 			#endif
-			.UseAvaloniaGraphics()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("Aloha.ttf", "Aloha");

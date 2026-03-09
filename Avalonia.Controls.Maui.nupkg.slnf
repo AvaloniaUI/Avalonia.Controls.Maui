@@ -4,7 +4,7 @@
     "projects": [
             "src\\Avalonia.Controls.Maui.Compatibility\\Avalonia.Controls.Maui.Compatibility.csproj",
             "src\\Avalonia.Controls.Maui.Essentials\\Avalonia.Controls.Maui.Essentials.csproj",
-            "src\\Avalonia.Controls.Maui.Graphics\\Avalonia.Controls.Maui.Graphics.csproj",
+
             "src\\Avalonia.Controls.Maui\\Avalonia.Controls.Maui.csproj",
             "src\\Avalonia.Controls.Maui.Desktop\\Avalonia.Controls.Maui.Desktop.csproj",
             "src\\Avalonia.Controls.Maui.SourceGenerators\\Avalonia.Controls.Maui.SourceGenerators.csproj",

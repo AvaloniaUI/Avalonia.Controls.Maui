@@ -169,6 +169,16 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
         containerView.Children.Add(PlatformView);
         ContainerView = containerView;
 
+        // Move margin from PlatformView to ContainerView. The ContainerView is the control
+        // in the parent's visual tree, so it must carry the margin for correct layout.
+        // Without this, the PlatformView's margin offsets it inside the ContainerView,
+        // causing misalignment with Clip/Shadow applied to the ContainerView.
+        if (PlatformView.Margin != default)
+        {
+            containerView.Margin = PlatformView.Margin;
+            PlatformView.Margin = new Avalonia.Thickness(0);
+        }
+
         if (parentPanel != null && index >= 0)
             parentPanel.Children.Insert(Math.Min(index, parentPanel.Children.Count), containerView);
     }
@@ -178,6 +188,13 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
     {
         if (ContainerView is Avalonia.Controls.Maui.Platform.ContentView container && PlatformView != null)
         {
+            // Move margin back from ContainerView to PlatformView
+            if (container.Margin != default)
+            {
+                PlatformView.Margin = container.Margin;
+                container.Margin = new Avalonia.Thickness(0);
+            }
+
             // Remember the container's parent and position so we can swap PlatformView back in
             var parentPanel = container.Parent as Avalonia.Controls.Panel;
             int index = parentPanel?.Children.IndexOf(container) ?? -1;

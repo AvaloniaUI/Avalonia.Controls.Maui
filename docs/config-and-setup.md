@@ -56,7 +56,7 @@ builder.UseAvaloniaApp(useSingleViewLifetime: true);
 On current source state, the `net*-windows` WinUI path is not production-ready. For Avalonia on Windows, prefer the base desktop TFM (`net11.0`) with full hosting.
 
 > [!IMPORTANT]
-> In full-hosting mode, call `UseAvaloniaApp` before optional package extensions such as `UseAvaloniaGraphics`, `UseAvaloniaCompatibility`, `UseAvaloniaEssentials`, or `UseAvaloniaMapsui`.
+> In full-hosting mode, call `UseAvaloniaApp` before optional package extensions such as `UseAvaloniaCompatibility`, `UseAvaloniaEssentials`, or `UseAvaloniaMapsui`.
 
 ### UseAvaloniaEmbedding
 
@@ -69,17 +69,6 @@ builder
 ```
 
 Use embedding when incrementally adopting Avalonia in a MAUI-native app. On current source state, Windows embedding is a stub path and should not be treated as production-ready.
-
-### UseAvaloniaGraphics
-
-The `UseAvaloniaGraphics` method registers the Avalonia handler for .NET MAUI's `GraphicsView` control, enabling custom 2D drawing through `IDrawable` using Skia. Add this method if your app uses `GraphicsView` or any `Microsoft.Maui.Graphics` drawing APIs.
-
-```csharp
-builder
-    .UseMauiApp<App>()
-    .UseAvaloniaApp()
-    .UseAvaloniaGraphics();
-```
 
 ### UseAvaloniaCompatibility
 
@@ -161,7 +150,6 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseAvaloniaApp()
-            .UseAvaloniaGraphics()
             .UseAvaloniaCompatibility()
             .UseAvaloniaEssentials();
 

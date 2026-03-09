@@ -23,7 +23,6 @@ public static class MauiProgram
 			#else
 			.UseAvaloniaEmbedding<AvaloniaApp>()
 			#endif
-			.UseAvaloniaGraphics()
 			.ConfigureFonts(fonts =>
 			{
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");

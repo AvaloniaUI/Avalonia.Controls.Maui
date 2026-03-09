@@ -76,7 +76,6 @@
 	<ItemGroup>
 		<ProjectReference Condition="'$(TargetFramework)' == '$(DotNetTfm)'" Include="../../../src/Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.csproj" />
 		<ProjectReference Include="../../../src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
-		<ProjectReference Include="../../../src/Avalonia.Controls.Maui.Graphics/Avalonia.Controls.Maui.Graphics.csproj" />
 		<ProjectReference Include="../../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
 		<ProjectReference Include="../../../src/Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" GlobalPropertiesToRemove="PublishAot" />
 	</ItemGroup>

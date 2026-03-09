@@ -201,7 +201,6 @@ namespace Maui.Controls.Sample
 #else
 			.UseAvaloniaEmbedding<AvaloniaApp>()
 #endif
-			.UseAvaloniaGraphics()
 			.UseAvaloniaCompatibility()
 			.UseAvaloniaEssentials()
 				.ConfigureFonts(fonts =>
