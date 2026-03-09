@@ -70,18 +70,30 @@
       <_HasAvaloniaDesktop Condition="'$(_IsMauiSingleProject)' == 'true'
                                    AND '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == ''
                                    AND '$(_HasAvaloniaDesktop)' != 'true'">true</_HasAvaloniaDesktop>
+      <_HasAvaloniaIOS Condition="'$(_IsMauiSingleProject)' == 'true'
+                                AND ('$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'ios'
+                                  OR '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'maccatalyst')
+                                AND '$(_HasAvaloniaIOS)' != 'true'">true</_HasAvaloniaIOS>
+      <_HasAvaloniaAndroid Condition="'$(_IsMauiSingleProject)' == 'true'
+                                    AND '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'android'
+                                    AND '$(_HasAvaloniaAndroid)' != 'true'">true</_HasAvaloniaAndroid>
 
       <!--
-        Avalonia.Desktop NuGet transitively depends on the Avalonia metapackage, Skia,
-        and HarfBuzz. When we replace the Desktop PackageReference with platform-specific
-        ProjectReferences + a compiled source file, we must ensure those base dependencies
-        are still present.
+        Avalonia.Desktop, Avalonia.iOS, and Avalonia.Android NuGet packages transitively
+        depend on the Avalonia metapackage, Skia, and HarfBuzz. When we replace them with
+        ProjectReferences, we must ensure those base dependencies are still present.
       -->
-      <_HasAvalonia Condition="'$(_HasAvaloniaDesktop)' == 'true'
+      <_HasAvalonia Condition="('$(_HasAvaloniaDesktop)' == 'true'
+                             OR '$(_HasAvaloniaIOS)' == 'true'
+                             OR '$(_HasAvaloniaAndroid)' == 'true')
                             AND '$(_HasAvalonia)' != 'true'">true</_HasAvalonia>
-      <_HasAvaloniaSkia Condition="'$(_HasAvaloniaDesktop)' == 'true'
+      <_HasAvaloniaSkia Condition="('$(_HasAvaloniaDesktop)' == 'true'
+                                 OR '$(_HasAvaloniaIOS)' == 'true'
+                                 OR '$(_HasAvaloniaAndroid)' == 'true')
                                 AND '$(_HasAvaloniaSkia)' != 'true'">true</_HasAvaloniaSkia>
-      <_HasAvaloniaHarfBuzz Condition="'$(_HasAvaloniaDesktop)' == 'true'
+      <_HasAvaloniaHarfBuzz Condition="('$(_HasAvaloniaDesktop)' == 'true'
+                                     OR '$(_HasAvaloniaIOS)' == 'true'
+                                     OR '$(_HasAvaloniaAndroid)' == 'true')
                                     AND '$(_HasAvaloniaHarfBuzz)' != 'true'">true</_HasAvaloniaHarfBuzz>
 
       <!-- Any Avalonia package needs transitive NuGet deps (MicroCom, SkiaSharp, HarfBuzzSharp) -->
