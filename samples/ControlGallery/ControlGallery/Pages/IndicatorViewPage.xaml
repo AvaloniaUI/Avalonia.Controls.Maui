@@ -1,0 +1,354 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:sys="clr-namespace:System.Collections.Generic;assembly=System.Runtime"
+             x:Class="ControlGallery.Pages.IndicatorViewPage"
+             Title="IndicatorView">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="24">
+
+            <Label Text="IndicatorView Control"
+                   FontSize="24"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center" />
+
+            <!-- Basic IndicatorView -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Basic IndicatorView"
+                           FontAttributes="Bold" />
+                    <Label Text="A simple indicator view with 5 items and position at index 2."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <IndicatorView Count="5"
+                                   Position="2"
+                                   HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Colors -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Custom Colors"
+                           FontAttributes="Bold" />
+                    <Label Text="IndicatorColor=Blue, SelectedIndicatorColor=Red."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <IndicatorView Count="5"
+                                   Position="2"
+                                   IndicatorColor="Blue"
+                                   SelectedIndicatorColor="Red"
+                                   HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Indicator Shape -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Indicator Shape"
+                           FontAttributes="Bold" />
+                    <Label Text="IndicatorsShape controls whether indicators are circles or squares."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Circle (default):"
+                               FontSize="12" />
+                        <IndicatorView Count="5"
+                                       Position="1"
+                                       IndicatorsShape="Circle"
+                                       HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Square:"
+                               FontSize="12" />
+                        <IndicatorView Count="5"
+                                       Position="3"
+                                       IndicatorsShape="Square"
+                                       HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Indicator Size -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Indicator Size"
+                           FontAttributes="Bold" />
+                    <Label Text="IndicatorSize controls the size of each indicator."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Default (6):"
+                               FontSize="12" />
+                        <IndicatorView Count="5"
+                                       Position="2"
+                                       IndicatorSize="6"
+                                       HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Large (15):"
+                               FontSize="12" />
+                        <IndicatorView Count="5"
+                                       Position="2"
+                                       IndicatorSize="15"
+                                       HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Extra Large (24):"
+                               FontSize="12" />
+                        <IndicatorView Count="5"
+                                       Position="2"
+                                       IndicatorSize="24"
+                                       HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- HideSingle -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="HideSingle Behavior"
+                           FontAttributes="Bold" />
+                    <Label Text="When HideSingle is true and Count is 1, the indicator is hidden."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="HideSingle=True, Count=1 (hidden):"
+                               FontSize="12" />
+                        <IndicatorView Count="1"
+                                       HideSingle="True"
+                                       IndicatorSize="12"
+                                       HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="HideSingle=False, Count=1 (visible):"
+                               FontSize="12" />
+                        <IndicatorView Count="1"
+                                       HideSingle="False"
+                                       IndicatorSize="12"
+                                       HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- MaximumVisible -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="MaximumVisible"
+                           FontAttributes="Bold" />
+                    <Label Text="Limits visible indicators. Count=10, MaximumVisible=7."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <IndicatorView Count="10"
+                                   Position="3"
+                                   MaximumVisible="7"
+                                   IndicatorSize="10"
+                                   HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Programmatic Control -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Programmatic Control"
+                           FontAttributes="Bold" />
+                    <Label Text="Change position programmatically using buttons."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <IndicatorView x:Name="ProgrammaticIndicator"
+                                   Count="5"
+                                   Position="0"
+                                   IndicatorSize="12"
+                                   IndicatorColor="LightGray"
+                                   SelectedIndicatorColor="DodgerBlue"
+                                   HorizontalOptions="Center" />
+                    <Label x:Name="PositionLabel"
+                           Text="Current Position: 0"
+                           HorizontalOptions="Fill"
+                           FontAttributes="Italic" />
+                    <HorizontalStackLayout Spacing="8"
+                                           HorizontalOptions="Center">
+                        <Button Text="Previous"
+                                Clicked="OnPreviousClicked" />
+                        <Button Text="Next"
+                                Clicked="OnNextClicked" />
+                        <Button Text="Reset"
+                                Clicked="OnResetClicked" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Combined Styling -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Combined Styling"
+                           FontAttributes="Bold" />
+                    <Label Text="Large square indicators with custom colors."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <IndicatorView Count="7"
+                                   Position="4"
+                                   IndicatorSize="18"
+                                   IndicatorsShape="Square"
+                                   IndicatorColor="#E0E0E0"
+                                   SelectedIndicatorColor="#9333EA"
+                                   HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ItemsSource -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="ItemsSource"
+                           FontAttributes="Bold" />
+                    <Label Text="Bind to a collection to dynamically set indicator count."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+                    <IndicatorView x:Name="ItemsSourceIndicator"
+                                   IndicatorSize="12"
+                                   IndicatorColor="LightGray"
+                                   SelectedIndicatorColor="Green"
+                                   HideSingle="False"
+                                   HorizontalOptions="Center" />
+                    <HorizontalStackLayout Spacing="8"
+                                           HorizontalOptions="Center">
+                        <Button Text="Add Item"
+                                Clicked="OnAddItemClicked" />
+                        <Button Text="Remove Item"
+                                Clicked="OnRemoveItemClicked" />
+                        <Button Text="Clear All"
+                                Clicked="OnClearItemsClicked" />
+                    </HorizontalStackLayout>
+                    <Label x:Name="ItemCountLabel"
+                           Text="Items: 0"
+                           HorizontalOptions="Fill"
+                           FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Custom Indicator Template -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="IndicatorTemplate"
+                           FontAttributes="Bold" />
+                    <Label Text="Use a DataTemplate for custom indicator visuals with selected state."
+                           FontSize="12"
+                           TextColor="Gray"
+                           Margin="0,0,0,4" />
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Custom template showing index numbers with selected background:"
+                               FontSize="12" />
+                        <IndicatorView x:Name="TemplatedIndicator"
+                                       Count="5"
+                                       Position="2"
+                                       HorizontalOptions="Center">
+                            <IndicatorView.IndicatorTemplate>
+                                <DataTemplate x:DataType="sys:KeyValuePair(x:Int32, x:Boolean)">
+                                    <Frame CornerRadius="12"
+                                           Padding="10,6"
+                                           HasShadow="False"
+                                           BorderColor="Transparent">
+                                        <Frame.Triggers>
+                                            <DataTrigger TargetType="Frame"
+                                                         Binding="{Binding Value}"
+                                                         Value="True">
+                                                <Setter Property="BackgroundColor" Value="#4CAF50" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Frame"
+                                                         Binding="{Binding Value}"
+                                                         Value="False">
+                                                <Setter Property="BackgroundColor" Value="#E0E0E0" />
+                                            </DataTrigger>
+                                        </Frame.Triggers>
+                                        <Label FontSize="12"
+                                               FontAttributes="Bold"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label"
+                                                             Binding="{Binding Value}"
+                                                             Value="True">
+                                                    <Setter Property="Text" Value="{Binding Key}" />
+                                                    <Setter Property="TextColor" Value="White" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label"
+                                                             Binding="{Binding Value}"
+                                                             Value="False">
+                                                    <Setter Property="Text" Value="{Binding Key}" />
+                                                    <Setter Property="TextColor" Value="#666666" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Frame>
+                                </DataTemplate>
+                            </IndicatorView.IndicatorTemplate>
+                        </IndicatorView>
+                        <Label x:Name="TemplatePositionLabel"
+                               Text="Selected: 2"
+                               HorizontalOptions="Fill"
+                               FontAttributes="Italic"
+                               Margin="0,4,0,0" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
