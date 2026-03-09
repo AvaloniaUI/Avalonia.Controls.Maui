@@ -59,8 +59,9 @@ public partial class PolylineHandler : ShapeViewHandler<Polyline, PlatformView>
     /// <param name="polyline">The polyline.</param>
     public static void MapFillRule(IShapeViewHandler handler, Microsoft.Maui.Controls.Shapes.Polyline polyline)
     {
-        // Avalonia Polyline doesn't have a FillRule property
-        // FillRule is determined by the PathGeometry used internally
-        // We cannot easily set it on the shape itself
+        if (handler.PlatformView is PlatformView platformView)
+        {
+            platformView.UpdateFillRule(polyline);
+        }
     }
 }
