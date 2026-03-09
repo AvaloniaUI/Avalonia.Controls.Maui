@@ -745,6 +745,8 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             this.UpdateBackButtonBehavior(VirtualView);
         else if (e.PropertyName == MauiShell.BackgroundColorProperty.PropertyName)
             this.UpdateBackgroundColor(VirtualView);
+        else if (e.PropertyName == Microsoft.Maui.Controls.Page.TitleProperty.PropertyName)
+            this.UpdateTitle(VirtualView);
     }
 
     /// <summary>Maps the CurrentItem property to the platform view.</summary>

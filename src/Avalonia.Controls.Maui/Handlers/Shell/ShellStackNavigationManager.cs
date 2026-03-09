@@ -80,6 +80,13 @@ internal class ShellStackNavigationManager : StackNavigationManager
     }
 
     /// <inheritdoc/>
+    protected override void UpdateCurrentPageWrapper()
+    {
+        // Shell manages its own toolbar — skip the base implementation
+        // which would re-enable the NavigationPage nav bar.
+    }
+
+    /// <inheritdoc/>
     protected override void OnNavigationCompleted()
     {
         // Shell manages its own toolbar — skip the base implementation
