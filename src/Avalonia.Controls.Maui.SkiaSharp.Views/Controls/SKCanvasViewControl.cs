@@ -264,8 +264,7 @@ public class SKCanvasViewControl : Control
 
             using var lease = leaseFeature.Lease();
             var canvas = lease?.SkCanvas;
-            var surface = lease?.SkSurface;
-            if (canvas == null || surface == null)
+            if (canvas == null)
                 return;
 
             var pixelWidth = (int)(Bounds.Width * _scaling);
@@ -276,30 +275,36 @@ public class SKCanvasViewControl : Control
 
             var rawInfo = new SKImageInfo(pixelWidth, pixelHeight, SKColorType.Bgra8888, SKAlphaType.Premul);
 
+            // Create a dedicated surface sized to our control's bounds.
+            // The lease surface is the entire window — passing it to the callback
+            // would expose wrong dimensions and canvas transforms to the consumer.
+            using var surface = SKSurface.Create(rawInfo);
+            if (surface == null)
+                return;
+
+            var surfaceCanvas = surface.Canvas;
+
             SKImageInfo info;
             if (_ignorePixelScaling)
             {
                 info = new SKImageInfo((int)Bounds.Width, (int)Bounds.Height, SKColorType.Bgra8888, SKAlphaType.Premul);
-                canvas.Save();
-                canvas.Scale((float)_scaling);
+                surfaceCanvas.Scale((float)_scaling);
             }
             else
             {
                 info = rawInfo;
             }
 
-            try
-            {
-                var args = new SKPaintSurfaceEventArgs(surface, info, rawInfo);
-                _paintAction(args);
-            }
-            finally
-            {
-                if (_ignorePixelScaling)
-                {
-                    canvas.Restore();
-                }
-            }
+            var args = new SKPaintSurfaceEventArgs(surface, info, rawInfo);
+            _paintAction(args);
+
+            // Blit the result onto the lease canvas at the control's position
+            surface.Flush();
+            using var image = surface.Snapshot();
+            canvas.Save();
+            canvas.Scale(1.0f / (float)_scaling);
+            canvas.DrawImage(image, 0, 0);
+            canvas.Restore();
         }
     }
 }
