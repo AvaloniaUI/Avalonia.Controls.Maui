@@ -4,8 +4,12 @@ namespace MauiConverter;
 
 class App : Application
 {
+	readonly AppShell _appShell;
+
 	public App(AppShell appShell)
 	{
+		_appShell = appShell;
+
 		Resources = new ResourceDictionary()
 		{
 			new Style<Shell>(
@@ -21,6 +25,30 @@ class App : Application
 				(NavigationPage.BarBackgroundColorProperty, ColorConstants.DarkPurple)).ApplyToDerivedTypes(true)
 		};
 
-		MainPage = appShell;
+		MainPage = _appShell;
+	}
+
+	protected override Window CreateWindow(IActivationState? activationState)
+	{
+		var window = base.CreateWindow(activationState);
+		window.TitleBar = new TitleBar
+		{
+			Title = "MauiConverter",
+			BackgroundColor = ColorConstants.DarkPurple,
+			ForegroundColor = Colors.White,
+		};
+
+		#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
+		window.Width = 400;
+		window.Height = 500;
+		#endif
+
+		// TitleBar extends into client area which isn't supported on Linux.
+		if (OperatingSystem.IsLinux())
+		{
+			window.TitleBar = null;
+		}
+
+		return window;
 	}
 }

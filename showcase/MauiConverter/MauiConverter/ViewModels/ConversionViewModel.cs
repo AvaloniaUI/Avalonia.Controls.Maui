@@ -86,21 +86,11 @@ partial class ConversionViewModel : BaseViewModel
 	[RelayCommand]
 	void OriginalUnitsPickerSelectedIndexChanged()
 	{
-		if (IsConvertedUnitsPickerSelectedItemValid()
-			&& IsNumberToConvertEntryTextValid())
-		{
-			ConvertUnits();
-		}
 	}
 
 	[RelayCommand]
 	void ConvertedUnitsPickerSelectedIndexChanged()
 	{
-		if (IsOriginalUnitsPickerSelectedItemValid()
-			&& IsNumberToConvertEntryTextValid())
-		{
-			ConvertUnits();
-		}
 	}
 
 	[RelayCommand]
@@ -169,11 +159,5 @@ partial class ConversionViewModel : BaseViewModel
 
 	partial void OnNumberToConvertEntryTextChanged(string value)
 	{
-		if (!string.IsNullOrWhiteSpace(OriginalUnitsPickerSelectedItem)
-			&& !string.IsNullOrWhiteSpace(ConvertedUnitsPickerSelectedItem)
-			&& !string.IsNullOrWhiteSpace(NumberToConvertEntryText))
-		{
-			ConvertUnits();
-		}
 	}
 }
