@@ -261,6 +261,13 @@ public partial class MainPage : FlyoutPage
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
             }),
 
+            new SampleGroup("Essentials Device", new List<SampleItem>
+            {
+                new("Device Display", "Screen metrics and orientation", typeof(ControlGallery.Pages.Essentials.DeviceDisplayPage)),
+                new("Device Info", "Hardware and platform details", typeof(ControlGallery.Pages.Essentials.DeviceInfoPage)),
+                new("Battery", "Charge level and power status", typeof(ControlGallery.Pages.Essentials.BatteryPage)),
+            }),
+
             new SampleGroup("Embedding", new List<SampleItem>
             {
                 new("Avalonia Embed", "Embedding an Avalonia control in a MAUI app", typeof(AvaloniaEmbedPage)),
@@ -270,13 +277,6 @@ public partial class MainPage : FlyoutPage
             new SampleGroup("Settings", new List<SampleItem>
             {
                 new("Theme", "Theme toggle and AppThemeBinding", typeof(ThemePage))
-            }),
-
-            new SampleGroup("Essentials", new List<SampleItem>
-            {
-                new("Device Display", "Screen metrics and orientation", typeof(ControlGallery.Pages.Essentials.DeviceDisplayPage)),
-                new("Device Info", "Hardware and platform details", typeof(ControlGallery.Pages.Essentials.DeviceInfoPage)),
-                new("Battery", "Charge level and power status", typeof(ControlGallery.Pages.Essentials.BatteryPage))
             })
         };
     }

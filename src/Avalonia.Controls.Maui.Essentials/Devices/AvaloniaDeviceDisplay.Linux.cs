@@ -363,14 +363,22 @@ public partial class AvaloniaDeviceDisplay
             var process = Process.Start(psi);
             if (process == null) return false;
 
-            if (process.WaitForExit(250))
+            try
+            {
+                if (process.WaitForExit(250))
+                {
+                    process.Dispose();
+                    return false;
+                }
+
+                _linuxSystemdInhibitProcess = process;
+                return true;
+            }
+            catch
             {
                 process.Dispose();
-                return false;
+                throw;
             }
-
-            _linuxSystemdInhibitProcess = process;
-            return true;
         }
         catch (Exception ex)
         {

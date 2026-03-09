@@ -1,5 +1,6 @@
 #if BROWSER
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices.JavaScript;
 using System.Threading.Tasks;
 using Microsoft.Maui.Devices;
@@ -28,10 +29,17 @@ public partial class AvaloniaBattery
 
     private async Task InitializeAsync()
     {
-        if (await InitBattery())
+        try
         {
-            _isInitialized = true;
-            SubscribeBatteryEvents(OnBatteryChanged);
+            if (await InitBattery())
+            {
+                _isInitialized = true;
+                SubscribeBatteryEvents(OnBatteryChanged);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Battery initialization failed: {ex.Message}");
         }
     }
 

@@ -3,19 +3,41 @@ using Microsoft.Maui.Devices;
 
 namespace Avalonia.Controls.Maui.Essentials.Devices;
 
+/// <summary>
+/// Avalonia implementation of <see cref="IDeviceInfo"/> that provides hardware and platform
+/// information across Linux, browser, and native MAUI platforms.
+/// </summary>
 public partial class AvaloniaDeviceInfo : IDeviceInfo
 {
     private static readonly Lazy<AvaloniaDeviceInfo> _current = new(() => new AvaloniaDeviceInfo());
-    
+
+    /// <summary>
+    /// Provides the default implementation for static usage of this API.
+    /// </summary>
     public static IDeviceInfo Current => _current.Value;
 
+    /// <inheritdoc/>
     public string Model => GetPlatformModel() ?? "Unknown";
+
+    /// <inheritdoc/>
     public string Manufacturer => GetPlatformManufacturer() ?? "Unknown";
+
+    /// <inheritdoc/>
     public string Name => GetPlatformName() ?? Environment.MachineName;
+
+    /// <inheritdoc/>
     public string VersionString => GetPlatformVersionString() ?? Environment.OSVersion.VersionString;
+
+    /// <inheritdoc/>
     public Version Version => GetPlatformVersion() ?? Environment.OSVersion.Version;
+
+    /// <inheritdoc/>
     public DevicePlatform Platform => GetPlatformPlatform();
+
+    /// <inheritdoc/>
     public DeviceIdiom Idiom => GetPlatformIdiom();
+
+    /// <inheritdoc/>
     public DeviceType DeviceType => GetPlatformDeviceType();
 
     private string? GetPlatformModel()
