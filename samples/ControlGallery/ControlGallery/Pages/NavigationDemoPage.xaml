@@ -10,14 +10,40 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="NavigationPage Demo"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
 
             <Label Text="This demo shows NavigationPage features including navigation bar customization, back button title, title icon, and page navigation."
                    HorizontalOptions="Center"
                    HorizontalTextAlignment="Center"/>
+
+            <!-- Page Transitions -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Page Transitions"
+                           FontAttributes="Bold"/>
+                    <Label Text="Change the transition animation used when pushing and popping pages."
+                           FontSize="12"/>
+                    <Label x:Name="CurrentTransitionLabel"
+                           Text="Current: Default"
+                           FontSize="12"
+                           TextColor="Gray"/>
+                    <Button Text="Default (Parallax)"
+                            Clicked="OnSetDefaultTransition"/>
+                    <Button Text="Simple Slide"
+                            Clicked="OnSetSlideTransition"/>
+                    <Button Text="Cross Fade"
+                            Clicked="OnSetCrossFadeTransition"/>
+                    <Button Text="Fast (150ms)"
+                            Clicked="OnSetFastTransition"/>
+                    <Button Text="Slow (800ms)"
+                            Clicked="OnSetSlowTransition"/>
+                    <Button Text="No Animation"
+                            Clicked="OnSetNoTransition"/>
+                </VerticalStackLayout>
+            </Border>
 
             <!-- Basic Navigation -->
             <Border Stroke="Gray"

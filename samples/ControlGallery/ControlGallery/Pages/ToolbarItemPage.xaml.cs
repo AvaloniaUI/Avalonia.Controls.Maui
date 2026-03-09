@@ -23,19 +23,19 @@ namespace ControlGallery.Pages
             SecondaryLogLabel.Text = $"{DateTime.Now:HH:mm:ss}: {message}";
         }
 
-        private void OnEditClicked(object sender, EventArgs e)
+        private void OnEditClicked(object? sender, EventArgs e)
         {
             LogPrimary("Edit Clicked");
             DisplayAlert("Primary", "Edit Item Clicked", "OK");
         }
 
-        private void OnDeleteClicked(object sender, EventArgs e)
+        private void OnDeleteClicked(object? sender, EventArgs e)
         {
             LogPrimary("Delete Clicked");
             DisplayAlert("Primary", "Delete Item Clicked", "OK");
         }
 
-        private void OnSecondaryClicked(object sender, EventArgs e)
+        private void OnSecondaryClicked(object? sender, EventArgs e)
         {
             LogSecondary("Secondary Clicked");
             DisplayAlert("Secondary", "Secondary Item Clicked", "OK");
@@ -43,7 +43,7 @@ namespace ControlGallery.Pages
 
 
 
-        private void OnExecuteEditClicked(object sender, EventArgs e)
+        private void OnExecuteEditClicked(object? sender, EventArgs e)
         {
             if (ToolbarItems.Count > 0)
             {
@@ -55,7 +55,7 @@ namespace ControlGallery.Pages
             }
         }
 
-        private void OnExecuteSecondaryClicked(object sender, EventArgs e)
+        private void OnExecuteSecondaryClicked(object? sender, EventArgs e)
         {
             foreach(var item in ToolbarItems)
             {
@@ -68,7 +68,7 @@ namespace ControlGallery.Pages
             }
         }
 
-        private void OnAddPrimaryItemClicked(object sender, EventArgs e)
+        private void OnAddPrimaryItemClicked(object? sender, EventArgs e)
         {
             if (_dynamicPrimaryItem == null)
             {
@@ -91,7 +91,7 @@ namespace ControlGallery.Pages
             }
         }
 
-        private void OnRemovePrimaryItemClicked(object sender, EventArgs e)
+        private void OnRemovePrimaryItemClicked(object? sender, EventArgs e)
         {
             if (_dynamicPrimaryItem != null && ToolbarItems.Contains(_dynamicPrimaryItem))
             {
@@ -100,7 +100,7 @@ namespace ControlGallery.Pages
             }
         }
 
-        private void OnAddSecondaryItemClicked(object sender, EventArgs e)
+        private void OnAddSecondaryItemClicked(object? sender, EventArgs e)
         {
              if (_dynamicSecondaryItem == null)
             {
@@ -123,7 +123,7 @@ namespace ControlGallery.Pages
             }
         }
 
-        private void OnRemoveSecondaryItemClicked(object sender, EventArgs e)
+        private void OnRemoveSecondaryItemClicked(object? sender, EventArgs e)
         {
             if (_dynamicSecondaryItem != null && ToolbarItems.Contains(_dynamicSecondaryItem))
             {
@@ -134,7 +134,7 @@ namespace ControlGallery.Pages
 
         private ToolbarItem? _cachedEditItem;
 
-        private void OnToggleEditClicked(object sender, EventArgs e)
+        private void OnToggleEditClicked(object? sender, EventArgs e)
         {
             var item = ToolbarItems.FirstOrDefault(i => i.Text == "Edit" || i.Text == "Updated") ?? _cachedEditItem;
             
@@ -149,7 +149,7 @@ namespace ControlGallery.Pages
             }
         }
 
-        private void OnToggleEditVisibilityClicked(object sender, EventArgs e)
+        private void OnToggleEditVisibilityClicked(object? sender, EventArgs e)
         {
             var item = ToolbarItems.FirstOrDefault(i => i.Text == "Edit" || i.Text == "Updated");
 
@@ -170,13 +170,13 @@ namespace ControlGallery.Pages
             }
         }
 
-        private void OnTextOnlyClicked(object sender, EventArgs e)
+        private void OnTextOnlyClicked(object? sender, EventArgs e)
         {
             LogPrimary("TextOnly Clicked");
             DisplayAlert("Primary", "TextOnly Item Clicked", "OK");
         }
 
-        private void OnToggleIconClicked(object sender, EventArgs e)
+        private void OnToggleIconClicked(object? sender, EventArgs e)
         {
             var item = ToolbarItems.FirstOrDefault(i => i.Text == "Edit" || i.Text == "Updated");
             
@@ -199,7 +199,7 @@ namespace ControlGallery.Pages
             }
         }
 
-        private void OnUpdateTextOnlyClicked(object sender, EventArgs e)
+        private void OnUpdateTextOnlyClicked(object? sender, EventArgs e)
         {
             var item = ToolbarItems.FirstOrDefault(i => i.Text == "TextOnly" || i.Text == "Text Updated");
 
@@ -222,7 +222,7 @@ namespace ControlGallery.Pages
             }
         }
 
-        private void OnSwapPrioritiesClicked(object sender, EventArgs e)
+        private void OnSwapPrioritiesClicked(object? sender, EventArgs e)
         {
             var item1 = ToolbarItems.FirstOrDefault(i => i.Text == "Edit" || i.Text == "Updated");
             var item2 = ToolbarItems.FirstOrDefault(i => i.Text == "Delete");
@@ -240,7 +240,7 @@ namespace ControlGallery.Pages
             }
         }
 
-        private void OnToggleEditOrderClicked(object sender, EventArgs e)
+        private void OnToggleEditOrderClicked(object? sender, EventArgs e)
         {
             var item = ToolbarItems.FirstOrDefault(i => i.Text == "Edit" || i.Text == "Updated");
             if (item != null)

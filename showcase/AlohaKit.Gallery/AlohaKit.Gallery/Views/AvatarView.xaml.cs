@@ -9,12 +9,12 @@ public partial class AvatarView : ContentPage
         UpdateBrushes();
     }
 
-    void OnFillStartColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnFillStartColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnFillEndColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnFillEndColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }

@@ -41,6 +41,14 @@ public static class ElementExtensions
         return (IElementHandler)ActivatorUtilities.CreateInstance(mauiContext.Services, handlerType);
     }
 
+    /// <summary>
+    /// Creates or retrieves the <see cref="IElementHandler"/> for a .NET MAUI <see cref="IElement"/> using the specified <see cref="IMauiContext"/>.
+    /// </summary>
+    /// <param name="view">The .NET MAUI element to get a handler for.</param>
+    /// <param name="context">The MAUI context used for handler resolution and dependency injection.</param>
+    /// <returns>The <see cref="IElementHandler"/> associated with the element.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="view"/> or <paramref name="context"/> is <c>null</c>.</exception>
+    /// <exception cref="HandlerNotFoundException">Thrown when no handler is registered for the element type.</exception>
     public static IElementHandler ToHandler(this IElement view, IMauiContext context)
     {
         if (view == null)
@@ -96,6 +104,12 @@ public static class ElementExtensions
         return elementHandler;
     }
 
+    /// <summary>
+    /// Gets the platform view for a .NET MAUI <see cref="IElement"/> whose handler has already been set.
+    /// </summary>
+    /// <param name="view">The .NET MAUI element to get the platform view for.</param>
+    /// <returns>The platform view object (typically an Avalonia control).</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the element's handler or platform view is not set.</exception>
     public static object ToPlatform(this IElement view)
     {
         if (view is IReplaceableView replaceableView && replaceableView.ReplacedView != view)
@@ -126,6 +140,13 @@ public static class ElementExtensions
         return view.Handler?.PlatformView ?? throw new InvalidOperationException($"Unable to convert {view} to {typeof(object)}");
     }
 
+    /// <summary>
+    /// Creates a handler for a .NET MAUI <see cref="IElement"/> using the specified <see cref="IMauiContext"/> and returns its platform view.
+    /// </summary>
+    /// <param name="view">The .NET MAUI element to convert to a platform view.</param>
+    /// <param name="context">The MAUI context used for handler resolution.</param>
+    /// <returns>The platform view object (typically an Avalonia control).</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the platform view cannot be obtained.</exception>
     public static object ToPlatform(this IElement view, IMauiContext context)
     {
         IElementHandler elementHandler = view.ToHandler(context);
@@ -179,16 +200,35 @@ public static class ElementExtensions
         }
     }
 
+    /// <summary>
+    /// Connects a .NET MAUI <see cref="IApplication"/> to its handler using the specified platform object and context.
+    /// </summary>
+    /// <param name="platformApplication">The platform application object.</param>
+    /// <param name="application">The .NET MAUI application to associate with its handler.</param>
+    /// <param name="context">The MAUI context for handler resolution.</param>
     public static void SetApplicationHandler(this object platformApplication, IApplication application, IMauiContext context)
     {
         platformApplication.SetHandler(application, context);
     }
 
+    /// <summary>
+    /// Connects a .NET MAUI <see cref="IWindow"/> to its handler using the specified platform object and context.
+    /// </summary>
+    /// <param name="platformWindow">The platform window object.</param>
+    /// <param name="window">The .NET MAUI window to associate with its handler.</param>
+    /// <param name="context">The MAUI context for handler resolution.</param>
     public static void SetWindowHandler(this object platformWindow, IWindow window, IMauiContext context)
     {
         platformWindow.SetHandler(window, context);
     }
 
+    /// <summary>
+    /// Walks the parent chain of a .NET MAUI <see cref="IElement"/> to find the first ancestor of the specified type.
+    /// </summary>
+    /// <typeparam name="T">The type of parent element to search for.</typeparam>
+    /// <param name="element">The element whose parent chain to search.</param>
+    /// <param name="includeThis">If <c>true</c>, includes the element itself in the search.</param>
+    /// <returns>The first ancestor of type <typeparamref name="T"/>, or <c>default</c> if none is found.</returns>
     public static T? FindParentOfType<T>(this IElement element, bool includeThis = false) where T : IElement
     {
         if (includeThis && element is T)

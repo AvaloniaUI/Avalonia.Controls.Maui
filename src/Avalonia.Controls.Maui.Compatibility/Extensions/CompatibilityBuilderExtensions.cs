@@ -1,7 +1,5 @@
 using Microsoft.Maui.Hosting;
 
-namespace Avalonia.Controls.Maui.Compatibility;
-
 /// <summary>
 /// Extension methods for adding compatibility handlers to MAUI applications.
 /// These handlers support legacy/obsolete MAUI controls using Avalonia implementations.
@@ -25,15 +23,15 @@ public static class CompatibilityBuilderExtensions
         return builder.ConfigureMauiHandlers(handlers =>
         {
 #pragma warning disable CS0618
-            handlers.AddHandler<Microsoft.Maui.Controls.Frame, Handlers.FrameHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.Frame, Avalonia.Controls.Maui.Compatibility.Handlers.FrameHandler>();
 #pragma warning restore CS0618
-            handlers.AddHandler<Microsoft.Maui.Controls.ListView, Handlers.ListViewHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.TableView, Handlers.TableViewHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.TextCell, TextCellHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.ImageCell, ImageCellHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.ViewCell, ViewCellHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.SwitchCell, SwitchCellHandler>();
-            handlers.AddHandler<Microsoft.Maui.Controls.EntryCell, EntryCellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.ListView, Avalonia.Controls.Maui.Compatibility.Handlers.ListViewHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.TableView, Avalonia.Controls.Maui.Compatibility.Handlers.TableViewHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.TextCell, Avalonia.Controls.Maui.Compatibility.TextCellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.ImageCell, Avalonia.Controls.Maui.Compatibility.ImageCellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.ViewCell, Avalonia.Controls.Maui.Compatibility.ViewCellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.SwitchCell, Avalonia.Controls.Maui.Compatibility.SwitchCellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.EntryCell, Avalonia.Controls.Maui.Compatibility.EntryCellHandler>();
         });
     }
 }

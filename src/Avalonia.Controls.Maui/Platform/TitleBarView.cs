@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Chrome;
 using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
@@ -18,12 +19,10 @@ public class TitleBarView : MauiView
 {
     private readonly DockPanel _rootPanel;
     private readonly Image _iconImage;
-    private readonly ContentControl _leadingContentContainer;
     private readonly StackPanel _titleStack;
     private readonly TextBlock _titleTextBlock;
     private readonly TextBlock _subtitleTextBlock;
     private readonly ContentControl _contentContainer;
-    private readonly ContentControl _trailingContentContainer;
 
     private IMauiContext? _mauiContext;
     private ITitleBar? _titleBar;
@@ -53,6 +52,9 @@ public class TitleBarView : MauiView
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TitleBarView"/> class, constructing the title bar layout with icon, title, subtitle, and content areas.
+    /// </summary>
     public TitleBarView()
     {
         Height = 32; // Standard title bar height
@@ -75,27 +77,6 @@ public class TitleBarView : MauiView
         };
         DockPanel.SetDock(_iconImage, Dock.Left);
         _rootPanel.Children.Add(_iconImage);
-
-        // Leading content
-        _leadingContentContainer = new ContentControl
-        {
-            IsVisible = false,
-            VerticalAlignment = VerticalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center
-        };
-        DockPanel.SetDock(_leadingContentContainer, Dock.Left);
-        _rootPanel.Children.Add(_leadingContentContainer);
-
-        // Trailing content
-        _trailingContentContainer = new ContentControl
-        {
-            IsVisible = false,
-            VerticalAlignment = VerticalAlignment.Center,
-            VerticalContentAlignment = VerticalAlignment.Center
-            // Note: Margin is dynamically set by UpdateMarginForWindowControls based on platform
-        };
-        DockPanel.SetDock(_trailingContentContainer, Dock.Right);
-        _rootPanel.Children.Add(_trailingContentContainer);
 
         // Title and subtitle stack (left aligned)
         _titleStack = new StackPanel
@@ -148,14 +129,15 @@ public class TitleBarView : MauiView
     {
         base.OnAttachedToVisualTree(e);
 
-        if (VisualRoot is Window window)
+        var window = this.FindAncestorOfType<Window>();
+        if (window != null)
         {
             _attachedWindow = window;
             _attachedWindow.PropertyChanged += OnWindowPropertyChanged;
 
-            // Calculate and apply initial margin
+            // Calculate initial margin and trigger re-layout
             UpdateWindowControlsMargin(window);
-            ApplyMarginToChildren();
+            InvalidateMeasure();
         }
     }
 
@@ -171,34 +153,25 @@ public class TitleBarView : MauiView
         }
     }
 
-    /// <summary>
-    /// Called when children are added or removed. Applies margin to new children.
-    /// </summary>
-    protected override void ChildrenChanged(object? sender, global::System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        base.ChildrenChanged(sender, e);
-
-        // Apply current margin to any new children
-        ApplyMarginToChildren();
-    }
-
     private void OnWindowPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (_attachedWindow == null)
             return;
 
-        // Update margins when decoration state or offscreen margins change
+        // Update margins when decoration state, offscreen margins, or decoration margins change
         if (e.Property == Window.IsExtendedIntoWindowDecorationsProperty ||
-            e.Property == Window.OffScreenMarginProperty)
+            e.Property == Window.OffScreenMarginProperty ||
+            e.Property == Window.WindowDecorationMarginProperty)
         {
             UpdateWindowControlsMargin(_attachedWindow);
-            ApplyMarginToChildren();
+            InvalidateMeasure();
         }
     }
 
     /// <summary>
     /// Calculates the margin needed for platform-specific window controls.
-    /// Uses Avalonia's OffScreenMargin when available, with fallback defaults for system chrome.
+    /// Uses Avalonia's OffScreenMargin and WindowDecorationMargin when available,
+    /// with fallback defaults for system chrome.
     /// </summary>
     private void UpdateWindowControlsMargin(Window window)
     {
@@ -206,6 +179,8 @@ public class TitleBarView : MauiView
         if (!window.IsExtendedIntoWindowDecorations)
         {
             _windowControlsMargin = new Thickness(0);
+            _rootPanel.Margin = new Thickness(0);
+            InvalidateArrange();
             return;
         }
 
@@ -219,37 +194,105 @@ public class TitleBarView : MauiView
                 0,
                 offScreenMargin.Right > 0 ? offScreenMargin.Right + 8 : 0,
                 0);
+            _rootPanel.Margin = _windowControlsMargin;
+            InvalidateArrange();
             return;
         }
 
-        // Fallback: When using PreferSystemChrome, system buttons are rendered by the OS
-        // but Avalonia doesn't report their position in OffScreenMargin.
-        // Use platform-specific defaults matching MAUI's approach.
+        // Check WindowDecorationMargin for left/right values (e.g. drawn decorations on X11/Win32)
+        var decorationMargin = window.WindowDecorationMargin;
+        if (decorationMargin.Left > 0 || decorationMargin.Right > 0)
+        {
+            _windowControlsMargin = new Thickness(
+                decorationMargin.Left > 0 ? decorationMargin.Left + 8 : 0,
+                0,
+                decorationMargin.Right > 0 ? decorationMargin.Right + 8 : 0,
+                0);
+            _rootPanel.Margin = _windowControlsMargin;
+            InvalidateArrange();
+            return;
+        }
+
         if (OperatingSystem.IsMacOS())
         {
-            // macOS: traffic light buttons are on the left (80px as used by MAUI)
-            _windowControlsMargin = new Thickness(80, 0, 0, 0);
+            // macOS: traffic light buttons are on the left (~78px)
+            _windowControlsMargin = new Thickness(78, 0, 0, 0);
         }
         else
         {
-            // Windows/Linux: window buttons are typically on the right (150px as used by MAUI)
-            // Note: Some Linux window managers put buttons on the left, but right is most common
+            // Windows: window buttons are typically on the right (150px as used by MAUI)
+            // X11 doesn't support TitleBar.
             _windowControlsMargin = new Thickness(0, 0, 150, 0);
         }
+
+        _rootPanel.Margin = _windowControlsMargin;
+        InvalidateArrange();
     }
 
-    /// <summary>
-    /// Applies the current window controls margin to all children.
-    /// </summary>
-    private void ApplyMarginToChildren()
+    /// <inheritdoc />
+    protected override Size MeasureOverride(Size availableSize)
     {
+        var layout = CrossPlatformLayout;
+        if (layout == null)
+        {
+            return base.MeasureOverride(availableSize);
+        }
+
+        var widthConstraint = availableSize.Width;
+        var heightConstraint = availableSize.Height;
+
+        // Reduce available width by window controls margin so MAUI layout
+        // measures children within the content area only.
+        var inset = _windowControlsMargin.Left + _windowControlsMargin.Right;
+        var adjustedWidth = Math.Max(0, widthConstraint - inset);
+
+        var crossPlatformSize = layout.CrossPlatformMeasure(adjustedWidth, heightConstraint);
+
+        CacheMeasureConstraints(adjustedWidth, heightConstraint);
+
+        // Return the full width so the TitleBarView background fills the entire window.
+        return new Size(widthConstraint, crossPlatformSize.Height);
+    }
+
+    /// <inheritdoc />
+    protected override Size ArrangeOverride(Size finalSize)
+    {
+        var layout = CrossPlatformLayout;
+        if (layout == null)
+        {
+            return base.ArrangeOverride(finalSize);
+        }
+
+        var inset = _windowControlsMargin.Left + _windowControlsMargin.Right;
+        var adjustedWidth = Math.Max(0, finalSize.Width - inset);
+
+        // Arrange MAUI content at (0,0) with the reduced width.
+        // MAUI's CrossPlatformArrange treats bounds.X/Y as the view's position rather than
+        // a content origin offset, so we shift children at the Avalonia level below.
+        var bounds = new Microsoft.Maui.Graphics.Rect(0, 0, adjustedWidth, finalSize.Height);
+
+        var widthConstraint = bounds.Width;
+        var heightConstraint = bounds.Height;
+
+        if (!IsMeasureValid(widthConstraint, heightConstraint))
+        {
+            layout.CrossPlatformMeasure(widthConstraint, heightConstraint);
+            CacheMeasureConstraints(widthConstraint, heightConstraint);
+        }
+
+        layout.CrossPlatformArrange(bounds);
+
+        // Re-position children to account for the window controls offset.
+        // Since only the position changes (not size), Avalonia updates Bounds
+        // without re-triggering ArrangeOverride on the children.
+        var leftOffset = _windowControlsMargin.Left;
         foreach (var child in Children)
         {
-            if (child is Control control)
-            {
-                control.Margin = _windowControlsMargin;
-            }
+            var childBounds = child.Bounds;
+            child.Arrange(new Rect(childBounds.X + leftOffset, childBounds.Y, childBounds.Width, childBounds.Height));
         }
+
+        return finalSize;
     }
 
     /// <summary>
@@ -298,10 +341,13 @@ public class TitleBarView : MauiView
 
     /// <summary>
     /// Adds a control to the passthrough elements (won't trigger window drag).
+    /// Also marks the control with <see cref="WindowDecorationsElementRole.User"/>
+    /// so the platform hit-testing recognizes it as an interactive element.
     /// </summary>
     public void AddPassthroughElement(Control control)
     {
         _passthroughControls.Add(control);
+        WindowDecorationProperties.SetElementRole(control, WindowDecorationsElementRole.User);
     }
 
     /// <summary>
@@ -310,6 +356,7 @@ public class TitleBarView : MauiView
     public void RemovePassthroughElement(Control control)
     {
         _passthroughControls.Remove(control);
+        WindowDecorationProperties.SetElementRole(control, WindowDecorationsElementRole.None);
     }
 
     /// <summary>
@@ -317,6 +364,11 @@ public class TitleBarView : MauiView
     /// </summary>
     public void ClearPassthroughElements()
     {
+        foreach (var control in _passthroughControls)
+        {
+            WindowDecorationProperties.SetElementRole(control, WindowDecorationsElementRole.None);
+        }
+
         _passthroughControls.Clear();
     }
 
@@ -362,7 +414,7 @@ public class TitleBarView : MauiView
     private void UpdateLeadingContent()
     {
         // Leading content is handled through the IContentView pattern
-        _leadingContentContainer.IsVisible = false;
+        //_leadingContentContainer.IsVisible = false;
     }
 
     private void UpdateContent()
@@ -374,7 +426,7 @@ public class TitleBarView : MauiView
     private void UpdateTrailingContent()
     {
         // Trailing content is handled through the IContentView pattern
-        _trailingContentContainer.IsVisible = false;
+        //_trailingContentContainer.IsVisible = false;
     }
 
     private void UpdateForegroundColor()

@@ -1,6 +1,8 @@
+using Avalonia.Animation;
 using Avalonia.Threading;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Internals;
+using MauiPage = Microsoft.Maui.Controls.Page;
 
 namespace Avalonia.Controls.Maui.Platform;
 
@@ -10,7 +12,7 @@ internal class AlertManager
     {
         readonly Dictionary<Control, OverlayHelper> _helpers = new();
 
-        public void OnAlertRequested(Page sender, AlertArguments arguments)
+        public void OnAlertRequested(MauiPage sender, AlertArguments arguments)
         {
             var overlayHelper = GetOverlayHelper(sender);
             if (overlayHelper is null)
@@ -22,7 +24,7 @@ internal class AlertManager
             overlayHelper.HandleAlert(arguments);
         }
 
-        public void OnActionSheetRequested(Page sender, ActionSheetArguments arguments)
+        public void OnActionSheetRequested(MauiPage sender, ActionSheetArguments arguments)
         {
             var overlayHelper = GetOverlayHelper(sender);
             if (overlayHelper is null)
@@ -34,7 +36,7 @@ internal class AlertManager
             overlayHelper.HandleActionSheet(arguments);
         }
 
-        public void OnPromptRequested(Page sender, PromptArguments arguments)
+        public void OnPromptRequested(MauiPage sender, PromptArguments arguments)
         {
             var overlayHelper = GetOverlayHelper(sender);
             if (overlayHelper is null)
@@ -46,13 +48,13 @@ internal class AlertManager
             overlayHelper.HandlePrompt(arguments);
         }
 
-        public void OnPageBusy(Page sender, bool enabled)
+        public void OnPageBusy(MauiPage sender, bool enabled)
         {
             var overlayHelper = GetOverlayHelper(sender);
             overlayHelper?.SetBusy(enabled);
         }
 
-        OverlayHelper? GetOverlayHelper(Page sender)
+        OverlayHelper? GetOverlayHelper(MauiPage sender)
         {
             var platformHost = GetPlatformHost(sender);
             if (platformHost is null)
@@ -70,7 +72,7 @@ internal class AlertManager
         /// Gets the platform host control that can contain overlays.
         /// For desktop apps, this is a Window.
         /// </summary>
-        static Control? GetPlatformHost(Page? page)
+        static Control? GetPlatformHost(MauiPage? page)
         {
             var platformView = page?.Window?.Handler?.PlatformView;
 
@@ -169,7 +171,7 @@ internal class AlertManager
                     VerticalAlignment = Layout.VerticalAlignment.Center
                 };
                 
-                if (Application.Current?.TryGetResource("ThemeForegroundBrush", Application.Current.ActualThemeVariant, out var foregroundBrush) == true 
+                if (Application.Current?.TryGetResource("SystemControlForegroundBaseHighBrush", Application.Current.ActualThemeVariant, out var foregroundBrush) == true
                     && foregroundBrush is Media.IBrush brush)
                 {
                     progressRing.Foreground = brush;
@@ -234,32 +236,63 @@ internal class AlertManager
                  });
             }
             
+            private static readonly TimeSpan DialogAnimationDuration = TimeSpan.FromMilliseconds(200);
+
             private async Task<T> ShowDialogOverlay<T>(Control dialog, Task<T> resultTask)
             {
+                 Grid? dialogContainer = null;
+
                  await Dispatcher.UIThread.InvokeAsync(() =>
                  {
                      EnsureOverlay();
-                     
-                     // Wrap dialog in a generic dim-background container
-                     var dialogContainer = new Grid
+
+                     // Wrap dialog in a dim-background container with fade transition
+                     dialogContainer = new Grid
                      {
-                         Background = new Avalonia.Media.SolidColorBrush(Media.Color.FromArgb(128, 0, 0, 0)) // Dim background
+                         Background = new Avalonia.Media.SolidColorBrush(Media.Color.FromArgb(128, 0, 0, 0)),
+                         Opacity = 0,
+                         Transitions = new Transitions
+                         {
+                             new DoubleTransition
+                             {
+                                 Property = Visual.OpacityProperty,
+                                 Duration = DialogAnimationDuration
+                             }
+                         }
                      };
-                     dialogContainer.Children.Add(dialog); // Dialog UserControl center-aligns itself
-                     
+                     dialogContainer.Children.Add(dialog);
+
                      _dialogGrid?.Children.Add(dialogContainer);
                  });
-                 
-                 try 
+
+                 // Trigger fade-in after the container is in the visual tree
+                 await Dispatcher.UIThread.InvokeAsync(() =>
+                 {
+                     if (dialogContainer != null)
+                         dialogContainer.Opacity = 1;
+                 });
+
+                 try
                  {
                      return await resultTask;
                  }
                  finally
                  {
+                     // Trigger fade-out
+                     await Dispatcher.UIThread.InvokeAsync(() =>
+                     {
+                         if (_dialogGrid?.Children.Count > 0 && _dialogGrid.Children[^1] is Visual top)
+                             top.Opacity = 0;
+                     });
+
+                     // Wait for fade-out animation to complete
+                     await Task.Delay(DialogAnimationDuration);
+
+                     // Remove from tree
                      await Dispatcher.UIThread.InvokeAsync(() =>
                      {
                          if (_dialogGrid?.Children.Count > 0)
-                             _dialogGrid.Children.RemoveAt(_dialogGrid.Children.Count - 1); // Remove top-most
+                             _dialogGrid.Children.RemoveAt(_dialogGrid.Children.Count - 1);
                      });
                  }
             }

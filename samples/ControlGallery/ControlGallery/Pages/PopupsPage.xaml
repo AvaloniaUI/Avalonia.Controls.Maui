@@ -6,10 +6,6 @@
 
     <ScrollView>
         <VerticalStackLayout Spacing="24" Padding="20">
-            <Label Text="Popups"
-                   FontSize="26"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
 
             <Label x:Name="ResultLabel"
                    Text="Tap a sample to see the result here."

@@ -22,10 +22,6 @@
                     <RoundRectangle CornerRadius="12"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="16">
-                    <Label Text="Lifecycle Events"
-                           FontSize="24"
-                           FontAttributes="Bold"
-                           HorizontalOptions="Center"/>
 
                     <VerticalStackLayout Spacing="8">
                         <Label Text="Actions" FontAttributes="Bold"/>

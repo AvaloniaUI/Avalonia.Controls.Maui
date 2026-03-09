@@ -9,10 +9,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <Label Text="AbsoluteLayout"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center"/>
 
             <!-- Absolute Positioning -->
             <Border Stroke="Gray"

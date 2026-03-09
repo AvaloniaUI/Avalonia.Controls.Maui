@@ -19,7 +19,7 @@ public partial class MainPage : ContentPage
         _weatherService = _useFakeData ? _fakeService : _realService;
     }
 
-    async void OnGetWeatherButtonClicked(object sender, EventArgs e)
+    async void OnGetWeatherButtonClicked(object? sender, EventArgs e)
     {
         // If using real service, check for API key
         if (!_useFakeData)

@@ -1,0 +1,60 @@
+{
+  "moduleId": "04-model-strategy",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "When should you route to a smaller, cheaper model?",
+      "options": [
+        "Never \u2014 always use the best model",
+        "For simple tasks where quality difference is minimal",
+        "Only for testing",
+        "When the API is down"
+      ],
+      "correctIndex": 1,
+      "explanation": "Small models handle simple classification, extraction, and formatting tasks well, saving cost and latency for the majority of requests.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "A fallback prompt is a simpler version of your prompt used when the primary model or prompt fails.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 0,
+      "explanation": "Fallback prompts provide graceful degradation \u2014 if the complex prompt or model fails, a simpler version keeps the system functional.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "What does LLM observability help you track?",
+      "options": [
+        "Only costs",
+        "Latency, token usage, quality scores, and error rates",
+        "Only the number of users",
+        "Only model weights"
+      ],
+      "correctIndex": 1,
+      "explanation": "Observability tools track the full lifecycle of LLM calls including latency, costs, quality metrics, and failure patterns.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "Model routing typically considers:",
+      "options": [
+        "Only the user's location",
+        "Task complexity, required quality, latency budget, and cost",
+        "Only the time of day",
+        "Only the model's release date"
+      ],
+      "correctIndex": 1,
+      "explanation": "Smart routing evaluates the incoming request's complexity and requirements to pick the optimal model from a pool.",
+      "xp": 5
+    }
+  ]
+}

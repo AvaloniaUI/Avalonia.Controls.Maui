@@ -4,6 +4,7 @@ using Avalonia.Media;
 using Avalonia.Media.Fonts;
 using Avalonia.Fonts.Inter;
 using Avalonia.Controls.Maui.Handlers;
+using Avalonia.Controls.Maui.Handlers.Shell;
 using Avalonia.Controls.Maui.Handlers.Shapes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
@@ -66,6 +67,17 @@ public static class MauiTestAppBuilderExtensions
             handlers.AddHandler<Microsoft.Maui.Controls.SwipeView, SwipeViewHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.Switch, SwitchHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.TimePicker, TimePickerHandler>();
+
+            handlers.AddHandler<Microsoft.Maui.Controls.Page, PageHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.ContentPage, PageHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.Layout, LayoutHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.TabbedPage, TabbedPageHandler>();
+
+            // Shell handlers
+            handlers.AddHandler<Microsoft.Maui.Controls.Shell, ShellHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.ShellItem, ShellItemHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.ShellSection, ShellSectionHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.ShellContent, ShellContentHandler>();
             
             // Shapes
             handlers.AddHandler<Microsoft.Maui.Controls.Shapes.Ellipse, EllipseHandler>();

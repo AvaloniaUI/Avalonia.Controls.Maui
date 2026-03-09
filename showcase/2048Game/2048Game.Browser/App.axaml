@@ -1,6 +1,6 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="_2048Game.Browser.AvaloniaApp">
+             x:Class="_2048Game.AvaloniaApp">
 	<Application.Styles>
 		<FluentTheme />
 	</Application.Styles>

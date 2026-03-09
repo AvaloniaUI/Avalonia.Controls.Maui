@@ -1,18 +1,17 @@
-using Microsoft.Maui.Handlers;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
-using Avalonia.Controls;
+using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Platform;
-using AvaloniaControl = Avalonia.Controls.Control;
+using Microsoft.Maui.Controls.Internals;
+using Microsoft.Maui.Handlers;
+using AvaloniaNavigationPage = Avalonia.Controls.NavigationPage;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell;
 
-public partial class ShellSectionHandler : ElementHandler<ShellSection, AvaloniaControl>, IStackNavigation
+/// <summary>Avalonia handler for <see cref="ShellSection"/>.</summary>
+public partial class ShellSectionHandler : ElementHandler<ShellSection, AvaloniaNavigationPage>
 {
+    /// <summary>Property mapper for <see cref="ShellSectionHandler"/>.</summary>
     public static IPropertyMapper<ShellSection, ShellSectionHandler> Mapper =
         new PropertyMapper<ShellSection, ShellSectionHandler>(ElementHandler.ElementMapper)
         {
@@ -20,179 +19,156 @@ public partial class ShellSectionHandler : ElementHandler<ShellSection, Avalonia
             [nameof(ShellSection.Items)] = MapItems,
         };
 
+    /// <summary>Command mapper for <see cref="ShellSectionHandler"/>.</summary>
     public static CommandMapper<ShellSection, ShellSectionHandler> CommandMapper =
         new CommandMapper<ShellSection, ShellSectionHandler>(ElementHandler.ElementCommandMapper)
         {
             [nameof(IStackNavigation.RequestNavigation)] = RequestNavigation
         };
 
-    ContentControl? _sectionContainer;
-    ShellContentHandler? _currentContentHandler;
-    readonly Stack<Microsoft.Maui.Controls.Page> _navigationStack = new();
+    AvaloniaNavigationPage? _navigationPage;
+    ShellStackNavigationManager? _navigationManager;
+    bool _syncing;
 
-    public ShellSectionHandler() : base(Mapper, CommandMapper)
-    {
-    }
+    /// <summary>Initializes a new instance of <see cref="ShellSectionHandler"/>.</summary>
+    public ShellSectionHandler() : base(Mapper, CommandMapper) { }
 
+    /// <summary>Initializes a new instance of <see cref="ShellSectionHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use.</param>
+    /// <param name="commandMapper">The command mapper to use.</param>
     public ShellSectionHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
-        : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
-    {
-    }
+        : base(mapper ?? Mapper, commandMapper ?? CommandMapper) { }
 
-    protected override AvaloniaControl CreatePlatformElement()
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
+    protected override AvaloniaNavigationPage CreatePlatformElement()
     {
-        _sectionContainer = new ContentControl
+        _navigationPage = new AvaloniaNavigationPage
         {
-            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
-            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-            VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
+            HorizontalAlignment = Layout.HorizontalAlignment.Stretch,
+            VerticalAlignment = Layout.VerticalAlignment.Stretch,
             MinWidth = 0,
-            MinHeight = 0
+            MinHeight = 0,
         };
 
-        return _sectionContainer;
+        return _navigationPage;
     }
 
-    protected override void ConnectHandler(AvaloniaControl platformView)
+    /// <inheritdoc/>
+    protected override void ConnectHandler(AvaloniaNavigationPage platformView)
     {
         base.ConnectHandler(platformView);
 
-        if (VirtualView is IShellSectionController sectionController)
+        if (_navigationPage != null && MauiContext != null)
         {
-            sectionController.NavigationRequested += OnNavigationRequested;
+            _navigationManager = new ShellStackNavigationManager(MauiContext);
+            _navigationManager.Connect(VirtualView, _navigationPage);
         }
 
-        UpdateCurrentItem();
+        if (VirtualView is IShellSectionController sectionController)
+            sectionController.NavigationRequested += OnNavigationRequested;
+
+        platformView.AttachedToVisualTree += OnAttachedToVisualTree;
+
+        SyncNavigationStack(animated: false);
     }
 
-    protected override void DisconnectHandler(AvaloniaControl platformView)
+    /// <inheritdoc/>
+    protected override void DisconnectHandler(AvaloniaNavigationPage platformView)
     {
         if (VirtualView is IShellSectionController sectionController)
-        {
             sectionController.NavigationRequested -= OnNavigationRequested;
-        }
 
-        _currentContentHandler = null;
+        if (_navigationManager != null && _navigationPage != null)
+            _navigationManager.Disconnect(VirtualView, _navigationPage);
+
+        _navigationManager = null;
+        platformView.AttachedToVisualTree -= OnAttachedToVisualTree;
 
         base.DisconnectHandler(platformView);
     }
 
+    /// <summary>Maps the CurrentItem property to the platform view.</summary>
+    /// <param name="handler">The shell section handler.</param>
+    /// <param name="section">The MAUI ShellSection virtual view.</param>
     public static void MapCurrentItem(ShellSectionHandler handler, ShellSection section)
-    {
-        handler.UpdateCurrentItem();
-    }
+        => handler.SyncNavigationStack(animated: false);
 
+    /// <summary>Maps the Items property to the platform view.</summary>
+    /// <param name="handler">The shell section handler.</param>
+    /// <param name="section">The MAUI ShellSection virtual view.</param>
     public static void MapItems(ShellSectionHandler handler, ShellSection section)
-    {
-        handler.UpdateCurrentItem();
-    }
+        => handler.SyncNavigationStack(animated: false);
 
+    /// <summary>Handles a navigation request command from MAUI's TCS lifecycle.</summary>
+    /// <param name="handler">The shell section handler.</param>
+    /// <param name="view">The stack navigation view.</param>
+    /// <param name="arg">The navigation request argument.</param>
     public static void RequestNavigation(ShellSectionHandler handler, IStackNavigation view, object? arg)
     {
-        if (arg is NavigationRequest navigationRequest)
-        {
-            handler.HandleNavigationRequest(navigationRequest);
-        }
+        if (arg is NavigationRequest request && handler._navigationManager != null)
+            _ = handler._navigationManager.NavigateTo(request);
     }
 
-    private void OnNavigationRequested(object? sender, EventArgs e)
+    /// <summary>
+    /// Synchronizes the navigation stack by building the target stack from the
+    /// current ShellContent page and any pushed pages, then requesting navigation
+    /// through MAUI's TCS lifecycle via <c>((IStackNavigation)VirtualView).RequestNavigation()</c>.
+    /// </summary>
+    /// <param name="animated">Whether the navigation should be animated.</param>
+    private void SyncNavigationStack(bool animated)
     {
-        // Handle navigation request from ShellSection
-        SyncNavigationStack();
-    }
-
-    public void SyncNavigationStack()
-    {
-        if (VirtualView == null || _sectionContainer == null)
+        if (_navigationManager == null || VirtualView == null || _navigationPage == null || MauiContext == null)
             return;
 
-        // Use DisplayedPage which MAUI maintains correctly throughout navigation
-        // Stack can contain null entries as placeholders, so DisplayedPage is the source of truth
-        var topPage = VirtualView.DisplayedPage;
-
-        if (topPage != null)
-        {
-            DisplayPage(topPage);
-        }
-    }
-
-    private void HandleNavigationRequest(NavigationRequest request)
-    {
-        if (request.NavigationStack != null && request.NavigationStack.Count > 0)
-        {
-            // Full stack replacement
-            _navigationStack.Clear();
-            foreach (var view in request.NavigationStack.Reverse())
-            {
-                if (view is Microsoft.Maui.Controls.Page page)
-                {
-                    _navigationStack.Push(page);
-                }
-            }
-
-            if (_navigationStack.Count > 0)
-            {
-                var topPage = _navigationStack.Peek();
-                DisplayPage(topPage);
-            }
-        }
-    }
-
-    private void DisplayPage(Microsoft.Maui.Controls.Page page)
-    {
-        if (_sectionContainer == null || MauiContext == null)
+        // Guard against re-entrancy: RequestNavigation on VirtualView synchronously
+        // invokes the handler command which calls NavigateTo.
+        if (_syncing)
             return;
 
-        var pageHandler = page.ToHandler(MauiContext);
-        if (pageHandler?.PlatformView is AvaloniaControl control)
-        {
-            // Only update if the content has changed
-            if (_sectionContainer.Content != control)
-            {
-                // Remove from current parent if it has one
-                if (control.Parent is ContentControl parentContainer)
-                {
-                    parentContainer.Content = null;
-                }
-
-                _sectionContainer.Content = control;
-            }
-        }
-    }
-
-    private void UpdateCurrentItem()
-    {
-        if (VirtualView?.CurrentItem == null || _sectionContainer == null || MauiContext == null)
+        if (VirtualView.CurrentItem is not IShellContentController contentController)
             return;
 
-        // Create handler for current content
-        var handler = VirtualView.CurrentItem.ToHandler(MauiContext);
-        _currentContentHandler = handler as ShellContentHandler;
+        var page = contentController.GetOrCreateContent();
+        if (page == null)
+            return;
 
-        // Initialize navigation stack with the current page
-        if (VirtualView.CurrentItem is IShellContentController contentController)
+        // Build the target stack: root page from ShellContent + any pushed pages
+        var targetStack = new List<IView> { page };
+
+        var externalStack = VirtualView.Navigation?.NavigationStack;
+        if (externalStack != null && externalStack.Count > 1)
         {
-            var page = contentController.GetOrCreateContent();
-            if (page != null)
+            for (int i = 1; i < externalStack.Count; i++)
             {
-                _navigationStack.Clear();
-                _navigationStack.Push(page);
+                if (externalStack[i] is IView pushed)
+                    targetStack.Add(pushed);
             }
         }
 
-        // Use SyncNavigationStack to display the current page
-        // This ensures we display pages directly, not through ShellContent handler
-        SyncNavigationStack();
+        // Skip if the manager already has this exact stack
+        var currentStack = _navigationManager.NavigationStack;
+        if (currentStack.Count == targetStack.Count
+            && currentStack.Count > 0
+            && ReferenceEquals(currentStack[currentStack.Count - 1], targetStack[targetStack.Count - 1]))
+        {
+            return;
+        }
+
+        _syncing = true;
+        try
+        {
+            ((IStackNavigation)VirtualView).RequestNavigation(
+                new NavigationRequest(targetStack, animated));
+        }
+        finally
+        {
+            _syncing = false;
+        }
     }
 
-    void IStackNavigation.RequestNavigation(NavigationRequest request)
-    {
-        HandleNavigationRequest(request);
-    }
+    private void OnNavigationRequested(object? sender, NavigationRequestedEventArgs e)
+        => SyncNavigationStack(animated: e.Animated);
 
-    void IStackNavigation.NavigationFinished(IReadOnlyList<IView> newStack)
-    {
-        // Navigation completed callback
-    }
+    private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+        => SyncNavigationStack(animated: false);
 }

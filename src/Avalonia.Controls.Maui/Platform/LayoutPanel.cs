@@ -6,11 +6,22 @@ using MauiRect = Microsoft.Maui.Graphics.Rect;
 
 namespace Avalonia.Controls.Maui.Platform;
 
+/// <summary>
+/// Avalonia panel that delegates measure and arrange passes to MAUI's cross-platform layout system.
+/// </summary>
 public class LayoutPanel : Panel
 {
+    /// <summary>
+    /// Gets or sets the delegate invoked during the measure pass to compute the desired size using MAUI's cross-platform layout.
+    /// </summary>
     internal Func<double, double, MauiSize>? CrossPlatformMeasure { get; set; }
+
+    /// <summary>
+    /// Gets or sets the delegate invoked during the arrange pass to position children using MAUI's cross-platform layout.
+    /// </summary>
     internal Func<MauiRect, MauiSize>? CrossPlatformArrange { get; set; }
 
+    /// <inheritdoc/>
     protected override AvaloniaSize MeasureOverride(AvaloniaSize availableSize)
     {
         if (CrossPlatformMeasure == null)
@@ -29,6 +40,7 @@ public class LayoutPanel : Panel
         return new AvaloniaSize(width, height);
     }
 
+    /// <inheritdoc/>
     protected override AvaloniaSize ArrangeOverride(AvaloniaSize finalSize)
     {
         if (CrossPlatformArrange == null)
@@ -39,8 +51,13 @@ public class LayoutPanel : Panel
         var width = finalSize.Width;
         var height = finalSize.Height;
 
-        var actual = CrossPlatformArrange(new MauiRect(0, 0, width, height));
+        CrossPlatformArrange(new MauiRect(0, 0, width, height));
 
-        return new AvaloniaSize(actual.Width, actual.Height);
+        // Always return finalSize rather than the cross-platform arrange result.
+        // MAUI layout managers may return a smaller size (or even zero) from ArrangeChildren,
+        // but native platform containers always fill the space given by the parent.
+        // In Avalonia, returning a smaller size would cause the panel to be repositioned
+        // (e.g., centered for Stretch alignment), shifting all children.
+        return finalSize;
     }
 }

@@ -5,13 +5,12 @@ using PlatformView = Avalonia.Controls.ToggleSwitch;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
-/// <summary>
-/// Handler that maps MAUI <see cref="ISwitch"/> to Avalonia <see cref="ToggleSwitch"/>.
-/// </summary>
+/// <summary>Avalonia handler for <see cref="ISwitch"/>.</summary>
 public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>
 {
     private bool _isUpdating;
 
+    /// <summary>Property mapper for <see cref="SwitchHandler"/>.</summary>
     public static IPropertyMapper<ISwitch, SwitchHandler> Mapper = new PropertyMapper<ISwitch, SwitchHandler>(ViewHandler.ViewMapper)
     {
         [nameof(ISwitch.IsOn)] = MapIsOn,
@@ -21,24 +20,32 @@ public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>
         [nameof(Microsoft.Maui.Controls.Switch.OnColor)] = MapTrackColor,
     };
 
+    /// <summary>Command mapper for <see cref="SwitchHandler"/>.</summary>
     public static CommandMapper<ISwitch, SwitchHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 
+    /// <summary>Initializes a new instance of <see cref="SwitchHandler"/>.</summary>
     public SwitchHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="SwitchHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <see langword="null"/> to use the default.</param>
     public SwitchHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>Initializes a new instance of <see cref="SwitchHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <see langword="null"/> to use the default.</param>
+    /// <param name="commandMapper">The command mapper to use, or <see langword="null"/> to use the default.</param>
     public SwitchHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformView()
     {
         return new PlatformView
@@ -48,18 +55,23 @@ public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>
         };
     }
 
+    /// <inheritdoc/>
     protected override void ConnectHandler(PlatformView platformView)
     {
         base.ConnectHandler(platformView);
         platformView.IsCheckedChanged += OnIsCheckedChanged;
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.IsCheckedChanged -= OnIsCheckedChanged;
         base.DisconnectHandler(platformView);
     }
 
+    /// <summary>Maps the IsOn property to the platform view.</summary>
+    /// <param name="handler">The handler for the switch.</param>
+    /// <param name="view">The virtual view.</param>
     public static void MapIsOn(SwitchHandler handler, ISwitch view)
     {
         if (handler.PlatformView is not PlatformView platformView)
@@ -85,6 +97,9 @@ public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>
         }
     }
 
+    /// <summary>Maps the TrackColor property to the platform view.</summary>
+    /// <param name="handler">The handler for the switch.</param>
+    /// <param name="view">The virtual view.</param>
     public static void MapTrackColor(SwitchHandler handler, ISwitch view)
     {
         if (handler is SwitchHandler switchHandler)
@@ -93,6 +108,9 @@ public partial class SwitchHandler : ViewHandler<ISwitch, PlatformView>
         }
     }
 
+    /// <summary>Maps the ThumbColor property to the platform view.</summary>
+    /// <param name="handler">The handler for the switch.</param>
+    /// <param name="view">The virtual view.</param>
     public static void MapThumbColor(SwitchHandler handler, ISwitch view)
     {
         if (handler is SwitchHandler switchHandler)

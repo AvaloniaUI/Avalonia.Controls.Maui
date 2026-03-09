@@ -9,32 +9,32 @@ public partial class SliderView : ContentPage
         UpdateBrushes();
     }
 
-    void OnMinimumBrushStartColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnMinimumBrushStartColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnMinimumBrushEndColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnMinimumBrushEndColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnMaximumBrushStartColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnMaximumBrushStartColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnMaximumBrushEndColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnMaximumBrushEndColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnThumbBrushStartColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnThumbBrushStartColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }
 
-    void OnThumbBrushEndColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnThumbBrushEndColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateBrushes();
     }

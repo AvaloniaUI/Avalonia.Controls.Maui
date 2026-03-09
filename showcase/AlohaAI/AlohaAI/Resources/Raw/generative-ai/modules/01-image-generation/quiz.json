@@ -1,0 +1,60 @@
+{
+  "moduleId": "01-image-generation",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "What does the 'forward process' in a diffusion model do?",
+      "options": [
+        "Generates the final image",
+        "Progressively adds noise until the data is pure random noise",
+        "Compresses the image",
+        "Classifies the image content"
+      ],
+      "correctIndex": 1,
+      "explanation": "The forward process gradually destroys structure by adding Gaussian noise. The reverse process then learns to undo this, generating images from noise.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "Stable Diffusion operates directly on full-resolution pixel space.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Stable Diffusion works in 'latent space' \u2014 a compressed representation \u2014 which is much more efficient than full pixel-level diffusion.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "ControlNet allows you to:",
+      "options": [
+        "Train a model from scratch",
+        "Constrain image generation using edges, poses, or depth maps",
+        "Only generate text",
+        "Remove the need for prompts"
+      ],
+      "correctIndex": 1,
+      "explanation": "ControlNet adds spatial conditioning \u2014 you can guide generation with edge maps, pose skeletons, depth maps, and other structural inputs.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "What is the main advantage of LoRA over full fine-tuning?",
+      "options": [
+        "Better image quality",
+        "Much smaller file sizes and lower VRAM requirements",
+        "Faster inference speed",
+        "No training needed"
+      ],
+      "correctIndex": 1,
+      "explanation": "LoRA trains small adapter matrices instead of all model weights, resulting in files that are megabytes instead of gigabytes.",
+      "xp": 5
+    }
+  ]
+}

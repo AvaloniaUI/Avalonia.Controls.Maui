@@ -42,7 +42,7 @@ public partial class ButtonPage : ContentPage
         BindingContext = this;
     }
     
-    private void OnButtonClicked(object sender, EventArgs e)
+    private void OnButtonClicked(object? sender, EventArgs e)
     {
         _clickCount++;
         ClickCountLabel.Text = $"Click count: {_clickCount}";
@@ -54,47 +54,47 @@ public partial class ButtonPage : ContentPage
     }
     
     // Pressed and Released event handlers for interactive buttons
-    private void OnButton1Pressed(object sender, EventArgs e)
+    private void OnButton1Pressed(object? sender, EventArgs e)
     {
-        var button = (Button)sender;
+        var button = (Button)sender!;
         button.BackgroundColor = Colors.DarkBlue;
         button.TextColor = Colors.White;
         button.Scale = 0.95;
     }
 
-    private void OnButton1Released(object sender, EventArgs e)
+    private void OnButton1Released(object? sender, EventArgs e)
     {
-        var button = (Button)sender;
+        var button = (Button)sender!;
         button.BackgroundColor = Colors.LightBlue;
         button.TextColor = Colors.Black;
         button.Scale = 1.0;
     }
 
-    private void OnButton2Pressed(object sender, EventArgs e)
+    private void OnButton2Pressed(object? sender, EventArgs e)
     {
-        var button = (Button)sender;
+        var button = (Button)sender!;
         button.BackgroundColor = Colors.DarkGreen;
         button.BorderWidth = 4;
     }
 
-    private void OnButton2Released(object sender, EventArgs e)
+    private void OnButton2Released(object? sender, EventArgs e)
     {
-        var button = (Button)sender;
+        var button = (Button)sender!;
         button.BackgroundColor = Colors.Green;
         button.BorderWidth = 2;
     }
 
-    private void OnButton3Pressed(object sender, EventArgs e)
+    private void OnButton3Pressed(object? sender, EventArgs e)
     {
-        var button = (Button)sender;
+        var button = (Button)sender!;
         button.BackgroundColor = Colors.DarkViolet;
         button.Scale = 0.9;
         button.Rotation = 2;
     }
 
-    private void OnButton3Released(object sender, EventArgs e)
+    private void OnButton3Released(object? sender, EventArgs e)
     {
-        var button = (Button)sender;
+        var button = (Button)sender!;
         button.BackgroundColor = Colors.Purple;
         button.Scale = 1.0;
         button.Rotation = 0;

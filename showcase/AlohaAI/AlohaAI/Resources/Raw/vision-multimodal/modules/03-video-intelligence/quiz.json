@@ -1,0 +1,46 @@
+{
+  "moduleId": "03-video-intelligence",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "Why is frame sampling important in video AI?",
+      "options": [
+        "It improves video quality",
+        "It reduces computational cost by processing representative frames",
+        "It adds more frames",
+        "It compresses the video file"
+      ],
+      "correctIndex": 1,
+      "explanation": "Processing every frame is prohibitively expensive. Sampling selects key frames that capture the important information.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "Temporal consistency \u2014 ensuring objects don't flicker or morph \u2014 is a solved problem in video AI.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 1,
+      "explanation": "Temporal consistency remains one of the biggest challenges in video AI, especially for generation and tracking tasks.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "Action recognition in video involves:",
+      "options": [
+        "Identifying what text appears on screen",
+        "Classifying what physical actions or activities are occurring",
+        "Counting the number of frames",
+        "Detecting audio patterns"
+      ],
+      "correctIndex": 1,
+      "explanation": "Action recognition identifies human activities (walking, running, cooking) by analyzing motion patterns across video frames.",
+      "xp": 5
+    }
+  ]
+}

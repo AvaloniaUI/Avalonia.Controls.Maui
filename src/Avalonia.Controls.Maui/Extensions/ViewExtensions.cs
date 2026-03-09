@@ -169,10 +169,7 @@ public static class ViewExtensions
     /// <remarks>This method posts the update to the UI thread to ensure thread safety.</remarks>
     public static void UpdateOpacity(this PlatformView control, IView view)
     {
-        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-        {
-            control.Opacity = view.Opacity;
-        });
+        control.Opacity = view.Opacity;
     }
 
     /// <summary>
@@ -183,10 +180,7 @@ public static class ViewExtensions
     /// <remarks>This method posts the update to the UI thread to ensure thread safety.</remarks>
     public static void UpdateOpacity(this PlatformView control, double opacity)
     {
-        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-        {
-            control.Opacity = opacity;
-        });
+        control.Opacity = opacity;
     }
 
     /// <summary>
@@ -516,7 +510,7 @@ public static class ViewExtensions
     /// Disposes the clip subscription for a platform view.
     /// </summary>
     /// <param name="control">The platform view.</param>
-    static void DisposeClipSubscription(PlatformView control)
+    internal static void DisposeClipSubscription(PlatformView control)
     {
         if (ClipSubscriptions.TryGetValue(control, out var disposable))
         {
@@ -593,8 +587,6 @@ public static class ViewExtensions
     /// </example>
     public static void UpdateShadow(this PlatformView control, IView view)
     {
-        // Convert MAUI shadow to Avalonia DropShadowEffect
-        // This handles color conversion, offset mapping, and blur radius
         var shadow = view.Shadow.ToPlatform();
 
         if (shadow is null)
@@ -604,8 +596,6 @@ public static class ViewExtensions
             return;
         }
 
-        // Apply the DropShadowEffect to the control
-        // Avalonia will render this as a GPU-accelerated drop shadow
         control.Effect = shadow;
     }
 
@@ -639,6 +629,17 @@ public static class ViewExtensions
             else
             {
                 templatedControl.ClearValue(TemplatedControl.BackgroundProperty);
+            }
+        }
+        else if (control is Border border)
+        {
+            if (view.Background != null)
+            {
+                border.Background = view.Background.ToPlatform();
+            }
+            else
+            {
+                border.ClearValue(Border.BackgroundProperty);
             }
         }
     }
@@ -681,6 +682,10 @@ public static class ViewExtensions
         switch (view.FlowDirection)
         {
             case FlowDirection.MatchParent:
+                // Clear the local value so Avalonia's inherited property system
+                // picks up the parent's FlowDirection automatically.
+                control.ClearValue(Visual.FlowDirectionProperty);
+                break;
             case FlowDirection.LeftToRight:
                 control.FlowDirection = Media.FlowDirection.LeftToRight;
                 break;

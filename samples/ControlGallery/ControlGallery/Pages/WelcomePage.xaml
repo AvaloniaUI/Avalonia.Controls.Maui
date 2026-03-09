@@ -21,7 +21,7 @@
                                  Padding="24" 
                                  Spacing="15">
 
-                <Label Text="Run your .NET MAUI apps on Linux, and Browser with pixel-perfect rendering."
+                <Label Text="Run your .NET MAUI apps on Windows, macOS, Linux, and the Browser with pixel-perfect rendering."
                        FontSize="16"
                        HorizontalOptions="Center"
                        HorizontalTextAlignment="Center"

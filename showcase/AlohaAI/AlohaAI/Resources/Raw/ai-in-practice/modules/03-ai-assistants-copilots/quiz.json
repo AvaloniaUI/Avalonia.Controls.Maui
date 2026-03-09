@@ -1,0 +1,66 @@
+{
+  "moduleId": "03-ai-assistants-copilots",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "Which of the following is NOT a core component of a copilot's architecture?",
+      "options": [
+        "Orchestration layer",
+        "Safety filters",
+        "Model training pipeline",
+        "Grounding data"
+      ],
+      "correctIndex": 2,
+      "explanation": "A copilot uses pre-trained models via APIs. Its core components are the orchestration layer, LLM connection, grounding data, extensions, and safety filters — not a training pipeline.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "GitHub Copilot gathers context from your current file, open tabs, and repository structure to construct its prompts.",
+      "options": ["True", "False"],
+      "correctIndex": 0,
+      "explanation": "GitHub Copilot uses sophisticated context gathering — reading your current file, open tabs, and repository structure — to build rich prompts that produce relevant code suggestions.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "What is the main purpose of the RAG pattern in a copilot?",
+      "options": [
+        "To make the model respond faster",
+        "To reduce the cost of API calls",
+        "To ground the model's responses in real, retrieved data and reduce hallucinations",
+        "To replace the need for a language model entirely"
+      ],
+      "correctIndex": 2,
+      "explanation": "RAG retrieves relevant documents and injects them into the model's context, grounding responses in factual data and dramatically reducing hallucinations.",
+      "xp": 5
+    },
+    {
+      "id": "q4",
+      "type": "MultipleChoice",
+      "question": "When building a copilot extension, why should you provide rich descriptions for your plugin functions?",
+      "options": [
+        "To generate API documentation automatically",
+        "Because the AI model uses those descriptions to decide when to invoke your plugin",
+        "To satisfy compiler requirements",
+        "To improve code readability for other developers"
+      ],
+      "correctIndex": 1,
+      "explanation": "The AI model reads the function descriptions to understand what each plugin does and when it should be called — clear descriptions lead to better tool selection.",
+      "xp": 5
+    },
+    {
+      "id": "q5",
+      "type": "TrueFalse",
+      "question": "A well-designed production copilot typically combines multiple patterns — such as RAG, tool use, memory, citations, and guardrails — working together.",
+      "options": ["True", "False"],
+      "correctIndex": 0,
+      "explanation": "Most production copilots layer multiple patterns together: RAG for grounding, tool use for actions, memory for context, citations for trust, and guardrails for safety.",
+      "xp": 5
+    }
+  ]
+}

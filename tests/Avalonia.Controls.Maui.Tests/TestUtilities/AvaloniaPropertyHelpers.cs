@@ -79,13 +79,15 @@ public static class AvaloniaPropertyHelpers
         var alignment = handler.PlatformView switch
         {
             TextBlock textBlock => textBlock.TextAlignment,
-            _ => Media.TextAlignment.Left
+            _ => Media.TextAlignment.Start
         };
 
         return alignment switch
         {
+            Media.TextAlignment.Start => Microsoft.Maui.TextAlignment.Start,
             Media.TextAlignment.Left => Microsoft.Maui.TextAlignment.Start,
             Media.TextAlignment.Center => Microsoft.Maui.TextAlignment.Center,
+            Media.TextAlignment.End => Microsoft.Maui.TextAlignment.End,
             Media.TextAlignment.Right => Microsoft.Maui.TextAlignment.End,
             _ => throw new NotImplementedException()
         };

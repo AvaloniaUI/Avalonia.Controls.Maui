@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+             x:Class="AlohaAI.Views.OnboardingPage"
+             Shell.NavBarIsVisible="False"
+             Shell.NavBarVisibilityAnimationEnabled="False"
+             Shell.TabBarIsVisible="False"
+             SafeAreaEdges="None">
+    <Grid SafeAreaEdges="None">
+        <!-- Sunset Gradient Background -->
+        <BoxView InputTransparent="True">
+            <BoxView.Background>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                    <GradientStop Color="#080510" Offset="0.0" />
+                    <GradientStop Color="#1B0D3D" Offset="0.25" />
+                    <GradientStop Color="#3A1D7A" Offset="0.50" />
+                    <GradientStop Color="#6B3FA0" Offset="0.70" />
+                    <GradientStop Color="#B85A6A" Offset="0.85" />
+                    <GradientStop Color="#E8734F" Offset="1.0" />
+                </LinearGradientBrush>
+            </BoxView.Background>
+        </BoxView>
+
+        <!-- Ambient Orbs -->
+        <Border HorizontalOptions="Start" VerticalOptions="Start"
+                TranslationX="-80" TranslationY="100"
+                HeightRequest="350" WidthRequest="350"
+                StrokeThickness="0" Stroke="Transparent" InputTransparent="True">
+            <Border.StrokeShape><RoundRectangle CornerRadius="175" /></Border.StrokeShape>
+            <Border.Background>
+                <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                    <GradientStop Color="#505B9FE6" Offset="0" />
+                    <GradientStop Color="#105B9FE6" Offset="0.6" />
+                    <GradientStop Color="Transparent" Offset="1" />
+                </RadialGradientBrush>
+            </Border.Background>
+        </Border>
+        <Border HorizontalOptions="End" VerticalOptions="End"
+                TranslationX="60" TranslationY="-200"
+                HeightRequest="300" WidthRequest="300"
+                StrokeThickness="0" Stroke="Transparent" InputTransparent="True">
+            <Border.StrokeShape><RoundRectangle CornerRadius="150" /></Border.StrokeShape>
+            <Border.Background>
+                <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                    <GradientStop Color="#40E88BBF" Offset="0" />
+                    <GradientStop Color="#10E88BBF" Offset="0.6" />
+                    <GradientStop Color="Transparent" Offset="1" />
+                </RadialGradientBrush>
+            </Border.Background>
+        </Border>
+
+    <Grid RowDefinitions="*,Auto,Auto" Padding="32,0,32,32">
+
+        <!-- Step 0: Welcome -->
+        <VerticalStackLayout x:Name="Step0" VerticalOptions="Center" Spacing="24" IsVisible="True">
+            <Image Source="logo_alohaai.png" HeightRequest="50" Aspect="AspectFit" HorizontalOptions="Center" />
+            <Label Text="Your pocket guide to the world of AI"
+                   FontSize="17" TextColor="White" Opacity="0.9"
+                   HorizontalOptions="Center" HorizontalTextAlignment="Center" LineHeight="1.4" />
+        </VerticalStackLayout>
+
+        <!-- Step 1: Learn -->
+        <VerticalStackLayout x:Name="Step1" VerticalOptions="Center" Spacing="24" IsVisible="False">
+            <Image Source="icon_explore.png" WidthRequest="180" HeightRequest="180"
+                   HorizontalOptions="Center" VerticalOptions="Center" />
+            <Label Text="Learn Agentic AI" FontSize="28" FontAttributes="Bold"
+                   TextColor="White" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+            <Label Text="Master cutting-edge concepts like Agents, MCP, RAG, and Semantic Kernel through bite-sized lessons"
+                   FontSize="16" TextColor="White" Opacity="0.85"
+                   HorizontalOptions="Center" HorizontalTextAlignment="Center" LineHeight="1.5"
+                   Margin="12,0" />
+        </VerticalStackLayout>
+
+        <!-- Step 2: Practice -->
+        <VerticalStackLayout x:Name="Step2" VerticalOptions="Center" Spacing="24" IsVisible="False">
+            <Image Source="icon_notebook.png" WidthRequest="180" HeightRequest="180"
+                   HorizontalOptions="Center" VerticalOptions="Center" />
+            <Label Text="Test Your Knowledge" FontSize="28" FontAttributes="Bold"
+                   TextColor="White" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+            <Label Text="Reinforce learning with interactive quizzes after each module — track your scores and improve over time"
+                   FontSize="16" TextColor="White" Opacity="0.85"
+                   HorizontalOptions="Center" HorizontalTextAlignment="Center" LineHeight="1.5"
+                   Margin="12,0" />
+        </VerticalStackLayout>
+
+        <!-- Step 3: Grow -->
+        <VerticalStackLayout x:Name="Step3" VerticalOptions="Center" Spacing="24" IsVisible="False">
+            <Image Source="icon_trophy.png" WidthRequest="180" HeightRequest="180"
+                   HorizontalOptions="Center" VerticalOptions="Center" />
+            <Label Text="Build Your Streak" FontSize="28" FontAttributes="Bold"
+                   TextColor="White" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+            <Label Text="Earn XP, unlock achievements, and stay motivated with daily learning goals and streak tracking"
+                   FontSize="16" TextColor="White" Opacity="0.85"
+                   HorizontalOptions="Center" HorizontalTextAlignment="Center" LineHeight="1.5"
+                   Margin="12,0" />
+        </VerticalStackLayout>
+
+        <!-- Step 4: Profile Setup -->
+        <VerticalStackLayout x:Name="Step4" VerticalOptions="Center" Spacing="20" IsVisible="False">
+            <Label Text="Personalize Your Profile" FontSize="28" FontAttributes="Bold"
+                   TextColor="White" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+            <Label Text="Add your name so we can personalize your learning experience"
+                   FontSize="16" TextColor="White" Opacity="0.85"
+                   HorizontalOptions="Center" HorizontalTextAlignment="Center" LineHeight="1.5"
+                   Margin="12,0" />
+            <Border StrokeShape="RoundRectangle 14" Stroke="#30FFFFFF" StrokeThickness="1"
+                    BackgroundColor="#15FFFFFF" Padding="4,0" Margin="20,0">
+                <Entry x:Name="NameEntry" Placeholder="Enter your name"
+                       PlaceholderColor="#AAAAAA" TextColor="White" FontSize="18"
+                       HorizontalTextAlignment="Center" ReturnType="Done"
+                       BackgroundColor="Transparent" />
+            </Border>
+        </VerticalStackLayout>
+
+        <!-- Page Indicators -->
+        <HorizontalStackLayout Grid.Row="1" HorizontalOptions="Center" Spacing="10" Margin="0,0,0,20">
+            <Border x:Name="Dot0" BackgroundColor="White" StrokeShape="RoundRectangle 4" Stroke="Transparent"
+                    WidthRequest="24" HeightRequest="8" />
+            <Border x:Name="Dot1" BackgroundColor="#FFFFFF40" StrokeShape="RoundRectangle 4" Stroke="Transparent"
+                    WidthRequest="8" HeightRequest="8" />
+            <Border x:Name="Dot2" BackgroundColor="#FFFFFF40" StrokeShape="RoundRectangle 4" Stroke="Transparent"
+                    WidthRequest="8" HeightRequest="8" />
+            <Border x:Name="Dot3" BackgroundColor="#FFFFFF40" StrokeShape="RoundRectangle 4" Stroke="Transparent"
+                    WidthRequest="8" HeightRequest="8" />
+            <Border x:Name="Dot4" BackgroundColor="#FFFFFF40" StrokeShape="RoundRectangle 4" Stroke="Transparent"
+                    WidthRequest="8" HeightRequest="8" />
+        </HorizontalStackLayout>
+
+        <!-- CTA Button -->
+        <Button Grid.Row="2"
+                x:Name="NextButton"
+                Text="Next →"
+                Clicked="OnNextClicked"
+                BackgroundColor="White"
+                TextColor="#5B8FD4"
+                FontSize="18"
+                FontAttributes="Bold"
+                CornerRadius="16"
+                HeightRequest="56"
+                Margin="0,0,0,20">
+            <Button.Shadow>
+                <Shadow Brush="White" Offset="0,4" Radius="16" Opacity="0.3" />
+            </Button.Shadow>
+        </Button>
+    </Grid>
+    </Grid>
+</ContentPage>

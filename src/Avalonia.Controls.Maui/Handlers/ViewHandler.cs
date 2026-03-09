@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
@@ -7,6 +8,10 @@ using PlatformView = Avalonia.Controls.Control;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>
+/// Base Avalonia handler for <see cref="IView"/>. Provides property and command mappers
+/// that translate MAUI view properties to Avalonia platform equivalents.
+/// </summary>
 public abstract partial class ViewHandler : ElementHandler, IViewHandler
 {
     /// <summary>
@@ -66,6 +71,9 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
 
     bool _hasContainer;
 
+    /// <summary>
+    /// Gets or sets the data flow direction used for property mapping.
+    /// </summary>
     internal DataFlowDirection DataFlowDirection { get; set; }
 
     /// <summary>
@@ -157,31 +165,42 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         if (platformView is null || VirtualView is null)
             return Microsoft.Maui.Graphics.Size.Zero;
 
+        // When there's a ContainerView, it's the control in the parent's visual tree
+        // and carries the margin. Measure the outermost view for correct sizing.
+        var viewToMeasure = (ContainerView as PlatformView) ?? platformView;
+
         if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
         {
-            // Already on UI thread, execute directly
-            var avaloniaConstraint = new global::Avalonia.Size(
-                double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
-                double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
-
-            platformView.Measure(avaloniaConstraint);
-            var avaloniaSize = platformView.DesiredSize;
-            return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
+            return MeasureCore(viewToMeasure, widthConstraint, heightConstraint);
         }
         else
         {
-            // Not on UI thread, invoke synchronously on UI thread
             return Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
             {
-                var avaloniaConstraint = new global::Avalonia.Size(
-                    double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
-                    double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
-
-                platformView.Measure(avaloniaConstraint);
-                var avaloniaSize = platformView.DesiredSize;
-                return new Microsoft.Maui.Graphics.Size(avaloniaSize.Width, avaloniaSize.Height);
+                return MeasureCore(viewToMeasure, widthConstraint, heightConstraint);
             }).GetAwaiter().GetResult();
         }
+    }
+
+    /// <summary>
+    /// Performs the core measurement of the platform view against the given constraints.
+    /// </summary>
+    /// <param name="viewToMeasure">The Avalonia view to measure (ContainerView if present, otherwise PlatformView).</param>
+    /// <param name="widthConstraint">The maximum width constraint.</param>
+    /// <param name="heightConstraint">The maximum height constraint.</param>
+    /// <returns>The desired size of the view.</returns>
+    private static Microsoft.Maui.Graphics.Size MeasureCore(PlatformView viewToMeasure, double widthConstraint, double heightConstraint)
+    {
+        var avaloniaConstraint = new global::Avalonia.Size(
+            double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
+            double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
+
+        viewToMeasure.Measure(avaloniaConstraint);
+
+        // Avalonia's DesiredSize includes the control's Margin, but MAUI's layout system
+        // adds margin separately when positioning children. Subtract it to avoid double-counting.
+        var contentSize = viewToMeasure.DesiredSize.Deflate(viewToMeasure.Margin);
+        return new Microsoft.Maui.Graphics.Size(contentSize.Width, contentSize.Height);
     }
 
     /// <inheritdoc/>
@@ -193,24 +212,46 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
             Avalonia.Threading.Dispatcher.UIThread.Invoke(() => Arrange(frame));
     }
 
+    /// <summary>
+    /// Arranges the platform view within the specified frame, compensating for MAUI/Avalonia margin differences.
+    /// When a ContainerView exists (for Clip/Shadow), it is the control in the parent's visual tree
+    /// and must be arranged instead, with the PlatformView filling the container.
+    /// </summary>
+    /// <param name="frame">The frame rectangle provided by the MAUI layout system.</param>
     private protected void Arrange(Microsoft.Maui.Graphics.Rect frame)
     {
         if (PlatformView is null)
             return;
 
-        // Only measure if the control hasn't been measured yet or if measure is invalid.
-        if (!PlatformView.IsMeasureValid)
+        // Determine which view is in the parent's visual tree.
+        var viewToArrange = (ContainerView as PlatformView) ?? PlatformView;
+
+        // MAUI's frame already accounts for margin positioning. Avalonia's Arrange
+        // further deflates by Margin internally, so inflate to compensate.
+        var arrangeRect = new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height)
+            .Inflate(viewToArrange.Margin);
+
+        if (!viewToArrange.IsMeasureValid)
         {
-            PlatformView.Measure(new global::Avalonia.Size(frame.Width, frame.Height));
+            viewToArrange.Measure(arrangeRect.Size);
         }
 
-        PlatformView.Arrange(new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height));
+        viewToArrange.Arrange(arrangeRect);
     }
 
 
+    /// <summary>
+    /// Creates the Avalonia platform view for this handler.
+    /// </summary>
+    /// <returns>The newly created platform view.</returns>
     private protected abstract PlatformView OnCreatePlatformView();
 
+    /// <inheritdoc/>
+#if MAUI_SOURCE_BUILD
+    private protected sealed override object OnCreatePlatformElement() =>
+#else
     public sealed override object OnCreatePlatformElement() =>
+#endif
         OnCreatePlatformView();
 
 
@@ -236,12 +277,15 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
 
     /// <summary>
     /// Maps the abstract <see cref="IView.Margin"/> property to the platform-specific implementations.
+    /// When a ContainerView exists (for Clip/Shadow), margin is applied to it instead
+    /// of the PlatformView, since the ContainerView is the control in the parent's visual tree.
     /// </summary>
     /// <param name="handler">The associated handler.</param>
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapMargin(IViewHandler handler, IView view)
     {
-        ((PlatformView?)handler.PlatformView)?.UpdateMargin(view);
+        var target = (handler.ContainerView as PlatformView) ?? (PlatformView?)handler.PlatformView;
+        target?.UpdateMargin(view);
     }
 
     /// <summary>
@@ -352,8 +396,9 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         {
             var provider = handler.GetRequiredService<IImageSourceServiceProvider>();
 
+            var logger = handler.MauiContext?.Services?.CreateLogger<ViewHandler>();
             platformView.UpdateBackgroundImageSourceAsync(image.ImageSource, provider)
-                .FireAndForget(handler);
+                .FireAndForget(logger);
         }
         else
         {
@@ -715,6 +760,11 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         }
     }
 
+    /// <summary>
+    /// Maps the context flyout from a <see cref="IContextFlyoutElement"/> to the Avalonia platform view.
+    /// </summary>
+    /// <param name="handler">The associated element handler.</param>
+    /// <param name="contextFlyoutContainer">The context flyout element containing the flyout to map.</param>
     internal static void MapContextFlyout(IElementHandler handler, IContextFlyoutElement contextFlyoutContainer)
     {
         _ = handler.MauiContext ?? throw new InvalidOperationException($"The handler's {nameof(handler.MauiContext)} cannot be null.");

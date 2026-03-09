@@ -3,7 +3,7 @@ using Microsoft.Maui.Graphics;
 
 namespace Avalonia.Controls.Maui.Tests.Stubs
 {
-    public class PageStub : Page
+    public class PageStub : Microsoft.Maui.Controls.Page
     {
         // Stub implementations or overrides if necessary
     }

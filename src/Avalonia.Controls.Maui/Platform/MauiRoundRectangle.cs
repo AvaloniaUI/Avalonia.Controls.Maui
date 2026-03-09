@@ -5,22 +5,35 @@ using global::Avalonia.Media;
 
 namespace Avalonia.Controls.Maui.Platform;
 
+/// <summary>
+/// Avalonia shape control that renders a rectangle with individually configurable rounded corners, used to implement MAUI Border shapes.
+/// </summary>
 public class MauiRoundRectangle : Shape
 {
+    /// <summary>
+    /// Defines the <see cref="CornerRadius"/> styled property.
+    /// </summary>
     public static readonly StyledProperty<CornerRadius> CornerRadiusProperty =
         AvaloniaProperty.Register<MauiRoundRectangle, CornerRadius>(nameof(CornerRadius));
 
+    /// <summary>
+    /// Registers property change handlers that invalidate the geometry when corner radius or bounds change.
+    /// </summary>
     static MauiRoundRectangle()
     {
         AffectsGeometry<MauiRoundRectangle>(CornerRadiusProperty, BoundsProperty);
     }
 
+    /// <summary>
+    /// Gets or sets the corner radius applied to each corner of the rectangle.
+    /// </summary>
     public CornerRadius CornerRadius
     {
         get => GetValue(CornerRadiusProperty);
         set => SetValue(CornerRadiusProperty, value);
     }
 
+    /// <inheritdoc/>
     protected override Geometry CreateDefiningGeometry()
     {
         var bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);

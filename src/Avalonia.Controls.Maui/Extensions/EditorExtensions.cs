@@ -86,13 +86,13 @@ namespace Avalonia.Controls.Maui.Extensions
             switch (editor.HorizontalTextAlignment)
             {
                 case TextAlignment.Start:
-                    textBox.TextAlignment = AvaloniaTextAlignment.Left;
+                    textBox.TextAlignment = AvaloniaTextAlignment.Start;
                     break;
                 case TextAlignment.Center:
                     textBox.TextAlignment = AvaloniaTextAlignment.Center;
                     break;
                 case TextAlignment.End:
-                    textBox.TextAlignment = AvaloniaTextAlignment.Right;
+                    textBox.TextAlignment = AvaloniaTextAlignment.End;
                     break;
             }
         }

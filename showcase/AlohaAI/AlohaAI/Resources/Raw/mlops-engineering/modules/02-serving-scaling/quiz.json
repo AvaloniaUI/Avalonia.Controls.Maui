@@ -1,0 +1,46 @@
+{
+  "moduleId": "02-serving-scaling",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "When should you use batch inference over online inference?",
+      "options": [
+        "Always",
+        "When results are needed in real-time",
+        "When processing large datasets where latency isn't critical",
+        "Never"
+      ],
+      "correctIndex": 2,
+      "explanation": "Batch inference processes many inputs at once (nightly reports, data pipelines) and is more cost-efficient but not suitable for real-time use.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "TrueFalse",
+      "question": "Dynamic batching groups incoming inference requests to process them together, improving GPU utilization.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 0,
+      "explanation": "Dynamic batching collects incoming requests over a short window and processes them as a batch, dramatically improving throughput on GPUs.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "MultipleChoice",
+      "question": "Shadow testing a new model means:",
+      "options": [
+        "Testing in the dark",
+        "Running the new model on live traffic without serving its results to users, comparing against production",
+        "Testing only at night",
+        "Using synthetic data"
+      ],
+      "correctIndex": 1,
+      "explanation": "Shadow testing runs the new model in parallel with production, comparing outputs without affecting users \u2014 a safe way to validate before switching.",
+      "xp": 5
+    }
+  ]
+}

@@ -7,10 +7,6 @@
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="16">
-            <Label Text="Polyline Samples"
-                   FontSize="24"
-                   FontAttributes="Bold"
-                   HorizontalOptions="Center" />
 
             <Border Stroke="Gray"
                     Padding="12">
@@ -61,6 +57,39 @@
                            TextColor="Gray" />
                 </VerticalStackLayout>
             </Border>
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="FillRule"
+                           FontAttributes="Bold" />
+                    <HorizontalStackLayout Spacing="20">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="EvenOdd"
+                                   FontSize="12"
+                                   TextColor="Gray" />
+                            <Polyline Points="60,10 90,90 10,40 110,40 30,90"
+                                      Fill="#F59E0B"
+                                      Stroke="#92400E"
+                                      StrokeThickness="2"
+                                      FillRule="EvenOdd" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="Nonzero"
+                                   FontSize="12"
+                                   TextColor="Gray" />
+                            <Polyline Points="60,10 90,90 10,40 110,40 30,90"
+                                      Fill="#F59E0B"
+                                      Stroke="#92400E"
+                                      StrokeThickness="2"
+                                      FillRule="Nonzero" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

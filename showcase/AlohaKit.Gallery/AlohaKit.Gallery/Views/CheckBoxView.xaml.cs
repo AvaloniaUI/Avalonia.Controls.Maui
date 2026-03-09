@@ -9,17 +9,17 @@ public partial class CheckBoxView : ContentPage
         UpdateColors();
     }
 
-    void OnCheckedColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnCheckedColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnUncheckedColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnUncheckedColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }
 
-    void OnStrokeColorEntryTextChanged(object sender, TextChangedEventArgs e)
+    void OnStrokeColorEntryTextChanged(object? sender, TextChangedEventArgs e)
     {
         UpdateColors();
     }

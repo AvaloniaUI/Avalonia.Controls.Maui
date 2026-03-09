@@ -1,0 +1,32 @@
+{
+  "id": "01-mlops-foundations",
+  "title": "Modern MLOps Foundations",
+  "description": "Build reproducible AI pipelines, manage artifacts, and automate deployment workflows",
+  "lessons": [
+    {
+      "id": "01-dataset-versioning",
+      "title": "Dataset & Version Management",
+      "file": "01-dataset-versioning.md",
+      "xp": 10
+    },
+    {
+      "id": "02-feature-vector-stores",
+      "title": "Feature Stores & Vector Databases",
+      "file": "02-feature-vector-stores.md",
+      "xp": 15
+    },
+    {
+      "id": "03-cicd-models",
+      "title": "CI/CD for Models & Prompts",
+      "file": "03-cicd-models.md",
+      "xp": 15
+    },
+    {
+      "id": "04-experiment-tracking",
+      "title": "Experiment Tracking & Release Strategy",
+      "file": "04-experiment-tracking.md",
+      "xp": 15
+    }
+  ],
+  "quiz": "quiz.json"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "01-cloud-ai-services",
+  "title": "Cloud AI Services",
+  "description": "Explore hosted AI services in the cloud — from large language model APIs to search, knowledge bases, and visual development tools.",
+  "lessons": [
+    { "id": "cloud-ai-overview", "title": "Cloud AI Services Overview", "file": "cloud-ai-overview.md", "xp": 10 },
+    { "id": "language-models-apis", "title": "Language Models & APIs", "file": "language-models-apis.md", "xp": 10 },
+    { "id": "search-and-knowledge", "title": "Search & Knowledge Services", "file": "search-and-knowledge.md", "xp": 10 },
+    { "id": "ai-studio-tools", "title": "AI Studio & Development Tools", "file": "ai-studio-tools.md", "xp": 15 }
+  ],
+  "quiz": "quiz.json"
+}

@@ -1,0 +1,36 @@
+<Project>
+
+  <!-- Default Avalonia version: set to the version this package was built against.
+       Users can override by setting AvaloniaVersion before this props is imported. -->
+  <PropertyGroup>
+    <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">__AvaloniaVersionPlaceholder__</AvaloniaVersion>
+  </PropertyGroup>
+
+  <!-- Auto-enable bootstrap (app class) generation for MAUI single-project apps.
+       The app class is platform-agnostic, so no platform TFM exclusion is needed here.
+       AvaloniaControlsMauiGenerateDesktopProgram is NOT set here; platform packages opt in. -->
+  <PropertyGroup>
+    <AvaloniaControlsMauiGenerateBootstrap
+        Condition="'$(AvaloniaControlsMauiGenerateBootstrap)' == '' And '$(UseMaui)' == 'true' And '$(SingleProject)' == 'true'">true</AvaloniaControlsMauiGenerateBootstrap>
+  </PropertyGroup>
+
+  <!-- Theme and font defaults for source generator. -->
+  <PropertyGroup>
+    <AvaloniaControlsMauiTheme Condition="'$(AvaloniaControlsMauiTheme)' == ''">Fluent</AvaloniaControlsMauiTheme>
+    <AvaloniaControlsMauiThemeVariant Condition="'$(AvaloniaControlsMauiThemeVariant)' == ''">Default</AvaloniaControlsMauiThemeVariant>
+    <AvaloniaControlsMauiIncludeInterFont Condition="'$(AvaloniaControlsMauiIncludeInterFont)' == ''">true</AvaloniaControlsMauiIncludeInterFont>
+  </PropertyGroup>
+
+  <!-- Pass properties to source generator -->
+  <ItemGroup>
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiGenerateBootstrap" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiGenerateDesktopProgram" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiTheme" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiThemeVariant" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiIncludeInterFont" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiProgramClass" />
+    <CompilerVisibleProperty Include="AvaloniaControlsMauiAppClassName" />
+    <CompilerVisibleProperty Include="RootNamespace" />
+  </ItemGroup>
+
+</Project>

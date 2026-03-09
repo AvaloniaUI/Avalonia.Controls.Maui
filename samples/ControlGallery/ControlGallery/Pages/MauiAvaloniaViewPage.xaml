@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.MauiAvaloniaViewPage"
+             xmlns:views="clr-namespace:ControlGallery.Views"
+             Title="Maui Avalonia View">
+    <Grid Margin="10" RowDefinitions="Auto, *">
+    <Label LineBreakMode="WordWrap"
+        Text="This is an example of a .NET MAUI Control written using Avalonia. This can be used in any .NET MAUI application." />
+    <views:CounterView Grid.Row="1" Count="5" HeightRequest="200" />
+    </Grid>
+</ContentPage>

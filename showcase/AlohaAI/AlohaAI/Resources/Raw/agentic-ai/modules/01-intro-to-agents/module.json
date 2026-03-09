@@ -1,0 +1,26 @@
+{
+  "id": "01-intro-to-agents",
+  "title": "Introduction to AI Agents",
+  "description": "Understand what AI agents are, how they differ from chatbots, and explore common architectures",
+  "lessons": [
+    {
+      "id": "01-what-are-agents",
+      "title": "What Are AI Agents?",
+      "file": "01-what-are-agents.md",
+      "xp": 10
+    },
+    {
+      "id": "02-agent-vs-chatbot",
+      "title": "Agents vs Chatbots",
+      "file": "02-agent-vs-chatbot.md",
+      "xp": 10
+    },
+    {
+      "id": "03-agent-architectures",
+      "title": "Agent Architectures",
+      "file": "03-agent-architectures.md",
+      "xp": 15
+    }
+  ],
+  "quiz": "quiz.json"
+}

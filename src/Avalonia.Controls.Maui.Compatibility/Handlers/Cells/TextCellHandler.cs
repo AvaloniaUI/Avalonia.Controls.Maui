@@ -6,8 +6,14 @@ using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui.Compatibility;
 
+/// <summary>
+/// Avalonia handler for <see cref="TextCell"/>.
+/// </summary>
 public class TextCellHandler : ElementHandler<TextCell, MauiTextCell>
 {
+    /// <summary>
+    /// Property mapper for <see cref="TextCellHandler"/>.
+    /// </summary>
     public static IPropertyMapper<TextCell, TextCellHandler> Mapper =
         new PropertyMapper<TextCell, TextCellHandler>(ElementMapper)
         {
@@ -20,23 +26,41 @@ public class TextCellHandler : ElementHandler<TextCell, MauiTextCell>
             ["ContextActions"] = MapContextActions,
         };
 
+    /// <summary>
+    /// Command mapper for <see cref="TextCellHandler"/>.
+    /// </summary>
     public static CommandMapper<TextCell, TextCellHandler> CommandMapper =
         new(ElementCommandMapper);
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextCellHandler"/> class.
+    /// </summary>
     public TextCellHandler() : base(Mapper, CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextCellHandler"/> class with a custom property mapper.
+    /// </summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public TextCellHandler(IPropertyMapper? mapper)
         : base(mapper ?? Mapper, CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TextCellHandler"/> class with custom mappers.
+    /// </summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public TextCellHandler(IPropertyMapper? mapper, CommandMapper? commandMapper)
         : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
     }
 
+    /// <summary>
+    /// Creates the Avalonia platform element for this handler.
+    /// </summary>
     protected override MauiTextCell CreatePlatformElement()
     {
         var cell = new MauiTextCell();
@@ -46,6 +70,7 @@ public class TextCellHandler : ElementHandler<TextCell, MauiTextCell>
         return cell;
     }
 
+    /// <inheritdoc/>
     protected override void DisconnectHandler(MauiTextCell platformView)
     {
         platformView.RemoveHandler(global::Avalonia.Input.InputElement.TappedEvent, OnCellTapped);
@@ -75,36 +100,71 @@ public class TextCellHandler : ElementHandler<TextCell, MauiTextCell>
         }
     }
 
+    /// <summary>
+    /// Maps the Text property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the TextCell.</param>
+    /// <param name="textCell">The MAUI TextCell virtual view.</param>
     public static void MapText(TextCellHandler handler, TextCell textCell)
     {
         handler.PlatformView.UpdateText(textCell);
     }
 
+    /// <summary>
+    /// Maps the Detail property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the TextCell.</param>
+    /// <param name="textCell">The MAUI TextCell virtual view.</param>
     public static void MapDetail(TextCellHandler handler, TextCell textCell)
     {
         handler.PlatformView.UpdateDetail(textCell);
     }
 
+    /// <summary>
+    /// Maps the TextColor property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the TextCell.</param>
+    /// <param name="textCell">The MAUI TextCell virtual view.</param>
     public static void MapTextColor(TextCellHandler handler, TextCell textCell)
     {
         handler.PlatformView.UpdateTextColor(textCell);
     }
 
+    /// <summary>
+    /// Maps the DetailColor property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the TextCell.</param>
+    /// <param name="textCell">The MAUI TextCell virtual view.</param>
     public static void MapDetailColor(TextCellHandler handler, TextCell textCell)
     {
         handler.PlatformView.UpdateDetailColor(textCell);
     }
 
+    /// <summary>
+    /// Maps the IsEnabled property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the TextCell.</param>
+    /// <param name="textCell">The MAUI TextCell virtual view.</param>
     public static void MapIsEnabled(TextCellHandler handler, TextCell textCell)
     {
         handler.PlatformView.UpdateIsEnabled(textCell);
     }
 
+    /// <summary>
+    /// Maps the Height property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the TextCell.</param>
+    /// <param name="textCell">The MAUI TextCell virtual view.</param>
     public static void MapHeight(TextCellHandler handler, TextCell textCell)
     {
         handler.PlatformView.UpdateHeight(textCell);
     }
 
+    /// <summary>
+    /// Maps the ContextActions property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler for the TextCell.</param>
+    /// <param name="textCell">The MAUI TextCell virtual view.</param>
     public static void MapContextActions(TextCellHandler handler, TextCell textCell)
     {
         handler.PlatformView.UpdateContextActions(textCell);

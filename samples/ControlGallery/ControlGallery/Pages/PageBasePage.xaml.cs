@@ -7,20 +7,20 @@ public partial class PageBasePage : ContentPage
         InitializeComponent();
     }
 
-    private void OnChangeBackground(object sender, EventArgs e)
+    private void OnChangeBackground(object? sender, EventArgs e)
     {
         // Set a different image
         BackgroundImageSource = ImageSource.FromFile("redbug.png");
         StatusLabel.Text = "This page has a BackgroundImageSource set via FileImageSource (redbug.png).";
     }
 
-    private void OnSetRedBackground(object sender, EventArgs e)
+    private void OnSetRedBackground(object? sender, EventArgs e)
     {
         Background = new SolidColorBrush(Colors.Red);
         StatusLabel.Text = "This page has a Background set to SolidColorBrush (Red).";
     }
 
-    private void OnSetGradientBackground(object sender, EventArgs e)
+    private void OnSetGradientBackground(object? sender, EventArgs e)
     {
         Background = new LinearGradientBrush
         {
@@ -35,13 +35,13 @@ public partial class PageBasePage : ContentPage
         StatusLabel.Text = "This page has a Background set to LinearGradientBrush (Blue-Violet).";
     }
 
-    private void OnClearBackgroundImage(object sender, EventArgs e)
+    private void OnClearBackgroundImage(object? sender, EventArgs e)
     {
         BackgroundImageSource = null;
         StatusLabel.Text = "BackgroundImageSource cleared.";
     }
 
-    private void OnClearBackground(object sender, EventArgs e)
+    private void OnClearBackground(object? sender, EventArgs e)
     {
         Background = null;
         StatusLabel.Text = "Background cleared.";

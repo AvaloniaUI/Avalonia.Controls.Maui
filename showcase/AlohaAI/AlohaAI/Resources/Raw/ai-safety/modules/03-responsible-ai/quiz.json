@@ -1,0 +1,46 @@
+{
+  "moduleId": "03-responsible-ai",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "A Model Card typically documents:",
+      "options": [
+        "Only the source code",
+        "The model's intended use, limitations, performance metrics, and ethical considerations",
+        "Only the training data",
+        "Only the API endpoint"
+      ],
+      "correctIndex": 1,
+      "explanation": "Model Cards are standardized documentation that describes a model's capabilities, limitations, training details, and ethical considerations.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "MultipleChoice",
+      "question": "What does SHAP help with in responsible AI?",
+      "options": [
+        "Training models faster",
+        "Explaining the contribution of each feature to a prediction",
+        "Compressing models",
+        "Generating synthetic data"
+      ],
+      "correctIndex": 1,
+      "explanation": "SHAP (SHapley Additive exPlanations) shows how much each input feature contributed to a specific prediction, enabling interpretability.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "TrueFalse",
+      "question": "'Demographic Parity' requires that a model's positive outcome rate is equal across all demographic groups.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 0,
+      "explanation": "Demographic parity is one fairness metric that checks whether the model's decisions are independent of protected attributes like race or gender.",
+      "xp": 5
+    }
+  ]
+}

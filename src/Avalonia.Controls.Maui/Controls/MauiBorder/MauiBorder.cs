@@ -170,6 +170,7 @@ namespace Avalonia.Controls.Maui
             set => SetValue(StrokeMiterLimitProperty, value);
         }
 
+        /// <inheritdoc/>
         protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
         {
             base.OnPropertyChanged(change);
@@ -188,25 +189,26 @@ namespace Avalonia.Controls.Maui
 
                 _backgroundGeometry = null;
                 _strokeGeometry = null;
+                Child?.Clip = null;
                 InvalidateMeasure();
                 InvalidateVisual();
             }
-            else if (change.Property == BoundsProperty)
-            {
-                _backgroundGeometry = null;
-                _strokeGeometry = null;
-            }
             else if (change.Property == StrokeThicknessProperty ||
-                     change.Property == StrokeProperty ||
-                     change.Property == StrokeDashPatternProperty ||
-                     change.Property == StrokeDashOffsetProperty ||
-                     change.Property == StrokeLineCapProperty ||
-                     change.Property == StrokeLineJoinProperty ||
-                     change.Property == StrokeMiterLimitProperty ||
                      change.Property == PaddingProperty)
             {
                 _backgroundGeometry = null;
                 _strokeGeometry = null;
+                Child?.Clip = null;
+                InvalidateVisual();
+            }
+            else if (change.Property == StrokeProperty ||
+                     change.Property == StrokeDashPatternProperty ||
+                     change.Property == StrokeDashOffsetProperty ||
+                     change.Property == StrokeLineCapProperty ||
+                     change.Property == StrokeLineJoinProperty ||
+                     change.Property == StrokeMiterLimitProperty)
+            {
+                InvalidateVisual();
             }
         }
 
@@ -215,139 +217,74 @@ namespace Avalonia.Controls.Maui
             InvalidateShape();
         }
 
-        protected override Size MeasureOverride(Size availableSize)
+        /// <inheritdoc/>
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
-            var strokeThickness = StrokeThickness;
-            var padding = Padding;
-            var constraint = availableSize.Deflate(new Thickness(strokeThickness) + padding);
-
-            if (Child != null)
+            base.OnDetachedFromVisualTree(e);
+            if (Shape is INotifyPropertyChanged notify)
             {
-                Child.Measure(constraint);
-                var childSize = Child.DesiredSize;
-                return new Size(
-                    childSize.Width + strokeThickness * 2 + padding.Left + padding.Right,
-                    childSize.Height + strokeThickness * 2 + padding.Top + padding.Bottom);
+                notify.PropertyChanged -= OnShapePropertyChanged;
             }
-
-            return new Size(strokeThickness * 2 + padding.Left + padding.Right,
-                strokeThickness * 2 + padding.Top + padding.Bottom);
         }
 
+        /// <inheritdoc/>
+        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToVisualTree(e);
+            if (Shape is INotifyPropertyChanged notify)
+            {
+                // Remove-then-add guards against double subscription since
+                // OnPropertyChanged also subscribes when Shape is first set.
+                notify.PropertyChanged -= OnShapePropertyChanged;
+                notify.PropertyChanged += OnShapePropertyChanged;
+            }
+        }
+
+        /// <inheritdoc/>
         protected override Size ArrangeOverride(Size finalSize)
         {
-            // Update geometries used for rendering
-            // Both background and stroke use the same geometry at StrokeThickness/2 offset
-            if (_strokeGeometry == null || _lastRenderSize != finalSize)
+            var arrangedSize = base.ArrangeOverride(finalSize);
+
+            if (finalSize.Width > 0 && finalSize.Height > 0)
             {
-                _strokeGeometry = CreateGeometry(finalSize, StrokeThickness / 2);
+                _strokeGeometry = CreateGeometry(finalSize);
                 _backgroundGeometry = _strokeGeometry;
                 _lastRenderSize = finalSize;
-            }
 
-            if (Child != null)
-            {
-                var strokeThickness = StrokeThickness;
-                var padding = Padding;
-                // Child is arranged inside padding only
-                // Stroke is drawn at the outer edge and doesn't reduce content area
-                var childRect = new Rect(finalSize).Deflate(padding);
-                Child.Arrange(childRect);
-
-                if (Shape != null)
+                if (Child != null)
                 {
-                    // Clip child to the border inner edge (relative to Child coordinates)
-                    Child.Clip = CreateClipGeometry(childRect, finalSize, strokeThickness);
+                    if (_strokeGeometry != null)
+                    {
+                        var childBounds = Child.Bounds;
+                        if (childBounds.X == 0 && childBounds.Y == 0)
+                        {
+                            // Child starts at origin, clip geometry can be used directly
+                            Child.Clip = _strokeGeometry;
+                        }
+                        else
+                        {
+                            // Child is offset within the border (e.g. centered and smaller),
+                            // translate the clip geometry to the child's coordinate space
+                            var clipGeometry = CreateGeometry(finalSize);
+                            if (clipGeometry != null)
+                            {
+                                clipGeometry.Transform = new TranslateTransform(-childBounds.X, -childBounds.Y);
+                            }
+
+                            Child.Clip = clipGeometry;
+                        }
+                    }
+                    else
+                    {
+                        Child.Clip = null;
+                    }
                 }
-                else
-                {
-                    Child.Clip = null;
-                }
-            }
-            else
-            {
-                Clip = null;
             }
 
-            return finalSize;
+            return arrangedSize;
         }
 
-        private Geometry? CreateClipGeometry(Rect childRect, Size borderSize, double strokeThickness)
-        {
-            if (Shape == null)
-                return null;
-
-            // When strokeThickness is 0, padding already keeps content inside the border
-            // No clipping is needed for straight edges; rounded corners are handled by the shape
-            // UNLESS padding is 0, then we might need to clip to the shape
-            if (strokeThickness <= 0 && childRect.X > 0 && childRect.Y > 0)
-                return null;
-
-            // Calculate the inner border rectangle (the visible area inside the stroke)
-            // relative to the Border's coordinate system
-            // Stroke is centered on the path at StrokeThickness/2
-            // Calculate the inner border rectangle (the visible area inside the stroke)
-            // relative to the Border's coordinate system
-            // Stroke is centered on the path at StrokeThickness/2
-            // We align the clip with the CENTER of the stroke to ensure robust overlap
-            var innerStrokePos = strokeThickness / 2;
-            
-            var innerBorderRect = new MauiGraphics.Rect(
-                innerStrokePos, 
-                innerStrokePos, 
-                Math.Max(0, borderSize.Width - 2 * innerStrokePos), 
-                Math.Max(0, borderSize.Height - 2 * innerStrokePos));
-
-            // Instead of offsetting the rect (which creates negative coordinates that MauiGraphics might mishandle),
-            // we generate the geometry in Border coordinates and then apply a TranslateTransform.
-            // This is safer and robust against shape generation quirks.
-            Geometry? clipGeometry = null;
-
-            if (Shape is MauiShapes.RoundRectangle roundRectangleShape)
-            {
-                // We need to adjust the corner radius to account for the stroke thickness
-                // The shape's CornerRadius is for the outer edge (or center, depending on definition)
-                // But effectively we want the radius at the INNER edge of the stroke.
-                // We basically want the radius at the clip position (innerStrokePos)
-                var radii = roundRectangleShape.CornerRadius;
-                
-                // Adjust radii based on the actual clip position
-                var adjustedRadii = new Microsoft.Maui.CornerRadius(
-                    Math.Max(0, radii.TopLeft - innerStrokePos),
-                    Math.Max(0, radii.TopRight - innerStrokePos),
-                    Math.Max(0, radii.BottomLeft - innerStrokePos),
-                    Math.Max(0, radii.BottomRight - innerStrokePos));
-
-                var tempRr = new MauiShapes.RoundRectangle
-                {
-                    CornerRadius = adjustedRadii
-                };
-
-                // Generate path for the adjusted rect and radius
-                var pathF = ((MauiGraphics.IShape)tempRr).PathForBounds(innerBorderRect);
-                clipGeometry = ShapeExtensions.ToAvaloniaGeometry(pathF);
-            }
-            else if (Shape is MauiGraphics.IRoundRectangle roundRectangle)
-            {
-                var pathF = roundRectangle.PathForBounds(innerBorderRect);
-                clipGeometry = ShapeExtensions.ToAvaloniaGeometry(pathF);
-            }
-            else
-            {
-                // For other shapes, generate path at the clip rect location
-                var genericPath = Shape.PathForBounds(innerBorderRect);
-                clipGeometry = ShapeExtensions.ToAvaloniaGeometry(genericPath);
-            }
-
-            // Apply transformation to shift from Border coordinates to Child coordinates
-            if (clipGeometry != null)
-            {
-                clipGeometry.Transform = new TranslateTransform(-childRect.X, -childRect.Y);
-            }
-
-            return clipGeometry;
-        }
-
+        /// <inheritdoc/>
         public override void Render(DrawingContext context)
         {
             var bounds = new Rect(Bounds.Size);
@@ -355,24 +292,18 @@ namespace Avalonia.Controls.Maui
             if (bounds.Width <= 0 || bounds.Height <= 0)
                 return;
 
-            // Ensure geometries are valid
             if (_strokeGeometry == null || _lastRenderSize != bounds.Size)
             {
-                // Both background and stroke use the same geometry at StrokeThickness/2 offset
-                // This way background fills to the stroke center line
-                // Stroke is drawn centered on this path, so it extends from 0 to StrokeThickness at the edge
-                _strokeGeometry = CreateGeometry(bounds.Size, StrokeThickness / 2);
+                _strokeGeometry = CreateGeometry(bounds.Size);
                 _backgroundGeometry = _strokeGeometry;
                 _lastRenderSize = bounds.Size;
             }
 
-            // Draw background first - fills to the stroke center line
             if (Background != null && _backgroundGeometry != null)
             {
                 context.DrawGeometry(Background, null, _backgroundGeometry);
             }
 
-            // Draw stroke on top - centered on the same path
             if (Stroke != null && StrokeThickness > 0 && _strokeGeometry != null)
             {
                 var pen = CreatePen();
@@ -380,28 +311,22 @@ namespace Avalonia.Controls.Maui
             }
         }
 
-        private Geometry? CreateGeometry(Size size, double offset)
+        private Geometry? CreateGeometry(Size size)
         {
             if (Shape is MauiShapes.RoundRectangle rr)
             {
-                // Special handling for RoundRectangle to ensure concentric borders
-                // We adjust the corner radius by the offset
-                var rect = new Rect(size).Deflate(offset);
+                var rect = new Rect(size).Deflate(0);
                 
                 var mauiRect = new MauiGraphics.Rect(rect.X, rect.Y, rect.Width, rect.Height);
             
-                var radii = rr.CornerRadius; // MAUI CornerRadius
+                var radii = rr.CornerRadius;
             
-                // Adjust radius: Subtract offset, clamp to 0
-                // MAUI CornerRadius constructor order: TopLeft, TopRight, BottomLeft, BottomRight
                 var newRadii = new Microsoft.Maui.CornerRadius(
-                    Math.Max(0, radii.TopLeft - offset),
-                    Math.Max(0, radii.TopRight - offset),
-                    Math.Max(0, radii.BottomLeft - offset),
-                    Math.Max(0, radii.BottomRight - offset)); 
+                    Math.Max(0, radii.TopLeft),
+                    Math.Max(0, radii.TopRight),
+                    Math.Max(0, radii.BottomLeft),
+                    Math.Max(0, radii.BottomRight)); 
             
-                // Create a temporary shape to generate the path
-                // We use the temp shape to generate the PathF which we then convert to Avalonia Geometry
                 var tempRr = new MauiShapes.RoundRectangle
                 {
                     CornerRadius = newRadii
@@ -413,13 +338,12 @@ namespace Avalonia.Controls.Maui
 
             if (Shape != null)
             {
-                var bounds = new MauiGraphics.Rect(offset, offset, size.Width - 2 * offset, size.Height - 2 * offset);
+                var bounds = new MauiGraphics.Rect(0, 0, size.Width, size.Height);
                 var pathF = Shape.PathForBounds(bounds);
                 return ShapeExtensions.ToAvaloniaGeometry(pathF);
             }
 
-            // Default to rectangle
-            return new RectangleGeometry(new Rect(size).Deflate(offset));
+            return null;
         }
 
         private Pen CreatePen()
@@ -431,7 +355,6 @@ namespace Avalonia.Controls.Maui
                 MiterLimit = StrokeMiterLimit
             };
 
-            // Set dash style if pattern is provided
             if (StrokeDashPattern != null && StrokeDashPattern.Length > 0)
             {
                 var dashes = new double[StrokeDashPattern.Length];
@@ -445,10 +368,14 @@ namespace Avalonia.Controls.Maui
             return pen;
         }
 
+        /// <summary>
+        /// Invalidates the cached shape geometry, forcing the border to recalculate and re-render its shape.
+        /// </summary>
         public void InvalidateShape()
         {
             _backgroundGeometry = null;
             _strokeGeometry = null;
+            Child?.Clip = null;
             InvalidateMeasure();
             InvalidateArrange();
             InvalidateVisual();

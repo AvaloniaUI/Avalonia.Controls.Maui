@@ -1,0 +1,480 @@
+<Project>
+
+  <!--
+    SourceBuild.targets - Replaces NuGet PackageReferences with ProjectReferences
+    to local Avalonia and/or MAUI source checkouts for source-level debugging.
+
+    Activated by setting AvaloniaSourcePath and/or MauiSourcePath properties
+    (typically via Directory.Build.props.user).
+  -->
+
+  <!--
+    When building from source, the NuGet Avalonia package's build infrastructure
+    (props/targets) is not available. Import the equivalent files from the source tree:
+      - AvaloniaBuildTasks.props: globs *.axaml into the AvaloniaXaml item group
+      - Avalonia.Generators.props: configures the XAML source generator (InitializeComponent)
+      - AvaloniaBuildTasks.targets: XAML compilation and resource embedding tasks
+    We also set AvaloniaBuildTasksLocation to the source-built Build.Tasks assembly.
+  -->
+  <PropertyGroup Condition="'$(AvaloniaSourcePath)' != ''">
+    <AvaloniaBuildTasksLocation>$(AvaloniaSourcePath)/src/Avalonia.Build.Tasks/bin/Debug/netstandard2.0/Avalonia.Build.Tasks.dll</AvaloniaBuildTasksLocation>
+    <EnableAvaloniaXamlCompilation Condition="'$(EnableAvaloniaXamlCompilation)' == ''">true</EnableAvaloniaXamlCompilation>
+    <AvaloniaUseCompiledBindingsByDefault Condition="'$(AvaloniaUseCompiledBindingsByDefault)' == ''">true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  <Import Project="$(AvaloniaSourcePath)/packages/Avalonia/AvaloniaBuildTasks.props"
+          Condition="'$(AvaloniaSourcePath)' != ''" />
+  <Import Project="$(AvaloniaSourcePath)/src/tools/Avalonia.Generators/Avalonia.Generators.props"
+          Condition="'$(AvaloniaSourcePath)' != ''" />
+  <Import Project="$(AvaloniaSourcePath)/packages/Avalonia/AvaloniaBuildTasks.targets"
+          Condition="'$(AvaloniaSourcePath)' != ''" />
+
+  <Target Name="_ReplaceAvaloniaSourceReferences"
+          BeforeTargets="CollectPackageReferences;ResolvePackageAssets"
+          Condition="'$(AvaloniaSourcePath)' != ''">
+    <!--
+      Auto-detect which Avalonia NuGet packages are referenced. These flags drive
+      both the ProjectReference replacements and the consolidated transitive deps
+      section at the bottom, so adding a new package is: add flag, add ProjectReference, done.
+    -->
+    <PropertyGroup>
+      <_HasAvalonia Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia'))">true</_HasAvalonia>
+      <_HasAvaloniaDesktop Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Desktop'))">true</_HasAvaloniaDesktop>
+      <_HasAvaloniaBrowser Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Browser'))">true</_HasAvaloniaBrowser>
+      <_HasAvaloniaSkia Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Skia'))">true</_HasAvaloniaSkia>
+      <_HasAvaloniaHarfBuzz Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.HarfBuzz'))">true</_HasAvaloniaHarfBuzz>
+      <_HasAvaloniaThemesFluent Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Themes.Fluent'))">true</_HasAvaloniaThemesFluent>
+      <_HasAvaloniaThemesSimple Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Themes.Simple'))">true</_HasAvaloniaThemesSimple>
+      <_HasAvaloniaFontsInter Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Fonts.Inter'))">true</_HasAvaloniaFontsInter>
+      <_HasAvaloniaHeadless Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Headless'))">true</_HasAvaloniaHeadless>
+      <_HasAvaloniaHeadlessXUnit Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Headless.XUnit'))">true</_HasAvaloniaHeadlessXUnit>
+      <_HasAvaloniaIOS Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.iOS'))">true</_HasAvaloniaIOS>
+      <_HasAvaloniaAndroid Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Android'))">true</_HasAvaloniaAndroid>
+      <!--
+        Single-project MAUI apps (SingleProject=true + UseMaui=true) need direct Avalonia
+        source references. In NuGet mode, Avalonia types flow transitively from the
+        Avalonia.Controls.Maui NuGet package's dependencies. In source-build mode, the
+        dynamically-replaced ProjectReferences in Avalonia.Controls.Maui don't propagate
+        transitively, so we add them here by setting the same _Has* flags.
+
+        This covers both:
+        - Bootstrap-enabled projects (source generator produces AvaloniaApp/Program.g.cs)
+        - Custom bootstrap projects (hand-written Program.cs/AvaloniaApp.axaml.cs)
+      -->
+      <_IsMauiSingleProject Condition="'$(UseMaui)' == 'true' AND '$(SingleProject)' == 'true'">true</_IsMauiSingleProject>
+      <_HasAvalonia Condition="'$(_IsMauiSingleProject)' == 'true'
+                            AND '$(_HasAvalonia)' != 'true'">true</_HasAvalonia>
+      <_HasAvaloniaThemesFluent Condition="'$(_IsMauiSingleProject)' == 'true'
+                                        AND '$(_HasAvaloniaThemesFluent)' != 'true'">true</_HasAvaloniaThemesFluent>
+      <_HasAvaloniaFontsInter Condition="'$(_IsMauiSingleProject)' == 'true'
+                                      AND '$(_HasAvaloniaFontsInter)' != 'true'">true</_HasAvaloniaFontsInter>
+      <_HasAvaloniaDesktop Condition="'$(_IsMauiSingleProject)' == 'true'
+                                   AND '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == ''
+                                   AND '$(_HasAvaloniaDesktop)' != 'true'">true</_HasAvaloniaDesktop>
+      <_HasAvaloniaIOS Condition="'$(_IsMauiSingleProject)' == 'true'
+                                AND ('$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'ios'
+                                  OR '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'maccatalyst')
+                                AND '$(_HasAvaloniaIOS)' != 'true'">true</_HasAvaloniaIOS>
+      <_HasAvaloniaAndroid Condition="'$(_IsMauiSingleProject)' == 'true'
+                                    AND '$([MSBuild]::GetTargetPlatformIdentifier($(TargetFramework)))' == 'android'
+                                    AND '$(_HasAvaloniaAndroid)' != 'true'">true</_HasAvaloniaAndroid>
+
+      <!--
+        Avalonia.Desktop, Avalonia.iOS, and Avalonia.Android NuGet packages transitively
+        depend on the Avalonia metapackage, Skia, and HarfBuzz. When we replace them with
+        ProjectReferences, we must ensure those base dependencies are still present.
+      -->
+      <_HasAvalonia Condition="('$(_HasAvaloniaDesktop)' == 'true'
+                             OR '$(_HasAvaloniaIOS)' == 'true'
+                             OR '$(_HasAvaloniaAndroid)' == 'true')
+                            AND '$(_HasAvalonia)' != 'true'">true</_HasAvalonia>
+      <_HasAvaloniaSkia Condition="('$(_HasAvaloniaDesktop)' == 'true'
+                                 OR '$(_HasAvaloniaIOS)' == 'true'
+                                 OR '$(_HasAvaloniaAndroid)' == 'true')
+                                AND '$(_HasAvaloniaSkia)' != 'true'">true</_HasAvaloniaSkia>
+      <_HasAvaloniaHarfBuzz Condition="('$(_HasAvaloniaDesktop)' == 'true'
+                                     OR '$(_HasAvaloniaIOS)' == 'true'
+                                     OR '$(_HasAvaloniaAndroid)' == 'true')
+                                    AND '$(_HasAvaloniaHarfBuzz)' != 'true'">true</_HasAvaloniaHarfBuzz>
+
+      <!-- Any Avalonia package needs transitive NuGet deps (MicroCom, SkiaSharp, HarfBuzzSharp) -->
+      <_NeedsAvaloniaTransitiveDeps Condition="'$(_HasAvalonia)' == 'true'
+                                            OR '$(_HasAvaloniaDesktop)' == 'true'
+                                            OR '$(_HasAvaloniaBrowser)' == 'true'
+                                            OR '$(_HasAvaloniaSkia)' == 'true'
+                                            OR '$(_HasAvaloniaHarfBuzz)' == 'true'
+                                            OR '$(_HasAvaloniaThemesFluent)' == 'true'
+                                            OR '$(_HasAvaloniaThemesSimple)' == 'true'
+                                            OR '$(_HasAvaloniaFontsInter)' == 'true'
+                                            OR '$(_HasAvaloniaHeadless)' == 'true'
+                                            OR '$(_HasAvaloniaHeadlessXUnit)' == 'true'
+                                            OR '$(_HasAvaloniaIOS)' == 'true'
+                                            OR '$(_HasAvaloniaAndroid)' == 'true'">true</_NeedsAvaloniaTransitiveDeps>
+
+      <!-- Define platform constant for DesktopShim.cs so it only calls the current OS backend -->
+      <DefineConstants Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('osx'))">$(DefineConstants);AVALONIA_DESKTOP_OSX</DefineConstants>
+      <DefineConstants Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('windows'))">$(DefineConstants);AVALONIA_DESKTOP_WINDOWS</DefineConstants>
+      <DefineConstants Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('linux'))">$(DefineConstants);AVALONIA_DESKTOP_LINUX</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <!--
+        ═══════════════════════════════════════════════════════════════════
+        PackageReference → ProjectReference replacements
+        ═══════════════════════════════════════════════════════════════════
+      -->
+
+      <!--
+        Avalonia metapackage: bundles Avalonia.Base, Avalonia.Controls, etc.
+        as ref assemblies. The metapackage csproj is an empty shell whose
+        transitive ProjectReferences don't flow, so reference core libs directly.
+      -->
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Base/Avalonia.Base.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Controls/Avalonia.Controls.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Dialogs/Avalonia.Dialogs.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Markup/Avalonia.Markup/Avalonia.Markup.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Markup/Avalonia.Markup.Xaml/Avalonia.Markup.Xaml.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.OpenGL/Avalonia.OpenGL.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Metal/Avalonia.Metal.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Vulkan/Avalonia.Vulkan.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.MicroCom/Avalonia.MicroCom.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.DesignerSupport/Avalonia.DesignerSupport.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Remote.Protocol/Avalonia.Remote.Protocol.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/tools/Avalonia.Generators/Avalonia.Generators.csproj"
+                        Condition="'$(_HasAvalonia)' == 'true'"
+                        ReferenceOutputAssembly="false"
+                        PrivateAssets="all"
+                        OutputItemType="Analyzer" />
+      <PackageReference Remove="Avalonia" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Themes.Fluent/Avalonia.Themes.Fluent.csproj"
+                        Condition="'$(_HasAvaloniaThemesFluent)' == 'true'" />
+      <PackageReference Remove="Avalonia.Themes.Fluent" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Themes.Simple/Avalonia.Themes.Simple.csproj"
+                        Condition="'$(_HasAvaloniaThemesSimple)' == 'true'" />
+      <PackageReference Remove="Avalonia.Themes.Simple" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Fonts.Inter/Avalonia.Fonts.Inter.csproj"
+                        Condition="'$(_HasAvaloniaFontsInter)' == 'true'" />
+      <PackageReference Remove="Avalonia.Fonts.Inter" />
+
+      <!--
+        Avalonia.Desktop references X11 → FreeDesktop.AtSpi, which depends on a DBus
+        source generator that doesn't propagate correctly across repo boundaries.
+
+        Replace with: a shim providing UsePlatformDetect (from the build/ directory)
+        + only the platform backend needed for the current OS. Skia and HarfBuzz are
+        handled by their own _Has* flags above.
+
+        The shim uses AVALONIA_DESKTOP_OSX / _WINDOWS / _LINUX preprocessor defines
+        (set below) to conditionally compile only the current platform's backend call.
+      -->
+      <Compile Include="$(MSBuildThisFileDirectory)DesktopShim.cs"
+               Condition="'$(_HasAvaloniaDesktop)' == 'true'"
+               Link="SourceBuild/DesktopShim.cs" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.Native/Avalonia.Native.csproj"
+                        Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('osx'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Windows/Avalonia.Win32/Avalonia.Win32.csproj"
+                        Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('windows'))" />
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Avalonia.X11/Avalonia.X11.csproj"
+                        Condition="'$(_HasAvaloniaDesktop)' == 'true' AND $([MSBuild]::IsOSPlatform('linux'))" />
+      <PackageReference Remove="Avalonia.Desktop" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Skia/Avalonia.Skia/Avalonia.Skia.csproj"
+                        Condition="'$(_HasAvaloniaSkia)' == 'true'" />
+      <PackageReference Remove="Avalonia.Skia" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/iOS/Avalonia.iOS/Avalonia.iOS.csproj"
+                        Condition="'$(_HasAvaloniaIOS)' == 'true'" />
+      <PackageReference Remove="Avalonia.iOS" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Android/Avalonia.Android/Avalonia.Android.csproj"
+                        Condition="'$(_HasAvaloniaAndroid)' == 'true'" />
+      <PackageReference Remove="Avalonia.Android" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Browser/Avalonia.Browser/Avalonia.Browser.csproj"
+                        Condition="'$(_HasAvaloniaBrowser)' == 'true'" />
+      <PackageReference Remove="Avalonia.Browser" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Headless/Avalonia.Headless/Avalonia.Headless.csproj"
+                        Condition="'$(_HasAvaloniaHeadless)' == 'true'" />
+      <PackageReference Remove="Avalonia.Headless" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/Headless/Avalonia.Headless.XUnit/Avalonia.Headless.XUnit.csproj"
+                        Condition="'$(_HasAvaloniaHeadlessXUnit)' == 'true'" />
+      <PackageReference Remove="Avalonia.Headless.XUnit" />
+
+      <ProjectReference Include="$(AvaloniaSourcePath)/src/HarfBuzz/Avalonia.HarfBuzz/Avalonia.HarfBuzz.csproj"
+                        Condition="'$(_HasAvaloniaHarfBuzz)' == 'true'" />
+      <PackageReference Remove="Avalonia.HarfBuzz" />
+
+      <!--
+        ═══════════════════════════════════════════════════════════════════
+        Transitive NuGet dependencies (consolidated)
+
+        These NuGet packages are dependencies of the Avalonia source projects
+        (via .props files), but NuGet-to-NuGet transitive deps don't flow
+        reliably across repo boundaries when replaced with ProjectReferences.
+        Add them once for ANY Avalonia package that's being source-replaced.
+        ═══════════════════════════════════════════════════════════════════
+      -->
+      <PackageReference Include="MicroCom.Runtime"
+                        Condition="'$(_NeedsAvaloniaTransitiveDeps)' == 'true'"
+                        Version="$(MicroComVersion)" />
+      <PackageReference Include="SkiaSharp"
+                        Condition="'$(_NeedsAvaloniaTransitiveDeps)' == 'true'"
+                        Version="$(SkiaSharpVersion)" />
+      <PackageReference Include="HarfBuzzSharp"
+                        Condition="'$(_NeedsAvaloniaTransitiveDeps)' == 'true'"
+                        Version="$(HarfBuzzSharpVersion)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="_ReplaceMauiSourceReferences"
+          BeforeTargets="CollectPackageReferences;ResolvePackageAssets"
+          Condition="'$(MauiSourcePath)' != ''">
+    <!--
+      Auto-detect which MAUI NuGet packages are referenced, then compute derived
+      flags based on the NuGet dependency tree. This ensures each ProjectReference
+      is added exactly once, even when multiple MAUI packages share transitive deps.
+
+      NuGet dependency tree (→ = "depends on"):
+        Controls.Maps → Controls.Core, Core, Maps, Graphics, Essentials
+        Controls      → Controls.Core, Controls.Xaml, Core, Graphics, Essentials
+        Controls.Core → Controls.Xaml, Core, Graphics, Essentials
+        Core          → Essentials
+        Graphics.Skia → Graphics (standalone)
+        Graphics      → (standalone)
+    -->
+    <PropertyGroup>
+      <!-- Direct detection flags -->
+      <_HasMauiControlsCore Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Core'))">true</_HasMauiControlsCore>
+      <_HasMauiControls Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls'))">true</_HasMauiControls>
+      <_HasMauiCore Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Core'))">true</_HasMauiCore>
+      <_HasMauiGraphics Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Graphics'))">true</_HasMauiGraphics>
+      <_HasMauiGraphicsSkia Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Graphics.Skia'))">true</_HasMauiGraphicsSkia>
+      <_HasMauiControlsMaps Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Maps'))">true</_HasMauiControlsMaps>
+
+      <!-- Derived flags: each project added once based on who needs it -->
+      <_NeedsMauiControlsCore Condition="'$(_HasMauiControlsCore)' == 'true'
+                                      OR '$(_HasMauiControls)' == 'true'
+                                      OR '$(_HasMauiControlsMaps)' == 'true'">true</_NeedsMauiControlsCore>
+      <_NeedsMauiCore Condition="'$(_NeedsMauiControlsCore)' == 'true'
+                              OR '$(_HasMauiCore)' == 'true'
+                              OR '$(_HasMauiControlsMaps)' == 'true'">true</_NeedsMauiCore>
+      <_NeedsMauiGraphics Condition="'$(_NeedsMauiCore)' == 'true'
+                                  OR '$(_HasMauiGraphics)' == 'true'">true</_NeedsMauiGraphics>
+      <_NeedsMauiExtensions Condition="'$(_NeedsMauiCore)' == 'true'">true</_NeedsMauiExtensions>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <!--
+        ═══════════════════════════════════════════════════════════════════
+        PackageReference → ProjectReference replacements (deduplicated)
+
+        Each ProjectReference is added exactly once using derived flags.
+        ═══════════════════════════════════════════════════════════════════
+      -->
+
+      <!-- Controls layer: Controls.Core + Controls.Xaml -->
+      <ProjectReference Include="$(MauiSourcePath)/src/Controls/src/Core/Controls.Core.csproj"
+                        Condition="'$(_NeedsMauiControlsCore)' == 'true'" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Controls/src/Xaml/Controls.Xaml.csproj"
+                        Condition="'$(_NeedsMauiControlsCore)' == 'true'" />
+
+      <!-- Core layer: Core + Essentials -->
+      <ProjectReference Include="$(MauiSourcePath)/src/Core/src/Core.csproj"
+                        Condition="'$(_NeedsMauiCore)' == 'true'" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Essentials/src/Essentials.csproj"
+                        Condition="'$(_NeedsMauiCore)' == 'true'" />
+
+      <!-- Graphics -->
+      <ProjectReference Include="$(MauiSourcePath)/src/Graphics/src/Graphics/Graphics.csproj"
+                        Condition="'$(_NeedsMauiGraphics)' == 'true'" />
+
+      <!-- Graphics.Skia (standalone, no derived flag needed) -->
+      <ProjectReference Include="$(MauiSourcePath)/src/Graphics/src/Graphics.Skia/Graphics.Skia.csproj"
+                        Condition="'$(_HasMauiGraphicsSkia)' == 'true'" />
+
+      <!-- Maps: Controls.Maps + Maps -->
+      <ProjectReference Include="$(MauiSourcePath)/src/Controls/Maps/src/Controls.Maps.csproj"
+                        Condition="'$(_HasMauiControlsMaps)' == 'true'" />
+      <ProjectReference Include="$(MauiSourcePath)/src/Core/maps/src/Maps.csproj"
+                        Condition="'$(_HasMauiControlsMaps)' == 'true'" />
+
+      <!-- Remove all MAUI PackageReferences (Remove is a no-op if not present) -->
+      <PackageReference Remove="Microsoft.Maui.Controls.Core" />
+      <PackageReference Remove="Microsoft.Maui.Controls" />
+      <PackageReference Remove="Microsoft.Maui.Core" />
+      <PackageReference Remove="Microsoft.Maui.Graphics" />
+      <PackageReference Remove="Microsoft.Maui.Graphics.Skia" />
+      <PackageReference Remove="Microsoft.Maui.Controls.Maps" />
+
+      <!--
+        ═══════════════════════════════════════════════════════════════════
+        Transitive NuGet dependencies (consolidated)
+
+        MAUI NuGet packages transitively bring in Microsoft.Extensions.*.
+        These don't flow across repo boundaries with ProjectReferences.
+        Remove any existing references first to avoid NU1504 duplicates
+        (projects may explicitly reference these), then re-add with the
+        correct version.
+        ═══════════════════════════════════════════════════════════════════
+      -->
+      <PackageReference Remove="Microsoft.Extensions.DependencyInjection"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'" />
+      <PackageReference Remove="Microsoft.Extensions.Logging"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'" />
+      <PackageReference Remove="Microsoft.Extensions.Logging.Abstractions"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'" />
+      <PackageReference Remove="Microsoft.Extensions.Configuration"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'" />
+      <PackageReference Remove="Microsoft.Extensions.Hosting.Abstractions"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'" />
+
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'"
+                        Version="$(MicrosoftExtensionsVersion)" />
+      <PackageReference Include="Microsoft.Extensions.Logging"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'"
+                        Version="$(MicrosoftExtensionsVersion)" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'"
+                        Version="$(MicrosoftExtensionsVersion)" />
+      <PackageReference Include="Microsoft.Extensions.Configuration"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'"
+                        Version="$(MicrosoftExtensionsVersion)" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions"
+                        Condition="'$(_NeedsMauiExtensions)' == 'true'"
+                        Version="$(MicrosoftExtensionsVersion)" />
+    </ItemGroup>
+  </Target>
+
+  <!--
+    When building MAUI from source, replace IgnoresAccessChecksToGenerator with
+    InternalsVisibleTo attributes injected directly into the MAUI source tree.
+    The generated .cs files are picked up by each project's default Compile glob.
+    Essentials uses the *.shared.cs naming convention since it disables default
+    compile items and only includes **/*.shared.cs explicitly.
+  -->
+  <PropertyGroup Condition="'$(MauiSourcePath)' != ''">
+    <DefineConstants>$(DefineConstants);MAUI_SOURCE_BUILD</DefineConstants>
+    <_MauiCoreIVTFile>$(MauiSourcePath)/src/Core/src/Properties/InternalsVisibleTo.Avalonia.g.cs</_MauiCoreIVTFile>
+    <_MauiControlsIVTFile>$(MauiSourcePath)/src/Controls/src/Core/Properties/InternalsVisibleTo.Avalonia.g.cs</_MauiControlsIVTFile>
+    <_MauiEssentialsIVTFile>$(MauiSourcePath)/src/Essentials/src/Properties/InternalsVisibleTo.Avalonia.shared.cs</_MauiEssentialsIVTFile>
+  </PropertyGroup>
+
+  <Target Name="_WriteMauiInternalsVisibleTo"
+          BeforeTargets="CollectPackageReferences"
+          Condition="'$(MauiSourcePath)' != '' AND '$(AddMauiInternals)' == 'true'">
+    <ItemGroup>
+      <_AvaloniaIVTLines Include="// Auto-generated by Avalonia.Controls.Maui source build. Do not check in." />
+      <_AvaloniaIVTLines Include="[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;Avalonia.Controls.Maui&quot;)]" />
+      <_AvaloniaIVTLines Include="[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;Avalonia.Controls.Maui.Compatibility&quot;)]" />
+
+      <_AvaloniaIVTLines Include="[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;Avalonia.Controls.Maui.Essentials&quot;)]" />
+      <_AvaloniaIVTLines Include="[assembly: System.Runtime.CompilerServices.InternalsVisibleTo(&quot;Avalonia.Controls.Maui.Maps.Mapsui&quot;)]" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(_MauiCoreIVTFile)"
+                     Lines="@(_AvaloniaIVTLines)"
+                     Overwrite="true" />
+    <WriteLinesToFile File="$(_MauiControlsIVTFile)"
+                     Lines="@(_AvaloniaIVTLines)"
+                     Overwrite="true" />
+    <WriteLinesToFile File="$(_MauiEssentialsIVTFile)"
+                     Lines="@(_AvaloniaIVTLines)"
+                     Overwrite="true" />
+  </Target>
+
+  <Target Name="_CleanMauiInternalsVisibleTo"
+          AfterTargets="Clean"
+          Condition="'$(MauiSourcePath)' != ''">
+    <Delete Files="$(_MauiCoreIVTFile)" Condition="Exists('$(_MauiCoreIVTFile)')" />
+    <Delete Files="$(_MauiControlsIVTFile)" Condition="Exists('$(_MauiControlsIVTFile)')" />
+    <Delete Files="$(_MauiEssentialsIVTFile)" Condition="Exists('$(_MauiEssentialsIVTFile)')" />
+  </Target>
+
+  <!--
+    When building from MAUI source with UseMaui=true, the Microsoft.Maui.Controls
+    NuGet package's build infrastructure (global usings, XAML source generators,
+    XAML compilation targets) is not available because we replaced the PackageReference
+    with ProjectReferences. Import the equivalent build infrastructure from the MAUI
+    source tree's .buildtasks/ directory, which contains the same props/targets files
+    that are packed into the NuGet package.
+
+    The .buildtasks/ directory is generated by the MAUI build and must exist before
+    building Avalonia.Controls.Maui from source. It contains pre-built DLLs for the
+    XAML source generator (Microsoft.Maui.Controls.SourceGen.dll) and XamlC build
+    task (Microsoft.Maui.Controls.Build.Tasks.dll).
+
+    Import order:
+      1. Set EnableDefaultMauiItems properties (normally set in After.targets)
+      2. Import Globs.props: global usings + MauiXaml/MauiCss item definitions
+      3. Import Build.Tasks.targets: registers XamlC task, adds source generators,
+         imports Before.targets, and schedules After.targets via AfterMicrosoftNETSdkTargets
+  -->
+  <PropertyGroup Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'">
+    <EnableDefaultMauiItems Condition="'$(EnableDefaultMauiItems)' == ''">$(EnableDefaultItems)</EnableDefaultMauiItems>
+    <EnableDefaultXamlItems Condition="'$(EnableDefaultXamlItems)' == ''">$(EnableDefaultMauiItems)</EnableDefaultXamlItems>
+    <EnableDefaultCssItems Condition="'$(EnableDefaultCssItems)' == ''">$(EnableDefaultMauiItems)</EnableDefaultCssItems>
+    <EnableDefaultEmbeddedResourceItems Condition="'$(EnableDefaultEmbeddedResourceItems)' == ''">$(EnableDefaultMauiItems)</EnableDefaultEmbeddedResourceItems>
+  </PropertyGroup>
+
+  <Import Project="$(MauiSourcePath)/.buildtasks/Microsoft.Maui.Controls.Globs.props"
+          Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'" />
+
+  <Import Project="$(MauiSourcePath)/.buildtasks/Microsoft.Maui.Controls.Build.Tasks.targets"
+          Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'" />
+
+  <!--
+    The Microsoft.Maui.Resizetizer NuGet package provides image/font/asset
+    processing targets (ResizetizeImages, ProcessMauiFonts, etc.).
+    When building from source with UseMaui=true, import these from the MAUI
+    source tree instead.
+  -->
+  <Import Project="$(MauiSourcePath)/.buildtasks/Microsoft.Maui.Resizetizer.targets"
+          Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'" />
+
+  <!--
+    When building browser projects from Avalonia source, the Avalonia.Browser NuGet
+    package's build infrastructure (props/targets) isn't imported because the
+    PackageReference was replaced with a ProjectReference. Import them from the
+    source tree to get:
+      - Static web asset registration (avalonia.js, storage.js, sw.js)
+      - EmccFlags for WebGL2 support
+      - EmccExportedRuntimeMethod items (GL, PThread)
+      - Native SkiaSharp/HarfBuzzSharp static library references
+      - WasmBuildNative flag
+
+    Additionally, add SkiaSharp.NativeAssets.WebAssembly and HarfBuzzSharp.NativeAssets.WebAssembly
+    as direct PackageReferences. In NuGet mode these flow transitively through
+    Avalonia.Browser → Avalonia.Skia → SkiaSharp.NativeAssets.WebAssembly, but
+    ProjectReferences don't propagate conditional transitive NuGet dependencies.
+    These must be added at evaluation time (not in a target) so NuGet restore
+    discovers them and their buildTransitive props (which set SkiaSharpStaticLibraryPath
+    and HarfBuzzSharpStaticLibraryPath) get imported before Avalonia.Browser.targets
+    evaluates the NativeFileReference items.
+  -->
+  <ItemGroup Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">
+    <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.WebAssembly" Version="$(HarfBuzzSharpVersion)" />
+  </ItemGroup>
+
+  <Import Project="$(AvaloniaSourcePath)/src/Browser/Avalonia.Browser/build/Avalonia.Browser.props"
+          Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'" />
+  <Import Project="$(AvaloniaSourcePath)/src/Browser/Avalonia.Browser/build/Avalonia.Browser.targets"
+          Condition="'$(AvaloniaSourcePath)' != '' AND $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'" />
+
+
+</Project>

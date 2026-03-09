@@ -68,10 +68,10 @@ public static class EntryExtensions
     {
         textBox.TextAlignment = entry.HorizontalTextAlignment switch
         {
-            TextAlignment.Start => AvaloniaTextAlignment.Left,
+            TextAlignment.Start => AvaloniaTextAlignment.Start,
             TextAlignment.Center => AvaloniaTextAlignment.Center,
-            TextAlignment.End => AvaloniaTextAlignment.Right,
-            _ => AvaloniaTextAlignment.Left
+            TextAlignment.End => AvaloniaTextAlignment.End,
+            _ => AvaloniaTextAlignment.Start
         };
     }
 

@@ -1,0 +1,46 @@
+{
+  "moduleId": "04-monitoring-improvement",
+  "passingScore": 70,
+  "questions": [
+    {
+      "id": "q1",
+      "type": "MultipleChoice",
+      "question": "Data drift occurs when:",
+      "options": [
+        "The model gets larger",
+        "Production input data distribution changes compared to training data",
+        "The API endpoint changes",
+        "Users stop using the app"
+      ],
+      "correctIndex": 1,
+      "explanation": "Data drift means the real-world data your model sees in production has shifted from what it was trained on, potentially degrading performance.",
+      "xp": 5
+    },
+    {
+      "id": "q2",
+      "type": "MultipleChoice",
+      "question": "Concept drift differs from data drift because:",
+      "options": [
+        "It's the same thing",
+        "The relationship between inputs and correct outputs changes, not just the inputs",
+        "It only affects images",
+        "It only happens once"
+      ],
+      "correctIndex": 1,
+      "explanation": "Concept drift means the definition of 'correct' has changed. For example, customer preferences shift over time, making old predictions wrong even if the data looks similar.",
+      "xp": 5
+    },
+    {
+      "id": "q3",
+      "type": "TrueFalse",
+      "question": "User feedback (thumbs up/down, corrections) can be used to improve AI models over time.",
+      "options": [
+        "True",
+        "False"
+      ],
+      "correctIndex": 0,
+      "explanation": "Human feedback creates labeled data for fine-tuning, identifies failure patterns, and helps prioritize improvement areas \u2014 this is the basis of RLHF.",
+      "xp": 5
+    }
+  ]
+}

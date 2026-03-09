@@ -12,12 +12,12 @@ public partial class BorderPage : ContentPage
         InitializeComponent();
     }
 
-    private void OnCornerSliderChanged(object sender, ValueChangedEventArgs e)
+    private void OnCornerSliderChanged(object? sender, ValueChangedEventArgs e)
     {
         UpdateCornerRadius();
     }
 
-    private void OnSetAllCornersClicked(object sender, EventArgs e)
+    private void OnSetAllCornersClicked(object? sender, EventArgs e)
     {
         TopLeftSlider.Value = 30;
         TopRightSlider.Value = 30;
@@ -40,7 +40,7 @@ public partial class BorderPage : ContentPage
         InteractiveRoundRect.CornerRadius = new CornerRadius(topLeft, topRight, bottomRight, bottomLeft);
     }
 
-    private void OnToggleDashAnimationClicked(object sender, EventArgs e)
+    private void OnToggleDashAnimationClicked(object? sender, EventArgs e)
     {
         if (_isDashAnimating)
         {
@@ -83,7 +83,7 @@ public partial class BorderPage : ContentPage
         AnimatedBorder.StrokeDashOffset = 0;
     }
 
-    private async void OnPulseColorClicked(object sender, EventArgs e)
+    private async void OnPulseColorClicked(object? sender, EventArgs e)
     {
         var originalColor = AnimatedBorder.Stroke;
         var colors = new[] { Colors.Red, Colors.Orange, Colors.Yellow, Colors.Green, Colors.Blue, Colors.Purple };
@@ -97,7 +97,7 @@ public partial class BorderPage : ContentPage
         AnimatedBorder.Stroke = originalColor;
     }
 
-    private async void OnAnimateThicknessClicked(object sender, EventArgs e)
+    private async void OnAnimateThicknessClicked(object? sender, EventArgs e)
     {
         for (int i = 2; i <= 12; i += 2)
         {
@@ -112,37 +112,37 @@ public partial class BorderPage : ContentPage
         }
     }
 
-    private void OnShapeRectangleClicked(object sender, EventArgs e)
+    private void OnShapeRectangleClicked(object? sender, EventArgs e)
     {
         ShapeSwitchBorder.StrokeShape = null;
         ShapeLabel.Text = "Rectangle";
     }
 
-    private void OnShapeRoundRect10Clicked(object sender, EventArgs e)
+    private void OnShapeRoundRect10Clicked(object? sender, EventArgs e)
     {
         ShapeSwitchBorder.StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(10) };
         ShapeLabel.Text = "RoundRect (10)";
     }
 
-    private void OnShapeRoundRect30Clicked(object sender, EventArgs e)
+    private void OnShapeRoundRect30Clicked(object? sender, EventArgs e)
     {
         ShapeSwitchBorder.StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(30) };
         ShapeLabel.Text = "RoundRect (30)";
     }
 
-    private void OnShapePillClicked(object sender, EventArgs e)
+    private void OnShapePillClicked(object? sender, EventArgs e)
     {
         ShapeSwitchBorder.StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(60) };
         ShapeLabel.Text = "Pill Shape";
     }
 
-    private void OnShapeAsymmetricClicked(object sender, EventArgs e)
+    private void OnShapeAsymmetricClicked(object? sender, EventArgs e)
     {
         ShapeSwitchBorder.StrokeShape = new RoundRectangle { CornerRadius = new CornerRadius(40, 10, 40, 10) };
         ShapeLabel.Text = "Asymmetric";
     }
 
-    private void OnShapeEllipseClicked(object sender, EventArgs e)
+    private void OnShapeEllipseClicked(object? sender, EventArgs e)
     {
         ShapeSwitchBorder.StrokeShape = new Ellipse();
         ShapeLabel.Text = "Ellipse";

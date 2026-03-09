@@ -55,7 +55,7 @@ public partial class MainPage : ContentPage
         }
     }
 
-    void OnStackSizeChanged(object sender, EventArgs args)
+    void OnStackSizeChanged(object? sender, EventArgs args)
     {
         double width = stackLayout.Width;
         double height = stackLayout.Height;
@@ -182,9 +182,9 @@ public partial class MainPage : ContentPage
         emptyCol = col;
     }
 
-    async void OnRandomizeButtonClicked(object sender, EventArgs args)
+    async void OnRandomizeButtonClicked(object? sender, EventArgs args)
     {
-        Button button = (Button)sender;
+        Button button = (Button)sender!;
         button.IsEnabled = false;
         Random rand = new Random();
 

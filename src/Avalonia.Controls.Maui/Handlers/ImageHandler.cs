@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
 using Avalonia.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Platform;
@@ -8,7 +7,7 @@ using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Extensions.Logging;
-using Avalonia.Labs.Gif;
+using Avalonia.Controls.Maui.Controls.Gif;
 using Avalonia.Animation;
 using AImage = Avalonia.Controls.Image;
 using AGrid = Avalonia.Controls.Grid;
@@ -17,41 +16,51 @@ using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
+/// <summary>Avalonia handler for <see cref="IImage"/>.</summary>
 public partial class ImageHandler : ViewHandler<IImage, AGrid>
 {
     private readonly AImage _staticImage;
     private GifImage? _gifImage;
     private CancellationTokenSource? _loadCts;
+    private IDisposable? _currentImageResult;
 
     private static readonly ConcurrentDictionary<string, Uri?> AssetCache = new();
 
+    /// <summary>Property mapper for <see cref="ImageHandler"/>.</summary>
     public static IPropertyMapper<IImage, ImageHandler> Mapper = new PropertyMapper<IImage, ImageHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IImage.Aspect)] = MapAspect,
         [nameof(IImage.IsAnimationPlaying)] = MapIsAnimationPlaying,
         [nameof(IImage.Source)] = MapSource,
-        [nameof(IView.Opacity)] = MapOpacity,
         [nameof(IView.Clip)] = MapClip,
         // IsLoading is read-only and updated automatically by the handler
     };
 
+    /// <summary>Command mapper for <see cref="ImageHandler"/>.</summary>
     public static CommandMapper<IImage, ImageHandler> CommandMapper = new(ViewHandler.ViewCommandMapper);
 
+    /// <summary>Initializes a new instance of <see cref="ImageHandler"/>.</summary>
     public ImageHandler() : base(Mapper, CommandMapper)
     {
         _staticImage = new AImage { IsVisible = true };
     }
 
+    /// <summary>Initializes a new instance of <see cref="ImageHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
     public ImageHandler(IPropertyMapper? mapper) : base(mapper ?? Mapper, CommandMapper)
     {
         _staticImage = new AImage { IsVisible = true };
     }
 
+    /// <summary>Initializes a new instance of <see cref="ImageHandler"/>.</summary>
+    /// <param name="mapper">The property mapper to use, or <c>null</c> to use the default mapper.</param>
+    /// <param name="commandMapper">The command mapper to use, or <c>null</c> to use the default command mapper.</param>
     public ImageHandler(IPropertyMapper? mapper, CommandMapper? commandMapper) : base(mapper ?? Mapper, commandMapper ?? CommandMapper)
     {
         _staticImage = new AImage { IsVisible = true };
     }
 
+    /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override AGrid CreatePlatformView()
     {
         var grid = new AGrid();
@@ -60,6 +69,30 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         return grid;
     }
 
+    /// <inheritdoc/>
+    protected override void DisconnectHandler(AGrid platformView)
+    {
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
+        _loadCts = null;
+
+        _currentImageResult?.Dispose();
+        _currentImageResult = null;
+
+        _staticImage.Source = null;
+
+        if (_gifImage != null)
+        {
+            try { _gifImage.Source = null!; } catch { }
+            _gifImage = null;
+        }
+
+        base.DisconnectHandler(platformView);
+    }
+
+    /// <summary>Maps the Source property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="image">The virtual view.</param>
     public static void MapSource(ImageHandler handler, IImage image)
     {
         if (handler is ImageHandler h)
@@ -71,21 +104,25 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
     }
     
+    /// <summary>Maps the IsAnimationPlaying property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="image">The virtual view.</param>
     public static void MapIsAnimationPlaying(ImageHandler handler, IImage image)
     {
         (handler.PlatformView as AGrid)?.UpdateIsAnimationPlaying(image.IsAnimationPlaying);
     }
 
-    public static void MapOpacity(ImageHandler handler, IView view)
-    {
-        (handler.PlatformView as AGrid)?.UpdateImageOpacity(view.Opacity);
-    }
-
+    /// <summary>Maps the Aspect property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="image">The virtual view.</param>
     public static void MapAspect(ImageHandler handler, IImage image)
     {
         (handler.PlatformView as AGrid)?.UpdateAspect(image.Aspect);
     }
 
+    /// <summary>Maps the Clip property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="view">The virtual view.</param>
     public static void MapClip(ImageHandler handler, IView view)
     {
         if (handler is ImageHandler imageHandler)
@@ -200,7 +237,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
         try
         {
-            _gifImage!.Source = gifUri;
+            _gifImage!.Source = GifStreamSource.FromUri(gifUri);
             await Task.Yield();
             
             _gifImage.IterationCount = shouldPlay
@@ -250,22 +287,33 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
         var provider = this.GetRequiredService<IImageSourceServiceProvider>();
 
-        if (provider.GetImageSourceService(source.GetType()) is IAvaloniaImageSourceService service)
+        if (provider.GetImageSourceService(GetImageSourceInterfaceType(source)) is IAvaloniaImageSourceService service)
         {
-            try 
+            try
             {
                 var result = await service.GetImageAsync(source, 1.0f, token);
-                if (token.IsCancellationRequested) return;
+                if (token.IsCancellationRequested)
+                {
+                    (result as IDisposable)?.Dispose();
+                    return;
+                }
+
+                var previousResult = _currentImageResult;
 
                 if (result?.Value is { } bitmap)
                 {
                     _staticImage.Source = bitmap;
                     _staticImage.IsVisible = true;
+                    _currentImageResult = result as IDisposable;
                 }
                 else
                 {
                     _staticImage.Source = null;
+                    _currentImageResult = null;
                 }
+
+                // Dispose previous image result after replacing to avoid displaying a disposed bitmap
+                previousResult?.Dispose();
             }
             catch (Exception ex)
             {
@@ -279,6 +327,8 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     {
         _staticImage.Source = null;
         _staticImage.IsVisible = false;
+        _currentImageResult?.Dispose();
+        _currentImageResult = null;
         if (_gifImage != null)
         {
             _gifImage.Source = null!;
@@ -322,44 +372,20 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
     private bool TryFindEmbeddedGif(string fileName, out Uri? result)
     {
-        result = null;
-        var targetName = Path.GetFileName(fileName);
-
-        var assemblies = new[]
-        {
-            Microsoft.Maui.Controls.Application.Current?.GetType().Assembly,
-            Assembly.GetEntryAssembly(),
-            Assembly.GetExecutingAssembly()
-        }.Where(x => x != null).Distinct();
-
-        foreach (var assembly in assemblies)
-        {
-            if (assembly == null) continue;
-            var assemblyName = assembly.GetName().Name;
-            var rootUri = new Uri($"avares://{assemblyName}/");
-
-            try
-            {
-                var assets = AssetLoader.GetAssets(rootUri, null);
-                
-                foreach (var assetUri in assets)
-                {
-                    // Match suffix (handles folders automatically)
-                    if (assetUri.ToString().EndsWith(targetName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        result = assetUri;
-                        return true;
-                    }
-                }
-            }
-            catch
-            {
-                // Assembly might not have any Avalonia resources
-            }
-        }
-
-        return false;
+        return AvaloniaResourceHelper.TryResolveResourceUri(fileName, out result);
     }
+
+    // UriImageSource implements both IUriImageSource and IStreamImageSource, which causes
+    // an ambiguous match when MAUI's ImageSourceServiceProvider resolves by concrete type.
+    // Resolve by interface type instead, checking more specific interfaces first.
+    private static Type GetImageSourceInterfaceType(IImageSource source) => source switch
+    {
+        IFileImageSource => typeof(IFileImageSource),
+        IFontImageSource => typeof(IFontImageSource),
+        IUriImageSource => typeof(IUriImageSource),
+        IStreamImageSource => typeof(IStreamImageSource),
+        _ => source.GetType()
+    };
 
     private void Log(LogLevel level, Exception? ex, string message)
     {
@@ -375,7 +401,8 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
     }
 
-    public virtual ImageSourcePartLoader SourceLoader => 
+    /// <summary>Gets the image source part loader for this handler.</summary>
+    public virtual ImageSourcePartLoader SourceLoader =>
         new ImageSourcePartLoader(new ImageImageSourcePartSetter(this));
         
     partial class ImageImageSourcePartSetter : ImageSourcePartSetter<ImageHandler>

@@ -308,11 +308,29 @@ public class MauiListView : MauiView
         set => SetValue(RefreshControlColorProperty, value);
     }
 
+    /// <summary>
+    /// Occurs when a pull-to-refresh gesture is requested.
+    /// </summary>
     public event EventHandler? RefreshRequested;
 
+    /// <summary>
+    /// Occurs when the list view is scrolled.
+    /// </summary>
     public event EventHandler<ScrolledEventArgs>? Scrolled;
+
+    /// <summary>
+    /// Occurs when an item in the list is tapped.
+    /// </summary>
     public event EventHandler<object?>? ItemTapped;
+
+    /// <summary>
+    /// Occurs when an item is about to appear in the visible area.
+    /// </summary>
     public event EventHandler<object?>? ItemAppearing;
+
+    /// <summary>
+    /// Occurs when an item is about to disappear from the visible area.
+    /// </summary>
     public event EventHandler<object?>? ItemDisappearing;
     
     private void OnListBoxTapped(object? sender, global::Avalonia.Input.TappedEventArgs e)
@@ -459,24 +477,46 @@ public class MauiListView : MauiView
         _listBox.ItemsSource = flattened;
     }
 
+    /// <summary>
+    /// Sets the items source for the list and rebuilds the internal item collection.
+    /// </summary>
+    /// <param name="items">The items source to display in the list.</param>
     public void SetItemsSource(IEnumerable? items)
     {
         _originalItemsSource = items;
         RebuildItemsSource();
     }
 
+    /// <summary>
+    /// Represents a group header item in the flattened list.
+    /// </summary>
     public class GroupHeader
     {
+        /// <summary>
+        /// Gets the data object associated with this group header.
+        /// </summary>
         public object? Data { get; init; }
     }
 
+    /// <summary>
+    /// Represents a list view header item in the flattened list.
+    /// </summary>
     public class ListViewHeader
     {
+        /// <summary>
+        /// Gets the data object associated with this header.
+        /// </summary>
         public object? Data { get; init; }
     }
 
+    /// <summary>
+    /// Represents a list view footer item in the flattened list.
+    /// </summary>
     public class ListViewFooter
     {
+        /// <summary>
+        /// Gets the data object associated with this footer.
+        /// </summary>
         public object? Data { get; init; }
     }
 
@@ -498,6 +538,12 @@ public class MauiListView : MauiView
         return _listBox.GetVisualDescendants().OfType<ScrollViewer>().FirstOrDefault();
     }
 
+    /// <summary>
+    /// Scrolls to the specified item at the given position.
+    /// </summary>
+    /// <param name="item">The item to scroll to.</param>
+    /// <param name="position">The scroll position relative to the item.</param>
+    /// <param name="animated">Whether to animate the scroll.</param>
     public void ScrollTo(object item, ScrollToPosition position, bool animated)
     {
         var scrollViewer = GetScrollViewer();
