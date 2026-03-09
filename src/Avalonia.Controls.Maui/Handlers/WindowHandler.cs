@@ -94,6 +94,10 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             mauiWindow.SetMauiContext(MauiContext);
         }
 
+        // Track Avalonia window size/position changes
+        platformView.Resized += OnAvaloniaWindowResized;
+        platformView.PositionChanged += OnAvaloniaWindowPositionChanged;
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             window.AlertManager.Subscribe();
@@ -113,6 +117,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     {
         var avWindow = (Window)platformView;
 
+        platformView.Resized -= OnAvaloniaWindowResized;
+        platformView.PositionChanged -= OnAvaloniaWindowPositionChanged;
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             window.AlertManager.Unsubscribe();
@@ -124,6 +131,31 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         _modalTracker = null;
 
         base.DisconnectHandler(platformView);
+    }
+
+    private void OnAvaloniaWindowResized(object? sender, WindowResizedEventArgs e)
+    {
+        UpdateVirtualViewFrame();
+    }
+
+    private void OnAvaloniaWindowPositionChanged(object? sender, PixelPointEventArgs e)
+    {
+        UpdateVirtualViewFrame();
+    }
+
+    private void UpdateVirtualViewFrame()
+    {
+        if (VirtualView is null)
+            return;
+
+        var avWindow = PlatformView;
+        var pos = avWindow.Position;
+        var size = avWindow.ClientSize;
+        var scaling = avWindow.RenderScaling;
+
+        VirtualView.FrameChanged(new Microsoft.Maui.Graphics.Rect(
+            pos.X / scaling, pos.Y / scaling,
+            size.Width, size.Height));
     }
 
     private void OnModalPushed(object? sender, Microsoft.Maui.Controls.ModalPushedEventArgs e)
