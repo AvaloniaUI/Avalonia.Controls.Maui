@@ -19,6 +19,11 @@ public class PlatformTouchGraphicsView : UserControl
     /// </summary>
     public PlatformTouchGraphicsView()
     {
+        // Allow content (e.g. shadows drawn by IDrawable) to extend beyond
+        // this control's bounds without being clipped.  TemplatedControl sets
+        // ClipToBounds = true by default; native MAUI explicitly sets
+        // ClipsToBounds = false on its wrapper views for the same reason.
+        ClipToBounds = false;
         Content = _platformGraphicsView = new PlatformGraphicsView();
     }
 

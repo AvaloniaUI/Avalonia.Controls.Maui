@@ -284,7 +284,7 @@ public static class ShellExtensions
         if (handler._flyoutContainer == null || shell == null)
             return;
 
-        switch (shell.FlyoutBehavior)
+        switch (((Microsoft.Maui.IFlyoutView)shell).FlyoutBehavior)
         {
             case Microsoft.Maui.FlyoutBehavior.Disabled:
                 handler._flyoutContainer.DrawerBehavior = DrawerBehavior.Disabled;
