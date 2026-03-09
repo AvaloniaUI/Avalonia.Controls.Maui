@@ -1158,7 +1158,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         ((IShellController)VirtualView).OnFlyoutItemSelected(item);
 
-        if (VirtualView.FlyoutBehavior == Microsoft.Maui.FlyoutBehavior.Flyout && _flyoutContainer != null)
+        if (((Microsoft.Maui.IFlyoutView)VirtualView).FlyoutBehavior == Microsoft.Maui.FlyoutBehavior.Flyout && _flyoutContainer != null)
         {
             _flyoutContainer.IsOpen = false;
             VirtualView.FlyoutIsPresented = false;
