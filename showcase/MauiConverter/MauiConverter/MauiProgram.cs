@@ -13,6 +13,20 @@ public static class MauiProgram
 #if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
 			.UseAvaloniaApp(useSingleAppLifetime)
 #endif
+			.ConfigureMauiHandlers(handlers =>
+			{
+#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
+				Avalonia.Controls.Maui.Handlers.WindowHandler.Mapper.AppendToMapping("DisableMinMaxButtons", (handler, view) =>
+				{
+					if (handler.PlatformView is Avalonia.Controls.Window avaloniaWindow)
+					{
+						avaloniaWindow.CanMinimize = false;
+						avaloniaWindow.CanMaximize = false;
+						avaloniaWindow.CanResize = false;
+					}
+				});
+#endif
+			})
 						.UseMauiCommunityToolkit()
 						.UseMauiCommunityToolkitMarkup();
 

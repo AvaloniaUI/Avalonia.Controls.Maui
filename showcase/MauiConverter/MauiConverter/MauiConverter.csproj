@@ -7,7 +7,7 @@
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">
 			$(TargetFrameworks);$(DotNetTfm)-windows10.0.19041.0</TargetFrameworks>
 		<OutputType Condition="'$(TargetFramework)' != '$(DotNetTfm)-browser'">Exe</OutputType>
-		<NoWarn>CS0618;CS0612;XC0022;CS8622;CS8618;CS8602;CS8612;CS8625;CS8603;CA1416</NoWarn>
+		<NoWarn>CS0618;CS0612;XC0022;CS8622;CS8618;CS8602;CS8612;CS8625;CS8603;CA1416;CS0162</NoWarn>
 
 		<!-- Note for MacCatalyst:
 		The default runtime is maccatalyst-x64, except in Release config, in which case the default is
@@ -18,7 +18,7 @@
 		either BOTH runtimes must be indicated or ONLY macatalyst-x64. -->
 		<!-- For example: <RuntimeIdentifiers>maccatalyst-x64;maccatalyst-arm64</RuntimeIdentifiers> -->
 
-		<OutputType>Exe</OutputType>
+		<OutputType Condition="'$(TargetFramework)' != '$(DotNetTfm)-browser'">Exe</OutputType>
 		<RootNamespace>MauiConverter</RootNamespace>
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>

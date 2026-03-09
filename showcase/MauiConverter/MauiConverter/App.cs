@@ -43,8 +43,9 @@ class App : Application
 		window.Height = 500;
 		#endif
 
-		// TitleBar extends into client area which isn't supported on Linux.
-		if (OperatingSystem.IsLinux())
+		// TitleBar extends into client area which isn't supported on Linux
+		// On Catalyst we don't need the custom window titlebar.
+		if (OperatingSystem.IsLinux() || OperatingSystem.IsMacCatalyst())
 		{
 			window.TitleBar = null;
 		}
