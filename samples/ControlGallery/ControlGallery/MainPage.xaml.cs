@@ -44,6 +44,7 @@ public partial class MainPage : FlyoutPage
         [typeof(GraphicsViewPage)] = () => new GraphicsViewPage(),
         [typeof(ImagePage)] = () => new ImagePage(),
         [typeof(ImageButtonPage)] = () => new ImageButtonPage(),
+        [typeof(LabelPage)] = () => new LabelPage(),
         [typeof(ListViewPage)] = () => new ListViewPage(),
         [typeof(MapPage)] = () => new MapPage(),
         [typeof(PickerPage)] = () => new PickerPage(),
@@ -197,6 +198,7 @@ public partial class MainPage : FlyoutPage
                 new("GraphicsView", "Custom 2D drawing canvas", typeof(GraphicsViewPage)),
                 new("Image", "Visual content display", typeof(ImagePage)),
                 new("ImageButton", "Interactive image button", typeof(ImageButtonPage)),
+                new("Label", "Single and multi-line text display", typeof(LabelPage)),
                 new("ListView", "Scrolling data items", typeof(ListViewPage)),
                 // TODO: Re-enable when Map is ready
                 //new("Map", "Interactive maps and pins", typeof(MapPage)),

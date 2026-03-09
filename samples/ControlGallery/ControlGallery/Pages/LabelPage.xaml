@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.LabelPage"
+             Title="Label">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Basic Text -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Text"
+                           FontAttributes="Bold"/>
+                    <Label Text="This is a simple label with plain text."/>
+                    <Label Text="Multi-line label&#x0a;with a line break in the text."/>
+                    <Label Text=""/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Color -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Color"
+                           FontAttributes="Bold"/>
+                    <Label Text="Red text"
+                           TextColor="Red"/>
+                    <Label Text="Green text"
+                           TextColor="Green"/>
+                    <Label Text="Blue text"
+                           TextColor="Blue"/>
+                    <Label Text="Orange text"
+                           TextColor="Orange"/>
+                    <Label Text="Purple text"
+                           TextColor="Purple"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Font Attributes -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Attributes"
+                           FontAttributes="Bold"/>
+                    <Label Text="Normal font"
+                           FontAttributes="None"/>
+                    <Label Text="Bold font"
+                           FontAttributes="Bold"/>
+                    <Label Text="Italic font"
+                           FontAttributes="Italic"/>
+                    <Label Text="Bold and Italic font"
+                           FontAttributes="Bold,Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Font Size -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Size"
+                           FontAttributes="Bold"/>
+                    <Label Text="Size 10"
+                           FontSize="10"/>
+                    <Label Text="Size 14 (Default)"
+                           FontSize="14"/>
+                    <Label Text="Size 18"
+                           FontSize="18"/>
+                    <Label Text="Size 24"
+                           FontSize="24"/>
+                    <Label Text="Size 32"
+                           FontSize="32"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Font Family -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Font Family"
+                           FontAttributes="Bold"/>
+                    <Label Text="Default font family"/>
+                    <Label Text="Courier New"
+                           FontFamily="Courier New"/>
+                    <Label Text="Georgia"
+                           FontFamily="Georgia"/>
+                    <Label Text="Times New Roman"
+                           FontFamily="Times New Roman"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Character Spacing -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Character Spacing"
+                           FontAttributes="Bold"/>
+                    <Label Text="Normal spacing (0)"
+                           CharacterSpacing="0"/>
+                    <Label Text="Tight spacing (-1)"
+                           CharacterSpacing="-1"/>
+                    <Label Text="Loose spacing (2)"
+                           CharacterSpacing="2"/>
+                    <Label Text="Very loose spacing (5)"
+                           CharacterSpacing="5"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Decorations -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Decorations"
+                           FontAttributes="Bold"/>
+                    <Label Text="No decoration"
+                           TextDecorations="None"/>
+                    <Label Text="Underline decoration"
+                           TextDecorations="Underline"/>
+                    <Label Text="Strikethrough decoration"
+                           TextDecorations="Strikethrough"/>
+                    <Label Text="Underline and Strikethrough"
+                           TextDecorations="Underline,Strikethrough"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Text Transform -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Transform"
+                           FontAttributes="Bold"/>
+                    <Label Text="Default Transform"
+                           TextTransform="Default"/>
+                    <Label Text="uppercase text"
+                           TextTransform="Uppercase"/>
+                    <Label Text="LOWERCASE TEXT"
+                           TextTransform="Lowercase"/>
+                    <Label Text="None Transform"
+                           TextTransform="None"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Horizontal Text Alignment -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Horizontal Text Alignment"
+                           FontAttributes="Bold"/>
+                    <Label Text="Start aligned"
+                           HorizontalTextAlignment="Start"
+                           BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#333333}"/>
+                    <Label Text="Center aligned"
+                           HorizontalTextAlignment="Center"
+                           BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#333333}"/>
+                    <Label Text="End aligned"
+                           HorizontalTextAlignment="End"
+                           BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#333333}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Line Break Mode -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Line Break Mode"
+                           FontAttributes="Bold"/>
+
+                    <Label Text="NoWrap"
+                           FontSize="12"/>
+                    <Label Text="This is a very long text that should not wrap and might be truncated depending on the layout constraints available"
+                           LineBreakMode="NoWrap"
+                           BackgroundColor="{AppThemeBinding Light=#E0E0E0, Dark=#333333}"/>
+
+                    <Label Text="WordWrap"
+                           FontSize="12"/>
+                    <Label Text="This is a very long text that should wrap to multiple lines if there is not enough space in the viewport to display it all"
+                           LineBreakMode="WordWrap"
+                           BackgroundColor="{AppThemeBinding Light=#D1E8FF, Dark=#004085}"/>
+
+                    <Label Text="TailTruncation"
+                           FontSize="12"/>
+                    <Label Text="This is a very long text that should be truncated at the end with an ellipsis if it doesn't fit within the available space"
+                           LineBreakMode="TailTruncation"
+                           BackgroundColor="{AppThemeBinding Light=#FFD6D6, Dark=#8B0000}"/>
+
+                    <Label Text="HeadTruncation"
+                           FontSize="12"/>
+                    <Label Text="This is a very long text that should be truncated at the start with an ellipsis if it doesn't fit within the available space"
+                           LineBreakMode="HeadTruncation"
+                           BackgroundColor="{AppThemeBinding Light=#FFF3CD, Dark=#856404}"/>
+
+                    <Label Text="MiddleTruncation"
+                           FontSize="12"/>
+                    <Label Text="This is a very long text that should be truncated at the middle with an ellipsis if it doesn't fit within the available space"
+                           LineBreakMode="MiddleTruncation"
+                           BackgroundColor="{AppThemeBinding Light=#D4EDDA, Dark=#155724}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Max Lines -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Max Lines"
+                           FontAttributes="Bold"/>
+                    <Label Text="MaxLines = 1: This is a long text that should only show one line regardless of how much content is available here."
+                           MaxLines="1"
+                           BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#333333}"/>
+                    <Label Text="MaxLines = 2: This is a long text that should show at most two lines. Any content beyond the second line should be truncated or hidden from view."
+                           MaxLines="2"
+                           BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#333333}"/>
+                    <Label Text="MaxLines = 0 (unlimited): This is a long text with no line limit, so it can wrap as many times as needed to fit all the content within the available width."
+                           MaxLines="0"
+                           BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#333333}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Line Height -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Line Height"
+                           FontAttributes="Bold"/>
+                    <Label Text="Line height 1.0: This text has normal line height spacing between lines when it wraps to multiple lines."
+                           LineHeight="1.0"
+                           BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#333333}"/>
+                    <Label Text="Line height 1.5: This text has increased line height spacing between lines when it wraps to multiple lines."
+                           LineHeight="1.5"
+                           BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#333333}"/>
+                    <Label Text="Line height 2.0: This text has double line height spacing between lines when it wraps to multiple lines."
+                           LineHeight="2.0"
+                           BackgroundColor="{AppThemeBinding Light=#F0F0F0, Dark=#333333}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Padding -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Padding"
+                           FontAttributes="Bold"/>
+                    <Label Text="No padding"
+                           Padding="0"
+                           BackgroundColor="{AppThemeBinding Light=#D1E8FF, Dark=#004085}"/>
+                    <Label Text="Padding 10"
+                           Padding="10"
+                           BackgroundColor="{AppThemeBinding Light=#D1E8FF, Dark=#004085}"/>
+                    <Label Text="Padding 20"
+                           Padding="20"
+                           BackgroundColor="{AppThemeBinding Light=#D1E8FF, Dark=#004085}"/>
+                    <Label Text="Asymmetric padding (30,5,30,5)"
+                           Padding="30,5,30,5"
+                           BackgroundColor="{AppThemeBinding Light=#D1E8FF, Dark=#004085}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- FormattedText -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="FormattedText (Spans)"
+                           FontAttributes="Bold"/>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Red bold "
+                                      TextColor="Red"
+                                      FontAttributes="Bold"/>
+                                <Span Text="Blue italic "
+                                      TextColor="Blue"
+                                      FontAttributes="Italic"/>
+                                <Span Text="Underlined"
+                                      TextDecorations="Underline"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Large "
+                                      FontSize="24"/>
+                                <Span Text="and "
+                                      FontSize="14"/>
+                                <Span Text="small "
+                                      FontSize="10"/>
+                                <Span Text="mixed sizes"
+                                      FontSize="18"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                    <Label>
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Strikethrough "
+                                      TextDecorations="Strikethrough"/>
+                                <Span Text="and "
+                                      TextColor="Gray"/>
+                                <Span Text="colored background"
+                                      BackgroundColor="Yellow"
+                                      TextColor="Black"/>
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- TextType.Html -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="TextType = Html"
+                           FontAttributes="Bold"/>
+                    <Label TextType="Html"
+                           Text="This has &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;, &lt;u&gt;underline&lt;/u&gt;, and &lt;s&gt;strikethrough&lt;/s&gt; text."/>
+                    <Label x:Name="HtmlLabel"
+                           TextType="Html"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
