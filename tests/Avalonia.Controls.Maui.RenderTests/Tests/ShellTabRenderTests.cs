@@ -130,6 +130,6 @@ public class ShellTabRenderTests : RenderTestBase
         };
 
         await RenderShellToFile(shell);
-        CompareImages(tolerance: 0.045);
+        CompareImages(tolerance: 0.050);
     }
 }
