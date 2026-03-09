@@ -273,7 +273,7 @@ public class SKCanvasViewControl : Control
             if (pixelWidth <= 0 || pixelHeight <= 0)
                 return;
 
-            var rawInfo = new SKImageInfo(pixelWidth, pixelHeight, SKColorType.Bgra8888, SKAlphaType.Premul);
+            var rawInfo = new SKImageInfo(pixelWidth, pixelHeight, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
 
             // Create a dedicated surface sized to our control's bounds.
             // The lease surface is the entire window — passing it to the callback
@@ -287,7 +287,7 @@ public class SKCanvasViewControl : Control
             SKImageInfo info;
             if (_ignorePixelScaling)
             {
-                info = new SKImageInfo((int)Bounds.Width, (int)Bounds.Height, SKColorType.Bgra8888, SKAlphaType.Premul);
+                info = new SKImageInfo((int)Bounds.Width, (int)Bounds.Height, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
                 surfaceCanvas.Scale((float)_scaling);
             }
             else

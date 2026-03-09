@@ -13,11 +13,16 @@ public static class AppHostBuilderExtensions
     /// Registers Avalonia-backed SkiaSharp view handlers and image source services.
     /// </summary>
     /// <param name="builder">The MAUI app builder to configure.</param>
+    /// <param name="forceSoftwareRendering">
+    /// When <see langword="true"/>, GL views will use CPU raster rendering instead of GPU.
+    /// This is useful for platforms like Browser/WASM where GPU rendering may not be reliable.
+    /// </param>
     /// <returns>The configured <see cref="MauiAppBuilder"/>.</returns>
-    public static MauiAppBuilder UseAvaloniaSkiaSharp(this MauiAppBuilder builder) =>
+    public static MauiAppBuilder UseAvaloniaSkiaSharp(this MauiAppBuilder builder, bool forceSoftwareRendering = false) =>
         builder
             .ConfigureMauiHandlers(handlers =>
             {
+                SKGLViewHandler.ForceSoftwareRendering = forceSoftwareRendering;
                 handlers.AddHandler<SKCanvasView, SKCanvasViewHandler>();
                 handlers.AddHandler<SKGLView, SKGLViewHandler>();
             })

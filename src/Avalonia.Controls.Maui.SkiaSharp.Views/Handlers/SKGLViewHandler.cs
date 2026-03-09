@@ -14,6 +14,13 @@ public class SKGLViewHandler : Avalonia.Controls.Maui.Handlers.ViewHandler<ISKGL
     private SKSizeI _lastCanvasSize;
 
     /// <summary>
+    /// Gets or sets the default value for <see cref="SKGLViewControl.ForceSoftwareRendering"/>
+    /// applied to new instances. Set this before handler registration (e.g. via
+    /// <c>UseAvaloniaSkiaSharp(forceSoftwareRendering: true)</c>) to force CPU rendering globally.
+    /// </summary>
+    public static bool ForceSoftwareRendering { get; set; }
+
+    /// <summary>
     /// The property mapper that maps <see cref="ISKGLView"/> properties to <see cref="SKGLViewHandler"/> methods.
     /// </summary>
     public static IPropertyMapper<ISKGLView, SKGLViewHandler> Mapper =
@@ -60,7 +67,10 @@ public class SKGLViewHandler : Avalonia.Controls.Maui.Handlers.ViewHandler<ISKGL
     }
 
     /// <inheritdoc/>
-    protected override SKGLViewControl CreatePlatformView() => new SKGLViewControl();
+    protected override SKGLViewControl CreatePlatformView() => new SKGLViewControl
+    {
+        ForceSoftwareRendering = ForceSoftwareRendering,
+    };
 
     /// <inheritdoc/>
     protected override void ConnectHandler(SKGLViewControl platformView)

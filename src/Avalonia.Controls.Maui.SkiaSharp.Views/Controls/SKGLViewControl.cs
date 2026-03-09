@@ -25,6 +25,13 @@ public class SKGLViewControl : Control
     private long _touchId;
 
     /// <summary>
+    /// Gets or sets whether to force software (CPU) rendering instead of GPU rendering.
+    /// When true, the control always creates a raster surface even if a GPU context is available.
+    /// This is useful for platforms like Browser/WASM where GPU rendering may not be reliable.
+    /// </summary>
+    public bool ForceSoftwareRendering { get; set; }
+
+    /// <summary>
     /// Gets or sets whether pixel scaling should be ignored when reporting canvas size.
     /// </summary>
     public bool IgnorePixelScaling
@@ -119,6 +126,7 @@ public class SKGLViewControl : Control
             new Rect(bounds.Size),
             PaintSurfaceAction,
             _ignorePixelScaling,
+            ForceSoftwareRendering,
             scaling,
             this);
         context.Custom(operation);
@@ -307,6 +315,7 @@ public class SKGLViewControl : Control
     {
         private readonly Action<SKPaintGLSurfaceEventArgs> _paintAction;
         private readonly bool _ignorePixelScaling;
+        private readonly bool _forceSoftwareRendering;
         private readonly double _scaling;
         private readonly SKGLViewControl _owner;
 
@@ -314,12 +323,14 @@ public class SKGLViewControl : Control
             Rect bounds,
             Action<SKPaintGLSurfaceEventArgs> paintAction,
             bool ignorePixelScaling,
+            bool forceSoftwareRendering,
             double scaling,
             SKGLViewControl owner)
         {
             Bounds = bounds;
             _paintAction = paintAction;
             _ignorePixelScaling = ignorePixelScaling;
+            _forceSoftwareRendering = forceSoftwareRendering;
             _scaling = scaling;
             _owner = owner;
         }
@@ -354,14 +365,20 @@ public class SKGLViewControl : Control
             if (pixelWidth <= 0 || pixelHeight <= 0)
                 return;
 
-            var rawInfo = new SKImageInfo(pixelWidth, pixelHeight, SKColorType.Bgra8888, SKAlphaType.Premul);
+            var useGpu = grContext != null && !_forceSoftwareRendering;
+
+            // Use Rgba8888 for GPU surfaces — BGRA is not supported by WebGL/OpenGL ES.
+            // For CPU raster, use the platform's native color type for best performance.
+            var colorType = useGpu ? SKColorType.Rgba8888 : SKImageInfo.PlatformColorType;
+            var rawInfo = new SKImageInfo(pixelWidth, pixelHeight, colorType, SKAlphaType.Premul);
 
             // Create a dedicated surface sized to our control's bounds.
             // The lease surface is the entire window — passing it to the callback
             // would expose wrong dimensions and canvas transforms to the consumer.
             // Use a GPU-backed surface when a GRContext is available, falling back to CPU raster.
-            using var surface = grContext != null
-                ? SKSurface.Create(grContext, false, rawInfo)
+            // ForceSoftwareRendering bypasses GPU even when a context is available (useful for Browser/WASM).
+            using var surface = useGpu
+                ? SKSurface.Create(grContext!, false, rawInfo)
                 : SKSurface.Create(rawInfo);
             if (surface == null)
                 return;
@@ -371,7 +388,7 @@ public class SKGLViewControl : Control
             SKImageInfo info;
             if (_ignorePixelScaling)
             {
-                info = new SKImageInfo((int)Bounds.Width, (int)Bounds.Height, SKColorType.Bgra8888, SKAlphaType.Premul);
+                info = new SKImageInfo((int)Bounds.Width, (int)Bounds.Height, colorType, SKAlphaType.Premul);
                 surfaceCanvas.Scale((float)_scaling);
             }
             else
