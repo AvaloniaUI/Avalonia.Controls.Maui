@@ -1,16 +1,41 @@
 ﻿using CommunityToolkit.Maui.Markup;
+using Microsoft.Maui.Controls.Shapes;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
 namespace MauiConverter;
 
 class ConversionPage : BaseContentPage<ConversionViewModel>
 {
+	readonly Border _resultBorder;
+	string _previousResult = string.Empty;
+
 	public ConversionPage(ConversionViewModel conversionViewModel) : base(conversionViewModel)
 	{
 		BackgroundColor = ColorConstants.LightPurple;
 		BindingContext.ConversionError += HandleConversionError;
+		BindingContext.PropertyChanged += OnViewModelPropertyChanged;
 
 		this.Bind(TitleProperty, nameof(ConversionViewModel.TitleText));
+
+		_resultBorder = new Border
+		{
+			StrokeShape = new RoundRectangle { CornerRadius = 8 },
+			Stroke = ColorConstants.DarkPurple,
+			BackgroundColor = Colors.White,
+			Padding = new Thickness(16, 12),
+			IsVisible = false,
+			Opacity = 0,
+			Scale = 0.8,
+			Content = new Label
+			{
+				TextColor = ColorConstants.DarkestPurple,
+				FontSize = 18,
+				FontAttributes = FontAttributes.Bold,
+				HorizontalTextAlignment = TextAlignment.Center,
+				VerticalTextAlignment = TextAlignment.Center,
+			}.Bind(Label.TextProperty,
+				static (ConversionViewModel vm) => vm.ConvertedNumberLabelText)
+		};
 
 		Content = new Grid
 		{
@@ -22,8 +47,8 @@ class ConversionPage : BaseContentPage<ConversionViewModel>
 				(Row.NumberToConvert, Star),
 				(Row.OriginalUnits, Star),
 				(Row.ConvertedUnits, Star),
-				(Row.ConvertedNumber, Star),
-				(Row.ConvertButton, Stars(2))),
+				(Row.ConvertButton, Stars(2)),
+				(Row.ConvertResult, Star)),
 
 			ColumnDefinitions = Columns.Define(
 				(Column.Label, Star),
@@ -86,10 +111,8 @@ class ConversionPage : BaseContentPage<ConversionViewModel>
 							static (ConversionViewModel vm) => vm.ConvertedUnitsPickerSelectedIndexChangedCommand,
 							mode:BindingMode.OneTime),
 
-				new DarkPurpleLabel()
-				   .Row(Row.ConvertedNumber).ColumnSpan(All<Column>()).TextCenterHorizontal()
-				   .Bind(Label.TextProperty,
-						static (ConversionViewModel vm) => vm.ConvertedNumberLabelText),
+				_resultBorder
+				   .Row(Row.ConvertResult).ColumnSpan(All<Column>()).Margins(left: 20, right: 20),
 
 				new BounceButton()
 				   .Row(Row.ConvertButton).ColumnSpan(All<Column>()).FillHorizontal()
@@ -103,8 +126,40 @@ class ConversionPage : BaseContentPage<ConversionViewModel>
 		}.FillHorizontal().CenterVertical().Paddings(left: 20, right: 20);
 	}
 
-	enum Row { UnitType, NumberToConvert, OriginalUnits, ConvertedUnits, ConvertedNumber, ConvertButton };
+	enum Row { UnitType, NumberToConvert, OriginalUnits, ConvertedUnits, ConvertButton, ConvertResult };
 	enum Column { Label, Input };
+
+	void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+	{
+		if (e.PropertyName != nameof(ConversionViewModel.ConvertedNumberLabelText))
+			return;
+
+		var newResult = BindingContext.ConvertedNumberLabelText;
+		var hadResult = !string.IsNullOrEmpty(_previousResult);
+		var hasResult = !string.IsNullOrEmpty(newResult);
+		_previousResult = newResult;
+
+		if (hasResult && !hadResult)
+			AnimateResultIn();
+		else if (!hasResult && hadResult)
+			AnimateResultOut();
+	}
+
+	async void AnimateResultIn()
+	{
+		_resultBorder.IsVisible = true;
+		await Task.WhenAll(
+			_resultBorder.FadeTo(1, 250, Easing.CubicOut),
+			_resultBorder.ScaleTo(1, 250, Easing.CubicOut));
+	}
+
+	async void AnimateResultOut()
+	{
+		await Task.WhenAll(
+			_resultBorder.FadeTo(0, 200, Easing.CubicIn),
+			_resultBorder.ScaleTo(0.8, 200, Easing.CubicIn));
+		_resultBorder.IsVisible = false;
+	}
 
 	async void HandleConversionError(object? sender, string message) =>
 		await Dispatcher.DispatchAsync(() => DisplayAlert("Conversion Error", message, "OK"));
