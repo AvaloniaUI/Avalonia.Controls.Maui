@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Avalonia.Automation;
+using Avalonia.Automation.Peers;
 using Avalonia.Controls.Metadata;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
@@ -10,6 +13,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Styling;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 
 // Clone of https://github.com/AvaloniaUI/Avalonia/pull/20660
 // When Avalonia.Controls.PipsPager ships, remove this file and update:
@@ -29,11 +33,18 @@ public class PipsPager : TemplatedControl
     private const string PART_NextButton = "PART_NextButton";
     private const string PART_PipsPagerList = "PART_PipsPagerList";
 
+    internal const string PipsPagerListPartName = PART_PipsPagerList;
+
     private Button? _previousButton;
     private Button? _nextButton;
     private ItemsControl? _pipsPagerList;
+    private ListBox? _pipsList;
     private bool _scrollPending;
     private bool _updatingPagerSize;
+    private bool _isInitialLoad = true;
+    private int _lastSelectedPageIndex = -1;
+    private CancellationTokenSource? _scrollAnimationCts;
+    private double _containerPipSize = 12.0;
     private PipsPagerTemplateSettings _templateSettings = new PipsPagerTemplateSettings();
 
     /// <summary>Defines the <see cref="MaxVisiblePips"/> property.</summary>
@@ -181,9 +192,20 @@ public class PipsPager : TemplatedControl
     }
 
     /// <inheritdoc/>
+    protected override AutomationPeer OnCreateAutomationPeer()
+        => new PipsPagerAutomationPeer(this);
+
+    /// <inheritdoc/>
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
+
+        // Skip animation when restoring scroll position after template re-apply.
+        _isInitialLoad = true;
+
+        _scrollAnimationCts?.Cancel();
+        _scrollAnimationCts?.Dispose();
+        _scrollAnimationCts = null;
 
         if (_previousButton != null)
             _previousButton.Click -= PreviousButton_Click;
@@ -201,6 +223,7 @@ public class PipsPager : TemplatedControl
         _previousButton = e.NameScope.Find<Button>(PART_PreviousButton);
         _nextButton = e.NameScope.Find<Button>(PART_NextButton);
         _pipsPagerList = e.NameScope.Find<ItemsControl>(PART_PipsPagerList);
+        _pipsList = _pipsPagerList as ListBox;
 
         if (_previousButton != null)
         {
@@ -258,6 +281,7 @@ public class PipsPager : TemplatedControl
             pips.Clear();
             for (var i = 1; i <= count; i++)
                 pips.Add(i);
+            // count > 0 here, so count - 1 >= 0 and Clamp is safe.
             SetCurrentValue(SelectedPageIndexProperty, Math.Clamp(savedIndex, 0, count - 1));
         }
     }
@@ -291,8 +315,11 @@ public class PipsPager : TemplatedControl
                 }
                 break;
             case Key.Home:
-                SetCurrentValue(SelectedPageIndexProperty, 0);
-                e.Handled = true;
+                if (NumberOfPages > 0)
+                {
+                    SetCurrentValue(SelectedPageIndexProperty, 0);
+                    e.Handled = true;
+                }
                 break;
             case Key.End:
                 if (NumberOfPages > 0)
@@ -354,11 +381,8 @@ public class PipsPager : TemplatedControl
         if (pips.Count < newValue)
         {
             var start = pips.Count + 1;
-            var count = newValue - pips.Count;
-            var toAdd = new List<int>(count);
-            for (var i = 0; i < count; i++)
-                toAdd.Add(start + i);
-            pips.AddRange(toAdd);
+            for (var i = start; i <= newValue; i++)
+                pips.Add(i);
         }
         else if (pips.Count > newValue)
         {
@@ -369,6 +393,10 @@ public class PipsPager : TemplatedControl
             SetCurrentValue(SelectedPageIndexProperty, newValue - 1);
         else if (newValue == 0 && SelectedPageIndex > 0)
             SetCurrentValue(SelectedPageIndexProperty, 0);
+
+        // The ListBox SelectedIndex binding may have evaluated before items were present.
+        // Re-sync so the selected pip gets the :selected pseudo-class.
+        SyncListBoxSelection();
 
         UpdateButtonsState();
         UpdatePseudoClasses();
@@ -385,7 +413,16 @@ public class PipsPager : TemplatedControl
         UpdatePagerSize();
     }
 
-    private void OnMaxVisiblePipsChanged(AvaloniaPropertyChangedEventArgs e) => UpdatePagerSize();
+    private void OnMaxVisiblePipsChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.GetNewValue<int>() < 1)
+        {
+            SetCurrentValue(MaxVisiblePipsProperty, 1);
+            return;
+        }
+
+        UpdatePagerSize();
+    }
 
     private void PreviousButton_Click(object? sender, RoutedEventArgs e)
     {
@@ -423,7 +460,18 @@ public class PipsPager : TemplatedControl
     }
 
     private void OnContainerPrepared(object? sender, ContainerPreparedEventArgs e)
-        => UpdateContainerAutomationProperties(e.Container, e.Index);
+    {
+        UpdateContainerAutomationProperties(e.Container, e.Index);
+
+        if (e.Container is ListBoxItem item)
+        {
+            // Apply size directly: DynamicResource does not reliably update already-prepared containers.
+            if (_containerPipSize != 12.0)
+                ApplyContainerSize(item);
+
+            item.IsSelected = e.Index == SelectedPageIndex;
+        }
+    }
 
     private void OnContainerIndexChanged(object? sender, ContainerIndexChangedEventArgs e)
         => UpdateContainerAutomationProperties(e.Container, e.NewIndex);
@@ -433,6 +481,12 @@ public class PipsPager : TemplatedControl
         AutomationProperties.SetName(container, $"Page {index + 1}");
         AutomationProperties.SetPositionInSet(container, index + 1);
         AutomationProperties.SetSizeOfSet(container, NumberOfPages);
+    }
+
+    private void SyncListBoxSelection()
+    {
+        if (_pipsList != null && _pipsList.SelectedIndex != SelectedPageIndex)
+            _pipsList.SelectedIndex = SelectedPageIndex;
     }
 
     private void RequestScrollToSelectedPip()
@@ -453,14 +507,130 @@ public class PipsPager : TemplatedControl
         if (_pipsPagerList == null)
             return;
 
-        // Only scroll the internal list when pips overflow MaxVisiblePips.
-        // Calling BringIntoView unconditionally bubbles up to ancestor
-        // ScrollViewers and causes unintended page-level scrolling.
+        // Only scroll when pips overflow MaxVisiblePips.
         if (NumberOfPages <= MaxVisiblePips)
             return;
 
-        var container = _pipsPagerList.ContainerFromIndex(SelectedPageIndex);
-        container?.BringIntoView();
+        var scrollViewer = _pipsPagerList.FindDescendantOfType<ScrollViewer>();
+        if (scrollViewer == null)
+            return;
+
+        var pipSize = GetContainerPipSize();
+        if (double.IsNaN(pipSize))
+            return;
+
+        var spacing = (_pipsPagerList.ItemsPanelRoot as StackPanel)?.Spacing ?? 0.0;
+        var stepSize = pipSize + spacing;
+
+        var maxVisiblePips = MaxVisiblePips;
+        var selectedIndex = SelectedPageIndex;
+
+        // Compensate for even MaxVisiblePips when navigating forward to keep the selected
+        // pip centred in the visible window.
+        var evenOffset = (maxVisiblePips % 2 == 0 && selectedIndex > _lastSelectedPageIndex) ? 1 : 0;
+        var offsetElements = selectedIndex + evenOffset - maxVisiblePips / 2;
+
+        var maxOffset = Orientation == Orientation.Horizontal
+            ? scrollViewer.Extent.Width - scrollViewer.Viewport.Width
+            : scrollViewer.Extent.Height - scrollViewer.Viewport.Height;
+
+        var targetOffset = Math.Clamp(offsetElements * stepSize, 0, maxOffset);
+        _lastSelectedPageIndex = selectedIndex;
+
+        if (_isInitialLoad)
+        {
+            // On first render, jump directly without animation.
+            _isInitialLoad = false;
+            scrollViewer.Offset = Orientation == Orientation.Horizontal
+                ? new Vector(targetOffset, 0)
+                : new Vector(0, targetOffset);
+            return;
+        }
+
+        AnimateScrollOffset(scrollViewer, targetOffset);
+    }
+
+    private void AnimateScrollOffset(ScrollViewer scrollViewer, double targetOffset)
+    {
+        var oldCts = _scrollAnimationCts;
+        _scrollAnimationCts = new CancellationTokenSource();
+        var token = _scrollAnimationCts.Token;
+        oldCts?.Cancel();
+        oldCts?.Dispose();
+
+        var startOffset = Orientation == Orientation.Horizontal
+            ? scrollViewer.Offset.X
+            : scrollViewer.Offset.Y;
+
+        var delta = targetOffset - startOffset;
+        if (Math.Abs(delta) < 0.5)
+            return;
+
+        const double duration = 200.0;
+        var startTicks = Environment.TickCount64;
+
+        void AnimateStep()
+        {
+            if (token.IsCancellationRequested)
+                return;
+
+            var elapsed = Environment.TickCount64 - startTicks;
+            var t = Math.Min(elapsed / duration, 1.0);
+
+            // Cubic ease-out.
+            var eased = 1.0 - Math.Pow(1.0 - t, 3);
+            var current = startOffset + delta * eased;
+
+            var maxOffset = Orientation == Orientation.Horizontal
+                ? scrollViewer.Extent.Width - scrollViewer.Viewport.Width
+                : scrollViewer.Extent.Height - scrollViewer.Viewport.Height;
+            current = Math.Clamp(current, 0, Math.Max(0, maxOffset));
+
+            scrollViewer.Offset = Orientation == Orientation.Horizontal
+                ? new Vector(current, scrollViewer.Offset.Y)
+                : new Vector(scrollViewer.Offset.X, current);
+
+            if (t < 1.0)
+                DispatcherTimer.RunOnce(AnimateStep, TimeSpan.FromMilliseconds(16), DispatcherPriority.Render);
+        }
+
+        DispatcherTimer.RunOnce(AnimateStep, TimeSpan.FromMilliseconds(16), DispatcherPriority.Render);
+    }
+
+    internal void InvalidatePagerSize(double containerSize)
+    {
+        _containerPipSize = containerSize;
+        UpdateContainerSizes();
+        UpdatePagerSize();
+    }
+
+    private void UpdateContainerSizes()
+    {
+        if (_pipsPagerList == null)
+            return;
+
+        for (var i = 0; i < _pipsPagerList.Items.Count; i++)
+        {
+            if (_pipsPagerList.ContainerFromIndex(i) is ListBoxItem item)
+                ApplyContainerSize(item);
+        }
+    }
+
+    private void ApplyContainerSize(ListBoxItem item)
+    {
+        var minor = _containerPipSize;
+        var major = Math.Max(minor, 24.0);
+
+        if (Orientation == Orientation.Horizontal)
+        {
+            item.Width = minor;
+            item.Height = major;
+        }
+        else
+        {
+            item.Width = major;
+            item.Height = minor;
+        }
     }
 
     private void UpdatePagerSize()
@@ -472,22 +642,13 @@ public class PipsPager : TemplatedControl
 
         try
         {
-            double pipSize = 12.0;
+            var pipSize = GetContainerPipSize();
 
-            var container = _pipsPagerList.ContainerFromIndex(SelectedPageIndex) as Layoutable;
-
-            if (container == null && _pipsPagerList.Items.Count > 0)
-                container = _pipsPagerList.ContainerFromIndex(0) as Layoutable;
-
-            if (container != null)
+            if (double.IsNaN(pipSize))
             {
-                var margin = container.Margin;
-                var size = Orientation == Orientation.Horizontal
-                    ? container.Bounds.Width + margin.Left + margin.Right
-                    : container.Bounds.Height + margin.Top + margin.Bottom;
-
-                if (size > 0)
-                    pipSize = size;
+                _pipsPagerList.Width = double.NaN;
+                _pipsPagerList.Height = double.NaN;
+                return;
             }
 
             double spacing = 0.0;
@@ -498,7 +659,11 @@ public class PipsPager : TemplatedControl
             var visibleCount = Math.Min(NumberOfPages, MaxVisiblePips);
 
             if (visibleCount <= 0)
+            {
+                _pipsPagerList.Width = 0;
+                _pipsPagerList.Height = 0;
                 return;
+            }
 
             var extent = (visibleCount * pipSize) + ((visibleCount - 1) * spacing);
 
@@ -519,5 +684,26 @@ public class PipsPager : TemplatedControl
         {
             _updatingPagerSize = false;
         }
+    }
+
+    private double GetContainerPipSize()
+    {
+        if (IndicatorTemplate != null && _pipsPagerList != null)
+        {
+            var container = (_pipsPagerList.ContainerFromIndex(SelectedPageIndex)
+                             ?? (_pipsPagerList.Items.Count > 0 ? _pipsPagerList.ContainerFromIndex(0) : null))
+                            as Layoutable;
+            if (container != null)
+            {
+                var size = Orientation == Orientation.Horizontal
+                    ? container.Bounds.Width
+                    : container.Bounds.Height;
+                if (size > 0)
+                    return size;
+            }
+            return double.NaN;
+        }
+
+        return _containerPipSize;
     }
 }

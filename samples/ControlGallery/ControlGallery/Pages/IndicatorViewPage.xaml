@@ -78,6 +78,43 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Pre-selected Position -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Pre-selected Position (starts at index 2)"
+                           FontAttributes="Bold"/>
+                    <CarouselView x:Name="preselectedCarousel"
+                                  IndicatorView="preselectedIndicator"
+                                  HeightRequest="120"
+                                  Position="2"
+                                  ItemsSource="{Binding Items}">
+                        <CarouselView.ItemTemplate>
+                            <DataTemplate x:DataType="pages:CarouselItem">
+                                <Grid Margin="10">
+                                    <BoxView Color="{Binding Color}"
+                                             CornerRadius="8"/>
+                                    <Label Text="{Binding Title}"
+                                           TextColor="White"
+                                           FontAttributes="Bold"
+                                           FontSize="16"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </CarouselView.ItemTemplate>
+                    </CarouselView>
+                    <IndicatorView x:Name="preselectedIndicator"
+                                   HorizontalOptions="Center"
+                                   IndicatorColor="LightGray"
+                                   SelectedIndicatorColor="DeepSkyBlue"
+                                   IndicatorSize="10"/>
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Custom Indicator Size -->
             <Border Stroke="Gray"
                     Padding="10">

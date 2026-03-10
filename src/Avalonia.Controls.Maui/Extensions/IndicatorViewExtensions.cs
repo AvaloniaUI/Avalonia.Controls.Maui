@@ -57,13 +57,15 @@ public static class IndicatorViewExtensions
         var size = indicator.IndicatorSize;
         var unselectedSize = size * (2.0 / 3.0);
         var containerMinor = Math.Max(size * 2.0, 12.0);
-        var containerMajor = Math.Max(size * 4.0, 24.0);
+        var containerMajor = Math.Max(size * 2.0, 24.0);
 
         pipsPager.Resources["PipsPagerPipSize"] = unselectedSize;
         pipsPager.Resources["PipsPagerPipSizeSelected"] = size;
         pipsPager.Resources["PipsPagerPipSizePointerOver"] = size;
         pipsPager.Resources["PipsPagerPipContainerMinorSize"] = containerMinor;
         pipsPager.Resources["PipsPagerPipContainerMajorSize"] = containerMajor;
+
+        pipsPager.InvalidatePagerSize(containerMinor);
     }
 
     /// <summary>

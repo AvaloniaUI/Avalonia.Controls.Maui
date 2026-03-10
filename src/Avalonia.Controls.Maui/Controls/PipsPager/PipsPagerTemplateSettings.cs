@@ -8,12 +8,9 @@ namespace Avalonia.Controls.Maui.Controls;
 /// </summary>
 public class PipsPagerTemplateSettings : AvaloniaObject
 {
-    private AvaloniaList<int> _pips;
+    private readonly AvaloniaList<int> _pips = new();
 
-    internal PipsPagerTemplateSettings()
-    {
-        _pips = new AvaloniaList<int>();
-    }
+    internal PipsPagerTemplateSettings() { }
 
     /// <summary>Defines the <see cref="Pips"/> property.</summary>
     public static readonly DirectProperty<PipsPagerTemplateSettings, AvaloniaList<int>> PipsProperty =
