@@ -95,7 +95,6 @@ public class SKCanvasViewControl : Control
         var args = CreateTouchArgs(e, SKTouchAction.Pressed, true);
         if (TouchAction?.Invoke(args) == true || args.Handled)
         {
-            e.Pointer.Capture(this);
             e.Handled = true;
             // Prevent ancestor gesture recognizers (e.g. SwipeGestureRecognizer on
             // NavigationPage) from stealing capture during fast drags.
@@ -127,7 +126,6 @@ public class SKCanvasViewControl : Control
         if (!_enableTouchEvents)
             return;
 
-        e.Pointer.Capture(null);
         var args = CreateTouchArgs(e, SKTouchAction.Released, false);
         if (TouchAction?.Invoke(args) == true || args.Handled)
             e.Handled = true;
