@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -22,7 +23,8 @@ public class SKGLViewControl : Control
     private bool _hasRenderLoop;
     private DispatcherTimer? _renderTimer;
     private GRContext? _lastGRContext;
-    private long _touchId;
+    private long _nextTouchId;
+    private readonly Dictionary<IPointer, long> _pointerTouchIds = new();
 
     /// <summary>
     /// Gets or sets whether to force software (CPU) rendering instead of GPU rendering.
@@ -174,11 +176,13 @@ public class SKGLViewControl : Control
         if (!_enableTouchEvents)
             return;
 
-        _touchId++;
-        var args = CreateTouchArgs(e, SKTouchAction.Pressed, true);
+        var touchId = ++_nextTouchId;
+        _pointerTouchIds[e.Pointer] = touchId;
+        var args = CreateTouchArgs(e, SKTouchAction.Pressed, true, touchId);
         if (TouchAction?.Invoke(args) == true || args.Handled)
         {
             e.Handled = true;
+            e.Pointer.Capture(this);
             // Prevent ancestor gesture recognizers (e.g. SwipeGestureRecognizer on
             // NavigationPage) from stealing capture during fast drags.
             e.PreventGestureRecognition();
@@ -192,12 +196,15 @@ public class SKGLViewControl : Control
         if (!_enableTouchEvents)
             return;
 
+        if (!_pointerTouchIds.TryGetValue(e.Pointer, out var touchId))
+            return;
+
         var props = e.GetCurrentPoint(this).Properties;
         var inContact = props.IsLeftButtonPressed || props.IsMiddleButtonPressed || props.IsRightButtonPressed;
         if (!inContact)
             return;
 
-        var args = CreateTouchArgs(e, SKTouchAction.Moved, inContact);
+        var args = CreateTouchArgs(e, SKTouchAction.Moved, inContact, touchId);
         if (TouchAction?.Invoke(args) == true || args.Handled)
             e.Handled = true;
     }
@@ -209,7 +216,10 @@ public class SKGLViewControl : Control
         if (!_enableTouchEvents)
             return;
 
-        var args = CreateTouchArgs(e, SKTouchAction.Released, false);
+        if (!_pointerTouchIds.Remove(e.Pointer, out var touchId))
+            return;
+
+        var args = CreateTouchArgs(e, SKTouchAction.Released, false, touchId);
         if (TouchAction?.Invoke(args) == true || args.Handled)
             e.Handled = true;
     }
@@ -227,9 +237,10 @@ public class SKGLViewControl : Control
             ? new SKPoint((float)point.X, (float)point.Y)
             : new SKPoint((float)(point.X * scaling), (float)(point.Y * scaling));
 
+        _pointerTouchIds.TryGetValue(e.Pointer, out var touchId);
         var wheelDelta = (int)(e.Delta.Y * 120);
         var args = new SKTouchEventArgs(
-            _touchId,
+            touchId,
             SKTouchAction.WheelChanged,
             SKMouseButton.Unknown,
             SKTouchDeviceType.Mouse,
@@ -241,7 +252,17 @@ public class SKGLViewControl : Control
             e.Handled = true;
     }
 
-    private SKTouchEventArgs CreateTouchArgs(PointerEventArgs e, SKTouchAction action, bool inContact)
+    /// <inheritdoc/>
+    protected override void OnPointerCaptureLost(PointerCaptureLostEventArgs e)
+    {
+        base.OnPointerCaptureLost(e);
+        if (!_enableTouchEvents)
+            return;
+
+        _pointerTouchIds.Remove(e.Pointer);
+    }
+
+    private SKTouchEventArgs CreateTouchArgs(PointerEventArgs e, SKTouchAction action, bool inContact, long touchId)
     {
         var point = e.GetPosition(this);
         var scaling = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
@@ -287,7 +308,7 @@ public class SKGLViewControl : Control
         }
 
         return new SKTouchEventArgs(
-            _touchId,
+            touchId,
             action,
             mouseButton,
             deviceType,
