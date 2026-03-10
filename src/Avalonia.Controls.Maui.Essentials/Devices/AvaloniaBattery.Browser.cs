@@ -16,6 +16,9 @@ public partial class AvaloniaBattery
     partial void GetPowerSourceBrowser(ref BatteryPowerSource? v) => v = _isInitialized ? (GetBatteryCharging() ? BatteryPowerSource.AC : BatteryPowerSource.Battery) : BatteryPowerSource.Unknown;
     partial void GetEnergySaverStatusBrowser(ref EnergySaverStatus? v) => v = EnergySaverStatus.Off;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="AvaloniaBattery"/> and starts battery monitoring on Browser.
+    /// </summary>
     public AvaloniaBattery()
     {
         if (OperatingSystem.IsBrowser())
