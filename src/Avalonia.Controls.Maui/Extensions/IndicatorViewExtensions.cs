@@ -41,7 +41,6 @@ public static class IndicatorViewExtensions
         {
             if (descendant is ListBox lb && lb.Name == "PART_PipsPagerList")
             {
-                lb.SelectedIndex = -1;
                 lb.SelectedIndex = indicator.Position;
                 InvalidatePipsSize(lb);
                 return;
