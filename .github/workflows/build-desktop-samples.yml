@@ -26,6 +26,8 @@ jobs:
             project: showcase/WeatherTwentyOne/WeatherTwentyOne/WeatherTwentyOne.csproj
           - name: AlohaAI
             project: showcase/AlohaAI/AlohaAI/AlohaAI.csproj
+          - name: MapApp
+            project: showcase/MapApp/MapApp/MapApp.csproj
 
     runs-on: ubuntu-latest
     name: ${{ matrix.app.name }} (NativeAOT)

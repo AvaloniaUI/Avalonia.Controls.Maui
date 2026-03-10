@@ -117,19 +117,6 @@ The following Essentials APIs are implemented:
 | `Preferences` | Full type support; persisted as JSON |
 | `HapticFeedback` | Stub implementation; `IsSupported` returns `false` |
 
-### UseAvaloniaMapsui
-
-If your app uses `Microsoft.Maui.Controls.Maps.Map`, install `Avalonia.Controls.Maui.Maps.Mapsui` and register its handler:
-
-```csharp
-using Avalonia.Controls.Maui.Maps.Mapsui;
-
-builder
-    .UseMauiApp<App>()
-    .UseAvaloniaApp()
-    .UseAvaloniaMapsui();
-```
-
 ### Full desktop example
 
 A typical `MauiProgram.cs` for a desktop app:
