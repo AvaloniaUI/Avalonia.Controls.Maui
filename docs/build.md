@@ -6,6 +6,12 @@
 
 ## Quick Start
 
+Restore required .NET workloads before building:
+
+```bash
+dotnet workload restore Avalonia.Controls.Maui.slnx
+```
+
 The default build target compiles the solution and copies packages to your local NuGet cache:
 
 ```bash
@@ -104,7 +110,8 @@ When `MauiSourcePath` is set, the build also:
 
 Before building, make sure the source repos are restored and have been built at least once:
 
-**NOTE**: This is important, you _really_ need to have built Avalonia or MAUI at least once before doing this source build.
+> [!NOTE]
+> You must build Avalonia or MAUI at least once before attempting a source build against them.
 
 ```bash
 # Avalonia
