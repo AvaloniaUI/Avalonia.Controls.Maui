@@ -6,49 +6,6 @@ This repository contains the Avalonia-based Handlers and target files for .NET M
 
 For info on how to build the project, reference our [build docs](/docs/build.md).
 
-## Quick Start
-
-Install the core package:
-
-```xml
-<PackageReference Include="Avalonia.Controls.Maui" Version="..." />
-```
-
-Register Avalonia in `MauiProgram.cs`:
-
-```csharp
-using Avalonia.Controls.Maui;
-
-public static class MauiProgram
-{
-    public static MauiApp CreateMauiApp()
-    {
-        var builder = MauiApp.CreateBuilder();
-
-        builder
-            .UseMauiApp<App>()
-            .UseAvaloniaApp();
-
-        return builder.Build();
-    }
-}
-```
-
-For WASM/Browser targets, pass `useSingleViewLifetime: true`:
-
-```csharp
-builder.UseAvaloniaApp(useSingleViewLifetime: true);
-```
-
-See [Configuration and Setup](/docs/config-and-setup.md) for the full setup guide.
-
-## Platform Support
-
-| Platform | Support |
-|---|---|
-| Linux (desktop) | Yes |
-| Browser / WASM | Yes |
-
 ## Documentation
 
 - [Configuration and Setup](/docs/config-and-setup.md)
