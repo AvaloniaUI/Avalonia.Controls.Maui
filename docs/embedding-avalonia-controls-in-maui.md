@@ -2,8 +2,8 @@
 
 This guide explains how to use Avalonia controls inside a .NET MAUI application. There are two approaches:
 
-1. **AvaloniaView** — Host any existing Avalonia control directly in a MAUI page.
-2. **Custom Handler** — Create a MAUI `View` backed by an Avalonia control, with full property mapping.
+1. **AvaloniaView**: host any existing Avalonia control directly in a MAUI page.
+2. **Custom Handler**: create a MAUI `View` backed by an Avalonia control, with full property mapping.
 
 Both approaches use the `UseAvaloniaEmbedding<TApp>()` extension method to initialize Avalonia within a native MAUI app.
 
@@ -132,9 +132,9 @@ Use this approach when you want to create a reusable MAUI control that exposes b
 
 There are three pieces:
 
-1. **MAUI View** — Defines the public API (bindable properties).
-2. **Avalonia Control** — Implements the visual rendering.
-3. **Handler** — Bridges the two, mapping MAUI properties to the Avalonia control.
+1. **MAUI View**: defines the public API (bindable properties).
+2. **Avalonia Control**: implements the visual rendering.
+3. **Handler**: bridges the two, mapping MAUI properties to the Avalonia control.
 
 ### Step 1: Define the MAUI View
 
@@ -245,7 +245,7 @@ namespace MyApp.Handlers;
 
 public class CounterViewHandler : AvaloniaControlHandler<CounterView, CounterControl>
 {
-    public static new IPropertyMapper<CounterView, CounterViewHandler> Mapper =
+    public static new readonly IPropertyMapper<CounterView, CounterViewHandler> Mapper =
         new PropertyMapper<CounterView, CounterViewHandler>(
             AvaloniaControlHandler<CounterView, CounterControl>.Mapper)
         {
