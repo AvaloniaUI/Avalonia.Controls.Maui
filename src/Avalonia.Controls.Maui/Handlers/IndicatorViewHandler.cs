@@ -1,6 +1,9 @@
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Primitives;
+using Avalonia.Threading;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using IndicatorView = Microsoft.Maui.Controls.IndicatorView;
 // When Avalonia.Controls.PipsPager ships, replace the line below with:
 // using PlatformView = Avalonia.Controls.PipsPager;
 using PlatformView = Avalonia.Controls.Maui.Controls.PipsPager;
@@ -64,13 +67,29 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
     {
         base.ConnectHandler(platformView);
         platformView.SelectedIndexChanged += OnSelectedIndexChanged;
+        platformView.TemplateApplied += OnTemplateApplied;
     }
 
     /// <inheritdoc/>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.SelectedIndexChanged -= OnSelectedIndexChanged;
+        platformView.TemplateApplied -= OnTemplateApplied;
         base.DisconnectHandler(platformView);
+    }
+
+    private void OnTemplateApplied(object? sender, TemplateAppliedEventArgs e)
+    {
+        if (sender is not PlatformView pv)
+            return;
+
+        // Property mappers fire before the control template is applied, so pip containers do not
+        // exist yet. Defer size and selection sync to after the first layout pass.
+        Dispatcher.UIThread.Post(() =>
+        {
+            pv.UpdatePipSize(VirtualView);
+            pv.ForceSelection(VirtualView);
+        }, DispatcherPriority.Loaded);
     }
 
     private void OnSelectedIndexChanged(object? sender, Controls.PipsPagerSelectedIndexChangedEventArgs e)
@@ -135,10 +154,11 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
             platformView.UpdateIndicatorShape(indicator);
     }
 
-    /// <summary>Maps <see cref="IndicatorView.IndicatorTemplate"/> to <see cref="PlatformView.IndicatorTemplate"/>.</summary>
+    /// <summary>Maps <see cref="IndicatorView.IndicatorTemplate"/> to the pip list's item template.</summary>
     public static void MapIndicatorTemplate(IndicatorViewHandler handler, IIndicatorView indicator)
     {
         if (handler.PlatformView is PlatformView platformView && handler.MauiContext is not null)
             platformView.UpdateIndicatorTemplate(indicator, handler.MauiContext);
     }
+
 }

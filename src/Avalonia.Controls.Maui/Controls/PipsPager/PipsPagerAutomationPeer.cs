@@ -35,7 +35,7 @@ public class PipsPagerAutomationPeer : ControlAutomationPeer, ISelectionProvider
 
         if (owner.SelectedPageIndex >= 0 && owner.SelectedPageIndex < owner.NumberOfPages)
         {
-            var pipsList = owner.FindNameScope()?.Find<ItemsControl>(PipsPager.PipsPagerListPartName);
+            var pipsList = owner.FindNameScope()?.Find<ItemsControl>("PART_PipsPagerList");
             if (pipsList != null)
             {
                 var container = pipsList.ContainerFromIndex(owner.SelectedPageIndex);

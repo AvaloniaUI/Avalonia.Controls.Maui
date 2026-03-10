@@ -1,49 +1,39 @@
+using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 
+// When Avalonia.Controls.PipsPager ships, remove this file entirely.
 namespace Avalonia.Controls.Maui.Controls;
 
 /// <summary>
-/// Bridges a MAUI <see cref="DataTemplate"/> to Avalonia's <see cref="IDataTemplate"/> for use as a
-/// <see cref="PipsPager.IndicatorTemplate"/>. The binding context passed to each item is the 1-based
-/// page number (<see cref="int"/>) from <see cref="PipsPagerTemplateSettings.Pips"/>.
+/// Wraps a MAUI <see cref="DataTemplate"/> as an Avalonia <see cref="IDataTemplate"/>
+/// so it can be assigned to an Avalonia <see cref="ItemsControl.ItemTemplate"/>.
 /// </summary>
-/// <remarks>
-/// Each <see cref="Build"/> call creates a MAUI handler via <c>ToHandler</c>. Because
-/// <see cref="IDataTemplate"/> has no disposal lifecycle, handlers are not disconnected when pip
-/// containers are recycled. The impact is negligible given the small number of pips.
-/// </remarks>
 internal sealed class MauiDataTemplateAdapter : IDataTemplate
 {
-    private readonly DataTemplate _mauiTemplate;
+    private readonly DataTemplate _template;
     private readonly IMauiContext _context;
 
-    public MauiDataTemplateAdapter(DataTemplate mauiTemplate, IMauiContext context)
+    internal MauiDataTemplateAdapter(DataTemplate template, IMauiContext context)
     {
-        _mauiTemplate = mauiTemplate;
+        _template = template;
         _context = context;
     }
 
+    /// <inheritdoc/>
+    public bool Match(object? data) => data is int;
+
+    /// <inheritdoc/>
     public Control? Build(object? param)
     {
-        var content = _mauiTemplate.CreateContent();
-        if (content is not View view)
-            return new Panel();
+        var content = _template.CreateContent();
+        if (content is not View mauiView)
+            return null;
 
-        var handler = view.ToHandler(_context);
-        // BindingContext must be set after ToHandler; handler init overwrites it if set before.
-        view.BindingContext = param;
+        mauiView.BindingContext = param;
 
-        var control = (Control?)((IViewHandler)handler).ContainerView
-                      ?? (Control?)handler.PlatformView;
-
-        // Disable hit-testing so pointer events reach the ListBoxItem and trigger selection.
-        if (control != null)
-            control.IsHitTestVisible = false;
-
-        return control;
+        var handler = mauiView.ToHandler(_context);
+        return handler.PlatformView as Control;
     }
-
-    public bool Match(object? data) => true;
 }

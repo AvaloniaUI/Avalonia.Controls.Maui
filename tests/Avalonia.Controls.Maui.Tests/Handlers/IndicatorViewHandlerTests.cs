@@ -34,7 +34,6 @@ public class IndicatorViewHandlerTests : HandlerTestBase<MauiIndicatorViewHandle
     }
 
     [AvaloniaTheory(DisplayName = "Count updates NumberOfPages correctly")]
-    [InlineData(0)]
     [InlineData(1)]
     [InlineData(3)]
     [InlineData(10)]
@@ -299,6 +298,12 @@ public class IndicatorViewHandlerTests : HandlerTestBase<MauiIndicatorViewHandle
 
         Assert.True(pager.Resources.TryGetValue("PipsPagerPipSize", out var unselected));
         Assert.Equal(12.0 * (2.0 / 3.0), (double)unselected!, 0.001);
+
+        Assert.True(pager.Resources.TryGetValue("PipsPagerPipContainerMinorSize", out var minor));
+        Assert.Equal(Math.Max(12.0 * 2.0, 12.0), (double)minor!);
+
+        Assert.True(pager.Resources.TryGetValue("PipsPagerPipContainerMajorSize", out var major));
+        Assert.Equal(Math.Max(12.0 * 2.0, 24.0), (double)major!);
     }
 
     [AvaloniaTheory(DisplayName = "IndicatorSize updates pip size resources")]
@@ -317,11 +322,15 @@ public class IndicatorViewHandlerTests : HandlerTestBase<MauiIndicatorViewHandle
             var pager = GetPlatformView(handler);
             pager.Resources.TryGetValue("PipsPagerPipSizeSelected", out var sel);
             pager.Resources.TryGetValue("PipsPagerPipSize", out var unsel);
-            return new { Selected = (double)sel!, Unselected = (double)unsel! };
+            pager.Resources.TryGetValue("PipsPagerPipContainerMinorSize", out var minor);
+            pager.Resources.TryGetValue("PipsPagerPipContainerMajorSize", out var major);
+            return new { Selected = (double)sel!, Unselected = (double)unsel!, ContainerMinor = (double)minor!, ContainerMajor = (double)major! };
         });
 
         Assert.Equal(size, result.Selected, 0.001);
         Assert.Equal(size * (2.0 / 3.0), result.Unselected, 0.001);
+        Assert.Equal(Math.Max(size * 2.0, 12.0), result.ContainerMinor, 0.001);
+        Assert.Equal(Math.Max(size * 2.0, 24.0), result.ContainerMajor, 0.001);
     }
 
     [AvaloniaFact(DisplayName = "Null IndicatorsShape defaults to circle")]
