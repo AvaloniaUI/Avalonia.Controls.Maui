@@ -87,21 +87,17 @@ public class PlatformTouchGraphicsView : UserControl
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        e.Handled = true;
+        e.PreventGestureRecognition();
         var points = GetViewPoints(e);
         _isTouching = true;
         _graphicsView?.StartInteraction(points);
-        e.Pointer.Capture(this);
-        e.Handled = true;
-        // Prevent ancestor gesture recognizers (e.g. SwipeGestureRecognizer on
-        // NavigationPage) from stealing capture during fast drags.
-        e.PreventGestureRecognition();
     }
 
     /// <inheritdoc/>
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
-        e.Pointer.Capture(null);
         var points = GetViewPoints(e);
 
         if (_isTouching)
