@@ -153,14 +153,13 @@ public static class ShapeViewExtensions
     }
 
     /// <summary>
-    /// Updates the stroke miter limit. Avalonia does not expose this directly.
+    /// Updates the stroke miter limit on the platform shape.
     /// </summary>
     /// <param name="platformView">Avalonia shape instance.</param>
     /// <param name="shapeView">The virtual shape view.</param>
-    [Avalonia.Controls.Maui.Platform.NotImplemented("Avalonia Shape doesn't expose StrokeMiterLimit property.")]
     public static void UpdateStrokeMiterLimit(this PlatformShape platformView, IShapeView shapeView)
     {
-        
+        platformView.StrokeMiterLimit = shapeView.StrokeMiterLimit;
     }
 
     /// <summary>
@@ -261,6 +260,30 @@ public static class ShapeViewExtensions
         {
             platformView.Points.Add(new global::Avalonia.Point(point.X, point.Y));
         }
+    }
+
+    /// <summary>
+    /// Updates the fill rule for a polygon.
+    /// </summary>
+    /// <param name="platformView">Avalonia polygon instance.</param>
+    /// <param name="polygon">The virtual polygon view.</param>
+    public static void UpdateFillRule(this AvaloniaPolygon platformView, Polygon polygon)
+    {
+        platformView.FillRule = polygon.FillRule == FillRule.EvenOdd
+            ? global::Avalonia.Media.FillRule.EvenOdd
+            : global::Avalonia.Media.FillRule.NonZero;
+    }
+
+    /// <summary>
+    /// Updates the fill rule for a polyline.
+    /// </summary>
+    /// <param name="platformView">Avalonia polyline instance.</param>
+    /// <param name="polyline">The virtual polyline view.</param>
+    public static void UpdateFillRule(this AvaloniaPolyline platformView, Polyline polyline)
+    {
+        platformView.FillRule = polyline.FillRule == FillRule.EvenOdd
+            ? global::Avalonia.Media.FillRule.EvenOdd
+            : global::Avalonia.Media.FillRule.NonZero;
     }
 
     /// <summary>

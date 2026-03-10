@@ -16,5 +16,5 @@ For info on how to build the project, reference our [build docs](/docs/build.md)
 
 [Avalonia.Controls.Maui.Essentials](/src/Avalonia.Controls.Maui.Essentials/)
 
+[Avalonia.Controls.Maui.SkiaSharp.Views](/src/Avalonia.Controls.Maui.SkiaSharp.Views/)
 
-[Avalonia.Controls.Maui.Maps.Mapsui](/src/Avalonia.Controls.Maui.Maps.Mapsui/)

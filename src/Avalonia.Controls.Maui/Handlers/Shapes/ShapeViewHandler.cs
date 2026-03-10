@@ -167,7 +167,6 @@ public abstract partial class ShapeViewHandler : ViewHandler<IShapeView, Platfor
     /// <summary>Maps the StrokeMiterLimit property to the platform view.</summary>
     /// <param name="handler">The shape view handler.</param>
     /// <param name="shapeView">The shape view.</param>
-    [Avalonia.Controls.Maui.Platform.NotImplemented("Avalonia Shape doesn't expose StrokeMiterLimit property.")]
     public static void MapStrokeMiterLimit(IShapeViewHandler handler, IShapeView shapeView)
     {
         if (handler.PlatformView is PlatformView platformView)
