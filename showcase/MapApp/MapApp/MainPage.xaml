@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:mapsui="clr-namespace:Mapsui.UI.Maui;assembly=Mapsui.UI.Maui"
+             x:Class="MapApp.MainPage">
+
+    <Grid>
+        <!-- Full-screen map -->
+        <mapsui:MapControl x:Name="MapControl" />
+
+        <!-- Top: search/navigate bar -->
+        <Border Padding="10"
+                Margin="10"
+                BackgroundColor="#CC222222"
+                StrokeShape="RoundRectangle 8"
+                Stroke="Transparent"
+                VerticalOptions="Start"
+                HorizontalOptions="Fill"
+                MaximumWidthRequest="600">
+            <Grid ColumnDefinitions="*,*,Auto" ColumnSpacing="8" RowDefinitions="Auto,Auto" RowSpacing="6">
+                <Entry x:Name="LatEntry"
+                       Placeholder="Latitude (e.g. 48.8566)"
+                       PlaceholderColor="#999999"
+                       TextColor="White"
+                       BackgroundColor="#44FFFFFF"
+                       Grid.Column="0" />
+                <Entry x:Name="LonEntry"
+                       Placeholder="Longitude (e.g. 2.3522)"
+                       PlaceholderColor="#999999"
+                       TextColor="White"
+                       BackgroundColor="#44FFFFFF"
+                       Grid.Column="1" />
+                <Button Text="Go"
+                        Clicked="OnGoClicked"
+                        BackgroundColor="#0078D4"
+                        TextColor="White"
+                        Grid.Column="2" />
+
+                <!-- Preset city buttons -->
+                <HorizontalStackLayout Grid.Row="1" Grid.ColumnSpan="3" Spacing="4">
+                    <Button Text="New York" Clicked="OnPresetClicked" StyleClass="PresetBtn"
+                            BackgroundColor="#555555" TextColor="White" FontSize="11" Padding="6,2" />
+                    <Button Text="London" Clicked="OnPresetClicked" StyleClass="PresetBtn"
+                            BackgroundColor="#555555" TextColor="White" FontSize="11" Padding="6,2" />
+                    <Button Text="Tokyo" Clicked="OnPresetClicked" StyleClass="PresetBtn"
+                            BackgroundColor="#555555" TextColor="White" FontSize="11" Padding="6,2" />
+                    <Button Text="Sydney" Clicked="OnPresetClicked" StyleClass="PresetBtn"
+                            BackgroundColor="#555555" TextColor="White" FontSize="11" Padding="6,2" />
+                    <Button Text="Paris" Clicked="OnPresetClicked" StyleClass="PresetBtn"
+                            BackgroundColor="#555555" TextColor="White" FontSize="11" Padding="6,2" />
+                    <Button Text="S&#227;o Paulo" Clicked="OnPresetClicked" StyleClass="PresetBtn"
+                            BackgroundColor="#555555" TextColor="White" FontSize="11" Padding="6,2" />
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Bottom-left: coordinate display -->
+        <Border Padding="8,4"
+                Margin="10"
+                BackgroundColor="#CC222222"
+                StrokeShape="RoundRectangle 6"
+                Stroke="Transparent"
+                VerticalOptions="End"
+                HorizontalOptions="Start">
+            <Label x:Name="CoordinateLabel"
+                   Text="Center: 0.0000, 0.0000"
+                   TextColor="White"
+                   FontSize="12"
+                   FontFamily="Consolas" />
+        </Border>
+
+        <!-- Bottom-right: zoom controls -->
+        <VerticalStackLayout Margin="10"
+                             Spacing="4"
+                             VerticalOptions="End"
+                             HorizontalOptions="End">
+            <Button Text="+"
+                    Clicked="OnZoomInClicked"
+                    BackgroundColor="#CC222222"
+                    TextColor="White"
+                    FontSize="20"
+                    WidthRequest="44"
+                    HeightRequest="44"
+                    Padding="0"
+                    CornerRadius="6" />
+            <Button Text="&#8722;"
+                    Clicked="OnZoomOutClicked"
+                    BackgroundColor="#CC222222"
+                    TextColor="White"
+                    FontSize="20"
+                    WidthRequest="44"
+                    HeightRequest="44"
+                    Padding="0"
+                    CornerRadius="6" />
+            <Button Text="&#127760;"
+                    Clicked="OnResetClicked"
+                    BackgroundColor="#CC222222"
+                    TextColor="White"
+                    FontSize="18"
+                    WidthRequest="44"
+                    HeightRequest="44"
+                    Padding="0"
+                    CornerRadius="6" />
+        </VerticalStackLayout>
+    </Grid>
+
+</ContentPage>

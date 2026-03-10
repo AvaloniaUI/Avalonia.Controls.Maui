@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="../../src/Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+  <Project Path="../../src/Avalonia.Controls.Maui.SkiaSharp.Views/Avalonia.Controls.Maui.SkiaSharp.Views.csproj" />
+  <Project Path="MapApp.Browser/MapApp.Browser.csproj" />
+  <Project Path="MapApp/MapApp.csproj" />
+</Solution>

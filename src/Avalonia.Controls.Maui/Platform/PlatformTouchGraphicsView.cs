@@ -87,6 +87,8 @@ public class PlatformTouchGraphicsView : UserControl
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
+        e.Handled = true;
+        e.PreventGestureRecognition();
         var points = GetViewPoints(e);
         _isTouching = true;
         _graphicsView?.StartInteraction(points);
