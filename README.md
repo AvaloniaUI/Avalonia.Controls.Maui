@@ -52,10 +52,10 @@ See [Configuration and Setup](/docs/config-and-setup.md) for the full setup guid
 ## Documentation
 
 - [Configuration and Setup](/docs/config-and-setup.md)
+- [Build](/docs/build.md)
 - [Architecture](/docs/architecture.md)
 - [Embedding Avalonia Controls in MAUI](/docs/embedding-avalonia-controls-in-maui.md)
 - [Known Issues](/docs/known-issues.md)
-- [Build](/docs/build.md)
 
 ## Projects
 
