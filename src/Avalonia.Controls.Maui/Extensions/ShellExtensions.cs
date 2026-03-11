@@ -3,6 +3,8 @@ using Avalonia.Layout;
 using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Maui.Controls;
 using Avalonia.Controls.Maui.Handlers.Shell;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using MauiShell = Microsoft.Maui.Controls.Shell;
@@ -262,7 +264,9 @@ public static class ShellExtensions
                     }
                     catch (Exception ex)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Error loading image: {ex}");
+                        handler.MauiContext?.Services.GetService<ILoggerFactory>()
+                            ?.CreateLogger(typeof(ShellExtensions))
+                            ?.LogError(ex, "Error loading flyout background image");
                     }
                 }
             }
@@ -909,7 +913,9 @@ public static class ShellExtensions
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error loading shell icon: {ex}");
+            handler.MauiContext?.Services.GetService<ILoggerFactory>()
+                ?.CreateLogger(typeof(ShellExtensions))
+                ?.LogError(ex, "Error loading shell icon");
         }
     }
 
