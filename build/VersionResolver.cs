@@ -57,7 +57,8 @@ public static class VersionResolver
         else if (NuGetVersion.TryParse(refName?.Replace("release/", "") ?? "", out var releaseVersion))
         {
             var now = DateTime.UtcNow;
-            var dateSuffix = $"{now:yy}{now.DayOfYear:000}.{now:HHmm}";
+            var timeValue = now.Hour * 100 + now.Minute;
+            var dateSuffix = $"{now:yy}{now.DayOfYear:000}.{timeValue}";
             var release = releaseVersion.Release;
             var newRelease = string.IsNullOrEmpty(release)
                 ? dateSuffix
