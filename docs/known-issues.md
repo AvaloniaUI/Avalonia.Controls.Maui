@@ -1,14 +1,13 @@
 # Known Issues
 
-## 11.x-preview
+## Current Limitations
 
-- The following features are not implemented yet and will be addressed in future versions.
- - WebView and Blazor Hybrid support are currently not available.
- - Some Microsoft.Maui.Essentials APIs, such as [MainThread](https://github.com/dotnet/maui/blob/6c123d72970865ccb1312e118f5098ef6c44e892/src/Essentials/src/MainThread/MainThread.netstandard.cs), can not be directly overridden. User code or libraries that uses them will throw `NotSupportedOrImplementedException` exceptions, since it will flow to the .NET Standard implementation. To work around this while we implement new APIs, in user code, you can use alternative APIs (such as the .NET MAUI Dispatcher) that offer the same functions.
- - Avalonia components can be embedded into .NET MAUI Native UI apps, but native UI elements cannot be directly added to Avalonia.Controls.Maui applications.
- - WinUI support for embedding Avalonia and Avalonia.Controls.Maui views.
- - Accessibility support between the .NET MAUI and Avalonia is currently limited.
- - `VerticalTextAlignment` is not supported in Avalonia, so it is a no-op for Avalonia.Controls.Maui. Text using this property will appear aligned at the top.
- - `IWindowOverlay` is not supported.
- - Deploying Avalonia.Controls.Maui Applications to existing .NET MAUI UI platforms (iOS/Catalyst, Android, WinUI) is not supported. Support for these platforms are planned.
-- `Microsoft.Maui.Maps` is not supported. Instead, you can use other .NET MAUI libraries such as [Mapsui.Maui](https://www.nuget.org/packages/Mapsui.Maui/) configured through the `Avalonia.Controls.Maui.SkiaSharp.Views` library. See the `MapApp` sample for more details.
+- WebView and Blazor Hybrid are not yet implemented.
+- Some `Microsoft.Maui.Essentials` APIs, such as [`MainThread`](https://github.com/dotnet/maui/blob/6c123d72970865ccb1312e118f5098ef6c44e892/src/Essentials/src/MainThread/MainThread.netstandard.cs), cannot be directly overridden. Code that calls them will fall through to the .NET Standard stub and throw `NotSupportedOrImplementedException`. Use alternative APIs such as the .NET MAUI `Dispatcher` as a workaround while support is being added.
+- Avalonia controls can be embedded into .NET MAUI native UI apps, but native UI elements cannot be embedded directly into `Avalonia.Controls.Maui` apps.
+- WinUI embedding of Avalonia and `Avalonia.Controls.Maui` views is not yet supported.
+- Accessibility bridging between .NET MAUI and Avalonia is currently limited.
+- `VerticalTextAlignment` is not supported in Avalonia and is a no-op. Text using this property will appear top-aligned.
+- `IWindowOverlay` is not supported.
+- Deploying to existing .NET MAUI native targets (iOS, Mac Catalyst, Android, WinUI) in full-hosting mode is not yet supported. These platforms are planned.
+- `Microsoft.Maui.Maps` is not supported. As an alternative, use [Mapsui.Maui](https://www.nuget.org/packages/Mapsui.Maui/) configured through the `Avalonia.Controls.Maui.SkiaSharp.Views` package. See the `MapApp` sample for details.

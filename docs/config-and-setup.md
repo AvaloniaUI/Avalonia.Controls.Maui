@@ -56,7 +56,7 @@ builder.UseAvaloniaApp(useSingleViewLifetime: true);
 On current source state, the `net*-windows` WinUI path is not production-ready. For Avalonia on Windows, prefer the base desktop TFM (`net11.0`) with full hosting.
 
 > [!IMPORTANT]
-> In full-hosting mode, call `UseAvaloniaApp` before optional package extensions such as `UseAvaloniaCompatibility`, `UseAvaloniaEssentials`, or `UseAvaloniaMapsui`.
+> In full-hosting mode, call `UseAvaloniaApp` before optional package extensions such as `UseAvaloniaCompatibility`, `UseAvaloniaEssentials`, or `UseAvaloniaSkiaSharp`.
 
 ### UseAvaloniaEmbedding
 
@@ -117,6 +117,28 @@ The following Essentials APIs are implemented:
 | `Preferences` | Full type support; persisted as JSON |
 | `HapticFeedback` | Stub implementation; `IsSupported` returns `false` |
 
+### UseAvaloniaSkiaSharp
+
+The `UseAvaloniaSkiaSharp` method registers Avalonia-backed handlers for `SKCanvasView` and `SKGLView` from the `SkiaSharp.Views.Maui` package, along with image source services for SkiaSharp image types.
+
+```csharp
+using Avalonia.Controls.Maui.SkiaSharp.Views;
+
+builder
+    .UseMauiApp<App>()
+    .UseAvaloniaApp()
+    .UseAvaloniaSkiaSharp();
+```
+
+Pass `forceSoftwareRendering: true` on platforms where GPU rendering is unreliable (e.g. Browser/WASM):
+
+```csharp
+builder.UseAvaloniaSkiaSharp(forceSoftwareRendering: true);
+```
+
+> [!NOTE]
+> This method is provided by the `Avalonia.Controls.Maui.SkiaSharp.Views` package, which must be added separately.
+
 ### Full desktop example
 
 A typical `MauiProgram.cs` for a desktop app:
@@ -125,6 +147,7 @@ A typical `MauiProgram.cs` for a desktop app:
 using Avalonia.Controls.Maui;
 using Avalonia.Controls.Maui.Compatibility;
 using Avalonia.Controls.Maui.Essentials;
+using Avalonia.Controls.Maui.SkiaSharp.Views;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
 
@@ -138,7 +161,8 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .UseAvaloniaApp()
             .UseAvaloniaCompatibility()
-            .UseAvaloniaEssentials();
+            .UseAvaloniaEssentials()
+            .UseAvaloniaSkiaSharp();
 
         return builder.Build();
     }
