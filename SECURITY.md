@@ -39,4 +39,5 @@ Security issues in **Avalonia** itself should be reported to the [Avalonia repos
 
 ## Known Considerations
 
-- **Network requests in `Avalonia.Controls.Maui.Maps.Mapsui`:** The map handler performs an HTTP request to a third-party geolocation API (`ip-api.com`) to determine an initial map center when no location is provided. This request is made using the device's IP address. If this behavior is a concern for your application, avoid using the map handler's automatic location fallback or configure an explicit initial position.
+- **Network requests in `Avalonia.Controls.Maui.Maps.Mapsui`:** The map handler performs an unencrypted HTTP request to a third-party geolocation API (`ip-api.com`) to determine an initial map center when no explicit location is provided. This request transmits the device's IP address to a third-party server. The free tier of ip-api.com does not support HTTPS. If this is a concern for your application, configure an explicit initial map position to prevent the fallback request from being made.
+

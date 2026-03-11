@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Maui.Accessibility;
 
 namespace Avalonia.Controls.Maui.Services;
@@ -24,7 +23,5 @@ internal class AvaloniaSemanticScreenReaderImplementation : ISemanticScreenReade
     {
         if (string.IsNullOrEmpty(text))
             return;
-
-        Debug.WriteLine($"SemanticScreenReader.Announce: {text}");
     }
 }
