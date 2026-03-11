@@ -1,3 +1,4 @@
+using Avalonia.Logging;
 using Microsoft.Maui.Accessibility;
 
 namespace Avalonia.Controls.Maui.Services;
@@ -23,5 +24,8 @@ internal class AvaloniaSemanticScreenReaderImplementation : ISemanticScreenReade
     {
         if (string.IsNullOrEmpty(text))
             return;
+
+        Logger.TryGet(LogEventLevel.Debug, LogArea.Control)
+            ?.Log(this, "SemanticScreenReader.Announce: {Text}", text);
     }
 }
