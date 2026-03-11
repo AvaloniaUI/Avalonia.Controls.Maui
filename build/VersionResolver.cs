@@ -56,7 +56,13 @@ public static class VersionResolver
         // Release branch
         else if (NuGetVersion.TryParse(refName?.Replace("release/", "") ?? "", out var releaseVersion))
         {
-            return releaseVersion;
+            var now = DateTime.UtcNow;
+            var dateSuffix = $"{now:yy}{now.DayOfYear:000}.{now:HHmm}";
+            var release = releaseVersion.Release;
+            var newRelease = string.IsNullOrEmpty(release)
+                ? dateSuffix
+                : $"{release}.{dateSuffix}";
+            return new NuGetVersion(releaseVersion.Major, releaseVersion.Minor, releaseVersion.Patch, newRelease);
         }
         // CI build number
         else if (int.TryParse(runNumber, out var ciRun))
