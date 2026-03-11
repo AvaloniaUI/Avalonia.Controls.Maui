@@ -450,15 +450,14 @@ Displays indicators that represent the number of items in a CarouselView.
 
 | Property | Status |
 |----------|--------|
-| Count | ⏳ TODO |
-| HideSingle | ⏳ TODO |
-| IndicatorColor | ⏳ TODO |
-| IndicatorSize | ⏳ TODO |
-| IndicatorsShape | ⏳ TODO |
-| ItemsSourceBy | ⏳ TODO |
-| MaximumVisible | ⏳ TODO |
-| Position | ⏳ TODO |
-| SelectedIndicatorColor | ⏳ TODO |
+| Count | ✅ Implemented |
+| HideSingle | ✅ Implemented |
+| IndicatorColor | ✅ Implemented |
+| IndicatorSize | ✅ Implemented |
+| IndicatorsShape | ✅ Implemented |
+| MaximumVisible | ✅ Implemented |
+| Position | ✅ Implemented |
+| SelectedIndicatorColor | ✅ Implemented |
 
 ---
 
