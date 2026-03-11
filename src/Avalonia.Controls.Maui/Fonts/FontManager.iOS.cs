@@ -11,7 +11,7 @@ public partial class FontManager
     /// Gets the default UIFont for the operating system.
     /// This is a stub implementation, in case native font handling is needed or used by other components.
     /// </summary>
-    public UIFont DefaultFont => _mauiFontManager?.DefaultFont ?? UIFont.SystemFontOfSize(UIFont.SystemFontSize);
+    public UIFont DefaultFont => _mauiFontManager?.DefaultFont ?? UIFont.SystemFontOfSize(UIFont.SystemFontSize)!;
 
     /// <summary>
     /// Retrieves the platform equivalent UIFont for an abstract Font object.
@@ -24,7 +24,7 @@ public partial class FontManager
     {
         if (_mauiFontManager != null)
         {
-            return _mauiFontManager.GetFont(font, defaultFontSize);
+            return _mauiFontManager.GetFont(font, defaultFontSize)!;
         }
         
         var size = GetFontSize(font, defaultFontSize);
@@ -43,11 +43,11 @@ public partial class FontManager
                 FontWeight.Heavy => UIFontWeight.Heavy,
                 FontWeight.Black => UIFontWeight.Black,
                 _ => UIFontWeight.Regular
-            });
+            })!;
         }
 
         return font.Slant == FontSlant.Italic
-            ? UIFont.ItalicSystemFontOfSize((nfloat)size)
-            : UIFont.SystemFontOfSize((nfloat)size);
+            ? UIFont.ItalicSystemFontOfSize((nfloat)size)!
+            : UIFont.SystemFontOfSize((nfloat)size)!;
     }
 }

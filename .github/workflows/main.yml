@@ -7,14 +7,16 @@ on:
       - '*'
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
+
 jobs:
 
   check-changes:
     runs-on: ubuntu-latest
     outputs:
-      maui-changes: ${{ steps.filter.outputs.maui }}
-      test-changes: ${{ steps.filter.outputs.test }}
-      build-changes: ${{ steps.filter.outputs.build }}
+      maui-changes: ${{ steps.filter.outputs.maui == 'true' || startsWith(github.ref, 'refs/heads/release/') }}
+      test-changes: ${{ steps.filter.outputs.test == 'true' || startsWith(github.ref, 'refs/heads/release/') }}
+      build-changes: ${{ steps.filter.outputs.build == 'true' || startsWith(github.ref, 'refs/heads/release/') }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3

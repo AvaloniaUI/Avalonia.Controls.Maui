@@ -26,10 +26,11 @@ The library is distributed as a set of NuGet packages, each covering a distinct 
 | `Avalonia.Controls.Maui.Essentials` | Avalonia-based implementations of `Microsoft.Maui.Essentials` APIs |
 | `Avalonia.Controls.Maui.Compatibility` | Handlers for deprecated .NET MAUI controls (`Frame`, `ListView`, `TableView`) |
 | `Avalonia.Controls.Maui.Desktop` | Metapackage that references the core package and runs source generation for desktop bootstrapping |
+| `Avalonia.Controls.Maui.SkiaSharp.Views` | Avalonia-backed handlers for `SKCanvasView` and `SKGLView` from `SkiaSharp.Views.Maui` |
 
 ## Platform support (current)
 
-As of March 3, 2026, the practical support story is split between full hosting and embedding:
+The practical support story is split between full hosting and embedding:
 
 | Platform/runtime | .NET MAUI built-in | Full hosting (`UseAvaloniaApp`) | Embedding (`UseAvaloniaEmbedding`) |
 |---|---|---|---|
