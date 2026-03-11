@@ -36,8 +36,3 @@ This policy covers the packages published from this repository:
 - `Avalonia.Controls.Maui.SourceGenerators`
 
 Security issues in **Avalonia** itself should be reported to the [Avalonia repository](https://github.com/AvaloniaUI/Avalonia/security). Issues in **.NET MAUI** should be reported to [Microsoft](https://www.microsoft.com/en-us/msrc).
-
-## Known Considerations
-
-- **Network requests in `Avalonia.Controls.Maui.Maps.Mapsui`:** The map handler performs an unencrypted HTTP request to a third-party geolocation API (`ip-api.com`) to determine an initial map center when no explicit location is provided. This request transmits the device's IP address to a third-party server. The free tier of ip-api.com does not support HTTPS. If this is a concern for your application, configure an explicit initial map position to prevent the fallback request from being made.
-
