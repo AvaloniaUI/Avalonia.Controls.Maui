@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
@@ -79,6 +80,7 @@ public partial class IndicatorViewPage : ContentPage, INotifyPropertyChanged
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
+    [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "Sample app; string binding path is intentional.")]
     private static DataTemplate BuildNumberedTemplate()
     {
         return new DataTemplate(() =>
