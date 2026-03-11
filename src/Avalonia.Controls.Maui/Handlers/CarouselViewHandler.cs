@@ -1,12 +1,11 @@
 using Avalonia.Controls.Maui.Controls;
-using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
 /// <summary>Avalonia handler for <see cref="CarouselView"/>.</summary>
-[NotImplemented("CarouselView is not yet implemented for the Avalonia backend")]
+[Avalonia.Controls.Maui.Platform.NotImplemented("CarouselView is not yet implemented for the Avalonia backend")]
 public class CarouselViewHandler : ViewHandler<CarouselView, PlaceholderControl>
 {
     /// <summary>Property mapper for <see cref="CarouselViewHandler"/>.</summary>
