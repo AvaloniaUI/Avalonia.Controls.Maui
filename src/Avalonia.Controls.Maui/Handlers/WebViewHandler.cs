@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Avalonia.Controls.Maui.Controls;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
@@ -8,7 +9,11 @@ using Microsoft.Maui.Controls;
 namespace Avalonia.Controls.Maui.Handlers;
 
 /// <summary>Avalonia handler for <see cref="WebView"/>.</summary>
-public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.NativeWebView>, IWebViewDelegate
+/// <remarks>
+/// On platforms where <see cref="Avalonia.Controls.NativeWebView"/> is not supported
+/// (Linux and Browser), a <see cref="PlaceholderControl"/> is shown instead.
+/// </remarks>
+public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.Control>, IWebViewDelegate
 {
     private WebNavigationEvent _currentNavigationEvent = WebNavigationEvent.NewPage;
 
@@ -49,25 +54,41 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.NativeWebV
     {
     }
 
+    private static bool IsWebViewSupported =>
+        !OperatingSystem.IsLinux() && !OperatingSystem.IsBrowser();
+
+    private Avalonia.Controls.NativeWebView? NativeWebView =>
+        PlatformView as Avalonia.Controls.NativeWebView;
+
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
-    protected override Avalonia.Controls.NativeWebView CreatePlatformView()
+    protected override Avalonia.Controls.Control CreatePlatformView()
     {
-        return new Avalonia.Controls.NativeWebView();
+        if (IsWebViewSupported)
+            return new Avalonia.Controls.NativeWebView();
+
+        return new PlaceholderControl("WebView is not supported on this platform");
     }
 
     /// <inheritdoc/>
-    protected override void ConnectHandler(Avalonia.Controls.NativeWebView platformView)
+    protected override void ConnectHandler(Avalonia.Controls.Control platformView)
     {
         base.ConnectHandler(platformView);
-        platformView.NavigationStarted += OnNavigationStarted;
-        platformView.NavigationCompleted += OnNavigationCompleted;
+        if (platformView is Avalonia.Controls.NativeWebView nativeWebView)
+        {
+            nativeWebView.NavigationStarted += OnNavigationStarted;
+            nativeWebView.NavigationCompleted += OnNavigationCompleted;
+        }
     }
 
     /// <inheritdoc/>
-    protected override void DisconnectHandler(Avalonia.Controls.NativeWebView platformView)
+    protected override void DisconnectHandler(Avalonia.Controls.Control platformView)
     {
-        platformView.NavigationStarted -= OnNavigationStarted;
-        platformView.NavigationCompleted -= OnNavigationCompleted;
+        if (platformView is Avalonia.Controls.NativeWebView nativeWebView)
+        {
+            nativeWebView.NavigationStarted -= OnNavigationStarted;
+            nativeWebView.NavigationCompleted -= OnNavigationCompleted;
+        }
+
         base.DisconnectHandler(platformView);
     }
 
@@ -83,14 +104,14 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.NativeWebV
 
     private void OnNavigationCompleted(object? sender, Avalonia.Controls.WebViewNavigationCompletedEventArgs e)
     {
-        if (VirtualView is null || PlatformView is null)
+        if (VirtualView is null || NativeWebView is not { } webView)
             return;
 
         var url = e.Request?.AbsoluteUri ?? string.Empty;
         var result = e.IsSuccess ? WebNavigationResult.Success : WebNavigationResult.Failure;
         VirtualView.Navigated(_currentNavigationEvent, url, result);
 
-        PlatformView.UpdateCanGoBackForward(VirtualView);
+        webView.UpdateCanGoBackForward(VirtualView);
         _currentNavigationEvent = WebNavigationEvent.NewPage;
     }
 
@@ -99,8 +120,11 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.NativeWebV
     /// <param name="webView">The virtual view.</param>
     public static void MapSource(WebViewHandler handler, IWebView webView)
     {
+        if (handler.NativeWebView is null)
+            return;
+
         webView.Source?.Load(handler);
-        handler.PlatformView?.UpdateCanGoBackForward(webView);
+        handler.NativeWebView.UpdateCanGoBackForward(webView);
     }
 
     /// <summary>Maps the UserAgent property to the platform view.</summary>
@@ -117,11 +141,11 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.NativeWebV
     /// <param name="arg">The command argument.</param>
     public static void MapGoBack(WebViewHandler handler, IWebView webView, object? arg)
     {
-        if (handler.PlatformView is { } platformView)
+        if (handler.NativeWebView is { } webViewControl)
         {
             handler._currentNavigationEvent = WebNavigationEvent.Back;
-            platformView.GoBack();
-            platformView.UpdateCanGoBackForward(webView);
+            webViewControl.GoBack();
+            webViewControl.UpdateCanGoBackForward(webView);
         }
     }
 
@@ -131,11 +155,11 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.NativeWebV
     /// <param name="arg">The command argument.</param>
     public static void MapGoForward(WebViewHandler handler, IWebView webView, object? arg)
     {
-        if (handler.PlatformView is { } platformView)
+        if (handler.NativeWebView is { } webViewControl)
         {
             handler._currentNavigationEvent = WebNavigationEvent.Forward;
-            platformView.GoForward();
-            platformView.UpdateCanGoBackForward(webView);
+            webViewControl.GoForward();
+            webViewControl.UpdateCanGoBackForward(webView);
         }
     }
 
@@ -145,10 +169,10 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.NativeWebV
     /// <param name="arg">The command argument.</param>
     public static void MapReload(WebViewHandler handler, IWebView webView, object? arg)
     {
-        if (handler.PlatformView is { } platformView)
+        if (handler.NativeWebView is { } webViewControl)
         {
             handler._currentNavigationEvent = WebNavigationEvent.Refresh;
-            platformView.Refresh();
+            webViewControl.Refresh();
         }
     }
 
@@ -158,9 +182,9 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.NativeWebV
     /// <param name="arg">The command argument (script string).</param>
     public static void MapEval(WebViewHandler handler, IWebView webView, object? arg)
     {
-        if (handler.PlatformView is { } platformView && arg is string script)
+        if (handler.NativeWebView is { } webViewControl && arg is string script)
         {
-            _ = platformView.InvokeScript(script);
+            _ = webViewControl.InvokeScript(script);
         }
     }
 
@@ -170,17 +194,17 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.NativeWebV
     /// <param name="arg">The command argument (EvaluateJavaScriptAsyncRequest).</param>
     public static void MapEvaluateJavaScriptAsync(WebViewHandler handler, IWebView webView, object? arg)
     {
-        if (handler.PlatformView is { } platformView && arg is EvaluateJavaScriptAsyncRequest request)
+        if (handler.NativeWebView is { } webViewControl && arg is EvaluateJavaScriptAsyncRequest request)
         {
-            EvaluateJavaScript(platformView, request);
+            EvaluateJavaScript(webViewControl, request);
         }
     }
 
-    private static async void EvaluateJavaScript(Avalonia.Controls.NativeWebView platformView, EvaluateJavaScriptAsyncRequest request)
+    private static async void EvaluateJavaScript(Avalonia.Controls.NativeWebView webViewControl, EvaluateJavaScriptAsyncRequest request)
     {
         try
         {
-            var result = await platformView.InvokeScript(request.Script);
+            var result = await webViewControl.InvokeScript(request.Script);
             request.SetResult(result ?? "null");
         }
         catch (Exception ex)
@@ -192,18 +216,18 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.NativeWebV
     /// <inheritdoc/>
     void IWebViewDelegate.LoadHtml(string? html, string? baseUrl)
     {
-        if (PlatformView is null || html is null)
+        if (NativeWebView is not { } webViewControl || html is null)
             return;
 
-        PlatformView.NavigateToString(html);
+        webViewControl.NavigateToString(html);
     }
 
     /// <inheritdoc/>
     void IWebViewDelegate.LoadUrl(string? url)
     {
-        if (PlatformView is null || url is null)
+        if (NativeWebView is not { } webViewControl || url is null)
             return;
 
-        PlatformView.Navigate(new Uri(url));
+        webViewControl.Navigate(new Uri(url));
     }
 }
