@@ -59,6 +59,7 @@ public partial class MainPage : FlyoutPage
         [typeof(SwitchPage)] = () => new SwitchPage(),
         [typeof(TableViewPage)] = () => new TableViewPage(),
         [typeof(TimePickerPage)] = () => new TimePickerPage(),
+        [typeof(WebViewPage)] = () => new WebViewPage(),
         // Effects
         [typeof(ClipPage)] = () => new ClipPage(),
         [typeof(ShadowPage)] = () => new ShadowPage(),
@@ -213,7 +214,8 @@ public partial class MainPage : FlyoutPage
                 new("SwipeView", "Swipe action container", typeof(SwipeViewPage)),
                 new("Switch", "Binary toggle switch", typeof(SwitchPage)),
                 new("TableView", "Form-based data table", typeof(TableViewPage)),
-                new("TimePicker", "Time selection picker", typeof(TimePickerPage))
+                new("TimePicker", "Time selection picker", typeof(TimePickerPage)),
+                new("WebView", "Embedded web content viewer", typeof(WebViewPage))
             }),
 
             new SampleGroup("Effects", new List<SampleItem>
