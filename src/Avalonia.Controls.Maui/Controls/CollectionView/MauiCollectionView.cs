@@ -3,6 +3,7 @@ using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Styling;
@@ -518,11 +519,13 @@ public class MauiCollectionView : TemplatedControl
         public SelectionContainer(MauiCollectionView owner)
         {
             _owner = owner;
+            // Use handledEventsToo so selection works even when child gesture recognizers
+            // (e.g. TapGestureRecognizer) have already handled the event during bubble routing.
+            AddHandler(PointerPressedEvent, OnContainerPointerPressed, RoutingStrategies.Bubble, handledEventsToo: true);
         }
 
-        protected override void OnPointerPressed(PointerPressedEventArgs e)
+        private void OnContainerPointerPressed(object? sender, PointerPressedEventArgs e)
         {
-            base.OnPointerPressed(e);
             _owner.HandleSelection(DataContext);
             e.Handled = true;
         }
@@ -542,6 +545,12 @@ public class MauiCollectionView : TemplatedControl
         {
             base.OnDetachedFromVisualTree(e);
             _owner.UnregisterItemContainer(this);
+
+            // Clean up MAUI parent chain established for RelativeSource bindings
+            if (Child is Control content && content.Tag is Microsoft.Maui.Controls.Element mauiElement)
+            {
+                (mauiElement.Parent as Microsoft.Maui.Controls.Element)?.RemoveLogicalChild(mauiElement);
+            }
         }
 
         protected override void OnDataContextChanged(EventArgs e)
