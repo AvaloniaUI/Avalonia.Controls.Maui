@@ -1,3 +1,0 @@
-[submodule "external/Avalonia.Controls.WebView"]
-	path = external/Avalonia.Controls.WebView
-	url = git@github.com:AvaloniaUI/Avalonia.Controls.WebView.git
