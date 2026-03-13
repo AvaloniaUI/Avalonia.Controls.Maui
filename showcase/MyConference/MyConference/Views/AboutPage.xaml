@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:MyConference.ViewModels"
+             x:Class="MyConference.Views.AboutPage"
+             x:DataType="viewModels:AboutViewModel"
+             Title="About">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="24" Padding="24">
+
+            <!-- Event logo / icon -->
+            <Border StrokeShape="RoundRectangle 16"
+                    StrokeThickness="0"
+                    BackgroundColor="{StaticResource Primary}"
+                    HeightRequest="100"
+                    WidthRequest="100"
+                    HorizontalOptions="Center"
+                    Margin="0,24,0,0">
+                <Label Text="MD"
+                       FontSize="40"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextOnPrimary}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" />
+            </Border>
+
+            <!-- Event name and tagline -->
+            <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                <Label Text="{Binding EventName}"
+                       Style="{StaticResource TitleLabel}"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="{Binding EventTagline}"
+                       Style="{StaticResource SubtitleLabel}"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <!-- Info card -->
+            <Border Style="{StaticResource CardBorder}" Padding="0">
+                <VerticalStackLayout>
+                    <!-- Date row -->
+                    <HorizontalStackLayout Spacing="12" Padding="16">
+                        <Label Text="📅" FontSize="20" VerticalTextAlignment="Center" />
+                        <Label Text="{Binding EventDate}"
+                               Style="{StaticResource CardTitleLabel}"
+                               VerticalTextAlignment="Center" />
+                    </HorizontalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="{StaticResource Divider}" Margin="16,0" />
+
+                    <!-- Location row -->
+                    <HorizontalStackLayout Spacing="12" Padding="16">
+                        <Label Text="📍" FontSize="20" VerticalTextAlignment="Center" />
+                        <Label Text="{Binding EventLocation}"
+                               Style="{StaticResource CardTitleLabel}"
+                               VerticalTextAlignment="Center" />
+                    </HorizontalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="{StaticResource Divider}" Margin="16,0" />
+
+                    <!-- Website row -->
+                    <HorizontalStackLayout Spacing="12" Padding="16">
+                        <Label Text="🌐" FontSize="20" VerticalTextAlignment="Center" />
+                        <Label Text="{Binding EventWebsite}"
+                               Style="{StaticResource CardTitleLabel}"
+                               TextColor="{StaticResource Primary}"
+                               VerticalTextAlignment="Center" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Visit Website button -->
+            <Button Text="Visit Website"
+                    Style="{StaticResource PrimaryButton}"
+                    Command="{Binding OpenWebsiteCommand}"
+                    HorizontalOptions="Fill"
+                    Margin="16,0" />
+
+            <!-- App version -->
+            <Label Text="{Binding AppVersion}"
+                   FontSize="12"
+                   TextColor="{StaticResource TextSecondary}"
+                   HorizontalTextAlignment="Center"
+                   Margin="0,8,0,24" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- Brand colors -->
+    <Color x:Key="Primary">#1A56DB</Color>
+    <Color x:Key="PrimaryDark">#1E40AF</Color>
+    <Color x:Key="PrimaryLight">#DBEAFE</Color>
+    <Color x:Key="Secondary">#0D9488</Color>
+    <Color x:Key="Accent">#F59E0B</Color>
+
+    <!-- Surface colors -->
+    <Color x:Key="Background">#F9FAFB</Color>
+    <Color x:Key="Surface">#FFFFFF</Color>
+    <Color x:Key="SurfaceVariant">#F3F4F6</Color>
+
+    <!-- Text colors -->
+    <Color x:Key="TextPrimary">#111827</Color>
+    <Color x:Key="TextSecondary">#6B7280</Color>
+    <Color x:Key="TextOnPrimary">#FFFFFF</Color>
+
+    <!-- UI element colors -->
+    <Color x:Key="Divider">#E5E7EB</Color>
+    <Color x:Key="Error">#EF4444</Color>
+    <Color x:Key="FavoriteActive">#EF4444</Color>
+    <Color x:Key="FavoriteInactive">#9CA3AF</Color>
+    <Color x:Key="CardShadow">#1A000000</Color>
+
+</ResourceDictionary>

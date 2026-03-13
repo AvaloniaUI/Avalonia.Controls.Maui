@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:MyConference.ViewModels"
+             xmlns:models="clr-namespace:MyConference.Models"
+             x:Class="MyConference.Views.SpeakersPage"
+             x:DataType="viewModels:SpeakersViewModel"
+             Title="Speakers">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <Border StrokeShape="RoundRectangle 12"
+                StrokeThickness="0"
+                BackgroundColor="{StaticResource SurfaceVariant}"
+                Margin="16,8,16,8"
+                Padding="16,0"
+                HeightRequest="44">
+            <Entry Text="{Binding SearchText}"
+                   Placeholder="Search speakers..."
+                   PlaceholderColor="{StaticResource TextSecondary}"
+                   TextColor="{StaticResource TextPrimary}"
+                   BackgroundColor="Transparent"
+                   FontSize="15"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Fill" />
+        </Border>
+
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefreshCommand}">
+
+            <Grid>
+                <CollectionView ItemsSource="{Binding Speakers}"
+                                ItemsLayout="VerticalGrid, 2">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Speaker">
+                            <Border Style="{StaticResource CardBorder}" Margin="8" Padding="12">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:SpeakersViewModel}}, Path=NavigateToSpeakerCommand}"
+                                        CommandParameter="{Binding}" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                                    <Border StrokeShape="RoundRectangle 40"
+                                            WidthRequest="80" HeightRequest="80"
+                                            StrokeThickness="0"
+                                            HorizontalOptions="Center">
+                                        <Image Source="{Binding ProfilePicture}"
+                                               Aspect="AspectFill" />
+                                    </Border>
+                                    <Label Text="{Binding FullName}"
+                                           Style="{StaticResource CardTitleLabel}"
+                                           HorizontalTextAlignment="Center"
+                                           MaxLines="2"
+                                           LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding TagLine}"
+                                           Style="{StaticResource CardSubtitleLabel}"
+                                           HorizontalTextAlignment="Center"
+                                           MaxLines="2"
+                                           LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout HorizontalOptions="Center"
+                                             VerticalOptions="Center"
+                                             Padding="20">
+                            <Label Text="No speakers found"
+                                   Style="{StaticResource SubtitleLabel}"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                   IsVisible="{Binding IsLoading}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+            </Grid>
+        </RefreshView>
+
+    </Grid>
+
+</ContentPage>

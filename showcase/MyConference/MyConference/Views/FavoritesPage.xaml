@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:MyConference.ViewModels"
+             xmlns:models="clr-namespace:MyConference.Models"
+             x:Class="MyConference.Views.FavoritesPage"
+             x:DataType="viewModels:FavoritesViewModel"
+             Title="Favorites">
+
+    <Grid>
+        <CollectionView ItemsSource="{Binding FavoriteSessions}">
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="16" Padding="32">
+                    <Label Text="♡"
+                           FontSize="64"
+                           TextColor="{StaticResource FavoriteInactive}"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="No favorites yet"
+                           Style="{StaticResource TitleLabel}"
+                           HorizontalTextAlignment="Center" />
+                    <Label Text="Tap the heart on any session to save it here"
+                           Style="{StaticResource SubtitleLabel}"
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Session">
+                    <Border Style="{StaticResource CardBorder}" Margin="16,4">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:FavoritesViewModel}}, Path=NavigateToSessionCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+
+                        <VerticalStackLayout Spacing="6" Padding="16">
+                            <!-- Time, Room, Remove button -->
+                            <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto">
+                                <Label Grid.Column="0"
+                                       Text="{Binding TimeSlot}"
+                                       Style="{StaticResource TimeLabel}" />
+                                <Label Grid.Column="1"
+                                       Text="•"
+                                       Style="{StaticResource TimeLabel}"
+                                       Margin="6,0" />
+                                <Label Grid.Column="2"
+                                       Text="{Binding RoomName}"
+                                       Style="{StaticResource RoomLabel}" />
+                                <Button Grid.Column="4"
+                                        Text="✕"
+                                        FontSize="16"
+                                        TextColor="{StaticResource TextSecondary}"
+                                        BackgroundColor="Transparent"
+                                        BorderWidth="0"
+                                        Padding="8,4"
+                                        WidthRequest="40"
+                                        HeightRequest="36"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:FavoritesViewModel}}, Path=RemoveFavoriteCommand}"
+                                        CommandParameter="{Binding .}" />
+                            </Grid>
+
+                            <!-- Session title -->
+                            <Label Text="{Binding Title}"
+                                   Style="{StaticResource CardTitleLabel}" />
+
+                            <!-- Speaker profiles -->
+                            <HorizontalStackLayout Spacing="8"
+                                                   BindableLayout.ItemsSource="{Binding SpeakerProfiles}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="models:Speaker">
+                                        <HorizontalStackLayout Spacing="6">
+                                            <Border StrokeShape="RoundRectangle 12"
+                                                    StrokeThickness="0"
+                                                    HeightRequest="24"
+                                                    WidthRequest="24">
+                                                <Image Source="{Binding ProfilePicture}"
+                                                       Aspect="AspectFill"
+                                                       HeightRequest="24"
+                                                       WidthRequest="24" />
+                                            </Border>
+                                            <Label Text="{Binding FullName}"
+                                                   Style="{StaticResource CardSubtitleLabel}"
+                                                   VerticalTextAlignment="Center" />
+                                        </HorizontalStackLayout>
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <ActivityIndicator IsRunning="{Binding IsLoading}"
+                           IsVisible="{Binding IsLoading}"
+                           Color="{StaticResource Primary}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center" />
+    </Grid>
+
+</ContentPage>

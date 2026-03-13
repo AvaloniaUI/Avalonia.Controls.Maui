@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:MyConference.ViewModels"
+             xmlns:models="clr-namespace:MyConference.Models"
+             x:Class="MyConference.Views.SpeakerDetailPage"
+             x:DataType="viewModels:SpeakerDetailViewModel"
+             Title="{Binding Speaker.FullName, FallbackValue='Speaker'}">
+
+    <Grid>
+        <ScrollView>
+            <VerticalStackLayout Spacing="16" Padding="16">
+
+                <!-- Avatar -->
+                <Border StrokeShape="RoundRectangle 60"
+                        WidthRequest="120" HeightRequest="120"
+                        StrokeThickness="0"
+                        HorizontalOptions="Center">
+                    <Image Source="{Binding Speaker.ProfilePicture, FallbackValue={x:Null}}"
+                           Aspect="AspectFill" />
+                </Border>
+
+                <!-- Name & tagline -->
+                <Label Text="{Binding Speaker.FullName, FallbackValue=''}"
+                       Style="{StaticResource TitleLabel}"
+                       HorizontalTextAlignment="Center" />
+
+                <Label Text="{Binding Speaker.TagLine, FallbackValue=''}"
+                       Style="{StaticResource SubtitleLabel}"
+                       HorizontalTextAlignment="Center" />
+
+                <!-- Bio -->
+                <Label Text="{Binding Speaker.Bio, FallbackValue=''}"
+                       LineBreakMode="WordWrap"
+                       TextColor="{StaticResource TextPrimary}"
+                       FontSize="14"
+                       Margin="0,8,0,0" />
+
+                <!-- Sessions header -->
+                <Label Text="Sessions"
+                       Style="{StaticResource TitleLabel}"
+                       FontSize="20"
+                       Margin="0,8,0,0" />
+
+                <!-- Sessions list via BindableLayout -->
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Sessions}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:Session">
+                            <Border Style="{StaticResource CardBorder}" Margin="0,4">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:SpeakerDetailViewModel}}, Path=NavigateToSessionCommand}"
+                                        CommandParameter="{Binding}" />
+                                </Border.GestureRecognizers>
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <VerticalStackLayout>
+                                        <Label Text="{Binding StartsAt, StringFormat='{0:HH:mm}'}"
+                                               Style="{StaticResource TimeLabel}" />
+                                    </VerticalStackLayout>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                        <Label Text="{Binding Title}"
+                                               Style="{StaticResource CardTitleLabel}" />
+                                        <Label Text="{Binding RoomName}"
+                                               Style="{StaticResource RoomLabel}" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ActivityIndicator IsRunning="{Binding IsLoading}"
+                           IsVisible="{Binding IsLoading}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+    </Grid>
+
+</ContentPage>
