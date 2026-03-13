@@ -866,9 +866,9 @@ public class MauiCollectionView : TemplatedControl
             }
         }
 
-        if (_scrollViewer != null)
+        if (_itemsControl != null)
         {
-            _scrollViewer.IsVisible = !isEmpty;
+            _itemsControl.IsVisible = !isEmpty;
         }
     }
 
