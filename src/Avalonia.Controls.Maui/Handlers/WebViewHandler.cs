@@ -54,8 +54,7 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.Control>, 
     {
     }
 
-    private static bool IsWebViewSupported =>
-        !OperatingSystem.IsLinux() && !OperatingSystem.IsBrowser();
+    private static bool IsWebViewSupported => true;
 
     private Avalonia.Controls.NativeWebView? NativeWebView =>
         PlatformView as Avalonia.Controls.NativeWebView;
