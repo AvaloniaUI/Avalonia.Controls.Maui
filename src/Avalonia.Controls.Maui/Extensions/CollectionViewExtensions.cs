@@ -311,6 +311,11 @@ public static class CollectionViewExtensions
             if (structuredItemsView.Header is Microsoft.Maui.Controls.View headerView)
             {
                 _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
+                headerView.BindingContext = structuredItemsView.BindingContext;
+                if (itemsView is Microsoft.Maui.Controls.Element parentElement)
+                {
+                    parentElement.AddLogicalChild(headerView);
+                }
                 var platformControl = (Control)headerView.ToPlatform(handler.MauiContext);
                 platformView.Header = platformControl;
             }
@@ -375,6 +380,11 @@ public static class CollectionViewExtensions
             if (structuredItemsView.Footer is Microsoft.Maui.Controls.View footerView)
             {
                 _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
+                footerView.BindingContext = structuredItemsView.BindingContext;
+                if (itemsView is Microsoft.Maui.Controls.Element parentElement)
+                {
+                    parentElement.AddLogicalChild(footerView);
+                }
                 var platformControl = (Control)footerView.ToPlatform(handler.MauiContext);
                 platformView.Footer = platformControl;
             }
