@@ -5,9 +5,14 @@ using MyConference.Services;
 
 namespace MyConference.ViewModels;
 
-[QueryProperty(nameof(SessionId), "SessionId")]
-public partial class SessionDetailViewModel : ObservableObject
+public partial class SessionDetailViewModel : ObservableObject, IQueryAttributable
 {
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("SessionId", out var value))
+            SessionId = value?.ToString() ?? string.Empty;
+    }
+
     private readonly ISessionizeService _sessionizeService;
     private readonly IFavoritesService _favoritesService;
 

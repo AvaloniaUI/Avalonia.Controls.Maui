@@ -6,9 +6,14 @@ using System.Collections.ObjectModel;
 
 namespace MyConference.ViewModels;
 
-[QueryProperty(nameof(SpeakerId), "SpeakerId")]
-public partial class SpeakerDetailViewModel : ObservableObject
+public partial class SpeakerDetailViewModel : ObservableObject, IQueryAttributable
 {
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("SpeakerId", out var value))
+            SpeakerId = value?.ToString() ?? string.Empty;
+    }
+
     private readonly ISessionizeService _sessionizeService;
     private readonly IFavoritesService _favoritesService;
 
