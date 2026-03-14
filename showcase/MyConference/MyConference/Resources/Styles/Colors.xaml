@@ -3,28 +3,52 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Brand colors -->
-    <Color x:Key="Primary">#1A56DB</Color>
-    <Color x:Key="PrimaryDark">#1E40AF</Color>
-    <Color x:Key="PrimaryLight">#DBEAFE</Color>
-    <Color x:Key="Secondary">#0D9488</Color>
-    <Color x:Key="Accent">#F59E0B</Color>
+    <!-- Brand colors (Light) -->
+    <Color x:Key="PrimaryLight">#1A56DB</Color>
+    <Color x:Key="PrimaryDarkLight">#1E40AF</Color>
+    <Color x:Key="PrimaryTintLight">#DBEAFE</Color>
+    <Color x:Key="SecondaryLight">#0D9488</Color>
+    <Color x:Key="AccentLight">#F59E0B</Color>
 
-    <!-- Surface colors -->
-    <Color x:Key="Background">#F9FAFB</Color>
-    <Color x:Key="Surface">#FFFFFF</Color>
-    <Color x:Key="SurfaceVariant">#F3F4F6</Color>
+    <!-- Brand colors (Dark) -->
+    <Color x:Key="PrimaryDark">#3B82F6</Color>
+    <Color x:Key="PrimaryDarkDark">#93C5FD</Color>
+    <Color x:Key="PrimaryTintDark">#1E3A5F</Color>
+    <Color x:Key="SecondaryDark">#2DD4BF</Color>
+    <Color x:Key="AccentDark">#FBBF24</Color>
 
-    <!-- Text colors -->
-    <Color x:Key="TextPrimary">#111827</Color>
-    <Color x:Key="TextSecondary">#6B7280</Color>
-    <Color x:Key="TextOnPrimary">#FFFFFF</Color>
+    <!-- Surface colors (Light) -->
+    <Color x:Key="BackgroundLight">#F9FAFB</Color>
+    <Color x:Key="SurfaceLight">#FFFFFF</Color>
+    <Color x:Key="SurfaceVariantLight">#F3F4F6</Color>
 
-    <!-- UI element colors -->
-    <Color x:Key="Divider">#E5E7EB</Color>
-    <Color x:Key="Error">#EF4444</Color>
-    <Color x:Key="FavoriteActive">#EF4444</Color>
-    <Color x:Key="FavoriteInactive">#9CA3AF</Color>
-    <Color x:Key="CardShadow">#1A000000</Color>
+    <!-- Surface colors (Dark) -->
+    <Color x:Key="BackgroundDark">#111827</Color>
+    <Color x:Key="SurfaceDark">#1F2937</Color>
+    <Color x:Key="SurfaceVariantDark">#374151</Color>
+
+    <!-- Text colors (Light) -->
+    <Color x:Key="TextPrimaryLight">#111827</Color>
+    <Color x:Key="TextSecondaryLight">#6B7280</Color>
+    <Color x:Key="TextOnPrimaryLight">#FFFFFF</Color>
+
+    <!-- Text colors (Dark) -->
+    <Color x:Key="TextPrimaryDark">#F9FAFB</Color>
+    <Color x:Key="TextSecondaryDark">#9CA3AF</Color>
+    <Color x:Key="TextOnPrimaryDark">#FFFFFF</Color>
+
+    <!-- UI element colors (Light) -->
+    <Color x:Key="DividerLight">#E5E7EB</Color>
+    <Color x:Key="ErrorLight">#EF4444</Color>
+    <Color x:Key="FavoriteActiveLight">#EF4444</Color>
+    <Color x:Key="FavoriteInactiveLight">#9CA3AF</Color>
+    <Color x:Key="CardShadowLight">#1A000000</Color>
+
+    <!-- UI element colors (Dark) -->
+    <Color x:Key="DividerDark">#374151</Color>
+    <Color x:Key="ErrorDark">#F87171</Color>
+    <Color x:Key="FavoriteActiveDark">#F87171</Color>
+    <Color x:Key="FavoriteInactiveDark">#6B7280</Color>
+    <Color x:Key="CardShadowDark">#1AFFFFFF</Color>
 
 </ResourceDictionary>

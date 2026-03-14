@@ -12,7 +12,7 @@
             <!-- Event logo / icon -->
             <Border StrokeShape="RoundRectangle 16"
                     StrokeThickness="0"
-                    BackgroundColor="{StaticResource Primary}"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                     HeightRequest="100"
                     WidthRequest="100"
                     HorizontalOptions="Center"
@@ -20,7 +20,7 @@
                 <Label Text="MD"
                        FontSize="40"
                        FontAttributes="Bold"
-                       TextColor="{StaticResource TextOnPrimary}"
+                       TextColor="{AppThemeBinding Light={StaticResource TextOnPrimaryLight}, Dark={StaticResource TextOnPrimaryDark}}"
                        HorizontalOptions="Center"
                        VerticalOptions="Center" />
             </Border>
@@ -46,7 +46,7 @@
                                VerticalTextAlignment="Center" />
                     </HorizontalStackLayout>
 
-                    <BoxView HeightRequest="1" Color="{StaticResource Divider}" Margin="16,0" />
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource DividerLight}, Dark={StaticResource DividerDark}}" Margin="16,0" />
 
                     <!-- Location row -->
                     <HorizontalStackLayout Spacing="12" Padding="16">
@@ -56,14 +56,14 @@
                                VerticalTextAlignment="Center" />
                     </HorizontalStackLayout>
 
-                    <BoxView HeightRequest="1" Color="{StaticResource Divider}" Margin="16,0" />
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource DividerLight}, Dark={StaticResource DividerDark}}" Margin="16,0" />
 
                     <!-- Website row -->
                     <HorizontalStackLayout Spacing="12" Padding="16">
                         <Label Text="🌐" FontSize="20" VerticalTextAlignment="Center" />
                         <Label Text="{Binding EventWebsite}"
                                Style="{StaticResource CardTitleLabel}"
-                               TextColor="{StaticResource Primary}"
+                               TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                VerticalTextAlignment="Center" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
@@ -79,7 +79,7 @@
             <!-- App version -->
             <Label Text="{Binding AppVersion}"
                    FontSize="12"
-                   TextColor="{StaticResource TextSecondary}"
+                   TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                    HorizontalTextAlignment="Center"
                    Margin="0,8,0,24" />
 

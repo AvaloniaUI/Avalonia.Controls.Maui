@@ -20,14 +20,14 @@
                         <!-- Search bar -->
                         <Border StrokeShape="RoundRectangle 12"
                                 StrokeThickness="0"
-                                BackgroundColor="{StaticResource SurfaceVariant}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceVariantLight}, Dark={StaticResource SurfaceVariantDark}}"
                                 Margin="16,8,16,8"
                                 Padding="16,0"
                                 HeightRequest="44">
                             <Entry Text="{Binding SearchText}"
                                    Placeholder="Search sessions or speakers..."
-                                   PlaceholderColor="{StaticResource TextSecondary}"
-                                   TextColor="{StaticResource TextPrimary}"
+                                   PlaceholderColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
                                    BackgroundColor="Transparent"
                                    FontSize="15"
                                    VerticalOptions="Center"
@@ -36,12 +36,12 @@
 
                         <!-- Offline banner -->
                         <Border IsVisible="{Binding IsOffline}"
-                                BackgroundColor="{StaticResource Accent}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource AccentLight}, Dark={StaticResource AccentDark}}"
                                 Padding="8,4" Margin="0">
                             <HorizontalStackLayout HorizontalOptions="Center" Spacing="8">
                                 <Label Text="📡" FontSize="14" VerticalOptions="Center" />
                                 <Label Text="Offline mode — showing cached data" FontSize="12"
-                                       TextColor="{StaticResource TextPrimary}" VerticalOptions="Center" />
+                                       TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" VerticalOptions="Center" />
                             </HorizontalStackLayout>
                         </Border>
 
@@ -57,7 +57,7 @@
                                         <Border StrokeShape="RoundRectangle 16"
                                                 Padding="14,6"
                                                 StrokeThickness="0"
-                                                BackgroundColor="{StaticResource SurfaceVariant}">
+                                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceVariantLight}, Dark={StaticResource SurfaceVariantDark}}">
                                             <Border.GestureRecognizers>
                                                 <TapGestureRecognizer
                                                     Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:SessionsViewModel}}, Path=SelectDayCommand}"
@@ -66,7 +66,7 @@
                                             <Label Text="{Binding}"
                                                    FontSize="13"
                                                    HorizontalTextAlignment="Center"
-                                                   TextColor="{StaticResource TextSecondary}" />
+                                                   TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
                                         </Border>
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>
@@ -80,10 +80,10 @@
                         <Grid Padding="20,20,20,8" ColumnDefinitions="Auto,*" ColumnSpacing="10">
                             <Label Text="{Binding TimeSlot}"
                                    FontSize="13" FontAttributes="Bold"
-                                   TextColor="{StaticResource Primary}"
+                                   TextColor="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}"
                                    VerticalOptions="Center" />
                             <BoxView Grid.Column="1" HeightRequest="1"
-                                     Color="{StaticResource Divider}"
+                                     Color="{AppThemeBinding Light={StaticResource DividerLight}, Dark={StaticResource DividerDark}}"
                                      VerticalOptions="Center" />
                         </Grid>
                     </DataTemplate>
@@ -92,8 +92,8 @@
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Session">
                         <Border StrokeShape="RoundRectangle 14"
-                                Stroke="{StaticResource Divider}"
-                                BackgroundColor="{StaticResource Surface}"
+                                Stroke="{AppThemeBinding Light={StaticResource DividerLight}, Dark={StaticResource DividerDark}}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
                                 StrokeThickness="1"
                                 Margin="16,5" Padding="0">
                             <Border.GestureRecognizers>
@@ -104,7 +104,7 @@
 
                             <VerticalStackLayout Spacing="0">
                                 <!-- Speaker banner -->
-                                <Grid BackgroundColor="{StaticResource SurfaceVariant}"
+                                <Grid BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceVariantLight}, Dark={StaticResource SurfaceVariantDark}}"
                                       Padding="14,10" ColumnDefinitions="Auto,*"
                                       ColumnSpacing="12">
                                     <!-- Speaker avatars -->
@@ -114,7 +114,7 @@
                                             <DataTemplate x:DataType="models:Speaker">
                                                 <Border StrokeShape="RoundRectangle 20"
                                                         StrokeThickness="2"
-                                                        Stroke="{StaticResource SurfaceVariant}"
+                                                        Stroke="{AppThemeBinding Light={StaticResource SurfaceVariantLight}, Dark={StaticResource SurfaceVariantDark}}"
                                                         WidthRequest="40" HeightRequest="40"
                                                         Margin="-10,0,0,0">
                                                     <Image Source="{Binding ProfilePicture}"
@@ -129,11 +129,11 @@
                                                          VerticalOptions="Center" Spacing="1">
                                         <Label Text="{Binding SpeakerNames}"
                                                FontSize="14" FontAttributes="Bold"
-                                               TextColor="{StaticResource TextPrimary}"
+                                               TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
                                                LineBreakMode="TailTruncation" MaxLines="1" />
                                         <Label Text="{Binding FirstSpeakerTagLine, FallbackValue=''}"
                                                FontSize="12"
-                                               TextColor="{StaticResource TextSecondary}"
+                                               TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                                LineBreakMode="TailTruncation" MaxLines="1" />
                                     </VerticalStackLayout>
                                 </Grid>
@@ -143,7 +143,7 @@
                                     <!-- Title -->
                                     <Label Text="{Binding Title}"
                                            FontSize="15" FontAttributes="Bold"
-                                           TextColor="{StaticResource TextPrimary}"
+                                           TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
                                            LineBreakMode="WordWrap" />
 
                                     <!-- Chips + Favorite row -->
@@ -151,20 +151,20 @@
                                         <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
                                             <Border StrokeShape="RoundRectangle 5"
                                                     StrokeThickness="0"
-                                                    BackgroundColor="{StaticResource PrimaryLight}"
+                                                    BackgroundColor="{AppThemeBinding Light={StaticResource PrimaryTintLight}, Dark={StaticResource PrimaryTintDark}}"
                                                     Padding="8,4">
                                                 <Label Text="{Binding TimeSlot}"
                                                        FontSize="11" FontAttributes="Bold"
-                                                       TextColor="{StaticResource PrimaryDark}"
+                                                       TextColor="{AppThemeBinding Light={StaticResource PrimaryDarkLight}, Dark={StaticResource PrimaryDarkDark}}"
                                                        VerticalTextAlignment="Center" />
                                             </Border>
                                             <Border StrokeShape="RoundRectangle 5"
                                                     StrokeThickness="0"
-                                                    BackgroundColor="{StaticResource SurfaceVariant}"
+                                                    BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceVariantLight}, Dark={StaticResource SurfaceVariantDark}}"
                                                     Padding="8,4">
                                                 <Label Text="{Binding RoomName}"
                                                        FontSize="11"
-                                                       TextColor="{StaticResource TextSecondary}"
+                                                       TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                                        VerticalTextAlignment="Center" />
                                             </Border>
                                         </HorizontalStackLayout>
@@ -180,10 +180,10 @@
                                                 CommandParameter="{Binding}">
                                             <Button.Triggers>
                                                 <DataTrigger TargetType="Button" Binding="{Binding IsFavorite}" Value="True">
-                                                    <Setter Property="TextColor" Value="{StaticResource FavoriteActive}" />
+                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FavoriteActiveLight}, Dark={StaticResource FavoriteActiveDark}}" />
                                                 </DataTrigger>
                                                 <DataTrigger TargetType="Button" Binding="{Binding IsFavorite}" Value="False">
-                                                    <Setter Property="TextColor" Value="{StaticResource FavoriteInactive}" />
+                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FavoriteInactiveLight}, Dark={StaticResource FavoriteInactiveDark}}" />
                                                 </DataTrigger>
                                             </Button.Triggers>
                                         </Button>

@@ -5,7 +5,7 @@
              x:Name="AvatarView">
     <Border StrokeShape="RoundRectangle 20"
             StrokeThickness="2"
-            Stroke="{StaticResource Surface}"
+            Stroke="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
             WidthRequest="40"
             HeightRequest="40">
         <Image Source="{Binding Source={x:Reference AvatarView}, Path=ImageSource}"

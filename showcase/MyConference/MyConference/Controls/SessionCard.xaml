@@ -27,10 +27,10 @@
                        VerticalOptions="Center">
                     <Label.Triggers>
                         <DataTrigger TargetType="Label" Binding="{Binding IsFavorite}" Value="True">
-                            <Setter Property="TextColor" Value="{StaticResource FavoriteActive}" />
+                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FavoriteActiveLight}, Dark={StaticResource FavoriteActiveDark}}" />
                         </DataTrigger>
                         <DataTrigger TargetType="Label" Binding="{Binding IsFavorite}" Value="False">
-                            <Setter Property="TextColor" Value="{StaticResource FavoriteInactive}" />
+                            <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource FavoriteInactiveLight}, Dark={StaticResource FavoriteInactiveDark}}" />
                         </DataTrigger>
                     </Label.Triggers>
                 </Label>
@@ -47,7 +47,7 @@
                         <DataTemplate x:DataType="models:Speaker">
                             <Border StrokeShape="RoundRectangle 14"
                                     StrokeThickness="2"
-                                    Stroke="{StaticResource Surface}"
+                                    Stroke="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
                                     WidthRequest="28"
                                     HeightRequest="28"
                                     Margin="-6,0,0,0">

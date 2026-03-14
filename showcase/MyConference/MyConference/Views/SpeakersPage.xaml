@@ -11,14 +11,14 @@
 
         <Border StrokeShape="RoundRectangle 12"
                 StrokeThickness="0"
-                BackgroundColor="{StaticResource SurfaceVariant}"
+                BackgroundColor="{AppThemeBinding Light={StaticResource SurfaceVariantLight}, Dark={StaticResource SurfaceVariantDark}}"
                 Margin="16,8,16,8"
                 Padding="16,0"
                 HeightRequest="44">
             <Entry Text="{Binding SearchText}"
                    Placeholder="Search speakers..."
-                   PlaceholderColor="{StaticResource TextSecondary}"
-                   TextColor="{StaticResource TextPrimary}"
+                   PlaceholderColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
+                   TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
                    BackgroundColor="Transparent"
                    FontSize="15"
                    VerticalOptions="Center"

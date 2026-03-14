@@ -32,7 +32,7 @@
                 <!-- Bio -->
                 <Label Text="{Binding Speaker.Bio, FallbackValue=''}"
                        LineBreakMode="WordWrap"
-                       TextColor="{StaticResource TextPrimary}"
+                       TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
                        FontSize="14"
                        Margin="0,8,0,0" />
 

@@ -14,7 +14,7 @@
                 <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="16" Padding="32">
                     <Label Text="♡"
                            FontSize="64"
-                           TextColor="{StaticResource FavoriteInactive}"
+                           TextColor="{AppThemeBinding Light={StaticResource FavoriteInactiveLight}, Dark={StaticResource FavoriteInactiveDark}}"
                            HorizontalTextAlignment="Center" />
                     <Label Text="No favorites yet"
                            Style="{StaticResource TitleLabel}"
@@ -50,7 +50,7 @@
                                 <Button Grid.Column="4"
                                         Text="✕"
                                         FontSize="16"
-                                        TextColor="{StaticResource TextSecondary}"
+                                        TextColor="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}"
                                         BackgroundColor="Transparent"
                                         BorderWidth="0"
                                         Padding="8,4"
@@ -94,7 +94,6 @@
 
         <ActivityIndicator IsRunning="{Binding IsLoading}"
                            IsVisible="{Binding IsLoading}"
-                           Color="{StaticResource Primary}"
                            VerticalOptions="Center"
                            HorizontalOptions="Center" />
     </Grid>
