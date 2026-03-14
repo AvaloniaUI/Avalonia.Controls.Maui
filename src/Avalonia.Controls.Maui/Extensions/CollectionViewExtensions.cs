@@ -46,8 +46,16 @@ public static class CollectionViewExtensions
 
                 mauiView.BindingContext = item;
 
+                // Establish MAUI parent chain so RelativeSource AncestorType bindings
+                // can walk up to find the ViewModel (e.g. for TapGestureRecognizer commands).
+                // Native MAUI CollectionView platforms do this via AddLogicalChild in their cell containers.
+                if (itemsView is Microsoft.Maui.Controls.Element parentElement)
+                {
+                    parentElement.AddLogicalChild(mauiView);
+                }
+
                 var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
-                
+
                 // Store the MAUI view in the Tag so we can access it for Visual State updates
                 if (platformControl != null)
                 {
@@ -197,7 +205,15 @@ public static class CollectionViewExtensions
                     return new TextBlock { Text = "Group Header" };
 
                 mauiView.BindingContext = item;
+                if (itemsView is Microsoft.Maui.Controls.Element parentElement)
+                {
+                    parentElement.AddLogicalChild(mauiView);
+                }
                 var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
+                if (platformControl != null)
+                {
+                    platformControl.Tag = mauiView;
+                }
                 return platformControl ?? new TextBlock { Text = "Group Header" };
             });
 
@@ -226,7 +242,15 @@ public static class CollectionViewExtensions
                     return new TextBlock { Text = "Group Footer" };
 
                 mauiView.BindingContext = item;
+                if (itemsView is Microsoft.Maui.Controls.Element parentElement)
+                {
+                    parentElement.AddLogicalChild(mauiView);
+                }
                 var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
+                if (platformControl != null)
+                {
+                    platformControl.Tag = mauiView;
+                }
                 return platformControl ?? new TextBlock { Text = "Group Footer" };
             });
 
@@ -287,6 +311,11 @@ public static class CollectionViewExtensions
             if (structuredItemsView.Header is Microsoft.Maui.Controls.View headerView)
             {
                 _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
+                headerView.BindingContext = structuredItemsView.BindingContext;
+                if (itemsView is Microsoft.Maui.Controls.Element parentElement)
+                {
+                    parentElement.AddLogicalChild(headerView);
+                }
                 var platformControl = (Control)headerView.ToPlatform(handler.MauiContext);
                 platformView.Header = platformControl;
             }
@@ -322,7 +351,15 @@ public static class CollectionViewExtensions
                     return new TextBlock { Text = "Header" };
 
                 mauiView.BindingContext = item;
+                if (itemsView is Microsoft.Maui.Controls.Element parentElement)
+                {
+                    parentElement.AddLogicalChild(mauiView);
+                }
                 var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
+                if (platformControl != null)
+                {
+                    platformControl.Tag = mauiView;
+                }
                 return platformControl ?? new TextBlock { Text = "Header" };
             });
 
@@ -343,6 +380,11 @@ public static class CollectionViewExtensions
             if (structuredItemsView.Footer is Microsoft.Maui.Controls.View footerView)
             {
                 _ = handler.MauiContext ?? throw new InvalidOperationException("MauiContext cannot be null");
+                footerView.BindingContext = structuredItemsView.BindingContext;
+                if (itemsView is Microsoft.Maui.Controls.Element parentElement)
+                {
+                    parentElement.AddLogicalChild(footerView);
+                }
                 var platformControl = (Control)footerView.ToPlatform(handler.MauiContext);
                 platformView.Footer = platformControl;
             }
@@ -378,7 +420,15 @@ public static class CollectionViewExtensions
                     return new TextBlock { Text = "Footer" };
 
                 mauiView.BindingContext = item;
+                if (itemsView is Microsoft.Maui.Controls.Element parentElement)
+                {
+                    parentElement.AddLogicalChild(mauiView);
+                }
                 var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
+                if (platformControl != null)
+                {
+                    platformControl.Tag = mauiView;
+                }
                 return platformControl ?? new TextBlock { Text = "Footer" };
             });
 
