@@ -341,49 +341,11 @@ public partial class MainPage : ContentPage
         }
     }
 
-    private SwipeDirection? swipedDirection;
-    private void PanGestureRecognizer_PanUpdated(object? sender, PanUpdatedEventArgs e)
+    private void OnSwiped(object? sender, SwipedEventArgs e)
     {
         if (_isAnimating) return;
 
-        switch (e.StatusType)
-        {
-            case GestureStatus.Running:
-                HandleTouch(e.TotalX, e.TotalY);
-                break;
-            case GestureStatus.Completed:
-                HandleTouchEnd(swipedDirection);
-                break;
-        }
-    }
-
-    private void HandleTouch(double eTotalX, double eTotalY)
-    {
-        swipedDirection = null;
-        const int delta = 10;
-        if (eTotalX > delta)
-        {
-            swipedDirection = SwipeDirection.Right;
-        }
-        else if (eTotalX < -delta)
-        {
-            swipedDirection = SwipeDirection.Left;
-        }
-        else if (eTotalY > delta)
-        {
-            swipedDirection = SwipeDirection.Down;
-        }
-        else if (eTotalY < -delta)
-        {
-            swipedDirection = SwipeDirection.Up;
-        }
-    }
-
-    private void HandleTouchEnd(SwipeDirection? swiped)
-    {
-        if (swiped == null || _isAnimating) return;
-
-        var direction = swiped switch
+        var direction = e.Direction switch
         {
             SwipeDirection.Right => Direction.Right,
             SwipeDirection.Left => Direction.Left,
