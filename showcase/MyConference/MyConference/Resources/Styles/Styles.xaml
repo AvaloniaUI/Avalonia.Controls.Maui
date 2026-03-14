@@ -25,45 +25,73 @@
 
     <!-- Label (default implicit) -->
     <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
+    </Style>
+
+    <!-- Entry -->
+    <Style TargetType="Entry">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+    </Style>
+
+    <!-- Editor -->
+    <Style TargetType="Editor">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+    </Style>
+
+    <!-- Button -->
+    <Style TargetType="Button">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
+    </Style>
+
+    <!-- Span -->
+    <Style TargetType="Span">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
     </Style>
 
     <!-- Named label styles -->
     <Style x:Key="TitleLabel" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
         <Setter Property="FontSize" Value="24" />
         <Setter Property="FontAttributes" Value="Bold" />
     </Style>
 
     <Style x:Key="SubtitleLabel" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
         <Setter Property="FontSize" Value="16" />
     </Style>
 
     <Style x:Key="CardTitleLabel" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontAttributes" Value="Bold" />
     </Style>
 
     <Style x:Key="CardSubtitleLabel" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
         <Setter Property="FontSize" Value="13" />
     </Style>
 
     <Style x:Key="TimeLabel" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontAttributes" Value="Bold" />
     </Style>
 
     <Style x:Key="RoomLabel" TargetType="Label">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
         <Setter Property="FontSize" Value="12" />
     </Style>
 
     <!-- SearchBar -->
     <Style TargetType="SearchBar">
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
         <Setter Property="BackgroundColor" Value="Transparent" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
         <Setter Property="PlaceholderColor" Value="{AppThemeBinding Light={StaticResource TextSecondaryLight}, Dark={StaticResource TextSecondaryDark}}" />
@@ -80,6 +108,7 @@
 
     <!-- Buttons -->
     <Style x:Key="PrimaryButton" TargetType="Button">
+        <Setter Property="FontFamily" Value="OpenSansSemibold" />
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource PrimaryLight}, Dark={StaticResource PrimaryDark}}" />
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextOnPrimaryLight}, Dark={StaticResource TextOnPrimaryDark}}" />
         <Setter Property="CornerRadius" Value="8" />
