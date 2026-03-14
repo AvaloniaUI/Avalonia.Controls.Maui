@@ -12,7 +12,7 @@
             <Label Grid.Column="0"
                    Text="{Binding Session.Title, FallbackValue=''}"
                    FontSize="18" FontAttributes="Bold"
-                   TextColor="{AppThemeBinding Light={StaticResource TextOnPrimaryLight}, Dark={StaticResource TextOnPrimaryDark}}"
+                   TextColor="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}"
                    LineBreakMode="TailTruncation"
                    VerticalOptions="Center" />
             <Border Grid.Column="2" StrokeShape="RoundRectangle 18"
@@ -30,7 +30,7 @@
                             <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource FavoriteActiveLight}, Dark={StaticResource FavoriteActiveDark}}" />
                         </DataTrigger>
                         <DataTrigger TargetType="Path" Binding="{Binding IsFavorite}" Value="False">
-                            <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource TextOnPrimaryLight}, Dark={StaticResource TextOnPrimaryDark}}" />
+                            <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource TextPrimaryLight}, Dark={StaticResource TextPrimaryDark}}" />
                         </DataTrigger>
                     </Path.Triggers>
                 </Path>
