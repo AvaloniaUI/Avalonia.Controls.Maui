@@ -75,7 +75,7 @@
                                                     StrokeThickness="0"
                                                     HeightRequest="24"
                                                     WidthRequest="24">
-                                                <Image Source="{Binding ProfilePicture}"
+                                                <Image Source="{Binding ProfilePicture, Converter={StaticResource ProxiedImageConverter}}"
                                                        Aspect="AspectFill"
                                                        HeightRequest="24"
                                                        WidthRequest="24" />

@@ -16,7 +16,7 @@
                         WidthRequest="120" HeightRequest="120"
                         StrokeThickness="0"
                         HorizontalOptions="Center">
-                    <Image Source="{Binding Speaker.ProfilePicture, FallbackValue={x:Null}}"
+                    <Image Source="{Binding Speaker.ProfilePicture, FallbackValue={x:Null}, Converter={StaticResource ProxiedImageConverter}}"
                            Aspect="AspectFill" />
                 </Border>
 

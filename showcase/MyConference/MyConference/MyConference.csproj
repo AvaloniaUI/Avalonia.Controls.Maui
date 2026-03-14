@@ -28,6 +28,7 @@
 		       <MauiXaml Update="MyPage.xaml" Inflator="Runtime" /> (force runtime inflation) -->
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+		<AllowUnsafeBlocks Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">true</AllowUnsafeBlocks>
 
 		<!-- AOT / Trimming validation -->
 		<IsTrimmable>true</IsTrimmable>

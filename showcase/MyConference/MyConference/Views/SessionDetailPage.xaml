@@ -105,7 +105,7 @@
                                     <Border StrokeShape="RoundRectangle 36"
                                             StrokeThickness="0"
                                             WidthRequest="72" HeightRequest="72">
-                                        <Image Source="{Binding ProfilePicture}"
+                                        <Image Source="{Binding ProfilePicture, Converter={StaticResource ProxiedImageConverter}}"
                                                Aspect="AspectFill" />
                                     </Border>
 

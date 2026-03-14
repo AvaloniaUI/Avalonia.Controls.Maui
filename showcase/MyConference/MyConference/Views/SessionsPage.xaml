@@ -117,7 +117,7 @@
                                                         Stroke="{AppThemeBinding Light={StaticResource SurfaceVariantLight}, Dark={StaticResource SurfaceVariantDark}}"
                                                         WidthRequest="40" HeightRequest="40"
                                                         Margin="-10,0,0,0">
-                                                    <Image Source="{Binding ProfilePicture}"
+                                                    <Image Source="{Binding ProfilePicture, Converter={StaticResource ProxiedImageConverter}}"
                                                            Aspect="AspectFill" />
                                                 </Border>
                                             </DataTemplate>

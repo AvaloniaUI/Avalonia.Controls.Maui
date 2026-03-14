@@ -11,6 +11,7 @@
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <converters:ProxiedImageConverter x:Key="ProxiedImageConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -6,7 +6,7 @@ namespace MyConference.Services;
 /// </summary>
 public class CorsProxyHandler : HttpClientHandler
 {
-    private const string CorsProxyBase = "https://corsproxy.io/?";
+    private const string CorsProxyBase = "https://corsproxy.io/?url=";
 
     protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {

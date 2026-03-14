@@ -45,7 +45,7 @@
                                             WidthRequest="80" HeightRequest="80"
                                             StrokeThickness="0"
                                             HorizontalOptions="Center">
-                                        <Image Source="{Binding ProfilePicture}"
+                                        <Image Source="{Binding ProfilePicture, Converter={StaticResource ProxiedImageConverter}}"
                                                Aspect="AspectFill" />
                                     </Border>
                                     <Label Text="{Binding FullName}"
