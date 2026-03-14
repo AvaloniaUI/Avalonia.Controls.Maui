@@ -7,10 +7,7 @@ public class SessionizeService : ISessionizeService
 {
     private const string CacheKey = "sessionize_data";
 
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
+    private static readonly JsonSerializerOptions JsonOptions = AppJsonContext.Default.Options;
 
     private readonly HttpClient _httpClient;
     private readonly ICacheService _cacheService;
@@ -43,8 +40,7 @@ public class SessionizeService : ISessionizeService
         catch (Exception)
         {
             // On failure, return stale cached data if available
-            var staleData = await _cacheService.GetAsync<SessionizeData>(CacheKey);
-            return staleData;
+            return await _cacheService.GetAsync<SessionizeData>(CacheKey);
         }
     }
 }

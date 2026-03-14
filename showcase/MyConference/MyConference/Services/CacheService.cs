@@ -1,13 +1,11 @@
 using System.Text.Json;
+using MyConference.Models;
 
 namespace MyConference.Services;
 
 public class CacheService : ICacheService
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNameCaseInsensitive = true
-    };
+    private static readonly JsonSerializerOptions JsonOptions = AppJsonContext.Default.Options;
 
     private static string GetDataPath(string key) =>
         Path.Combine(FileSystem.AppDataDirectory, $"cache_{key}.json");

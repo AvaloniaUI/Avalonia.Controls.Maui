@@ -38,14 +38,16 @@ public static class MauiProgram
         builder.Services.AddSingleton<ICacheService, CacheService>();
         builder.Services.AddSingleton<IFavoritesService, FavoritesService>();
         builder.Services.AddSingleton<ISessionizeService, SessionizeService>();
-        #if BROWSER
-        builder.Services.AddSingleton(new HttpClient(new CorsProxyHandler()));
-        #else
-        builder.Services.AddSingleton<HttpClient>();
-        #endif
-        #if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
+#if BROWSER
+        var httpClient = new HttpClient(new CorsProxyHandler());
+#else
+        var httpClient = new HttpClient();
+#endif
+        httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36");
+        builder.Services.AddSingleton(httpClient);
+#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
         builder.Services.AddSingleton(Connectivity.Current);
-        #endif
+#endif
 
         // ViewModels
         builder.Services.AddTransient<SessionsViewModel>();

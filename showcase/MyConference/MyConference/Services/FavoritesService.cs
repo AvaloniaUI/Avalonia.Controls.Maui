@@ -1,4 +1,5 @@
 using System.Text.Json;
+using MyConference.Models;
 
 namespace MyConference.Services;
 
@@ -36,7 +37,7 @@ public class FavoritesService : IFavoritesService
             if (string.IsNullOrEmpty(json))
                 return [];
 
-            return JsonSerializer.Deserialize<HashSet<string>>(json) ?? [];
+            return JsonSerializer.Deserialize(json, AppJsonContext.Default.HashSetString) ?? [];
         }
         catch (Exception)
         {
@@ -46,7 +47,7 @@ public class FavoritesService : IFavoritesService
 
     private void SaveFavorites()
     {
-        var json = JsonSerializer.Serialize(_favorites);
+        var json = JsonSerializer.Serialize(_favorites, AppJsonContext.Default.HashSetString);
         Preferences.Default.Set(PreferencesKey, json);
     }
 }
