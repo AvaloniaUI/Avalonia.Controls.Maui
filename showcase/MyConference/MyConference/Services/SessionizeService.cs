@@ -7,8 +7,6 @@ public class SessionizeService : ISessionizeService
 {
     private const string CacheKey = "sessionize_data";
 
-    private static readonly JsonSerializerOptions JsonOptions = AppJsonContext.Default.Options;
-
     private readonly HttpClient _httpClient;
     private readonly ICacheService _cacheService;
 
@@ -22,7 +20,7 @@ public class SessionizeService : ISessionizeService
     {
         if (!forceRefresh)
         {
-            var cached = await _cacheService.GetAsync<SessionizeData>(CacheKey);
+            var cached = await _cacheService.GetAsync(CacheKey, AppJsonContext.Default.SessionizeData);
             if (cached is not null && _cacheService.IsFresh(CacheKey))
                 return cached;
         }
@@ -30,17 +28,17 @@ public class SessionizeService : ISessionizeService
         try
         {
             var json = await _httpClient.GetStringAsync(EventConfig.SessionizeApiUrl);
-            var data = JsonSerializer.Deserialize<SessionizeData>(json, JsonOptions);
+            var data = JsonSerializer.Deserialize(json, AppJsonContext.Default.SessionizeData);
 
             if (data is not null)
-                await _cacheService.SetAsync(CacheKey, data);
+                await _cacheService.SetAsync(CacheKey, data, AppJsonContext.Default.SessionizeData);
 
             return data;
         }
         catch (Exception)
         {
             // On failure, return stale cached data if available
-            return await _cacheService.GetAsync<SessionizeData>(CacheKey);
+            return await _cacheService.GetAsync(CacheKey, AppJsonContext.Default.SessionizeData);
         }
     }
 }

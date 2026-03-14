@@ -29,6 +29,14 @@
 		<MauiXamlInflator>SourceGen</MauiXamlInflator>
 		<TreatWarningsAsErrors>false</TreatWarningsAsErrors>
 
+		<!-- AOT / Trimming validation -->
+		<IsTrimmable>true</IsTrimmable>
+		<IsAotCompatible>true</IsAotCompatible>
+		<TrimmerSingleWarn>false</TrimmerSingleWarn>
+		<SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+		<EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+		<ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
+
 		<!-- Display name -->
 		<ApplicationTitle>MyConference</ApplicationTitle>
 

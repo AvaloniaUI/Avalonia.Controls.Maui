@@ -1,19 +1,17 @@
 using System.Text.Json;
-using MyConference.Models;
+using System.Text.Json.Serialization.Metadata;
 
 namespace MyConference.Services;
 
 public class CacheService : ICacheService
 {
-    private static readonly JsonSerializerOptions JsonOptions = AppJsonContext.Default.Options;
-
     private static string GetDataPath(string key) =>
         Path.Combine(FileSystem.AppDataDirectory, $"cache_{key}.json");
 
     private static string GetTimestampPath(string key) =>
         Path.Combine(FileSystem.AppDataDirectory, $"cache_{key}_timestamp.txt");
 
-    public async Task<T?> GetAsync<T>(string key) where T : class
+    public async Task<T?> GetAsync<T>(string key, JsonTypeInfo<T> jsonTypeInfo) where T : class
     {
         try
         {
@@ -22,7 +20,7 @@ public class CacheService : ICacheService
                 return null;
 
             var json = await File.ReadAllTextAsync(path);
-            return JsonSerializer.Deserialize<T>(json, JsonOptions);
+            return JsonSerializer.Deserialize(json, jsonTypeInfo);
         }
         catch (Exception)
         {
@@ -30,11 +28,11 @@ public class CacheService : ICacheService
         }
     }
 
-    public async Task SetAsync<T>(string key, T data) where T : class
+    public async Task SetAsync<T>(string key, T data, JsonTypeInfo<T> jsonTypeInfo) where T : class
     {
         try
         {
-            var json = JsonSerializer.Serialize(data, JsonOptions);
+            var json = JsonSerializer.Serialize(data, jsonTypeInfo);
             await File.WriteAllTextAsync(GetDataPath(key), json);
             await File.WriteAllTextAsync(GetTimestampPath(key), DateTime.UtcNow.ToString("O"));
         }
