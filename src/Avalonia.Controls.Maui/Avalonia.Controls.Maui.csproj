@@ -33,7 +33,7 @@
     <PackageReference Include="Avalonia.Skia" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="$(AvaloniaVersion)" />
-    <PackageReference Include="Avalonia.Controls.WebView" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Controls.WebView" Version="12.0.999-cibuild0000026-alpha" />
     <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Maui.Graphics" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Maui.Graphics.Skia" Version="$(MauiVersion)" />
