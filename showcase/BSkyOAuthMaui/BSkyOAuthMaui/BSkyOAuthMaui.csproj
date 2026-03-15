@@ -72,8 +72,8 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(MicrosoftExtensionsVersion)" />
-		<PackageReference Include="CarpaNet" Version="0.1.0-alpha.58" />
-		<PackageReference Include="CarpaNet.OAuth" Version="0.1.0-alpha.58" />
+		<PackageReference Include="CarpaNet" Version="0.1.0-alpha.68" />
+		<PackageReference Include="CarpaNet.OAuth" Version="0.1.0-alpha.68" />
 	</ItemGroup>
 
 	<ItemGroup>
