@@ -22,6 +22,7 @@ public static class MauiEssentialsBuilderExtensions
         Microsoft.Maui.Devices.HapticFeedback.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaHapticFeedback());
         Microsoft.Maui.Storage.Preferences.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaPreferences());
         FileSystem.SetCurrent(new Avalonia.Controls.Maui.Essentials.AvaloniaFileSystem());
+        Microsoft.Maui.Authentication.WebAuthenticator.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaWebAuthenticator(platformProvider));
 
         return builder;
     }
