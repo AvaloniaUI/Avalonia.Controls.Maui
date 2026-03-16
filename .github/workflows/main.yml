@@ -102,6 +102,11 @@ jobs:
         path: ${{github.workspace}}/artifacts/test-results/**/*.trx
         retention-days: 7
 
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libwebkit2gtk-4.1-dev at-spi2-core
+
     - name: Run Benchmark Tests
       run: |
         xvfb-run dotnet run --project ${{github.workspace}}/samples/BenchmarkApp/BenchmarkApp.Desktop -- --run-all --output ${{github.workspace}}/artifacts/test-results/benchmark-results.xml
