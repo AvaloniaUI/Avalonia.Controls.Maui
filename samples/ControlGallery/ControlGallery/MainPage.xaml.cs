@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using ControlGallery.Pages;
 using ControlGallery.Pages.ShellSamples;
@@ -281,23 +282,24 @@ public partial class MainPage : FlyoutPage
         UpdateMenu(_lastSearchText);
     }
 
-    private void NavigateToPage(Type pageType)
+    private async void NavigateToPage(Type pageType)
     {
         if (PageFactory.TryGetValue(pageType, out var factory))
         {
+            IsPresented = false;
+            await Task.Yield();
+
             var page = factory();
 
             if (Detail is NavigationPage navPage)
             {
                 navPage.Navigation.InsertPageBefore(page, navPage.RootPage);
-                navPage.Navigation.PopToRootAsync(animated: false);
+                await navPage.Navigation.PopToRootAsync(animated: false);
             }
             else
             {
                 Detail = new NavigationPage(page);
             }
-
-            IsPresented = false;
         }
     }
 }

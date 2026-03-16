@@ -42,6 +42,12 @@
     <ProjectReference Include="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\Raw\**">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+    </AvaloniaResource>
+  </ItemGroup>
+
 
   <ItemGroup>
     <Using Include="Xunit" />

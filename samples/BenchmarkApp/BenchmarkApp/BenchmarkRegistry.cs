@@ -41,7 +41,7 @@ public static class BenchmarkRegistry
         Register<ShapeHandlerLeakBenchmark>();
         Register<ImageButtonLeakBenchmark>();
         Register<CompositeViewLeakBenchmark>();
-        //Register<WebViewMiscLeakBenchmark>();
+        Register<WebViewMiscLeakBenchmark>();
         Register<MenuAndToolbarLeakBenchmark>();
         Register<CompatibilityHandlerLeakBenchmark>();
         Register<FlyoutPageLeakBenchmark>();
