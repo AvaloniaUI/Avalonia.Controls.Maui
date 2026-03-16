@@ -2,10 +2,8 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>$(DotNetTfm);$(DotNetTfm)-browser;$(DotNetTfm)-android</TargetFrameworks>
-		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">
-			$(TargetFrameworks);$(DotNetTfm)-ios;$(DotNetTfm)-maccatalyst</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">
-			$(TargetFrameworks);$(DotNetTfm)-windows10.0.19041.0</TargetFrameworks>
+		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);$(DotNetTfm)-ios;$(DotNetTfm)-maccatalyst</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);$(DotNetTfm)-windows10.0.19041.0</TargetFrameworks>
 
 		<OutputType Condition="'$(TargetFramework)' != '$(DotNetTfm)-browser'">Exe</OutputType>
 		<RootNamespace>WeatherTwentyOne</RootNamespace>
