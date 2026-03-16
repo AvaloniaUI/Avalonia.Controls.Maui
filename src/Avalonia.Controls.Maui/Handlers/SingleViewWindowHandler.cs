@@ -71,7 +71,6 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            window.AlertManager.Subscribe();
             window.ModalPushed += OnModalPushed;
             window.ModalPopped += OnModalPopped;
         }
@@ -82,7 +81,6 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
     {
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            window.AlertManager.Unsubscribe();
             window.ModalPushed -= OnModalPushed;
             window.ModalPopped -= OnModalPopped;
         }
@@ -115,6 +113,7 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
     static void mapContent(SingleViewWindowHandler handler, IWindow window)
     {
         var avContent = GetMauiContent(handler);
+        (window as Microsoft.Maui.Controls.Window)?.AlertManager.Unsubscribe();
         var content = window.Content?.ToPlatform(handler.MauiContext!);
         avContent.SetMainContent(content);
     }

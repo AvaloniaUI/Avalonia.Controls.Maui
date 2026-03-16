@@ -16,8 +16,8 @@ namespace BenchmarkApp.Tests;
 /// with no in-tab navigation. ShellTabSwitchMemoryGrowthBenchmark is even simpler. Neither
 /// exercises the compound path of Shell tab switch + in-tab page push with toolbar items.
 /// </remarks>
-[BenchmarkTest("ShellTabSwitchWithNavAndToolbarLeak", Description = "Verifies Shell tab switching + in-tab push/pop with toolbars doesn't leak")]
-public class ShellTabSwitchWithNavigationAndToolbarBenchmark : BenchmarkTestPage
+[BenchmarkTest("ShellTabSwitchWithNavigationAndToolbarLeak", Description = "Verifies Shell tab switching + in-tab push/pop with toolbars doesn't leak")]
+public class ShellTabSwitchWithNavigationAndToolbarLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
     public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)

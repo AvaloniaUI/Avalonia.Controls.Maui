@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.VisualTree;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Platform;
@@ -60,6 +61,7 @@ public static class CollectionViewExtensions
                 if (platformControl != null)
                 {
                     platformControl.Tag = mauiView;
+                    AttachLogicalChildCleanup(platformControl);
                 }
 
                 return platformControl ?? new TextBlock { Text = item?.ToString() ?? string.Empty };
@@ -119,6 +121,10 @@ public static class CollectionViewExtensions
 
                 mauiView.BindingContext = item;
                 var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
+                if (platformControl != null)
+                {
+                    AttachLogicalChildCleanup(platformControl);
+                }
                 return platformControl ?? new TextBlock { Text = "No items" };
             });
 
@@ -172,6 +178,19 @@ public static class CollectionViewExtensions
     }
 
     /// <summary>
+    /// Updates the item sizing strategy of the collection view.
+    /// </summary>
+    /// <param name="platformView">The platform collection view.</param>
+    /// <param name="itemsView">The cross-platform items view.</param>
+    public static void UpdateItemSizingStrategy(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
+    {
+        if (itemsView is Microsoft.Maui.Controls.StructuredItemsView structuredItemsView)
+        {
+            platformView.ItemSizingStrategy = structuredItemsView.ItemSizingStrategy;
+        }
+    }
+
+    /// <summary>
     /// Updates the is grouped property of the collection view.
     /// </summary>
     /// <param name="platformView">The platform collection view.</param>
@@ -213,6 +232,7 @@ public static class CollectionViewExtensions
                 if (platformControl != null)
                 {
                     platformControl.Tag = mauiView;
+                    AttachLogicalChildCleanup(platformControl);
                 }
                 return platformControl ?? new TextBlock { Text = "Group Header" };
             });
@@ -250,6 +270,7 @@ public static class CollectionViewExtensions
                 if (platformControl != null)
                 {
                     platformControl.Tag = mauiView;
+                    AttachLogicalChildCleanup(platformControl);
                 }
                 return platformControl ?? new TextBlock { Text = "Group Footer" };
             });
@@ -311,6 +332,7 @@ public static class CollectionViewExtensions
                     parentElement.AddLogicalChild(headerView);
                 }
                 var platformControl = (Control)headerView.ToPlatform(handler.MauiContext);
+                AttachLogicalChildCleanup(platformControl);
                 platformView.Header = platformControl;
             }
             else if (structuredItemsView.Header is string headerText)
@@ -353,6 +375,7 @@ public static class CollectionViewExtensions
                 if (platformControl != null)
                 {
                     platformControl.Tag = mauiView;
+                    AttachLogicalChildCleanup(platformControl);
                 }
                 return platformControl ?? new TextBlock { Text = "Header" };
             });
@@ -380,6 +403,7 @@ public static class CollectionViewExtensions
                     parentElement.AddLogicalChild(footerView);
                 }
                 var platformControl = (Control)footerView.ToPlatform(handler.MauiContext);
+                AttachLogicalChildCleanup(platformControl);
                 platformView.Footer = platformControl;
             }
             else if (structuredItemsView.Footer is string footerText)
@@ -422,6 +446,7 @@ public static class CollectionViewExtensions
                 if (platformControl != null)
                 {
                     platformControl.Tag = mauiView;
+                    AttachLogicalChildCleanup(platformControl);
                 }
                 return platformControl ?? new TextBlock { Text = "Footer" };
             });
@@ -461,5 +486,19 @@ public static class CollectionViewExtensions
     public static void UpdateRemainingItemsThreshold(this MauiCollectionView platformView, Microsoft.Maui.Controls.ItemsView itemsView)
     {
         platformView.RemainingItemsThreshold = itemsView.RemainingItemsThreshold;
+    }
+
+    private static void AttachLogicalChildCleanup(Control platformControl)
+    {
+        platformControl.DetachedFromVisualTree -= OnPlatformControlDetachedFromVisualTree;
+        platformControl.DetachedFromVisualTree += OnPlatformControlDetachedFromVisualTree;
+    }
+
+    private static void OnPlatformControlDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (sender is Control control)
+        {
+            MauiCollectionView.CleanupLogicalChild(control);
+        }
     }
 }

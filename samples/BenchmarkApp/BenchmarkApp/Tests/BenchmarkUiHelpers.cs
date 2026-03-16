@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq;
+using AvaloniaControl = global::Avalonia.Controls.Control;
+using AvaloniaPanel = global::Avalonia.Controls.Panel;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using PlatformCollectionView = global::Avalonia.Controls.Maui.MauiCollectionView;
@@ -23,6 +25,46 @@ internal static class BenchmarkUiHelpers
         await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(
             () => { },
             Avalonia.Threading.DispatcherPriority.Background);
+    }
+
+    public static async Task WaitUntilAsync(
+        Func<bool> condition,
+        CancellationToken cancellationToken,
+        int timeoutMs = 2000,
+        int pollDelayMs = 10)
+    {
+        var deadline = DateTime.UtcNow.AddMilliseconds(timeoutMs);
+
+        while (!condition())
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (DateTime.UtcNow >= deadline)
+            {
+                throw new TimeoutException($"Condition was not met within {timeoutMs}ms.");
+            }
+
+            await WaitForIdleAsync(cancellationToken, pollDelayMs);
+        }
+    }
+
+    public static Task WaitForRealizedPlatformItemsAsync(
+        CollectionView collectionView,
+        Func<int> expectedCount,
+        CancellationToken cancellationToken,
+        int timeoutMs = 4000,
+        int pollDelayMs = 15)
+    {
+        return WaitUntilAsync(
+            () =>
+            {
+                var expected = expectedCount();
+                return GetPlatformItemCount(collectionView) == expected &&
+                    GetPlatformContainers(collectionView).Count == expected;
+            },
+            cancellationToken,
+            timeoutMs,
+            pollDelayMs);
     }
 
     public static ObservableCollection<CollectionViewBenchmarkItem> CreateItems(int count, int offset = 0)
@@ -58,13 +100,14 @@ internal static class BenchmarkUiHelpers
     public static CollectionView CreateCollectionView(
         IEnumerable itemsSource,
         bool grouped = false,
-        bool useEmptyTemplate = false)
+        bool useEmptyTemplate = false,
+        ItemSizingStrategy itemSizingStrategy = ItemSizingStrategy.MeasureAllItems)
     {
         var collectionView = new CollectionView
         {
             ItemsSource = itemsSource,
             ItemTemplate = CreateCollectionViewItemTemplate(),
-            ItemSizingStrategy = ItemSizingStrategy.MeasureAllItems,
+            ItemSizingStrategy = itemSizingStrategy,
             HeightRequest = 420,
             RemainingItemsThreshold = 2
         };
@@ -93,10 +136,76 @@ internal static class BenchmarkUiHelpers
         return (collectionView.Handler?.PlatformView as PlatformCollectionView)?.GetItemsControl()?.ItemCount ?? 0;
     }
 
+    public static object? GetPlatformItemsSource(CollectionView collectionView)
+    {
+        return (collectionView.Handler?.PlatformView as PlatformCollectionView)?.GetItemsControl()?.ItemsSource;
+    }
+
+    public static IReadOnlyList<AvaloniaControl> GetPlatformContainers(CollectionView collectionView)
+    {
+        if ((collectionView.Handler?.PlatformView as PlatformCollectionView)?.GetItemsControl()?.ItemsPanelRoot is not AvaloniaPanel panel)
+        {
+            return Array.Empty<AvaloniaControl>();
+        }
+
+        return panel.Children.OfType<AvaloniaControl>().ToArray();
+    }
+
+    public static int CountRetainedReferences<T>(IReadOnlyCollection<T> before, IReadOnlyCollection<T> after)
+        where T : class
+    {
+        if (before.Count == 0 || after.Count == 0)
+        {
+            return 0;
+        }
+
+        var afterSet = new HashSet<T>(after, ReferenceEqualityComparer.Instance);
+        var retained = 0;
+
+        foreach (var item in before)
+        {
+            if (afterSet.Contains(item))
+            {
+                retained++;
+            }
+        }
+
+        return retained;
+    }
+
+    public static double CalculatePercentile(IReadOnlyList<double> samples, double percentile)
+    {
+        if (samples.Count == 0)
+        {
+            return 0;
+        }
+
+        if (samples.Count == 1)
+        {
+            return samples[0];
+        }
+
+        var ordered = samples.OrderBy(value => value).ToArray();
+        var position = (ordered.Length - 1) * percentile;
+        var lowerIndex = (int)Math.Floor(position);
+        var upperIndex = (int)Math.Ceiling(position);
+
+        if (lowerIndex == upperIndex)
+        {
+            return ordered[lowerIndex];
+        }
+
+        var weight = position - lowerIndex;
+        return ordered[lowerIndex] + ((ordered[upperIndex] - ordered[lowerIndex]) * weight);
+    }
+
     public static void DisconnectElementTree(IView? view)
     {
         switch (view)
         {
+            case ContentPage page when page.Content is IView content:
+                DisconnectElementTree(content);
+                break;
             case Layout layout:
                 foreach (var child in layout.Children.ToList())
                 {

@@ -100,7 +100,6 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            window.AlertManager.Subscribe();
             window.ModalPushed += OnModalPushed;
             window.ModalPopped += OnModalPopped;
 
@@ -122,7 +121,6 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            window.AlertManager.Unsubscribe();
             window.ModalPushed -= OnModalPushed;
             window.ModalPopped -= OnModalPopped;
             window.PropertyChanged -= OnWindowPropertyChanged;
@@ -228,6 +226,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     static void mapContent(WindowHandler handler, IWindow window)
     {
         var avWindow = GetMauiWindow(handler);
+        (window as Microsoft.Maui.Controls.Window)?.AlertManager.Unsubscribe();
         var content = window.Content?.ToPlatform(handler.MauiContext!);
         avWindow.SetMainContent(content);
     }
@@ -291,7 +290,6 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     static Window GetWindow(WindowHandler handler, IWindow window)
     {
         _ = handler.MauiContext ?? throw new InvalidOperationException($"{nameof(MauiContext)} should have been set by base class.");
-        var content = window.Content?.ToPlatform(handler.MauiContext);
         return (Window)handler.PlatformView;
     }
 
@@ -333,7 +331,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
     static void mapMaximumWidth(WindowHandler handler, IWindow window)
     {
         var avWindow = GetWindow(handler, window);
-        if (double.IsNaN(window.MinimumHeight))
+        if (double.IsNaN(window.MaximumWidth))
             avWindow.MaxWidth = double.MaxValue;
         else
             avWindow.MaxWidth = window.MaximumWidth;
