@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.WebView.WebViewNavigationPage"
+             Title="Navigation">
+    <Grid Padding="20"
+          RowDefinitions="Auto,Auto,*,Auto"
+          RowSpacing="10">
+
+        <Label Grid.Row="0"
+               Text="Exercises back, forward, and reload using a WebView with its own navigation history, including same-document history changes from site menus."
+               FontSize="12"
+               TextColor="Gray" />
+
+        <FlexLayout Grid.Row="1"
+                    Wrap="Wrap"
+                    Direction="Row"
+                    AlignItems="Center"
+                    JustifyContent="Start">
+            <Button Text="Open Avalonia"
+                    Margin="0,0,10,10"
+                    Clicked="OnNavigationAvaloniaClicked" />
+            <Button Text="Open Local"
+                    Margin="0,0,10,10"
+                    Clicked="OnNavigationLocalClicked" />
+            <Button x:Name="NavigationBackButton"
+                    Text="Back"
+                    Margin="0,0,10,10"
+                    IsEnabled="{Binding Source={x:Reference NavigationWebView}, Path=CanGoBack}"
+                    Clicked="OnNavigationBackClicked" />
+            <Button x:Name="NavigationForwardButton"
+                    Text="Forward"
+                    Margin="0,0,10,10"
+                    IsEnabled="{Binding Source={x:Reference NavigationWebView}, Path=CanGoForward}"
+                    Clicked="OnNavigationForwardClicked" />
+            <Button Text="Reload"
+                    Margin="0,0,0,10"
+                    Clicked="OnNavigationReloadClicked" />
+        </FlexLayout>
+
+        <WebView Grid.Row="2"
+                 x:Name="NavigationWebView"
+                 Source="https://avaloniaui.net"
+                 Navigated="OnNavigationWebViewNavigated" />
+
+        <Label Grid.Row="3"
+               x:Name="NavigationStatusLabel"
+               FontSize="12"
+               TextColor="Gray" />
+
+    </Grid>
+</ContentPage>

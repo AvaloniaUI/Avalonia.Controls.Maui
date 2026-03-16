@@ -4,6 +4,7 @@ using System.Windows.Input;
 using ControlGallery.Pages;
 using ControlGallery.Pages.ShellSamples;
 using ControlGallery.Pages.ShellSamples.ShellPlayground;
+using ControlGallery.Pages.WebView;
 
 namespace ControlGallery;
 
@@ -60,7 +61,14 @@ public partial class MainPage : FlyoutPage
         [typeof(SwitchPage)] = () => new SwitchPage(),
         [typeof(TableViewPage)] = () => new TableViewPage(),
         [typeof(TimePickerPage)] = () => new TimePickerPage(),
-        [typeof(WebViewPage)] = () => new WebViewPage(),
+        // WebView
+        [typeof(WebViewLoadWebPage)] = () => new WebViewLoadWebPage(),
+        [typeof(WebViewLoadLocalPage)] = () => new WebViewLoadLocalPage(),
+        [typeof(WebViewInlineHtmlPage)] = () => new WebViewInlineHtmlPage(),
+        [typeof(WebViewNavigationPage)] = () => new WebViewNavigationPage(),
+        [typeof(WebViewEventsPage)] = () => new WebViewEventsPage(),
+        [typeof(WebViewCookiesPage)] = () => new WebViewCookiesPage(),
+        [typeof(WebViewPlaygroundPage)] = () => new WebViewPlaygroundPage(),
         // Effects
         [typeof(ClipPage)] = () => new ClipPage(),
         [typeof(ShadowPage)] = () => new ShadowPage(),
@@ -215,8 +223,18 @@ public partial class MainPage : FlyoutPage
                 new("SwipeView", "Swipe action container", typeof(SwipeViewPage)),
                 new("Switch", "Binary toggle switch", typeof(SwitchPage)),
                 new("TableView", "Form-based data table", typeof(TableViewPage)),
-                new("TimePicker", "Time selection picker", typeof(TimePickerPage)),
-                new("WebView", "Embedded web content viewer", typeof(WebViewPage))
+                new("TimePicker", "Time selection picker", typeof(TimePickerPage))
+            }),
+
+            new SampleGroup("WebView", new List<SampleItem>
+            {
+                new("Load Web", "Load remote web content", typeof(WebViewLoadWebPage)),
+                new("Load Local", "Load packaged HTML assets", typeof(WebViewLoadLocalPage)),
+                new("Inline HTML", "Render HtmlWebViewSource content", typeof(WebViewInlineHtmlPage)),
+                new("Navigation", "Back, forward, and reload", typeof(WebViewNavigationPage)),
+                new("Events", "Navigating and Navigated events", typeof(WebViewEventsPage)),
+                new("Cookies", "CookieContainer integration", typeof(WebViewCookiesPage)),
+                new("Playground", "Freeform WebView testing", typeof(WebViewPlaygroundPage))
             }),
 
             new SampleGroup("Effects", new List<SampleItem>
