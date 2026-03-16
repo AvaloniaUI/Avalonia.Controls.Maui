@@ -14,10 +14,10 @@ public static class MauiProgram
             .UseMauiApp<App>()
             #if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
             .UseAvaloniaApp(useSingleAppLifetime)
+            .UseAvaloniaEssentials()
             #else
             .UseAvaloniaEmbedding<AvaloniaApp>()
             #endif
-            .UseAvaloniaEssentials()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("fa-solid-900.ttf", "FontAwesome");

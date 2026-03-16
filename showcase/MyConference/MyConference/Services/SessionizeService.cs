@@ -1,0 +1,44 @@
+using System.Text.Json;
+using MyConference.Models;
+
+namespace MyConference.Services;
+
+public class SessionizeService : ISessionizeService
+{
+    private const string CacheKey = "sessionize_data";
+
+    private readonly HttpClient _httpClient;
+    private readonly ICacheService _cacheService;
+
+    public SessionizeService(HttpClient httpClient, ICacheService cacheService)
+    {
+        _httpClient = httpClient;
+        _cacheService = cacheService;
+    }
+
+    public async Task<SessionizeData?> GetConferenceDataAsync(bool forceRefresh = false)
+    {
+        if (!forceRefresh)
+        {
+            var cached = await _cacheService.GetAsync(CacheKey, AppJsonContext.Default.SessionizeData);
+            if (cached is not null && _cacheService.IsFresh(CacheKey))
+                return cached;
+        }
+
+        try
+        {
+            var json = await _httpClient.GetStringAsync(EventConfig.SessionizeApiUrl);
+            var data = JsonSerializer.Deserialize(json, AppJsonContext.Default.SessionizeData);
+
+            if (data is not null)
+                await _cacheService.SetAsync(CacheKey, data, AppJsonContext.Default.SessionizeData);
+
+            return data;
+        }
+        catch (Exception)
+        {
+            // On failure, return stale cached data if available
+            return await _cacheService.GetAsync(CacheKey, AppJsonContext.Default.SessionizeData);
+        }
+    }
+}

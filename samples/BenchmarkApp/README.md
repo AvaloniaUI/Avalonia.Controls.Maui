@@ -37,6 +37,7 @@ These tests create controls, connect handlers, tear them down, force GC, and ver
 | `InputControlLeak` | Editor, SearchBar, Picker, Switch, CheckBox, Slider with events |
 | `CollectionViewLeak` | CollectionView with header, footer, and item templates |
 | `TabbedPageLeak` | TabbedPage with child ContentPages |
+| `WebViewMiscLeak` | WebView handler teardown with HTML source, cookies, and user-agent state |
 
 ### Performance Tests
 

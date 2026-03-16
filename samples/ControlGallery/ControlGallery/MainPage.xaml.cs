@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using ControlGallery.Pages;
 using ControlGallery.Pages.ShellSamples;
 using ControlGallery.Pages.ShellSamples.ShellPlayground;
+using ControlGallery.Pages.WebView;
 
 namespace ControlGallery;
 
@@ -42,6 +44,7 @@ public partial class MainPage : FlyoutPage
         [typeof(EditorPage)] = () => new EditorPage(),
         [typeof(FramePage)] = () => new FramePage(),
         [typeof(GraphicsViewPage)] = () => new GraphicsViewPage(),
+        [typeof(IndicatorViewPage)] = () => new IndicatorViewPage(),
         [typeof(ImagePage)] = () => new ImagePage(),
         [typeof(ImageButtonPage)] = () => new ImageButtonPage(),
         [typeof(ListViewPage)] = () => new ListViewPage(),
@@ -58,6 +61,14 @@ public partial class MainPage : FlyoutPage
         [typeof(SwitchPage)] = () => new SwitchPage(),
         [typeof(TableViewPage)] = () => new TableViewPage(),
         [typeof(TimePickerPage)] = () => new TimePickerPage(),
+        // WebView
+        [typeof(WebViewLoadWebPage)] = () => new WebViewLoadWebPage(),
+        [typeof(WebViewLoadLocalPage)] = () => new WebViewLoadLocalPage(),
+        [typeof(WebViewInlineHtmlPage)] = () => new WebViewInlineHtmlPage(),
+        [typeof(WebViewNavigationPage)] = () => new WebViewNavigationPage(),
+        [typeof(WebViewEventsPage)] = () => new WebViewEventsPage(),
+        [typeof(WebViewCookiesPage)] = () => new WebViewCookiesPage(),
+        [typeof(WebViewPlaygroundPage)] = () => new WebViewPlaygroundPage(),
         // Effects
         [typeof(ClipPage)] = () => new ClipPage(),
         [typeof(ShadowPage)] = () => new ShadowPage(),
@@ -198,6 +209,7 @@ public partial class MainPage : FlyoutPage
                 new("Editor", "Multi-line text editor", typeof(EditorPage)),
                 new("Frame", "Bordered layout container", typeof(FramePage)),
                 new("GraphicsView", "Custom 2D drawing canvas", typeof(GraphicsViewPage)),
+                new("IndicatorView", "Page position indicators for CarouselView", typeof(IndicatorViewPage)),
                 new("Image", "Visual content display", typeof(ImagePage)),
                 new("ImageButton", "Interactive image button", typeof(ImageButtonPage)),
                 new("ListView", "Scrolling data items", typeof(ListViewPage)),
@@ -215,6 +227,17 @@ public partial class MainPage : FlyoutPage
                 new("Switch", "Binary toggle switch", typeof(SwitchPage)),
                 new("TableView", "Form-based data table", typeof(TableViewPage)),
                 new("TimePicker", "Time selection picker", typeof(TimePickerPage))
+            }),
+
+            new SampleGroup("WebView", new List<SampleItem>
+            {
+                new("Load Web", "Load remote web content", typeof(WebViewLoadWebPage)),
+                new("Load Local", "Load packaged HTML assets", typeof(WebViewLoadLocalPage)),
+                new("Inline HTML", "Render HtmlWebViewSource content", typeof(WebViewInlineHtmlPage)),
+                new("Navigation", "Back, forward, and reload", typeof(WebViewNavigationPage)),
+                new("Events", "Navigating and Navigated events", typeof(WebViewEventsPage)),
+                new("Cookies", "CookieContainer integration", typeof(WebViewCookiesPage)),
+                new("Playground", "Freeform WebView testing", typeof(WebViewPlaygroundPage))
             }),
 
             new SampleGroup("Effects", new List<SampleItem>
@@ -287,23 +310,24 @@ public partial class MainPage : FlyoutPage
         UpdateMenu(_lastSearchText);
     }
 
-    private void NavigateToPage(Type pageType)
+    private async void NavigateToPage(Type pageType)
     {
         if (PageFactory.TryGetValue(pageType, out var factory))
         {
+            IsPresented = false;
+            await Task.Yield();
+
             var page = factory();
 
             if (Detail is NavigationPage navPage)
             {
                 navPage.Navigation.InsertPageBefore(page, navPage.RootPage);
-                navPage.Navigation.PopToRootAsync(animated: false);
+                await navPage.Navigation.PopToRootAsync(animated: false);
             }
             else
             {
                 Detail = new NavigationPage(page);
             }
-
-            IsPresented = false;
         }
     }
 }

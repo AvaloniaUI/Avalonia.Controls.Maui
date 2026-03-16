@@ -741,16 +741,16 @@ Handle OAuth-style authentication flows.
 
 | Member | Type | Status |
 |--------|------|--------|
-| AuthenticateAsync(WebAuthenticatorOptions) | Method | ⏳ TODO |
-| AuthenticateAsync(WebAuthenticatorOptions, CancellationToken) | Method | ⏳ TODO |
+| AuthenticateAsync(WebAuthenticatorOptions) | Method | ✅ Done |
+| AuthenticateAsync(WebAuthenticatorOptions, CancellationToken) | Method | ✅ Done |
 
 ### Supporting Types
 
 | Type | Status |
 |------|--------|
-| WebAuthenticatorOptions | ⏳ TODO |
-| WebAuthenticatorResult | ⏳ TODO |
-| IWebAuthenticatorResponseDecoder | ⏳ TODO |
+| WebAuthenticatorOptions | ✅ Done |
+| WebAuthenticatorResult | ✅ Done |
+| IWebAuthenticatorResponseDecoder | ✅ Done |
 
 ---
 

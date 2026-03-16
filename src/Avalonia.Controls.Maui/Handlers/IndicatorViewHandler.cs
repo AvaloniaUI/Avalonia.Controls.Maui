@@ -1,7 +1,12 @@
-using System;
+using Avalonia.Controls.Maui.Platform;
+using Avalonia.Controls.Primitives;
+using Avalonia.Threading;
 using Microsoft.Maui;
-using Microsoft.Maui.Graphics;
-using PlatformView = Avalonia.Controls.Maui.Controls.MauiIndicatorView;
+using Microsoft.Maui.Controls;
+using IndicatorView = Microsoft.Maui.Controls.IndicatorView;
+// When Avalonia.Controls.PipsPager ships, replace the line below with:
+// using PlatformView = Avalonia.Controls.PipsPager;
+using PlatformView = Avalonia.Controls.Maui.Controls.PipsPager;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -9,7 +14,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, PlatformView>
 {
     /// <summary>Property mapper for <see cref="IndicatorViewHandler"/>.</summary>
-    public static IPropertyMapper<IIndicatorView, IndicatorViewHandler> Mapper =
+    public static readonly IPropertyMapper<IIndicatorView, IndicatorViewHandler> Mapper =
         new PropertyMapper<IIndicatorView, IndicatorViewHandler>(ViewHandler.ViewMapper)
         {
             [nameof(IIndicatorView.Count)] = MapCount,
@@ -20,10 +25,11 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
             [nameof(IIndicatorView.IndicatorColor)] = MapIndicatorColor,
             [nameof(IIndicatorView.SelectedIndicatorColor)] = MapSelectedIndicatorColor,
             [nameof(IIndicatorView.IndicatorsShape)] = MapIndicatorShape,
+            [nameof(IndicatorView.IndicatorTemplate)] = MapIndicatorTemplate,
         };
 
     /// <summary>Command mapper for <see cref="IndicatorViewHandler"/>.</summary>
-    public static CommandMapper<IIndicatorView, IndicatorViewHandler> CommandMapper =
+    public static readonly CommandMapper<IIndicatorView, IndicatorViewHandler> CommandMapper =
         new(ViewCommandMapper)
         {
         };
@@ -49,124 +55,110 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
     }
 
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
-    protected override PlatformView CreatePlatformView()
+    protected override PlatformView CreatePlatformView() => new PlatformView
     {
-        return new PlatformView();
+        // MAUI's IndicatorView does not show navigation buttons
+        IsPreviousButtonVisible = false,
+        IsNextButtonVisible = false,
+    };
+
+    /// <inheritdoc/>
+    protected override void ConnectHandler(PlatformView platformView)
+    {
+        base.ConnectHandler(platformView);
+        platformView.SelectedIndexChanged += OnSelectedIndexChanged;
+        platformView.TemplateApplied += OnTemplateApplied;
     }
 
-    /// <summary>Maps the Count property to the platform view.</summary>
-    /// <param name="handler">The handler for the indicator view.</param>
-    /// <param name="indicator">The virtual indicator view.</param>
+    /// <inheritdoc/>
+    protected override void DisconnectHandler(PlatformView platformView)
+    {
+        platformView.SelectedIndexChanged -= OnSelectedIndexChanged;
+        platformView.TemplateApplied -= OnTemplateApplied;
+        base.DisconnectHandler(platformView);
+    }
+
+    private void OnTemplateApplied(object? sender, TemplateAppliedEventArgs e)
+    {
+        if (sender is not PlatformView pv)
+            return;
+
+        // Property mappers fire before the control template is applied, so pip containers do not
+        // exist yet. Defer size and selection sync to after the first layout pass.
+        Dispatcher.UIThread.Post(() =>
+        {
+            pv.UpdatePipSize(VirtualView);
+            pv.ForceSelection(VirtualView);
+        }, DispatcherPriority.Loaded);
+    }
+
+    private void OnSelectedIndexChanged(object? sender, Controls.PipsPagerSelectedIndexChangedEventArgs e)
+    {
+        if (VirtualView.Position != e.NewIndex)
+            VirtualView.Position = e.NewIndex;
+    }
+
+    /// <summary>Maps <see cref="IIndicatorView.Count"/> to <see cref="PlatformView.NumberOfPages"/>.</summary>
     public static void MapCount(IndicatorViewHandler handler, IIndicatorView indicator)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.Count = indicator.Count;
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateNumberOfPages(indicator);
     }
 
-    /// <summary>Maps the Position property to the platform view.</summary>
-    /// <param name="handler">The handler for the indicator view.</param>
-    /// <param name="indicator">The virtual indicator view.</param>
+    /// <summary>Maps <see cref="IIndicatorView.Position"/> to <see cref="PlatformView.SelectedPageIndex"/>.</summary>
     public static void MapPosition(IndicatorViewHandler handler, IIndicatorView indicator)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.Position = indicator.Position;
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateSelectedPageIndex(indicator);
     }
 
-    /// <summary>Maps the HideSingle property to the platform view.</summary>
-    /// <param name="handler">The handler for the indicator view.</param>
-    /// <param name="indicator">The virtual indicator view.</param>
+    /// <summary>Maps <see cref="IIndicatorView.HideSingle"/> to the platform view visibility.</summary>
     public static void MapHideSingle(IndicatorViewHandler handler, IIndicatorView indicator)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.HideSingle = indicator.HideSingle;
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateHideSingle(indicator);
     }
 
-    /// <summary>Maps the MaximumVisible property to the platform view.</summary>
-    /// <param name="handler">The handler for the indicator view.</param>
-    /// <param name="indicator">The virtual indicator view.</param>
+    /// <summary>Maps <see cref="IIndicatorView.MaximumVisible"/> to <see cref="PlatformView.MaxVisiblePips"/>.</summary>
     public static void MapMaximumVisible(IndicatorViewHandler handler, IIndicatorView indicator)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.MaximumVisible = indicator.MaximumVisible;
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateMaxVisiblePips(indicator);
     }
 
-    /// <summary>Maps the IndicatorSize property to the platform view.</summary>
-    /// <param name="handler">The handler for the indicator view.</param>
-    /// <param name="indicator">The virtual indicator view.</param>
+    /// <summary>Maps <see cref="IIndicatorView.IndicatorSize"/> to pip size resources.</summary>
     public static void MapIndicatorSize(IndicatorViewHandler handler, IIndicatorView indicator)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        platformView.IndicatorSize = indicator.IndicatorSize;
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdatePipSize(indicator);
     }
 
-    /// <summary>Maps the IndicatorColor property to the platform view.</summary>
-    /// <param name="handler">The handler for the indicator view.</param>
-    /// <param name="indicator">The virtual indicator view.</param>
+    /// <summary>Maps <see cref="IIndicatorView.IndicatorColor"/> to the pip foreground resource brush.</summary>
     public static void MapIndicatorColor(IndicatorViewHandler handler, IIndicatorView indicator)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        if (indicator.IndicatorColor != null)
-        {
-            var color = indicator.IndicatorColor.ToColor();
-            if (color != null)
-            {
-                var avaloniaColor = global::Avalonia.Media.Color.FromArgb(
-                    (byte)(color.Alpha * 255),
-                    (byte)(color.Red * 255),
-                    (byte)(color.Green * 255),
-                    (byte)(color.Blue * 255));
-
-                platformView.IndicatorColor = new global::Avalonia.Media.SolidColorBrush(avaloniaColor);
-            }
-        }
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdatePipFill(indicator);
     }
 
-    /// <summary>Maps the SelectedIndicatorColor property to the platform view.</summary>
-    /// <param name="handler">The handler for the indicator view.</param>
-    /// <param name="indicator">The virtual indicator view.</param>
+    /// <summary>Maps <see cref="IIndicatorView.SelectedIndicatorColor"/> to the selected pip foreground resource brush.</summary>
     public static void MapSelectedIndicatorColor(IndicatorViewHandler handler, IIndicatorView indicator)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        if (indicator.SelectedIndicatorColor != null)
-        {
-            var color = indicator.SelectedIndicatorColor.ToColor();
-            if (color != null)
-            {
-                var avaloniaColor = global::Avalonia.Media.Color.FromArgb(
-                    (byte)(color.Alpha * 255),
-                    (byte)(color.Red * 255),
-                    (byte)(color.Green * 255),
-                    (byte)(color.Blue * 255));
-
-                platformView.SelectedIndicatorColor = new global::Avalonia.Media.SolidColorBrush(avaloniaColor);
-            }
-        }
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateSelectedPipFill(indicator);
     }
 
-    /// <summary>Maps the IndicatorsShape property to the platform view.</summary>
-    /// <param name="handler">The handler for the indicator view.</param>
-    /// <param name="indicator">The virtual indicator view.</param>
+    /// <summary>Maps <see cref="IIndicatorView.IndicatorsShape"/> to the pip corner radius resource.</summary>
     public static void MapIndicatorShape(IndicatorViewHandler handler, IIndicatorView indicator)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        // Check if the shape is a circle (Ellipse) or square (Rectangle)
-        platformView.IsCircleShape = indicator.IndicatorsShape is Microsoft.Maui.Graphics.IShape shape &&
-                                      shape.GetType().Name.Contains("Ellipse");
+        if (handler.PlatformView is PlatformView platformView)
+            platformView.UpdateIndicatorShape(indicator);
     }
+
+    /// <summary>Maps <see cref="IndicatorView.IndicatorTemplate"/> to the pip list's item template.</summary>
+    public static void MapIndicatorTemplate(IndicatorViewHandler handler, IIndicatorView indicator)
+    {
+        if (handler.PlatformView is PlatformView platformView && handler.MauiContext is not null)
+            platformView.UpdateIndicatorTemplate(indicator, handler.MauiContext);
+    }
+
 }

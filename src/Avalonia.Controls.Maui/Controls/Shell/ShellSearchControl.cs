@@ -13,6 +13,7 @@ using Avalonia.VisualTree;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell
 {
@@ -23,6 +24,7 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
     {
         private readonly MauiSearchHandler _mauiSearchHandler;
         private readonly IMauiContext _mauiContext;
+        private readonly ILogger<ShellSearchControl>? _logger;
 
         /// <summary>
         /// Gets the underlying MAUI SearchHandler.
@@ -44,6 +46,7 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
         {
             _mauiSearchHandler = mauiSearchHandler ?? throw new ArgumentNullException(nameof(mauiSearchHandler));
             _mauiContext = mauiContext ?? throw new ArgumentNullException(nameof(mauiContext));
+            _logger = mauiContext.Services.GetService<ILoggerFactory>()?.CreateLogger<ShellSearchControl>();
 
             _mauiSearchHandler.PropertyChanged += OnMauiSearchHandlerPropertyChanged;
             _mauiSearchHandler.FocusChangeRequested += OnFocusChangeRequested;
@@ -452,7 +455,7 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error loading search icon: {ex}");
+                _logger?.LogError(ex, "Error loading search icon");
             }
         }
         

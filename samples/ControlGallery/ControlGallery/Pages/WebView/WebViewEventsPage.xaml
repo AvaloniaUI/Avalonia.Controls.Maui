@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.WebView.WebViewEventsPage"
+             Title="Events">
+    <Grid Padding="20"
+          RowDefinitions="Auto,Auto,*,Auto,Auto"
+          RowSpacing="10">
+
+        <Label Grid.Row="0"
+               Text="Captures Navigating and Navigated events in order on a dedicated WebView."
+               FontSize="12"
+               TextColor="Gray" />
+
+        <FlexLayout Grid.Row="1"
+                    Wrap="Wrap"
+                    Direction="Row"
+                    AlignItems="Center"
+                    JustifyContent="Start">
+            <Button Text="Load Avalonia"
+                    Margin="0,0,10,10"
+                    Clicked="OnEventsAvaloniaClicked" />
+            <Button Text="Load Local"
+                    Margin="0,0,10,10"
+                    Clicked="OnEventsLocalClicked" />
+            <Button Text="Reload"
+                    Margin="0,0,10,10"
+                    Clicked="OnEventsReloadClicked" />
+            <Button Text="Clear Log"
+                    Margin="0,0,0,10"
+                    Clicked="OnClearEventsLogClicked" />
+        </FlexLayout>
+
+        <WebView Grid.Row="2"
+                 x:Name="EventsWebView"
+                 Source="https://avaloniaui.net"
+                 Navigating="OnEventsWebViewNavigating"
+                 Navigated="OnEventsWebViewNavigated" />
+
+        <Label Grid.Row="3"
+               x:Name="EventsStatusLabel"
+               FontSize="12"
+               TextColor="Gray" />
+
+        <Editor Grid.Row="4"
+                x:Name="EventsLogEditor"
+                HeightRequest="120"
+                IsReadOnly="True"
+                AutoSize="TextChanges"
+                BackgroundColor="#F7F7F7"
+                FontSize="12" />
+
+    </Grid>
+</ContentPage>

@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+    <PackageReference Include="Avalonia.Controls.WebView" Version="$(AvaloniaWebViewVersion)" />
     <PackageReference Include="Microsoft.Maui.Core" Version="$(MauiVersion)" />
   </ItemGroup>
 

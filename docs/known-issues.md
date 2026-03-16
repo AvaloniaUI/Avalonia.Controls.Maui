@@ -2,7 +2,7 @@
 
 ## Current Limitations
 
-- WebView and Blazor Hybrid are not yet implemented.
+- Blazor Hybrid is not yet implemented.
 - Some `Microsoft.Maui.Essentials` APIs, such as [`MainThread`](https://github.com/dotnet/maui/blob/6c123d72970865ccb1312e118f5098ef6c44e892/src/Essentials/src/MainThread/MainThread.netstandard.cs), cannot be directly overridden. Code that calls them will fall through to the .NET Standard stub and throw `NotSupportedOrImplementedException`. Use alternative APIs such as the .NET MAUI `Dispatcher` as a workaround while support is being added.
 - Avalonia controls can be embedded into .NET MAUI native UI apps, but native UI elements cannot be embedded directly into `Avalonia.Controls.Maui` apps.
 - WinUI embedding of Avalonia and `Avalonia.Controls.Maui` views is not yet supported.
