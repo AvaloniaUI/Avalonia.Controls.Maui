@@ -1,4 +1,23 @@
 <Project>
   <Import Project="build/SourceBuild.targets"
           Condition="'$(AvaloniaSourcePath)' != '' Or '$(MauiSourcePath)' != ''" />
+
+  <PropertyGroup Condition="'$(IsPackable)' == 'true'">
+      <Authors>Avalonia Team</Authors>
+      <Copyright>Copyright 2025-$([System.DateTime]::Now.ToString(`yyyy`)) &#169; The AvaloniaUI
+          Project</Copyright>
+      <PackageProjectUrl>https://avaloniaui.net</PackageProjectUrl>
+      <RepositoryUrl>https://github.com/AvaloniaUI/Avalonia.Controls.Maui/</RepositoryUrl>
+      <PackageTags>avalonia;avaloniaui;maui;macos;windows;linux;wasm;handlers</PackageTags>
+      <PackageReleaseNotes>https://github.com/AvaloniaUI/Avalonia.Controls.Maui/releases</PackageReleaseNotes>
+      <RepositoryType>git</RepositoryType>
+      <PackageLicenseExpression>MIT</PackageLicenseExpression>
+      <PackageIcon>Icon.png</PackageIcon>
+      <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' == 'true'" Label="PackageIcon">
+      <None Include="$(BuildDirectory)/Assets/Icon.png" Pack="true" Visible="false"
+          PackagePath="" />
+  </ItemGroup>
 </Project>
