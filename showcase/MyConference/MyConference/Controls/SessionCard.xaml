@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:MyConference.Models"
+             x:Class="MyConference.Controls.SessionCard"
+             x:DataType="models:Session">
+
+    <Border Style="{StaticResource CardBorder}" Margin="16,4">
+        <VerticalStackLayout Spacing="6" Padding="14,10">
+
+            <!-- Top row: time, room, favorite -->
+            <Grid ColumnDefinitions="Auto,Auto,*,Auto">
+                <Label Grid.Column="0"
+                       Style="{StaticResource TimeLabel}"
+                       Text="{Binding TimeSlot}" />
+                <Label Grid.Column="1"
+                       Text="•"
+                       Margin="6,0"
+                       VerticalOptions="Center"
+                       Opacity="0.5" />
+                <Label Grid.Column="2"
+                       Style="{StaticResource RoomLabel}"
+                       Text="{Binding RoomName}" />
+                <Path Grid.Column="3"
+                      Data="M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z"
+                      Aspect="Uniform"
+                      WidthRequest="20" HeightRequest="20"
+                      VerticalOptions="Center">
+                    <Path.Triggers>
+                        <DataTrigger TargetType="Path" Binding="{Binding IsFavorite}" Value="True">
+                            <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource FavoriteActiveLight}, Dark={StaticResource FavoriteActiveDark}}" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Path" Binding="{Binding IsFavorite}" Value="False">
+                            <Setter Property="Fill" Value="{AppThemeBinding Light={StaticResource FavoriteInactiveLight}, Dark={StaticResource FavoriteInactiveDark}}" />
+                        </DataTrigger>
+                    </Path.Triggers>
+                </Path>
+            </Grid>
+
+            <!-- Title -->
+            <Label Style="{StaticResource CardTitleLabel}"
+                   Text="{Binding Title}" />
+
+            <!-- Speakers row -->
+            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                <HorizontalStackLayout BindableLayout.ItemsSource="{Binding SpeakerProfiles}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:Speaker">
+                            <Border StrokeShape="RoundRectangle 14"
+                                    StrokeThickness="2"
+                                    Stroke="{AppThemeBinding Light={StaticResource SurfaceLight}, Dark={StaticResource SurfaceDark}}"
+                                    WidthRequest="28"
+                                    HeightRequest="28"
+                                    Margin="-6,0,0,0">
+                                <Image Source="{Binding ProfilePicture}"
+                                       Aspect="AspectFill" />
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </HorizontalStackLayout>
+
+                <Label VerticalOptions="Center"
+                       FontSize="13"
+                       Opacity="0.7"
+                       LineBreakMode="TailTruncation"
+                       Text="{Binding SpeakerNames}" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </Border>
+
+</ContentView>

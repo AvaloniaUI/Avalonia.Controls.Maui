@@ -450,15 +450,14 @@ Displays indicators that represent the number of items in a CarouselView.
 
 | Property | Status |
 |----------|--------|
-| Count | ⏳ TODO |
-| HideSingle | ⏳ TODO |
-| IndicatorColor | ⏳ TODO |
-| IndicatorSize | ⏳ TODO |
-| IndicatorsShape | ⏳ TODO |
-| ItemsSourceBy | ⏳ TODO |
-| MaximumVisible | ⏳ TODO |
-| Position | ⏳ TODO |
-| SelectedIndicatorColor | ⏳ TODO |
+| Count | ✅ Implemented |
+| HideSingle | ✅ Implemented |
+| IndicatorColor | ✅ Implemented |
+| IndicatorSize | ✅ Implemented |
+| IndicatorsShape | ✅ Implemented |
+| MaximumVisible | ✅ Implemented |
+| Position | ✅ Implemented |
+| SelectedIndicatorColor | ✅ Implemented |
 
 ---
 
@@ -1337,33 +1336,35 @@ A cell containing a developer-defined view, for use in a TableView or ListView.
 
 Displays web pages or local HTML content.
 
+Note: `ProcessTerminated` remains unsupported until Avalonia `NativeWebView` exposes an equivalent process-failure event.
+
 ### Properties
 
 | Property | Status |
 |----------|--------|
-| CanGoBack | ⏳ TODO |
-| CanGoForward | ⏳ TODO |
-| Cookies | ⏳ TODO |
-| Source | ⏳ TODO |
-| UserAgent | ⏳ TODO |
+| CanGoBack | ✅ Implemented |
+| CanGoForward | ✅ Implemented |
+| Cookies | ✅ Implemented |
+| Source | ✅ Implemented |
+| UserAgent | ✅ Implemented |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Navigated | ⏳ TODO |
-| Navigating | ⏳ TODO |
-| ProcessTerminated | ⏳ TODO |
+| Navigated | ✅ Implemented |
+| Navigating | ✅ Implemented |
+| ProcessTerminated | ❌ Not Supported (Avalonia backend exposes no equivalent process-failure event) |
 
 ### Methods
 
 | Method | Status |
 |--------|--------|
-| Eval | ⏳ TODO |
-| EvaluateJavaScriptAsync | ⏳ TODO |
-| GoBack | ⏳ TODO |
-| GoForward | ⏳ TODO |
-| Reload | ⏳ TODO |
+| Eval | ✅ Implemented |
+| EvaluateJavaScriptAsync | ✅ Implemented |
+| GoBack | ✅ Implemented |
+| GoForward | ✅ Implemented |
+| Reload | ✅ Implemented |
 
 ---
 

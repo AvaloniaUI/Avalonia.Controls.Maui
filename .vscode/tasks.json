@@ -77,6 +77,20 @@
                 "/property:DotNetTfm=${config:dotnetTfm}",
                 "/consoleloggerparameters:NoSummary"
             ],
+
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build_myconference_desktop",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "build",
+                "${workspaceFolder}/showcase/MyConference/MyConference/MyConference.csproj",
+                "/property:GenerateFullPaths=true",
+                "/property:DotNetTfm=${config:dotnetTfm}",
+                "/consoleloggerparameters:NoSummary"
+            ],
             "problemMatcher": "$msCompile"
         }
     ]

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="BSkyOAuthMaui.MainPage"
+             Title="BSky OAuth">
+
+    <Grid RowDefinitions="Auto,*" Padding="15">
+        <VerticalStackLayout Spacing="10" Grid.Row="0">
+            <Entry x:Name="HandleEntry"
+                   Placeholder="Enter your Bluesky handle"
+                   Keyboard="Url" />
+
+            <HorizontalStackLayout Spacing="10">
+                <Button x:Name="LoginBtn"
+                        Text="Login"
+                        Clicked="OnLoginClicked" />
+                <Button x:Name="LoadSessionBtn"
+                        Text="Load Session"
+                        Clicked="OnLoadSessionClicked" />
+                <Button x:Name="GetTimelineBtn"
+                        Text="Get Timeline"
+                        IsEnabled="False"
+                        Clicked="OnGetTimelineClicked" />
+            </HorizontalStackLayout>
+
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               IsRunning="False"
+                               IsVisible="False"
+                               HorizontalOptions="Start" />
+
+            <Label x:Name="StatusLabel"
+                   Text="Not authenticated"
+                   TextColor="Gray" />
+        </VerticalStackLayout>
+
+        <CollectionView x:Name="TimelineView" Grid.Row="1">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="LightGray"
+                            StrokeThickness="1"
+                            Padding="10"
+                            Margin="0,5"
+                            StrokeShape="RoundRectangle 8">
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding AuthorDisplay}"
+                                   FontAttributes="Bold" />
+                            <Label Text="{Binding Text}"
+                                   MaxLines="5" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>

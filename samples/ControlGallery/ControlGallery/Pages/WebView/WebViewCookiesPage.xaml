@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.WebView.WebViewCookiesPage"
+             Title="Cookies">
+    <Grid Padding="20"
+          RowDefinitions="Auto,Auto,*,Auto"
+          RowSpacing="10">
+
+        <Label Grid.Row="0"
+               Text="Seeds MauiCookie into a dedicated CookieContainer and loads httpbin's /cookies echo endpoint so the response proves what the server received."
+               FontSize="12"
+               TextColor="Gray" />
+
+        <FlexLayout Grid.Row="1"
+                    Wrap="Wrap"
+                    Direction="Row"
+                    AlignItems="Center"
+                    JustifyContent="Start">
+            <Button Text="Verify Cookie"
+                    Margin="0,0,10,10"
+                    Clicked="OnLoadCookieSampleClicked" />
+            <Button Text="Reset Cookie View"
+                    Margin="0,0,0,10"
+                    Clicked="OnResetCookieSampleClicked" />
+        </FlexLayout>
+
+        <WebView Grid.Row="2"
+                 x:Name="CookieWebView"
+                 Navigated="OnCookieWebViewNavigated">
+            <WebView.Source>
+                <HtmlWebViewSource>
+                    <HtmlWebViewSource.Html>
+                        <![CDATA[
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <body style="font-family: Segoe UI, sans-serif; margin: 24px;">
+                            <h1>Cookie sample</h1>
+                            <p>Press <strong>Verify Cookie</strong> to open <code>https://httpbin.org/cookies</code>.</p>
+                            <p>Success means the page shows <code>"MauiCookie": "Hmmm Cookies!"</code>.</p>
+                        </body>
+                        </html>
+                        ]]>
+                    </HtmlWebViewSource.Html>
+                </HtmlWebViewSource>
+            </WebView.Source>
+        </WebView>
+
+        <Label Grid.Row="3"
+               x:Name="CookieStatusLabel"
+               FontSize="12"
+               TextColor="Gray" />
+
+    </Grid>
+</ContentPage>

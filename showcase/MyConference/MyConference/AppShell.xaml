@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MyConference.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:MyConference.Views"
+    Shell.FlyoutBehavior="Disabled"
+    Title="MyConference">
+
+    <TabBar>
+        <ShellContent
+            Title="Sessions"
+            Route="sessions"
+            Icon="calendar_icon.png"
+            ContentTemplate="{DataTemplate views:SessionsPage}" />
+        <ShellContent
+            Title="Speakers"
+            Route="speakers"
+            Icon="speakers_icon.png"
+            ContentTemplate="{DataTemplate views:SpeakersPage}" />
+        <ShellContent
+            Title="Favorites"
+            Route="favorites"
+            Icon="favorites_icon.png"
+            ContentTemplate="{DataTemplate views:FavoritesPage}" />
+        <ShellContent
+            Title="About"
+            Route="about"
+            Icon="info_icon.png"
+            ContentTemplate="{DataTemplate views:AboutPage}" />
+    </TabBar>
+
+</Shell>

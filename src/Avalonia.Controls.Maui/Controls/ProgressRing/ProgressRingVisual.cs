@@ -11,8 +11,7 @@ namespace Avalonia.Controls.Maui;
 /// </summary>
 public class ProgressRingVisual : Control
 {
-    private CancellationTokenSource? _animationCts;
-    private Avalonia.Animation.Animation? _progressAnimation;
+    private Avalonia.Animation.Animation? _spinAnimation;
     
     // Geometry caching for performance
     private Geometry? _cachedGeometry;
@@ -32,6 +31,12 @@ public class ProgressRingVisual : Control
             MaximumProperty,
             StrokeThicknessProperty,
             AnimationProgressProperty);
+
+        // Use Avalonia's style system for the infinite animation.
+        // Styles call Apply() internally, which correctly handles infinite IterationCount
+        // (unlike RunAsync which throws for looping animations).
+        IsActiveProperty.Changed.AddClassHandler<ProgressRingVisual>((x, _) => x.UpdateSpinningPseudoClass());
+        IsIndeterminateProperty.Changed.AddClassHandler<ProgressRingVisual>((x, _) => x.UpdateSpinningPseudoClass());
     }
     
     /// <summary>
@@ -173,62 +178,34 @@ public class ProgressRingVisual : Control
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnAttachedToVisualTree(e);
-        UpdateAnimation();
+        UpdateSpinningPseudoClass();
     }
 
     /// <inheritdoc/>
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
         base.OnDetachedFromVisualTree(e);
-        StopAnimation();
-    }
-
-    /// <inheritdoc/>
-    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
-    {
-        base.OnPropertyChanged(change);
-        
-        if (change.Property == IsIndeterminateProperty || change.Property == IsActiveProperty)
-        {
-            UpdateAnimation();
-        }
-    }
-
-    private void UpdateAnimation()
-    {
-        if (IsActive && IsIndeterminate && VisualRoot != null)
-        {
-            StartAnimation();
-        }
-        else
-        {
-            StopAnimation();
-        }
-    }
-
-    private void StartAnimation()
-    {
-        if (_animationCts != null) return;
-        
-        _animationCts = new CancellationTokenSource();
-        EnsureAnimation();
-        _progressAnimation?.RunAsync(this, _animationCts.Token);
-    }
-
-    private void StopAnimation()
-    {
-        _animationCts?.Cancel();
-        _animationCts?.Dispose();
-        _animationCts = null;
+        PseudoClasses.Set(":spinning", false);
         AnimationProgress = 0;
     }
 
-    private void EnsureAnimation()
+    private void UpdateSpinningPseudoClass()
     {
-        if (_progressAnimation != null) return;
+        bool spinning = IsActive && IsIndeterminate && VisualRoot != null;
+        PseudoClasses.Set(":spinning", spinning);
+        if (!spinning)
+        {
+            AnimationProgress = 0;
+        }
+    }
 
-        // Simple linear animation from 0 to 1.
-        _progressAnimation = new Avalonia.Animation.Animation
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ProgressRingVisual"/> class.
+    /// </summary>
+    public ProgressRingVisual()
+    {
+        // Create the infinite spinning animation.
+        _spinAnimation = new Avalonia.Animation.Animation
         {
             Duration = TimeSpan.FromSeconds(2.0),
             IterationCount = IterationCount.Infinite,
@@ -247,6 +224,14 @@ public class ProgressRingVisual : Control
                 }
             }
         };
+
+        // Register the animation via a style targeting the :spinning pseudo-class.
+        // Avalonia's style system uses Apply() internally which correctly handles
+        // infinite IterationCount (unlike RunAsync which throws for looping animations).
+        Styles.Add(new Avalonia.Styling.Style(x => x.Is<ProgressRingVisual>().Class(":spinning"))
+        {
+            Animations = { _spinAnimation }
+        });
     }
 
     /// <summary>

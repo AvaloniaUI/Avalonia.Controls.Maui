@@ -1,11 +1,14 @@
 ﻿<html>
 <body>
-    <h1>Hello<h1>
+    <h1>User Agent Sample</h1>
+    <p>This page renders <code>navigator.userAgent</code> from the current WebView.</p>
     <h2>
         <span>Your user agent is:</span>
         <br/>
         <span id="user-agent-span"></span>
     </h2>
-    <script type="text/javascript">document.getElementById("user-agent-span").textContent = navigator.userAgent</script>
+    <script type="text/javascript">
+        document.getElementById("user-agent-span").textContent = navigator.userAgent;
+    </script>
 </body>
 </html>

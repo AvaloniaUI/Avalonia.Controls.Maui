@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.WebView.WebViewLoadWebPage"
+             Title="Load Web">
+    <Grid Padding="20"
+          RowDefinitions="Auto,Auto,Auto,*,Auto"
+          RowSpacing="10">
+
+        <Label Grid.Row="0"
+               Text="Loads remote web content into a dedicated WebView."
+               FontSize="12"
+               TextColor="Gray" />
+
+        <FlexLayout Grid.Row="1"
+                    Wrap="Wrap"
+                    Direction="Row"
+                    AlignItems="Center"
+                    JustifyContent="Start">
+            <Button Text="Avalonia"
+                    Margin="0,0,10,10"
+                    Clicked="OnLoadWebAvaloniaClicked" />
+            <Button Text="MAUI"
+                    Margin="0,0,0,10"
+                    Clicked="OnLoadWebMauiClicked" />
+        </FlexLayout>
+
+        <Grid Grid.Row="2"
+              ColumnDefinitions="*,Auto"
+              ColumnSpacing="10">
+            <Entry x:Name="WebUrlEntry"
+                   Grid.Column="0"
+                   Placeholder="Enter remote URL..."
+                   Text="https://avaloniaui.net"
+                   ReturnType="Go"
+                   Completed="OnWebUrlEntryCompleted" />
+            <Button Text="Go"
+                    Grid.Column="1"
+                    Clicked="OnLoadWebGoClicked" />
+        </Grid>
+
+        <WebView Grid.Row="3"
+                 x:Name="LoadWebWebView"
+                 Source="https://avaloniaui.net"
+                 Navigated="OnLoadWebWebViewNavigated" />
+
+        <Label Grid.Row="4"
+               x:Name="LoadWebStatusLabel"
+               FontSize="12"
+               TextColor="Gray" />
+
+    </Grid>
+</ContentPage>

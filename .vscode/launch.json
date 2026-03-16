@@ -74,6 +74,18 @@
             "stopAtEntry": false
         },
         {
+            "name": "MyConference Desktop",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build_myconference_desktop",
+            "program": "${workspaceFolder}/showcase/MyConference/MyConference/bin/Debug/${config:dotnetTfm}/MyConference.dll",
+            "args": [ 
+            ],
+            "cwd": "${workspaceFolder}/showcase/MyConference/MyConference/bin/Debug/${config:dotnetTfm}",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
             "name": ".NET Core Attach",
             "type": "coreclr",
             "request": "attach"

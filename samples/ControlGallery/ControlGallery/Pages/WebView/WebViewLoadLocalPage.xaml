@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.WebView.WebViewLoadLocalPage"
+             Title="Load Local">
+    <Grid Padding="20"
+          RowDefinitions="Auto,Auto,*,Auto"
+          RowSpacing="10">
+
+        <Label Grid.Row="0"
+               Text="Loads packaged HTML from app assets and resolves relative files such as stylesheets."
+               FontSize="12"
+               TextColor="Gray" />
+
+        <Grid Grid.Row="1"
+              ColumnDefinitions="*,Auto"
+              ColumnSpacing="10">
+            <Entry x:Name="LocalAssetEntry"
+                   Grid.Column="0"
+                   Placeholder="Enter packaged asset path..."
+                   Text="WebView/index.html"
+                   ReturnType="Go"
+                   Completed="OnLocalAssetEntryCompleted" />
+            <Button Text="Load Asset"
+                    Grid.Column="1"
+                    Clicked="OnLoadLocalAssetClicked" />
+        </Grid>
+
+        <WebView Grid.Row="2"
+                 x:Name="LocalPreviewWebView"
+                 Source="WebView/index.html"
+                 Navigated="OnLocalPreviewNavigated" />
+
+        <Label Grid.Row="3"
+               x:Name="LocalPreviewStatusLabel"
+               FontSize="12"
+               TextColor="Gray" />
+
+    </Grid>
+</ContentPage>

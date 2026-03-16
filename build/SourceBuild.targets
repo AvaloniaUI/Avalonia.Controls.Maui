@@ -49,6 +49,7 @@
       <_HasAvaloniaHeadlessXUnit Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Headless.XUnit'))">true</_HasAvaloniaHeadlessXUnit>
       <_HasAvaloniaIOS Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.iOS'))">true</_HasAvaloniaIOS>
       <_HasAvaloniaAndroid Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Android'))">true</_HasAvaloniaAndroid>
+      <_HasAvaloniaWebView Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Avalonia.Controls.WebView'))">true</_HasAvaloniaWebView>
       <!--
         Single-project MAUI apps (SingleProject=true + UseMaui=true) need direct Avalonia
         source references. In NuGet mode, Avalonia types flow transitively from the
@@ -218,6 +219,18 @@
       <ProjectReference Include="$(AvaloniaSourcePath)/src/HarfBuzz/Avalonia.HarfBuzz/Avalonia.HarfBuzz.csproj"
                         Condition="'$(_HasAvaloniaHarfBuzz)' == 'true'" />
       <PackageReference Remove="Avalonia.HarfBuzz" />
+
+      <!--
+        Avalonia.Controls.WebView: when WebViewSourcePath is set, replace the NuGet
+        package with ProjectReferences to the local checkout. The WebView package
+        depends on WebView.Core (private assets), so both are needed.
+      -->
+      <ProjectReference Include="$(WebViewSourcePath)/src/Avalonia.Controls.WebView/Avalonia.Controls.WebView.csproj"
+                        Condition="'$(WebViewSourcePath)' != '' AND '$(_HasAvaloniaWebView)' == 'true'" />
+      <ProjectReference Include="$(WebViewSourcePath)/src/Avalonia.Controls.WebView.Core/Avalonia.Controls.WebView.Core.csproj"
+                        Condition="'$(WebViewSourcePath)' != '' AND '$(_HasAvaloniaWebView)' == 'true'" />
+      <PackageReference Remove="Avalonia.Controls.WebView"
+                        Condition="'$(WebViewSourcePath)' != ''" />
 
       <!--
         ═══════════════════════════════════════════════════════════════════

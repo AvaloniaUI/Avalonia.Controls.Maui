@@ -5,5 +5,8 @@
 
     <!-- Set to your local MAUI repo path to build from source -->
     <!-- <MauiSourcePath>$(MSBuildThisFileDirectory)../maui</MauiSourcePath> -->
+
+    <!-- Set to your local Avalonia.Controls.WebView repo path to build from source -->
+    <!-- <WebViewSourcePath>$(MSBuildThisFileDirectory)../Avalonia.Controls.WebView</WebViewSourcePath> -->
   </PropertyGroup>
 </Project>
