@@ -2,6 +2,7 @@ using Avalonia.Controls.Templates;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using System.Collections.ObjectModel;
+using MauiSelectionMode = Microsoft.Maui.Controls.SelectionMode;
 
 namespace Avalonia.Controls.Maui.Tests.Controls;
 
@@ -31,6 +32,17 @@ public class MauiCollectionViewTests
         
         var internalItemsControl = collectionView.GetItemsControl();
         Assert.Equal(items, internalItemsControl?.ItemsSource);
+    }
+
+    [AvaloniaFact(DisplayName = "Null ItemsSource Clears Internal ItemsControl")]
+    public void NullItemsSourceClearsInternalItemsControl()
+    {
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = new List<string> { "A", "B" };
+
+        collectionView.ItemsSource = null;
+
+        Assert.Null(collectionView.GetItemsControl()?.ItemsSource);
     }
 
     [AvaloniaFact(DisplayName = "EmptyView String Displayed When ItemsSource Empty")]
@@ -76,6 +88,26 @@ public class MauiCollectionViewTests
         Assert.True(collectionView.GetScrollViewer()?.IsVisible);
     }
 
+    [AvaloniaFact(DisplayName = "EmptyView Reused When Empty State Unchanged")]
+    public void EmptyViewReusedWhenEmptyStateUnchanged()
+    {
+        var collectionView = CreateCollectionView();
+        collectionView.EmptyView = "Empty Message";
+        collectionView.ItemsSource = new List<string>();
+
+        var firstTextBlock = collectionView.GetVisualDescendants()
+            .OfType<TextBlock>()
+            .Single(t => t.Text == "Empty Message");
+
+        collectionView.ItemsSource = new List<string>();
+
+        var secondTextBlock = collectionView.GetVisualDescendants()
+            .OfType<TextBlock>()
+            .Single(t => t.Text == "Empty Message");
+
+        Assert.Same(firstTextBlock, secondTextBlock);
+    }
+
     [AvaloniaFact(DisplayName = "Header String Displayed")]
     public void HeaderStringDisplayed()
     {
@@ -111,7 +143,7 @@ public class MauiCollectionViewTests
         var item = "Item 1";
         
         // Testing property setting logic directly since private interaction requires reflection
-        collectionView.SelectionMode = SelectionMode.Single;
+        collectionView.SelectionMode = MauiSelectionMode.Single;
         collectionView.SelectedItem = item;
 
         Assert.Equal(item, collectionView.SelectedItem);
@@ -123,11 +155,27 @@ public class MauiCollectionViewTests
         var collectionView = CreateCollectionView();
         var selectedItems = new ObservableCollection<object> { "Item 1", "Item 2" };
         
-        collectionView.SelectionMode = SelectionMode.Multiple;
+        collectionView.SelectionMode = MauiSelectionMode.Multiple;
         collectionView.SelectedItems = selectedItems;
 
         Assert.Equal(selectedItems, collectionView.SelectedItems);
         Assert.Contains("Item 1", collectionView.SelectedItems);
         Assert.Contains("Item 2", collectionView.SelectedItems);
+    }
+
+    [AvaloniaFact(DisplayName = "Grouped Inner Collection Changes Update Items")]
+    public void GroupedInnerCollectionChangesUpdateItems()
+    {
+        var firstGroup = new ObservableCollection<string> { "A" };
+        var groups = new ObservableCollection<ObservableCollection<string>> { firstGroup };
+        var collectionView = CreateCollectionView();
+        collectionView.IsGrouped = true;
+        collectionView.ItemsSource = groups;
+
+        Assert.Equal(1, collectionView.GetItemsControl()?.ItemCount);
+
+        firstGroup.Add("B");
+
+        Assert.Equal(2, collectionView.GetItemsControl()?.ItemCount);
     }
 }

@@ -283,13 +283,7 @@ public static class CollectionViewExtensions
     {
         if (itemsView is Microsoft.Maui.Controls.SelectableItemsView selectableItemsView)
         {
-            platformView.SelectionMode = selectableItemsView.SelectionMode switch
-            {
-                Microsoft.Maui.Controls.SelectionMode.None => global::Avalonia.Controls.SelectionMode.Single,
-                Microsoft.Maui.Controls.SelectionMode.Single => global::Avalonia.Controls.SelectionMode.Single,
-                Microsoft.Maui.Controls.SelectionMode.Multiple => global::Avalonia.Controls.SelectionMode.Multiple,
-                _ => global::Avalonia.Controls.SelectionMode.Single
-            };
+            platformView.SelectionMode = selectableItemsView.SelectionMode;
 
             if (selectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.None)
             {

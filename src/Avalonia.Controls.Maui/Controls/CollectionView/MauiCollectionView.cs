@@ -11,8 +11,10 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Microsoft.Maui.Controls;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using MauiSelectionMode = Microsoft.Maui.Controls.SelectionMode;
 
 namespace Avalonia.Controls.Maui;
 
@@ -28,6 +30,11 @@ public class MauiCollectionView : TemplatedControl
     private Control? _footerView;
     private Panel? _rootPanel;
     private StackPanel? _mainContainer;
+    private readonly HashSet<INotifyCollectionChanged> _subscribedGroupCollections = new();
+    private object? _renderedEmptyViewSource;
+    private IDataTemplate? _renderedEmptyViewTemplate;
+    private bool _isEmptyViewVisible;
+    private bool _hasReachedRemainingItemsThreshold;
 
     /// <summary>Defines the <see cref="ItemsSource"/> property.</summary>
     public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty =
@@ -64,10 +71,10 @@ public class MauiCollectionView : TemplatedControl
             defaultBindingMode: Data.BindingMode.TwoWay);
 
     /// <summary>Defines the <see cref="SelectionMode"/> property.</summary>
-    public static readonly StyledProperty<SelectionMode> SelectionModeProperty =
-        AvaloniaProperty.Register<MauiCollectionView, SelectionMode>(
+    public static readonly StyledProperty<MauiSelectionMode> SelectionModeProperty =
+        AvaloniaProperty.Register<MauiCollectionView, MauiSelectionMode>(
             nameof(SelectionMode),
-            SelectionMode.Single);
+            MauiSelectionMode.Single);
 
     /// <summary>Defines the <see cref="ItemsLayout"/> property.</summary>
     public static readonly StyledProperty<IItemsLayout?> ItemsLayoutProperty =
@@ -143,6 +150,7 @@ public class MauiCollectionView : TemplatedControl
         HeaderTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
         FooterProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
         FooterTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
+        RemainingItemsThresholdProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.ResetRemainingItemsThresholdGate());
     }
 
     /// <summary>
@@ -240,7 +248,7 @@ public class MauiCollectionView : TemplatedControl
     /// <summary>
     /// Gets or sets the selection behavior for the collection view.
     /// </summary>
-    public SelectionMode SelectionMode
+    public MauiSelectionMode SelectionMode
     {
         get => GetValue(SelectionModeProperty);
         set => SetValue(SelectionModeProperty, value);
@@ -463,13 +471,13 @@ public class MauiCollectionView : TemplatedControl
 
     private void HandleSelection(object? dataContext)
     {
-        if (SelectionMode != SelectionMode.Single &&
-            SelectionMode != SelectionMode.Multiple)
+        if (SelectionMode != MauiSelectionMode.Single &&
+            SelectionMode != MauiSelectionMode.Multiple)
             return;
 
         var actualData = dataContext is GroupItem groupItem ? groupItem.Data : dataContext;
 
-        if (SelectionMode == SelectionMode.Multiple)
+        if (SelectionMode == MauiSelectionMode.Multiple)
         {
             var selectedItems = SelectedItems;
             if (selectedItems == null)
@@ -507,6 +515,17 @@ public class MauiCollectionView : TemplatedControl
     {
         if (Equals(e.OldValue, e.NewValue))
             return;
+
+        if (SelectionMode == MauiSelectionMode.None)
+        {
+            if (e.NewValue != null)
+            {
+                SetCurrentValue(SelectedItemProperty, null);
+            }
+
+            UpdateSelectionVisuals();
+            return;
+        }
 
         SelectionChanged?.Invoke(this, EventArgs.Empty);
         UpdateSelectionVisuals();
@@ -633,11 +652,11 @@ public class MauiCollectionView : TemplatedControl
         if (item is GroupItem groupItem)
             item = groupItem.Data;
 
-        if (SelectionMode == SelectionMode.Single)
+        if (SelectionMode == MauiSelectionMode.Single)
         {
             return Equals(SelectedItem, item);
         }
-        else if (SelectionMode == SelectionMode.Multiple)
+        else if (SelectionMode == MauiSelectionMode.Multiple)
         {
             return SelectedItems != null && SelectedItems.Contains(item!);
         }
@@ -769,25 +788,39 @@ public class MauiCollectionView : TemplatedControl
             oldCollection.CollectionChanged -= OnCollectionChanged;
         }
 
+        UnsubscribeFromGroupCollections();
+
         if (e.NewValue is INotifyCollectionChanged newCollection)
         {
             newCollection.CollectionChanged += OnCollectionChanged;
         }
 
+        SubscribeToGroupCollections();
+
         UpdateItemsSource();
         UpdateEmptyView();
+        ResetRemainingItemsThresholdGate();
     }
 
     private void OnGroupingChanged()
     {
+        SubscribeToGroupCollections();
         UpdateItemTemplate();
         UpdateItemsSource();
+        UpdateEmptyView();
+        ResetRemainingItemsThresholdGate();
     }
 
     private void UpdateItemsSource()
     {
         if (_itemsControl == null)
             return;
+
+        if (ItemsSource == null)
+        {
+            _itemsControl.ItemsSource = null;
+            return;
+        }
 
         if (IsGrouped && ItemsSource is IEnumerable enumerable)
         {
@@ -820,16 +853,26 @@ public class MauiCollectionView : TemplatedControl
         {
             _itemsControl.ItemsSource = nonGroupedEnumerable;
         }
+        else
+        {
+            _itemsControl.ItemsSource = null;
+        }
     }
 
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (ReferenceEquals(sender, ItemsSource))
+        {
+            SubscribeToGroupCollections();
+        }
+
         if (IsGrouped)
         {
             UpdateItemsSource();
         }
 
         UpdateEmptyView();
+        ResetRemainingItemsThresholdGate();
     }
 
     private void UpdateEmptyView()
@@ -837,38 +880,45 @@ public class MauiCollectionView : TemplatedControl
         if (_rootPanel == null)
             return;
 
-        if (_emptyView != null && _rootPanel.Children.Contains(_emptyView))
-        {
-            _rootPanel.Children.Remove(_emptyView);
-            _emptyView = null;
-        }
-
-        bool isEmpty = ItemsSource == null || !ItemsSource.GetEnumerator().MoveNext();
-
-        if (isEmpty && (EmptyView != null || EmptyViewTemplate != null))
-        {
-            if (EmptyViewTemplate != null)
-            {
-                _emptyView = EmptyViewTemplate.Build(EmptyView);
-            }
-            else if (EmptyView is Control control)
-            {
-                _emptyView = control;
-            }
-            else if (EmptyView is string text)
-            {
-                _emptyView = new TextBlock { Text = text };
-            }
-
-            if (_emptyView != null)
-            {
-                _rootPanel.Children.Add(_emptyView);
-            }
-        }
+        bool isEmpty = IsItemsSourceEmpty();
 
         if (_itemsControl != null)
         {
             _itemsControl.IsVisible = !isEmpty;
+        }
+
+        if (!isEmpty)
+        {
+            RemoveEmptyView();
+            return;
+        }
+
+        if (CanReuseEmptyView())
+        {
+            return;
+        }
+
+        RemoveEmptyView();
+
+        if (EmptyViewTemplate != null)
+        {
+            _emptyView = EmptyViewTemplate.Build(EmptyView);
+        }
+        else if (EmptyView is Control control)
+        {
+            _emptyView = control;
+        }
+        else if (EmptyView is string text)
+        {
+            _emptyView = new TextBlock { Text = text };
+        }
+
+        if (_emptyView != null)
+        {
+            _rootPanel.Children.Add(_emptyView);
+            _isEmptyViewVisible = true;
+            _renderedEmptyViewSource = EmptyView;
+            _renderedEmptyViewTemplate = EmptyViewTemplate;
         }
     }
 
@@ -951,23 +1001,114 @@ public class MauiCollectionView : TemplatedControl
 
         ScrollChanged?.Invoke(this, e);
 
-        if (RemainingItemsThreshold >= 0)
+        if (RemainingItemsThreshold < 0)
         {
-            var verticalOffset = _scrollViewer.Offset.Y;
-            var viewportHeight = _scrollViewer.Viewport.Height;
-            var extentHeight = _scrollViewer.Extent.Height;
+            _hasReachedRemainingItemsThreshold = false;
+            return;
+        }
 
-            if (extentHeight > 0)
+        var verticalOffset = _scrollViewer.Offset.Y;
+        var viewportHeight = _scrollViewer.Viewport.Height;
+        var extentHeight = _scrollViewer.Extent.Height;
+
+        if (extentHeight <= 0)
+        {
+            _hasReachedRemainingItemsThreshold = false;
+            return;
+        }
+
+        var remainingDistance = extentHeight - (verticalOffset + viewportHeight);
+        var thresholdDistance = viewportHeight * (RemainingItemsThreshold + 1) / 10.0;
+        var isWithinThreshold = remainingDistance <= thresholdDistance;
+
+        if (isWithinThreshold && !_hasReachedRemainingItemsThreshold)
+        {
+            _hasReachedRemainingItemsThreshold = true;
+            RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
+        }
+        else if (!isWithinThreshold)
+        {
+            _hasReachedRemainingItemsThreshold = false;
+        }
+    }
+
+    private void SubscribeToGroupCollections()
+    {
+        UnsubscribeFromGroupCollections();
+
+        if (!IsGrouped || ItemsSource is not IEnumerable groups)
+            return;
+
+        foreach (var group in groups)
+        {
+            if (group is INotifyCollectionChanged groupCollection)
             {
-                var remainingDistance = extentHeight - (verticalOffset + viewportHeight);
-                var thresholdDistance = viewportHeight * (RemainingItemsThreshold + 1) / 10.0;
-
-                if (remainingDistance <= thresholdDistance)
-                {
-                    RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
-                }
+                groupCollection.CollectionChanged += OnCollectionChanged;
+                _subscribedGroupCollections.Add(groupCollection);
             }
         }
+    }
+
+    private void UnsubscribeFromGroupCollections()
+    {
+        foreach (var groupCollection in _subscribedGroupCollections)
+        {
+            groupCollection.CollectionChanged -= OnCollectionChanged;
+        }
+
+        _subscribedGroupCollections.Clear();
+    }
+
+    private bool IsItemsSourceEmpty()
+    {
+        if (ItemsSource == null)
+            return true;
+
+        if (ItemsSource is ICollection collection)
+            return collection.Count == 0;
+
+        if (ItemsSource is IReadOnlyCollection<object> readOnlyCollection)
+            return readOnlyCollection.Count == 0;
+
+        var enumerator = ItemsSource.GetEnumerator();
+
+        try
+        {
+            return !enumerator.MoveNext();
+        }
+        finally
+        {
+            (enumerator as IDisposable)?.Dispose();
+        }
+    }
+
+    private bool CanReuseEmptyView()
+    {
+        return _isEmptyViewVisible &&
+            _emptyView != null &&
+            Equals(_renderedEmptyViewSource, EmptyView) &&
+            ReferenceEquals(_renderedEmptyViewTemplate, EmptyViewTemplate);
+    }
+
+    private void RemoveEmptyView()
+    {
+        if (_rootPanel == null)
+            return;
+
+        if (_emptyView != null && _rootPanel.Children.Contains(_emptyView))
+        {
+            _rootPanel.Children.Remove(_emptyView);
+        }
+
+        _emptyView = null;
+        _isEmptyViewVisible = false;
+        _renderedEmptyViewSource = null;
+        _renderedEmptyViewTemplate = null;
+    }
+
+    private void ResetRemainingItemsThresholdGate()
+    {
+        _hasReachedRemainingItemsThreshold = false;
     }
 
     /// <summary>

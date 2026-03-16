@@ -61,6 +61,11 @@ public static class BenchmarkRegistry
         Register<GraphicsViewLeakBenchmark>();
         Register<PropertyMappingPerformanceBenchmark>();
         Register<LayoutPerformanceBenchmark>();
+        Register<LayoutPassCountBenchmark>();
+        Register<CollectionViewLoadBenchmark>();
+        Register<CollectionViewIncrementalUpdateBenchmark>();
+        Register<CollectionViewScrollBenchmark>();
+        Register<CollectionViewEmptyViewToggleBenchmark>();
         Register<NavigationPerformanceBenchmark>();
         Register<IdleRenderMemoryGrowthBenchmark>();
         Register<ShellTabSwitchMemoryGrowthBenchmark>();

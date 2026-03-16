@@ -157,13 +157,9 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
                 else if (selectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Multiple)
                 {
                     var virtualSelectedItems = selectableItemsView.SelectedItems;
-                    if (selectedItems != null && virtualSelectedItems != null)
+                    if (virtualSelectedItems != null)
                     {
-                        virtualSelectedItems.Clear();
-                        foreach (var item in selectedItems)
-                        {
-                            virtualSelectedItems.Add(item);
-                        }
+                        SynchronizeSelectedItems(virtualSelectedItems, selectedItems ?? []);
                     }
 
                     // Execute command for Multiple selection (pass the list of items)
@@ -179,6 +175,25 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
                 _isUpdatingSelection = false;
             }
         });
+    }
+
+    internal static void SynchronizeSelectedItems(IList<object> target, IReadOnlyCollection<object> source)
+    {
+        for (int i = target.Count - 1; i >= 0; i--)
+        {
+            if (!source.Contains(target[i]))
+            {
+                target.RemoveAt(i);
+            }
+        }
+
+        foreach (var item in source)
+        {
+            if (!target.Contains(item))
+            {
+                target.Add(item);
+            }
+        }
     }
 
     private void OnRemainingItemsThresholdReached(object? sender, EventArgs e)
