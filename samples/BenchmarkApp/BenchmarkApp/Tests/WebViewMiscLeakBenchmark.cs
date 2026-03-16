@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Net;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls;
 
@@ -6,9 +7,10 @@ namespace BenchmarkApp.Tests;
 
 /// <summary>
 /// Tests that WebView control and its handler are collected after disconnect.
-/// WebViewHandler uses a placeholder control and has navigation event subscriptions.
+/// Covers the mapped WebView surface including events, HtmlWebViewSource base URLs,
+/// cookies, and custom user agents before disconnecting the handler.
 /// </summary>
-[BenchmarkTest("WebViewMiscLeak", Description = "Verifies WebView is collected after disconnect")]
+[BenchmarkTest("WebViewMiscLeak", Description = "Verifies WebView plus mapped state is collected after disconnect")]
 public class WebViewMiscLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
@@ -103,23 +105,35 @@ public class WebViewMiscLeakBenchmark : BenchmarkTestPage
         Dictionary<string, WeakReference<object>> trackedObjects,
         VerticalStackLayout layout)
     {
-        // First WebView with HTML source
+        var cookies = new CookieContainer();
+        cookies.Add(new Cookie("BenchmarkCookie", "Avalonia.Controls.Maui", "/", "example.com"));
+
+        // First WebView exercises HtmlWebViewSource base URLs, cookie sync, and user agent mapping.
         var webView1 = new WebView
         {
             HeightRequest = 200,
-            Source = new HtmlWebViewSource { Html = "<html><body><p>Test</p></body></html>" },
+            UserAgent = "BenchmarkHtmlWebView/1.0",
+            Cookies = cookies,
+            Source = new HtmlWebViewSource
+            {
+                Html = "<html><body><p>Benchmark HTML source.</p></body></html>",
+                BaseUrl = "https://example.com/",
+            },
         };
         webView1.Navigating += (_, _) => { };
         webView1.Navigated += (_, _) => { };
         layout.Children.Add(webView1);
         trackedObjects["WebView1"] = new WeakReference<object>(webView1);
 
-        // Second WebView with URL source
+        // Second WebView keeps URL navigation in the mix while exercising user agent mapping.
         var webView2 = new WebView
         {
             HeightRequest = 200,
+            UserAgent = "BenchmarkUrlWebView/1.0",
             Source = new UrlWebViewSource { Url = "about:blank" },
         };
+        webView2.Navigating += (_, _) => { };
+        webView2.Navigated += (_, _) => { };
         layout.Children.Add(webView2);
         trackedObjects["WebView2"] = new WeakReference<object>(webView2);
     }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.WebView.WebViewInlineHtmlPage"
+             Title="Inline HTML">
+    <Grid Padding="20"
+          RowDefinitions="Auto,Auto,*,Auto"
+          RowSpacing="10">
+
+        <Label Grid.Row="0"
+               Text="Renders HtmlWebViewSource content directly so markup updates can be verified without touching navigation history."
+               FontSize="12"
+               TextColor="Gray" />
+
+        <Button Grid.Row="1"
+                Text="Refresh Inline Content"
+                HorizontalOptions="Start"
+                Clicked="OnRefreshInlineHtmlClicked" />
+
+        <WebView Grid.Row="2"
+                 x:Name="InlineHtmlWebView" />
+
+        <Label Grid.Row="3"
+               x:Name="InlineHtmlStatusLabel"
+               FontSize="12"
+               TextColor="Gray" />
+
+    </Grid>
+</ContentPage>
