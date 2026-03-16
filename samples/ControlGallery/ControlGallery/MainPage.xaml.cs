@@ -101,6 +101,9 @@ public partial class MainPage : FlyoutPage
         [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
         [typeof(PreferencesPage)] = () => new PreferencesPage(),
         [typeof(FilePickerPage)] = () => new FilePickerPage(),
+        [typeof(Pages.Essentials.DeviceDisplayPage)] = () => new Pages.Essentials.DeviceDisplayPage(),
+        [typeof(Pages.Essentials.DeviceInfoPage)] = () => new Pages.Essentials.DeviceInfoPage(),
+        [typeof(Pages.Essentials.BatteryPage)] = () => new Pages.Essentials.BatteryPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
         // Embedding
@@ -279,6 +282,13 @@ public partial class MainPage : FlyoutPage
                 new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
                 new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
+            }),
+
+            new SampleGroup("Essentials Device", new List<SampleItem>
+            {
+                new("Device Display", "Screen metrics and orientation", typeof(ControlGallery.Pages.Essentials.DeviceDisplayPage)),
+                new("Device Info", "Hardware and platform details", typeof(ControlGallery.Pages.Essentials.DeviceInfoPage)),
+                new("Battery", "Charge level and power status", typeof(ControlGallery.Pages.Essentials.BatteryPage)),
             }),
 
             new SampleGroup("Embedding", new List<SampleItem>

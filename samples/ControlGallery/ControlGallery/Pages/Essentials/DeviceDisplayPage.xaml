@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.Essentials.DeviceDisplayPage"
+             Title="Device Display">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <Label Text="Device Display"
+                   Style="{StaticResource SubHeadline}"/>
+
+            <!-- Main Display Info -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Main Display Info"
+                           FontAttributes="Bold"/>
+                    
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="20" RowSpacing="10">
+                        <Label Text="Width:" Grid.Row="0" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label x:Name="WidthLabel" Grid.Row="0" Grid.Column="1"/>
+
+                        <Label Text="Height:" Grid.Row="1" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label x:Name="HeightLabel" Grid.Row="1" Grid.Column="1"/>
+
+                        <Label Text="Density:" Grid.Row="2" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label x:Name="DensityLabel" Grid.Row="2" Grid.Column="1"/>
+
+                        <Label Text="Orientation:" Grid.Row="3" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label x:Name="OrientationLabel" Grid.Row="3" Grid.Column="1"/>
+
+                        <Label Text="Rotation:" Grid.Row="4" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label x:Name="RotationLabel" Grid.Row="4" Grid.Column="1"/>
+
+                        <Label Text="Refresh Rate:" Grid.Row="5" Grid.Column="0" FontAttributes="Bold"/>
+                        <Label x:Name="RefreshRateLabel" Grid.Row="5" Grid.Column="1"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Screen On Toggle -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="Keep Screen On:" VerticalOptions="Center" FontAttributes="Bold"/>
+                    <Switch x:Name="KeepScreenOnSwitch" Toggled="OnKeepScreenOnToggled"/>
+                </HorizontalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
