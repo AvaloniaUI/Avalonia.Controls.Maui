@@ -20,12 +20,12 @@
             <Button x:Name="PlaygroundBackButton"
                     Text="Back"
                     Margin="0,0,10,10"
-                    IsEnabled="{Binding Source={x:Reference PlaygroundWebView}, Path=CanGoBack}"
+                    IsEnabled="{Binding Source={x:Reference PlaygroundWebView}, Path=CanGoBack, x:DataType=WebView}"
                     Clicked="OnPlaygroundBackClicked" />
             <Button x:Name="PlaygroundForwardButton"
                     Text="Forward"
                     Margin="0,0,10,10"
-                    IsEnabled="{Binding Source={x:Reference PlaygroundWebView}, Path=CanGoForward}"
+                    IsEnabled="{Binding Source={x:Reference PlaygroundWebView}, Path=CanGoForward, x:DataType=WebView}"
                     Clicked="OnPlaygroundForwardClicked" />
             <Button Text="Reload"
                     Margin="0,0,10,10"
