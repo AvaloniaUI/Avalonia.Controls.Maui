@@ -180,17 +180,21 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
 
     internal static void SynchronizeSelectedItems(IList<object> target, IReadOnlyCollection<object> source)
     {
+        var sourceSet = new HashSet<object>(source, ReferenceEqualityComparer.Instance);
+
         for (int i = target.Count - 1; i >= 0; i--)
         {
-            if (!source.Contains(target[i]))
+            if (!sourceSet.Contains(target[i]))
             {
                 target.RemoveAt(i);
             }
         }
 
+        var targetSet = new HashSet<object>(target, ReferenceEqualityComparer.Instance);
+
         foreach (var item in source)
         {
-            if (!target.Contains(item))
+            if (!targetSet.Contains(item))
             {
                 target.Add(item);
             }

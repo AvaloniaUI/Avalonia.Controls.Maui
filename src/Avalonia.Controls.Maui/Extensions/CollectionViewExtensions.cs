@@ -121,10 +121,6 @@ public static class CollectionViewExtensions
 
                 mauiView.BindingContext = item;
                 var platformControl = (Control)mauiView.ToPlatform(handler.MauiContext);
-                if (platformControl != null)
-                {
-                    AttachLogicalChildCleanup(platformControl);
-                }
                 return platformControl ?? new TextBlock { Text = "No items" };
             });
 
@@ -332,6 +328,7 @@ public static class CollectionViewExtensions
                     parentElement.AddLogicalChild(headerView);
                 }
                 var platformControl = (Control)headerView.ToPlatform(handler.MauiContext);
+                platformControl.Tag = headerView;
                 AttachLogicalChildCleanup(platformControl);
                 platformView.Header = platformControl;
             }
@@ -403,6 +400,7 @@ public static class CollectionViewExtensions
                     parentElement.AddLogicalChild(footerView);
                 }
                 var platformControl = (Control)footerView.ToPlatform(handler.MauiContext);
+                platformControl.Tag = footerView;
                 AttachLogicalChildCleanup(platformControl);
                 platformView.Footer = platformControl;
             }

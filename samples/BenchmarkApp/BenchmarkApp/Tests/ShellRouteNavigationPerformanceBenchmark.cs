@@ -68,6 +68,11 @@ public class ShellRouteNavigationPerformanceBenchmark : BenchmarkTestPage
             window.Page = this;
             Content = new Label { Text = "Shell route performance benchmark complete" };
             BenchmarkUiHelpers.DisconnectElementTree(shell.CurrentPage);
+
+            Routing.UnRegisterRoute(detailRoute);
+            Routing.UnRegisterRoute(lessonRoute);
+            Routing.UnRegisterRoute(quizRoute);
+
             await BenchmarkUiHelpers.WaitForIdleAsync(cancellationToken, 20);
         }
     }

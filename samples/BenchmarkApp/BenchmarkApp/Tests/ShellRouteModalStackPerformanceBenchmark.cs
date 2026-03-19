@@ -81,6 +81,10 @@ public class ShellRouteModalStackPerformanceBenchmark : BenchmarkTestPage
             window.Page = this;
             Content = new Label { Text = "Shell route modal stack performance benchmark complete" };
             BenchmarkUiHelpers.DisconnectElementTree(shell.CurrentPage);
+
+            Routing.UnRegisterRoute(detailRoute);
+            Routing.UnRegisterRoute(lessonRoute);
+
             await BenchmarkUiHelpers.WaitForIdleAsync(cancellationToken, 20);
         }
     }
