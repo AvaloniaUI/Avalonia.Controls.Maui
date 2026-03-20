@@ -231,7 +231,7 @@ public static class ViewExtensions
     public static void Unfocus(this PlatformView control, IView view)
     {
         var topLevel = TopLevel.GetTopLevel(control);
-        topLevel?.FocusManager?.ClearFocus();
+        topLevel?.FocusManager?.Focus(null);
     }
 
     /// <summary>

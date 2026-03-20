@@ -484,12 +484,12 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             else if (_searchBar != null)
             {
                 var topLevel = TopLevel.GetTopLevel(_searchBar);
-                topLevel?.FocusManager?.ClearFocus();
+                topLevel?.FocusManager?.Focus(null);
                 e.Result = true;
             }
         }
 
-        private void OnSearchBarGotFocus(object? sender, Avalonia.Input.GotFocusEventArgs e)
+        private void OnSearchBarGotFocus(object? sender, Avalonia.Input.FocusChangedEventArgs e)
         {
             InvokeSearchHandlerMethod("OnFocused");
         }
@@ -623,7 +623,7 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                 }
 
                 var topLevel = TopLevel.GetTopLevel(this);
-                topLevel?.FocusManager?.ClearFocus();
+                topLevel?.FocusManager?.Focus(null);
 
                 if (_mauiSearchHandler != null)
                 {
