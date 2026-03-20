@@ -14,8 +14,8 @@ namespace BenchmarkApp.Tests;
 /// Gap: RefreshViewLeakBenchmark toggles IsRefreshing in a flat layout and never navigates.
 /// It never has an active refresh at the moment of disconnect.
 /// </remarks>
-[BenchmarkTest("RefreshViewWithNavAndBindingChurnLeak", Description = "Verifies RefreshView isn't leaked when actively refreshing during navigation pop")]
-public class RefreshViewWithNavigationAndBindingChurnBenchmark : BenchmarkTestPage
+[BenchmarkTest("RefreshViewWithNavigationAndBindingChurnLeak", Description = "Verifies RefreshView isn't leaked when actively refreshing during navigation pop")]
+public class RefreshViewWithNavigationAndBindingChurnLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
     public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
