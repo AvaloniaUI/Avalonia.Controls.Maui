@@ -17,7 +17,7 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 public partial class ShellHandlerTests : HandlerTestBase
 {
     private static DrawerPage? GetDrawerPage(MauiShellHandler handler) =>
-        (handler.PlatformView as Avalonia.Controls.ContentPage)?.Content as DrawerPage;
+        ((handler.PlatformView as Avalonia.Controls.ContentPage)?.Content as ContentControl)?.Content as DrawerPage;
 
     [AvaloniaFact(DisplayName = "Shell Creates Platform View")]
     public async Task ShellCreatesPlatformView()

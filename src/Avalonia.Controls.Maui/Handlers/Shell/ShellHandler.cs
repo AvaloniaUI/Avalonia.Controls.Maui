@@ -461,11 +461,17 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 
         _flyoutContainer.Content = _mainContainer;
 
-        // Return a ContentPage hosting the DrawerPage so it can be placed
-        // inside an Avalonia NavigationPage (StackNavigationManager expects ContentPage).
-        return new Avalonia.Controls.ContentPage
+        var pageWrapper = new ContentControl
         {
             Content = _flyoutContainer,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            HorizontalContentAlignment = HorizontalAlignment.Stretch,
+            VerticalContentAlignment = VerticalAlignment.Stretch
+        };
+        return new Avalonia.Controls.ContentPage
+        {
+            Content = pageWrapper,
             ContentTemplate = null,
             HorizontalContentAlignment = HorizontalAlignment.Stretch,
             VerticalContentAlignment = VerticalAlignment.Stretch
