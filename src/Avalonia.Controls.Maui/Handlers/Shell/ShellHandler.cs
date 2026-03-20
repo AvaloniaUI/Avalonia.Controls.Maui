@@ -657,7 +657,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             Threading.Dispatcher.UIThread.Post(() => 
             {
                 var topLevel = _mainContainer != null ? TopLevel.GetTopLevel(_mainContainer) : null;
-                topLevel?.FocusManager?.ClearFocus();
+                topLevel?.FocusManager?.Focus(null);
             });
         }
         else if (e.PropertyName == nameof(VisualElement.BackgroundColor))
@@ -1182,7 +1182,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         
         if (topLevel != null)
         {
-            topLevel.FocusManager?.ClearFocus();
+            topLevel.FocusManager?.Focus(null);
         }
 
         if (VirtualView == null)

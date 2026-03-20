@@ -6,7 +6,7 @@ using Avalonia.Media;
 using Avalonia.VisualTree;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using PipsPager = Avalonia.Controls.Maui.Controls.PipsPager;
+using PipsPager = Avalonia.Controls.PipsPager;
 
 namespace Avalonia.Controls.Maui.Platform;
 
