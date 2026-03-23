@@ -11,11 +11,12 @@ public partial class AvaloniaClipboard
         return ClipboardInterop.ReadTextAsync();
     }
 
-    private partial Task PlatformSetTextAsync(string? text)
+    private partial async Task<bool> PlatformSetTextAsync(string? text)
     {
         if (text is null)
-            return Task.CompletedTask;
+            return true;
 
-        return ClipboardInterop.WriteTextAsync(text);
+        await ClipboardInterop.WriteTextAsync(text);
+        return true;
     }
 }

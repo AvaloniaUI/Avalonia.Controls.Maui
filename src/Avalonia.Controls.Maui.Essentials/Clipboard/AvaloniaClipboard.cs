@@ -50,14 +50,18 @@ public partial class AvaloniaClipboard : MauiClipboard
     /// <inheritdoc/>
     public async Task SetTextAsync(string? text)
     {
+        bool success;
         try
         {
-            await PlatformSetTextAsync(text);
+            success = await PlatformSetTextAsync(text);
         }
         catch
         {
             return;
         }
+
+        if (!success)
+            return;
 
         UpdateState(text);
         ClipboardContentChanged?.Invoke(this, EventArgs.Empty);
@@ -71,5 +75,5 @@ public partial class AvaloniaClipboard : MauiClipboard
 
     private partial Task<string?> PlatformGetTextAsync();
 
-    private partial Task PlatformSetTextAsync(string? text);
+    private partial Task<bool> PlatformSetTextAsync(string? text);
 }

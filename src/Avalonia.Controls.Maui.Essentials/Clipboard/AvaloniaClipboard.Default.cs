@@ -24,19 +24,18 @@ public partial class AvaloniaClipboard
         return await clipboard.TryGetTextAsync();
     }
 
-    private partial async Task PlatformSetTextAsync(string? text)
+    private partial async Task<bool> PlatformSetTextAsync(string? text)
     {
         var clipboard = GetClipboard();
         if (clipboard is null)
-            return;
+            return false;
 
         if (!Dispatcher.UIThread.CheckAccess())
-        {
             await Dispatcher.UIThread.InvokeAsync(async () => await clipboard.SetTextAsync(text));
-            return;
-        }
+        else
+            await clipboard.SetTextAsync(text);
 
-        await clipboard.SetTextAsync(text);
+        return true;
     }
 
     IClipboard? GetClipboard()

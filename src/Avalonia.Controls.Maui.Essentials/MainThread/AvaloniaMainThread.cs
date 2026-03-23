@@ -24,6 +24,8 @@ public static class AvaloniaMainThread
     /// <param name="action">The action to invoke on the main thread.</param>
     public static void BeginInvokeOnMainThread(Action action)
     {
+        ArgumentNullException.ThrowIfNull(action);
+
         if (IsMainThread)
             action();
         else
@@ -37,6 +39,8 @@ public static class AvaloniaMainThread
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public static async Task InvokeOnMainThreadAsync(Action action)
     {
+        ArgumentNullException.ThrowIfNull(action);
+
         if (IsMainThread)
         {
             action();
@@ -54,6 +58,8 @@ public static class AvaloniaMainThread
     /// <returns>A <see cref="Task{T}"/> representing the asynchronous operation with the result.</returns>
     public static async Task<T> InvokeOnMainThreadAsync<T>(Func<T> func)
     {
+        ArgumentNullException.ThrowIfNull(func);
+
         if (IsMainThread)
             return func();
 
@@ -67,6 +73,8 @@ public static class AvaloniaMainThread
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public static async Task InvokeOnMainThreadAsync(Func<Task> funcTask)
     {
+        ArgumentNullException.ThrowIfNull(funcTask);
+
         if (IsMainThread)
         {
             await funcTask();
@@ -84,6 +92,8 @@ public static class AvaloniaMainThread
     /// <returns>A <see cref="Task{T}"/> representing the asynchronous operation with the result.</returns>
     public static async Task<T> InvokeOnMainThreadAsync<T>(Func<Task<T>> funcTask)
     {
+        ArgumentNullException.ThrowIfNull(funcTask);
+
         if (IsMainThread)
             return await funcTask();
 
