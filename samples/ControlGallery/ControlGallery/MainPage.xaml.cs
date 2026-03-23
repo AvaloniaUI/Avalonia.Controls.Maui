@@ -98,6 +98,8 @@ public partial class MainPage : FlyoutPage
         [typeof(VisualStateManagerPage)] = () => new VisualStateManagerPage(),
         [typeof(LifecycleEventsPage)] = () => new LifecycleEventsPage(),
         // Essentials
+        [typeof(BrowserPage)] = () => new BrowserPage(),
+        [typeof(LauncherPage)] = () => new LauncherPage(),
         [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
         [typeof(PreferencesPage)] = () => new PreferencesPage(),
         [typeof(FilePickerPage)] = () => new FilePickerPage(),
@@ -276,7 +278,9 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Essentials", new List<SampleItem>
             {
+                new("Browser", "Open URLs in the system browser", typeof(BrowserPage)),
                 new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
+                new("Launcher", "Open URIs with the default handler", typeof(LauncherPage)),
                 new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
             }),
