@@ -16,7 +16,7 @@ namespace BenchmarkApp.Tests;
 /// compound path of toolbar item subscription swapping during rapid navigation.
 /// </remarks>
 [BenchmarkTest("NavigationWithToolbarChurnLeak", Description = "Verifies rapid push/pop with changing ToolbarItems doesn't leak")]
-public class NavigationWithToolbarChurnBenchmark : BenchmarkTestPage
+public class NavigationWithToolbarChurnLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
     public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)

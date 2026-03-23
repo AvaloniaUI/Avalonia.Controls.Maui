@@ -19,6 +19,7 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
             [nameof(ItemsView.HorizontalScrollBarVisibility)] = MapHorizontalScrollBarVisibility,
             [nameof(ItemsView.VerticalScrollBarVisibility)] = MapVerticalScrollBarVisibility,
             [nameof(StructuredItemsView.ItemsLayout)] = MapItemsLayout,
+            [nameof(StructuredItemsView.ItemSizingStrategy)] = MapItemSizingStrategy,
             [nameof(StructuredItemsView.Header)] = MapHeader,
             [nameof(StructuredItemsView.HeaderTemplate)] = MapHeaderTemplate,
             [nameof(StructuredItemsView.Footer)] = MapFooter,
@@ -157,13 +158,9 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
                 else if (selectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Multiple)
                 {
                     var virtualSelectedItems = selectableItemsView.SelectedItems;
-                    if (selectedItems != null && virtualSelectedItems != null)
+                    if (virtualSelectedItems != null)
                     {
-                        virtualSelectedItems.Clear();
-                        foreach (var item in selectedItems)
-                        {
-                            virtualSelectedItems.Add(item);
-                        }
+                        SynchronizeSelectedItems(virtualSelectedItems, selectedItems ?? []);
                     }
 
                     // Execute command for Multiple selection (pass the list of items)
@@ -179,6 +176,29 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
                 _isUpdatingSelection = false;
             }
         });
+    }
+
+    internal static void SynchronizeSelectedItems(IList<object> target, IReadOnlyCollection<object> source)
+    {
+        var sourceSet = new HashSet<object>(source, ReferenceEqualityComparer.Instance);
+
+        for (int i = target.Count - 1; i >= 0; i--)
+        {
+            if (!sourceSet.Contains(target[i]))
+            {
+                target.RemoveAt(i);
+            }
+        }
+
+        var targetSet = new HashSet<object>(target, ReferenceEqualityComparer.Instance);
+
+        foreach (var item in source)
+        {
+            if (!targetSet.Contains(item))
+            {
+                target.Add(item);
+            }
+        }
     }
 
     private void OnRemainingItemsThresholdReached(object? sender, EventArgs e)
@@ -249,6 +269,14 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
         handler.PlatformView.UpdateItemsLayout(itemsView);
     }
 
+    /// <summary>Maps the ItemSizingStrategy property to the platform view.</summary>
+    /// <param name="handler">The handler for the collection view.</param>
+    /// <param name="itemsView">The virtual items view.</param>
+    public static void MapItemSizingStrategy(CollectionViewHandler handler, ItemsView itemsView)
+    {
+        handler.PlatformView.UpdateItemSizingStrategy(itemsView);
+    }
+
     /// <summary>Maps the IsGrouped property to the platform view.</summary>
     /// <param name="handler">The handler for the collection view.</param>
     /// <param name="itemsView">The virtual items view.</param>
@@ -287,6 +315,13 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
     public static void MapSelectionMode(CollectionViewHandler handler, ItemsView itemsView)
     {
         handler.PlatformView.UpdateSelectionMode(itemsView);
+
+        if (itemsView is SelectableItemsView selectableItemsView &&
+            selectableItemsView.SelectionMode != Microsoft.Maui.Controls.SelectionMode.None)
+        {
+            handler.PlatformView.UpdateSelectedItem(itemsView);
+            handler.PlatformView.UpdateSelectedItems(itemsView);
+        }
     }
 
     /// <summary>Maps the Header property to the platform view.</summary>

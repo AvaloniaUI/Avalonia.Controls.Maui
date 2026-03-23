@@ -26,8 +26,8 @@
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.0-preview2</AvaloniaVersion>
-        <AvaloniaWebViewVersion Condition="'$(AvaloniaWebViewVersion)' == ''">12.0.0-preview2</AvaloniaWebViewVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.0-rc1</AvaloniaVersion>
+        <AvaloniaWebViewVersion Condition="'$(AvaloniaWebViewVersion)' == ''">12.0.0-rc1</AvaloniaWebViewVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net11.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
         <BuildDirectory>$(MSBuildThisFileDirectory)/build/</BuildDirectory>

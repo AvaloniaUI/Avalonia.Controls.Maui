@@ -7,6 +7,9 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>Avalonia handler for <see cref="IScrollView"/>.</summary>
 public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
 {
+    private static readonly MethodInfo? s_setContentSizeMethod = GetSetter("ContentSize");
+    private static readonly MethodInfo? s_setScrollXMethod = GetSetter("ScrollX");
+    private static readonly MethodInfo? s_setScrollYMethod = GetSetter("ScrollY");
     private EventHandler<ScrollChangedEventArgs>? _scrollChangedHandler;
 
     /// <summary>Property mapper for <see cref="ScrollViewHandler"/>.</summary>
@@ -160,12 +163,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
         var targetSize = new GraphicsSize(avaloniaSize.Width, avaloniaSize.Height);
         if (scrollView is Microsoft.Maui.Controls.ScrollView mauiScrollView)
         {
-            var contentSizeProperty = typeof(Microsoft.Maui.Controls.ScrollView).GetProperty(
-                "ContentSize",
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var setter = contentSizeProperty?.GetSetMethod(true);
-            setter?.Invoke(mauiScrollView, [targetSize]);
+            s_setContentSizeMethod?.Invoke(mauiScrollView, [targetSize]);
         }
     }
 
@@ -191,16 +189,14 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
             return;
         }
 
-        var scrollXProp = typeof(Microsoft.Maui.Controls.ScrollView).GetProperty("ScrollX", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        if (scrollXProp?.CanWrite == true)
-        {
-            scrollXProp.SetValue(mauiScrollView, scrollX);
-        }
+        s_setScrollXMethod?.Invoke(mauiScrollView, [scrollX]);
+        s_setScrollYMethod?.Invoke(mauiScrollView, [scrollY]);
+    }
 
-        var scrollYProp = typeof(Microsoft.Maui.Controls.ScrollView).GetProperty("ScrollY", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        if (scrollYProp?.CanWrite == true)
-        {
-            scrollYProp.SetValue(mauiScrollView, scrollY);
-        }
+    private static MethodInfo? GetSetter(string propertyName)
+    {
+        return typeof(Microsoft.Maui.Controls.ScrollView)
+            .GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?
+            .GetSetMethod(true);
     }
 }

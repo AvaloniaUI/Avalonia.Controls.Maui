@@ -15,8 +15,8 @@ namespace BenchmarkApp.Tests;
 /// has no modals. ModalPageLeakBenchmark has no Shell. ShellFlyoutItemChurnLeakBenchmark has no
 /// modals or in-tab navigation.
 /// </remarks>
-[BenchmarkTest("ShellNavWithModalsAndFlyoutLeak", Description = "Verifies Shell + flyout + in-tab nav + modals compound navigation doesn't leak")]
-public class ShellNavigationWithModalsAndFlyoutBenchmark : BenchmarkTestPage
+[BenchmarkTest("ShellNavigationWithModalsAndFlyoutLeak", Description = "Verifies Shell + flyout + in-tab navigation + modals compound navigation doesn't leak")]
+public class ShellNavigationWithModalsAndFlyoutLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
     public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
