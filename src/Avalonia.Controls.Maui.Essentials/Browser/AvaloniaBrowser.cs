@@ -10,6 +10,10 @@ public partial class AvaloniaBrowser : IBrowser
     /// <inheritdoc/>
     public async Task<bool> OpenAsync(Uri uri, BrowserLaunchOptions options)
     {
+        var scheme = uri.Scheme;
+        if (scheme != Uri.UriSchemeHttp && scheme != Uri.UriSchemeHttps)
+            return false;
+
         try
         {
             return await PlatformOpenAsync(uri);

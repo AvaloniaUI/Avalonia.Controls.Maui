@@ -13,7 +13,13 @@ public partial class BrowserPage : ContentPage
         if (string.IsNullOrWhiteSpace(url))
             return;
 
-        var result = await Browser.Default.OpenAsync(new Uri(url), BrowserLaunchMode.SystemPreferred);
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri))
+        {
+            ResultLabel.Text = "Invalid URL";
+            return;
+        }
+
+        var result = await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
         ResultLabel.Text = result ? "Opened" : "Failed to open";
     }
 

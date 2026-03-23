@@ -7,7 +7,7 @@ public partial class AvaloniaBrowser
 {
     private partial Task<bool> PlatformOpenAsync(Uri uri)
     {
-        var window = LauncherInterop.WindowOpen(uri.AbsoluteUri, "_blank");
+        using var window = LauncherInterop.WindowOpen(uri.AbsoluteUri, "_blank");
         return Task.FromResult(window is not null);
     }
 }
