@@ -161,17 +161,4 @@
     <EnableAvaloniaXamlCompilation Condition="'$(EnableAvaloniaXamlCompilation)' == ''">true</EnableAvaloniaXamlCompilation>
   </PropertyGroup>
 
-  <!-- Redirect MainThread to AvaloniaMainThread for projects that reference Essentials
-       on non-platform TFMs (net11.0 / net11.0-browser) where MAUI's native MainThread is unavailable. -->
-  <Target Name="_AddAvaloniaMainThreadAlias" BeforeTargets="CoreCompile"
-          Condition="'$(AvaloniaControlsMauiDisableMainThreadAlias)' != 'true'
-              And ('$(_AvMauiTargetPlatformId)' == '' Or '$(_AvMauiTargetPlatformId)' == 'browser')">
-    <ItemGroup>
-      <_EssentialsRef Include="@(ProjectReference)" Condition="$([System.String]::new('%(Filename)').Contains('Avalonia.Controls.Maui.Essentials'))" />
-      <_EssentialsRef Include="@(PackageReference)" Condition="$([System.String]::new('%(Identity)').Contains('Avalonia.Controls.Maui.Essentials'))" />
-    </ItemGroup>
-    <ItemGroup Condition="'@(_EssentialsRef)' != ''">
-      <Using Include="Avalonia.Controls.Maui.Essentials.AvaloniaMainThread" Alias="MainThread" />
-    </ItemGroup>
-  </Target>
 </Project>

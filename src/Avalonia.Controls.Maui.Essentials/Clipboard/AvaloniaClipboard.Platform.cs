@@ -5,8 +5,8 @@ using Avalonia.Threading;
 namespace Avalonia.Controls.Maui.Essentials;
 
 /// <summary>
-/// Desktop-specific clipboard implementation using Avalonia's <c>TopLevel.Clipboard</c> API.
-/// Monitors <c>Window.Activated</c> to detect external clipboard changes.
+/// Platform implementation using Avalonia's <c>TopLevel.Clipboard</c> API.
+/// On desktop, monitors <c>Window.Activated</c> to detect external clipboard changes.
 /// </summary>
 public partial class AvaloniaClipboard
 {
@@ -73,7 +73,6 @@ public partial class AvaloniaClipboard
         }
         catch
         {
-            // Clipboard access can fail on some platforms.
         }
     }
 }

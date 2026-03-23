@@ -426,20 +426,17 @@ Monitor the device magnetometer sensor which detects the device's orientation re
 
 Run code on the application's main UI thread.
 
-> **Note:** MAUI's static `MainThread` class has no extensibility point (`SetDefault()`) for custom backends.
-> Use `AvaloniaMainThread` (in `Avalonia.Controls.Maui.Essentials`) instead — it provides the same API
-> backed by Avalonia's `Dispatcher.UIThread`, working on both Linux and WebAssembly.
-
-### Static Class: AvaloniaMainThread
+### Static Class: MainThread
 
 | Member | Type | Status |
 |--------|------|--------|
-| IsMainThread | Property | ✅ Implemented |
-| BeginInvokeOnMainThread(Action) | Method | ✅ Implemented |
-| InvokeOnMainThreadAsync(Action) | Method | ✅ Implemented |
-| InvokeOnMainThreadAsync\<T\>(Func\<T\>) | Method | ✅ Implemented |
-| InvokeOnMainThreadAsync(Func\<Task\>) | Method | ✅ Implemented |
-| InvokeOnMainThreadAsync\<T\>(Func\<Task\<T\>\>) | Method | ✅ Implemented |
+| IsMainThread | Property | ⏳ TODO |
+| BeginInvokeOnMainThread(Action) | Method | ⏳ TODO |
+| InvokeOnMainThreadAsync(Action) | Method | ⏳ TODO |
+| InvokeOnMainThreadAsync<T>(Func<T>) | Method | ⏳ TODO |
+| InvokeOnMainThreadAsync(Func<Task>) | Method | ⏳ TODO |
+| InvokeOnMainThreadAsync<T>(Func<Task<T>>) | Method | ⏳ TODO |
+| GetMainThreadSynchronizationContextAsync() | Method | ⏳ TODO |
 
 ---
 

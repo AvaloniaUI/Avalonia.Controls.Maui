@@ -30,10 +30,7 @@ public partial class ClipboardPage : ContentPage
 
     void OnClipboardContentChanged(object? sender, EventArgs e)
     {
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            EventLabel.Text = $"Last event: {DateTime.Now:T}";
-        });
+        EventLabel.Text = $"Last event: {DateTime.Now:T}";
     }
 
     protected override void OnDisappearing()
