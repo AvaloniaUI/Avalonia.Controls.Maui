@@ -7,8 +7,8 @@ namespace Avalonia.Controls.Maui.Essentials;
 /// for both desktop (Linux) and browser (WebAssembly) targets.
 /// </summary>
 /// <remarks>
-/// Delegates to Avalonia's <c>TopLevel.Clipboard</c> API on all platforms (desktop and browser).
-/// On desktop, monitors window activation to detect external clipboard changes.
+/// Delegates to Avalonia's <c>TopLevel.Clipboard</c> API on all platforms.
+/// On desktop, monitors <c>Window.Activated</c> to detect external clipboard changes.
 /// </remarks>
 public partial class AvaloniaClipboard : MauiClipboard
 {

@@ -10,7 +10,7 @@ namespace Avalonia.Controls.Maui.Essentials;
 /// </summary>
 public partial class AvaloniaClipboard
 {
-    bool _isSubscribed;
+    Window? _subscribedWindow;
 
     private partial async Task<string?> PlatformGetTextAsync()
     {
@@ -40,27 +40,43 @@ public partial class AvaloniaClipboard
 
     IClipboard? GetClipboard()
     {
-        EnsureSubscribedToWindowActivation();
+        EnsureSubscribed();
         return _platformProvider.GetTopLevel()?.Clipboard;
     }
 
-    void EnsureSubscribedToWindowActivation()
+    void EnsureSubscribed()
     {
-        if (_isSubscribed)
+        if (_subscribedWindow is not null)
             return;
 
         if (_platformProvider.GetTopLevel() is Window window)
         {
             window.Activated += OnWindowActivated;
-            _isSubscribed = true;
+            window.Closed += OnWindowClosed;
+            _subscribedWindow = window;
         }
+    }
+
+    void Unsubscribe()
+    {
+        if (_subscribedWindow is null)
+            return;
+
+        _subscribedWindow.Activated -= OnWindowActivated;
+        _subscribedWindow.Closed -= OnWindowClosed;
+        _subscribedWindow = null;
+    }
+
+    void OnWindowClosed(object? sender, EventArgs e)
+    {
+        Unsubscribe();
     }
 
     async void OnWindowActivated(object? sender, EventArgs e)
     {
         try
         {
-            var clipboard = _platformProvider.GetTopLevel()?.Clipboard;
+            var clipboard = _subscribedWindow?.Clipboard;
             if (clipboard is null)
                 return;
 
