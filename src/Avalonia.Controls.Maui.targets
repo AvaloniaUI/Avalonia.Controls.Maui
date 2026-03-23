@@ -160,4 +160,14 @@
   <PropertyGroup>
     <EnableAvaloniaXamlCompilation Condition="'$(EnableAvaloniaXamlCompilation)' == ''">true</EnableAvaloniaXamlCompilation>
   </PropertyGroup>
+
+  <!-- Redirect MainThread to AvaloniaMainThread so existing MAUI code using
+       MainThread.BeginInvokeOnMainThread() works transparently on Avalonia backends.
+       Only applied on non-platform targets (net11.0 / net11.0-browser) where MAUI's
+       native MainThread is not available. On Android/iOS/Windows/macCatalyst, the
+       native MainThread works and should not be shadowed. -->
+  <ItemGroup Condition="'$(AvaloniaControlsMauiDisableMainThreadAlias)' != 'true'
+      And ('$(_AvMauiTargetPlatformId)' == '' Or '$(_AvMauiTargetPlatformId)' == 'browser')">
+    <Using Include="Avalonia.Controls.Maui.Essentials.AvaloniaMainThread" Alias="MainThread" />
+  </ItemGroup>
 </Project>

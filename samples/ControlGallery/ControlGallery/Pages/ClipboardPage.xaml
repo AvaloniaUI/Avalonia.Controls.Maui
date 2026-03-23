@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ClipboardPage"
+             Title="Clipboard">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Copy Text -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Copy to Clipboard"
+                           FontAttributes="Bold"/>
+                    <Entry x:Name="CopyEntry"
+                           Placeholder="Enter text to copy"/>
+                    <Button Text="Copy"
+                            Clicked="OnCopyClicked"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Paste Text -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Paste from Clipboard"
+                           FontAttributes="Bold"/>
+                    <Button Text="Paste"
+                            Clicked="OnPasteClicked"/>
+                    <Label x:Name="PasteResultLabel"
+                           Text="Pasted: --"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- HasText Check -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Clipboard Status"
+                           FontAttributes="Bold"/>
+                    <Button Text="Check HasText"
+                            Clicked="OnCheckHasTextClicked"/>
+                    <Label x:Name="HasTextLabel"
+                           Text="HasText: --"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ClipboardContentChanged -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Content Changed Event"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="EventLabel"
+                           Text="Last event: --"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
