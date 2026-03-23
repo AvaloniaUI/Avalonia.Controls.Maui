@@ -29,7 +29,17 @@ public partial class AvaloniaClipboard : MauiClipboard
     public bool HasText => _hasText;
 
     /// <inheritdoc/>
-    public event EventHandler<EventArgs>? ClipboardContentChanged;
+    public event EventHandler<EventArgs>? ClipboardContentChanged
+    {
+        add
+        {
+            _clipboardContentChanged += value;
+            EnsureSubscribed();
+        }
+        remove => _clipboardContentChanged -= value;
+    }
+
+    EventHandler<EventArgs>? _clipboardContentChanged;
 
     /// <inheritdoc/>
     public async Task<string?> GetTextAsync()
@@ -63,7 +73,7 @@ public partial class AvaloniaClipboard : MauiClipboard
             return;
 
         UpdateState(text);
-        ClipboardContentChanged?.Invoke(this, EventArgs.Empty);
+        _clipboardContentChanged?.Invoke(this, EventArgs.Empty);
     }
 
     void UpdateState(string? text)
@@ -75,4 +85,6 @@ public partial class AvaloniaClipboard : MauiClipboard
     private partial Task<string?> PlatformGetTextAsync();
 
     private partial Task<bool> PlatformSetTextAsync(string? text);
+
+    partial void EnsureSubscribed();
 }

@@ -14,7 +14,7 @@ public partial class AvaloniaClipboard
 
     private partial async Task<string?> PlatformGetTextAsync()
     {
-        var clipboard = GetClipboard();
+        var clipboard = _platformProvider.GetTopLevel()?.Clipboard;
         if (clipboard is null)
             return null;
 
@@ -26,7 +26,7 @@ public partial class AvaloniaClipboard
 
     private partial async Task<bool> PlatformSetTextAsync(string? text)
     {
-        var clipboard = GetClipboard();
+        var clipboard = _platformProvider.GetTopLevel()?.Clipboard;
         if (clipboard is null)
             return false;
 
@@ -38,13 +38,7 @@ public partial class AvaloniaClipboard
         return true;
     }
 
-    IClipboard? GetClipboard()
-    {
-        EnsureSubscribed();
-        return _platformProvider.GetTopLevel()?.Clipboard;
-    }
-
-    void EnsureSubscribed()
+    partial void EnsureSubscribed()
     {
         if (_subscribedWindow is not null)
             return;
@@ -85,7 +79,7 @@ public partial class AvaloniaClipboard
             UpdateState(currentText);
 
             if (changed)
-                ClipboardContentChanged?.Invoke(this, EventArgs.Empty);
+                _clipboardContentChanged?.Invoke(this, EventArgs.Empty);
         }
         catch
         {
