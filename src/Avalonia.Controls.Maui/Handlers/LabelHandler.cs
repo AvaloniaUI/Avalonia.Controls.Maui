@@ -37,6 +37,7 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>
         [nameof(ILabel.Background)] = MapBackground,
         [nameof(MauiLabel.TextTransform)] = MapTextTransform,
         [nameof(MauiLabel.FormattedText)] = MapFormattedText,
+        [nameof(MauiLabel.TextType)] = MapTextType,
     };
 
     /// <summary>Command mapper for <see cref="LabelHandler"/>.</summary>
@@ -163,6 +164,14 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>
     /// <param name="label">The virtual view.</param>
     public static void MapFormattedText(LabelHandler handler, ILabel label) =>
         ((AvaloniaTextBlock)handler.PlatformView)?.UpdateFormattedText(label, handler);
+
+    /// <summary>
+    /// Maps the TextType property to the platform view.
+    /// </summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="label">The virtual view.</param>
+    public static void MapTextType(LabelHandler handler, ILabel label) =>
+        ((AvaloniaTextBlock)handler.PlatformView)?.UpdateTextType(label);
 }
 
 /// <summary>Extension methods for mapping MAUI Label properties to Avalonia controls.</summary>
@@ -173,7 +182,29 @@ public static class LabelTextBlockExtensions
     /// <param name="label">The MAUI label providing the text.</param>
     public static void UpdateText(this AvaloniaTextBlock textBlock, ILabel label)
     {
+        if (label is MauiLabel mauiLabel)
+        {
+            if (mauiLabel.TextType == TextType.Html)
+            {
+                textBlock.UpdateHtmlText(mauiLabel);
+                return;
+            }
+
+            if (mauiLabel.FormattedText != null && mauiLabel.FormattedText.Spans.Count > 0)
+                return;
+        }
+
         textBlock.UpdateTextPlainText(label);
+    }
+
+    /// <summary>
+    /// Updates the TextType property on the platform view, re-rendering text as plain or HTML.
+    /// </summary>
+    /// <param name="textBlock">The Avalonia text block.</param>
+    /// <param name="label">The MAUI label providing the text type.</param>
+    public static void UpdateTextType(this AvaloniaTextBlock textBlock, ILabel label)
+    {
+        textBlock.UpdateText(label);
     }
 
     /// <summary>Updates the TextColor property on the platform view.</summary>
@@ -359,6 +390,24 @@ public static class LabelTextBlockExtensions
     internal static void DetermineTruncatedTextWrapping(this AvaloniaTextBlock textBlock) =>
         textBlock.TextWrapping = textBlock.MaxLines > 1 ? TextWrapping.Wrap : TextWrapping.NoWrap;
 
+    internal static void UpdateHtmlText(this AvaloniaTextBlock textBlock, MauiLabel label)
+    {
+        var html = label.Text ?? string.Empty;
+
+        textBlock.Text = null;
+
+        if (string.IsNullOrEmpty(html))
+            return;
+
+        var convertedInlines = Avalonia.Controls.Maui.Platform.HtmlToInlinesConverter.Convert(html);
+        var inlines = new Avalonia.Controls.Documents.InlineCollection();
+        foreach (var inline in convertedInlines)
+        {
+            inlines.Add(inline);
+        }
+        textBlock.Inlines = inlines;
+    }
+
     internal static void UpdateTextPlainText(this AvaloniaTextBlock textBlock, ILabel label)
     {
         var text = label.Text ?? string.Empty;
@@ -397,8 +446,8 @@ public static class LabelTextBlockExtensions
             return;
         }
 
-        // Re-apply text with transform
-        textBlock.UpdateTextPlainText(label);
+        // Re-apply text (respects TextType)
+        textBlock.UpdateText(label);
     }
 
     
@@ -417,27 +466,22 @@ public static class LabelTextBlockExtensions
         var formattedText = mauiLabel.FormattedText;
         if (formattedText == null || formattedText.Spans.Count == 0)
         {
-            // Fall back to plain text if no formatted text
             textBlock.UpdateTextPlainText(label);
             return;
         }
 
-        // Clear existing content
         textBlock.Text = null;
-        textBlock.Inlines?.Clear();
-
-        if (textBlock.Inlines == null)
-        {
-            return;
-        }
+        var inlines = new Avalonia.Controls.Documents.InlineCollection();
 
         var fontManager = handler.GetRequiredService<IFontManager>();
 
         foreach (var span in formattedText.Spans)
         {
             var run = CreateRun(span, fontManager);
-            textBlock.Inlines.Add(run);
+            inlines.Add(run);
         }
+
+        textBlock.Inlines = inlines;
     }
 
     private static Run CreateRun(MauiSpan span, IFontManager fontManager)

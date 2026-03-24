@@ -484,7 +484,7 @@ Displays single-line and multi-line text.
 | TextColor | ✅ Implemented |
 | TextDecorations | ✅ Implemented |
 | TextTransform | ✅ Implemented |
-| TextType | ⏳ TODO |
+| TextType | ✅ Implemented |
 | VerticalTextAlignment | ⏳ TODO |
 
 ---
@@ -644,7 +644,7 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | Content | ✅ Implemented |
  | IsBusy | ✅ Implemented |
  | Padding | ⏳ TODO |
- | Title | ⏳ TODO |
+ | Title | ✅ Implemented |
  | IconImageSource | ⏳ TODO |
  | ToolbarItems | ✅ Implemented |
  

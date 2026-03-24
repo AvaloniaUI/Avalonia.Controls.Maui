@@ -47,6 +47,7 @@ public partial class MainPage : FlyoutPage
         [typeof(IndicatorViewPage)] = () => new IndicatorViewPage(),
         [typeof(ImagePage)] = () => new ImagePage(),
         [typeof(ImageButtonPage)] = () => new ImageButtonPage(),
+        [typeof(LabelPage)] = () => new LabelPage(),
         [typeof(ListViewPage)] = () => new ListViewPage(),
         [typeof(MapPage)] = () => new MapPage(),
         [typeof(PickerPage)] = () => new PickerPage(),
@@ -209,6 +210,7 @@ public partial class MainPage : FlyoutPage
                 new("IndicatorView", "Page position indicators for CarouselView", typeof(IndicatorViewPage)),
                 new("Image", "Visual content display", typeof(ImagePage)),
                 new("ImageButton", "Interactive image button", typeof(ImageButtonPage)),
+                new("Label", "Single and multi-line text display", typeof(LabelPage)),
                 new("ListView", "Scrolling data items", typeof(ListViewPage)),
                 // TODO: Re-enable when Map is ready
                 //new("Map", "Interactive maps and pins", typeof(MapPage)),
