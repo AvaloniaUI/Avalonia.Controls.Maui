@@ -198,7 +198,7 @@ public class ViewHandlerTests : HandlerTestBase
             Assert.True(entry.IsFocused, "Entry should reflect focus state");
             Assert.True(focusedCount > 0, "Focused event should fire");
 
-            window.FocusManager?.ClearFocus();
+            window.FocusManager?.Focus(null);
             Dispatcher.UIThread.RunJobs();
 
             Assert.False(entry.IsFocused, "Entry should clear focus state");

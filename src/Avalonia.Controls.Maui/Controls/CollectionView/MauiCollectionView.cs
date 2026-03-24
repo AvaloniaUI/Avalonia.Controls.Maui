@@ -11,8 +11,11 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using Microsoft.Maui.Controls;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using MauiItemSizingStrategy = Microsoft.Maui.Controls.ItemSizingStrategy;
+using MauiSelectionMode = Microsoft.Maui.Controls.SelectionMode;
 
 namespace Avalonia.Controls.Maui;
 
@@ -28,6 +31,12 @@ public class MauiCollectionView : TemplatedControl
     private Control? _footerView;
     private Panel? _rootPanel;
     private StackPanel? _mainContainer;
+    private ObservableCollection<object>? _flattenedGroupedItems;
+    private readonly HashSet<INotifyCollectionChanged> _subscribedGroupCollections = new();
+    private object? _renderedEmptyViewSource;
+    private IDataTemplate? _renderedEmptyViewTemplate;
+    private bool _isEmptyViewVisible;
+    private bool _hasReachedRemainingItemsThreshold;
 
     /// <summary>Defines the <see cref="ItemsSource"/> property.</summary>
     public static readonly StyledProperty<IEnumerable?> ItemsSourceProperty =
@@ -64,16 +73,22 @@ public class MauiCollectionView : TemplatedControl
             defaultBindingMode: Data.BindingMode.TwoWay);
 
     /// <summary>Defines the <see cref="SelectionMode"/> property.</summary>
-    public static readonly StyledProperty<SelectionMode> SelectionModeProperty =
-        AvaloniaProperty.Register<MauiCollectionView, SelectionMode>(
+    public static readonly StyledProperty<MauiSelectionMode> SelectionModeProperty =
+        AvaloniaProperty.Register<MauiCollectionView, MauiSelectionMode>(
             nameof(SelectionMode),
-            SelectionMode.Single);
+            MauiSelectionMode.None);
 
     /// <summary>Defines the <see cref="ItemsLayout"/> property.</summary>
     public static readonly StyledProperty<IItemsLayout?> ItemsLayoutProperty =
         AvaloniaProperty.Register<MauiCollectionView, IItemsLayout?>(
             nameof(ItemsLayout),
             LinearItemsLayout.Vertical);
+
+    /// <summary>Defines the <see cref="ItemSizingStrategy"/> property.</summary>
+    public static readonly StyledProperty<MauiItemSizingStrategy> ItemSizingStrategyProperty =
+        AvaloniaProperty.Register<MauiCollectionView, MauiItemSizingStrategy>(
+            nameof(ItemSizingStrategy),
+            MauiItemSizingStrategy.MeasureAllItems);
 
     /// <summary>Defines the <see cref="IsGrouped"/> property.</summary>
     public static readonly StyledProperty<bool> IsGroupedProperty =
@@ -135,14 +150,17 @@ public class MauiCollectionView : TemplatedControl
         HorizontalScrollBarVisibilityProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnScrollBarVisibilityChanged());
         VerticalScrollBarVisibilityProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnScrollBarVisibilityChanged());
         ItemsLayoutProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnItemsLayoutChanged(e));
+        ItemSizingStrategyProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnItemSizingStrategyChanged());
         IsGroupedProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnGroupingChanged());
         GroupHeaderTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnGroupingChanged());
         GroupFooterTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnGroupingChanged());
         SelectedItemProperty.Changed.AddClassHandler<MauiCollectionView>((cv, e) => cv.OnSelectedItemChanged(e));
+        SelectionModeProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.OnSelectionModeChanged());
         HeaderProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
         HeaderTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
         FooterProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
         FooterTemplateProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.UpdateHeaderFooter());
+        RemainingItemsThresholdProperty.Changed.AddClassHandler<MauiCollectionView>((cv, _) => cv.ResetRemainingItemsThresholdGate());
     }
 
     /// <summary>
@@ -240,7 +258,7 @@ public class MauiCollectionView : TemplatedControl
     /// <summary>
     /// Gets or sets the selection behavior for the collection view.
     /// </summary>
-    public SelectionMode SelectionMode
+    public MauiSelectionMode SelectionMode
     {
         get => GetValue(SelectionModeProperty);
         set => SetValue(SelectionModeProperty, value);
@@ -253,6 +271,15 @@ public class MauiCollectionView : TemplatedControl
     {
         get => GetValue(ItemsLayoutProperty);
         set => SetValue(ItemsLayoutProperty, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the strategy used to measure and size items in the collection.
+    /// </summary>
+    public MauiItemSizingStrategy ItemSizingStrategy
+    {
+        get => GetValue(ItemSizingStrategyProperty);
+        set => SetValue(ItemSizingStrategyProperty, value);
     }
 
     /// <summary>
@@ -365,7 +392,7 @@ public class MauiCollectionView : TemplatedControl
         // (not DynamicResource bindings), so we need to force recreation of all items
         // by re-applying the template and refreshing the items source.
         UpdateItemTemplate();
-        UpdateItemsSource();
+        UpdateItemsSource(forceRebuild: true);
         UpdateHeaderFooter();
         UpdateEmptyView();
     }
@@ -430,7 +457,7 @@ public class MauiCollectionView : TemplatedControl
 
                 content ??= new TextBlock { Text = obj?.ToString() ?? string.Empty };
 
-                return WrapItemForSelection(content);
+                return WrapItemIfSelectable(content, obj);
             });
 
             _itemsControl.ItemTemplate = template;
@@ -442,7 +469,7 @@ public class MauiCollectionView : TemplatedControl
                 var content = ItemTemplate.Build(obj);
                 if (content != null)
                 {
-                    return WrapItemForSelection(content);
+                    return WrapItemIfSelectable(content, obj);
                 }
 
                 return null;
@@ -451,8 +478,13 @@ public class MauiCollectionView : TemplatedControl
         }
     }
 
-    private Control WrapItemForSelection(Control content)
+    private Control WrapItemIfSelectable(Control content, object? item)
     {
+        if (!ShouldWrapItemForSelection(item))
+        {
+            return content;
+        }
+
         return new SelectionContainer(this)
         {
             Child = content,
@@ -461,15 +493,30 @@ public class MauiCollectionView : TemplatedControl
         };
     }
 
+    private bool ShouldWrapItemForSelection(object? item)
+    {
+        if (SelectionMode == MauiSelectionMode.None)
+        {
+            return false;
+        }
+
+        if (item is GroupItem groupItem)
+        {
+            return !groupItem.IsHeader && !groupItem.IsFooter;
+        }
+
+        return true;
+    }
+
     private void HandleSelection(object? dataContext)
     {
-        if (SelectionMode != SelectionMode.Single &&
-            SelectionMode != SelectionMode.Multiple)
+        if (SelectionMode != MauiSelectionMode.Single &&
+            SelectionMode != MauiSelectionMode.Multiple)
             return;
 
         var actualData = dataContext is GroupItem groupItem ? groupItem.Data : dataContext;
 
-        if (SelectionMode == SelectionMode.Multiple)
+        if (SelectionMode == MauiSelectionMode.Multiple)
         {
             var selectedItems = SelectedItems;
             if (selectedItems == null)
@@ -508,7 +555,34 @@ public class MauiCollectionView : TemplatedControl
         if (Equals(e.OldValue, e.NewValue))
             return;
 
+        if (SelectionMode == MauiSelectionMode.None)
+        {
+            if (e.NewValue != null)
+            {
+                SetCurrentValue(SelectedItemProperty, null);
+            }
+
+            UpdateSelectionVisuals();
+            return;
+        }
+
         SelectionChanged?.Invoke(this, EventArgs.Empty);
+        UpdateSelectionVisuals();
+    }
+
+    private void OnSelectionModeChanged()
+    {
+        if (SelectionMode == MauiSelectionMode.None)
+        {
+            if (SelectedItem != null)
+            {
+                SetCurrentValue(SelectedItemProperty, null);
+            }
+
+            SelectedItems?.Clear();
+        }
+
+        UpdateItemTemplate();
         UpdateSelectionVisuals();
     }
 
@@ -545,12 +619,6 @@ public class MauiCollectionView : TemplatedControl
         {
             base.OnDetachedFromVisualTree(e);
             _owner.UnregisterItemContainer(this);
-
-            // Clean up MAUI parent chain established for RelativeSource bindings
-            if (Child is Control content && content.Tag is Microsoft.Maui.Controls.Element mauiElement)
-            {
-                (mauiElement.Parent as Microsoft.Maui.Controls.Element)?.RemoveLogicalChild(mauiElement);
-            }
         }
 
         protected override void OnDataContextChanged(EventArgs e)
@@ -633,11 +701,11 @@ public class MauiCollectionView : TemplatedControl
         if (item is GroupItem groupItem)
             item = groupItem.Data;
 
-        if (SelectionMode == SelectionMode.Single)
+        if (SelectionMode == MauiSelectionMode.Single)
         {
             return Equals(SelectedItem, item);
         }
-        else if (SelectionMode == SelectionMode.Multiple)
+        else if (SelectionMode == MauiSelectionMode.Multiple)
         {
             return SelectedItems != null && SelectedItems.Contains(item!);
         }
@@ -762,6 +830,13 @@ public class MauiCollectionView : TemplatedControl
         }
     }
 
+    private void OnItemSizingStrategyChanged()
+    {
+        // ItemSizingStrategy is currently consumed as an opt-in scroll fast path.
+        // Layout still uses the same measurement behavior unless a more complete
+        // virtualization/recycling implementation is introduced.
+    }
+
     private void OnItemsSourceChanged(AvaloniaPropertyChangedEventArgs e)
     {
         if (e.OldValue is INotifyCollectionChanged oldCollection)
@@ -769,67 +844,356 @@ public class MauiCollectionView : TemplatedControl
             oldCollection.CollectionChanged -= OnCollectionChanged;
         }
 
+        UnsubscribeFromGroupCollections();
+
         if (e.NewValue is INotifyCollectionChanged newCollection)
         {
             newCollection.CollectionChanged += OnCollectionChanged;
         }
 
-        UpdateItemsSource();
+        SubscribeToGroupCollections();
+
+        UpdateItemsSource(forceRebuild: true);
         UpdateEmptyView();
+        ResetRemainingItemsThresholdGate();
     }
 
     private void OnGroupingChanged()
     {
+        SubscribeToGroupCollections();
         UpdateItemTemplate();
-        UpdateItemsSource();
+        UpdateItemsSource(forceRebuild: true);
+        UpdateEmptyView();
+        ResetRemainingItemsThresholdGate();
     }
 
-    private void UpdateItemsSource()
+    private void UpdateItemsSource(bool forceRebuild = false)
     {
         if (_itemsControl == null)
             return;
 
+        if (ItemsSource == null)
+        {
+            _flattenedGroupedItems = null;
+            _itemsControl.ItemsSource = null;
+            return;
+        }
+
         if (IsGrouped && ItemsSource is IEnumerable enumerable)
         {
-            var flattenedItems = new ObservableCollection<object>();
+            _flattenedGroupedItems ??= new ObservableCollection<object>();
 
-            foreach (var group in enumerable)
+            if (forceRebuild || !ReferenceEquals(_itemsControl.ItemsSource, _flattenedGroupedItems))
             {
-                if (GroupHeaderTemplate != null)
-                {
-                    flattenedItems.Add(new GroupItem { Data = group, IsHeader = true });
-                }
-
-                if (group is IEnumerable groupItems)
-                {
-                    foreach (var item in groupItems)
-                    {
-                        flattenedItems.Add(new GroupItem { Data = item, IsHeader = false, IsFooter = false });
-                    }
-                }
-
-                if (GroupFooterTemplate != null)
-                {
-                    flattenedItems.Add(new GroupItem { Data = group, IsFooter = true });
-                }
+                RebuildFlattenedGroupedItems(enumerable, _flattenedGroupedItems);
             }
 
-            _itemsControl.ItemsSource = flattenedItems;
+            _itemsControl.ItemsSource = _flattenedGroupedItems;
         }
         else if (ItemsSource is IEnumerable nonGroupedEnumerable)
         {
+            _flattenedGroupedItems = null;
             _itemsControl.ItemsSource = nonGroupedEnumerable;
+        }
+        else
+        {
+            _flattenedGroupedItems = null;
+            _itemsControl.ItemsSource = null;
         }
     }
 
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        if (ReferenceEquals(sender, ItemsSource))
+        {
+            SubscribeToGroupCollections();
+        }
+
         if (IsGrouped)
         {
-            UpdateItemsSource();
+            if (!TryHandleGroupedCollectionChanged(sender, e))
+            {
+                UpdateItemsSource(forceRebuild: true);
+            }
         }
 
         UpdateEmptyView();
+        ResetRemainingItemsThresholdGate();
+    }
+
+    private bool TryHandleGroupedCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (_itemsControl == null || _flattenedGroupedItems == null || ItemsSource is not IEnumerable enumerable)
+            return false;
+
+        if (!ReferenceEquals(_itemsControl.ItemsSource, _flattenedGroupedItems))
+        {
+            UpdateItemsSource(forceRebuild: true);
+            return true;
+        }
+
+        if (ReferenceEquals(sender, ItemsSource))
+        {
+            return TryHandleOuterGroupedCollectionChanged(e, enumerable);
+        }
+
+        return TryHandleInnerGroupedCollectionChanged(sender, e);
+    }
+
+    private bool TryHandleOuterGroupedCollectionChanged(NotifyCollectionChangedEventArgs e, IEnumerable groups)
+    {
+        if (_flattenedGroupedItems == null)
+            return false;
+
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add when e.NewItems != null && e.NewStartingIndex >= 0:
+                int insertionIndex = GetFlatStartIndexForGroupIndex(e.NewStartingIndex);
+                InsertGroups(insertionIndex, e.NewItems);
+                return true;
+
+            case NotifyCollectionChangedAction.Remove when e.OldItems != null && e.OldStartingIndex >= 0:
+                int removalIndex = GetFlatStartIndexForGroupIndex(e.OldStartingIndex);
+                RemoveGroups(removalIndex, e.OldItems);
+                return true;
+
+            case NotifyCollectionChangedAction.Replace
+                when e.OldItems != null && e.NewItems != null && e.NewStartingIndex >= 0:
+                int replacementIndex = GetFlatStartIndexForGroupIndex(e.NewStartingIndex);
+                RemoveGroups(replacementIndex, e.OldItems);
+                InsertGroups(replacementIndex, e.NewItems);
+                return true;
+
+            case NotifyCollectionChangedAction.Reset:
+                RebuildFlattenedGroupedItems(groups, _flattenedGroupedItems);
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    private bool TryHandleInnerGroupedCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        if (_flattenedGroupedItems == null || sender == null)
+            return false;
+
+        int groupIndex = GetGroupIndex(sender);
+        if (groupIndex < 0)
+            return false;
+
+        int groupStartIndex = GetFlatStartIndexForGroupIndex(groupIndex);
+        int itemStartIndex = groupStartIndex + (GroupHeaderTemplate != null ? 1 : 0);
+
+        switch (e.Action)
+        {
+            case NotifyCollectionChangedAction.Add when e.NewItems != null && e.NewStartingIndex >= 0:
+                InsertItems(itemStartIndex + e.NewStartingIndex, e.NewItems);
+                return true;
+
+            case NotifyCollectionChangedAction.Remove when e.OldItems != null && e.OldStartingIndex >= 0:
+                RemoveRange(itemStartIndex + e.OldStartingIndex, e.OldItems.Count);
+                return true;
+
+            case NotifyCollectionChangedAction.Replace
+                when e.NewItems != null && e.OldItems != null && e.NewStartingIndex >= 0 && e.OldItems.Count == e.NewItems.Count:
+                ReplaceItems(itemStartIndex + e.NewStartingIndex, e.NewItems);
+                return true;
+
+            case NotifyCollectionChangedAction.Reset:
+                return false;
+
+            default:
+                return false;
+        }
+    }
+
+    private void RebuildFlattenedGroupedItems(IEnumerable groups, ObservableCollection<object> target)
+    {
+        target.Clear();
+
+        foreach (var group in groups)
+        {
+            AppendGroup(target, group);
+        }
+    }
+
+    private void AppendGroup(ICollection<object> target, object? group)
+    {
+        if (GroupHeaderTemplate != null)
+        {
+            target.Add(new GroupItem { Data = group, IsHeader = true });
+        }
+
+        if (group is IEnumerable groupItems)
+        {
+            foreach (var item in groupItems)
+            {
+                target.Add(CreateGroupItem(item));
+            }
+        }
+
+        if (GroupFooterTemplate != null)
+        {
+            target.Add(new GroupItem { Data = group, IsFooter = true });
+        }
+    }
+
+    private GroupItem CreateGroupItem(object? item)
+    {
+        return new GroupItem
+        {
+            Data = item,
+            IsHeader = false,
+            IsFooter = false
+        };
+    }
+
+    private void InsertGroups(int insertionIndex, IList groups)
+    {
+        if (_flattenedGroupedItems == null)
+            return;
+
+        foreach (var group in groups)
+        {
+            foreach (var flattenedItem in EnumerateFlattenedGroup(group))
+            {
+                _flattenedGroupedItems.Insert(insertionIndex++, flattenedItem);
+            }
+        }
+    }
+
+    private void RemoveGroups(int removalIndex, IList groups)
+    {
+        int itemsToRemove = 0;
+
+        foreach (var group in groups)
+        {
+            itemsToRemove += GetFlatLengthForGroup(group);
+        }
+
+        RemoveRange(removalIndex, itemsToRemove);
+    }
+
+    private void InsertItems(int insertionIndex, IList items)
+    {
+        if (_flattenedGroupedItems == null)
+            return;
+
+        foreach (var item in items)
+        {
+            _flattenedGroupedItems.Insert(insertionIndex++, CreateGroupItem(item));
+        }
+    }
+
+    private void ReplaceItems(int replacementIndex, IList items)
+    {
+        if (_flattenedGroupedItems == null)
+            return;
+
+        for (int i = 0; i < items.Count; i++)
+        {
+            _flattenedGroupedItems[replacementIndex + i] = CreateGroupItem(items[i]);
+        }
+    }
+
+    private void RemoveRange(int index, int count)
+    {
+        if (_flattenedGroupedItems == null || count <= 0)
+            return;
+
+        for (int i = 0; i < count; i++)
+        {
+            if (index >= 0 && index < _flattenedGroupedItems.Count)
+            {
+                _flattenedGroupedItems.RemoveAt(index);
+            }
+        }
+    }
+
+    private IEnumerable<object> EnumerateFlattenedGroup(object? group)
+    {
+        if (GroupHeaderTemplate != null)
+        {
+            yield return new GroupItem { Data = group, IsHeader = true };
+        }
+
+        if (group is IEnumerable groupItems)
+        {
+            foreach (var item in groupItems)
+            {
+                yield return CreateGroupItem(item);
+            }
+        }
+
+        if (GroupFooterTemplate != null)
+        {
+            yield return new GroupItem { Data = group, IsFooter = true };
+        }
+    }
+
+    private int GetFlatStartIndexForGroupIndex(int groupIndex)
+    {
+        if (groupIndex <= 0 || ItemsSource is not IEnumerable groups)
+            return 0;
+
+        int flatIndex = 0;
+        int currentGroupIndex = 0;
+
+        foreach (var group in groups)
+        {
+            if (currentGroupIndex >= groupIndex)
+                break;
+
+            flatIndex += GetFlatLengthForGroup(group);
+            currentGroupIndex++;
+        }
+
+        return flatIndex;
+    }
+
+    private int GetGroupIndex(object groupToFind)
+    {
+        if (ItemsSource is not IEnumerable groups)
+            return -1;
+
+        int index = 0;
+        foreach (var group in groups)
+        {
+            if (ReferenceEquals(group, groupToFind))
+            {
+                return index;
+            }
+
+            index++;
+        }
+
+        return -1;
+    }
+
+    private int GetFlatLengthForGroup(object? group)
+    {
+        int count = 0;
+
+        if (GroupHeaderTemplate != null)
+        {
+            count++;
+        }
+
+        if (group is IEnumerable groupItems)
+        {
+            foreach (var _ in groupItems)
+            {
+                count++;
+            }
+        }
+
+        if (GroupFooterTemplate != null)
+        {
+            count++;
+        }
+
+        return count;
     }
 
     private void UpdateEmptyView()
@@ -837,38 +1201,45 @@ public class MauiCollectionView : TemplatedControl
         if (_rootPanel == null)
             return;
 
-        if (_emptyView != null && _rootPanel.Children.Contains(_emptyView))
-        {
-            _rootPanel.Children.Remove(_emptyView);
-            _emptyView = null;
-        }
-
-        bool isEmpty = ItemsSource == null || !ItemsSource.GetEnumerator().MoveNext();
-
-        if (isEmpty && (EmptyView != null || EmptyViewTemplate != null))
-        {
-            if (EmptyViewTemplate != null)
-            {
-                _emptyView = EmptyViewTemplate.Build(EmptyView);
-            }
-            else if (EmptyView is Control control)
-            {
-                _emptyView = control;
-            }
-            else if (EmptyView is string text)
-            {
-                _emptyView = new TextBlock { Text = text };
-            }
-
-            if (_emptyView != null)
-            {
-                _rootPanel.Children.Add(_emptyView);
-            }
-        }
+        bool isEmpty = IsItemsSourceEmpty();
 
         if (_itemsControl != null)
         {
             _itemsControl.IsVisible = !isEmpty;
+        }
+
+        if (!isEmpty)
+        {
+            RemoveEmptyView();
+            return;
+        }
+
+        if (CanReuseEmptyView())
+        {
+            return;
+        }
+
+        RemoveEmptyView();
+
+        if (EmptyViewTemplate != null)
+        {
+            _emptyView = EmptyViewTemplate.Build(EmptyView);
+        }
+        else if (EmptyView is Control control)
+        {
+            _emptyView = control;
+        }
+        else if (EmptyView is string text)
+        {
+            _emptyView = new TextBlock { Text = text };
+        }
+
+        if (_emptyView != null)
+        {
+            _rootPanel.Children.Add(_emptyView);
+            _isEmptyViewVisible = true;
+            _renderedEmptyViewSource = EmptyView;
+            _renderedEmptyViewTemplate = EmptyViewTemplate;
         }
     }
 
@@ -951,23 +1322,114 @@ public class MauiCollectionView : TemplatedControl
 
         ScrollChanged?.Invoke(this, e);
 
-        if (RemainingItemsThreshold >= 0)
+        if (RemainingItemsThreshold < 0)
         {
-            var verticalOffset = _scrollViewer.Offset.Y;
-            var viewportHeight = _scrollViewer.Viewport.Height;
-            var extentHeight = _scrollViewer.Extent.Height;
+            _hasReachedRemainingItemsThreshold = false;
+            return;
+        }
 
-            if (extentHeight > 0)
+        var verticalOffset = _scrollViewer.Offset.Y;
+        var viewportHeight = _scrollViewer.Viewport.Height;
+        var extentHeight = _scrollViewer.Extent.Height;
+
+        if (extentHeight <= 0)
+        {
+            _hasReachedRemainingItemsThreshold = false;
+            return;
+        }
+
+        var remainingDistance = extentHeight - (verticalOffset + viewportHeight);
+        var thresholdDistance = viewportHeight * (RemainingItemsThreshold + 1) / 10.0;
+        var isWithinThreshold = remainingDistance <= thresholdDistance;
+
+        if (isWithinThreshold && !_hasReachedRemainingItemsThreshold)
+        {
+            _hasReachedRemainingItemsThreshold = true;
+            RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
+        }
+        else if (!isWithinThreshold)
+        {
+            _hasReachedRemainingItemsThreshold = false;
+        }
+    }
+
+    private void SubscribeToGroupCollections()
+    {
+        UnsubscribeFromGroupCollections();
+
+        if (!IsGrouped || ItemsSource is not IEnumerable groups)
+            return;
+
+        foreach (var group in groups)
+        {
+            if (group is INotifyCollectionChanged groupCollection)
             {
-                var remainingDistance = extentHeight - (verticalOffset + viewportHeight);
-                var thresholdDistance = viewportHeight * (RemainingItemsThreshold + 1) / 10.0;
-
-                if (remainingDistance <= thresholdDistance)
-                {
-                    RemainingItemsThresholdReached?.Invoke(this, EventArgs.Empty);
-                }
+                groupCollection.CollectionChanged += OnCollectionChanged;
+                _subscribedGroupCollections.Add(groupCollection);
             }
         }
+    }
+
+    private void UnsubscribeFromGroupCollections()
+    {
+        foreach (var groupCollection in _subscribedGroupCollections)
+        {
+            groupCollection.CollectionChanged -= OnCollectionChanged;
+        }
+
+        _subscribedGroupCollections.Clear();
+    }
+
+    private bool IsItemsSourceEmpty()
+    {
+        if (ItemsSource == null)
+            return true;
+
+        if (ItemsSource is ICollection collection)
+            return collection.Count == 0;
+
+        if (ItemsSource is IReadOnlyCollection<object> readOnlyCollection)
+            return readOnlyCollection.Count == 0;
+
+        var enumerator = ItemsSource.GetEnumerator();
+
+        try
+        {
+            return !enumerator.MoveNext();
+        }
+        finally
+        {
+            (enumerator as IDisposable)?.Dispose();
+        }
+    }
+
+    private bool CanReuseEmptyView()
+    {
+        return _isEmptyViewVisible &&
+            _emptyView != null &&
+            Equals(_renderedEmptyViewSource, EmptyView) &&
+            ReferenceEquals(_renderedEmptyViewTemplate, EmptyViewTemplate);
+    }
+
+    private void RemoveEmptyView()
+    {
+        if (_rootPanel == null)
+            return;
+
+        if (_emptyView != null && _rootPanel.Children.Contains(_emptyView))
+        {
+            _rootPanel.Children.Remove(_emptyView);
+        }
+
+        _emptyView = null;
+        _isEmptyViewVisible = false;
+        _renderedEmptyViewSource = null;
+        _renderedEmptyViewTemplate = null;
+    }
+
+    private void ResetRemainingItemsThresholdGate()
+    {
+        _hasReachedRemainingItemsThreshold = false;
     }
 
     /// <summary>
@@ -984,6 +1446,14 @@ public class MauiCollectionView : TemplatedControl
 
         Dispatcher.UIThread.Post(() =>
         {
+            if (!IsGrouped &&
+                group == null &&
+                TryGetItemIndex(item, out var index) &&
+                TryScrollToUniformLinearIndex(index, position))
+            {
+                return;
+            }
+
             var container = _itemsControl.ContainerFromItem(item);
             if (container != null)
             {
@@ -1006,6 +1476,13 @@ public class MauiCollectionView : TemplatedControl
 
         Dispatcher.UIThread.Post(() =>
         {
+            if (!IsGrouped &&
+                groupIndex < 0 &&
+                TryScrollToUniformLinearIndex(index, position))
+            {
+                return;
+            }
+
             if (index >= 0 && _itemsControl.ItemCount > index)
             {
                 Control? container = _itemsControl.ContainerFromIndex(index);
@@ -1021,6 +1498,161 @@ public class MauiCollectionView : TemplatedControl
                 }
             }
         }, DispatcherPriority.Background);
+    }
+
+    private bool TryGetItemIndex(object item, out int index)
+    {
+        if (ItemsSource is IList list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (Equals(list[i], item))
+                {
+                    index = i;
+                    return true;
+                }
+            }
+        }
+        else if (ItemsSource is IEnumerable enumerable)
+        {
+            index = 0;
+            foreach (var candidate in enumerable)
+            {
+                if (Equals(candidate, item))
+                {
+                    return true;
+                }
+
+                index++;
+            }
+        }
+
+        index = -1;
+        return false;
+    }
+
+    private bool TryScrollToUniformLinearIndex(int index, ScrollToPosition position)
+    {
+        if (_scrollViewer == null ||
+            _itemsControl == null ||
+            ItemSizingStrategy != MauiItemSizingStrategy.MeasureFirstItem ||
+            ItemsLayout is not LinearItemsLayout linearLayout ||
+            index < 0 ||
+            index >= _itemsControl.ItemCount)
+        {
+            return false;
+        }
+
+        if (_itemsControl.ItemsPanelRoot is not Panel panel || panel.Children.Count == 0)
+        {
+            return false;
+        }
+
+        if (panel.Children[0] is not Control firstContainer)
+        {
+            return false;
+        }
+
+        var isVertical = linearLayout.Orientation == ItemsLayoutOrientation.Vertical;
+        var itemSize = ResolveMeasuredExtent(
+            isVertical ? firstContainer.Bounds.Height : firstContainer.Bounds.Width,
+            isVertical ? firstContainer.DesiredSize.Height : firstContainer.DesiredSize.Width);
+        var itemsControlOffset = GetItemsControlOffsetInScrollContent(isVertical);
+
+        if (!(itemSize > 0) || itemsControlOffset < 0)
+        {
+            return false;
+        }
+
+        var spacing = Math.Max(0, linearLayout.ItemSpacing);
+        var itemStart = itemsControlOffset + (index * (itemSize + spacing));
+        var itemEnd = itemStart + itemSize;
+        var viewport = isVertical ? _scrollViewer.Viewport.Height : _scrollViewer.Viewport.Width;
+        var extent = isVertical ? _scrollViewer.Extent.Height : _scrollViewer.Extent.Width;
+        var currentOffset = isVertical ? _scrollViewer.Offset.Y : _scrollViewer.Offset.X;
+
+        if (!(viewport > 0) || !(extent > 0))
+        {
+            return false;
+        }
+
+        var targetOffset = currentOffset;
+        switch (position)
+        {
+            case ScrollToPosition.MakeVisible:
+                if (itemStart < currentOffset)
+                {
+                    targetOffset = itemStart;
+                }
+                else if (itemEnd > currentOffset + viewport)
+                {
+                    targetOffset = itemEnd - viewport;
+                }
+                else
+                {
+                    return true;
+                }
+                break;
+            case ScrollToPosition.Start:
+                targetOffset = itemStart;
+                break;
+            case ScrollToPosition.Center:
+                targetOffset = itemStart + (itemSize / 2) - (viewport / 2);
+                break;
+            case ScrollToPosition.End:
+                targetOffset = itemEnd - viewport;
+                break;
+        }
+
+        var maxOffset = Math.Max(0, extent - viewport);
+        targetOffset = Math.Max(0, Math.Min(targetOffset, maxOffset));
+
+        _scrollViewer.Offset = isVertical
+            ? new Vector(_scrollViewer.Offset.X, targetOffset)
+            : new Vector(targetOffset, _scrollViewer.Offset.Y);
+
+        return true;
+    }
+
+    private static double ResolveMeasuredExtent(double boundsExtent, double desiredExtent)
+    {
+        if (boundsExtent > 0 && !double.IsNaN(boundsExtent) && !double.IsInfinity(boundsExtent))
+        {
+            return boundsExtent;
+        }
+
+        if (desiredExtent > 0 && !double.IsNaN(desiredExtent) && !double.IsInfinity(desiredExtent))
+        {
+            return desiredExtent;
+        }
+
+        return 0;
+    }
+
+    private double GetItemsControlOffsetInScrollContent(bool isVertical)
+    {
+        if (_itemsControl == null || _scrollViewer?.Content is not Visual content)
+        {
+            return -1;
+        }
+
+        var transform = _itemsControl.TransformToVisual(content);
+        if (transform == null)
+        {
+            return -1;
+        }
+
+        var origin = transform.Value.Transform(new Point(0, 0));
+        return isVertical ? origin.Y : origin.X;
+    }
+
+    internal static void CleanupLogicalChild(Control content)
+    {
+        if (content.Tag is Microsoft.Maui.Controls.Element mauiElement &&
+            mauiElement.Parent is Microsoft.Maui.Controls.Element parentElement)
+        {
+            parentElement.RemoveLogicalChild(mauiElement);
+        }
     }
 
     private void ScrollToContainer(Control container, ScrollToPosition position, bool animate)

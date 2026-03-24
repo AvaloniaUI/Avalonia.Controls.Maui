@@ -4,9 +4,7 @@ using Avalonia.Threading;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using IndicatorView = Microsoft.Maui.Controls.IndicatorView;
-// When Avalonia.Controls.PipsPager ships, replace the line below with:
-// using PlatformView = Avalonia.Controls.PipsPager;
-using PlatformView = Avalonia.Controls.Maui.Controls.PipsPager;
+using PlatformView = Avalonia.Controls.PipsPager;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -92,7 +90,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         }, DispatcherPriority.Loaded);
     }
 
-    private void OnSelectedIndexChanged(object? sender, Controls.PipsPagerSelectedIndexChangedEventArgs e)
+    private void OnSelectedIndexChanged(object? sender, Avalonia.Controls.PipsPagerSelectedIndexChangedEventArgs e)
     {
         if (VirtualView.Position != e.NewIndex)
             VirtualView.Position = e.NewIndex;

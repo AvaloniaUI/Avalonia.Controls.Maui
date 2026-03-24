@@ -188,5 +188,57 @@ namespace Avalonia.Controls.Maui.Tests.Platform
                Assert.Equal("Test Input", result);
             }
         }
+
+        [AvaloniaFact(DisplayName = "DisplayAlert Works After Window Page Swap")]
+        public async Task DisplayAlert_Works_After_Window_Page_Swap()
+        {
+            EnsureHandlerCreated();
+
+            var initialPage = new Microsoft.Maui.Controls.ContentPage();
+            var window = new MauiWindow(initialPage);
+            var windowHandler = await CreateHandlerAsync<MauiWindowHandler>(window);
+
+            var replacementPage = new Microsoft.Maui.Controls.ContentPage();
+            window.Page = replacementPage;
+
+            await Task.Delay(100);
+            AvaloniaDispatcher.UIThread.RunJobs();
+
+            var alertTask = replacementPage.DisplayAlertAsync("Alert Title", "Replacement Message", "OK");
+
+            await Task.Delay(100);
+            AvaloniaDispatcher.UIThread.RunJobs();
+
+            var avaloniaWindow = windowHandler.PlatformView as Window;
+            var wrapper = Assert.IsType<AvaloniaGrid>(avaloniaWindow!.Content);
+            var overlayGrid = Assert.IsType<AvaloniaGrid>(wrapper.Children.OfType<AvaloniaGrid>().Last());
+            var dialogGrid = Assert.IsType<AvaloniaGrid>(overlayGrid.Children.OfType<AvaloniaGrid>().Last());
+            var dialogContainer = Assert.IsType<AvaloniaGrid>(dialogGrid.Children.Last());
+            var dialogControl = Assert.IsType<MauiAlertDialog>(dialogContainer.Children.FirstOrDefault());
+
+            (dialogControl as TemplatedControl)?.ApplyTemplate();
+            dialogControl.Measure(new Size(800, 600));
+            dialogControl.Arrange(new Rect(0, 0, 800, 600));
+
+            var okButton = dialogControl.GetVisualDescendants()
+                .OfType<Button>()
+                .FirstOrDefault();
+
+            Assert.NotNull(okButton);
+            okButton.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+
+            for (int i = 0; i < 5; i++)
+            {
+                AvaloniaDispatcher.UIThread.RunJobs();
+                await Task.Delay(10);
+            }
+
+            var timeout = Task.Delay(2000);
+            var completed = await Task.WhenAny(alertTask, timeout);
+
+            Assert.NotSame(timeout, completed);
+            await alertTask;
+            Assert.Empty(dialogGrid.Children);
+        }
     }
 }
