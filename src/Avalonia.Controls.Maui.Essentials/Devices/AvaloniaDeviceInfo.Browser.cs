@@ -7,34 +7,45 @@ namespace Avalonia.Controls.Maui.Essentials.Devices;
 
 public partial class AvaloniaDeviceInfo
 {
+    private static readonly Lazy<string> _cachedUserAgent = new(GetUserAgent);
+    private static readonly Lazy<string> _cachedBrowserName = new(() => ParseBrowserName(_cachedUserAgent.Value));
+
     partial void GetModelBrowser(ref string? v) => v = "Browser";
-    partial void GetManufacturerBrowser(ref string? v) => v = GetBrowserName();
+    partial void GetManufacturerBrowser(ref string? v) => v = _cachedBrowserName.Value;
     partial void GetNameBrowser(ref string? v) => v = "Web Browser";
-    partial void GetVersionStringBrowser(ref string? v) => v = GetUserAgent();
+    partial void GetVersionStringBrowser(ref string? v) => v = _cachedUserAgent.Value;
     partial void GetVersionBrowser(ref Version? v) => v = ParseBrowserVersion();
     partial void GetPlatformBrowser(ref DevicePlatform? v) => v = DevicePlatform.Create("Wasm");
-    partial void GetIdiomBrowser(ref DeviceIdiom? v) => v = DeviceIdiom.Desktop;
+    partial void GetIdiomBrowser(ref DeviceIdiom? v) => v = GetIdiomFromUserAgent();
     partial void GetDeviceTypeBrowser(ref DeviceType? v) => v = DeviceType.Physical;
 
-    private static string GetBrowserName()
+    private static string ParseBrowserName(string ua)
     {
-        var ua = GetUserAgent().ToLowerInvariant();
-        if (ua.Contains("edg")) return "Edge";
-        if (ua.Contains("opr") || ua.Contains("opera")) return "Opera";
-        if (ua.Contains("chrome")) return "Chrome";
-        if (ua.Contains("firefox")) return "Firefox";
-        if (ua.Contains("safari")) return "Safari";
+        var lower = ua.ToLowerInvariant();
+        if (lower.Contains("edg")) return "Edge";
+        if (lower.Contains("opr") || lower.Contains("opera")) return "Opera";
+        if (lower.Contains("chrome")) return "Chrome";
+        if (lower.Contains("firefox")) return "Firefox";
+        if (lower.Contains("safari")) return "Safari";
         return "Unknown Browser";
+    }
+
+    private static DeviceIdiom GetIdiomFromUserAgent()
+    {
+        var ua = _cachedUserAgent.Value.ToLowerInvariant();
+        if (ua.Contains("mobile") || ua.Contains("android") || ua.Contains("iphone"))
+            return DeviceIdiom.Phone;
+        if (ua.Contains("tablet") || ua.Contains("ipad"))
+            return DeviceIdiom.Tablet;
+        return DeviceIdiom.Desktop;
     }
 
     private static Version ParseBrowserVersion()
     {
         try
         {
-            var ua = GetUserAgent();
-            // Try to extract version from known browser tokens
-            // Edge: "Edg/120.0.0.0", Chrome: "Chrome/120.0.0.0", Firefox: "Firefox/121.0", Safari: "Version/17.0"
-            var browserName = GetBrowserName();
+            var ua = _cachedUserAgent.Value;
+            var browserName = _cachedBrowserName.Value;
             var token = browserName switch
             {
                 "Edge" => "Edg/",

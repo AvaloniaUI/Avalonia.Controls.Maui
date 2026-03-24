@@ -17,21 +17,19 @@ public partial class AvaloniaBattery
     partial void GetEnergySaverStatusBrowser(ref EnergySaverStatus? v) => v = EnergySaverStatus.Off;
 
     /// <summary>
-    /// Initializes a new instance of <see cref="AvaloniaBattery"/> and starts battery monitoring on Browser.
+    /// Initializes battery monitoring on browser, ensuring thread-safe single initialization.
     /// </summary>
     public AvaloniaBattery()
     {
         if (OperatingSystem.IsBrowser())
-        {
-            if (!_isInitialized)
-            {
-                _ = InitializeAsync();
-            }
-        }
+            InitializeBrowserAsync();
     }
 
-    private async Task InitializeAsync()
+    private async void InitializeBrowserAsync()
     {
+        if (_isInitialized)
+            return;
+
         try
         {
             if (await InitBattery())

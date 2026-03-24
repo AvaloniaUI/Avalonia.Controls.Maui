@@ -164,58 +164,25 @@ public partial class AvaloniaBattery : IBattery
 
     private void TrySubscribeNativeBatteryInfo()
     {
-        try
-        {
-            Battery.Default.BatteryInfoChanged += OnNativeBatteryInfoChanged;
-            _isForwardingBatteryInfoChanged = true;
-        }
-        catch
-        {
-            _isForwardingBatteryInfoChanged = false;
-        }
+        // Skip native forwarding, we are the registered default
+        _isForwardingBatteryInfoChanged = false;
     }
 
     private void TryUnsubscribeNativeBatteryInfo()
     {
-        try
-        {
-            Battery.Default.BatteryInfoChanged -= OnNativeBatteryInfoChanged;
-        }
-        catch
-        {
-        }
-
         _isForwardingBatteryInfoChanged = false;
     }
 
     private void TrySubscribeNativeEnergySaverStatus()
     {
-        try
-        {
-            Battery.Default.EnergySaverStatusChanged += OnNativeEnergySaverStatusChanged;
-            _isForwardingEnergySaverStatusChanged = true;
-        }
-        catch
-        {
-            _isForwardingEnergySaverStatusChanged = false;
-        }
+        // Skip native forwarding, we are the registered default
+        _isForwardingEnergySaverStatusChanged = false;
     }
 
     private void TryUnsubscribeNativeEnergySaverStatus()
     {
-        try
-        {
-            Battery.Default.EnergySaverStatusChanged -= OnNativeEnergySaverStatusChanged;
-        }
-        catch
-        {
-        }
-
         _isForwardingEnergySaverStatusChanged = false;
     }
-
-    private void OnNativeBatteryInfoChanged(object? sender, BatteryInfoChangedEventArgs e) => OnBatteryInfoChanged(e);
-    private void OnNativeEnergySaverStatusChanged(object? sender, EnergySaverStatusChangedEventArgs e) => OnEnergySaverStatusChanged(e);
 
     private BatterySnapshot CaptureBatterySnapshot() => new(ChargeLevel, State, PowerSource);
 
@@ -228,11 +195,6 @@ public partial class AvaloniaBattery : IBattery
             GetChargeLevelLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetChargeLevelBrowser(ref v);
-        else
-        {
-            try { v = Battery.Default.ChargeLevel; }
-            catch { }
-        }
         return v;
     }
 
@@ -243,12 +205,6 @@ public partial class AvaloniaBattery : IBattery
             GetStateLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetStateBrowser(ref v);
-        else
-        {
-            try { v = Battery.Default.State; }
-            catch { }
-        }
-
         return v;
     }
 
@@ -259,11 +215,6 @@ public partial class AvaloniaBattery : IBattery
             GetPowerSourceLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetPowerSourceBrowser(ref v);
-        else
-        {
-            try { v = Battery.Default.PowerSource; }
-            catch { }
-        }
         return v;
     }
 
@@ -274,11 +225,6 @@ public partial class AvaloniaBattery : IBattery
             GetEnergySaverStatusLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetEnergySaverStatusBrowser(ref v);
-        else
-        {
-            try { v = Battery.Default.EnergySaverStatus; }
-            catch { }
-        }
         return v;
     }
 

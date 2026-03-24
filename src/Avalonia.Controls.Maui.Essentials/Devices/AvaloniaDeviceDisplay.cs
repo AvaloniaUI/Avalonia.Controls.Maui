@@ -14,7 +14,6 @@ public partial class AvaloniaDeviceDisplay : IDeviceDisplay
 {
     private readonly object _displayEventSync = new();
     private bool _keepScreenOn;
-    private uint? _linuxInhibitCookie;
     private Screens? _observedScreens;
     private DisplayInfo? _lastMainDisplayInfo;
     private EventHandler<DisplayInfoChangedEventArgs>? _mainDisplayInfoChanged;
@@ -133,7 +132,7 @@ public partial class AvaloniaDeviceDisplay : IDeviceDisplay
     private void OnScreensChanged(object? sender, EventArgs e)
     {
         DisplayInfo changedDisplayInfo;
-        bool raiseEvent;
+        EventHandler<DisplayInfoChangedEventArgs>? handler;
 
         lock (_displayEventSync)
         {
@@ -144,11 +143,10 @@ public partial class AvaloniaDeviceDisplay : IDeviceDisplay
                 return;
 
             _lastMainDisplayInfo = changedDisplayInfo;
-            raiseEvent = _mainDisplayInfoChanged is not null;
+            handler = _mainDisplayInfoChanged;
         }
 
-        if (raiseEvent)
-            _mainDisplayInfoChanged?.Invoke(this, new DisplayInfoChangedEventArgs(changedDisplayInfo));
+        handler?.Invoke(this, new DisplayInfoChangedEventArgs(changedDisplayInfo));
     }
 
     private Screens? GetScreens()

@@ -46,9 +46,10 @@
     <PackageReference Include="Microsoft.Maui.Core" Version="$(MauiVersion)" />
   </ItemGroup>
 
-  <!-- Browser: exclude default (file-based) implementations -->
+  <!-- Browser: exclude desktop implementations -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'browser'">
     <Compile Remove="**/*.Default.cs" />
+    <Compile Remove="**/*.Linux.cs" />
   </ItemGroup>
   <!-- Non-browser: exclude browser-specific implementations -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) != 'browser'">
@@ -64,16 +65,19 @@
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' OR $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
     <Compile Remove="**/*.Android.cs" />
     <Compile Remove="**/*.Windows.cs" />
+    <Compile Remove="**/*.Linux.cs" />
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <Compile Remove="**/*.iOS.cs" />
     <Compile Remove="**/*.Windows.cs" />
+    <Compile Remove="**/*.Linux.cs" />
   </ItemGroup>
 
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
     <Compile Remove="**/*.iOS.cs" />
     <Compile Remove="**/*.Android.cs" />
+    <Compile Remove="**/*.Linux.cs" />
   </ItemGroup>
 
   <ItemGroup Condition=" ('$(IsPackable)' == 'true')">

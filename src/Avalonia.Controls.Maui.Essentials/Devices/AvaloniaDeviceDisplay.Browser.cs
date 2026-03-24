@@ -8,14 +8,14 @@ namespace Avalonia.Controls.Maui.Essentials.Devices;
 
 public partial class AvaloniaDeviceDisplay
 {
-    private static JSObject? _wakeLockSentinel;
+    private JSObject? _wakeLockSentinel;
 
     partial void UpdateKeepScreenOnBrowser(bool value)
     {
         _ = UpdateWakeLockAsync(value);
     }
 
-    private static async Task UpdateWakeLockAsync(bool value)
+    private async Task UpdateWakeLockAsync(bool value)
     {
         try
         {

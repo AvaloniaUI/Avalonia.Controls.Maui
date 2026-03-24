@@ -47,11 +47,6 @@ public partial class AvaloniaDeviceInfo : IDeviceInfo
             GetModelLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetModelBrowser(ref v);
-        else
-        {
-            try { v = DeviceInfo.Current.Model; }
-            catch { }
-        }
         return v;
     }
 
@@ -62,11 +57,6 @@ public partial class AvaloniaDeviceInfo : IDeviceInfo
             GetManufacturerLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetManufacturerBrowser(ref v);
-        else
-        {
-            try { v = DeviceInfo.Current.Manufacturer; }
-            catch { }
-        }
         return v;
     }
 
@@ -77,11 +67,6 @@ public partial class AvaloniaDeviceInfo : IDeviceInfo
             GetNameLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetNameBrowser(ref v);
-        else
-        {
-            try { v = DeviceInfo.Current.Name; }
-            catch { }
-        }
         return v;
     }
 
@@ -92,11 +77,6 @@ public partial class AvaloniaDeviceInfo : IDeviceInfo
             GetVersionStringLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetVersionStringBrowser(ref v);
-        else
-        {
-            try { v = DeviceInfo.Current.VersionString; }
-            catch { }
-        }
         return v;
     }
 
@@ -107,11 +87,6 @@ public partial class AvaloniaDeviceInfo : IDeviceInfo
             GetVersionLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetVersionBrowser(ref v);
-        else
-        {
-            try { v = DeviceInfo.Current.Version; }
-            catch { }
-        }
         return v;
     }
 
@@ -122,11 +97,6 @@ public partial class AvaloniaDeviceInfo : IDeviceInfo
             GetPlatformLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetPlatformBrowser(ref v);
-        else
-        {
-            try { v = DeviceInfo.Current.Platform; }
-            catch { }
-        }
 
         if (v == null || v == DevicePlatform.Unknown)
             return GetDefaultPlatform();
@@ -141,11 +111,6 @@ public partial class AvaloniaDeviceInfo : IDeviceInfo
             GetIdiomLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetIdiomBrowser(ref v);
-        else
-        {
-            try { v = DeviceInfo.Current.Idiom; }
-            catch { }
-        }
 
         if (v == null || v == DeviceIdiom.Unknown)
             return DeviceIdiom.Desktop;
@@ -160,11 +125,6 @@ public partial class AvaloniaDeviceInfo : IDeviceInfo
             GetDeviceTypeLinux(ref v);
         else if (OperatingSystem.IsBrowser())
             GetDeviceTypeBrowser(ref v);
-        else
-        {
-            try { v = DeviceInfo.Current.DeviceType; }
-            catch { }
-        }
 
         if (v == null || v == DeviceType.Unknown)
             return DeviceType.Physical;

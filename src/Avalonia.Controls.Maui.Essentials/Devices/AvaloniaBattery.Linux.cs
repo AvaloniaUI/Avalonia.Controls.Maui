@@ -8,7 +8,7 @@ public partial class AvaloniaBattery
 {
     partial void GetChargeLevelLinux(ref double? v) => v = ReadChargeLevel();
     partial void GetStateLinux(ref BatteryState? v) => v = ReadBatteryState();
-    partial void GetPowerSourceLinux(ref BatteryPowerSource? v) => v = ReadPowerSource(ReadBatteryState());
+    partial void GetPowerSourceLinux(ref BatteryPowerSource? v) => v = ReadPowerSource();
     partial void GetEnergySaverStatusLinux(ref EnergySaverStatus? v) => v = ReadEnergySaverStatus();
 
     private static double ReadChargeLevel()
@@ -50,9 +50,8 @@ public partial class AvaloniaBattery
         }
     }
 
-    private static BatteryPowerSource ReadPowerSource(BatteryState state)
+    private static BatteryPowerSource ReadPowerSource()
     {
-        // Also check for AC adapter presence directly
         try
         {
             var acOnline = ReadAcOnline();
@@ -64,7 +63,8 @@ public partial class AvaloniaBattery
             Debug.WriteLine($"Battery Power Source Error: {ex.Message}");
         }
 
-        // Fallback to inferring from battery state
+        // Fallback: infer from battery state without caching (single read)
+        var state = ReadBatteryState();
         return state switch
         {
             BatteryState.Charging or BatteryState.Full => BatteryPowerSource.AC,

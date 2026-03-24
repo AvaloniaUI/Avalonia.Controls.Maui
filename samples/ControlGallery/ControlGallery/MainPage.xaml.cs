@@ -97,6 +97,7 @@ public partial class MainPage : FlyoutPage
         [typeof(TriggersPage)] = () => new TriggersPage(),
         [typeof(VisualStateManagerPage)] = () => new VisualStateManagerPage(),
         [typeof(LifecycleEventsPage)] = () => new LifecycleEventsPage(),
+        [typeof(Pages.Essentials.OnPlatformPage)] = () => new Pages.Essentials.OnPlatformPage(),
         // Essentials
         [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
         [typeof(PreferencesPage)] = () => new PreferencesPage(),
@@ -269,6 +270,7 @@ public partial class MainPage : FlyoutPage
                 new("Tooltips", "Tooltips on various elements", typeof(TooltipsPage)),
                 new("Triggers", "Visual states and actions", typeof(TriggersPage)),
                 new("Visual States", "VisualStateManager examples", typeof(VisualStateManagerPage)),
+                new("OnPlatform", "Platform-specific UI customization", typeof(ControlGallery.Pages.Essentials.OnPlatformPage)),
             }),
 
             new SampleGroup("Shell", new List<SampleItem>
@@ -286,9 +288,9 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Essentials Device", new List<SampleItem>
             {
+                new("Battery", "Charge level and power status", typeof(ControlGallery.Pages.Essentials.BatteryPage)),
                 new("Device Display", "Screen metrics and orientation", typeof(ControlGallery.Pages.Essentials.DeviceDisplayPage)),
                 new("Device Info", "Hardware and platform details", typeof(ControlGallery.Pages.Essentials.DeviceInfoPage)),
-                new("Battery", "Charge level and power status", typeof(ControlGallery.Pages.Essentials.BatteryPage)),
             }),
 
             new SampleGroup("Embedding", new List<SampleItem>

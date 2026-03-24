@@ -1,5 +1,6 @@
 let battery = null;
 let batteryCallback = null;
+let subscribed = false;
 
 export async function initBattery() {
     if ('getBattery' in navigator) {
@@ -18,13 +19,11 @@ export function getBatteryCharging() {
 }
 
 export function subscribeBatteryEvents(callback) {
+    if (subscribed) return;
     batteryCallback = callback;
     if (battery) {
-        battery.addEventListener('levelchange', () => {
-            batteryCallback();
-        });
-        battery.addEventListener('chargingchange', () => {
-            batteryCallback();
-        });
+        battery.addEventListener('levelchange', () => batteryCallback?.());
+        battery.addEventListener('chargingchange', () => batteryCallback?.());
+        subscribed = true;
     }
 }

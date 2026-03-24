@@ -21,6 +21,7 @@ public partial class AvaloniaDeviceDisplay
 
     private LinuxInhibitBackend _linuxInhibitBackend;
     private string? _linuxPortalRequestPath;
+    private uint? _linuxInhibitCookie;
     private uint? _linuxSessionCookie;
     private Process? _linuxSystemdInhibitProcess;
 
@@ -126,8 +127,7 @@ public partial class AvaloniaDeviceDisplay
             using var process = Process.Start(psi);
             if (process == null) return false;
 
-            var output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit(3000);
+            var output = RunAndReadOutput(process);
             if (process.ExitCode != 0) return false;
 
             if (!TryParsePortalRequestPath(output, out var requestPath))
@@ -185,8 +185,7 @@ public partial class AvaloniaDeviceDisplay
             using var process = Process.Start(psi);
             if (process == null) return false;
 
-            var output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit(3000);
+            var output = RunAndReadOutput(process);
 
             if (process.ExitCode != 0) return false;
 
@@ -245,8 +244,7 @@ public partial class AvaloniaDeviceDisplay
             using var process = Process.Start(psi);
             if (process == null) return false;
 
-            var output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit(3000);
+            var output = RunAndReadOutput(process);
             if (process.ExitCode != 0) return false;
 
             if (!TryParseDbusCookie(output, out var cookie))
@@ -304,8 +302,7 @@ public partial class AvaloniaDeviceDisplay
             using var process = Process.Start(psi);
             if (process == null) return false;
 
-            var output = process.StandardOutput.ReadToEnd();
-            process.WaitForExit(3000);
+            var output = RunAndReadOutput(process);
             if (process.ExitCode != 0) return false;
 
             if (!TryParseDbusCookie(output, out var cookie))
@@ -412,13 +409,26 @@ public partial class AvaloniaDeviceDisplay
         }
     }
 
+    /// <summary>
+    /// Reads process stdout safely, draining stderr to prevent deadlocks.
+    /// </summary>
+    [SupportedOSPlatform("linux")]
+    private static string RunAndReadOutput(Process process, int timeoutMs = 3000)
+    {
+        // Drain stderr asynchronously to prevent deadlock when both stdout and stderr are redirected
+        process.StandardError.ReadToEnd();
+        var output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit(timeoutMs);
+        return output;
+    }
+
     private static bool TryParseDbusCookie(string? output, out uint cookie)
     {
         cookie = 0;
         if (string.IsNullOrWhiteSpace(output))
             return false;
 
-        var match = Regex.Match(output, @"uint32\s+(\d+)");
+        var match = DbusCookieRegex().Match(output);
         return match.Success && uint.TryParse(match.Groups[1].Value, out cookie);
     }
 
@@ -428,13 +438,19 @@ public partial class AvaloniaDeviceDisplay
         if (string.IsNullOrWhiteSpace(output))
             return false;
 
-        var match = Regex.Match(output, @"objectpath '([^']+)'");
+        var match = PortalRequestPathRegex().Match(output);
         if (!match.Success)
             return false;
 
         requestPath = match.Groups[1].Value;
         return !string.IsNullOrWhiteSpace(requestPath);
     }
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"uint32\s+(\d+)")]
+    private static partial Regex DbusCookieRegex();
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"objectpath '([^']+)'")]
+    private static partial Regex PortalRequestPathRegex();
 
     /// <summary>
     /// Fallback for distros without gdbus (e.g. minimal installs, some Wayland compositors).
