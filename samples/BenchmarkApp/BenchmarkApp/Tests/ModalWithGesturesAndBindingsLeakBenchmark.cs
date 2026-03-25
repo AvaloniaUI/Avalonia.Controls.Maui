@@ -94,12 +94,8 @@ public class ModalWithGesturesAndBindingsLeakBenchmark : BenchmarkTestPage
                 trackedObjects.Count, modalCycles);
         }
 
-        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
-        {
-            return BenchmarkResult.Fail(
-                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
-                metrics);
-        }
+        if (CreateNativeMemoryFailure(memoryDelta, logger, metrics) is { } nativeMemoryFailure)
+            return nativeMemoryFailure;
 
         return BenchmarkResult.Pass(metrics);
     }
