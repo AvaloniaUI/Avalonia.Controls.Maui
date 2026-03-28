@@ -1,9 +1,5 @@
 using Avalonia.Controls;
-using Avalonia.Layout;
-using Avalonia.Media;
 using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Avalonia.Controls.Maui.Platform;
 
@@ -15,7 +11,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// </summary>
 public class MauiAvaloniaContent : ContentControl, IDisposable
 {
-    private readonly Stack<(Control Content, Panel Scrim)> _modalStack = new();
+    private readonly ModalOverlayHelper _modalHelper;
     private readonly Grid _rootGrid;
     private Control? _mainContent;
 
@@ -28,6 +24,7 @@ public class MauiAvaloniaContent : ContentControl, IDisposable
         // Tag as "OverlayWrapper" so AlertManager adds its overlay as a sibling
         // instead of wrapping Content in a new Grid.
         _rootGrid = new Grid { Tag = "OverlayWrapper" };
+        _modalHelper = new ModalOverlayHelper(_rootGrid, () => Bounds.Height);
         Content = _rootGrid;
     }
 
@@ -36,6 +33,13 @@ public class MauiAvaloniaContent : ContentControl, IDisposable
     /// </summary>
     public void Dispose()
     {
+        ClearAllModals();
+
+        if (_mainContent != null)
+        {
+            _rootGrid.Children.Remove(_mainContent);
+            _mainContent = null;
+        }
     }
 
     /// <summary>
@@ -60,104 +64,17 @@ public class MauiAvaloniaContent : ContentControl, IDisposable
     /// <summary>
     /// Presents a modal page as a fullscreen overlay within the content area.
     /// </summary>
-    public async void PresentModal(Control modalContent, bool animated = true)
+    public void PresentModal(Control modalContent, bool animated = true)
     {
-        int zBase = 100 + _modalStack.Count * 2;
-
-        var scrim = new Panel
-        {
-            Background = new SolidColorBrush(Colors.Black, 0.5),
-            ZIndex = zBase,
-            IsHitTestVisible = true,
-            Opacity = animated ? 0 : 1
-        };
-
-        var theme = Application.Current?.ActualThemeVariant;
-        var defaultBg = theme == Avalonia.Styling.ThemeVariant.Dark
-            ? new SolidColorBrush(Color.Parse("#1F1F1F"))
-            : (IBrush)Brushes.White;
-
-        var wrapper = new Border
-        {
-            Child = modalContent,
-            Background = defaultBg,
-            ZIndex = zBase + 1,
-            HorizontalAlignment = HorizontalAlignment.Stretch,
-            VerticalAlignment = VerticalAlignment.Stretch
-        };
-
-        _modalStack.Push((wrapper, scrim));
-        _rootGrid.Children.Add(scrim);
-        _rootGrid.Children.Add(wrapper);
-
-        if (animated)
-        {
-            var containerHeight = Bounds.Height;
-            if (containerHeight <= 0) containerHeight = 800;
-
-            var transform = new TranslateTransform(0, containerHeight);
-            wrapper.RenderTransform = transform;
-
-            var duration = TimeSpan.FromMilliseconds(400);
-            var startTime = DateTime.Now;
-
-            while (DateTime.Now - startTime < duration)
-            {
-                var progress = (DateTime.Now - startTime).TotalMilliseconds / duration.TotalMilliseconds;
-                progress = Math.Min(1.0, progress);
-                progress = 1 - Math.Pow(1 - progress, 3); // ease out cubic
-
-                transform.Y = containerHeight * (1 - progress);
-                scrim.Opacity = progress;
-                await Task.Delay(16);
-            }
-
-            transform.Y = 0;
-            scrim.Opacity = 1;
-            wrapper.RenderTransform = null;
-        }
+        _modalHelper.Present(modalContent, animated);
     }
 
     /// <summary>
     /// Dismisses the top-most modal overlay.
     /// </summary>
-    public async void DismissModal(bool animated = true)
+    public void DismissModal(bool animated = true)
     {
-        if (_modalStack.Count == 0)
-            return;
-
-        var (modalContent, scrim) = _modalStack.Pop();
-
-        try
-        {
-            if (animated)
-            {
-                var containerHeight = Bounds.Height;
-                if (containerHeight <= 0) containerHeight = 800;
-
-                var transform = new TranslateTransform(0, 0);
-                modalContent.RenderTransform = transform;
-
-                var duration = TimeSpan.FromMilliseconds(400);
-                var startTime = DateTime.Now;
-
-                while (DateTime.Now - startTime < duration)
-                {
-                    var progress = (DateTime.Now - startTime).TotalMilliseconds / duration.TotalMilliseconds;
-                    progress = Math.Min(1.0, progress);
-                    progress = 1 - Math.Pow(1 - progress, 3); // ease out cubic
-
-                    transform.Y = containerHeight * progress;
-                    scrim.Opacity = 1 - progress;
-                    await Task.Delay(16);
-                }
-            }
-        }
-        finally
-        {
-            _rootGrid.Children.Remove(modalContent);
-            _rootGrid.Children.Remove(scrim);
-        }
+        _modalHelper.Dismiss(animated);
     }
 
     /// <summary>
@@ -165,16 +82,11 @@ public class MauiAvaloniaContent : ContentControl, IDisposable
     /// </summary>
     public void ClearAllModals()
     {
-        while (_modalStack.Count > 0)
-        {
-            var (modalContent, scrim) = _modalStack.Pop();
-            _rootGrid.Children.Remove(modalContent);
-            _rootGrid.Children.Remove(scrim);
-        }
+        _modalHelper.ClearAll();
     }
 
     /// <summary>
     /// Gets the current number of presented modals.
     /// </summary>
-    public int ModalCount => _modalStack.Count;
+    public int ModalCount => _modalHelper.Count;
 }

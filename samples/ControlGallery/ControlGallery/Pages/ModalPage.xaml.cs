@@ -11,6 +11,7 @@ public partial class ModalPage : ContentPage
     {
         base.OnAppearing();
         UpdateModalStackInfo();
+        ResultLabel.Text = "Tap a button to present a modal page.";
     }
 
     private void UpdateModalStackInfo()
@@ -23,8 +24,11 @@ public partial class ModalPage : ContentPage
 
     private async void OnShowBasicModal(object? sender, EventArgs e)
     {
+        var tcs = new TaskCompletionSource();
         var modal = new BasicModalContent("Basic Modal", "This is a basic modal page. Tap the button below to dismiss it.");
+        modal.Disappearing += (s, args) => tcs.TrySetResult();
         await Navigation.PushModalAsync(modal);
+        await tcs.Task;
         ResultLabel.Text = "Basic modal was dismissed.";
         UpdateModalStackInfo();
     }
@@ -42,21 +46,27 @@ public partial class ModalPage : ContentPage
 
     private async void OnShowModalWithNavigation(object? sender, EventArgs e)
     {
+        var tcs = new TaskCompletionSource();
         var modalContent = new ModalNavigationContent();
         var navPage = new NavigationPage(modalContent)
         {
             BarBackgroundColor = Colors.DodgerBlue,
             BarTextColor = Colors.White
         };
+        navPage.Disappearing += (s, args) => tcs.TrySetResult();
         await Navigation.PushModalAsync(navPage);
+        await tcs.Task;
         ResultLabel.Text = "Navigation modal was dismissed.";
         UpdateModalStackInfo();
     }
 
     private async void OnShowFullScreenModal(object? sender, EventArgs e)
     {
+        var tcs = new TaskCompletionSource();
         var modal = new FullScreenModalContent();
+        modal.Disappearing += (s, args) => tcs.TrySetResult();
         await Navigation.PushModalAsync(modal);
+        await tcs.Task;
         ResultLabel.Text = "Full-screen modal was dismissed.";
         UpdateModalStackInfo();
     }
@@ -187,6 +197,14 @@ public class ColorPickerModalContent : ContentPage
         layout.Children.Add(cancelButton);
 
         Content = new ScrollView { Content = layout };
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        // Ensure the TCS completes even if the modal is dismissed via back gesture
+        // or other platform mechanisms that bypass the button handlers.
+        _tcs.TrySetResult(null);
     }
 }
 
