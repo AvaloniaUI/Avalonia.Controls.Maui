@@ -11,12 +11,14 @@ namespace BenchmarkApp;
 /// <param name="TestName">The benchmark test name.</param>
 /// <param name="Passed">Whether the test passed.</param>
 /// <param name="FailureReason">The failure reason, or <c>null</c> if passed.</param>
+/// <param name="WarningReason">A non-fatal warning reason, or <c>null</c> if none.</param>
 /// <param name="ElapsedSeconds">Elapsed wall-clock time in seconds.</param>
 /// <param name="Metrics">Collected metrics from the benchmark run.</param>
 public record BenchmarkTestResult(
     string TestName,
     bool Passed,
     string? FailureReason,
+    string? WarningReason,
     double ElapsedSeconds,
     IReadOnlyDictionary<string, object> Metrics);
 
@@ -63,6 +65,12 @@ public static class JUnitXmlWriter
                 testCase.Add(new XElement("failure",
                     new XAttribute("message", message),
                     message));
+            }
+
+            if (!string.IsNullOrEmpty(result.WarningReason))
+            {
+                testCase.Add(new XElement("system-out",
+                    $"WARNING: {result.WarningReason}"));
             }
 
             testCases.Add(testCase);
