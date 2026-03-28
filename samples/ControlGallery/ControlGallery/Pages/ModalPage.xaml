@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ModalPage"
+             Title="Modal Pages">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+
+            <Label Text="Modal pages are presented over the current page and require dismissal before returning. They use PushModalAsync / PopModalAsync."
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"/>
+
+            <Label x:Name="ResultLabel"
+                   Text="Tap a button to present a modal page."
+                   TextColor="Gray"
+                   HorizontalOptions="Center"
+                   HorizontalTextAlignment="Center"/>
+
+            <!-- Basic Modal -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Basic Modal"
+                           FontAttributes="Bold"/>
+                    <Label Text="Present a simple modal page that can be dismissed with a button."
+                           FontSize="12"/>
+                    <Button Text="Show Basic Modal"
+                            Clicked="OnShowBasicModal"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Modal with Result -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Modal with Result"
+                           FontAttributes="Bold"/>
+                    <Label Text="Present a modal that returns a value when dismissed."
+                           FontSize="12"/>
+                    <Button Text="Show Color Picker Modal"
+                            Clicked="OnShowColorPickerModal"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Modal with Navigation -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Modal with NavigationPage"
+                           FontAttributes="Bold"/>
+                    <Label Text="Wrap a modal in a NavigationPage to get a navigation bar and support pushing pages within the modal."
+                           FontSize="12"/>
+                    <Button Text="Show Modal with Navigation"
+                            Clicked="OnShowModalWithNavigation"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Full-Screen Modal -->
+            <Border Stroke="Gray" Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Full-Screen Content"
+                           FontAttributes="Bold"/>
+                    <Label Text="Present a modal with full-screen content (e.g. an image viewer)."
+                           FontSize="12"/>
+                    <Button Text="Show Full-Screen Modal"
+                            Clicked="OnShowFullScreenModal"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Modal Stack Info -->
+            <Border Stroke="Gray" Padding="10"
+                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Modal Stack Info"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="ModalStackInfoLabel"
+                           Text="Modal stack depth: 0"
+                           FontSize="12"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
