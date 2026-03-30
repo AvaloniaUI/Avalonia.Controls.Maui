@@ -233,7 +233,14 @@ public partial class MauiAppStub : Application
 
             if (result.Passed)
             {
-                logger.LogInformation("PASSED");
+                if (!string.IsNullOrEmpty(result.WarningReason))
+                {
+                    logger.LogWarning("PASSED (with warning): {Reason}", result.WarningReason);
+                }
+                else
+                {
+                    logger.LogInformation("PASSED");
+                }
             }
             else
             {
@@ -271,6 +278,7 @@ public partial class MauiAppStub : Application
                 displayName,
                 result.Passed,
                 result.FailureReason,
+                result.WarningReason,
                 stopwatch.Elapsed.TotalSeconds,
                 allMetrics));
         }

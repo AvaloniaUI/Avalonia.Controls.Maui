@@ -35,6 +35,7 @@ jobs:
               - 'build/**'
             test:
               - 'tests/Avalonia.Controls.Maui.*/**'
+              - 'samples/BenchmarkApp/**'
               - 'Directory.*.props'
               - 'Directory.*.targets'
               - 'global.json'

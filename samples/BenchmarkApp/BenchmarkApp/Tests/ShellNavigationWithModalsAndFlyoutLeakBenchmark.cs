@@ -112,12 +112,8 @@ public class ShellNavigationWithModalsAndFlyoutLeakBenchmark : BenchmarkTestPage
             return BenchmarkResult.Fail($"Avg memory growth {avgGrowthPerCycle:N0} bytes/cycle exceeds 1 MB", metrics);
         }
 
-        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
-        {
-            return BenchmarkResult.Fail(
-                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
-                metrics);
-        }
+        if (CreateNativeMemoryFailure(memoryDelta, logger, metrics) is { } nativeMemoryFailure)
+            return nativeMemoryFailure;
 
         logger.LogInformation(
             "All {Count} page objects collected after {Cycles} compound navigation cycles. Avg growth: {AvgGrowth:N0} bytes/cycle",
