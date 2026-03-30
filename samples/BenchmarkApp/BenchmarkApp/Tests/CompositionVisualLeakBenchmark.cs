@@ -154,12 +154,8 @@ public class CompositionVisualLeakBenchmark : BenchmarkTestPage
             return BenchmarkResult.Fail(string.Join("; ", reasons), metrics);
         }
 
-        if (memoryDelta.WorkingSetDelta > 100 * 1024 * 1024)
-        {
-            return BenchmarkResult.Warn(
-                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 100 MB threshold",
-                metrics);
-        }
+        if (CreateNativeMemoryFailure(memoryDelta, logger, metrics, 100 * 1024 * 1024) is { } nativeMemoryFailure)
+            return nativeMemoryFailure;
 
         return BenchmarkResult.Pass(metrics);
     }

@@ -22,18 +22,15 @@ public class MenuAndToolbarLeakBenchmark : BenchmarkTestPage
 
         await CreateAndDestroyMenuPage(window, trackedObjects, cancellationToken);
 
-        // Force GC multiple times with delays
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-        await Task.Delay(100, cancellationToken);
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
-        await Task.Delay(50, cancellationToken);
-        GC.Collect();
-        GC.WaitForPendingFinalizers();
-        GC.Collect();
+        // Force GC with increasing delays to give finalizers and weak reference
+        // tracking time to settle, especially on slower CI runners.
+        for (int i = 0; i < 4; i++)
+        {
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true);
+            GC.WaitForPendingFinalizers();
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true);
+            await Task.Delay(50 * (i + 1), cancellationToken);
+        }
 
         var memAfter = MemorySnapshot.Capture(forceGC: false);
         var memoryDelta = memAfter.Compare(memBefore);
@@ -71,12 +68,8 @@ public class MenuAndToolbarLeakBenchmark : BenchmarkTestPage
             return BenchmarkResult.Fail($"Objects leaked: {leakedNames}", metrics);
         }
 
-        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
-        {
-            return BenchmarkResult.Warn(
-                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
-                metrics);
-        }
+        if (CreateNativeMemoryFailure(memoryDelta, logger, metrics) is { } nativeMemoryFailure)
+            return nativeMemoryFailure;
 
         logger.LogInformation(
             "All {Count} menu/toolbar objects collected successfully",
