@@ -28,6 +28,7 @@ public class MenuAndToolbarLeakBenchmark : BenchmarkTestPage
         {
             GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true);
             GC.WaitForPendingFinalizers();
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, blocking: true);
             await Task.Delay(50 * (i + 1), cancellationToken);
         }
 
