@@ -27,6 +27,7 @@ public partial class MainPage : FlyoutPage
         [typeof(NavigationDemoPage)] = () => new NavigationDemoPage(),
         [typeof(ControlGallery.Pages.TabbedPage)] = () => new ControlGallery.Pages.TabbedPage(),
         [typeof(TitleBarPage)] = () => new TitleBarPage(),
+        [typeof(ModalPage)] = () => new ModalPage(),
         [typeof(PopupsPage)] = () => new PopupsPage(),
         [typeof(ToolbarItemPage)] = () => new ToolbarItemPage(),
         [typeof(ShellPage)] = () => new ShellPage(),
@@ -182,6 +183,7 @@ public partial class MainPage : FlyoutPage
                 new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
                 new("TitleBar", "Custom window title bar", typeof(TitleBarPage)),
                 new("ToolbarItems", "Toolbar items and interactions", typeof(ToolbarItemPage)),
+                new("Modal Pages", "Present pages modally with PushModalAsync", typeof(ModalPage)),
                 new("Popups", "Alerts, ActionSheets, and Prompts", typeof(PopupsPage)),
                 new("Lifecycle Events", "View & VisualElement event tracing", typeof(LifecycleEventsPage))
             }),
