@@ -23,9 +23,9 @@ public abstract class BenchmarkTestPage : ContentPage
 
     /// <summary>
     /// Creates a benchmark failure when native memory growth exceeds the given threshold using
-    /// <see cref="MemoryDelta.NativeMemoryEstimate"/> (PrivateMemory minus GC committed bytes),
-    /// which excludes shared libraries, GPU buffers, and OS page cache that make WorkingSet
-    /// unreliable on CI.
+    /// <see cref="MemoryDelta.NativeMemoryEstimate"/> (an estimate of native memory growth computed
+    /// as PrivateMemoryDelta minus GcCommittedBytesDelta), which excludes shared libraries, GPU
+    /// buffers, and OS page cache that make WorkingSet unreliable on CI.
     /// </summary>
     /// <returns>
     /// A failing <see cref="BenchmarkResult"/> when native memory growth exceeds the threshold;
