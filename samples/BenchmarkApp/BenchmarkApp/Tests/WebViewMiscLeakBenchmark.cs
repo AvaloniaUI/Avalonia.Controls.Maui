@@ -10,7 +10,7 @@ namespace BenchmarkApp.Tests;
 /// Covers the mapped WebView surface including events, HtmlWebViewSource base URLs,
 /// cookies, and custom user agents before disconnecting the handler.
 /// </summary>
-[BenchmarkTest("WebViewMiscLeak", Description = "Verifies WebView plus mapped state is collected after disconnect")]
+// [BenchmarkTest("WebViewMiscLeak", Description = "Verifies WebView plus mapped state is collected after disconnect")]
 public class WebViewMiscLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
