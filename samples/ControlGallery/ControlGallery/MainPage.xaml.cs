@@ -102,6 +102,7 @@ public partial class MainPage : FlyoutPage
         [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
         [typeof(PreferencesPage)] = () => new PreferencesPage(),
         [typeof(FilePickerPage)] = () => new FilePickerPage(),
+        [typeof(VersionTrackingPage)] = () => new VersionTrackingPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
         // Embedding
@@ -281,6 +282,7 @@ public partial class MainPage : FlyoutPage
                 new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
                 new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
+                new("Version Tracking", "Inspect first-launch and version/build history", typeof(VersionTrackingPage)),
             }),
 
             new SampleGroup("Embedding", new List<SampleItem>
