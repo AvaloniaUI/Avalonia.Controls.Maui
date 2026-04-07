@@ -15,10 +15,8 @@ namespace Avalonia.Controls.Maui.Essentials;
 /// Avalonia implementation of <see cref="IPreferences"/> that persists key/value preferences to a JSON file.
 /// </summary>
 /// <remarks>
-/// This implementation mirrors MAUI's <c>UnpackagedPreferencesImplementation</c> on Windows,
-/// using a <see cref="ConcurrentDictionary{TKey, TValue}"/> backed by a JSON file
-/// at <c>{AppDataDirectory}/../Settings/preferences.dat</c>.
-/// It is fully cross-platform and has no native dependencies.
+/// This implementation uses a <see cref="ConcurrentDictionary{TKey, TValue}"/> backed by a JSON file
+/// at <c>{AppDataDirectory}/Settings/preferences.dat</c>.
 /// </remarks>
 public partial class AvaloniaPreferences : IPreferences
 {
