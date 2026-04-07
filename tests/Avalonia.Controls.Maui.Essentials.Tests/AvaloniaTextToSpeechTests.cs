@@ -37,8 +37,10 @@ public class AvaloniaTextToSpeechTests
     {
         var sut = new AvaloniaTextToSpeech();
 
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+        var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
             sut.SpeakAsync("test", new SpeechOptions { Pitch = 3.0f }));
+
+        Assert.Equal(nameof(SpeechOptions.Pitch), exception.ParamName);
     }
 
     [Fact]
@@ -46,8 +48,10 @@ public class AvaloniaTextToSpeechTests
     {
         var sut = new AvaloniaTextToSpeech();
 
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+        var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
             sut.SpeakAsync("test", new SpeechOptions { Volume = 1.5f }));
+
+        Assert.Equal(nameof(SpeechOptions.Volume), exception.ParamName);
     }
 
     [Fact]
@@ -55,8 +59,10 @@ public class AvaloniaTextToSpeechTests
     {
         var sut = new AvaloniaTextToSpeech();
 
-        await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+        var exception = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
             sut.SpeakAsync("test", new SpeechOptions { Rate = 0.0f }));
+
+        Assert.Equal(nameof(SpeechOptions.Rate), exception.ParamName);
     }
 
     [Fact]

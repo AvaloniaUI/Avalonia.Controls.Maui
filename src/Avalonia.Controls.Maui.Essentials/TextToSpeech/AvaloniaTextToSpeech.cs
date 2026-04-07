@@ -23,13 +23,13 @@ public sealed partial class AvaloniaTextToSpeech : ITextToSpeech
         options ??= new SpeechOptions();
 
         if (options.Pitch.HasValue && (options.Pitch.Value < 0f || options.Pitch.Value > 2f))
-            throw new ArgumentOutOfRangeException(nameof(options), "Pitch must be between 0 and 2.");
+            throw new ArgumentOutOfRangeException(nameof(SpeechOptions.Pitch), "Pitch must be between 0 and 2.");
 
         if (options.Volume.HasValue && (options.Volume.Value < 0f || options.Volume.Value > 1f))
-            throw new ArgumentOutOfRangeException(nameof(options), "Volume must be between 0 and 1.");
+            throw new ArgumentOutOfRangeException(nameof(SpeechOptions.Volume), "Volume must be between 0 and 1.");
 
         if (options.Rate.HasValue && (options.Rate.Value < 0.1f || options.Rate.Value > 2f))
-            throw new ArgumentOutOfRangeException(nameof(options), "Rate must be between 0.1 and 2.");
+            throw new ArgumentOutOfRangeException(nameof(SpeechOptions.Rate), "Rate must be between 0.1 and 2.");
 
         await _semaphore.WaitAsync(cancelToken).ConfigureAwait(false);
         try

@@ -39,9 +39,7 @@ public sealed partial class AvaloniaTextToSpeech
             return;
         }
 
-        throw new PlatformNotSupportedException(
-            "Text-to-speech requires espeak-ng or speech-dispatcher. " +
-            "Install with: sudo apt install espeak-ng (Debian/Ubuntu) or sudo dnf install espeak-ng (Fedora).");
+        throw CreateUnsupportedPlatformException();
     }
 
     static async Task<string?> DetectToolAsync()
@@ -191,39 +189,50 @@ public sealed partial class AvaloniaTextToSpeech
         // Locale.Id stores the full voice identifier (e.g. "en-gb", "es-la")
         // which espeak-ng uses directly as the -v parameter.
         if (options.Locale is { } locale && !string.IsNullOrEmpty(locale.Id))
-            args.Add($"-v {locale.Id}");
+        {
+            args.Add("-v");
+            args.Add(locale.Id);
+        }
         else if (options.Locale is { } loc && !string.IsNullOrEmpty(loc.Language))
-            args.Add($"-v {loc.Language}");
+        {
+            args.Add("-v");
+            args.Add(loc.Language);
+        }
 
         if (options.Pitch.HasValue)
         {
             var pitch = (int)(options.Pitch.Value * 49.5f);
-            args.Add($"-p {pitch.ToString(CultureInfo.InvariantCulture)}");
+            args.Add("-p");
+            args.Add(pitch.ToString(CultureInfo.InvariantCulture));
         }
 
         if (options.Rate.HasValue)
         {
             var wpm = (int)(80 + (options.Rate.Value - 0.1f) * (370f / 1.9f));
-            args.Add($"-s {wpm.ToString(CultureInfo.InvariantCulture)}");
+            args.Add("-s");
+            args.Add(wpm.ToString(CultureInfo.InvariantCulture));
         }
 
         if (options.Volume.HasValue)
         {
             var amplitude = (int)(options.Volume.Value * 200f);
-            args.Add($"-a {amplitude.ToString(CultureInfo.InvariantCulture)}");
+            args.Add("-a");
+            args.Add(amplitude.ToString(CultureInfo.InvariantCulture));
         }
 
-        args.Add($"-- \"{EscapeShellArg(text)}\"");
+        args.Add("--");
+        args.Add(text);
 
         using var process = new Process();
         process.StartInfo = new ProcessStartInfo
         {
             FileName = "espeak-ng",
-            Arguments = string.Join(' ', args),
             UseShellExecute = false,
             CreateNoWindow = true,
             RedirectStandardError = true
         };
+        foreach (var arg in args)
+            process.StartInfo.ArgumentList.Add(arg);
         process.Start();
 
         // Register cancellation to kill the process immediately when token fires
@@ -232,9 +241,8 @@ public sealed partial class AvaloniaTextToSpeech
             try { process.Kill(entireProcessTree: true); } catch { /* best effort */ }
         });
 
-        var errorTask = process.StandardError.ReadToEndAsync();
-        await process.WaitForExitAsync().ConfigureAwait(false);
-        cancelToken.ThrowIfCancellationRequested();
+        var errorTask = process.StandardError.ReadToEndAsync(cancelToken);
+        await process.WaitForExitAsync(cancelToken).ConfigureAwait(false);
 
         var error = await errorTask.ConfigureAwait(false);
         if (process.ExitCode != 0)
@@ -247,39 +255,50 @@ public sealed partial class AvaloniaTextToSpeech
 
         // Locale.Id stores the full language tag for spd-say
         if (options.Locale is { } locale && !string.IsNullOrEmpty(locale.Id))
-            args.Add($"-l {locale.Id}");
+        {
+            args.Add("-l");
+            args.Add(locale.Id);
+        }
         else if (options.Locale is { } loc && !string.IsNullOrEmpty(loc.Language))
-            args.Add($"-l {loc.Language}");
+        {
+            args.Add("-l");
+            args.Add(loc.Language);
+        }
 
         if (options.Pitch.HasValue)
         {
             var pitch = (int)((options.Pitch.Value - 1f) * 100f);
-            args.Add($"-p {pitch.ToString(CultureInfo.InvariantCulture)}");
+            args.Add("-p");
+            args.Add(pitch.ToString(CultureInfo.InvariantCulture));
         }
 
         if (options.Rate.HasValue)
         {
             var rate = (int)((options.Rate.Value - 1.05f) * (200f / 1.9f));
-            args.Add($"-r {rate.ToString(CultureInfo.InvariantCulture)}");
+            args.Add("-r");
+            args.Add(rate.ToString(CultureInfo.InvariantCulture));
         }
 
         if (options.Volume.HasValue)
         {
             var volume = (int)(options.Volume.Value * 200f - 100f);
-            args.Add($"-i {volume.ToString(CultureInfo.InvariantCulture)}");
+            args.Add("-i");
+            args.Add(volume.ToString(CultureInfo.InvariantCulture));
         }
 
-        args.Add($"-- \"{EscapeShellArg(text)}\"");
+        args.Add("--");
+        args.Add(text);
 
         using var process = new Process();
         process.StartInfo = new ProcessStartInfo
         {
             FileName = "spd-say",
-            Arguments = string.Join(' ', args),
             UseShellExecute = false,
             CreateNoWindow = true,
             RedirectStandardError = true
         };
+        foreach (var arg in args)
+            process.StartInfo.ArgumentList.Add(arg);
         process.Start();
 
         // Register cancellation to kill the client and tell the daemon to stop
@@ -300,13 +319,25 @@ public sealed partial class AvaloniaTextToSpeech
             catch { /* best effort */ }
         });
 
-        var errorTask = process.StandardError.ReadToEndAsync();
-        await process.WaitForExitAsync().ConfigureAwait(false);
-        cancelToken.ThrowIfCancellationRequested();
+        var errorTask = process.StandardError.ReadToEndAsync(cancelToken);
+        await process.WaitForExitAsync(cancelToken).ConfigureAwait(false);
 
         var error = await errorTask.ConfigureAwait(false);
         if (process.ExitCode != 0)
             throw CreateProcessFailedException("spd-say", process.ExitCode, error);
+    }
+
+    static PlatformNotSupportedException CreateUnsupportedPlatformException()
+    {
+        if (OperatingSystem.IsLinux())
+        {
+            return new PlatformNotSupportedException(
+                "Text-to-speech requires espeak-ng or speech-dispatcher. " +
+                "Install espeak-ng (for example: sudo apt install espeak-ng or sudo dnf install espeak-ng).");
+        }
+
+        return new PlatformNotSupportedException(
+            "Text-to-speech is currently supported on desktop Linux with espeak-ng or speech-dispatcher.");
     }
 
     static InvalidOperationException CreateProcessFailedException(string processName, int exitCode, string error)
@@ -317,7 +348,4 @@ public sealed partial class AvaloniaTextToSpeech
 
         return new InvalidOperationException(detail);
     }
-
-    static string EscapeShellArg(string arg) =>
-        arg.Replace("\\", "\\\\").Replace("\"", "\\\"");
 }
