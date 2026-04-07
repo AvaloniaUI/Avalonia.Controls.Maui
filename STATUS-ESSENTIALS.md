@@ -701,20 +701,20 @@ Track application version history on the device.
 
 | Member | Type | Status |
 |--------|------|--------|
-| Track() | Method | ⏳ TODO |
-| IsFirstLaunchEver | Property | ⏳ TODO |
-| IsFirstLaunchForCurrentVersion | Property | ⏳ TODO |
-| IsFirstLaunchForCurrentBuild | Property | ⏳ TODO |
-| CurrentVersion | Property | ⏳ TODO |
-| CurrentBuild | Property | ⏳ TODO |
-| PreviousVersion | Property | ⏳ TODO |
-| PreviousBuild | Property | ⏳ TODO |
-| FirstInstalledVersion | Property | ⏳ TODO |
-| FirstInstalledBuild | Property | ⏳ TODO |
-| VersionHistory | Property | ⏳ TODO |
-| BuildHistory | Property | ⏳ TODO |
-| IsFirstLaunchForVersion(string) | Method | ⏳ TODO |
-| IsFirstLaunchForBuild(string) | Method | ⏳ TODO |
+| Track() | Method | ✅ Done |
+| IsFirstLaunchEver | Property | ✅ Done |
+| IsFirstLaunchForCurrentVersion | Property | ✅ Done |
+| IsFirstLaunchForCurrentBuild | Property | ✅ Done |
+| CurrentVersion | Property | ✅ Done |
+| CurrentBuild | Property | ✅ Done |
+| PreviousVersion | Property | ✅ Done |
+| PreviousBuild | Property | ✅ Done |
+| FirstInstalledVersion | Property | ✅ Done |
+| FirstInstalledBuild | Property | ✅ Done |
+| VersionHistory | Property | ✅ Done |
+| BuildHistory | Property | ✅ Done |
+| IsFirstLaunchForVersion(string) | Method | ✅ Done |
+| IsFirstLaunchForBuild(string) | Method | ✅ Done |
 
 ---
 
