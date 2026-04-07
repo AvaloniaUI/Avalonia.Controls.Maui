@@ -27,7 +27,8 @@ public static class MauiEssentialsBuilderExtensions
         Microsoft.Maui.Storage.Preferences.SetDefault(preferences);
         FileSystem.SetCurrent(new Avalonia.Controls.Maui.Essentials.AvaloniaFileSystem());
         Microsoft.Maui.Authentication.WebAuthenticator.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaWebAuthenticator(platformProvider));
-        builder.Services.TryAddSingleton<IPreferences>(preferences);
+        builder.Services.RemoveAll<IPreferences>();
+        builder.Services.AddSingleton<IPreferences>(preferences);
         builder.Services.TryAddSingleton<IMauiInitializeService, Avalonia.Controls.Maui.Essentials.AvaloniaVersionTrackingInitializer>();
         builder.Services.TryAddSingleton<IVersionTracking>(services =>
             new Avalonia.Controls.Maui.Essentials.AvaloniaVersionTracking(
