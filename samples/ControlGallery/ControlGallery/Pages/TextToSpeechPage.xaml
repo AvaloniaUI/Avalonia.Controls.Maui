@@ -6,30 +6,24 @@
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="20">
-
-            <!-- Text Input -->
             <Border Stroke="Gray"
-                    Padding="10">
+                    Padding="14">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
+
+                <VerticalStackLayout Spacing="16">
                     <Label Text="Text to Speak"
                            FontAttributes="Bold"/>
+
                     <Editor x:Name="TextEditor"
                             Text="Hello! This is a text-to-speech demo from Avalonia Controls for MAUI."
                             HeightRequest="100"
                             Placeholder="Enter text to speak..."/>
-                </VerticalStackLayout>
-            </Border>
 
-            <!-- Speech Options -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
+                    <BoxView HeightRequest="1"
+                             Color="LightGray"/>
+
                     <Label Text="Speech Options"
                            FontAttributes="Bold"/>
 
@@ -56,32 +50,20 @@
                             Maximum="1"
                             Value="1"
                             ValueChanged="OnVolumeChanged"/>
-                </VerticalStackLayout>
-            </Border>
 
-            <!-- Locale Selection -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
+                    <BoxView HeightRequest="1"
+                             Color="LightGray"/>
+
                     <Label Text="Locale"
                            FontAttributes="Bold"/>
                     <Picker x:Name="LocalePicker"
                             Title="Select a locale"/>
                     <Label x:Name="LocaleCountLabel"
-                           Text="Available locales: --"/>
-                </VerticalStackLayout>
-            </Border>
+                            Text="Available locales: --"/>
 
-            <!-- Controls -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
+                    <BoxView HeightRequest="1"
+                             Color="LightGray"/>
+
                     <HorizontalStackLayout Spacing="10">
                         <Button x:Name="SpeakButton"
                                 Text="Speak"
@@ -95,7 +77,6 @@
                            Text="Status: Ready"/>
                 </VerticalStackLayout>
             </Border>
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
