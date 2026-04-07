@@ -49,6 +49,6 @@ public partial class AvaloniaPreferences
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             appName);
 
-        return Path.Combine(appDataDirectory, "..", "Settings", "preferences.dat");
+        return Path.Combine(appDataDirectory, "Settings", "preferences.dat");
     }
 }
