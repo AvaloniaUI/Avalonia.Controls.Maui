@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.TextToSpeechPage"
+             Title="TextToSpeech">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Text Input -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text to Speak"
+                           FontAttributes="Bold"/>
+                    <Editor x:Name="TextEditor"
+                            Text="Hello! This is a text-to-speech demo from Avalonia Controls for MAUI."
+                            HeightRequest="100"
+                            Placeholder="Enter text to speak..."/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Speech Options -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Speech Options"
+                           FontAttributes="Bold"/>
+
+                    <Label x:Name="PitchLabel"
+                           Text="Pitch: 1.0"/>
+                    <Slider x:Name="PitchSlider"
+                            Minimum="0"
+                            Maximum="2"
+                            Value="1"
+                            ValueChanged="OnPitchChanged"/>
+
+                    <Label x:Name="RateLabel"
+                           Text="Rate: 1.0"/>
+                    <Slider x:Name="RateSlider"
+                            Minimum="0.1"
+                            Maximum="2"
+                            Value="1"
+                            ValueChanged="OnRateChanged"/>
+
+                    <Label x:Name="VolumeLabel"
+                           Text="Volume: 1.0"/>
+                    <Slider x:Name="VolumeSlider"
+                            Minimum="0"
+                            Maximum="1"
+                            Value="1"
+                            ValueChanged="OnVolumeChanged"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Locale Selection -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Locale"
+                           FontAttributes="Bold"/>
+                    <Picker x:Name="LocalePicker"
+                            Title="Select a locale"/>
+                    <Label x:Name="LocaleCountLabel"
+                           Text="Available locales: --"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Controls -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout Spacing="10">
+                        <Button x:Name="SpeakButton"
+                                Text="Speak"
+                                Clicked="OnSpeakClicked"/>
+                        <Button x:Name="StopButton"
+                                Text="Stop"
+                                IsEnabled="False"
+                                Clicked="OnStopClicked"/>
+                    </HorizontalStackLayout>
+                    <Label x:Name="StatusLabel"
+                           Text="Status: Ready"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
