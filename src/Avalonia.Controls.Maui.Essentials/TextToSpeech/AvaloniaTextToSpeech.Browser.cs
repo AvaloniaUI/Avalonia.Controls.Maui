@@ -66,9 +66,16 @@ public sealed partial class AvaloniaTextToSpeech
 
     sealed class VoiceInfo
     {
+        [JsonPropertyName("name")]
         public string? Name { get; set; }
+
+        [JsonPropertyName("lang")]
         public string? Lang { get; set; }
+
+        [JsonPropertyName("voiceURI")]
         public string? VoiceURI { get; set; }
+
+        [JsonPropertyName("isDefault")]
         public bool IsDefault { get; set; }
     }
 

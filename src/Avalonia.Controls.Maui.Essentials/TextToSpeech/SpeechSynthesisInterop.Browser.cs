@@ -10,6 +10,7 @@ namespace Avalonia.Controls.Maui.Essentials;
 internal static partial class SpeechSynthesisInterop
 {
     const string ModuleName = "AvaloniaTextToSpeech";
+    const string ModulePath = "../_content/Avalonia.Controls.Maui.Essentials/js/speechSynthesis-interop.js";
     static readonly object ModuleLoadLock = new();
     static bool _moduleLoaded;
     static Task? _moduleLoadTask;
@@ -30,9 +31,7 @@ internal static partial class SpeechSynthesisInterop
     {
         try
         {
-            await JSHost.ImportAsync(ModuleName,
-                "../js/speechSynthesis-interop.js")
-                .ConfigureAwait(false);
+            await JSHost.ImportAsync(ModuleName, ModulePath).ConfigureAwait(false);
 
             lock (ModuleLoadLock)
             {
