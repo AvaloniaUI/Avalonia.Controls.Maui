@@ -116,10 +116,10 @@ Copy and paste text to and from the system clipboard.
 
 | Member | Type | Status |
 |--------|------|--------|
-| HasText | Property | ⏳ TODO |
-| SetTextAsync(string) | Method | ⏳ TODO |
-| GetTextAsync() | Method | ⏳ TODO |
-| ClipboardContentChanged | Event | ⏳ TODO |
+| HasText | Property | ✅ Implemented |
+| SetTextAsync(string) | Method | ✅ Implemented |
+| GetTextAsync() | Method | ✅ Implemented |
+| ClipboardContentChanged | Event | ✅ Implemented |
 
 ---
 

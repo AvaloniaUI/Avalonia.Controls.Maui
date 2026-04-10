@@ -99,6 +99,7 @@ public partial class MainPage : FlyoutPage
         [typeof(VisualStateManagerPage)] = () => new VisualStateManagerPage(),
         [typeof(LifecycleEventsPage)] = () => new LifecycleEventsPage(),
         // Essentials
+        [typeof(ClipboardPage)] = () => new ClipboardPage(),
         [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
         [typeof(PreferencesPage)] = () => new PreferencesPage(),
         [typeof(FilePickerPage)] = () => new FilePickerPage(),
@@ -278,6 +279,7 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Essentials", new List<SampleItem>
             {
+                new("Clipboard", "Copy and paste text", typeof(ClipboardPage)),
                 new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
                 new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),

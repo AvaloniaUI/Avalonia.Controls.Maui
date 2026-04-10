@@ -18,6 +18,7 @@ builder
 
 | API | Namespace | Status | Notes |
 |-----|-----------|--------|-------|
+| Clipboard | `Microsoft.Maui.ApplicationModel.DataTransfer` | Implemented | Full support for text copy/paste. Uses Avalonia's cross-platform clipboard API (desktop and browser). |
 | Screenshot | `Microsoft.Maui.Media` | Implemented | Full support. **Note**: Always outputs PNG regardless of requested format. |
 | FilePicker | `Microsoft.Maui.Storage` | Implemented | Full support for single and multi-file selection. MIME types and UTIs are converted to glob patterns where possible. |
 | MediaPicker | `Microsoft.Maui.Media` | Partial | Photo and video **picking** is supported. Camera capture (`CapturePhotoAsync`/`CaptureVideoAsync`) throws `NotSupportedException`. |
