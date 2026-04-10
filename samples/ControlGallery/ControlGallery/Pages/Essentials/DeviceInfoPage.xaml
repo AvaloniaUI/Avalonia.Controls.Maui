@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.Essentials.DeviceInfoPage"
+             Title="Device Info">
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <Label Text="Device Information" 
+                   Style="{StaticResource SubHeadline}" />
+            
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="System Information" FontAttributes="Bold" />
+                    <Label Text="Displays information about the hardware and operating system." FontSize="12" Opacity="0.7" />
+                    
+                    <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="20" RowSpacing="10">
+                        <Label Text="Model:" Grid.Row="0" Grid.Column="0" FontAttributes="Bold" />
+                        <Label x:Name="ModelLabel" Grid.Row="0" Grid.Column="1" />
+                        
+                        <Label Text="Manufacturer:" Grid.Row="1" Grid.Column="0" FontAttributes="Bold" />
+                        <Label x:Name="ManufacturerLabel" Grid.Row="1" Grid.Column="1" />
+                        
+                        <Label Text="Name:" Grid.Row="2" Grid.Column="0" FontAttributes="Bold" />
+                        <Label x:Name="NameLabel" Grid.Row="2" Grid.Column="1" />
+                        
+                        <Label Text="Version:" Grid.Row="3" Grid.Column="0" FontAttributes="Bold" />
+                        <Label x:Name="VersionLabel" Grid.Row="3" Grid.Column="1" />
+                        
+                        <Label Text="Platform:" Grid.Row="4" Grid.Column="0" FontAttributes="Bold" />
+                        <Label x:Name="PlatformLabel" Grid.Row="4" Grid.Column="1" />
+                        
+                        <Label Text="Idiom:" Grid.Row="5" Grid.Column="0" FontAttributes="Bold" />
+                        <Label x:Name="IdiomLabel" Grid.Row="5" Grid.Column="1" />
+                        
+                        <Label Text="Device Type:" Grid.Row="6" Grid.Column="0" FontAttributes="Bold" />
+                        <Label x:Name="DeviceTypeLabel" Grid.Row="6" Grid.Column="1" />
+                    </Grid>
+                    
+                    <Button Text="Refresh Info" Clicked="OnRefreshClicked" HorizontalOptions="Center" WidthRequest="200" />
+                </VerticalStackLayout>
+            </Border>
+            
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

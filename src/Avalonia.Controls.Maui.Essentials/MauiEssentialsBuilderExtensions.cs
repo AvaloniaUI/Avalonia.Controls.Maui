@@ -23,6 +23,9 @@ public static class MauiEssentialsBuilderExtensions
         Microsoft.Maui.Storage.Preferences.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaPreferences());
         FileSystem.SetCurrent(new Avalonia.Controls.Maui.Essentials.AvaloniaFileSystem());
         Microsoft.Maui.Authentication.WebAuthenticator.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaWebAuthenticator(platformProvider));
+        Microsoft.Maui.Devices.DeviceInfo.SetCurrent(Avalonia.Controls.Maui.Essentials.Devices.AvaloniaDeviceInfo.Current);
+        Microsoft.Maui.Devices.DeviceDisplay.SetCurrent(new Avalonia.Controls.Maui.Essentials.Devices.AvaloniaDeviceDisplay());
+        Microsoft.Maui.Devices.Battery.SetDefault(Avalonia.Controls.Maui.Essentials.Devices.AvaloniaBattery.Default);
 
         return builder;
     }
