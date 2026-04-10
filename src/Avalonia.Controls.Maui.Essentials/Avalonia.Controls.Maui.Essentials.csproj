@@ -32,6 +32,11 @@
     <Compile Remove="**/*.Browser.cs" />
   </ItemGroup>
 
+  <!-- Include JS interop modules as static web content -->
+  <ItemGroup>
+    <Content Include="wwwroot\**" Pack="true" PackagePath="staticwebassets\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
   <ItemGroup Condition=" ('$(IsPackable)' == 'true')">
     <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath=""
       Visible="false" />
