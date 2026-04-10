@@ -612,10 +612,10 @@ Securely store encrypted key/value pairs.
 
 | Member | Type | Status |
 |--------|------|--------|
-| GetAsync(string) | Method | ⏳ TODO |
-| SetAsync(string, string) | Method | ⏳ TODO |
-| Remove(string) | Method | ⏳ TODO |
-| RemoveAll() | Method | ⏳ TODO |
+| GetAsync(string) | Method | ✅ Implemented |
+| SetAsync(string, string) | Method | ✅ Implemented |
+| Remove(string) | Method | ✅ Implemented |
+| RemoveAll() | Method | ✅ Implemented |
 
 ---
 

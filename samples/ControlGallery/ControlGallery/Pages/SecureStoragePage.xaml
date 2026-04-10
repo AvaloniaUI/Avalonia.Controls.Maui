@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.SecureStoragePage"
+             Title="Secure Storage">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Store and Retrieve -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Store and Retrieve"
+                           FontAttributes="Bold"/>
+                    <Entry x:Name="KeyEntry"
+                           Placeholder="Enter a key..."
+                           Text="oauth_token"/>
+                    <Entry x:Name="ValueEntry"
+                           Placeholder="Enter a secret value..."
+                           IsPassword="True"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Save"
+                                Clicked="OnSaveClicked"/>
+                        <Button Text="Load"
+                                Clicked="OnLoadClicked"/>
+                        <Button Text="Remove"
+                                Clicked="OnRemoveClicked"/>
+                    </HorizontalStackLayout>
+                    <Label x:Name="ResultLabel"
+                           Text="Value: --"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Persistence Test -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Persistence Test"
+                           FontAttributes="Bold"/>
+                    <Label Text="Save a timestamp, restart the app, then load it back."
+                           FontSize="13"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Save Timestamp"
+                                Clicked="OnSaveTimestampClicked"/>
+                        <Button Text="Load Timestamp"
+                                Clicked="OnLoadTimestampClicked"/>
+                    </HorizontalStackLayout>
+                    <Label x:Name="PersistenceResultLabel"
+                           Text="Saved: --"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
