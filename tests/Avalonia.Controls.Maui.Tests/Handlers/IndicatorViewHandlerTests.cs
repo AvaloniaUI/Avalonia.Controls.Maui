@@ -5,7 +5,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls.Shapes;
 using Microsoft.Maui.Graphics;
 using MauiIndicatorViewHandler = Avalonia.Controls.Maui.Handlers.IndicatorViewHandler;
-using PipsPager = Avalonia.Controls.Maui.Controls.PipsPager;
+using PipsPager = Avalonia.Controls.PipsPager;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 

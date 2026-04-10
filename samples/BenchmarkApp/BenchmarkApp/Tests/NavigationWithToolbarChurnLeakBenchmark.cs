@@ -16,7 +16,7 @@ namespace BenchmarkApp.Tests;
 /// compound path of toolbar item subscription swapping during rapid navigation.
 /// </remarks>
 [BenchmarkTest("NavigationWithToolbarChurnLeak", Description = "Verifies rapid push/pop with changing ToolbarItems doesn't leak")]
-public class NavigationWithToolbarChurnBenchmark : BenchmarkTestPage
+public class NavigationWithToolbarChurnLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
     public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
@@ -101,12 +101,8 @@ public class NavigationWithToolbarChurnBenchmark : BenchmarkTestPage
             return BenchmarkResult.Fail($"Avg memory growth {avgGrowthPerCycle:N0} bytes/cycle exceeds 256 KB", metrics);
         }
 
-        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
-        {
-            return BenchmarkResult.Fail(
-                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
-                metrics);
-        }
+        if (CreateNativeMemoryFailure(memoryDelta, logger, metrics) is { } nativeMemoryFailure)
+            return nativeMemoryFailure;
 
         logger.LogInformation(
             "All {Count} objects collected after {Cycles} cycles. Avg growth: {AvgGrowth:N0} bytes/cycle",

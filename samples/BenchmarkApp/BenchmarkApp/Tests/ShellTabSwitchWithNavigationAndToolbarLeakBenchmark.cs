@@ -16,8 +16,8 @@ namespace BenchmarkApp.Tests;
 /// with no in-tab navigation. ShellTabSwitchMemoryGrowthBenchmark is even simpler. Neither
 /// exercises the compound path of Shell tab switch + in-tab page push with toolbar items.
 /// </remarks>
-[BenchmarkTest("ShellTabSwitchWithNavAndToolbarLeak", Description = "Verifies Shell tab switching + in-tab push/pop with toolbars doesn't leak")]
-public class ShellTabSwitchWithNavigationAndToolbarBenchmark : BenchmarkTestPage
+[BenchmarkTest("ShellTabSwitchWithNavigationAndToolbarLeak", Description = "Verifies Shell tab switching + in-tab push/pop with toolbars doesn't leak")]
+public class ShellTabSwitchWithNavigationAndToolbarLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
     public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
@@ -113,12 +113,8 @@ public class ShellTabSwitchWithNavigationAndToolbarBenchmark : BenchmarkTestPage
             return BenchmarkResult.Fail($"Avg memory growth {avgGrowthPerCycle:N0} bytes/cycle exceeds 512 KB", metrics);
         }
 
-        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
-        {
-            return BenchmarkResult.Fail(
-                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
-                metrics);
-        }
+        if (CreateNativeMemoryFailure(memoryDelta, logger, metrics) is { } nativeMemoryFailure)
+            return nativeMemoryFailure;
 
         logger.LogInformation(
             "All {PageCount} pages collected after {Cycles} cycles. Avg growth: {AvgGrowth:N0} bytes/cycle",

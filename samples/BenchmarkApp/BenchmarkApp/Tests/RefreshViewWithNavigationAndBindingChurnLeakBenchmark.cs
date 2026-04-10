@@ -14,8 +14,8 @@ namespace BenchmarkApp.Tests;
 /// Gap: RefreshViewLeakBenchmark toggles IsRefreshing in a flat layout and never navigates.
 /// It never has an active refresh at the moment of disconnect.
 /// </remarks>
-[BenchmarkTest("RefreshViewWithNavAndBindingChurnLeak", Description = "Verifies RefreshView isn't leaked when actively refreshing during navigation pop")]
-public class RefreshViewWithNavigationAndBindingChurnBenchmark : BenchmarkTestPage
+[BenchmarkTest("RefreshViewWithNavigationAndBindingChurnLeak", Description = "Verifies RefreshView isn't leaked when actively refreshing during navigation pop")]
+public class RefreshViewWithNavigationAndBindingChurnLeakBenchmark : BenchmarkTestPage
 {
     /// <inheritdoc/>
     public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
@@ -111,12 +111,8 @@ public class RefreshViewWithNavigationAndBindingChurnBenchmark : BenchmarkTestPa
             return BenchmarkResult.Fail($"Avg memory growth {avgGrowthPerCycle:N0} bytes/cycle exceeds 256 KB", metrics);
         }
 
-        if (memoryDelta.WorkingSetDelta > 50 * 1024 * 1024)
-        {
-            return BenchmarkResult.Fail(
-                $"Native memory growth {memoryDelta.WorkingSetDelta / (1024.0 * 1024):F1} MB exceeds 50 MB threshold",
-                metrics);
-        }
+        if (CreateNativeMemoryFailure(memoryDelta, logger, metrics) is { } nativeMemoryFailure)
+            return nativeMemoryFailure;
 
         logger.LogInformation(
             "All {Count} RefreshView objects collected after {Cycles} cycles. Avg growth: {AvgGrowth:N0} bytes/cycle",

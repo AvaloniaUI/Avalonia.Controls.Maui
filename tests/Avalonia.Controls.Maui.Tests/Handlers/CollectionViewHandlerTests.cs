@@ -4,8 +4,8 @@ using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using AvaloniaCollectionView = Avalonia.Controls.Maui.MauiCollectionView;
-using AvaloniaSelectionMode = Avalonia.Controls.SelectionMode;
 using AvaloniaScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility;
 using MauiCollectionViewHandler = Avalonia.Controls.Maui.Handlers.CollectionViewHandler;
 using MauiScrollBarVisibility = Microsoft.Maui.ScrollBarVisibility;
@@ -289,17 +289,45 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         Assert.True(isGrouped);
     }
 
+    [AvaloniaFact(DisplayName = "ItemSizingStrategy Initializes Correctly")]
+    public async Task ItemSizingStrategyInitializesCorrectly()
+    {
+        var collectionView = CreateCollectionView();
+        collectionView.ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem;
+
+        var itemSizingStrategy = await GetValueAsync<ItemSizingStrategy, MauiCollectionViewHandler>(
+            collectionView, GetPlatformItemSizingStrategy);
+
+        Assert.Equal(ItemSizingStrategy.MeasureFirstItem, itemSizingStrategy);
+    }
+
+    [AvaloniaFact(DisplayName = "ItemSizingStrategy Updates Correctly")]
+    public async Task ItemSizingStrategyUpdatesCorrectly()
+    {
+        var collectionView = CreateCollectionView();
+        collectionView.ItemSizingStrategy = ItemSizingStrategy.MeasureAllItems;
+
+        var itemSizingStrategy = await GetValueAsync<ItemSizingStrategy, MauiCollectionViewHandler>(
+            collectionView, handler =>
+            {
+                collectionView.ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem;
+                handler.UpdateValue(nameof(StructuredItemsView.ItemSizingStrategy));
+                return GetPlatformItemSizingStrategy(handler);
+            });
+
+        Assert.Equal(ItemSizingStrategy.MeasureFirstItem, itemSizingStrategy);
+    }
+
     [AvaloniaFact(DisplayName = "SelectionMode None Initializes Correctly")]
     public async Task SelectionModeNoneInitializesCorrectly()
     {
         var collectionView = CreateCollectionView();
         collectionView.SelectionMode = MauiSelectionMode.None;
 
-        var selectionMode = await GetValueAsync<AvaloniaSelectionMode, MauiCollectionViewHandler>(
+        var selectionMode = await GetValueAsync<MauiSelectionMode, MauiCollectionViewHandler>(
             collectionView, GetPlatformSelectionMode);
 
-        // None maps to Single in Avalonia (but selection is handled differently)
-        Assert.Equal(AvaloniaSelectionMode.Single, selectionMode);
+        Assert.Equal(MauiSelectionMode.None, selectionMode);
     }
 
     [AvaloniaFact(DisplayName = "SelectionMode Single Initializes Correctly")]
@@ -308,10 +336,10 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         var collectionView = CreateCollectionView();
         collectionView.SelectionMode = MauiSelectionMode.Single;
 
-        var selectionMode = await GetValueAsync<AvaloniaSelectionMode, MauiCollectionViewHandler>(
+        var selectionMode = await GetValueAsync<MauiSelectionMode, MauiCollectionViewHandler>(
             collectionView, GetPlatformSelectionMode);
 
-        Assert.Equal(AvaloniaSelectionMode.Single, selectionMode);
+        Assert.Equal(MauiSelectionMode.Single, selectionMode);
     }
 
     [AvaloniaFact(DisplayName = "SelectionMode Multiple Initializes Correctly")]
@@ -320,10 +348,10 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         var collectionView = CreateCollectionView();
         collectionView.SelectionMode = MauiSelectionMode.Multiple;
 
-        var selectionMode = await GetValueAsync<AvaloniaSelectionMode, MauiCollectionViewHandler>(
+        var selectionMode = await GetValueAsync<MauiSelectionMode, MauiCollectionViewHandler>(
             collectionView, GetPlatformSelectionMode);
 
-                Assert.Equal(AvaloniaSelectionMode.Multiple, selectionMode);
+        Assert.Equal(MauiSelectionMode.Multiple, selectionMode);
     }
 
     [AvaloniaFact(DisplayName = "SelectionMode None Clears Selection")]
@@ -818,6 +846,73 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         Assert.True(scrollViewer.Offset.Y > 0, $"ScrollViewer offset {scrollViewer.Offset.Y} should be greater than 0 after scrolling");
     }
 
+    [AvaloniaFact(DisplayName = "ScrollTo Index Updates Offset With MeasureFirstItem")]
+    public async Task ScrollToIndexUpdatesOffsetWithMeasureFirstItem()
+    {
+        var items = Enumerable.Range(0, 100).Select(i => $"Item {i}").ToList();
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = items;
+        collectionView.HeightRequest = 200;
+        collectionView.ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem;
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+        var platformView = handler.PlatformView;
+
+        var window = new Window { Content = platformView, Width = 200, Height = 200 };
+        window.Show();
+
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        var scrollViewer = platformView.GetScrollViewer();
+        Assert.NotNull(scrollViewer);
+        Assert.Equal(0, scrollViewer.Offset.Y);
+
+        collectionView.ScrollTo(99, -1, ScrollToPosition.MakeVisible, false);
+
+        Threading.Dispatcher.UIThread.RunJobs();
+        await Task.Delay(100);
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        Assert.True(scrollViewer.Offset.Y > 0, $"ScrollViewer offset {scrollViewer.Offset.Y} should be greater than 0 after scrolling");
+    }
+
+    [AvaloniaFact(DisplayName = "ScrollTo MeasureFirstItem Accounts For Header Offset")]
+    public async Task ScrollToMeasureFirstItemAccountsForHeaderOffset()
+    {
+        var items = Enumerable.Range(0, 100).Select(i => $"Item {i}").ToList();
+
+        async Task<double> GetOffsetAsync(View? header)
+        {
+            var collectionView = CreateCollectionView();
+            collectionView.ItemsSource = items;
+            collectionView.HeightRequest = 200;
+            collectionView.ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem;
+            collectionView.Header = header;
+
+            var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+            var platformView = handler.PlatformView;
+
+            var window = new Window { Content = platformView, Width = 240, Height = 260 };
+            window.Show();
+
+            Threading.Dispatcher.UIThread.RunJobs();
+
+            collectionView.ScrollTo(50, -1, ScrollToPosition.Start, false);
+
+            Threading.Dispatcher.UIThread.RunJobs();
+            await Task.Delay(100);
+            Threading.Dispatcher.UIThread.RunJobs();
+
+            return platformView.GetScrollViewer()?.Offset.Y ?? 0;
+        }
+
+        var withoutHeaderOffset = await GetOffsetAsync(null);
+        var withHeaderOffset = await GetOffsetAsync(new Microsoft.Maui.Controls.Grid { HeightRequest = 120 });
+
+        Assert.True(withHeaderOffset > withoutHeaderOffset + 50,
+            $"Scroll offset with header ({withHeaderOffset}) should reflect header height and be materially larger than without header ({withoutHeaderOffset}).");
+    }
+
     [AvaloniaFact(DisplayName = "ScrollTo Item Updates Offset")]
     public async Task ScrollToItemUpdatesOffset()
     {
@@ -954,6 +1049,52 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         Assert.True(commandExecutedCount > 0, "RemainingItemsThresholdReachedCommand should have executed");
     }
 
+    [AvaloniaFact(DisplayName = "RemainingItemsThresholdReachedCommand Fires Once Per Threshold Crossing")]
+    public async Task RemainingItemsThresholdReachedCommandFiresOncePerThresholdCrossing()
+    {
+        var items = Enumerable.Range(0, 100).Select(i => $"Item {i}").ToList();
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = items;
+        collectionView.HeightRequest = 200;
+        collectionView.RemainingItemsThreshold = 5;
+
+        var commandExecutedCount = 0;
+        var command = new TestCommand(() => commandExecutedCount++);
+        collectionView.RemainingItemsThresholdReachedCommand = command;
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+        var platformView = handler.PlatformView;
+
+        var window = new Window { Content = platformView, Width = 200, Height = 200 };
+        window.Show();
+
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        collectionView.ScrollTo(92, -1, ScrollToPosition.MakeVisible, false);
+        Threading.Dispatcher.UIThread.RunJobs();
+        await Task.Delay(100);
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        collectionView.ScrollTo(95, -1, ScrollToPosition.MakeVisible, false);
+        Threading.Dispatcher.UIThread.RunJobs();
+        await Task.Delay(100);
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal(1, commandExecutedCount);
+
+        collectionView.ScrollTo(0, -1, ScrollToPosition.MakeVisible, false);
+        Threading.Dispatcher.UIThread.RunJobs();
+        await Task.Delay(100);
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        collectionView.ScrollTo(96, -1, ScrollToPosition.MakeVisible, false);
+        Threading.Dispatcher.UIThread.RunJobs();
+        await Task.Delay(100);
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal(2, commandExecutedCount);
+    }
+
     [AvaloniaFact(DisplayName = "ScrolledEventFires")]
     public async Task ScrolledEventFires()
     {
@@ -996,6 +1137,7 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         collectionView.SelectionChangedCommand = command;
 
         var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+        Assert.Equal(0, commandExecutedCount);
 
         // Simulate selection change on platform (even though mode is None)
         handler.PlatformView.SelectedItem = "Item 2";
@@ -1003,6 +1145,24 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         await Task.Delay(150);
 
         Assert.Equal(0, commandExecutedCount);
+    }
+
+    [AvaloniaFact(DisplayName = "SynchronizeSelectedItems Applies Diff In Place")]
+    public void SynchronizeSelectedItemsAppliesDiffInPlace()
+    {
+        var target = new ObservableCollection<object> { "Item 1", "Item 2" };
+        var changes = new List<NotifyCollectionChangedAction>();
+        target.CollectionChanged += (_, e) => changes.Add(e.Action);
+
+        Avalonia.Controls.Maui.Handlers.CollectionViewHandler.SynchronizeSelectedItems(
+            target,
+            new HashSet<object> { "Item 2", "Item 3" });
+
+        Assert.Equal(new object[] { "Item 2", "Item 3" }, target);
+        Assert.Equal(2, changes.Count);
+        Assert.Contains(NotifyCollectionChangedAction.Remove, changes);
+        Assert.Contains(NotifyCollectionChangedAction.Add, changes);
+        Assert.DoesNotContain(NotifyCollectionChangedAction.Reset, changes);
     }
     
     System.Collections.IEnumerable? GetPlatformItemsSource(MauiCollectionViewHandler handler) =>
@@ -1023,8 +1183,8 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
     bool GetPlatformIsGrouped(MauiCollectionViewHandler handler) =>
         handler.PlatformView?.IsGrouped ?? false;
 
-    AvaloniaSelectionMode GetPlatformSelectionMode(MauiCollectionViewHandler handler) =>
-        handler.PlatformView?.SelectionMode ?? AvaloniaSelectionMode.Single;
+    MauiSelectionMode GetPlatformSelectionMode(MauiCollectionViewHandler handler) =>
+        handler.PlatformView?.SelectionMode ?? MauiSelectionMode.Single;
 
     object? GetPlatformSelectedItem(MauiCollectionViewHandler handler) =>
         handler.PlatformView?.SelectedItem;
@@ -1058,6 +1218,9 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
 
     ItemsUpdatingScrollMode GetPlatformItemsUpdatingScrollMode(MauiCollectionViewHandler handler) =>
         handler.PlatformView?.ItemsUpdatingScrollMode ?? ItemsUpdatingScrollMode.KeepItemsInView;
+
+    ItemSizingStrategy GetPlatformItemSizingStrategy(MauiCollectionViewHandler handler) =>
+        handler.PlatformView?.ItemSizingStrategy ?? ItemSizingStrategy.MeasureAllItems;
 }
 
 public class TestTemplateSelector : DataTemplateSelector

@@ -231,7 +231,11 @@ public static class ShellItemExtensions
         {
             if (handler._sectionPageMap.TryGetValue(item.CurrentItem, out var wrapperPage))
             {
-                if (wrapperPage.Content != control)
+                // Wrap the section control in a ContentControl so that
+                // NavigationPage (a Page) is not set directly as
+                // ContentPage.Content.
+                var existingWrapper = wrapperPage.Content as ContentControl;
+                if (existingWrapper?.Content != control)
                 {
                     // The control may be parented deep inside a ContentPresenter chain
                     // (not directly to the wrapper page), so always detach if it has any parent.
@@ -239,7 +243,19 @@ public static class ShellItemExtensions
                     {
                         control.DetachFromVisualTree();
                     }
-                    wrapperPage.Content = control;
+
+                    if (existingWrapper == null)
+                    {
+                        existingWrapper = new ContentControl
+                        {
+                            HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                            VerticalAlignment = VerticalAlignment.Stretch,
+                            HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
+                            VerticalContentAlignment = VerticalAlignment.Stretch
+                        };
+                        wrapperPage.Content = existingWrapper;
+                    }
+                    existingWrapper.Content = control;
                 }
 
                 // Find the index of this wrapper page in the Pages list

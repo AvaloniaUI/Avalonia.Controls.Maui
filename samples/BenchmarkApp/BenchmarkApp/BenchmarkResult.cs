@@ -7,10 +7,11 @@ namespace BenchmarkApp;
 /// </summary>
 public sealed class BenchmarkResult
 {
-    private BenchmarkResult(bool passed, string? failureReason, IReadOnlyDictionary<string, object>? metrics)
+    private BenchmarkResult(bool passed, string? failureReason, string? warningReason, IReadOnlyDictionary<string, object>? metrics)
     {
         Passed = passed;
         FailureReason = failureReason;
+        WarningReason = warningReason;
         Metrics = metrics ?? new Dictionary<string, object>();
     }
 
@@ -25,6 +26,12 @@ public sealed class BenchmarkResult
     public string? FailureReason { get; }
 
     /// <summary>
+    /// Gets a warning message for non-fatal threshold breaches, or <c>null</c> if none.
+    /// Warnings do not cause test failure but are recorded in test output for tracking.
+    /// </summary>
+    public string? WarningReason { get; }
+
+    /// <summary>
     /// Gets the metrics collected during the benchmark run.
     /// </summary>
     public IReadOnlyDictionary<string, object> Metrics { get; }
@@ -33,11 +40,18 @@ public sealed class BenchmarkResult
     /// Creates a passing result with optional metrics.
     /// </summary>
     public static BenchmarkResult Pass(IReadOnlyDictionary<string, object>? metrics = null)
-        => new(true, null, metrics);
+        => new(true, null, null, metrics);
 
     /// <summary>
     /// Creates a failing result with a reason and optional metrics.
     /// </summary>
     public static BenchmarkResult Fail(string reason, IReadOnlyDictionary<string, object>? metrics = null)
-        => new(false, reason, metrics);
+        => new(false, reason, null, metrics);
+
+    /// <summary>
+    /// Creates a passing result with a warning. The test will not fail, but the warning
+    /// reason is recorded in test output for monitoring and tracking purposes.
+    /// </summary>
+    public static BenchmarkResult Warn(string reason, IReadOnlyDictionary<string, object>? metrics = null)
+        => new(true, null, reason, metrics);
 }
