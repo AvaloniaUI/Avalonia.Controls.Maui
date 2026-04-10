@@ -26,8 +26,8 @@
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.0-rc1</AvaloniaVersion>
-        <AvaloniaWebViewVersion Condition="'$(AvaloniaWebViewVersion)' == ''">12.0.0-rc1</AvaloniaWebViewVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.0</AvaloniaVersion>
+        <AvaloniaWebViewVersion Condition="'$(AvaloniaWebViewVersion)' == ''">12.0.0</AvaloniaWebViewVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net11.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
         <BuildDirectory>$(MSBuildThisFileDirectory)/build/</BuildDirectory>
@@ -116,6 +116,23 @@
         For source builds (MauiSourcePath set), SourceBuild.targets writes
         InternalsVisibleTo .cs files into the MAUI source directories instead.
     -->
+    <!--
+        Pin AndroidX Ktx packages and LiveData to versions compatible with the base
+        AndroidX packages pulled in by Avalonia.Android. The MAUI Ktx packages have
+        tight upper-bound constraints (e.g. Fragment.Ktx 1.8.8.1 requires Fragment
+        >= 1.8.8.1 && < 1.8.9) that conflict with the newer base packages from Avalonia.
+    -->
+    <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+        <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.2" />
+        <PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.12.4.1" />
+        <PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModel.Ktx" Version="2.10.0.2" />
+        <PackageReference Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.4.0.2" />
+        <PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android" Version="2.10.0.2" />
+        <PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx" Version="2.10.0.2" />
+        <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData.Core" Version="2.10.0.2" />
+        <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.10.0.2" />
+    </ItemGroup>
+
     <ItemGroup Condition="'$(AddMauiInternals)' == 'true' AND '$(MauiSourcePath)' == ''">
         <IgnoresAccessChecksTo Include="Microsoft.Maui" />
         <IgnoresAccessChecksTo Include="Microsoft.Maui.Controls" />
