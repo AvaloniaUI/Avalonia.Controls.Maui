@@ -10,6 +10,52 @@ namespace Avalonia.Controls.Maui.Essentials;
 internal static partial class ConnectivityInterop
 {
     const string ModuleName = "AvaloniaConnectivity";
+    const string ModuleSource = """
+        let _callback = null;
+
+        export function isOnline() {
+            return globalThis.navigator.onLine;
+        }
+
+        export function getConnectionType() {
+            const conn = getConnection();
+            return conn?.type ?? "unknown";
+        }
+
+        export function subscribe(callback) {
+            _callback = callback;
+            globalThis.addEventListener("online", onStatusChange);
+            globalThis.addEventListener("offline", onStatusChange);
+
+            const conn = getConnection();
+            if (conn) {
+                conn.addEventListener("change", onStatusChange);
+            }
+        }
+
+        export function unsubscribe() {
+            globalThis.removeEventListener("online", onStatusChange);
+            globalThis.removeEventListener("offline", onStatusChange);
+
+            const conn = getConnection();
+            if (conn) {
+                conn.removeEventListener("change", onStatusChange);
+            }
+            _callback = null;
+        }
+
+        function onStatusChange() {
+            if (_callback) {
+                _callback();
+            }
+        }
+
+        function getConnection() {
+            return globalThis.navigator.connection ||
+                globalThis.navigator.mozConnection ||
+                globalThis.navigator.webkitConnection;
+        }
+        """;
     static readonly object ModuleLoadLock = new();
     static bool _moduleLoaded;
     static Task? _moduleLoadTask;
@@ -35,8 +81,11 @@ internal static partial class ConnectivityInterop
     {
         try
         {
+            var moduleUrl = "data:text/javascript;charset=utf-8," +
+                System.Uri.EscapeDataString(ModuleSource);
+
             await JSHost.ImportAsync(ModuleName,
-                "../js/connectivity-interop.js")
+                moduleUrl)
                 .ConfigureAwait(false);
 
             lock (ModuleLoadLock)

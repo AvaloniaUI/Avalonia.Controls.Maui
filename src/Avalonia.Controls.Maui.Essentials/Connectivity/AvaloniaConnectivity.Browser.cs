@@ -15,6 +15,8 @@ public sealed partial class AvaloniaConnectivity
         if (!ConnectivityInterop.IsModuleLoaded)
             return NetworkAccess.Unknown;
 
+        // Browser online/offline is a best-effort signal. Treat online as Internet for
+        // compatibility with IConnectivity expectations, but it does not prove external reachability.
         return ConnectivityInterop.IsOnline()
             ? NetworkAccess.Internet
             : NetworkAccess.None;
@@ -53,5 +55,6 @@ public sealed partial class AvaloniaConnectivity
     {
         await ConnectivityInterop.EnsureModuleLoadedAsync().ConfigureAwait(false);
         ConnectivityInterop.Subscribe(RaiseConnectivityChanged);
+        RaiseConnectivityChanged();
     }
 }
