@@ -10,6 +10,9 @@ public sealed partial class AvaloniaConnectivity
 {
     private partial NetworkAccess PlatformGetNetworkAccess()
     {
+        if (LinuxConnectivityHelper.TryGetNetworkAccess(out var linuxAccess))
+            return linuxAccess;
+
         if (!NetworkInterface.GetIsNetworkAvailable())
             return NetworkAccess.None;
 
@@ -29,6 +32,9 @@ public sealed partial class AvaloniaConnectivity
 
     private partial IEnumerable<ConnectionProfile> PlatformGetConnectionProfiles()
     {
+        if (LinuxConnectivityHelper.TryGetConnectionProfiles(out var linuxProfiles))
+            return linuxProfiles;
+
         var profiles = new HashSet<ConnectionProfile>();
         var interfaces = NetworkInterface.GetAllNetworkInterfaces();
 
