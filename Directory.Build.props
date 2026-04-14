@@ -39,7 +39,7 @@
         <ValidateXcodeVersion>false</ValidateXcodeVersion>
         <AddMauiInternals>false</AddMauiInternals>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <NoWarn>$(NoWarn);CS0618;CS8002;NU1903</NoWarn>
+        <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
     </PropertyGroup>
 
     <!-- Min Versions -->
