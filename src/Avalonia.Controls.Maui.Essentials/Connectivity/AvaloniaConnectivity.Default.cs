@@ -8,26 +8,37 @@ namespace Avalonia.Controls.Maui.Essentials;
 /// </summary>
 public sealed partial class AvaloniaConnectivity
 {
+    private partial void PlatformInitialize()
+    {
+    }
+
     private partial NetworkAccess PlatformGetNetworkAccess()
     {
         if (LinuxConnectivityHelper.TryGetNetworkAccess(out var linuxAccess))
             return linuxAccess;
 
-        if (!NetworkInterface.GetIsNetworkAvailable())
-            return NetworkAccess.None;
-
-        var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-        foreach (var ni in interfaces)
+        try
         {
-            if (ni.OperationalStatus == OperationalStatus.Up &&
-                ni.NetworkInterfaceType != NetworkInterfaceType.Loopback &&
-                ni.NetworkInterfaceType != NetworkInterfaceType.Tunnel)
-            {
-                return NetworkAccess.Internet;
-            }
-        }
+            if (!NetworkInterface.GetIsNetworkAvailable())
+                return NetworkAccess.None;
 
-        return NetworkAccess.None;
+            var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (var ni in interfaces)
+            {
+                if (ni.OperationalStatus == OperationalStatus.Up &&
+                    ni.NetworkInterfaceType != NetworkInterfaceType.Loopback &&
+                    ni.NetworkInterfaceType != NetworkInterfaceType.Tunnel)
+                {
+                    return NetworkAccess.Internet;
+                }
+            }
+
+            return NetworkAccess.None;
+        }
+        catch (Exception ex) when (ex is NetworkInformationException or PlatformNotSupportedException)
+        {
+            return NetworkAccess.Unknown;
+        }
     }
 
     private partial IEnumerable<ConnectionProfile> PlatformGetConnectionProfiles()
@@ -35,34 +46,41 @@ public sealed partial class AvaloniaConnectivity
         if (LinuxConnectivityHelper.TryGetConnectionProfiles(out var linuxProfiles))
             return linuxProfiles;
 
-        var profiles = new HashSet<ConnectionProfile>();
-        var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-
-        foreach (var ni in interfaces)
+        try
         {
-            if (ni.OperationalStatus != OperationalStatus.Up)
-                continue;
+            var profiles = new HashSet<ConnectionProfile>();
+            var interfaces = NetworkInterface.GetAllNetworkInterfaces();
 
-            if (ni.NetworkInterfaceType is NetworkInterfaceType.Loopback or NetworkInterfaceType.Tunnel)
-                continue;
-
-            var profile = ni.NetworkInterfaceType switch
+            foreach (var ni in interfaces)
             {
-                NetworkInterfaceType.Wireless80211 => ConnectionProfile.WiFi,
-                NetworkInterfaceType.Ethernet => ConnectionProfile.Ethernet,
-                NetworkInterfaceType.GigabitEthernet => ConnectionProfile.Ethernet,
-                NetworkInterfaceType.FastEthernetT => ConnectionProfile.Ethernet,
-                NetworkInterfaceType.FastEthernetFx => ConnectionProfile.Ethernet,
-                NetworkInterfaceType.Ethernet3Megabit => ConnectionProfile.Ethernet,
-                NetworkInterfaceType.Wwanpp => ConnectionProfile.Cellular,
-                NetworkInterfaceType.Wwanpp2 => ConnectionProfile.Cellular,
-                _ => ConnectionProfile.Unknown
-            };
+                if (ni.OperationalStatus != OperationalStatus.Up)
+                    continue;
 
-            profiles.Add(profile);
+                if (ni.NetworkInterfaceType is NetworkInterfaceType.Loopback or NetworkInterfaceType.Tunnel)
+                    continue;
+
+                var profile = ni.NetworkInterfaceType switch
+                {
+                    NetworkInterfaceType.Wireless80211 => ConnectionProfile.WiFi,
+                    NetworkInterfaceType.Ethernet => ConnectionProfile.Ethernet,
+                    NetworkInterfaceType.GigabitEthernet => ConnectionProfile.Ethernet,
+                    NetworkInterfaceType.FastEthernetT => ConnectionProfile.Ethernet,
+                    NetworkInterfaceType.FastEthernetFx => ConnectionProfile.Ethernet,
+                    NetworkInterfaceType.Ethernet3Megabit => ConnectionProfile.Ethernet,
+                    NetworkInterfaceType.Wwanpp => ConnectionProfile.Cellular,
+                    NetworkInterfaceType.Wwanpp2 => ConnectionProfile.Cellular,
+                    _ => ConnectionProfile.Unknown
+                };
+
+                profiles.Add(profile);
+            }
+
+            return profiles;
         }
-
-        return profiles;
+        catch (Exception ex) when (ex is NetworkInformationException or PlatformNotSupportedException)
+        {
+            return [ConnectionProfile.Unknown];
+        }
     }
 
     private partial void PlatformStartListening()

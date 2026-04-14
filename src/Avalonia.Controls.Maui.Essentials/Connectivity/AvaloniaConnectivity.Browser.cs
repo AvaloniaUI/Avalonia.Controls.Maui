@@ -10,8 +10,13 @@ namespace Avalonia.Controls.Maui.Essentials;
 [SupportedOSPlatform("browser")]
 public sealed partial class AvaloniaConnectivity
 {
+    int _browserSubscriptionVersion;
+    bool _browserSubscribed;
+
     private partial NetworkAccess PlatformGetNetworkAccess()
     {
+        EnsureBrowserModuleLoaded();
+
         if (!ConnectivityInterop.IsModuleLoaded)
             return NetworkAccess.Unknown;
 
@@ -24,6 +29,8 @@ public sealed partial class AvaloniaConnectivity
 
     private partial IEnumerable<ConnectionProfile> PlatformGetConnectionProfiles()
     {
+        EnsureBrowserModuleLoaded();
+
         if (!ConnectivityInterop.IsModuleLoaded)
             return [ConnectionProfile.Unknown];
 
@@ -40,21 +47,51 @@ public sealed partial class AvaloniaConnectivity
         return [profile];
     }
 
+    private partial void PlatformInitialize()
+    {
+        EnsureBrowserModuleLoaded();
+    }
+
     private partial void PlatformStartListening()
     {
-        _ = StartBrowserListeningAsync();
+        var version = Interlocked.Increment(ref _browserSubscriptionVersion);
+        _ = StartBrowserListeningAsync(version);
     }
 
     private partial void PlatformStopListening()
     {
-        if (ConnectivityInterop.IsModuleLoaded)
-            ConnectivityInterop.Unsubscribe();
+        Interlocked.Increment(ref _browserSubscriptionVersion);
+
+        lock (_eventLock)
+        {
+            if (ConnectivityInterop.IsModuleLoaded && _browserSubscribed)
+            {
+                ConnectivityInterop.Unsubscribe();
+                _browserSubscribed = false;
+            }
+        }
     }
 
-    async Task StartBrowserListeningAsync()
+    void EnsureBrowserModuleLoaded()
+    {
+        _ = ConnectivityInterop.EnsureModuleLoadedAsync();
+    }
+
+    async Task StartBrowserListeningAsync(int version)
     {
         await ConnectivityInterop.EnsureModuleLoadedAsync().ConfigureAwait(false);
-        ConnectivityInterop.Subscribe(RaiseConnectivityChanged);
+
+        lock (_eventLock)
+        {
+            if (!_isListening || version != _browserSubscriptionVersion)
+                return;
+
+            if (_browserSubscribed)
+                ConnectivityInterop.Unsubscribe();
+
+            ConnectivityInterop.Subscribe(RaiseConnectivityChanged);
+            _browserSubscribed = true;
+        }
         RaiseConnectivityChanged();
     }
 }

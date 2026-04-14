@@ -13,6 +13,14 @@ public sealed partial class AvaloniaConnectivity : IConnectivity
     EventHandler<ConnectivityChangedEventArgs>? _connectivityChanged;
     bool _isListening;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AvaloniaConnectivity"/> class.
+    /// </summary>
+    public AvaloniaConnectivity()
+    {
+        PlatformInitialize();
+    }
+
     /// <inheritdoc/>
     public NetworkAccess NetworkAccess => PlatformGetNetworkAccess();
 
@@ -64,6 +72,7 @@ public sealed partial class AvaloniaConnectivity : IConnectivity
 
     private partial NetworkAccess PlatformGetNetworkAccess();
     private partial IEnumerable<ConnectionProfile> PlatformGetConnectionProfiles();
+    private partial void PlatformInitialize();
     private partial void PlatformStartListening();
     private partial void PlatformStopListening();
 }

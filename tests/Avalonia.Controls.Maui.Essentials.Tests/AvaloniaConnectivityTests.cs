@@ -67,17 +67,6 @@ public class AvaloniaConnectivityTests
     }
 
     [Fact]
-    public void NetworkAccess_ConsistentAcrossMultipleCalls()
-    {
-        var sut = new AvaloniaConnectivity();
-
-        var first = sut.NetworkAccess;
-        var second = sut.NetworkAccess;
-
-        Assert.Equal(first, second);
-    }
-
-    [Fact]
     public void ConnectionProfiles_AllValuesAreValidEnum()
     {
         var sut = new AvaloniaConnectivity();

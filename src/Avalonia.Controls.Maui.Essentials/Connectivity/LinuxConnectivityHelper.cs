@@ -26,7 +26,7 @@ internal static class LinuxConnectivityHelper
                 GetDefaultRouteInterfaces());
             return true;
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        catch (Exception ex) when (IsExpectedConnectivityException(ex))
         {
             return false;
         }
@@ -49,7 +49,7 @@ internal static class LinuxConnectivityHelper
             profiles = results.Length > 0 ? results : [ConnectionProfile.Unknown];
             return true;
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        catch (Exception ex) when (IsExpectedConnectivityException(ex))
         {
             return false;
         }
@@ -155,6 +155,9 @@ internal static class LinuxConnectivityHelper
             .Where(ni => ni.NetworkInterfaceType is not NetworkInterfaceType.Loopback and not NetworkInterfaceType.Tunnel)
             .Select(ni => new LinuxInterfaceInfo(ni.Name, ni.NetworkInterfaceType));
     }
+
+    static bool IsExpectedConnectivityException(Exception ex) =>
+        ex is IOException or UnauthorizedAccessException or NetworkInformationException or PlatformNotSupportedException;
 
     internal readonly record struct LinuxInterfaceInfo(string Name, NetworkInterfaceType Type);
 }
