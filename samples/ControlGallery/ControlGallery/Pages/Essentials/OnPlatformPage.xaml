@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.Essentials.OnPlatformPage"
+             Title="OnPlatform">
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            <Label Text="OnPlatform Customization"
+                   Style="{StaticResource SubHeadline}" />
+
+            <!-- OnPlatform with text -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Platform-specific text" FontAttributes="Bold" />
+                    <Label>
+                        <Label.Text>
+                            <OnPlatform x:TypeArguments="x:String">
+                                <On Platform="Android" Value="Running on Android" />
+                                <On Platform="iOS" Value="Running on iOS" />
+                                <On Platform="MacCatalyst,macOS" Value="Running on macOS" />
+                                <On Platform="WinUI" Value="Running on Windows" />
+                                <On Platform="Linux" Value="Running on Linux" />
+                                <On Platform="Wasm" Value="Running on WebAssembly" />
+                            </OnPlatform>
+                        </Label.Text>
+                    </Label>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- OnPlatform with colors -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Platform-specific colors" FontAttributes="Bold" />
+                    <BoxView HeightRequest="50" CornerRadius="8">
+                        <BoxView.Color>
+                            <OnPlatform x:TypeArguments="Color">
+                                <On Platform="Android" Value="#3DDC84" />
+                                <On Platform="iOS" Value="#007AFF" />
+                                <On Platform="MacCatalyst,macOS" Value="#007AFF" />
+                                <On Platform="WinUI" Value="#0078D4" />
+                                <On Platform="Linux" Value="#E95420" />
+                                <On Platform="Wasm" Value="#654FF0" />
+                            </OnPlatform>
+                        </BoxView.Color>
+                    </BoxView>
+                    <Label>
+                        <Label.Text>
+                            <OnPlatform x:TypeArguments="x:String">
+                                <On Platform="Android" Value="Android Green" />
+                                <On Platform="iOS,MacCatalyst,macOS" Value="Apple Blue" />
+                                <On Platform="WinUI" Value="Windows Blue" />
+                                <On Platform="Linux" Value="Ubuntu Orange" />
+                                <On Platform="Wasm" Value="WASM Purple" />
+                            </OnPlatform>
+                        </Label.Text>
+                    </Label>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- OnPlatform with layout -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Platform-specific padding" FontAttributes="Bold" />
+                    <Frame BackgroundColor="LightGray">
+                        <Frame.Padding>
+                            <OnPlatform x:TypeArguments="Thickness">
+                                <On Platform="Android" Value="10" />
+                                <On Platform="iOS,MacCatalyst,macOS" Value="20" />
+                                <On Platform="WinUI" Value="15" />
+                                <On Platform="Linux" Value="25" />
+                                <On Platform="Wasm" Value="30" />
+                            </OnPlatform>
+                        </Frame.Padding>
+                        <Label Text="This box has platform-specific padding" />
+                    </Frame>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Runtime platform check -->
+            <Border Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Runtime platform check" FontAttributes="Bold" />
+                    <Label x:Name="RuntimePlatformLabel" />
+                    <Label x:Name="RuntimeIdiomLabel" />
+                    <Button Text="Check Platform" Clicked="OnCheckPlatformClicked" />
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
