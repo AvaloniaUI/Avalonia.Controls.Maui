@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.VersionTrackingPage"
+             Title="VersionTracking">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Overview -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Version Tracking"
+                           FontAttributes="Bold"/>
+                    <Label Text="This page shows the persisted VersionTracking state for the current app install. To see history grow, launch a build with a different app version or build number."
+                           LineBreakMode="WordWrap"/>
+                    <Button Text="Refresh Status"
+                            Clicked="OnRefreshClicked"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Launch Flags -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Launch Flags"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="FirstLaunchEverLabel"
+                           Text="IsFirstLaunchEver: --"/>
+                    <Label x:Name="FirstLaunchForCurrentVersionLabel"
+                           Text="IsFirstLaunchForCurrentVersion: --"/>
+                    <Label x:Name="FirstLaunchForCurrentBuildLabel"
+                           Text="IsFirstLaunchForCurrentBuild: --"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Current And Previous -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Current And Previous"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="CurrentVersionLabel"
+                           Text="CurrentVersion: --"/>
+                    <Label x:Name="CurrentBuildLabel"
+                           Text="CurrentBuild: --"/>
+                    <Label x:Name="PreviousVersionLabel"
+                           Text="PreviousVersion: --"/>
+                    <Label x:Name="PreviousBuildLabel"
+                           Text="PreviousBuild: --"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Install History -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Install History"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="FirstInstalledVersionLabel"
+                           Text="FirstInstalledVersion: --"/>
+                    <Label x:Name="FirstInstalledBuildLabel"
+                           Text="FirstInstalledBuild: --"/>
+                    <Label x:Name="VersionHistoryLabel"
+                           Text="VersionHistory: --"
+                           LineBreakMode="WordWrap"/>
+                    <Label x:Name="BuildHistoryLabel"
+                           Text="BuildHistory: --"
+                           LineBreakMode="WordWrap"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
