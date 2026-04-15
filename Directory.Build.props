@@ -54,6 +54,12 @@
         <MicrosoftExtensionsVersion>11.0.0-preview.3.26207.106</MicrosoftExtensionsVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+        <!-- Avalonia.FreeDesktop still declares the vulnerable version; force the patched one and suppress the stale audit hit. -->
+        <PackageReference Update="Tmds.DBus.Protocol" Version="0.92.0" />
+        <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-xrw6-gwf8-vvr9" />
+    </ItemGroup>
+
     <!--
         SkiaSharp, HarfBuzzSharp, and MicroCom versions must match what Avalonia uses.
         When AvaloniaSourcePath is set, read them directly from Avalonia's Directory.Packages.props
