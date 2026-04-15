@@ -51,7 +51,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <MicrosoftExtensionsVersion>11.0.0-preview.2.26159.112</MicrosoftExtensionsVersion>
+        <MicrosoftExtensionsVersion>11.0.0-preview.3.26203.7</MicrosoftExtensionsVersion>
     </PropertyGroup>
 
     <!--
