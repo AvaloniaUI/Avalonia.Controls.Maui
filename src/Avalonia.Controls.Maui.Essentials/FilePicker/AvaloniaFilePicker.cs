@@ -42,7 +42,7 @@ public class AvaloniaFilePicker : IFilePicker
     /// </summary>
     /// <param name="options">The options that configure the file picker, including title and allowed file types. Can be <c>null</c> for default behavior.</param>
     /// <returns>A collection of FileResult objects representing the selected files, or an empty collection if the user cancelled the dialog.</returns>
-    public async Task<IEnumerable<FileResult?>> PickMultipleAsync(PickOptions? options)
+    public async Task<IEnumerable<FileResult>?> PickMultipleAsync(PickOptions? options)
     {
         var topLevel = _platformProvider.GetTopLevel()
             ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
@@ -53,7 +53,7 @@ public class AvaloniaFilePicker : IFilePicker
         if (results.Count == 0)
             return [];
 
-        var fileResults = new List<FileResult?>();
+        var fileResults = new List<FileResult>();
         foreach (var result in results)
         {
             var path = result.TryGetLocalPath();
