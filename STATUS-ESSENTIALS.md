@@ -148,16 +148,16 @@ Monitor network connectivity state and type.
 
 | Member | Type | Status |
 |--------|------|--------|
-| NetworkAccess | Property | ⏳ TODO |
-| ConnectionProfiles | Property | ⏳ TODO |
-| ConnectivityChanged | Event | ⏳ TODO |
+| NetworkAccess | Property | ✅ Implemented |
+| ConnectionProfiles | Property | ✅ Implemented |
+| ConnectivityChanged | Event | ✅ Implemented |
 
 ### Supporting Types
 
 | Type | Status |
 |------|--------|
-| NetworkAccess | ⏳ TODO |
-| ConnectionProfile | ⏳ TODO |
+| NetworkAccess | ✅ Implemented |
+| ConnectionProfile | ✅ Implemented |
 
 ---
 
