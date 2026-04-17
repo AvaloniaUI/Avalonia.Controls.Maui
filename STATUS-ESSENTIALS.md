@@ -96,15 +96,15 @@ Open a web browser to a specific URL.
 
 | Member | Type | Status |
 |--------|------|--------|
-| OpenAsync(Uri, BrowserLaunchOptions) | Method | ⏳ TODO |
+| OpenAsync(Uri, BrowserLaunchOptions) | Method | ✅ Implemented |
 
 ### Supporting Types
 
 | Type | Status |
 |------|--------|
-| BrowserLaunchMode | ⏳ TODO |
-| BrowserLaunchOptions | ⏳ TODO |
-| BrowserTitleMode | ⏳ TODO |
+| BrowserLaunchMode | ✅ Implemented |
+| BrowserLaunchOptions | ✅ Implemented |
+| BrowserTitleMode | ✅ Implemented |
 
 ---
 
@@ -393,16 +393,16 @@ Open another application by URI.
 
 | Member | Type | Status |
 |--------|------|--------|
-| CanOpenAsync(Uri) | Method | ⏳ TODO |
-| OpenAsync(Uri) | Method | ⏳ TODO |
-| OpenAsync(OpenFileRequest) | Method | ⏳ TODO |
-| TryOpenAsync(Uri) | Method | ⏳ TODO |
+| CanOpenAsync(Uri) | Method | ✅ Implemented |
+| OpenAsync(Uri) | Method | ✅ Implemented |
+| OpenAsync(OpenFileRequest) | Method | ✅ Implemented |
+| TryOpenAsync(Uri) | Method | ✅ Implemented |
 
 ### Supporting Types
 
 | Type | Status |
 |------|--------|
-| OpenFileRequest | ⏳ TODO |
+| OpenFileRequest | ✅ Implemented |
 
 ---
 
