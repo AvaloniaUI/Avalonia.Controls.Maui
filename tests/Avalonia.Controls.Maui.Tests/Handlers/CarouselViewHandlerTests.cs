@@ -1,11 +1,14 @@
 using Avalonia.Animation;
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
+using System.Collections.ObjectModel;
 using Microsoft.Maui.Controls;
 using AvaloniaCarousel = Avalonia.Controls.Carousel;
 using AvaloniaCarouselViewHandler = Avalonia.Controls.Maui.Handlers.CarouselViewHandler;
 using AvaloniaSwipeGestureRecognizer = Avalonia.Input.GestureRecognizers.SwipeGestureRecognizer;
+using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
 using MauiLabel = Microsoft.Maui.Controls.Label;
 using MauiThickness = Microsoft.Maui.Thickness;
 
@@ -20,7 +23,7 @@ public class CarouselViewHandlerTests : HandlerTestBase
         var handler = await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
 
         Assert.NotNull(handler.PlatformView);
-        Assert.IsType<AvaloniaCarousel>(handler.PlatformView);
+        Assert.IsAssignableFrom<AvaloniaCarousel>(handler.PlatformView);
     }
 
     [AvaloniaFact(DisplayName = "ItemsSource Initializes Correctly")]
@@ -130,6 +133,90 @@ public class CarouselViewHandlerTests : HandlerTestBase
         Assert.NotNull(handler.PlatformView.ItemTemplate);
         Assert.NotSame(firstTemplate, handler.PlatformView.ItemTemplate);
         Assert.IsAssignableFrom<Avalonia.Controls.Control>(handler.PlatformView.ItemTemplate.Build("Two"));
+    }
+
+    [AvaloniaFact(DisplayName = "EmptyView String Initializes Correctly")]
+    public async Task EmptyViewStringInitializesCorrectly()
+    {
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = new List<string>();
+        carouselView.EmptyView = "No carousel items";
+
+        var handler = await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
+        var emptyContent = Assert.IsType<AvaloniaTextBlock>(handler.PlatformView.ItemTemplate?.Build(new object()));
+
+        Assert.True(handler.PlatformView.IsShowingEmptyView());
+        Assert.Equal("No carousel items", emptyContent.Text);
+        Assert.Null(carouselView.CurrentItem);
+    }
+
+    [AvaloniaFact(DisplayName = "EmptyViewTemplate Initializes Correctly")]
+    public async Task EmptyViewTemplateInitializesCorrectly()
+    {
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = new List<string>();
+        carouselView.EmptyView = "No carousel items";
+        carouselView.EmptyViewTemplate = new DataTemplate(() => new MauiLabel { Text = "Templated empty view" });
+
+        var handler = await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
+
+        Assert.True(handler.PlatformView.IsShowingEmptyView());
+        Assert.NotNull(handler.PlatformView.ItemTemplate);
+        Assert.IsAssignableFrom<Avalonia.Controls.Control>(handler.PlatformView.ItemTemplate.Build(new object()));
+    }
+
+    [AvaloniaFact(DisplayName = "EmptyView Updates Correctly")]
+    public async Task EmptyViewUpdatesCorrectly()
+    {
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = new List<string>();
+        carouselView.EmptyView = "Initial empty view";
+
+        var handler = await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            carouselView.EmptyView = "Updated empty view";
+            handler.UpdateValue(nameof(ItemsView.EmptyView));
+        });
+
+        var emptyContent = Assert.IsType<AvaloniaTextBlock>(handler.PlatformView.ItemTemplate?.Build(new object()));
+
+        Assert.True(handler.PlatformView.IsShowingEmptyView());
+        Assert.Equal("Updated empty view", emptyContent.Text);
+    }
+
+    [AvaloniaFact(DisplayName = "EmptyView Tracks Collection Changes")]
+    public async Task EmptyViewTracksCollectionChanges()
+    {
+        var items = new ObservableCollection<string>();
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = items;
+        carouselView.EmptyView = "No carousel items";
+
+        var handler = await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
+
+        Assert.True(handler.PlatformView.IsShowingEmptyView());
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            items.Add("One");
+            Dispatcher.UIThread.RunJobs();
+        });
+
+        Assert.False(handler.PlatformView.IsShowingEmptyView());
+        Assert.Same(items, handler.PlatformView.ItemsSource);
+        Assert.Equal("One", handler.PlatformView.SelectedItem);
+        Assert.Equal("One", carouselView.CurrentItem);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            items.Clear();
+            Dispatcher.UIThread.RunJobs();
+        });
+
+        Assert.True(handler.PlatformView.IsShowingEmptyView());
+        Assert.Null(carouselView.CurrentItem);
     }
 
     [AvaloniaFact(DisplayName = "Loop Maps To WrapSelection")]
@@ -272,6 +359,27 @@ public class CarouselViewHandlerTests : HandlerTestBase
         });
 
         Assert.Equal(items[2], handler.PlatformView.SelectedItem);
+    }
+
+    [AvaloniaFact(DisplayName = "CurrentItem Null Clears Platform Selection")]
+    public async Task CurrentItemNullClearsPlatformSelection()
+    {
+        var items = CreateItems();
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = items;
+        carouselView.CurrentItem = items[1];
+
+        var handler = await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            carouselView.CurrentItem = null;
+            handler.UpdateValue(nameof(CarouselView.CurrentItem));
+        });
+
+        Assert.Equal(-1, handler.PlatformView.SelectedIndex);
+        Assert.Null(handler.PlatformView.SelectedItem);
+        Assert.Null(carouselView.CurrentItem);
     }
 
     [AvaloniaFact(DisplayName = "Platform Selection Updates Virtual Selection")]

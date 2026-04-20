@@ -98,8 +98,8 @@ Displays a scrollable list of data items, where users swipe to move through the 
 | CurrentItem | ✅ Implemented |
 | CurrentItemChangedCommand | ✅ Implemented |
 | CurrentItemChangedCommandParameter | ✅ Implemented |
-| EmptyView | ⏳ TODO |
-| EmptyViewTemplate | ⏳ TODO |
+| EmptyView | ✅ Implemented |
+| EmptyViewTemplate | ✅ Implemented |
 | IndicatorView | ⏳ TODO |
 | IsBounceEnabled | ⏳ TODO |
 | IsScrollAnimated | ✅ Implemented |

@@ -78,6 +78,31 @@
                 </Grid>
             </Border>
         </DataTemplate>
+
+        <DataTemplate x:Key="CarouselEmptyTemplate"
+                      x:DataType="x:String">
+            <Border Margin="8"
+                    Padding="24"
+                    BackgroundColor="{AppThemeBinding Light=#F9FAFB, Dark=#111827}"
+                    Stroke="{AppThemeBinding Light=#D1D5DB, Dark=#4B5563}"
+                    StrokeThickness="1">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8"
+                                     HorizontalOptions="Center"
+                                     VerticalOptions="Center">
+                    <Label Text="Empty carousel"
+                           FontSize="22"
+                           FontAttributes="Bold"
+                           HorizontalTextAlignment="Center"/>
+                    <Label Text="{Binding .}"
+                           FontSize="13"
+                           Opacity="0.75"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Border>
+        </DataTemplate>
     </ContentPage.Resources>
 
     <ScrollView>
@@ -115,6 +140,38 @@
                            FontAttributes="Italic"/>
                     <CarouselView ItemsSource="{Binding SourceItems}"
                                   ItemTemplate="{StaticResource CarouselCardTemplate}"
+                                  HeightRequest="220"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="EmptyView"
+                           FontAttributes="Bold"
+                           FontSize="20"/>
+                    <Label Text="Shows EmptyView and EmptyViewTemplate when ItemsSource has no items."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="12"
+                                           VerticalOptions="Center">
+                        <Button Text="Add item"
+                                VerticalOptions="Center"
+                                Clicked="OnAddEmptyItemClicked"/>
+                        <Button Text="Clear items"
+                                VerticalOptions="Center"
+                                Clicked="OnClearEmptyItemsClicked"/>
+                        <Label Text="{Binding EmptyItems.Count, StringFormat='Items: {0}'}"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <CarouselView ItemsSource="{Binding EmptyItems}"
+                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
+                                  EmptyView="No items yet. Add an item to populate the carousel."
+                                  EmptyViewTemplate="{StaticResource CarouselEmptyTemplate}"
                                   HeightRequest="220"/>
                 </VerticalStackLayout>
             </Border>

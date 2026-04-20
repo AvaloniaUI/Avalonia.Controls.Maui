@@ -57,6 +57,11 @@ public partial class CarouselViewPage : ContentPage
     public ObservableCollection<CarouselDemoItem> SourceItems { get; } = CreateItems("ItemsSource");
 
     /// <summary>
+    /// Gets the items used by the EmptyView sample.
+    /// </summary>
+    public ObservableCollection<CarouselDemoItem> EmptyItems { get; } = [];
+
+    /// <summary>
     /// Gets or sets the active items used by the runtime ItemsSource sample.
     /// </summary>
     public ObservableCollection<CarouselDemoItem> RuntimeSourceItems
@@ -496,6 +501,21 @@ public partial class CarouselViewPage : ContentPage
             $"{RuntimeSourceName} added {nextNumber}",
             "Added to the active ObservableCollection while the carousel is visible.",
             Color.FromArgb("#0891B2")));
+    }
+
+    private void OnAddEmptyItemClicked(object? sender, EventArgs e)
+    {
+        var nextNumber = EmptyItems.Count + 1;
+        EmptyItems.Add(new CarouselDemoItem(
+            $"{nextNumber:00}",
+            $"Empty sample {nextNumber}",
+            "Added to the EmptyView sample while the carousel is visible.",
+            Color.FromArgb("#7C3AED")));
+    }
+
+    private void OnClearEmptyItemsClicked(object? sender, EventArgs e)
+    {
+        EmptyItems.Clear();
     }
 
     private void OnUseCardTemplateClicked(object? sender, EventArgs e)

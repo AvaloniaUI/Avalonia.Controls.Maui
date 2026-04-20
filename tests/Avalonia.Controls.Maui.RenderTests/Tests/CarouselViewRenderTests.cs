@@ -39,6 +39,22 @@ public class CarouselViewRenderTests : RenderTestBase
         CompareImages(tolerance: 0.05);
     }
 
+    [AvaloniaFact]
+    public async Task Render_CarouselView_EmptyView()
+    {
+        var carouselView = new CrossPlatformCarouselView
+        {
+            WidthRequest = 280,
+            HeightRequest = 160,
+            ItemsSource = Array.Empty<string>(),
+            EmptyView = "No carousel items",
+            EmptyViewTemplate = CreateEmptyViewTemplate()
+        };
+
+        await RenderToFile(carouselView);
+        CompareImages(tolerance: 0.05);
+    }
+
     static MauiDataTemplate CreateItemTemplate()
     {
         return new MauiDataTemplate(() =>
@@ -58,6 +74,32 @@ public class CarouselViewRenderTests : RenderTestBase
             return new MauiGrid
             {
                 BackgroundColor = MauiColor.FromRgb(0, 120, 140),
+                Margin = new MauiThickness(6),
+                Padding = new MauiThickness(16),
+                Children = { label }
+            };
+        });
+    }
+
+    static MauiDataTemplate CreateEmptyViewTemplate()
+    {
+        return new MauiDataTemplate(() =>
+        {
+            var label = new MauiLabel
+            {
+                FontAttributes = FontAttributes.Bold,
+                FontSize = 22,
+                HorizontalOptions = LayoutOptions.Center,
+                HorizontalTextAlignment = MauiTextAlignment.Center,
+                TextColor = MauiColor.FromRgb(55, 65, 81),
+                VerticalOptions = LayoutOptions.Center,
+                VerticalTextAlignment = MauiTextAlignment.Center
+            };
+            label.SetBinding(MauiLabel.TextProperty, ".");
+
+            return new MauiGrid
+            {
+                BackgroundColor = MauiColor.FromRgb(249, 250, 251),
                 Margin = new MauiThickness(6),
                 Padding = new MauiThickness(16),
                 Children = { label }
