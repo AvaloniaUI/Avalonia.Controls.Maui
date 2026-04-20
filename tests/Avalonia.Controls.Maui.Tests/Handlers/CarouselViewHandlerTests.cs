@@ -219,6 +219,25 @@ public class CarouselViewHandlerTests : HandlerTestBase
         Assert.Null(carouselView.CurrentItem);
     }
 
+    [AvaloniaFact(DisplayName = "Queued ItemsSource Refresh After Disconnect Does Not Throw")]
+    public async Task QueuedItemsSourceRefreshAfterDisconnectDoesNotThrow()
+    {
+        var items = new ObservableCollection<string>();
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = items;
+        carouselView.EmptyView = "No carousel items";
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<AvaloniaCarouselViewHandler>(carouselView);
+
+            items.Add("One");
+            ((Microsoft.Maui.IElementHandler)handler).DisconnectHandler();
+
+            Dispatcher.UIThread.RunJobs();
+        });
+    }
+
     [AvaloniaFact(DisplayName = "Loop Maps To WrapSelection")]
     public async Task LoopMapsToWrapSelection()
     {

@@ -424,23 +424,26 @@ public class CarouselViewHandler : ViewHandler<CarouselView, PlatformView>
 
     private void RefreshItemsSourceAfterCollectionChanged()
     {
-        if (PlatformView == null || VirtualView == null)
+        if (((IElementHandler)this).PlatformView is not PlatformView platformView ||
+            ((IElementHandler)this).VirtualView is not CarouselView virtualView)
+        {
             return;
+        }
 
         UpdatePlatformSelection(() =>
         {
-            PlatformView.UpdateItemsSource(VirtualView, this);
+            platformView.UpdateItemsSource(virtualView, this);
 
-            if (PlatformView.IsShowingEmptyView())
+            if (platformView.IsShowingEmptyView())
                 return;
 
-            if (CanSelectCurrentItem(VirtualView))
+            if (CanSelectCurrentItem(virtualView))
             {
-                PlatformView.UpdateCurrentItem(VirtualView);
+                platformView.UpdateCurrentItem(virtualView);
             }
             else
             {
-                PlatformView.UpdatePosition(VirtualView);
+                platformView.UpdatePosition(virtualView);
             }
         }, syncVirtualSelection: true);
     }
