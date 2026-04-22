@@ -416,6 +416,26 @@ public class CarouselViewHandlerTests : HandlerTestBase
         Assert.Equal(items[2], carouselView.CurrentItem);
     }
 
+    [AvaloniaFact(DisplayName = "Platform Selection Raises Virtual Events")]
+    public async Task PlatformSelectionRaisesVirtualEvents()
+    {
+        var positionChangedCount = 0;
+        var currentItemChangedCount = 0;
+        var items = CreateItems();
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = items;
+
+        var handler = await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
+
+        carouselView.PositionChanged += (_, _) => positionChangedCount++;
+        carouselView.CurrentItemChanged += (_, _) => currentItemChangedCount++;
+
+        await InvokeOnMainThreadAsync(() => handler.PlatformView.SelectedIndex = 2);
+
+        Assert.Equal(1, positionChangedCount);
+        Assert.Equal(1, currentItemChangedCount);
+    }
+
     [AvaloniaFact(DisplayName = "Platform Selection Executes Commands")]
     public async Task PlatformSelectionExecutesCommands()
     {
