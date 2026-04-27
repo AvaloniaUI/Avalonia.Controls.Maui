@@ -972,8 +972,8 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         // Simulate selection change on platform
         handler.PlatformView.SelectedItem = targetItem;
 
-        // Wait for Dispatcher.Post in handler
-        await Task.Delay(150);
+        // Run the UI dispatcher queue so the posted selection update completes before asserting.
+        await InvokeOnMainThreadAsync(() => Threading.Dispatcher.UIThread.RunJobs());
 
         Assert.Equal(1, commandExecutedCount);
         Assert.Null(lastParameter);
@@ -1008,8 +1008,8 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         // Simulate selection change on platform
         handler.PlatformView.SelectedItem = targetItem;
 
-        // Wait for Dispatcher.Post in handler
-        await Task.Delay(150);
+        // Run the UI dispatcher queue so the posted selection update completes before asserting.
+        await InvokeOnMainThreadAsync(() => Threading.Dispatcher.UIThread.RunJobs());
 
         Assert.Equal(1, commandExecutedCount);
         Assert.Equal(targetItem, lastParameter);
