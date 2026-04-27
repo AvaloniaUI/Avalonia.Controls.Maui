@@ -95,17 +95,30 @@ Displays a scrollable list of data items, where users swipe to move through the 
 
 | Property | Status |
 |----------|--------|
-| CurrentItem | ⏳ TODO |
-| CurrentItemChangedCommand | ⏳ TODO |
-| CurrentItemChangedCommandParameter | ⏳ TODO |
+| CurrentItem | ✅ Implemented |
+| CurrentItemChangedCommand | ✅ Implemented |
+| CurrentItemChangedCommandParameter | ✅ Implemented |
+| EmptyView | ✅ Implemented |
+| EmptyViewTemplate | ✅ Implemented |
+| IndicatorView | ⏳ TODO |
 | IsBounceEnabled | ⏳ TODO |
-| IsScrollAnimated | ⏳ TODO |
-| IsSwipeEnabled | ⏳ TODO |
-| ItemsSource | ⏳ TODO |
-| ItemTemplate | ⏳ TODO |
-| Loop | ⏳ TODO |
-| PeekAreaInsets | ⏳ TODO |
-| Position | ⏳ TODO |
+| IsScrollAnimated | ✅ Implemented |
+| IsSwipeEnabled | ✅ Implemented |
+| ItemsLayout | ✅ Implemented |
+| ItemsSource | ✅ Implemented |
+| ItemTemplate | ✅ Implemented |
+| Loop | ✅ Implemented |
+| PeekAreaInsets | ✅ Implemented |
+| Position | ✅ Implemented |
+| PositionChangedCommand | ✅ Implemented |
+| PositionChangedCommandParameter | ✅ Implemented |
+
+### Events
+
+| Event | Status |
+|-------|--------|
+| CurrentItemChanged | ✅ Implemented |
+| PositionChanged | ✅ Implemented |
 
 ---
 

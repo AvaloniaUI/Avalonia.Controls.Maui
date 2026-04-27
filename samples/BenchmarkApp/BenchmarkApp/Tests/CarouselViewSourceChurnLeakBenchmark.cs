@@ -6,9 +6,8 @@ using Microsoft.Maui.Controls;
 namespace BenchmarkApp.Tests;
 
 /// <summary>
-/// Tests that rapidly changing CarouselView's ItemsSource and Position doesn't leak items
-/// or handlers. MauiCarouselView subscribes to CollectionChanged on each new source and
-/// must properly unsubscribe from the old one.
+/// Tests that rapidly changing CarouselView's ItemsSource, Position, and CurrentItem doesn't leak items,
+/// handlers, or the native Avalonia Carousel platform view.
 /// </summary>
 [BenchmarkTest("CarouselViewSourceChurnLeak", Description = "Verifies CarouselView handles rapid ItemsSource changes without leaking")]
 public class CarouselViewSourceChurnLeakBenchmark : BenchmarkTestPage
@@ -124,6 +123,7 @@ public class CarouselViewSourceChurnLeakBenchmark : BenchmarkTestPage
             if (items.Count > 2)
             {
                 carouselView.Position = 2;
+                carouselView.CurrentItem = items[2];
                 await Task.Delay(20, cancellationToken);
             }
 
@@ -149,6 +149,7 @@ public class CarouselViewSourceChurnLeakBenchmark : BenchmarkTestPage
         if (carouselView.Handler is object handler)
         {
             trackedObjects["CarouselView.Handler"] = new WeakReference<object>(handler);
+            CaptureWeakReference(trackedObjects, "CarouselView.PlatformView", carouselView.Handler.PlatformView);
         }
 
         trackedObjects["CarouselView"] = new WeakReference<object>(carouselView);
@@ -156,5 +157,16 @@ public class CarouselViewSourceChurnLeakBenchmark : BenchmarkTestPage
         // Disconnect
         carouselView.Handler?.DisconnectHandler();
         Content = new Label { Text = "CarouselView source churn test complete" };
+    }
+
+    private static void CaptureWeakReference(
+        Dictionary<string, WeakReference<object>> trackedObjects,
+        string name,
+        object? target)
+    {
+        if (target != null)
+        {
+            trackedObjects[name] = new WeakReference<object>(target);
+        }
     }
 }
