@@ -116,7 +116,7 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
 
         private void SetTabBarColor(BindableProperty property, object sender)
         {
-            if (sender is Button button && Color.TryParse(button.CommandParameter?.ToString(), out Color color))
+            if (sender is Button button && Color.TryParse(button.CommandParameter?.ToString() ?? string.Empty, out Color color))
             {
                 var shell = this.GetShell();
                 shell?.SetValue(property, color);
