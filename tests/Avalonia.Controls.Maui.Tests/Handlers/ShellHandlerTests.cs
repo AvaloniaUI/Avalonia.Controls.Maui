@@ -938,7 +938,18 @@ public partial class ShellHandlerTests : HandlerTestBase
         var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
 
         Assert.NotNull(handler._backButton);
-        Assert.Equal("←", handler._backButton.Content);
+        AssertNavigationIcon(handler._backButton.Content);
+    }
+
+    [AvaloniaFact(DisplayName = "Shell Default Flyout Icon Uses Vector Fallback")]
+    public async Task ShellDefaultFlyoutIconUsesVectorFallback()
+    {
+        var shell = CreateBasicShell();
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler._hamburgerButton);
+        AssertNavigationIcon(handler._hamburgerButton.Content);
     }
 
     [AvaloniaFact(DisplayName = "Shell Title Is Left-Aligned After Navigation Buttons")]
@@ -1069,7 +1080,7 @@ public partial class ShellHandlerTests : HandlerTestBase
             handler.UpdateValue(Shell.BackButtonBehaviorProperty.PropertyName);
         });
 
-        Assert.Equal("←", handler._backButton.Content);
+        AssertNavigationIcon(handler._backButton.Content);
         Assert.True(handler._backButton.IsEnabled);
     }
 
@@ -1230,6 +1241,13 @@ public partial class ShellHandlerTests : HandlerTestBase
         shellSection.Navigation.PushAsync(page2);
 
         return shell;
+    }
+
+    private static void AssertNavigationIcon(object? content)
+    {
+        var panel = Assert.IsType<Panel>(content);
+        var icon = Assert.Single(panel.Children.OfType<PathIcon>());
+        Assert.NotNull(icon.Data);
     }
 
     private sealed class SuggestionsSearchHandler : SearchHandler
