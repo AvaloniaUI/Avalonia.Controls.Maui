@@ -975,11 +975,8 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         // Wait for Dispatcher.Post in handler
         await Task.Delay(150);
 
-        // MAUI might fire once with null parameter, and we fire once with correct parameter
-        Assert.True(commandExecutedCount >= 1, "Command should be executed at least once");
-        
-        // We really care that it was executed with the correct item eventually
-        Assert.Equal(targetItem, lastParameter);
+        Assert.Equal(1, commandExecutedCount);
+        Assert.Null(lastParameter);
     }
 
     [AvaloniaFact(DisplayName = "SelectionChangedCommandParameter Passed")]
@@ -1014,7 +1011,7 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         // Wait for Dispatcher.Post in handler
         await Task.Delay(150);
 
-        Assert.True(commandExecutedCount >= 1, "Command should be executed at least once");
+        Assert.Equal(1, commandExecutedCount);
         Assert.Equal(targetItem, lastParameter);
     }
 
