@@ -1015,6 +1015,69 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         Assert.Equal(targetItem, lastParameter);
     }
 
+    [AvaloniaFact(DisplayName = "Multiple Selection Preserves SelectedItems")]
+    public async Task MultipleSelectionPreservesSelectedItems()
+    {
+        var firstItem = "Item 1";
+        var secondItem = "Item 2";
+        var items = new List<string> { firstItem, secondItem, "Item 3" };
+        var collectionView = CreateCollectionView();
+
+        collectionView.ItemsSource = items;
+        collectionView.SelectionMode = MauiSelectionMode.Multiple;
+        collectionView.SelectedItems = new ObservableCollection<object>();
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+
+        handler.PlatformView.SelectedItems = new ObservableCollection<object> { firstItem, secondItem };
+        handler.PlatformView.SelectedItem = secondItem;
+
+        await InvokeOnMainThreadAsync(() => Threading.Dispatcher.UIThread.RunJobs());
+
+        Assert.NotNull(collectionView.SelectedItems);
+        Assert.Equal(new object[] { firstItem, secondItem }, collectionView.SelectedItems);
+    }
+
+    [AvaloniaFact(DisplayName = "Multiple Selection Event Preserves CurrentSelection")]
+    public async Task MultipleSelectionEventPreservesCurrentSelection()
+    {
+        var firstItem = "Orange";
+        var secondItem = "Yellow";
+        var thirdItem = "Blue";
+        var items = new List<string> { firstItem, secondItem, "Green", thirdItem };
+        var collectionView = CreateCollectionView();
+
+        collectionView.ItemsSource = items;
+        collectionView.SelectionMode = MauiSelectionMode.Multiple;
+        collectionView.SelectedItems = new ObservableCollection<object>();
+
+        Microsoft.Maui.Controls.SelectionChangedEventArgs? lastArgs = null;
+        collectionView.SelectionChanged += (_, e) => lastArgs = e;
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+        var window = new Window { Content = handler.PlatformView, Width = 300, Height = 400 };
+        window.Show();
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        FindSelectionContainer(handler.PlatformView, firstItem).RaiseEvent(CreatePointerPressedEventArgs(
+            FindSelectionContainer(handler.PlatformView, firstItem)));
+        await InvokeOnMainThreadAsync(() => Threading.Dispatcher.UIThread.RunJobs());
+
+        FindSelectionContainer(handler.PlatformView, secondItem).RaiseEvent(CreatePointerPressedEventArgs(
+            FindSelectionContainer(handler.PlatformView, secondItem)));
+        await InvokeOnMainThreadAsync(() => Threading.Dispatcher.UIThread.RunJobs());
+
+        FindSelectionContainer(handler.PlatformView, thirdItem).RaiseEvent(CreatePointerPressedEventArgs(
+            FindSelectionContainer(handler.PlatformView, thirdItem)));
+        await InvokeOnMainThreadAsync(() => Threading.Dispatcher.UIThread.RunJobs());
+
+        Assert.NotNull(lastArgs);
+        Assert.Equal(3, lastArgs.CurrentSelection.Count);
+        Assert.Equal(new object[] { firstItem, secondItem, thirdItem }, lastArgs.CurrentSelection);
+        Assert.NotNull(collectionView.SelectedItems);
+        Assert.Equal(new object[] { firstItem, secondItem, thirdItem }, collectionView.SelectedItems);
+    }
+
     [AvaloniaFact(DisplayName = "RemainingItemsThresholdReachedCommand Executes")]
     public async Task RemainingItemsThresholdReachedCommandExecutes()
     {
@@ -1218,6 +1281,30 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
 
     ItemSizingStrategy GetPlatformItemSizingStrategy(MauiCollectionViewHandler handler) =>
         handler.PlatformView?.ItemSizingStrategy ?? ItemSizingStrategy.MeasureAllItems;
+
+    static Avalonia.Controls.Border FindSelectionContainer(AvaloniaCollectionView collectionView, object item)
+    {
+        return Assert.IsAssignableFrom<Avalonia.Controls.Border>(collectionView.GetVisualDescendants()
+            .First(control => control.GetType().Name == "SelectionContainer" && Equals(control.DataContext, item)));
+    }
+
+    static Avalonia.Input.PointerPressedEventArgs CreatePointerPressedEventArgs(Visual target)
+    {
+        var pointer = new Avalonia.Input.Pointer(1, Avalonia.Input.PointerType.Mouse, true);
+        var point = new Avalonia.Point(10, 10);
+        var properties = new Avalonia.Input.PointerPointProperties(
+            Avalonia.Input.RawInputModifiers.None,
+            Avalonia.Input.PointerUpdateKind.LeftButtonPressed);
+
+        return new Avalonia.Input.PointerPressedEventArgs(
+            target,
+            pointer,
+            target,
+            point,
+            0,
+            properties,
+            Avalonia.Input.KeyModifiers.None);
+    }
 }
 
 public class TestTemplateSelector : DataTemplateSelector

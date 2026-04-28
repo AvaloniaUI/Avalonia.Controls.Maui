@@ -153,15 +153,11 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
                 }
                 else if (currentSelectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Multiple)
                 {
-                    if (!Equals(currentSelectableItemsView.SelectedItem, selectedItem))
-                    {
-                        currentSelectableItemsView.SelectedItem = selectedItem;
-                    }
-
+                    var desiredSelectedItems = selectedItems ?? [];
                     var virtualSelectedItems = currentSelectableItemsView.SelectedItems;
-                    if (virtualSelectedItems != null)
+                    if (!SelectionEquals(virtualSelectedItems, desiredSelectedItems))
                     {
-                        SynchronizeSelectedItems(virtualSelectedItems, selectedItems ?? []);
+                        currentSelectableItemsView.UpdateSelectedItems(desiredSelectedItems.ToList());
                     }
                 }
             }
@@ -193,6 +189,13 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
                 target.Add(item);
             }
         }
+    }
+
+    internal static bool SelectionEquals(IList<object>? current, IReadOnlyList<object> desired)
+    {
+        return current is not null &&
+            current.Count == desired.Count &&
+            current.SequenceEqual(desired, ReferenceEqualityComparer.Instance);
     }
 
     private void OnRemainingItemsThresholdReached(object? sender, EventArgs e)
