@@ -6,6 +6,7 @@ using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Animations;
 using Microsoft.Maui.Hosting;
@@ -20,12 +21,49 @@ public static class MauiAppBuilderExtensions
     /// </summary>
     public static MauiAppBuilder ConfigureImageSources(this MauiAppBuilder builder)
     {
+        builder.Services.TryAddSingleton<AvaloniaUriImageSourceServiceOptions>();
+
         builder.ConfigureImageSources(services =>
         {
             services.AddService<IFileImageSource, AvaloniaFileImageSourceService>();
-            services.AddService<IUriImageSource, AvaloniaUriImageSourceService>();
+            services.AddService<IUriImageSource>(provider =>
+            {
+                var logger = provider.GetService<ILogger<AvaloniaUriImageSourceService>>();
+                var options = provider.GetService<AvaloniaUriImageSourceServiceOptions>();
+
+                return new AvaloniaUriImageSourceService(logger, httpClient: null, options: options);
+            });
             services.AddService<IFontImageSource, AvaloniaFontImageSourceService>();
             services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
+        });
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Configures downloads performed by <see cref="AvaloniaUriImageSourceService"/>.
+    /// </summary>
+    /// <param name="builder">The <see cref="MauiAppBuilder"/> to configure.</param>
+    /// <param name="configureDelegate">A delegate used to configure URI image source options.</param>
+    public static MauiAppBuilder ConfigureAvaloniaUriImageSourceService(
+        this MauiAppBuilder builder,
+        Action<AvaloniaUriImageSourceServiceOptions> configureDelegate)
+    {
+        if (builder is null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        if (configureDelegate is null)
+        {
+            throw new ArgumentNullException(nameof(configureDelegate));
+        }
+
+        builder.Services.AddSingleton(_ =>
+        {
+            var options = new AvaloniaUriImageSourceServiceOptions();
+            configureDelegate(options);
+            return options;
         });
 
         return builder;

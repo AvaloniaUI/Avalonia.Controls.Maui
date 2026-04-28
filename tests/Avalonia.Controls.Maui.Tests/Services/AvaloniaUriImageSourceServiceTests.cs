@@ -1,8 +1,12 @@
 using System.Net;
+using System.Reflection;
 using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Maui.Tests;
 using Avalonia;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Hosting;
 
 namespace Avalonia.Controls.Maui.Tests.Services;
 
@@ -15,6 +19,75 @@ public class AvaloniaUriImageSourceServiceTests
     {
         // Ensure Avalonia platform services are available for Bitmap creation
         TestAppBuilder.BuildAvaloniaApp().SetupWithoutStarting();
+    }
+
+    [Fact(DisplayName = "Default URI image service sets no User-Agent")]
+    public void DefaultRequestSendsNoUserAgent()
+    {
+        using var client = new HttpClient(new CountingHandler(PngBytes));
+
+        _ = new AvaloniaUriImageSourceService(null, client);
+
+        Assert.Equal(string.Empty, client.DefaultRequestHeaders.UserAgent.ToString());
+    }
+
+    [Fact(DisplayName = "Configured User-Agent is applied to URI image service")]
+    public void ConfiguredUserAgentIsSent()
+    {
+        using var client = new HttpClient(new CountingHandler(PngBytes));
+        var options = new AvaloniaUriImageSourceServiceOptions
+        {
+            UserAgent = "Avalonia.Controls.Maui.Tests/1.0"
+        };
+
+        _ = new AvaloniaUriImageSourceService(null, client, options);
+
+        Assert.Equal("Avalonia.Controls.Maui.Tests/1.0", client.DefaultRequestHeaders.UserAgent.ToString());
+    }
+
+    [Fact(DisplayName = "Existing HttpClient User-Agent is preserved when not configured")]
+    public void ExistingHttpClientUserAgentIsPreservedWhenNotConfigured()
+    {
+        using var client = new HttpClient(new CountingHandler(PngBytes));
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("Existing.Client/2.0");
+
+        _ = new AvaloniaUriImageSourceService(null, client);
+
+        Assert.Equal("Existing.Client/2.0", client.DefaultRequestHeaders.UserAgent.ToString());
+    }
+
+    [Fact(DisplayName = "App builder registers configured URI image User-Agent")]
+    public void ConfigureAvaloniaUriImageSourceServiceRegistersUserAgent()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder.ConfigureAvaloniaUriImageSourceService(options =>
+        {
+            options.UserAgent = "Configured.App/3.0";
+        });
+
+        using var provider = builder.Services.BuildServiceProvider();
+        var options = provider.GetRequiredService<AvaloniaUriImageSourceServiceOptions>();
+
+        Assert.Equal("Configured.App/3.0", options.UserAgent);
+    }
+
+    [Fact(DisplayName = "Default image source registration applies configured URI image User-Agent")]
+    public void ConfigureImageSourcesAppliesConfiguredUriImageSourceUserAgent()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder.ConfigureImageSources();
+        builder.ConfigureAvaloniaUriImageSourceService(options =>
+        {
+            options.UserAgent = "Configured.Images/4.0";
+        });
+
+        using var app = builder.Build();
+        var imageSourceServiceProvider = app.Services.GetRequiredService<IImageSourceServiceProvider>();
+        var service = Assert.IsType<AvaloniaUriImageSourceService>(
+            imageSourceServiceProvider.GetImageSourceService(typeof(IUriImageSource)));
+        var httpClient = GetHttpClient(service);
+
+        Assert.Equal("Configured.Images/4.0", httpClient.DefaultRequestHeaders.UserAgent.ToString());
     }
 
     [Fact(DisplayName = "Uses cached file for subsequent requests", Skip = "https://github.com/AvaloniaUI/Avalonia.Controls.Maui/issues/74")]
@@ -108,6 +181,15 @@ public class AvaloniaUriImageSourceServiceTests
         {
             try { File.Delete(path); } catch { }
         }
+    }
+
+    private static HttpClient GetHttpClient(AvaloniaUriImageSourceService service)
+    {
+        var field = typeof(AvaloniaUriImageSourceService).GetField(
+            "_httpClient",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
+        return Assert.IsType<HttpClient>(field?.GetValue(service));
     }
 
     private sealed class CountingHandler : HttpMessageHandler

@@ -306,6 +306,18 @@ Remote images are supported through `UriImageSource` with optional disk caching.
 </Image>
 ```
 
+`AvaloniaUriImageSourceService` sends no `User-Agent` header by default. Configure one during app setup when a remote image host requires a custom agent:
+
+```csharp
+builder
+    .UseMauiApp<App>()
+    .UseAvaloniaApp()
+    .ConfigureAvaloniaUriImageSourceService(options =>
+    {
+        options.UserAgent = "MyApp/1.0";
+    });
+```
+
 ## Register custom handlers
 
 Handlers map a .NET MAUI virtual view to a platform view rendered by Avalonia. You can register custom handlers to add support for your own controls or to replace the built-in handlers for existing .NET MAUI controls.
