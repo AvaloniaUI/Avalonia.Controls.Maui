@@ -234,7 +234,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
             return;
         }
 
-        EnsureGifControl();
+        EnsureGifControl(VirtualView);
 
         if (!PlatformView.Children.Contains(_gifImage!))
         {
@@ -263,7 +263,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
     }
     
-    private void EnsureGifControl()
+    private void EnsureGifControl(IView? view)
     {
         if (_gifImage == null)
         {
@@ -271,15 +271,18 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
             {
                 IsVisible = false,
                 Stretch = _staticImage.Stretch,
-                Opacity = _staticImage.Opacity,
-                Clip = _staticImage.Clip
+                Opacity = _staticImage.Opacity
             };
         }
         else
         {
             _gifImage.Stretch = _staticImage.Stretch;
             _gifImage.Opacity = _staticImage.Opacity;
-            _gifImage.Clip = _staticImage.Clip;
+        }
+
+        if (view is not null)
+        {
+            _gifImage.UpdateClip(view);
         }
     }
 
