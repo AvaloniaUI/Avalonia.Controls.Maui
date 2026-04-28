@@ -1,5 +1,5 @@
 
-
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls;
 
@@ -15,45 +15,13 @@ public class HandlerDisconnectLeakBenchmark : BenchmarkTestPage
     public override async Task<BenchmarkResult> RunAsync(Window window, ILogger logger, CancellationToken cancellationToken)
     {
         var memBefore = MemorySnapshot.Capture(forceGC: true);
+        var weakRefs = await CreateAndTearDownControlsAsync(cancellationToken);
 
-        var layout = new VerticalStackLayout();
-        Content = layout;
-
-        var weakRefs = new Dictionary<string, WeakReference<VisualElement>>();
-
-        // Create and connect each control type
-        var button = new Button { Text = "Leak test button" };
-        layout.Children.Add(button);
-        weakRefs["Button"] = new WeakReference<VisualElement>(button);
-
-        var label = new Label { Text = "Leak test label" };
-        layout.Children.Add(label);
-        weakRefs["Label"] = new WeakReference<VisualElement>(label);
-
-        var entry = new Entry { Placeholder = "Leak test entry" };
-        layout.Children.Add(entry);
-        weakRefs["Entry"] = new WeakReference<VisualElement>(entry);
-
-        // Remove from layout and disconnect handlers
-        layout.Children.Clear();
-        button.Handler?.DisconnectHandler();
-        label.Handler?.DisconnectHandler();
-        entry.Handler?.DisconnectHandler();
-
-        // Null local references
-        button = null;
-        label = null;
-        entry = null;
-
-        // Replace content and null layout
-        Content = new Label { Text = "Done" };
-        layout = null;
-
-        // Force GC with delay to allow pending dispatcher work
+        // Force GC after the teardown work and queued UI cleanup have completed.
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
-        await Task.Delay(100, cancellationToken);
+        await BenchmarkUiHelpers.WaitForIdleAsync(cancellationToken);
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
@@ -98,5 +66,45 @@ public class HandlerDisconnectLeakBenchmark : BenchmarkTestPage
             return nativeMemoryFailure;
 
         return BenchmarkResult.Pass(metrics);
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private async Task<Dictionary<string, WeakReference<VisualElement>>> CreateAndTearDownControlsAsync(
+        CancellationToken cancellationToken)
+    {
+        var layout = new VerticalStackLayout();
+        Content = layout;
+
+        var weakRefs = new Dictionary<string, WeakReference<VisualElement>>();
+
+        var button = new Button { Text = "Leak test button" };
+        layout.Children.Add(button);
+        weakRefs["Button"] = new WeakReference<VisualElement>(button);
+
+        var label = new Label { Text = "Leak test label" };
+        layout.Children.Add(label);
+        weakRefs["Label"] = new WeakReference<VisualElement>(label);
+
+        var entry = new Entry { Placeholder = "Leak test entry" };
+        layout.Children.Add(entry);
+        weakRefs["Entry"] = new WeakReference<VisualElement>(entry);
+
+        await BenchmarkUiHelpers.WaitForIdleAsync(cancellationToken);
+
+        layout.Children.Clear();
+        button.Handler?.DisconnectHandler();
+        label.Handler?.DisconnectHandler();
+        entry.Handler?.DisconnectHandler();
+
+        button = null;
+        label = null;
+        entry = null;
+
+        Content = new Label { Text = "Done" };
+        layout = null;
+
+        await BenchmarkUiHelpers.WaitForIdleAsync(cancellationToken);
+
+        return weakRefs;
     }
 }
