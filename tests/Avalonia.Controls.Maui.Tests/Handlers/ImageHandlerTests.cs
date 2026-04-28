@@ -1,10 +1,14 @@
 using System.Diagnostics;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
+using Avalonia.Media;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
 using MauiImageHandler = Avalonia.Controls.Maui.Handlers.ImageHandler;
 using MauiIImage = Microsoft.Maui.IImage;
+using MauiEllipseGeometry = Microsoft.Maui.Controls.Shapes.EllipseGeometry;
+using MauiPoint = Microsoft.Maui.Graphics.Point;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -198,6 +202,31 @@ public partial class ImageHandlerTests : HandlerTestBase<MauiImageHandler, Image
 
         Assert.Contains(true, image.LoadingStates);
         Assert.Equal(false, image.LastIsLoading);
+    }
+
+    [AvaloniaFact(DisplayName = "Clip maps to inner image control")]
+    public async Task ClipMapsToInnerImageControl()
+    {
+        var image = new ImageStub
+        {
+            Width = 75,
+            Height = 75,
+            Clip = new MauiEllipseGeometry
+            {
+                Center = new MauiPoint(36, 36),
+                RadiusX = 36,
+                RadiusY = 36
+            }
+        };
+
+        var handler = await CreateHandlerAsync(image);
+
+        var imageControl = await InvokeOnMainThreadAsync(() =>
+            handler.PlatformView.Children.OfType<Image>().First());
+
+        var clip = await InvokeOnMainThreadAsync(() => Assert.IsType<EllipseGeometry>(imageControl.Clip));
+
+        Assert.Equal(new Rect(0, 0, 72, 72), clip.Rect);
     }
     
     static async Task WaitForLoadingStateAsync(ImageStub image, bool expected, int timeoutMs = 1000)
