@@ -52,4 +52,33 @@ public class ImageRenderTests : RenderTestBase
         await RenderToFile(layout);
         CompareImages();
     }
+
+    [AvaloniaFact]
+    public async Task Render_Image_WithRoundRectangleClip()
+    {
+        var imagePath = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Resources", "Images", "redbug.png");
+        var layout = new Microsoft.Maui.Controls.Grid
+        {
+            WidthRequest = 100,
+            HeightRequest = 100,
+            BackgroundColor = Colors.DeepSkyBlue
+        };
+
+        var control = new Microsoft.Maui.Controls.Image
+        {
+            Source = imagePath,
+            WidthRequest = 100,
+            HeightRequest = 100,
+            Aspect = Microsoft.Maui.Aspect.AspectFill,
+            Clip = new RoundRectangleGeometry
+            {
+                CornerRadius = new Microsoft.Maui.CornerRadius(24)
+            }
+        };
+
+        layout.Add(control);
+
+        await RenderToFile(layout);
+        CompareImages();
+    }
 }
