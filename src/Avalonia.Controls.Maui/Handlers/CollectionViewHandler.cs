@@ -131,43 +131,33 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
 
         // Capture current state
         var selectedItem = PlatformView.SelectedItem;
-        var selectedItems = PlatformView.SelectedItems?.Cast<object>().ToList(); // Create a copy
+        var selectedItems = PlatformView.SelectedItems?.Cast<object>().ToList();
 
         Dispatcher.UIThread.Post(() =>
         {
             if (VirtualView == null || PlatformView == null || _isUpdatingSelection)
                 return;
 
+            if (VirtualView is not SelectableItemsView currentSelectableItemsView)
+                return;
+
             _isUpdatingSelection = true;
             try
             {
-                if (selectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Single)
+                if (currentSelectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Single)
                 {
-                    if (!Equals(selectableItemsView.SelectedItem, selectedItem))
+                    if (!Equals(currentSelectableItemsView.SelectedItem, selectedItem))
                     {
-                        selectableItemsView.SelectedItem = selectedItem;
-                    }
-
-                    // Execute command for Single selection
-                    var parameter = selectableItemsView.SelectionChangedCommandParameter ?? selectedItem;
-                    if (selectableItemsView.SelectionChangedCommand?.CanExecute(parameter) == true)
-                    {
-                        selectableItemsView.SelectionChangedCommand.Execute(parameter);
+                        currentSelectableItemsView.SelectedItem = selectedItem;
                     }
                 }
-                else if (selectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Multiple)
+                else if (currentSelectableItemsView.SelectionMode == Microsoft.Maui.Controls.SelectionMode.Multiple)
                 {
-                    var virtualSelectedItems = selectableItemsView.SelectedItems;
-                    if (virtualSelectedItems != null)
+                    var desiredSelectedItems = selectedItems ?? [];
+                    var virtualSelectedItems = currentSelectableItemsView.SelectedItems;
+                    if (!SelectionEquals(virtualSelectedItems, desiredSelectedItems))
                     {
-                        SynchronizeSelectedItems(virtualSelectedItems, selectedItems ?? []);
-                    }
-
-                    // Execute command for Multiple selection (pass the list of items)
-                    var parameter = selectableItemsView.SelectionChangedCommandParameter ?? virtualSelectedItems;
-                    if (selectableItemsView.SelectionChangedCommand?.CanExecute(parameter) == true)
-                    {
-                        selectableItemsView.SelectionChangedCommand.Execute(parameter);
+                        currentSelectableItemsView.UpdateSelectedItems(desiredSelectedItems.ToList());
                     }
                 }
             }
@@ -199,6 +189,13 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
                 target.Add(item);
             }
         }
+    }
+
+    internal static bool SelectionEquals(IList<object>? current, IReadOnlyList<object> desired)
+    {
+        return current is not null &&
+            current.Count == desired.Count &&
+            current.SequenceEqual(desired, ReferenceEqualityComparer.Instance);
     }
 
     private void OnRemainingItemsThresholdReached(object? sender, EventArgs e)
