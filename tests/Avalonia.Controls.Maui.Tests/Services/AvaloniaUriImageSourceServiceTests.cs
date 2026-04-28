@@ -56,6 +56,36 @@ public class AvaloniaUriImageSourceServiceTests
         Assert.Equal("Existing.Client/2.0", client.DefaultRequestHeaders.UserAgent.ToString());
     }
 
+    [Fact(DisplayName = "Configured User-Agent replaces existing HttpClient User-Agent")]
+    public void ConfiguredUserAgentReplacesExistingHttpClientUserAgent()
+    {
+        using var client = new HttpClient(new CountingHandler(PngBytes));
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("Existing.Client/2.0");
+        var options = new AvaloniaUriImageSourceServiceOptions
+        {
+            UserAgent = "Configured.Client/3.0"
+        };
+
+        _ = new AvaloniaUriImageSourceService(null, client, options);
+
+        Assert.Equal("Configured.Client/3.0", client.DefaultRequestHeaders.UserAgent.ToString());
+    }
+
+    [Fact(DisplayName = "Blank configured User-Agent preserves existing HttpClient User-Agent")]
+    public void BlankConfiguredUserAgentPreservesExistingHttpClientUserAgent()
+    {
+        using var client = new HttpClient(new CountingHandler(PngBytes));
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("Existing.Client/2.0");
+        var options = new AvaloniaUriImageSourceServiceOptions
+        {
+            UserAgent = " "
+        };
+
+        _ = new AvaloniaUriImageSourceService(null, client, options);
+
+        Assert.Equal("Existing.Client/2.0", client.DefaultRequestHeaders.UserAgent.ToString());
+    }
+
     [Fact(DisplayName = "App builder registers configured URI image User-Agent")]
     public void ConfigureAvaloniaUriImageSourceServiceRegistersUserAgent()
     {
@@ -69,6 +99,28 @@ public class AvaloniaUriImageSourceServiceTests
         var options = provider.GetRequiredService<AvaloniaUriImageSourceServiceOptions>();
 
         Assert.Equal("Configured.App/3.0", options.UserAgent);
+    }
+
+    [Fact(DisplayName = "Configured URI image options replace default registration")]
+    public void ConfigureAvaloniaUriImageSourceServiceReplacesDefaultOptionsRegistration()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder.ConfigureImageSources();
+        builder.ConfigureAvaloniaUriImageSourceService(options =>
+        {
+            options.UserAgent = "Configured.App/3.0";
+        });
+
+        var registrations = builder.Services
+            .Where(descriptor => descriptor.ServiceType == typeof(AvaloniaUriImageSourceServiceOptions))
+            .ToList();
+
+        using var provider = builder.Services.BuildServiceProvider();
+        var options = provider.GetServices<AvaloniaUriImageSourceServiceOptions>().ToList();
+
+        Assert.Single(registrations);
+        Assert.Single(options);
+        Assert.Equal("Configured.App/3.0", options[0].UserAgent);
     }
 
     [Fact(DisplayName = "Default image source registration applies configured URI image User-Agent")]
@@ -88,6 +140,26 @@ public class AvaloniaUriImageSourceServiceTests
         var httpClient = GetHttpClient(service);
 
         Assert.Equal("Configured.Images/4.0", httpClient.DefaultRequestHeaders.UserAgent.ToString());
+    }
+
+    [Fact(DisplayName = "Default image source registration uses registered HttpClient")]
+    public void ConfigureImageSourcesUsesRegisteredHttpClient()
+    {
+        var builder = MauiApp.CreateBuilder();
+        using var client = new HttpClient(new CountingHandler(PngBytes));
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("Registered.Client/5.0");
+
+        builder.Services.AddSingleton(client);
+        builder.ConfigureImageSources();
+
+        using var app = builder.Build();
+        var imageSourceServiceProvider = app.Services.GetRequiredService<IImageSourceServiceProvider>();
+        var service = Assert.IsType<AvaloniaUriImageSourceService>(
+            imageSourceServiceProvider.GetImageSourceService(typeof(IUriImageSource)));
+        var httpClient = GetHttpClient(service);
+
+        Assert.Same(client, httpClient);
+        Assert.Equal("Registered.Client/5.0", httpClient.DefaultRequestHeaders.UserAgent.ToString());
     }
 
     [Fact(DisplayName = "Uses cached file for subsequent requests", Skip = "https://github.com/AvaloniaUI/Avalonia.Controls.Maui/issues/74")]

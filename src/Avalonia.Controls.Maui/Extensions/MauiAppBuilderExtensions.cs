@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls.Maui.Animations;
 using Avalonia.Controls.Maui.Handlers;
@@ -29,9 +30,10 @@ public static class MauiAppBuilderExtensions
             services.AddService<IUriImageSource>(provider =>
             {
                 var logger = provider.GetService<ILogger<AvaloniaUriImageSourceService>>();
+                var httpClient = provider.GetService<HttpClient>();
                 var options = provider.GetService<AvaloniaUriImageSourceServiceOptions>();
 
-                return new AvaloniaUriImageSourceService(logger, httpClient: null, options: options);
+                return new AvaloniaUriImageSourceService(logger, httpClient, options);
             });
             services.AddService<IFontImageSource, AvaloniaFontImageSourceService>();
             services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
@@ -59,6 +61,7 @@ public static class MauiAppBuilderExtensions
             throw new ArgumentNullException(nameof(configureDelegate));
         }
 
+        builder.Services.RemoveAll<AvaloniaUriImageSourceServiceOptions>();
         builder.Services.AddSingleton(_ =>
         {
             var options = new AvaloniaUriImageSourceServiceOptions();

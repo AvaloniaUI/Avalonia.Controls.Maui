@@ -68,10 +68,13 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
 
     private void ApplyUserAgent(string? userAgent)
     {
-        if (!string.IsNullOrWhiteSpace(userAgent))
+        if (string.IsNullOrWhiteSpace(userAgent))
         {
-            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
+            return;
         }
+
+        _httpClient.DefaultRequestHeaders.UserAgent.Clear();
+        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
     }
 
     /// <summary>

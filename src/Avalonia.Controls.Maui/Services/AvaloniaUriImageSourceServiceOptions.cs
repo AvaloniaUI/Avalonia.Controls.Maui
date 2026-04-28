@@ -8,7 +8,8 @@ public sealed class AvaloniaUriImageSourceServiceOptions
     /// <summary>
     /// Gets or sets the optional HTTP User-Agent header used when downloading remote URI images.
     /// The default is <see langword="null"/>, which sends no User-Agent header unless the supplied
-    /// <see cref="System.Net.Http.HttpClient"/> already has one configured.
+    /// <see cref="System.Net.Http.HttpClient"/> already has one configured. A non-blank value replaces
+    /// any existing <see cref="System.Net.Http.HttpClient"/> User-Agent header.
     /// </summary>
     public string? UserAgent { get; set; }
 }
