@@ -22,8 +22,6 @@ public static class MauiAppBuilderExtensions
     /// </summary>
     public static MauiAppBuilder ConfigureImageSources(this MauiAppBuilder builder)
     {
-        builder.Services.TryAddSingleton<AvaloniaUriImageSourceServiceOptions>();
-
         builder.ConfigureImageSources(services =>
         {
             services.AddService<IFileImageSource, AvaloniaFileImageSourceService>();
@@ -31,42 +29,11 @@ public static class MauiAppBuilderExtensions
             {
                 var logger = provider.GetService<ILogger<AvaloniaUriImageSourceService>>();
                 var httpClient = provider.GetService<HttpClient>();
-                var options = provider.GetService<AvaloniaUriImageSourceServiceOptions>();
 
-                return new AvaloniaUriImageSourceService(logger, httpClient, options);
+                return new AvaloniaUriImageSourceService(logger, httpClient);
             });
             services.AddService<IFontImageSource, AvaloniaFontImageSourceService>();
             services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
-        });
-
-        return builder;
-    }
-
-    /// <summary>
-    /// Configures downloads performed by <see cref="AvaloniaUriImageSourceService"/>.
-    /// </summary>
-    /// <param name="builder">The <see cref="MauiAppBuilder"/> to configure.</param>
-    /// <param name="configureDelegate">A delegate used to configure URI image source options.</param>
-    public static MauiAppBuilder ConfigureAvaloniaUriImageSourceService(
-        this MauiAppBuilder builder,
-        Action<AvaloniaUriImageSourceServiceOptions> configureDelegate)
-    {
-        if (builder is null)
-        {
-            throw new ArgumentNullException(nameof(builder));
-        }
-
-        if (configureDelegate is null)
-        {
-            throw new ArgumentNullException(nameof(configureDelegate));
-        }
-
-        builder.Services.RemoveAll<AvaloniaUriImageSourceServiceOptions>();
-        builder.Services.AddSingleton(_ =>
-        {
-            var options = new AvaloniaUriImageSourceServiceOptions();
-            configureDelegate(options);
-            return options;
         });
 
         return builder;

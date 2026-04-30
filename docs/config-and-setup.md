@@ -306,16 +306,15 @@ Remote images are supported through `UriImageSource` with optional disk caching.
 </Image>
 ```
 
-`AvaloniaUriImageSourceService` sends no `User-Agent` header by default. Configure one during app setup when a remote image host requires a custom agent:
+`AvaloniaUriImageSourceService` sends no `User-Agent` header by default. Register a configured `HttpClient` when a remote image host requires a custom agent:
 
 ```csharp
-builder
-    .UseMauiApp<App>()
-    .UseAvaloniaApp()
-    .ConfigureAvaloniaUriImageSourceService(options =>
-    {
-        options.UserAgent = "MyApp/1.0";
-    });
+builder.Services.AddSingleton(_ =>
+{
+    var client = new HttpClient();
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("MyApp/1.0");
+    return client;
+});
 ```
 
 ## Register custom handlers

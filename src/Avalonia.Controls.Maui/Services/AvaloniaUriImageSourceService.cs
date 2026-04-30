@@ -43,38 +43,12 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     /// <param name="logger">An optional logger for diagnostic messages during image loading and caching.</param>
     /// <param name="httpClient">An optional <see cref="HttpClient"/> for downloading remote images. A default client is created if not provided.</param>
     public AvaloniaUriImageSourceService(ILogger<AvaloniaUriImageSourceService>? logger = null, HttpClient? httpClient = null)
-        : this(logger, httpClient, options: null)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AvaloniaUriImageSourceService"/> class.
-    /// </summary>
-    /// <param name="logger">An optional logger for diagnostic messages during image loading and caching.</param>
-    /// <param name="httpClient">An optional <see cref="HttpClient"/> for downloading remote images. A default client is created if not provided.</param>
-    /// <param name="options">Optional settings for URI image downloads.</param>
-    public AvaloniaUriImageSourceService(
-        ILogger<AvaloniaUriImageSourceService>? logger,
-        HttpClient? httpClient,
-        AvaloniaUriImageSourceServiceOptions? options)
     {
         _logger = logger;
         _httpClient = httpClient ?? new HttpClient();
-        ApplyUserAgent(options?.UserAgent);
         _inFlightCache = new ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>>();
 
         EnsureCacheDirectory();
-    }
-
-    private void ApplyUserAgent(string? userAgent)
-    {
-        if (string.IsNullOrWhiteSpace(userAgent))
-        {
-            return;
-        }
-
-        _httpClient.DefaultRequestHeaders.UserAgent.Clear();
-        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(userAgent);
     }
 
     /// <summary>
