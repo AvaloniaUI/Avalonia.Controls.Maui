@@ -658,7 +658,7 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | IsBusy | ✅ Implemented |
  | Padding | ⏳ TODO |
  | Title | ⏳ TODO |
- | IconImageSource | ⏳ TODO |
+ | IconImageSource | ✅ Implemented |
  | ToolbarItems | ✅ Implemented |
  
  ### Methods
