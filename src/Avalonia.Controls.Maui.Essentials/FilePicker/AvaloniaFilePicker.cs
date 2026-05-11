@@ -6,8 +6,29 @@ using MauiFilePickerFileType = Microsoft.Maui.Storage.FilePickerFileType;
 namespace Avalonia.Controls.Maui.Essentials;
 
 /// <summary>
-/// Implements IFilePicker using Avalonia's StorageProvider API to present native file picker dialogs on desktop and browser platforms.
+/// Implements <see cref="IFilePicker"/> using Avalonia's <c>StorageProvider</c> API to present native file
+/// picker dialogs on desktop and browser platforms.
 /// </summary>
+/// <remarks>
+/// <para>
+/// The returned <see cref="FileResult"/> instances are <see cref="AvaloniaFileResult"/> wrappers around the
+/// underlying Avalonia <see cref="IStorageFile"/>. This is intentional: on platforms such as
+/// Avalonia.Browser the picked file does not have a real filesystem path, and the default
+/// <see cref="FileResult"/> would not be able to open the stream.
+/// </para>
+/// <para>
+/// <b>Reading file contents:</b> always prefer <c>OpenReadAsync()</c> over reading <c>FullPath</c> with
+/// <c>System.IO.File</c> APIs. When the underlying storage item has no local path (Browser, sandboxed
+/// providers, network shares), <c>FullPath</c> falls back to the bare file name, which would cause
+/// <c>File.OpenRead(result.FullPath)</c> to throw a <see cref="FileNotFoundException"/> resolved against
+/// the current working directory. <c>await result.OpenReadAsync()</c> routes through Avalonia's storage
+/// provider and works uniformly across platforms.
+/// </para>
+/// <para>
+/// Consumers needing richer Avalonia storage APIs (write streams, properties, bookmarks) can cast the
+/// result to <see cref="AvaloniaFileResult"/> and access <see cref="AvaloniaFileResult.StorageFile"/>.
+/// </para>
+/// </remarks>
 public class AvaloniaFilePicker : IFilePicker
 {
     readonly IAvaloniaEssentialsPlatformProvider _platformProvider;

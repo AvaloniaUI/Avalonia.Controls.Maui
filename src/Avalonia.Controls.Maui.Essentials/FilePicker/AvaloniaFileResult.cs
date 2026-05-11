@@ -9,11 +9,30 @@ namespace Avalonia.Controls.Maui.Essentials;
 /// item has no local file path and the default <c>OpenReadAsync</c> implementation would
 /// otherwise fail.
 /// </summary>
+/// <remarks>
+/// <para>
+/// <b>Reading content:</b> use <c>OpenReadAsync()</c>. The override routes through the underlying
+/// <see cref="IStorageFile"/> and works on every Avalonia platform, including those without a real
+/// filesystem path.
+/// </para>
+/// <para>
+/// <b>About <c>FullPath</c>:</b> when the wrapped <see cref="IStorageFile"/> exposes a local path
+/// (desktop platforms), <c>FullPath</c> contains it and can be passed to <c>System.IO.File</c> APIs as
+/// usual. When it does not (Avalonia.Browser, sandboxed or virtual storage providers), <c>FullPath</c>
+/// falls back to <c>IStorageItem.Name</c> — a bare file name with no directory component. Callers that
+/// pass this fallback value to <c>File.OpenRead</c> or similar APIs will get a
+/// <see cref="FileNotFoundException"/> resolved against the current working directory. To remain
+/// portable across platforms, always read via <c>OpenReadAsync()</c> rather than the path.
+/// </para>
+/// <para>
+/// <b>Escape hatch:</b> the wrapped Avalonia storage object is exposed as <see cref="StorageFile"/> for
+/// consumers that need write streams, basic properties, or bookmarks beyond what
+/// <see cref="FileResult"/> models.
+/// </para>
+/// </remarks>
 public sealed class AvaloniaFileResult : FileResult
 {
     const string FallbackContentType = "application/octet-stream";
-
-    readonly IStorageFile _storageFile;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AvaloniaFileResult"/> class wrapping the specified <see cref="IStorageFile"/>.
@@ -22,7 +41,7 @@ public sealed class AvaloniaFileResult : FileResult
     public AvaloniaFileResult(IStorageFile storageFile)
         : base(storageFile.TryGetLocalPath() ?? storageFile.Name)
     {
-        _storageFile = storageFile;
+        StorageFile = storageFile;
         FileName = storageFile.Name;
         // FileBase.PlatformGetContentType throws NotImplementedInReferenceAssemblyException
         // on the portable build of Microsoft.Maui.Essentials that we consume, so we resolve
@@ -33,13 +52,13 @@ public sealed class AvaloniaFileResult : FileResult
     /// <summary>
     /// Gets the underlying Avalonia <see cref="IStorageFile"/>.
     /// </summary>
-    public IStorageFile StorageFile => _storageFile;
+    public IStorageFile StorageFile { get; }
 
     /// <summary>
     /// Opens a stream to the underlying Avalonia <see cref="IStorageFile"/>. Invoked by <c>FileResult.OpenReadAsync</c>.
     /// </summary>
     /// <returns>A <see cref="Stream"/> with read access to the file contents.</returns>
-    public override Task<Stream> PlatformOpenReadAsync() => _storageFile.OpenReadAsync();
+    public override Task<Stream> PlatformOpenReadAsync() => StorageFile.OpenReadAsync();
 
     static string ResolveContentType(string fileName)
     {
@@ -58,6 +77,19 @@ public sealed class AvaloniaFileResult : FileResult
 
     // Mirrors Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider's default mappings.
     // Source: https://github.com/dotnet/aspnetcore/blob/main/src/Middleware/StaticFiles/src/FileExtensionContentTypeProvider.cs
+    //
+    // Why vendored (snapshot, not a dependency):
+    //  - Microsoft.Maui.Essentials' portable build throws NotImplementedInReferenceAssemblyException
+    //    from FileBase.PlatformGetContentType, so we cannot defer to MAUI here.
+    //  - Taking a runtime dependency on Microsoft.AspNetCore.StaticFiles for a control library
+    //    would pull ASP.NET Core into every consuming app, including non-server scenarios
+    //    (desktop, Browser), which is not appropriate for an Avalonia/MAUI compatibility shim.
+    //  - The mapping list is stable and rarely-changing; an inline copy keeps this library
+    //    self-contained at the cost of being a point-in-time snapshot.
+    //
+    // Caveat: this table can drift from upstream over time. If a new common type is missing
+    // (e.g. a future image/video format), re-sync from the link above. Files with extensions
+    // not in this table fall back to "application/octet-stream".
     static readonly Dictionary<string, string> s_extensionMap = new(StringComparer.OrdinalIgnoreCase)
     {
         { ".323", "text/h323" },
