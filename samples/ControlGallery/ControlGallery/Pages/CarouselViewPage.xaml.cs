@@ -12,6 +12,7 @@ public partial class CarouselViewPage : ContentPage
     private CarouselDemoItem? _eventCurrentItem;
     private int _eventPosition;
     private int _gesturePosition;
+    private int _indicatorPosition = 1;
     private bool _isAnimationEnabled = true;
     private bool _isGestureSwipeEnabled = true;
     private bool _isLoopEnabled = true;
@@ -55,6 +56,11 @@ public partial class CarouselViewPage : ContentPage
     /// Gets the items used by the explicit ItemsSource sample.
     /// </summary>
     public ObservableCollection<CarouselDemoItem> SourceItems { get; } = CreateItems("ItemsSource");
+
+    /// <summary>
+    /// Gets the items used by the IndicatorView sample.
+    /// </summary>
+    public ObservableCollection<CarouselDemoItem> IndicatorItems { get; } = CreateItems("Indicator");
 
     /// <summary>
     /// Gets the items used by the EmptyView sample.
@@ -302,6 +308,23 @@ public partial class CarouselViewPage : ContentPage
     }
 
     /// <summary>
+    /// Gets or sets the selected item index in the IndicatorView sample.
+    /// </summary>
+    public int IndicatorPosition
+    {
+        get => _indicatorPosition;
+        set
+        {
+            var nextPosition = Math.Clamp(value, 0, IndicatorItems.Count - 1);
+            if (_indicatorPosition == nextPosition)
+                return;
+
+            _indicatorPosition = nextPosition;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the selected item index in the loop sample.
     /// </summary>
     public int LoopPosition
@@ -459,6 +482,16 @@ public partial class CarouselViewPage : ContentPage
     private void OnGestureNextClicked(object? sender, EventArgs e)
     {
         GesturePosition = Math.Clamp(GesturePosition + 1, 0, GestureItems.Count - 1);
+    }
+
+    private void OnIndicatorPreviousClicked(object? sender, EventArgs e)
+    {
+        IndicatorPosition = Math.Clamp(IndicatorPosition - 1, 0, IndicatorItems.Count - 1);
+    }
+
+    private void OnIndicatorNextClicked(object? sender, EventArgs e)
+    {
+        IndicatorPosition = Math.Clamp(IndicatorPosition + 1, 0, IndicatorItems.Count - 1);
     }
 
     private void OnLoopPreviousClicked(object? sender, EventArgs e)

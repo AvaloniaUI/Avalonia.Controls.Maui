@@ -100,7 +100,7 @@ Displays a scrollable list of data items, where users swipe to move through the 
 | CurrentItemChangedCommandParameter | ✅ Implemented |
 | EmptyView | ✅ Implemented |
 | EmptyViewTemplate | ✅ Implemented |
-| IndicatorView | ⏳ TODO |
+| IndicatorView | ✅ Implemented |
 | IsBounceEnabled | ⏳ TODO |
 | IsScrollAnimated | ✅ Implemented |
 | IsSwipeEnabled | ✅ Implemented |
@@ -657,7 +657,7 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | Content | ✅ Implemented |
  | IsBusy | ✅ Implemented |
  | Padding | ⏳ TODO |
- | Title | ⏳ TODO |
+ | Title | ✅ Implemented |
  | IconImageSource | ✅ Implemented |
  | ToolbarItems | ✅ Implemented |
  
@@ -707,7 +707,7 @@ Displays a short list of items, from which an item can be selected.
 | HorizontalTextAlignment | ✅ Implemented  |
 | ItemsSource | ✅ Implemented  |
 | ItemDisplayBinding | ✅ Implemented  |
-| SelectedIndex | ⏳ TODO |
+| SelectedIndex | ✅ Implemented |
 | SelectedItem | ✅ Implemented  |
 | TextColor | ✅ Implemented  |
 | Title | ✅ Implemented |
