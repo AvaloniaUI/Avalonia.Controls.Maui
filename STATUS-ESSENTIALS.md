@@ -260,16 +260,19 @@ Pick files from the device.
 
 | Member | Type | Status |
 |--------|------|--------|
-| PickAsync(PickOptions) | Method | ⏳ TODO |
-| PickMultipleAsync(PickOptions) | Method | ⏳ TODO |
+| PickAsync(PickOptions) | Method | ✅ Implemented |
+| PickMultipleAsync(PickOptions) | Method | ✅ Implemented |
 
 ### Supporting Types
 
 | Type | Status |
 |------|--------|
-| PickOptions | ⏳ TODO |
-| FilePickerFileType | ⏳ TODO |
-| FileResult | ⏳ TODO |
+| PickOptions | ✅ Implemented |
+| FilePickerFileType | ❌ Not Applicable |
+| FileResult | ✅ Implemented |
+
+FilePickerFileType requires changes to .NET MAUI to allow it to be overridden,
+see https://github.com/dotnet/maui/blob/main/src/Essentials/src/FilePicker/FilePicker.netstandard.watchos.tvos.cs#L13-L29
 
 ---
 
