@@ -315,7 +315,8 @@ public partial class CarouselViewPage : ContentPage
         get => _indicatorPosition;
         set
         {
-            var nextPosition = Math.Clamp(value, 0, IndicatorItems.Count - 1);
+            var nextPosition = NormalizeIndicatorPosition(value);
+
             if (_indicatorPosition == nextPosition)
                 return;
 
@@ -474,6 +475,14 @@ public partial class CarouselViewPage : ContentPage
         return Math.Clamp(position, 0, LoopItems.Count - 1);
     }
 
+    private int NormalizeIndicatorPosition(int position)
+    {
+        if (IndicatorItems.Count == 0)
+            return 0;
+
+        return (position % IndicatorItems.Count + IndicatorItems.Count) % IndicatorItems.Count;
+    }
+
     private void OnGesturePreviousClicked(object? sender, EventArgs e)
     {
         GesturePosition = Math.Clamp(GesturePosition - 1, 0, GestureItems.Count - 1);
@@ -486,12 +495,12 @@ public partial class CarouselViewPage : ContentPage
 
     private void OnIndicatorPreviousClicked(object? sender, EventArgs e)
     {
-        IndicatorPosition = Math.Clamp(IndicatorPosition - 1, 0, IndicatorItems.Count - 1);
+        IndicatorPosition--;
     }
 
     private void OnIndicatorNextClicked(object? sender, EventArgs e)
     {
-        IndicatorPosition = Math.Clamp(IndicatorPosition + 1, 0, IndicatorItems.Count - 1);
+        IndicatorPosition++;
     }
 
     private void OnLoopPreviousClicked(object? sender, EventArgs e)

@@ -218,7 +218,7 @@ public class CarouselViewHandler : ViewHandler<CarouselView, PlatformView>
     }
 
     /// <summary>
-    /// Maps the IndicatorView property to the carousel selection and item count.
+    /// Handles IndicatorView property updates.
     /// </summary>
     /// <param name="handler">The handler for the carousel view.</param>
     /// <param name="carouselView">The virtual carousel view.</param>
