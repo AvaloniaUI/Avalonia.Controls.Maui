@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.LauncherPage"
+             Title="Launcher">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Launch URI -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Launch URI"
+                           FontAttributes="Bold"/>
+                    <Entry x:Name="LauncherEntry"
+                           Text="https://github.com/AvaloniaUI"
+                           Placeholder="Enter URI"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Can Open?"
+                                Clicked="OnCanOpenClicked"/>
+                        <Button Text="Open"
+                                Clicked="OnOpenClicked"/>
+                        <Button Text="Try Open"
+                                Clicked="OnTryOpenClicked"/>
+                    </HorizontalStackLayout>
+                    <Label x:Name="ResultLabel"
+                           Text=""
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Quick Links -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Quick Links"
+                           FontAttributes="Bold"/>
+                    <Button Text="Open mailto:"
+                            Clicked="OnMailtoClicked"/>
+                    <Button Text="Open tel:"
+                            Clicked="OnTelClicked"/>
+                    <Label x:Name="QuickLinkResultLabel"
+                           Text=""
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

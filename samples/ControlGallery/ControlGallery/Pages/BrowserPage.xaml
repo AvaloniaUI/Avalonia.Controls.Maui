@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.BrowserPage"
+             Title="Browser">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Open URL -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Open URL in Browser"
+                           FontAttributes="Bold"/>
+                    <Entry x:Name="UrlEntry"
+                           Text="https://avaloniaui.net"
+                           Placeholder="Enter URL"/>
+                    <Button Text="Open"
+                            Clicked="OnOpenClicked"/>
+                    <Label x:Name="ResultLabel"
+                           Text=""
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Quick Links -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Quick Links"
+                           FontAttributes="Bold"/>
+                    <Button Text="Avalonia UI"
+                            Clicked="OnAvaloniaClicked"/>
+                    <Button Text="GitHub"
+                            Clicked="OnGitHubClicked"/>
+                    <Button Text=".NET MAUI Docs"
+                            Clicked="OnMauiDocsClicked"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
