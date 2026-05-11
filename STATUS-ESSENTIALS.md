@@ -681,15 +681,15 @@ Speak text using the device's text-to-speech engine.
 
 | Member | Type | Status |
 |--------|------|--------|
-| GetLocalesAsync() | Method | ⏳ TODO |
-| SpeakAsync(string, SpeechOptions, CancellationToken) | Method | ⏳ TODO |
+| GetLocalesAsync() | Method | ✅ Done |
+| SpeakAsync(string, SpeechOptions, CancellationToken) | Method | ✅ Done |
 
 ### Supporting Types
 
 | Type | Status |
 |------|--------|
-| Locale | ⏳ TODO |
-| SpeechOptions | ⏳ TODO |
+| Locale | ✅ Done |
+| SpeechOptions | ✅ Done |
 
 ---
 
