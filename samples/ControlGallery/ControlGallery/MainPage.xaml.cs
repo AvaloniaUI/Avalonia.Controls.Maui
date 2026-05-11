@@ -24,6 +24,7 @@ public partial class MainPage : FlyoutPage
         // Services
         [typeof(FontsPage)] = () => new FontsPage(),
         // Pages
+        [typeof(PageBasePage)] = () => new PageBasePage(),
         [typeof(NavigationDemoPage)] = () => new NavigationDemoPage(),
         [typeof(ControlGallery.Pages.TabbedPage)] = () => new ControlGallery.Pages.TabbedPage(),
         [typeof(TitleBarPage)] = () => new TitleBarPage(),
@@ -178,6 +179,7 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Pages", new List<SampleItem>
             {
+                new("Page", "Base page background and padding", typeof(PageBasePage)),
                 new("NavigationPage", "Navigation stack with animated transitions", typeof(NavigationDemoPage)),
                 new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
                 new("TitleBar", "Custom window title bar", typeof(TitleBarPage)),

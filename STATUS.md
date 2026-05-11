@@ -26,7 +26,7 @@ A container control that draws a border, background, or both, around another con
 | Property | Status |
 |----------|--------|
 | Content | ✅ Implemented |
-| Padding | ✅ Implemented |
+ | Padding | ✅ Implemented |
 | StrokeShape | ✅ Implemented |
 | Stroke | ✅ Implemented |
 | StrokeThickness | ✅ Implemented |
@@ -656,8 +656,8 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | BackgroundImageSource | ✅ Implemented |
  | Content | ✅ Implemented |
  | IsBusy | ✅ Implemented |
- | Padding | ⏳ TODO |
- | Title | ⏳ TODO |
+ | Padding | ✅ Implemented |
+ | Title | ✅ Implemented |
  | IconImageSource | ✅ Implemented |
  | ToolbarItems | ✅ Implemented |
  
