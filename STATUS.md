@@ -26,7 +26,7 @@ A container control that draws a border, background, or both, around another con
 | Property | Status |
 |----------|--------|
 | Content | ✅ Implemented |
- | Padding | ✅ Implemented |
+| Padding | ✅ Implemented |
 | StrokeShape | ✅ Implemented |
 | Stroke | ✅ Implemented |
 | StrokeThickness | ✅ Implemented |

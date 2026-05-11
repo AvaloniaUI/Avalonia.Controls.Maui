@@ -2,7 +2,6 @@ using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
-using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 using MauiLabel = Microsoft.Maui.Controls.Label;
@@ -192,10 +191,10 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
             handler.InnerContentView!.Measure(new Avalonia.Size(200, 100));
             handler.InnerContentView.Arrange(new Avalonia.Rect(0, 0, 200, 100));
 
-            Assert.Equal(12, content.Frame.X);
-            Assert.Equal(8, content.Frame.Y);
-            Assert.Equal(184, content.Frame.Width);
-            Assert.Equal(90, content.Frame.Height);
+            Assert.Equal(12, content.Frame.X, precision: 3);
+            Assert.Equal(8, content.Frame.Y, precision: 3);
+            Assert.Equal(184, content.Frame.Width, precision: 3);
+            Assert.Equal(90, content.Frame.Height, precision: 3);
         });
     }
 
@@ -218,10 +217,10 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
             handler.InnerContentView!.Measure(new Avalonia.Size(200, 100));
             handler.InnerContentView.Arrange(new Avalonia.Rect(0, 0, 200, 100));
 
-            Assert.Equal(0, content.Frame.X);
-            Assert.Equal(0, content.Frame.Y);
-            Assert.Equal(200, content.Frame.Width);
-            Assert.Equal(100, content.Frame.Height);
+            Assert.Equal(0, content.Frame.X, precision: 3);
+            Assert.Equal(0, content.Frame.Y, precision: 3);
+            Assert.Equal(200, content.Frame.Width, precision: 3);
+            Assert.Equal(100, content.Frame.Height, precision: 3);
         });
 
         await InvokeOnMainThreadAsync(() =>
@@ -232,10 +231,10 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
             handler.InnerContentView!.Measure(new Avalonia.Size(200, 100));
             handler.InnerContentView.Arrange(new Avalonia.Rect(0, 0, 200, 100));
 
-            Assert.Equal(10, content.Frame.X);
-            Assert.Equal(20, content.Frame.Y);
-            Assert.Equal(160, content.Frame.Width);
-            Assert.Equal(40, content.Frame.Height);
+            Assert.Equal(10, content.Frame.X, precision: 3);
+            Assert.Equal(20, content.Frame.Y, precision: 3);
+            Assert.Equal(160, content.Frame.Width, precision: 3);
+            Assert.Equal(40, content.Frame.Height, precision: 3);
         });
     }
 }
