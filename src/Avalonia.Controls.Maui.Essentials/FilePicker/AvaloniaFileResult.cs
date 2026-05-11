@@ -75,8 +75,16 @@ public sealed class AvaloniaFileResult : FileResult
             : FallbackContentType;
     }
 
-    // Mirrors Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider's default mappings.
-    // Source: https://github.com/dotnet/aspnetcore/blob/main/src/Middleware/StaticFiles/src/FileExtensionContentTypeProvider.cs
+    // The following dictionary is derived from
+    // Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider's default mappings.
+    //
+    //   Source:    https://github.com/dotnet/aspnetcore/blob/main/src/Middleware/StaticFiles/src/FileExtensionContentTypeProvider.cs
+    //   Copyright: (c) .NET Foundation and Contributors. All rights reserved.
+    //   License:   Apache License, Version 2.0 — http://www.apache.org/licenses/LICENSE-2.0
+    //
+    // The full attribution notice and the Apache-2.0 license text required by section 4
+    // of the license are reproduced in THIRD-PARTY-NOTICES.txt at the root of this repository.
+    // When redistributing this assembly, that notice file must accompany the distribution.
     //
     // Why vendored (snapshot, not a dependency):
     //  - Microsoft.Maui.Essentials' portable build throws NotImplementedInReferenceAssemblyException
