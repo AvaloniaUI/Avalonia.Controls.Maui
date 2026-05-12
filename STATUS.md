@@ -656,7 +656,7 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | BackgroundImageSource | ✅ Implemented |
  | Content | ✅ Implemented |
  | IsBusy | ✅ Implemented |
- | Padding | ⏳ TODO |
+ | Padding | ✅ Implemented |
  | Title | ✅ Implemented |
  | IconImageSource | ✅ Implemented |
  | ToolbarItems | ✅ Implemented |
