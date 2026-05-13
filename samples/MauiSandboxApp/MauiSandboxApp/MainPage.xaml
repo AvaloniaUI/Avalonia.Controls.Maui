@@ -1,5 +1,51 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+              xmlns:local="clr-namespace:MauiSandboxApp"
+              xmlns:sk="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
              x:Class="MauiSandboxApp.MainPage">
+             <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <Label Text="Bug Repro: SKCanvasView collapses to zero size on Avalonia backend"
+                   FontSize="22" FontAttributes="Bold" LineBreakMode="WordWrap" />
+
+            <Label Text="SKCanvasViewControl extends Control without overriding MeasureOverride, so DesiredSize is (0,0). When HorizontalOptions is not Fill (e.g. Start) and no WidthRequest/HeightRequest is set, Avalonia's ArrangeCore clamps the render size to DesiredSize, causing the view to collapse."
+                   FontSize="13" LineBreakMode="WordWrap" Opacity="0.6" />
+
+            <BoxView HeightRequest="1" Opacity="0.3" />
+
+            <!-- Case 1: Fill (works on both) -->
+            <Label Text="1. SKCanvasView + HorizontalOptions=Fill (works):"
+                   FontSize="16" FontAttributes="Bold" />
+            <sk:SKCanvasView x:Name="CvFill"
+                             HorizontalOptions="Fill"
+                             HeightRequest="100"
+                             PaintSurface="OnPaintSurface" />
+
+            <!-- Case 2: Start, no size (BUG on Avalonia) -->
+            <Label Text="2. SKCanvasView + HorizontalOptions=Start, no size set (collapsed on Avalonia):"
+                   FontSize="16" FontAttributes="Bold" TextColor="Red" />
+            <sk:SKCanvasView x:Name="CvStart"
+                             HorizontalOptions="Start"
+                             PaintSurface="OnPaintSurface" />
+
+            <!-- Case 3: Custom view with MeasureOverride fix -->
+            <Label Text="3. UserCustomSKCanvasView + HorizontalOptions=Start, no size set (override MeasureOverride → 100x100):"
+                   FontSize="16" FontAttributes="Bold" TextColor="Green" />
+            <local:UserCustomSKCanvasView x:Name="CvFixed"
+                                          HorizontalOptions="Start"
+                                          PaintSurface="OnPaintSurface" />
+
+            <BoxView HeightRequest="1" Opacity="0.3" />
+
+            <Label Text="Expected: Cases 1, 2, 3 should all render colored rectangles."
+                   FontSize="14" />
+            <Label Text="Actual (Avalonia backend): Case 1 and 3 render. Case 2 collapses to zero because MeasureOverride returns (0,0)."
+                   FontSize="14" TextColor="Red" />
+            <Label Text="Actual (WinUI backend): All cases render correctly."
+                   FontSize="14" TextColor="Green" />
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

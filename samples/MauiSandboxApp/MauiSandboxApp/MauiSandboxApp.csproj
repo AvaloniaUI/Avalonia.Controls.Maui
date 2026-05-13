@@ -67,10 +67,12 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(MicrosoftExtensionsVersion)" />
+		<PackageReference Include="SkiaSharp.Views.Maui.Controls" Version="3.119.4-preview.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Condition="'$(TargetFramework)' == '$(DotNetTfm)'" Include="../../../src/Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.csproj" />
+		<ProjectReference Include="../../../src/Avalonia.Controls.Maui.SkiaSharp.Views/Avalonia.Controls.Maui.SkiaSharp.Views.csproj" />
 		<ProjectReference Include="../../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
 		<ProjectReference Include="../../../src/Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" GlobalPropertiesToRemove="PublishAot" />
 	</ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace MauiSandboxApp;
 
@@ -11,8 +12,10 @@ public static class MauiProgram
 			.UseMauiApp<App>()
 			#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
 			.UseAvaloniaApp(useSingleAppLifetime)
+			.UseAvaloniaSkiaSharp()
 			#else
 			.UseAvaloniaEmbedding<AvaloniaApp>()
+			.UseSkiaSharp()
 			#endif
 			.ConfigureFonts(fonts =>
 			{
