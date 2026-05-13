@@ -118,7 +118,8 @@ public static class ShellExtensions
             handler._topBarBorder,
             ShellHandler.DefaultBarHeight,
             isVisible,
-            animate);
+            animate,
+            hitTestWhenVisible: true);
     }
 
     /// <summary>
@@ -143,7 +144,8 @@ public static class ShellExtensions
             handler._topBarShadow,
             4,
             hasShadow && isVisible,
-            animate);
+            animate,
+            hitTestWhenVisible: false);
     }
 
     private static bool GetNavBarVisibilityAnimationEnabled(MauiShell shell)
@@ -153,9 +155,14 @@ public static class ShellExtensions
             : MauiShell.GetNavBarVisibilityAnimationEnabled(shell);
     }
 
-    private static void ApplyNavBarElementVisibility(Control element, double visibleHeight, bool isVisible, bool animate)
+    private static void ApplyNavBarElementVisibility(
+        Control element,
+        double visibleHeight,
+        bool isVisible,
+        bool animate,
+        bool hitTestWhenVisible)
     {
-        element.IsHitTestVisible = isVisible;
+        element.IsHitTestVisible = isVisible && hitTestWhenVisible;
 
         if (animate)
         {

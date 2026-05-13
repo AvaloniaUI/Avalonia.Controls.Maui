@@ -779,6 +779,8 @@ public partial class ShellHandlerTests : HandlerTestBase
 
         Assert.Contains(Layoutable.HeightProperty, transitionProperties);
         Assert.Contains(Visual.OpacityProperty, transitionProperties);
+        Assert.True(handler._topBarBorder.IsHitTestVisible);
+        Assert.False(handler._topBarShadow.IsHitTestVisible);
 
         await InvokeOnMainThreadAsync(() =>
         {
