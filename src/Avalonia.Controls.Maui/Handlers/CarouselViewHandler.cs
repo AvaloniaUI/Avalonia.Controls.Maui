@@ -28,7 +28,6 @@ public class CarouselViewHandler : ViewHandler<CarouselView, PlatformView>
             [nameof(ItemsView.EmptyView)] = MapEmptyView,
             [nameof(ItemsView.EmptyViewTemplate)] = MapEmptyViewTemplate,
             [nameof(CarouselView.CurrentItem)] = MapCurrentItem,
-            [nameof(CarouselView.IndicatorView)] = MapIndicatorView,
             [nameof(CarouselView.IsScrollAnimated)] = MapIsScrollAnimated,
             [nameof(CarouselView.IsSwipeEnabled)] = MapIsSwipeEnabled,
             [nameof(CarouselView.ItemsLayout)] = MapItemsLayout,
@@ -215,18 +214,6 @@ public class CarouselViewHandler : ViewHandler<CarouselView, PlatformView>
         }
 
         handler.UpdatePlatformSelection(() => handler.PlatformView.UpdateCurrentItem(virtualCarousel), syncVirtualSelection: true);
-    }
-
-    /// <summary>
-    /// Handles IndicatorView property updates.
-    /// </summary>
-    /// <param name="handler">The handler for the carousel view.</param>
-    /// <param name="carouselView">The virtual carousel view.</param>
-    public static void MapIndicatorView(CarouselViewHandler handler, ItemsView carouselView)
-    {
-        // MAUI's set-only CarouselView.IndicatorView property establishes the binding
-        // between the indicator's Position/ItemsSource and this carousel. The backend
-        // keeps Position and ItemsSource mapped, so no additional platform state is needed.
     }
 
     /// <summary>
