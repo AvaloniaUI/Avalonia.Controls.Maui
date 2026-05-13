@@ -57,11 +57,7 @@ public class AvaloniaMediaPicker : IMediaPicker
     /// <returns>A FileResult representing the selected photo, or <see langword="null"/> if the user cancelled the dialog.</returns>
     public async Task<FileResult?> PickPhotoAsync(MediaPickerOptions? options = null)
     {
-        var topLevel = _platformProvider.GetTopLevel()
-            ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
-
-        var pickerOptions = CreatePhotoPickerOptions(options);
-        var results = await topLevel.StorageProvider.OpenFilePickerAsync(pickerOptions).ConfigureAwait(false);
+        var results = await OpenFilePickerAsync(CreatePhotoPickerOptions(options)).ConfigureAwait(false);
 
         if (results.Count == 0)
             return null;
@@ -76,11 +72,7 @@ public class AvaloniaMediaPicker : IMediaPicker
     /// <returns>A list of FileResult objects representing the selected photos, or an empty list if the user cancelled the dialog.</returns>
     public async Task<List<FileResult>> PickPhotosAsync(MediaPickerOptions? options = null)
     {
-        var topLevel = _platformProvider.GetTopLevel()
-            ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
-
-        var pickerOptions = CreatePhotoPickerOptions(options, allowMultiple: true);
-        var results = await topLevel.StorageProvider.OpenFilePickerAsync(pickerOptions).ConfigureAwait(false);
+        var results = await OpenFilePickerAsync(CreatePhotoPickerOptions(options, allowMultiple: true)).ConfigureAwait(false);
 
         var fileResults = new List<FileResult>(results.Count);
         foreach (var result in results)
@@ -96,11 +88,7 @@ public class AvaloniaMediaPicker : IMediaPicker
     /// <returns>A FileResult representing the selected video, or <see langword="null"/> if the user cancelled the dialog.</returns>
     public async Task<FileResult?> PickVideoAsync(MediaPickerOptions? options = null)
     {
-        var topLevel = _platformProvider.GetTopLevel()
-            ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
-
-        var pickerOptions = CreateVideoPickerOptions(options);
-        var results = await topLevel.StorageProvider.OpenFilePickerAsync(pickerOptions).ConfigureAwait(false);
+        var results = await OpenFilePickerAsync(CreateVideoPickerOptions(options)).ConfigureAwait(false);
 
         if (results.Count == 0)
             return null;
@@ -115,17 +103,20 @@ public class AvaloniaMediaPicker : IMediaPicker
     /// <returns>A list of FileResult objects representing the selected videos, or an empty list if the user cancelled the dialog.</returns>
     public async Task<List<FileResult>> PickVideosAsync(MediaPickerOptions? options = null)
     {
-        var topLevel = _platformProvider.GetTopLevel()
-            ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
-
-        var pickerOptions = CreateVideoPickerOptions(options, allowMultiple: true);
-        var results = await topLevel.StorageProvider.OpenFilePickerAsync(pickerOptions).ConfigureAwait(false);
+        var results = await OpenFilePickerAsync(CreateVideoPickerOptions(options, allowMultiple: true)).ConfigureAwait(false);
 
         var fileResults = new List<FileResult>(results.Count);
         foreach (var result in results)
             fileResults.Add(new AvaloniaFileResult(result));
 
         return fileResults;
+    }
+
+    internal virtual async Task<IReadOnlyList<IStorageFile>> OpenFilePickerAsync(FilePickerOpenOptions options)
+    {
+        var topLevel = _platformProvider.GetTopLevel()
+            ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
+        return await topLevel.StorageProvider.OpenFilePickerAsync(options).ConfigureAwait(false);
     }
 
     static FilePickerOpenOptions CreatePhotoPickerOptions(MediaPickerOptions? options, bool allowMultiple = false)
