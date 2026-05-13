@@ -707,7 +707,7 @@ Displays a short list of items, from which an item can be selected.
 | HorizontalTextAlignment | ✅ Implemented  |
 | ItemsSource | ✅ Implemented  |
 | ItemDisplayBinding | ✅ Implemented  |
-| SelectedIndex | ⏳ TODO |
+| SelectedIndex | ✅ Implemented |
 | SelectedItem | ✅ Implemented  |
 | TextColor | ✅ Implemented  |
 | Title | ✅ Implemented |
@@ -718,7 +718,7 @@ Displays a short list of items, from which an item can be selected.
 
 | Event | Status |
 |-------|--------|
-| SelectedIndexChanged | ⏳ TODO |
+| SelectedIndexChanged | ✅ Implemented |
 
 ---
 
