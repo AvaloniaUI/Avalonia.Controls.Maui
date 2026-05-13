@@ -8,6 +8,12 @@ namespace Avalonia.Controls.Maui.Essentials;
 /// <summary>
 /// Avalonia implementation of IMediaPicker that uses the StorageProvider file picker for photo and video selection on desktop platforms.
 /// </summary>
+/// <remarks>
+/// The returned <see cref="FileResult"/> instances are <see cref="AvaloniaFileResult"/> wrappers around the
+/// underlying Avalonia <see cref="IStorageFile"/>. Prefer <c>OpenReadAsync()</c> over reading <c>FullPath</c> —
+/// on platforms such as Avalonia.Browser the picked file has no real filesystem path. See
+/// <see cref="AvaloniaFileResult"/> for the full rationale.
+/// </remarks>
 public class AvaloniaMediaPicker : IMediaPicker
 {
     readonly IAvaloniaEssentialsPlatformProvider _platformProvider;
@@ -60,8 +66,7 @@ public class AvaloniaMediaPicker : IMediaPicker
         if (results.Count == 0)
             return null;
 
-        var path = results[0].TryGetLocalPath();
-        return path is not null ? new FileResult(path) : null;
+        return new AvaloniaFileResult(results[0]);
     }
 
     /// <summary>
@@ -77,13 +82,9 @@ public class AvaloniaMediaPicker : IMediaPicker
         var pickerOptions = CreatePhotoPickerOptions(options, allowMultiple: true);
         var results = await topLevel.StorageProvider.OpenFilePickerAsync(pickerOptions).ConfigureAwait(false);
 
-        var fileResults = new List<FileResult>();
+        var fileResults = new List<FileResult>(results.Count);
         foreach (var result in results)
-        {
-            var path = result.TryGetLocalPath();
-            if (path is not null)
-                fileResults.Add(new FileResult(path));
-        }
+            fileResults.Add(new AvaloniaFileResult(result));
 
         return fileResults;
     }
@@ -104,8 +105,7 @@ public class AvaloniaMediaPicker : IMediaPicker
         if (results.Count == 0)
             return null;
 
-        var path = results[0].TryGetLocalPath();
-        return path is not null ? new FileResult(path) : null;
+        return new AvaloniaFileResult(results[0]);
     }
 
     /// <summary>
@@ -121,13 +121,9 @@ public class AvaloniaMediaPicker : IMediaPicker
         var pickerOptions = CreateVideoPickerOptions(options, allowMultiple: true);
         var results = await topLevel.StorageProvider.OpenFilePickerAsync(pickerOptions).ConfigureAwait(false);
 
-        var fileResults = new List<FileResult>();
+        var fileResults = new List<FileResult>(results.Count);
         foreach (var result in results)
-        {
-            var path = result.TryGetLocalPath();
-            if (path is not null)
-                fileResults.Add(new FileResult(path));
-        }
+            fileResults.Add(new AvaloniaFileResult(result));
 
         return fileResults;
     }
