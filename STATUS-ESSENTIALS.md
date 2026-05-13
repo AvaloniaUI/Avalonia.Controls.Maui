@@ -473,20 +473,26 @@ Pick or capture photos and videos from the device.
 
 | Member | Type | Status |
 |--------|------|--------|
-| IsCaptureSupported | Property | ⏳ TODO |
-| PickPhotoAsync(MediaPickerOptions) | Method | ⏳ TODO |
-| PickPhotosAsync(MediaPickerOptions) | Method | ⏳ TODO |
-| CapturePhotoAsync(MediaPickerOptions) | Method | ⏳ TODO |
-| PickVideoAsync(MediaPickerOptions) | Method | ⏳ TODO |
-| PickVideosAsync(MediaPickerOptions) | Method | ⏳ TODO |
-| CaptureVideoAsync(MediaPickerOptions) | Method | ⏳ TODO |
+| IsCaptureSupported | Property | ✅ Implemented |
+| PickPhotoAsync(MediaPickerOptions) | Method | ✅ Implemented |
+| PickPhotosAsync(MediaPickerOptions) | Method | ✅ Implemented |
+| CapturePhotoAsync(MediaPickerOptions) | Method | ❌ Not Applicable |
+| PickVideoAsync(MediaPickerOptions) | Method | ✅ Implemented |
+| PickVideosAsync(MediaPickerOptions) | Method | ✅ Implemented |
+| CaptureVideoAsync(MediaPickerOptions) | Method | ❌ Not Applicable |
 
 ### Supporting Types
 
 | Type | Status |
 |------|--------|
-| MediaPickerOptions | ⏳ TODO |
-| FileResult | ⏳ TODO |
+| MediaPickerOptions | ✅ Implemented |
+| FileResult | ✅ Implemented |
+
+`IsCaptureSupported` returns `false` and the `Capture*` methods throw
+`NotSupportedException`, as Avalonia desktop/Browser targets do not expose a
+camera capture API. Picked results are `AvaloniaFileResult` instances so
+`OpenReadAsync()` works on platforms without a local filesystem path
+(Avalonia.Browser, sandboxed storage providers).
 
 ---
 
