@@ -19,7 +19,7 @@
 
 		<OutputType Condition="'$(TargetFramework)' != '$(DotNetTfm)-browser'">Exe</OutputType>
 		<!-- For SkiaSharp.Views.Maui.Controls -->
-		<NoWarn>$(NoWarn);IL2104</NoWarn>
+		<NoWarn>$(NoWarn);IL2104;IL2026</NoWarn>
 		<RootNamespace>MapApp</RootNamespace>
 		<UseMaui>true</UseMaui>
 		<SingleProject>true</SingleProject>
