@@ -8,6 +8,12 @@ namespace Avalonia.Controls.Maui.Essentials;
 /// <summary>
 /// Avalonia implementation of IMediaPicker that uses the StorageProvider file picker for photo and video selection on desktop platforms.
 /// </summary>
+/// <remarks>
+/// The returned <see cref="FileResult"/> instances are <see cref="AvaloniaFileResult"/> wrappers around the
+/// underlying Avalonia <see cref="IStorageFile"/>. Prefer <c>OpenReadAsync()</c> over reading <c>FullPath</c> —
+/// on platforms such as Avalonia.Browser the picked file has no real filesystem path. See
+/// <see cref="AvaloniaFileResult"/> for the full rationale.
+/// </remarks>
 public class AvaloniaMediaPicker : IMediaPicker
 {
     readonly IAvaloniaEssentialsPlatformProvider _platformProvider;
@@ -51,17 +57,12 @@ public class AvaloniaMediaPicker : IMediaPicker
     /// <returns>A FileResult representing the selected photo, or <see langword="null"/> if the user cancelled the dialog.</returns>
     public async Task<FileResult?> PickPhotoAsync(MediaPickerOptions? options = null)
     {
-        var topLevel = _platformProvider.GetTopLevel()
-            ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
-
-        var pickerOptions = CreatePhotoPickerOptions(options);
-        var results = await topLevel.StorageProvider.OpenFilePickerAsync(pickerOptions).ConfigureAwait(false);
+        var results = await OpenFilePickerAsync(CreatePhotoPickerOptions(options)).ConfigureAwait(false);
 
         if (results.Count == 0)
             return null;
 
-        var path = results[0].TryGetLocalPath();
-        return path is not null ? new FileResult(path) : null;
+        return new AvaloniaFileResult(results[0]);
     }
 
     /// <summary>
@@ -71,19 +72,11 @@ public class AvaloniaMediaPicker : IMediaPicker
     /// <returns>A list of FileResult objects representing the selected photos, or an empty list if the user cancelled the dialog.</returns>
     public async Task<List<FileResult>> PickPhotosAsync(MediaPickerOptions? options = null)
     {
-        var topLevel = _platformProvider.GetTopLevel()
-            ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
+        var results = await OpenFilePickerAsync(CreatePhotoPickerOptions(options, allowMultiple: true)).ConfigureAwait(false);
 
-        var pickerOptions = CreatePhotoPickerOptions(options, allowMultiple: true);
-        var results = await topLevel.StorageProvider.OpenFilePickerAsync(pickerOptions).ConfigureAwait(false);
-
-        var fileResults = new List<FileResult>();
+        var fileResults = new List<FileResult>(results.Count);
         foreach (var result in results)
-        {
-            var path = result.TryGetLocalPath();
-            if (path is not null)
-                fileResults.Add(new FileResult(path));
-        }
+            fileResults.Add(new AvaloniaFileResult(result));
 
         return fileResults;
     }
@@ -95,17 +88,12 @@ public class AvaloniaMediaPicker : IMediaPicker
     /// <returns>A FileResult representing the selected video, or <see langword="null"/> if the user cancelled the dialog.</returns>
     public async Task<FileResult?> PickVideoAsync(MediaPickerOptions? options = null)
     {
-        var topLevel = _platformProvider.GetTopLevel()
-            ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
-
-        var pickerOptions = CreateVideoPickerOptions(options);
-        var results = await topLevel.StorageProvider.OpenFilePickerAsync(pickerOptions).ConfigureAwait(false);
+        var results = await OpenFilePickerAsync(CreateVideoPickerOptions(options)).ConfigureAwait(false);
 
         if (results.Count == 0)
             return null;
 
-        var path = results[0].TryGetLocalPath();
-        return path is not null ? new FileResult(path) : null;
+        return new AvaloniaFileResult(results[0]);
     }
 
     /// <summary>
@@ -115,21 +103,20 @@ public class AvaloniaMediaPicker : IMediaPicker
     /// <returns>A list of FileResult objects representing the selected videos, or an empty list if the user cancelled the dialog.</returns>
     public async Task<List<FileResult>> PickVideosAsync(MediaPickerOptions? options = null)
     {
-        var topLevel = _platformProvider.GetTopLevel()
-            ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
+        var results = await OpenFilePickerAsync(CreateVideoPickerOptions(options, allowMultiple: true)).ConfigureAwait(false);
 
-        var pickerOptions = CreateVideoPickerOptions(options, allowMultiple: true);
-        var results = await topLevel.StorageProvider.OpenFilePickerAsync(pickerOptions).ConfigureAwait(false);
-
-        var fileResults = new List<FileResult>();
+        var fileResults = new List<FileResult>(results.Count);
         foreach (var result in results)
-        {
-            var path = result.TryGetLocalPath();
-            if (path is not null)
-                fileResults.Add(new FileResult(path));
-        }
+            fileResults.Add(new AvaloniaFileResult(result));
 
         return fileResults;
+    }
+
+    internal virtual async Task<IReadOnlyList<IStorageFile>> OpenFilePickerAsync(FilePickerOpenOptions options)
+    {
+        var topLevel = _platformProvider.GetTopLevel()
+            ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
+        return await topLevel.StorageProvider.OpenFilePickerAsync(options).ConfigureAwait(false);
     }
 
     static FilePickerOpenOptions CreatePhotoPickerOptions(MediaPickerOptions? options, bool allowMultiple = false)
