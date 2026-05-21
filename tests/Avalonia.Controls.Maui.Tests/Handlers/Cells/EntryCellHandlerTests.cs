@@ -1,6 +1,7 @@
 using Avalonia.Controls.Maui.Compatibility;
 using Avalonia.Headless.XUnit;
 using Microsoft.Maui.Controls;
+using MauiTextAlignment = Microsoft.Maui.TextAlignment;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers.Cells;
 
@@ -101,5 +102,36 @@ public class EntryCellHandlerTests : HandlerTestBase
         });
 
         Assert.False(handler.PlatformView.IsEnabled);
+    }
+
+    [AvaloniaTheory(DisplayName = "VerticalTextAlignment Maps Correctly")]
+    [InlineData(MauiTextAlignment.Start, Avalonia.Layout.VerticalAlignment.Top)]
+    [InlineData(MauiTextAlignment.Center, Avalonia.Layout.VerticalAlignment.Center)]
+    [InlineData(MauiTextAlignment.End, Avalonia.Layout.VerticalAlignment.Bottom)]
+    public async Task VerticalTextAlignmentMapsCorrectly(
+        MauiTextAlignment alignment,
+        Avalonia.Layout.VerticalAlignment expected)
+    {
+        var cell = new EntryCell { VerticalTextAlignment = alignment };
+        var handler = await CreateHandlerAsync<EntryCellHandler>(cell);
+
+        Assert.Equal(expected, handler.PlatformView.Input.VerticalContentAlignment);
+    }
+
+    [AvaloniaFact(DisplayName = "VerticalTextAlignment Updates Correctly")]
+    public async Task VerticalTextAlignmentUpdatesCorrectly()
+    {
+        var cell = new EntryCell { VerticalTextAlignment = MauiTextAlignment.Start };
+        var handler = await CreateHandlerAsync<EntryCellHandler>(cell);
+
+        Assert.Equal(Avalonia.Layout.VerticalAlignment.Top, handler.PlatformView.Input.VerticalContentAlignment);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            cell.VerticalTextAlignment = MauiTextAlignment.End;
+            handler.UpdateValue(nameof(EntryCell.VerticalTextAlignment));
+        });
+
+        Assert.Equal(Avalonia.Layout.VerticalAlignment.Bottom, handler.PlatformView.Input.VerticalContentAlignment);
     }
 }
