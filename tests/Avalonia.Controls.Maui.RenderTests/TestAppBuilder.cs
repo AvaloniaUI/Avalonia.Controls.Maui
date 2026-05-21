@@ -49,6 +49,7 @@ public static class MauiTestAppBuilderExtensions
             handlers.AddHandler<Microsoft.Maui.Controls.Border, BorderHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.BoxView, BoxViewHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.Button, ButtonHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.CarouselView, CarouselViewHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.CheckBox, CheckBoxHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.DatePicker, DatePickerHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.Editor, EditorHandler>();

@@ -201,7 +201,7 @@ public static class ShellExtensions
         }
         else
         {
-            handler._hamburgerButton.Content = "☰";
+            handler._hamburgerButton.Content = ShellHandler.CreateNavigationIconContent(ShellHandler.HamburgerIconPathData);
         }
     }
 
@@ -765,8 +765,7 @@ public static class ShellExtensions
         }
         else
         {
-            // Reset to default back arrow
-            handler._backButton.Content = "←";
+            handler._backButton.Content = ShellHandler.CreateNavigationIconContent(ShellHandler.BackIconPathData);
         }
 
         // Update visibility - consider both navigation stack and behavior.IsVisible
