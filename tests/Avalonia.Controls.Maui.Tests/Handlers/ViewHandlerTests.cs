@@ -432,6 +432,8 @@ public class ViewHandlerTests : HandlerTestBase
         protected override void OnDetached()
         {
             ClearBackground();
+            AttachedCount = Math.Max(0, AttachedCount - 1);
+            OriginalBackground = null;
         }
 
         protected override void OnElementPropertyChanged(PropertyChangedEventArgs args)

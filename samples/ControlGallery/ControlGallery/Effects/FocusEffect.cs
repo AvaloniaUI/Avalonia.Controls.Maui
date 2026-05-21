@@ -13,26 +13,28 @@ public class FocusPlatformEffect : PlatformEffect
 
     public static event EventHandler? DiagnosticsChanged;
 
-#if !WINDOWS && !ANDROID && !IOS && !MACCATALYST
+#if WINDOWS
+    private Microsoft.UI.Xaml.Media.Brush? _originalBackground;
+#elif ANDROID
+    private Android.Graphics.Drawables.Drawable? _originalBackground;
+#elif IOS || MACCATALYST
+    private UIKit.UIColor? _originalBackground;
+#else
     private global::Avalonia.Media.IBrush? _originalBackground;
 #endif
 
     protected override void OnAttached()
     {
         AttachedCount++;
-#if !WINDOWS && !ANDROID && !IOS && !MACCATALYST
-        if (Control is global::Avalonia.Controls.TextBox textBox)
-        {
-            _originalBackground = textBox.Background;
-        }
-#endif
+        CaptureBackground();
         UpdateBackground();
         DiagnosticsChanged?.Invoke(this, EventArgs.Empty);
     }
 
     protected override void OnDetached()
     {
-        ClearBackground();
+        RestoreBackground();
+        _originalBackground = null;
         AttachedCount = Math.Max(0, AttachedCount - 1);
         DiagnosticsChanged?.Invoke(this, EventArgs.Empty);
     }
@@ -54,15 +56,31 @@ public class FocusPlatformEffect : PlatformEffect
 #if WINDOWS
         if (Control is Microsoft.UI.Xaml.Controls.Control control)
         {
-            control.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(
-                isFocused ? Microsoft.UI.Colors.LightGreen : Microsoft.UI.Colors.Transparent);
+            if (isFocused)
+            {
+                control.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.LightGreen);
+            }
+            else
+            {
+                RestoreBackground();
+            }
         }
 #elif ANDROID
-        Control?.SetBackgroundColor(isFocused ? Android.Graphics.Color.LightGreen : Android.Graphics.Color.Transparent);
+        if (Control is Android.Views.View view)
+        {
+            if (isFocused)
+            {
+                view.SetBackgroundColor(Android.Graphics.Color.LightGreen);
+            }
+            else
+            {
+                RestoreBackground();
+            }
+        }
 #elif IOS || MACCATALYST
         if (Control is UIKit.UIView view)
         {
-            view.BackgroundColor = isFocused ? UIKit.UIColor.FromRGB(220, 245, 220) : UIKit.UIColor.Clear;
+            view.BackgroundColor = isFocused ? UIKit.UIColor.FromRGB(220, 245, 220) : _originalBackground;
         }
 #else
         if (Control is global::Avalonia.Controls.TextBox textBox)
@@ -74,19 +92,54 @@ public class FocusPlatformEffect : PlatformEffect
 #endif
     }
 
-    private void ClearBackground()
+    private void CaptureBackground()
     {
 #if WINDOWS
         if (Control is Microsoft.UI.Xaml.Controls.Control control)
         {
-            control.Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
+            _originalBackground = control.Background;
         }
 #elif ANDROID
-        Control?.SetBackgroundColor(Android.Graphics.Color.Transparent);
+        if (Control is Android.Views.View view)
+        {
+            _originalBackground = view.Background;
+        }
 #elif IOS || MACCATALYST
         if (Control is UIKit.UIView view)
         {
-            view.BackgroundColor = UIKit.UIColor.Clear;
+            _originalBackground = view.BackgroundColor;
+        }
+#else
+        if (Control is global::Avalonia.Controls.TextBox textBox)
+        {
+            _originalBackground = textBox.Background;
+        }
+#endif
+    }
+
+    private void RestoreBackground()
+    {
+#if WINDOWS
+        if (Control is Microsoft.UI.Xaml.Controls.Control control)
+        {
+            if (_originalBackground is null)
+            {
+                control.ClearValue(Microsoft.UI.Xaml.Controls.Control.BackgroundProperty);
+            }
+            else
+            {
+                control.Background = _originalBackground;
+            }
+        }
+#elif ANDROID
+        if (Control is Android.Views.View view)
+        {
+            view.SetBackground(_originalBackground);
+        }
+#elif IOS || MACCATALYST
+        if (Control is UIKit.UIView view)
+        {
+            view.BackgroundColor = _originalBackground;
         }
 #else
         if (Control is global::Avalonia.Controls.TextBox textBox)
