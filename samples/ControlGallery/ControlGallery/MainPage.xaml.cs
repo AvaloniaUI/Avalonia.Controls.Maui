@@ -105,6 +105,7 @@ public partial class MainPage : FlyoutPage
         [typeof(PreferencesPage)] = () => new PreferencesPage(),
         [typeof(FilePickerPage)] = () => new FilePickerPage(),
         [typeof(AppActionsPage)] = () => new AppActionsPage(),
+        [typeof(MediaPickerPage)] = () => new MediaPickerPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
         // Embedding
@@ -285,6 +286,7 @@ public partial class MainPage : FlyoutPage
             {
                 new("App Actions", "Add custom actions to your app", typeof(AppActionsPage)),
                 new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
+                new("Media Picker", "Pick photos and videos from the device", typeof(MediaPickerPage)),
                 new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage))           
             }),
