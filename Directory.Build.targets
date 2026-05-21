@@ -20,4 +20,9 @@
       <None Include="$(BuildDirectory)/Assets/Icon.png" Pack="true" Visible="false"
           PackagePath="" />
   </ItemGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' == 'true'" Label="ThirdPartyNotices">
+      <None Include="$(MSBuildThisFileDirectory)THIRD-PARTY-NOTICES.txt" Pack="true"
+          Visible="false" PackagePath="" />
+  </ItemGroup>
 </Project>

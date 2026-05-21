@@ -1,6 +1,7 @@
 using Avalonia.Controls.Maui.Extensions;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using System.ComponentModel;
 using System.Collections.Specialized;
 using AvaloniaTabbedPage = Avalonia.Controls.TabbedPage;
 using MauiTabbedPage = Microsoft.Maui.Controls.TabbedPage;
@@ -11,6 +12,8 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>Avalonia handler for <see cref="MauiTabbedPage"/>.</summary>
 public partial class TabbedPageHandler : ViewHandler<MauiTabbedPage, AvaloniaTabbedPage>
 {
+    private readonly HashSet<MauiPage> _trackedPages = new();
+
     /// <summary>Property mapper for <see cref="TabbedPageHandler"/>.</summary>
     public static IPropertyMapper<MauiTabbedPage, TabbedPageHandler> Mapper =
         new PropertyMapper<MauiTabbedPage, TabbedPageHandler>(ViewMapper)
@@ -68,6 +71,12 @@ public partial class TabbedPageHandler : ViewHandler<MauiTabbedPage, AvaloniaTab
     /// <inheritdoc/>
     public override void SetVirtualView(IView view)
     {
+        if (((IElementHandler)this).VirtualView is MauiTabbedPage oldVirtualView)
+        {
+            oldVirtualView.PagesChanged -= OnPagesChanged;
+            UntrackChildPages();
+        }
+
         base.SetVirtualView(view);
 
         _ = PlatformView ?? throw new InvalidOperationException($"{nameof(PlatformView)} should have been set by base class.");
@@ -75,6 +84,7 @@ public partial class TabbedPageHandler : ViewHandler<MauiTabbedPage, AvaloniaTab
 
         // Subscribe to children changes
         VirtualView.PagesChanged += OnPagesChanged;
+        TrackChildPages();
 
         // Load initial pages
         PlatformView.UpdateChildren(VirtualView, MauiContext);
@@ -83,16 +93,92 @@ public partial class TabbedPageHandler : ViewHandler<MauiTabbedPage, AvaloniaTab
     /// <inheritdoc/>
     protected override void DisconnectHandler(AvaloniaTabbedPage platformView)
     {
-        VirtualView.PagesChanged -= OnPagesChanged;
+        if (((IElementHandler)this).VirtualView is MauiTabbedPage virtualView)
+        {
+            virtualView.PagesChanged -= OnPagesChanged;
+        }
 
         platformView.SelectionChanged -= OnTabSelectionChanged;
+        platformView.DetachAndDisposeTabHeaderIcons();
+
+        UntrackChildPages();
 
         base.DisconnectHandler(platformView);
     }
 
     private void OnPagesChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        TrackChildPages();
         PlatformView.UpdateChildren(VirtualView, MauiContext);
+    }
+
+    private void TrackChildPages()
+    {
+        if (((IElementHandler)this).VirtualView is not MauiTabbedPage virtualView)
+            return;
+
+        foreach (var page in _trackedPages.ToArray())
+        {
+            if (!virtualView.Children.Contains(page))
+            {
+                page.PropertyChanged -= OnChildPagePropertyChanged;
+                _trackedPages.Remove(page);
+            }
+        }
+
+        foreach (var page in virtualView.Children)
+        {
+            if (_trackedPages.Add(page))
+            {
+                page.PropertyChanged += OnChildPagePropertyChanged;
+            }
+        }
+    }
+
+    private void UntrackChildPages()
+    {
+        foreach (var page in _trackedPages)
+        {
+            page.PropertyChanged -= OnChildPagePropertyChanged;
+        }
+
+        _trackedPages.Clear();
+    }
+
+    private void OnChildPagePropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is not MauiPage page)
+            return;
+
+        if (e.PropertyName == nameof(MauiPage.Title))
+        {
+            if (((IElementHandler)this).VirtualView is MauiTabbedPage virtualView &&
+                ((IElementHandler)this).PlatformView is AvaloniaTabbedPage platformView)
+            {
+                var index = virtualView.Children.IndexOf(page);
+                var preservedHeader = index >= 0
+                    ? platformView.Pages?.ElementAtOrDefault(index)?.Header
+                    : null;
+                var preservedIconImageSource = page.IconImageSource;
+
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    if (((IElementHandler)this).VirtualView == virtualView &&
+                        ((IElementHandler)this).PlatformView == platformView)
+                    {
+                        platformView.UpdateChildTitle(virtualView, page, MauiContext, preservedHeader, preservedIconImageSource);
+                    }
+                });
+            }
+        }
+        else if (e.PropertyName == nameof(MauiPage.IconImageSource))
+        {
+            if (((IElementHandler)this).VirtualView is MauiTabbedPage virtualView &&
+                ((IElementHandler)this).PlatformView is AvaloniaTabbedPage platformView)
+            {
+                platformView.UpdateChildIconImageSource(virtualView, page, MauiContext);
+            }
+        }
     }
 
     /// <summary>Maps the BarBackground property to the platform view.</summary>
@@ -148,6 +234,7 @@ public partial class TabbedPageHandler : ViewHandler<MauiTabbedPage, AvaloniaTab
     /// <param name="tabbedPage">The virtual tabbed page.</param>
     public static void MapItemsSource(TabbedPageHandler handler, MauiTabbedPage tabbedPage)
     {
+        handler.TrackChildPages();
         handler.PlatformView?.UpdateChildren(tabbedPage, handler.MauiContext);
     }
 
@@ -156,6 +243,7 @@ public partial class TabbedPageHandler : ViewHandler<MauiTabbedPage, AvaloniaTab
     /// <param name="tabbedPage">The virtual tabbed page.</param>
     public static void MapItemTemplate(TabbedPageHandler handler, MauiTabbedPage tabbedPage)
     {
+        handler.TrackChildPages();
         handler.PlatformView?.UpdateChildren(tabbedPage, handler.MauiContext);
     }
 

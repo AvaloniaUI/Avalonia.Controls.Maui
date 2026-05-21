@@ -36,9 +36,6 @@ public class AvaloniaVersionTracking : IVersionTracking
     /// <inheritdoc/>
     public void Track()
     {
-        if (_versionTrail != null)
-            return;
-
         lock (_locker)
         {
             if (_versionTrail != null)

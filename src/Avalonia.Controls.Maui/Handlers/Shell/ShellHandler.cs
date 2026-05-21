@@ -20,6 +20,9 @@ namespace Avalonia.Controls.Maui.Handlers.Shell;
 /// <summary>Avalonia handler for <see cref="MauiShell"/>.</summary>
 public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
 {
+    internal const string BackIconPathData = "M12.7347,4.20949 C13.0332,3.92233 13.508,3.93153 13.7952,4.23005 C14.0823,4.52857 14.0731,5.00335 13.7746,5.29051 L5.50039,13.25 L24.2532,13.25 C24.6674,13.25 25.0032,13.5858 25.0032,13.9999982 C25.0032,14.4142 24.6674,14.75 24.2532,14.75 L5.50137,14.75 L13.7746,22.7085 C14.0731,22.9957 14.0823,23.4705 13.7952,23.769 C13.508,24.0675 13.0332,24.0767 12.7347,23.7896 L3.30673,14.7202 C2.89776,14.3268 2.89776,13.6723 3.30673,13.2788 L12.7347,4.20949 Z";
+    internal const string HamburgerIconPathData = "M3 17h18a1 1 0 0 1 .117 1.993L21 19H3a1 1 0 0 1-.117-1.993L3 17h18H3Zm0-6 18-.002a1 1 0 0 1 .117 1.993l-.117.007L3 13a1 1 0 0 1-.117-1.993L3 11l18-.002L3 11Zm0-6h18a1 1 0 0 1 .117 1.993L21 7H3a1 1 0 0 1-.117-1.993L3 5h18H3Z";
+
     /// <summary>Default height for the navigation bar.</summary>
     internal const double DefaultBarHeight = 48;
 
@@ -333,18 +336,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         // Back button: Button > Panel > PathIcon — exactly matching DrawerPage PART_PaneButton structure
         _backButton = new Button
         {
-            Content = new Panel
-            {
-                Children =
-                {
-                    new PathIcon
-                    {
-                        Data = Avalonia.Media.StreamGeometry.Parse("M12.7347,4.20949 C13.0332,3.92233 13.508,3.93153 13.7952,4.23005 C14.0823,4.52857 14.0731,5.00335 13.7746,5.29051 L5.50039,13.25 L24.2532,13.25 C24.6674,13.25 25.0032,13.5858 25.0032,13.9999982 C25.0032,14.4142 24.6674,14.75 24.2532,14.75 L5.50137,14.75 L13.7746,22.7085 C14.0731,22.9957 14.0823,23.4705 13.7952,23.769 C13.508,24.0675 13.0332,24.0767 12.7347,23.7896 L3.30673,14.7202 C2.89776,14.3268 2.89776,13.6723 3.30673,13.2788 L12.7347,4.20949 Z"),
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    }
-                }
-            },
+            Content = CreateNavigationIconContent(BackIconPathData),
             Background = Brushes.Transparent,
             [DockPanel.DockProperty] = Dock.Left,
             IsVisible = false
@@ -354,18 +346,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         // Hamburger button: Button > Panel > PathIcon — exactly matching DrawerPage PART_PaneButton structure
         _hamburgerButton = new Button
         {
-            Content = new Panel
-            {
-                Children =
-                {
-                    new PathIcon
-                    {
-                        Data = Avalonia.Media.StreamGeometry.Parse("M3 17h18a1 1 0 0 1 .117 1.993L21 19H3a1 1 0 0 1-.117-1.993L3 17h18H3Zm0-6 18-.002a1 1 0 0 1 .117 1.993l-.117.007L3 13a1 1 0 0 1-.117-1.993L3 11l18-.002L3 11Zm0-6h18a1 1 0 0 1 .117 1.993L21 7H3a1 1 0 0 1-.117-1.993L3 5h18H3Z"),
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    }
-                }
-            },
+            Content = CreateNavigationIconContent(HamburgerIconPathData),
             Background = Brushes.Transparent,
             [DockPanel.DockProperty] = Dock.Left
         };
@@ -1274,5 +1255,21 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             unselectedStateStyle.Setters.Add(new Styling.Setter { Property = Border.BorderBrushProperty, Value = Brushes.Transparent });
             panel.Styles.Add(unselectedStateStyle);
         }
+    }
+
+    internal static Panel CreateNavigationIconContent(string pathData)
+    {
+        return new Panel
+        {
+            Children =
+            {
+                new PathIcon
+                {
+                    Data = Avalonia.Media.StreamGeometry.Parse(pathData),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
+                }
+            }
+        };
     }
 }
