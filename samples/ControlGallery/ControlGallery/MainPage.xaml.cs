@@ -24,6 +24,7 @@ public partial class MainPage : FlyoutPage
         // Services
         [typeof(FontsPage)] = () => new FontsPage(),
         // Pages
+        [typeof(PageBasePage)] = () => new PageBasePage(),
         [typeof(NavigationDemoPage)] = () => new NavigationDemoPage(),
         [typeof(ControlGallery.Pages.TabbedPage)] = () => new ControlGallery.Pages.TabbedPage(),
         [typeof(TitleBarPage)] = () => new TitleBarPage(),
@@ -38,6 +39,7 @@ public partial class MainPage : FlyoutPage
         [typeof(BoxViewPage)] = () => new BoxViewPage(),
         [typeof(ButtonPage)] = () => new ButtonPage(),
         [typeof(CheckBoxPage)] = () => new CheckBoxPage(),
+        [typeof(CarouselViewPage)] = () => new CarouselViewPage(),
         [typeof(CollectionViewPage)] = () => new CollectionViewPage(),
         [typeof(ContentViewPage)] = () => new ContentViewPage(),
         [typeof(DatePickerPage)] = () => new DatePickerPage(),
@@ -103,6 +105,7 @@ public partial class MainPage : FlyoutPage
         [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
         [typeof(PreferencesPage)] = () => new PreferencesPage(),
         [typeof(FilePickerPage)] = () => new FilePickerPage(),
+        [typeof(MediaPickerPage)] = () => new MediaPickerPage(),
         [typeof(Pages.Essentials.DeviceDisplayPage)] = () => new Pages.Essentials.DeviceDisplayPage(),
         [typeof(Pages.Essentials.DeviceInfoPage)] = () => new Pages.Essentials.DeviceInfoPage(),
         [typeof(Pages.Essentials.BatteryPage)] = () => new Pages.Essentials.BatteryPage(),
@@ -181,6 +184,7 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Pages", new List<SampleItem>
             {
+                new("Page", "Base page background and padding", typeof(PageBasePage)),
                 new("NavigationPage", "Navigation stack with animated transitions", typeof(NavigationDemoPage)),
                 new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
                 new("TitleBar", "Custom window title bar", typeof(TitleBarPage)),
@@ -205,6 +209,7 @@ public partial class MainPage : FlyoutPage
                 new("BoxView", "Decorative colored rectangles", typeof(BoxViewPage)),
                 new("Button", "Standard clickable button", typeof(ButtonPage)),
                 new("CheckBox", "Toggle selection control", typeof(CheckBoxPage)),
+                new("CarouselView", "A carousel for paged content", typeof(CarouselViewPage)),
                 new("CollectionView", "Modern templated list", typeof(CollectionViewPage)),
                 new("ContentView", "Reusable custom content", typeof(ContentViewPage)),
                 new("DatePicker", "Date selection picker", typeof(DatePickerPage)),
@@ -284,6 +289,7 @@ public partial class MainPage : FlyoutPage
             new SampleGroup("Essentials", new List<SampleItem>
             {
                 new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
+                new("Media Picker", "Pick photos and videos from the device", typeof(MediaPickerPage)),
                 new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
             }),

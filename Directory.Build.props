@@ -26,7 +26,7 @@
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.0</AvaloniaVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.0.3</AvaloniaVersion>
         <AvaloniaWebViewVersion Condition="'$(AvaloniaWebViewVersion)' == ''">12.0.0</AvaloniaWebViewVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net11.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
@@ -51,7 +51,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <MicrosoftExtensionsVersion>11.0.0-preview.2.26159.112</MicrosoftExtensionsVersion>
+        <MicrosoftExtensionsVersion>11.0.0-preview.4.26230.115</MicrosoftExtensionsVersion>
     </PropertyGroup>
 
     <ItemGroup Condition="'$(MSBuildProjectName)' == 'Avalonia.Controls.Maui.Desktop'">
@@ -84,7 +84,7 @@
     </Target>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net11.0'">
-        <MauiVersion>11.0.0-preview.2.26152.10</MauiVersion>
+        <MauiVersion>11.0.0-preview.4.26230.3</MauiVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net10.0'">

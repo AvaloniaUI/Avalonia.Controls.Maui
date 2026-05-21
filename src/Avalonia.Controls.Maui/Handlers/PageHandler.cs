@@ -30,6 +30,7 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
         {
             [nameof(MauiPage.Background)] = MapBackground,
             [nameof(MauiPage.BackgroundImageSource)] = MapBackgroundImageSource,
+            [nameof(MauiPage.Padding)] = MapPadding,
             [nameof(MauiPage.Title)] = MapTitle,
 
             [nameof(ContentPage.Content)] = MapContent,
@@ -162,6 +163,20 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
         {
             ((AvaloniaPanel)contentView).UpdateBackgroundImageSource(page, handler.MauiContext);
         }
+    }
+
+    /// <summary>
+    /// Maps the <see cref="MauiPage.Padding"/> property to the platform view.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="page">The associated <see cref="MauiPage"/> instance.</param>
+    public static void MapPadding(PageHandler handler, MauiPage page)
+    {
+        // Page padding is consumed by MAUI's cross-platform IContentView layout
+        // when arranging presented content. Invalidate the Avalonia wrapper so
+        // the next layout pass uses the updated MAUI padding without applying a
+        // second platform-side padding.
+        handler.InnerContentView?.InvalidateMeasure();
     }
 
     /// <summary>

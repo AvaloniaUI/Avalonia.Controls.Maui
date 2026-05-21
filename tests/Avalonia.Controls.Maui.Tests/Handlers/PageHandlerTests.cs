@@ -3,6 +3,9 @@ using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
 using Microsoft.Maui.Graphics;
+using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
+using MauiLabel = Microsoft.Maui.Controls.Label;
+using MauiThickness = Microsoft.Maui.Thickness;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -163,6 +166,75 @@ public class PageHandlerTests : HandlerTestBase<PageHandler, PageStub>
             var brush = handler.InnerContentView!.Background as SolidColorBrush;
             Assert.NotNull(brush);
             Assert.Equal(Media.Colors.Green, brush.Color);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "MapPadding Arranges Content Inside Page Padding")]
+    public async Task MapPadding_Arranges_Content_Inside_Page_Padding()
+    {
+        var content = new MauiLabel { Text = "Padded content" };
+        var page = new MauiContentPage
+        {
+            Padding = new MauiThickness(12, 8, 4, 2),
+            Content = content,
+            WidthRequest = 200,
+            HeightRequest = 100
+        };
+
+        var handler = await CreateHandlerAsync<PageHandler>(page);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            handler.UpdateValue(nameof(MauiContentPage.Content));
+            handler.UpdateValue(nameof(MauiContentPage.Padding));
+
+            handler.InnerContentView!.Measure(new Avalonia.Size(200, 100));
+            handler.InnerContentView.Arrange(new Avalonia.Rect(0, 0, 200, 100));
+
+            Assert.Equal(12, content.Frame.X, precision: 3);
+            Assert.Equal(8, content.Frame.Y, precision: 3);
+            Assert.Equal(184, content.Frame.Width, precision: 3);
+            Assert.Equal(90, content.Frame.Height, precision: 3);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "MapPadding Uses Updated Page Padding On Next Arrange")]
+    public async Task MapPadding_Uses_Updated_Page_Padding_On_Next_Arrange()
+    {
+        var content = new MauiLabel { Text = "Updated padded content" };
+        var page = new MauiContentPage
+        {
+            Content = content,
+            WidthRequest = 200,
+            HeightRequest = 100
+        };
+
+        var handler = await CreateHandlerAsync<PageHandler>(page);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            handler.UpdateValue(nameof(MauiContentPage.Content));
+            handler.InnerContentView!.Measure(new Avalonia.Size(200, 100));
+            handler.InnerContentView.Arrange(new Avalonia.Rect(0, 0, 200, 100));
+
+            Assert.Equal(0, content.Frame.X, precision: 3);
+            Assert.Equal(0, content.Frame.Y, precision: 3);
+            Assert.Equal(200, content.Frame.Width, precision: 3);
+            Assert.Equal(100, content.Frame.Height, precision: 3);
+        });
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            page.Padding = new MauiThickness(10, 20, 30, 40);
+            handler.UpdateValue(nameof(MauiContentPage.Padding));
+
+            handler.InnerContentView!.Measure(new Avalonia.Size(200, 100));
+            handler.InnerContentView.Arrange(new Avalonia.Rect(0, 0, 200, 100));
+
+            Assert.Equal(10, content.Frame.X, precision: 3);
+            Assert.Equal(20, content.Frame.Y, precision: 3);
+            Assert.Equal(160, content.Frame.Width, precision: 3);
+            Assert.Equal(40, content.Frame.Height, precision: 3);
         });
     }
 }
