@@ -1393,13 +1393,13 @@ All controls inherit these common properties from the View and VisualElement bas
 | Background | Brush | ✅ Implemented |
 | BackgroundColor | Color | ✅ Implemented |
 | Behaviors | IList<Behavior> | ✅ Implemented |
-| BindingContext | object | ⏳ TODO |
-| Bounds | Rect | ⏳ TODO |
+| BindingContext | object | ✅ Verified |
+| Bounds | Rect | ✅ Verified |
 | Clip | Geometry | ✅ Implemented |
 | DesiredSize | Size | ✅ Implemented |
-| Effects | IList<Effect> | ⏳ TODO |
+| Effects | IList<Effect> | ✅ Verified |
 | FlowDirection | FlowDirection | ✅ Implemented |
-| Frame | Rect | ⏳ TODO |
+| Frame | Rect | ✅ Verified |
 | GestureRecognizers | IList<IGestureRecognizer> | ✅ Implemented |
 | Handler | IViewHandler | ✅ Implemented |
 | Height | double | ✅ Implemented |
@@ -1416,8 +1416,8 @@ All controls inherit these common properties from the View and VisualElement bas
 | MinimumHeightRequest | double | ✅ Implemented |
 | MinimumWidthRequest | double | ✅ Implemented |
 | Opacity | double | ✅ Implemented |
-| Parent | Element | ⏳ TODO |
-| Resources | ResourceDictionary | ⏳ TODO |
+| Parent | Element | ✅ Verified |
+| Resources | ResourceDictionary | ✅ Verified |
 | Rotation | double | ✅ Implemented |
 | RotationX | double | ✅ Implemented |
 | RotationY | double | ✅ Implemented |
@@ -1433,9 +1433,9 @@ All controls inherit these common properties from the View and VisualElement bas
 | VerticalOptions | LayoutOptions | ✅ Implemented |
 | Width | double | ✅ Implemented |
 | WidthRequest | double | ✅ Implemented |
-| Window | Window | ⏳ TODO |
-| X | double | ⏳ TODO |
-| Y | double | ⏳ TODO |
+| Window | Window | ✅ Verified |
+| X | double | ✅ Verified |
+| Y | double | ✅ Verified |
 | ZIndex | int | ✅ Implemented |
 
 ---
