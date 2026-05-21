@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace ControlGallery.Pages;
 
 public partial class FilePickerPage : ContentPage
@@ -8,51 +10,52 @@ public partial class FilePickerPage : ContentPage
     }
 
     private async void OnPickSingleClicked(object? sender, EventArgs e)
+        => await PickAndDescribeAsync(options: null, allowMultiple: false);
+
+    private async void OnPickMultipleClicked(object? sender, EventArgs e)
+        => await PickAndDescribeAsync(options: null, allowMultiple: true);
+
+    private async Task PickAndDescribeAsync(PickOptions? options, bool allowMultiple)
     {
         try
         {
-            var result = await FilePicker.Default.PickAsync();
-            if (result is not null)
+            StatusLabel.Text = "Status: showing picker…";
+            PreviewImage.Source = null;
+
+            var files = allowMultiple
+                ? (await FilePicker.Default.PickMultipleAsync(options))?.ToList()
+                : await PickSingleAsListAsync(options);
+
+            if (files is null || files.Count == 0)
             {
-                FileNameLabel.Text = $"File: {result.FileName}";
-                FilePathLabel.Text = $"Path: {result.FullPath}";
+                StatusLabel.Text = "Status: cancelled";
+                DetailsLabel.Text = "No file selected.";
+                return;
             }
-            else
+
+            var sb = new StringBuilder();
+            for (var i = 0; i < files.Count; i++)
             {
-                FileNameLabel.Text = "File: (cancelled)";
-                FilePathLabel.Text = "Path: --";
+                if (i > 0)
+                    sb.AppendLine().AppendLine("---");
+                await FileResultPreview.AppendFileDetailsAsync(sb, files[i], index: i + 1, total: files.Count);
             }
+
+            DetailsLabel.Text = sb.ToString();
+            StatusLabel.Text = $"Status: {files.Count} file(s) read successfully";
+
+            PreviewImage.Source = await FileResultPreview.TryLoadImagePreviewAsync(files[0]);
         }
         catch (Exception ex)
         {
-            FileNameLabel.Text = $"Error: {ex.Message}";
-            FilePathLabel.Text = "Path: --";
+            StatusLabel.Text = $"Status: error — {ex.GetType().Name}";
+            DetailsLabel.Text = ex.ToString();
         }
     }
 
-    private async void OnPickMultipleClicked(object? sender, EventArgs e)
+    private static async Task<List<FileResult>?> PickSingleAsListAsync(PickOptions? options)
     {
-        try
-        {
-            var results = await FilePicker.Default.PickMultipleAsync();
-            var files = results?.Where(r => r is not null).ToList();
-            if (files is not null && files.Count > 0)
-            {
-                var names = string.Join(", ", files.Select(f => f!.FileName));
-                var paths = string.Join("\n", files.Select(f => f!.FullPath));
-                FileNameLabel.Text = $"Files: {names}";
-                FilePathLabel.Text = $"Paths:\n{paths}";
-            }
-            else
-            {
-                FileNameLabel.Text = "Files: (cancelled)";
-                FilePathLabel.Text = "Path: --";
-            }
-        }
-        catch (Exception ex)
-        {
-            FileNameLabel.Text = $"Error: {ex.Message}";
-            FilePathLabel.Text = "Path: --";
-        }
+        var single = await FilePicker.Default.PickAsync(options);
+        return single is null ? null : [single];
     }
 }
