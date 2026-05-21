@@ -184,14 +184,14 @@ public static class LabelTextBlockExtensions
     {
         if (label is MauiLabel mauiLabel)
         {
+            if (mauiLabel.FormattedText != null)
+                return;
+
             if (mauiLabel.TextType == TextType.Html)
             {
                 textBlock.UpdateHtmlText(mauiLabel);
                 return;
             }
-
-            if (mauiLabel.FormattedText != null && mauiLabel.FormattedText.Spans.Count > 0)
-                return;
         }
 
         textBlock.UpdateTextPlainText(label);
@@ -397,7 +397,10 @@ public static class LabelTextBlockExtensions
         textBlock.Text = null;
 
         if (string.IsNullOrEmpty(html))
+        {
+            textBlock.Inlines?.Clear();
             return;
+        }
 
         var convertedInlines = Avalonia.Controls.Maui.Platform.HtmlToInlinesConverter.Convert(html);
         var inlines = new Avalonia.Controls.Documents.InlineCollection();
@@ -464,9 +467,16 @@ public static class LabelTextBlockExtensions
         }
 
         var formattedText = mauiLabel.FormattedText;
-        if (formattedText == null || formattedText.Spans.Count == 0)
+        if (formattedText == null)
         {
-            textBlock.UpdateTextPlainText(label);
+            textBlock.UpdateText(label);
+            return;
+        }
+
+        if (formattedText.Spans.Count == 0)
+        {
+            textBlock.Text = string.Empty;
+            textBlock.Inlines?.Clear();
             return;
         }
 

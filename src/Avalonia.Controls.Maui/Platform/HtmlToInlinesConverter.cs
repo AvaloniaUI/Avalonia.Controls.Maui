@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
 using Avalonia.Controls.Documents;
@@ -8,7 +9,7 @@ namespace Avalonia.Controls.Maui.Platform;
 /// <summary>
 /// Converts a subset of HTML markup into Avalonia <see cref="Inline"/> elements
 /// for display in a <see cref="Avalonia.Controls.TextBlock"/>.
-/// Only supports the tags that MAUI Native supports: b, i, u, br, p, a, font.
+/// Only supports the tags that MAUI Native supports: b, strong, i, em, u, br, p, a, font.
 /// </summary>
 internal static partial class HtmlToInlinesConverter
 {
@@ -106,14 +107,16 @@ internal static partial class HtmlToInlinesConverter
                     else
                     {
                         var href = GetAttributeValue(attributes, "href");
-                        if (href != null && Uri.TryCreate(href, UriKind.Absolute, out var uri))
+                        var style = styleStack.Peek();
+                        if (href != null && Uri.TryCreate(href, UriKind.Absolute, out var uri) && IsSafeNavigationUri(uri))
                         {
                             pendingHref = uri;
                             linkStartIndex = inlines.Count;
+                            style = style
+                                .WithUnderline(true)
+                                .WithForeground(new SolidColorBrush(Colors.RoyalBlue));
                         }
-                        var style = styleStack.Peek()
-                            .WithUnderline(true)
-                            .WithForeground(new SolidColorBrush(Colors.RoyalBlue));
+
                         PushStyle(styleStack, style);
                     }
                     break;
@@ -226,29 +229,37 @@ internal static partial class HtmlToInlinesConverter
         color = default;
         value = value.Trim();
 
-        // Handle named colors and hex via Avalonia's Color.TryParse
-        if (Color.TryParse(value, out color))
-            return true;
-
         // Handle rgb(r, g, b) and rgba(r, g, b, a)
         var rgbMatch = RgbRegex().Match(value);
         if (rgbMatch.Success)
         {
-            if (byte.TryParse(rgbMatch.Groups[1].Value, out var r) &&
-                byte.TryParse(rgbMatch.Groups[2].Value, out var g) &&
-                byte.TryParse(rgbMatch.Groups[3].Value, out var b))
+            if (byte.TryParse(rgbMatch.Groups[1].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var r) &&
+                byte.TryParse(rgbMatch.Groups[2].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var g) &&
+                byte.TryParse(rgbMatch.Groups[3].Value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var b))
             {
                 byte a = 255;
-                if (rgbMatch.Groups[4].Success && double.TryParse(rgbMatch.Groups[4].Value, out var alpha))
-                    a = (byte)(alpha * 255);
+                if (rgbMatch.Groups[4].Success &&
+                    double.TryParse(rgbMatch.Groups[4].Value, NumberStyles.Float, CultureInfo.InvariantCulture, out var alpha))
+                {
+                    a = (byte)Math.Round(Math.Clamp(alpha, 0d, 1d) * 255);
+                }
 
                 color = Color.FromArgb(a, r, g, b);
                 return true;
             }
         }
 
+        // Handle named colors and hex via Avalonia's Color.TryParse
+        if (Color.TryParse(value, out color))
+            return true;
+
         return false;
     }
+
+    private static bool IsSafeNavigationUri(Uri uri) =>
+        uri.Scheme == Uri.UriSchemeHttp ||
+        uri.Scheme == Uri.UriSchemeHttps ||
+        uri.Scheme == Uri.UriSchemeMailto;
 
     private static bool TryParseFontSize(string value, out double fontSize)
     {

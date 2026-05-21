@@ -1,3 +1,4 @@
+using System.Globalization;
 using Avalonia.Controls.Documents;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Headless.XUnit;
@@ -153,5 +154,39 @@ public class HtmlToInlinesConverterTests
         var button = Assert.IsType<HyperlinkButton>(container.Child);
         Assert.Equal("Link", button.Content);
         Assert.Equal(new Uri("https://example.com"), button.NavigateUri);
+    }
+
+    [AvaloniaTheory(DisplayName = "Unsafe anchor schemes render as plain text")]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("file:///tmp/test.txt")]
+    [InlineData("data:text/html;base64,PGI+SGk8L2I+")]
+    public void Unsafe_Anchor_Schemes_Render_As_Plain_Text(string href)
+    {
+        var inlines = HtmlToInlinesConverter.Convert($"<a href=\"{href}\">Link</a>");
+
+        Assert.Single(inlines);
+        var run = Assert.IsType<Run>(inlines[0]);
+        Assert.Equal("Link", run.Text);
+        Assert.Null(run.TextDecorations);
+    }
+
+    [AvaloniaFact(DisplayName = "RGBA alpha parses using invariant culture")]
+    public void Rgba_Alpha_Parses_Using_Invariant_Culture()
+    {
+        var originalCulture = CultureInfo.CurrentCulture;
+        try
+        {
+            CultureInfo.CurrentCulture = new CultureInfo("fr-FR");
+
+            var inlines = HtmlToInlinesConverter.Convert("<font color=\"rgba(10, 20, 30, 0.5)\">Half</font>");
+
+            var run = Assert.IsType<Run>(inlines[0]);
+            var brush = Assert.IsType<SolidColorBrush>(run.Foreground);
+            Assert.Equal(Color.FromArgb(128, 10, 20, 30), brush.Color);
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = originalCulture;
+        }
     }
 }

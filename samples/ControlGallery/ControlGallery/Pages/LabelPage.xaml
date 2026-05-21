@@ -356,8 +356,11 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="TextType = Html"
                            FontAttributes="Bold"/>
-                    <Label TextType="Html"
-                           Text="This has &lt;b&gt;bold&lt;/b&gt;, &lt;i&gt;italic&lt;/i&gt;, &lt;u&gt;underline&lt;/u&gt;, and &lt;s&gt;strikethrough&lt;/s&gt; text."/>
+                    <Label TextType="Html">
+                        <Label.Text>
+                            <![CDATA[This has <b>bold</b>, <i>italic</i>, and <u>underline</u> text.]]>
+                        </Label.Text>
+                    </Label>
                     <Label x:Name="HtmlLabel"
                            TextType="Html"/>
                 </VerticalStackLayout>
