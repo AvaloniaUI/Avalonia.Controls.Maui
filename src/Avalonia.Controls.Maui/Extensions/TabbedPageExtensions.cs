@@ -4,8 +4,9 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Platform;
 using AvaloniaContentPage = Avalonia.Controls.ContentPage;
-using AvaloniaTabbedPage = Avalonia.Controls.TabbedPage;
 using AvaloniaImage = Avalonia.Controls.Image;
+using AvaloniaPage = Avalonia.Controls.Page;
+using AvaloniaTabbedPage = Avalonia.Controls.TabbedPage;
 using MauiTabbedPage = Microsoft.Maui.Controls.TabbedPage;
 using MauiPage = Microsoft.Maui.Controls.Page;
 
@@ -107,28 +108,124 @@ public static class TabbedPageExtensions
         if (mauiContext == null)
             return;
 
+        tabbedPage.DisposeTabHeaderIcons();
+
         var pages = new List<Avalonia.Controls.Page>();
+        var pagesToLoadIcons = new List<(AvaloniaPage PlatformPage, MauiPage MauiPage)>();
 
         foreach (var page in mauiTabbedPage.Children)
         {
             var wrappedPage = (AvaloniaContentPage)page.ToPlatform(mauiContext);
-            wrappedPage.Header = CreateTabHeader(page, mauiContext);
+            wrappedPage.Header = CreateTabHeader(page);
             pages.Add(wrappedPage);
+            pagesToLoadIcons.Add((wrappedPage, page));
         }
 
         tabbedPage.Pages = pages;
 
+        foreach (var (platformPage, page) in pagesToLoadIcons)
+        {
+            LoadTabIconIfNeeded(tabbedPage, platformPage, page, mauiContext);
+        }
+
         // Reapply bar and tab colors after rebuilding items
         UpdateTabColors(tabbedPage, mauiTabbedPage);
 
-        // Apply SelectedItem if set
+        // Reapply current selection after rebuilding items
+        tabbedPage.UpdateCurrentPage(mauiTabbedPage);
         tabbedPage.UpdateSelectedItem(mauiTabbedPage);
+    }
+
+    /// <summary>
+    /// Updates a child tab title without rebuilding the whole header, preserving any loaded tab icon.
+    /// </summary>
+    public static void UpdateChildTitle(
+        this AvaloniaTabbedPage tabbedPage,
+        MauiTabbedPage mauiTabbedPage,
+        MauiPage page,
+        IMauiContext? mauiContext,
+        object? preservedHeader = null,
+        ImageSource? preservedIconImageSource = null)
+    {
+        if (mauiContext == null || tabbedPage.Pages == null)
+            return;
+
+        var index = mauiTabbedPage.Children.IndexOf(page);
+        if (index < 0)
+            return;
+
+        var platformPage = tabbedPage.Pages.ElementAtOrDefault(index);
+        if (platformPage == null)
+            return;
+
+        var title = page.Title ?? "Tab";
+
+        if (platformPage.Header is StackPanel panel)
+        {
+            var titleBlock = panel.Children.OfType<TextBlock>().FirstOrDefault();
+            if (titleBlock != null)
+            {
+                titleBlock.Text = title;
+                return;
+            }
+        }
+
+        if (platformPage.Header is string)
+        {
+            if (page.IconImageSource != null &&
+                ReferenceEquals(page.IconImageSource, preservedIconImageSource) &&
+                preservedHeader is StackPanel preservedPanel)
+            {
+                var preservedTitleBlock = preservedPanel.Children.OfType<TextBlock>().FirstOrDefault();
+                if (preservedTitleBlock != null)
+                {
+                    preservedTitleBlock.Text = title;
+                    platformPage.Header = preservedPanel;
+                    return;
+                }
+            }
+
+            platformPage.Header = page.IconImageSource == null
+                ? title
+                : CreateTabHeader(page);
+            LoadTabIconIfNeeded(tabbedPage, platformPage, page, mauiContext);
+            return;
+        }
+
+        DisposeHeaderIconImages(platformPage.Header);
+        platformPage.Header = CreateTabHeader(page);
+        LoadTabIconIfNeeded(tabbedPage, platformPage, page, mauiContext);
+    }
+
+    /// <summary>
+    /// Updates a child tab icon without rebuilding the tab page collection.
+    /// </summary>
+    public static void UpdateChildIconImageSource(
+        this AvaloniaTabbedPage tabbedPage,
+        MauiTabbedPage mauiTabbedPage,
+        MauiPage page,
+        IMauiContext? mauiContext)
+    {
+        if (mauiContext == null || tabbedPage.Pages == null)
+            return;
+
+        var index = mauiTabbedPage.Children.IndexOf(page);
+        if (index < 0)
+            return;
+
+        var platformPage = tabbedPage.Pages.ElementAtOrDefault(index);
+        if (platformPage == null)
+            return;
+
+        DisposeHeaderIconImages(platformPage.Header);
+        platformPage.Header = CreateTabHeader(page);
+        LoadTabIconIfNeeded(tabbedPage, platformPage, page, mauiContext);
     }
 
     /// <summary>
     /// Creates a tab header from a page, including icon if available.
     /// </summary>
-    private static object CreateTabHeader(MauiPage page, IMauiContext mauiContext)
+    private static object CreateTabHeader(MauiPage page)
     {
         var title = page.Title ?? "Tab";
 
@@ -136,17 +233,12 @@ public static class TabbedPageExtensions
         if (page.IconImageSource == null)
             return title;
 
-        // Create header with icon and text
         var headerPanel = new StackPanel
         {
             Orientation = Avalonia.Layout.Orientation.Horizontal,
             Spacing = 4
         };
 
-        // Load icon asynchronously
-        _ = LoadTabIconAsync(headerPanel, page.IconImageSource, mauiContext);
-
-        // Add text
         headerPanel.Children.Add(new TextBlock
         {
             Text = title,
@@ -156,34 +248,59 @@ public static class TabbedPageExtensions
         return headerPanel;
     }
 
+    private static void LoadTabIconIfNeeded(AvaloniaTabbedPage tabbedPage, AvaloniaPage platformPage, MauiPage page, IMauiContext mauiContext)
+    {
+        if (page.IconImageSource == null || platformPage.Header is not StackPanel headerPanel)
+            return;
+
+        _ = LoadTabIconAsync(tabbedPage, platformPage, headerPanel, page.IconImageSource, mauiContext);
+    }
+
     /// <summary>
     /// Loads the tab icon asynchronously.
     /// </summary>
-    private static async Task LoadTabIconAsync(StackPanel headerPanel, ImageSource imageSource, IMauiContext mauiContext)
+    private static async Task LoadTabIconAsync(AvaloniaTabbedPage tabbedPage, AvaloniaPage platformPage, StackPanel headerPanel, ImageSource imageSource, IMauiContext mauiContext)
     {
         try
         {
-            var image = new AvaloniaImage
-            {
-                Width = 16,
-                Height = 16,
-                VerticalAlignment = Layout.VerticalAlignment.Center
-            };
-
             var services = mauiContext.Services;
             var imageSourceServiceProvider = services.GetRequiredService<IImageSourceServiceProvider>();
-            var imageSourceService = imageSourceServiceProvider.GetRequiredImageSourceService(imageSource);
+            var imageSourceService = imageSourceServiceProvider.GetImageSourceService(GetImageSourceInterfaceType(imageSource));
 
-            var result = await imageSourceService.GetImageAsync(imageSource);
-
-            if (result is IImageSourceServiceResult<Media.Imaging.Bitmap> bitmapResult)
+            if (imageSourceService is IAvaloniaImageSourceService avaloniaImageSourceService)
             {
-                image.Source = bitmapResult.Value;
-                // Insert icon at the beginning
-                if (headerPanel.Children.Count > 0)
-                    headerPanel.Children.Insert(0, image);
-                else
-                    headerPanel.Children.Add(image);
+                var result = await avaloniaImageSourceService.GetImageAsync(imageSource);
+                if (result?.Value != null)
+                {
+                    if (!ReferenceEquals(platformPage.Header, headerPanel) ||
+                        tabbedPage.Pages?.Contains(platformPage) != true)
+                    {
+                        (result as IDisposable)?.Dispose();
+                        return;
+                    }
+
+                    var image = new AvaloniaImage
+                    {
+                        Source = result.Value,
+                        Width = 16,
+                        Height = 16,
+                        VerticalAlignment = Layout.VerticalAlignment.Center
+                    };
+
+                    if (result is IDisposable disposable)
+                    {
+                        image.Tag = disposable;
+                    }
+
+                    if (headerPanel.Children.Count > 0)
+                    {
+                        headerPanel.Children.Insert(0, image);
+                    }
+                    else
+                    {
+                        headerPanel.Children.Add(image);
+                    }
+                }
             }
         }
         catch
@@ -191,6 +308,56 @@ public static class TabbedPageExtensions
             // Silently ignore icon loading failures
         }
     }
+
+    private static void DisposeHeaderIconImages(object? header)
+    {
+        if (header is not StackPanel panel)
+            return;
+
+        foreach (var image in panel.Children.OfType<AvaloniaImage>())
+        {
+            if (image.Tag is IDisposable disposable)
+            {
+                image.Tag = null;
+                image.Source = null;
+                disposable.Dispose();
+            }
+        }
+    }
+
+    internal static void DisposeTabHeaderIcons(this AvaloniaTabbedPage tabbedPage)
+    {
+        if (tabbedPage.Pages == null)
+            return;
+
+        foreach (var page in tabbedPage.Pages)
+        {
+            DisposeHeaderIconImages(page.Header);
+        }
+    }
+
+    internal static void DetachAndDisposeTabHeaderIcons(this AvaloniaTabbedPage tabbedPage)
+    {
+        if (tabbedPage.Pages == null)
+            return;
+
+        var pages = tabbedPage.Pages.ToList();
+        tabbedPage.Pages = Array.Empty<AvaloniaPage>();
+
+        foreach (var page in pages)
+        {
+            DisposeHeaderIconImages(page.Header);
+        }
+    }
+
+    private static Type GetImageSourceInterfaceType(ImageSource imageSource) => imageSource switch
+    {
+        IFileImageSource => typeof(IFileImageSource),
+        IFontImageSource => typeof(IFontImageSource),
+        IUriImageSource => typeof(IUriImageSource),
+        IStreamImageSource => typeof(IStreamImageSource),
+        _ => imageSource.GetType()
+    };
 
     /// <summary>
     /// Updates the selected tab to match the TabbedPage's CurrentPage property.

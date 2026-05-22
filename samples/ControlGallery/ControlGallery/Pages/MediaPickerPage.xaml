@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="ControlGallery.Pages.FilePickerPage"
-             Title="FilePicker">
+             x:Class="ControlGallery.Pages.MediaPickerPage"
+             Title="MediaPicker">
     <ScrollView>
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-            <!-- Pick Files -->
+            <!-- Pick Media -->
             <Border Stroke="Gray"
                     Padding="10">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Pick Files"
+                    <Label Text="Pick Media"
                            FontAttributes="Bold"/>
-                    <Button Text="Pick Single File"
-                            Clicked="OnPickSingleClicked"/>
-                    <Button Text="Pick Multiple Files"
-                            Clicked="OnPickMultipleClicked"/>
+                    <Label x:Name="CaptureLabel"
+                           Text="IsCaptureSupported: ?"
+                           FontAttributes="Italic"/>
+                    <Button Text="Pick Photo"
+                            Clicked="OnPickPhotoClicked"/>
+                    <Button Text="Pick Photos"
+                            Clicked="OnPickPhotosClicked"/>
+                    <Button Text="Pick Video"
+                            Clicked="OnPickVideoClicked"/>
+                    <Button Text="Pick Videos"
+                            Clicked="OnPickVideosClicked"/>
                 </VerticalStackLayout>
             </Border>
 
