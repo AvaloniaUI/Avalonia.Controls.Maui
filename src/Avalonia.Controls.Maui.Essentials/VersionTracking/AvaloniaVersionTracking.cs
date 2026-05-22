@@ -130,55 +130,57 @@ public class AvaloniaVersionTracking : IVersionTracking
 
     void InitVersionTracking()
     {
-        IsFirstLaunchEver =
+        var isFirstLaunchEver =
             !_preferences.ContainsKey(VersionsKey, _sharedName) ||
             !_preferences.ContainsKey(BuildsKey, _sharedName);
 
-        if (IsFirstLaunchEver)
-        {
-            _versionTrail = new Dictionary<string, List<string>>(StringComparer.Ordinal)
-            {
-                [VersionsKey] = new List<string>(),
-                [BuildsKey] = new List<string>()
-            };
-        }
-        else
-        {
-            _versionTrail = new Dictionary<string, List<string>>(StringComparer.Ordinal)
-            {
-                [VersionsKey] = ReadHistory(VersionsKey).ToList(),
-                [BuildsKey] = ReadHistory(BuildsKey).ToList()
-            };
-        }
+        var versionTrail =
+            isFirstLaunchEver
+                ? new Dictionary<string, List<string>>(StringComparer.Ordinal)
+                {
+                    [VersionsKey] = new List<string>(),
+                    [BuildsKey] = new List<string>()
+                }
+                : new Dictionary<string, List<string>>(StringComparer.Ordinal)
+                {
+                    [VersionsKey] = ReadHistory(VersionsKey).ToList(),
+                    [BuildsKey] = ReadHistory(BuildsKey).ToList()
+                };
 
-        IsFirstLaunchForCurrentVersion =
-            !_versionTrail[VersionsKey].Contains(CurrentVersion) ||
-            CurrentVersion != GetLastInstalled(VersionsKey);
+        var isFirstLaunchForCurrentVersion =
+            !versionTrail[VersionsKey].Contains(CurrentVersion) ||
+            CurrentVersion != GetLastInstalled(versionTrail, VersionsKey);
 
-        if (IsFirstLaunchForCurrentVersion)
+        if (isFirstLaunchForCurrentVersion)
         {
-            _versionTrail[VersionsKey].RemoveAll(v => v == CurrentVersion);
-            _versionTrail[VersionsKey].Add(CurrentVersion);
+            versionTrail[VersionsKey].RemoveAll(v => v == CurrentVersion);
+            versionTrail[VersionsKey].Add(CurrentVersion);
         }
 
-        IsFirstLaunchForCurrentBuild =
-            !_versionTrail[BuildsKey].Contains(CurrentBuild) ||
-            CurrentBuild != GetLastInstalled(BuildsKey);
+        var isFirstLaunchForCurrentBuild =
+            !versionTrail[BuildsKey].Contains(CurrentBuild) ||
+            CurrentBuild != GetLastInstalled(versionTrail, BuildsKey);
 
-        if (IsFirstLaunchForCurrentBuild)
+        if (isFirstLaunchForCurrentBuild)
         {
-            _versionTrail[BuildsKey].RemoveAll(b => b == CurrentBuild);
-            _versionTrail[BuildsKey].Add(CurrentBuild);
+            versionTrail[BuildsKey].RemoveAll(b => b == CurrentBuild);
+            versionTrail[BuildsKey].Add(CurrentBuild);
         }
 
-        if (IsFirstLaunchForCurrentVersion || IsFirstLaunchForCurrentBuild)
+        if (isFirstLaunchForCurrentVersion || isFirstLaunchForCurrentBuild)
         {
-            WriteHistory(VersionsKey, _versionTrail[VersionsKey]);
-            WriteHistory(BuildsKey, _versionTrail[BuildsKey]);
+            WriteHistory(VersionsKey, versionTrail[VersionsKey]);
+            WriteHistory(BuildsKey, versionTrail[BuildsKey]);
         }
+
+        IsFirstLaunchEver = isFirstLaunchEver;
+        IsFirstLaunchForCurrentVersion = isFirstLaunchForCurrentVersion;
+        IsFirstLaunchForCurrentBuild = isFirstLaunchForCurrentBuild;
+        _versionTrail = versionTrail;
     }
 
-    string GetLastInstalled(string key) => _versionTrail![key].LastOrDefault() ?? string.Empty;
+    static string GetLastInstalled(Dictionary<string, List<string>> versionTrail, string key) =>
+        versionTrail[key].LastOrDefault() ?? string.Empty;
 
     string[] ReadHistory(string key) =>
         _preferences.Get(key, (string?)null, _sharedName)?
