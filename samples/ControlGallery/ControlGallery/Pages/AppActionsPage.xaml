@@ -1,4 +1,5 @@
 <ContentPage x:Class="ControlGallery.Pages.AppActionsPage"
+             xmlns:model="clr-namespace:Microsoft.Maui.ApplicationModel;assembly=Microsoft.Maui.Essentials"
              Title="AppActions">
 
     <VerticalStackLayout Padding="20" Spacing="12">
@@ -24,7 +25,7 @@
                         SelectionMode="Single"
                         HeightRequest="250">
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="model:AppAction">
                     <Border Stroke="Gray" Padding="10" Margin="5">
                         <VerticalStackLayout>
                             <Label Text="{Binding Title}" FontAttributes="Bold"/>

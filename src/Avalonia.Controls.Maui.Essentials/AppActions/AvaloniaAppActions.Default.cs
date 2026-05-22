@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Microsoft.Maui.ApplicationModel;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using TmdsDBus::Tmds.DBus;
 
 namespace Avalonia.Controls.Maui.Essentials
@@ -60,7 +61,15 @@ namespace Avalonia.Controls.Maui.Essentials
         /// - Handling action invocation
         /// </summary>
         class Current(IClassicDesktopStyleApplicationLifetime desktop, IEnumerable<AppAction> actions, EventHandler<AppActionEventArgs>? onAppAction) : IAppActionsDBus
-        {            
+        {
+            class SanitizedAction
+            {
+                public required AppAction Action { get; set; }
+                public required string ActionId { get; set; }
+            }
+
+            List<SanitizedAction> _sanitizedActions = new List<SanitizedAction>();
+
             // D-Bus object path required by IDBusObject
             ObjectPath IDBusObject.ObjectPath => new(currentObjectPath);
 
@@ -173,13 +182,21 @@ Exec={dotnet} {dll}
             private async Task RegisterDesktopFiles(string dotnet, string dll)
             {
                 var name = Assembly.GetEntryAssembly()?.GetName().Name;
-                if(string.IsNullOrWhiteSpace(name))
+                if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidOperationException("Unable to determine application name from entry assembly");
 
                 string desktopFile = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
                     $".local/share/applications/{name}{uid}.desktop"
                 );
+
+                _sanitizedActions = actions
+                     .Select((a, i) => new SanitizedAction()
+                     {
+                         Action = a,
+                         ActionId = CreateActionId(a.Title, i)
+
+                     }).ToList();
 
                 // Base desktop entry
                 string content = $@"[Desktop Entry]
@@ -189,16 +206,19 @@ Type=Application
 Categories=Utility;
 StartupNotify=true
 StartupWMClass={uid}
-Actions={string.Join(";", actions.Select(a => a.Title))};
+Actions={string.Join(";", _sanitizedActions.Select(a => a.ActionId))};
 ";
 
                 // Add individual actions
-                foreach (var action in actions)
+                foreach (var entry in _sanitizedActions)
                 {
-                    content += $@"[Desktop Action {action.Title}]
-Name={action.Title}
-Exec=gdbus call --session --dest {currentInterface} --object-path {currentObjectPath} --method com.essentials.AppActions.OnAppAction ""{action.Id}""
+                    content += $@"[Desktop Action {entry.ActionId}]
+Name={entry.Action.Title}
+Exec=gdbus call --session --dest {currentInterface} --object-path {currentObjectPath} --method com.essentials.AppActions.OnAppAction ""{EscapeDesktopArg(entry.ActionId)}""
 ";
+
+                    if (!string.IsNullOrWhiteSpace(entry.Action.Subtitle))
+                        content += $"Comment={entry.Action.Subtitle}";
                 }
 
                 await File.WriteAllTextAsync(desktopFile, content);
@@ -224,11 +244,29 @@ Exec=gdbus call --session --dest {currentInterface} --object-path {currentObject
             /// </summary>
             public Task OnAppActionAsync(string arg)
             {
-                var action = actions?.FirstOrDefault(a => a.Id == arg);
+                var action = _sanitizedActions?.FirstOrDefault(a => a.ActionId == arg);
                 if (action != null)
-                    onAppAction?.Invoke(this, new AppActionEventArgs(action));
+                    onAppAction?.Invoke(this, new AppActionEventArgs(action.Action));
 
                 return Task.CompletedTask;
+            }
+
+            static string CreateActionId(string title, int index)
+            {
+                // Stable sanitized ID
+                var sanitized = Regex.Replace(title.ToLowerInvariant(), @"[^a-z0-9]+", "-")
+                    .Trim('-');
+
+                if (string.IsNullOrWhiteSpace(sanitized))
+                    sanitized = "action";
+
+                return $"{sanitized}-{index}";
+            }
+
+            static string EscapeDesktopArg(string value)
+            {
+                // Minimal quoting for desktop Exec arguments
+                return "\"" + value.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";
             }
 
             /// <summary>
