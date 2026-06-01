@@ -100,7 +100,7 @@ Displays a scrollable list of data items, where users swipe to move through the 
 | CurrentItemChangedCommandParameter | ✅ Implemented |
 | EmptyView | ✅ Implemented |
 | EmptyViewTemplate | ✅ Implemented |
-| IndicatorView | ⏳ TODO |
+| IndicatorView | ✅ Implemented |
 | IsBounceEnabled | ⏳ TODO |
 | IsScrollAnimated | ✅ Implemented |
 | IsSwipeEnabled | ✅ Implemented |
@@ -987,7 +987,7 @@ A Page that provides fundamental UI features that most applications require, inc
 | BackgroundColor | ✅ Implemented |
 | CurrentItem | ✅ Implemented |
 | CurrentPage | ✅ Implemented (via DisplayedPage) |
-| CurrentState | ⏳ TODO |
+| CurrentState | ✅ Implemented |
 | DisabledColor | ✅ Implemented |
 | FlyoutBackdrop | ✅ Implemented |
 | FlyoutBackground | ✅ Implemented |
@@ -1014,8 +1014,8 @@ A Page that provides fundamental UI features that most applications require, inc
 | MenuItemTemplate | ✅ Implemented |
 | NavBarHasShadow | ✅ Implemented |
 | NavBarIsVisible | ✅ Implemented |
-| NavBarVisibilityAnimationEnabled | ⏳ TODO |
-| PresentationMode | ⏳ TODO |
+| NavBarVisibilityAnimationEnabled | ✅ Implemented |
+| PresentationMode | ✅ Implemented |
 | SearchHandler | ✅ Implemented |
 | TabBarBackgroundColor | ✅ Implemented |
 | TabBarDisabledColor | ✅ Implemented (placeholder) |
@@ -1026,15 +1026,14 @@ A Page that provides fundamental UI features that most applications require, inc
 | TitleColor | ✅ Implemented |
 | TitleView | ✅ Implemented |
 | UnselectedColor | ✅ Implemented |
-| PresentationMode | ✅ Implemented |
 | FlyoutDisplayOptions | ✅ Implemented (AsSingleItem/AsMultipleItems) |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Navigated | ⏳ TODO |
-| Navigating | ⏳ TODO |
+| Navigated | ✅ Implemented |
+| Navigating | ✅ Implemented |
 
 ### Methods
 
