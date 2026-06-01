@@ -24,6 +24,7 @@ public partial class MainPage : FlyoutPage
         // Services
         [typeof(FontsPage)] = () => new FontsPage(),
         // Pages
+        [typeof(PageBasePage)] = () => new PageBasePage(),
         [typeof(NavigationDemoPage)] = () => new NavigationDemoPage(),
         [typeof(ControlGallery.Pages.TabbedPage)] = () => new ControlGallery.Pages.TabbedPage(),
         [typeof(TitleBarPage)] = () => new TitleBarPage(),
@@ -103,6 +104,7 @@ public partial class MainPage : FlyoutPage
         [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
         [typeof(PreferencesPage)] = () => new PreferencesPage(),
         [typeof(FilePickerPage)] = () => new FilePickerPage(),
+        [typeof(MediaPickerPage)] = () => new MediaPickerPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
         // Embedding
@@ -178,6 +180,7 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Pages", new List<SampleItem>
             {
+                new("Page", "Base page background and padding", typeof(PageBasePage)),
                 new("NavigationPage", "Navigation stack with animated transitions", typeof(NavigationDemoPage)),
                 new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
                 new("TitleBar", "Custom window title bar", typeof(TitleBarPage)),
@@ -281,6 +284,7 @@ public partial class MainPage : FlyoutPage
             new SampleGroup("Essentials", new List<SampleItem>
             {
                 new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
+                new("Media Picker", "Pick photos and videos from the device", typeof(MediaPickerPage)),
                 new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
                 new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
             }),

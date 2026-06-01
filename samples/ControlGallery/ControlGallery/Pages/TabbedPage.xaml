@@ -73,6 +73,8 @@
                            FontSize="12"/>
                     <Button Text="Tabs with Icons"
                             Clicked="OnOpenIconsTabbedPage"/>
+                    <Button Text="Dynamic Tab Icons"
+                            Clicked="OnOpenDynamicIconsTabbedPage"/>
                 </VerticalStackLayout>
             </Border>
 
