@@ -132,6 +132,46 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="12">
+                    <Label Text="IndicatorView"
+                           FontAttributes="Bold"
+                           FontSize="20"/>
+                    <Label Text="Connects CarouselView.IndicatorView to item count and selected position."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="12"
+                                           VerticalOptions="Center">
+                        <Button Text="Previous"
+                                VerticalOptions="Center"
+                                Clicked="OnIndicatorPreviousClicked"/>
+                        <Button Text="Next"
+                                VerticalOptions="Center"
+                                Clicked="OnIndicatorNextClicked"/>
+                    </HorizontalStackLayout>
+                    <CarouselView x:Name="IndicatorCarousel"
+                                  ItemsSource="{Binding IndicatorItems}"
+                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
+                                  IndicatorView="CarouselIndicator"
+                                  Position="{Binding IndicatorPosition, Mode=TwoWay}"
+                                  HeightRequest="220"/>
+                    <IndicatorView x:Name="CarouselIndicator"
+                                   HorizontalOptions="Center"
+                                   IndicatorColor="#9CA3AF"
+                                   SelectedIndicatorColor="#2563EB"/>
+                    <HorizontalStackLayout Spacing="16"
+                                           HorizontalOptions="Center">
+                        <Label Text="{Binding IndicatorPosition, StringFormat='Position: {0}'}"
+                               FontAttributes="Bold"/>
+                        <Label Text="{Binding Source={x:Reference CarouselIndicator}, Path=Count, StringFormat='Count: {0}'}"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Stroke="Gray"
+                    Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
                     <Label Text="ItemsSource"
                            FontAttributes="Bold"
                            FontSize="20"/>
