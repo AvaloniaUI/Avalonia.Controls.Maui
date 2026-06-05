@@ -1,6 +1,8 @@
 using ControlGallery.Handlers;
 using ControlGallery.Views;
+using ControlGallery.Effects;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Controls.Hosting;
 
 namespace ControlGallery;
 
@@ -21,6 +23,10 @@ public static class MauiProgram
 			.ConfigureMauiHandlers(handlers =>
 			{
 				handlers.AddHandler<CounterView, CounterViewHandler>();
+			})
+			.ConfigureEffects(effects =>
+			{
+				effects.Add<FocusRoutingEffect, FocusPlatformEffect>();
 			})
 			.ConfigureFonts(fonts =>
 			{
