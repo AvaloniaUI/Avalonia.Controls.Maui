@@ -718,7 +718,7 @@ Displays a short list of items, from which an item can be selected.
 
 | Event | Status |
 |-------|--------|
-| SelectedIndexChanged | ⏳ TODO |
+| SelectedIndexChanged | ✅ Implemented |
 
 ---
 

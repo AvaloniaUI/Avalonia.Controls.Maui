@@ -5,6 +5,7 @@ using Avalonia.Headless.XUnit;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using MauiPickerHandler = Avalonia.Controls.Maui.Handlers.PickerHandler;
+using MauiPicker = Microsoft.Maui.Controls.Picker;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -247,6 +248,75 @@ public partial class PickerHandlerTests : HandlerTestBase<MauiPickerHandler, Pic
         var selectedIndex = await InvokeOnMainThreadAsync(() => handler.PlatformView?.SelectedIndex ?? -1);
 
         Assert.Equal(1, selectedIndex);
+    }
+
+    [AvaloniaFact(DisplayName = "Selected Index Updates Native Selected Item")]
+    public async Task SelectedIndexUpdatesNativeSelectedItem()
+    {
+        var picker = new PickerStub
+        {
+            Items = new List<string> { "Red", "Green", "Blue" },
+            SelectedIndex = 2
+        };
+
+        var handler = await CreateHandlerAsync(picker);
+
+        var selectedItem = await InvokeOnMainThreadAsync(() => handler.PlatformView?.SelectedItem);
+
+        Assert.Equal("Blue", selectedItem);
+    }
+
+    [AvaloniaFact(DisplayName = "Maui Picker Selected Index Updates Native Selected Item")]
+    public async Task MauiPickerSelectedIndexUpdatesNativeSelectedItem()
+    {
+        var picker = new MauiPicker();
+        picker.Items.Add("Red");
+        picker.Items.Add("Green");
+        picker.Items.Add("Blue");
+        picker.SelectedIndex = 2;
+
+        var handler = await CreateHandlerAsync<MauiPickerHandler>(picker);
+
+        var selected = await InvokeOnMainThreadAsync(() =>
+        {
+            return new
+            {
+                Index = handler.PlatformView?.SelectedIndex ?? -1,
+                Item = handler.PlatformView?.SelectedItem
+            };
+        });
+
+        Assert.Equal(2, selected.Index);
+        Assert.Equal("Blue", selected.Item);
+    }
+
+    [AvaloniaFact(DisplayName = "Native Selection Raises SelectedIndexChanged")]
+    public async Task NativeSelectionRaisesSelectedIndexChanged()
+    {
+        var picker = new MauiPicker();
+        picker.Items.Add("Item 1");
+        picker.Items.Add("Item 2");
+        picker.Items.Add("Item 3");
+        picker.SelectedIndex = 0;
+
+        var eventCount = 0;
+        var observedIndex = -1;
+        picker.SelectedIndexChanged += (_, _) =>
+        {
+            eventCount++;
+            observedIndex = picker.SelectedIndex;
+        };
+
+        var handler = await CreateHandlerAsync<MauiPickerHandler>(picker);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            handler.PlatformView!.SelectedIndex = 2;
+        });
+
+        Assert.Equal(2, picker.SelectedIndex);
+        Assert.Equal(2, observedIndex);
+        Assert.Equal(1, eventCount);
     }
 
     [AvaloniaFact(DisplayName = "Initial Selected Index Not Cleared By Native Events")]
