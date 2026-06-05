@@ -16,8 +16,13 @@
                     <Label Text="Navbar &amp; TabBar" FontAttributes="Bold" />
                     <HorizontalStackLayout Spacing="10">
                         <Button Text="Toggle NavBar" Clicked="OnToggleNavBar" />
+                        <Button Text="Toggle NavBar Animation" Clicked="OnToggleNavBarAnimation" />
                         <Button Text="Toggle TabBar" Clicked="OnToggleTabBar" />
                     </HorizontalStackLayout>
+                    <Label x:Name="NavBarAnimationLabel"
+                           Text="NavBar animation: enabled"
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
                     
                     <Label Text="Title View" FontAttributes="Bold" />
                     <HorizontalStackLayout Spacing="10">
