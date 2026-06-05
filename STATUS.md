@@ -341,7 +341,7 @@ Displays an entry with a label and placeholder, for use in a TableView or ListVi
 | Placeholder | ✅ Implemented |
 | LabelColor | ✅ Implemented |
 | HorizontalTextAlignment | ✅ Implemented |
-| VerticalTextAlignment | ⏳ TODO |
+| VerticalTextAlignment | ✅ Implemented |
 | Keyboard | ✅ Implemented |
 | IsEnabled | ✅ Implemented |
 | ContextActions | ✅ Implemented |
@@ -718,7 +718,7 @@ Displays a short list of items, from which an item can be selected.
 
 | Event | Status |
 |-------|--------|
-| SelectedIndexChanged | ⏳ TODO |
+| SelectedIndexChanged | ✅ Implemented |
 
 ---
 
