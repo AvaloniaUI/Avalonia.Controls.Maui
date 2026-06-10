@@ -9,6 +9,7 @@ using AvaloniaCarousel = Avalonia.Controls.Carousel;
 using AvaloniaCarouselViewHandler = Avalonia.Controls.Maui.Handlers.CarouselViewHandler;
 using AvaloniaSwipeGestureRecognizer = Avalonia.Input.GestureRecognizers.SwipeGestureRecognizer;
 using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
+using MauiIndicatorView = Microsoft.Maui.Controls.IndicatorView;
 using MauiLabel = Microsoft.Maui.Controls.Label;
 using MauiThickness = Microsoft.Maui.Thickness;
 
@@ -399,6 +400,88 @@ public class CarouselViewHandlerTests : HandlerTestBase
         Assert.Equal(-1, handler.PlatformView.SelectedIndex);
         Assert.Null(handler.PlatformView.SelectedItem);
         Assert.Null(carouselView.CurrentItem);
+    }
+
+    [AvaloniaFact(DisplayName = "IndicatorView Initializes Count And Position")]
+    public async Task IndicatorViewInitializesCountAndPosition()
+    {
+        var indicatorView = new MauiIndicatorView();
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = CreateItems();
+        carouselView.Position = 1;
+        carouselView.IndicatorView = indicatorView;
+
+        await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
+
+        Assert.Equal(3, indicatorView.Count);
+        Assert.Equal(1, indicatorView.Position);
+    }
+
+    [AvaloniaFact(DisplayName = "Carousel Selection Updates IndicatorView Position")]
+    public async Task CarouselSelectionUpdatesIndicatorViewPosition()
+    {
+        var indicatorView = new MauiIndicatorView();
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = CreateItems();
+        carouselView.IndicatorView = indicatorView;
+
+        var handler = await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
+
+        await InvokeOnMainThreadAsync(() => handler.PlatformView.SelectedIndex = 2);
+
+        Assert.Equal(2, carouselView.Position);
+        Assert.Equal(2, indicatorView.Position);
+    }
+
+    [AvaloniaFact(DisplayName = "IndicatorView Position Updates Carousel Selection")]
+    public async Task IndicatorViewPositionUpdatesCarouselSelection()
+    {
+        var items = CreateItems();
+        var indicatorView = new MauiIndicatorView();
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = items;
+        carouselView.IndicatorView = indicatorView;
+
+        var handler = await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
+
+        await InvokeOnMainThreadAsync(() => indicatorView.Position = 2);
+
+        Assert.Equal(2, handler.PlatformView.SelectedIndex);
+        Assert.Equal(2, carouselView.Position);
+        Assert.Equal(items[2], carouselView.CurrentItem);
+    }
+
+    [AvaloniaFact(DisplayName = "IndicatorView Count Tracks Collection Changes")]
+    public async Task IndicatorViewCountTracksCollectionChanges()
+    {
+        var items = new ObservableCollection<string> { "One", "Two" };
+        var indicatorView = new MauiIndicatorView();
+        var carouselView = CreateCarouselView();
+        carouselView.ItemsSource = items;
+        carouselView.Position = 1;
+        carouselView.IndicatorView = indicatorView;
+
+        await CreateHandlerAsync<AvaloniaCarouselViewHandler>(carouselView);
+
+        Assert.Equal(2, indicatorView.Count);
+        Assert.Equal(1, indicatorView.Position);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            items.Add("Three");
+            Dispatcher.UIThread.RunJobs();
+        });
+
+        Assert.Equal(3, indicatorView.Count);
+        Assert.Equal(1, indicatorView.Position);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            items.Clear();
+            Dispatcher.UIThread.RunJobs();
+        });
+
+        Assert.Equal(0, indicatorView.Count);
     }
 
     [AvaloniaFact(DisplayName = "Platform Selection Updates Virtual Selection")]

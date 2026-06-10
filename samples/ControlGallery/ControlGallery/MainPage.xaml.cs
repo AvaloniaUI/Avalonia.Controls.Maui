@@ -74,6 +74,7 @@ public partial class MainPage : FlyoutPage
         [typeof(WebViewPlaygroundPage)] = () => new WebViewPlaygroundPage(),
         // Effects
         [typeof(ClipPage)] = () => new ClipPage(),
+        [typeof(EffectsPage)] = () => new EffectsPage(),
         [typeof(ShadowPage)] = () => new ShadowPage(),
         // Layout
         [typeof(StackLayoutPage)] = () => new StackLayoutPage(),
@@ -250,6 +251,7 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Effects", new List<SampleItem>
             {
+                new("Effects", "RoutingEffect and PlatformEffect sample", typeof(EffectsPage)),
                 new("Clip", "Shape-based clipping samples", typeof(ClipPage)),
                 new("Shadow", "Soft elevation and offsets", typeof(ShadowPage)),
                 new("Transformations", "Play with scale, rotation, translation, anchors", typeof(TransformationsPage))

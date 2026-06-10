@@ -12,8 +12,6 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public class ShellSectionHandlerTests : HandlerTestBase
 {
-    // --- Platform view creation ---
-
     [AvaloniaFact(DisplayName = "Handler creates AvaloniaNavigationPage as PlatformView")]
     public async Task HandlerCreatesNavigationPage()
     {
@@ -45,8 +43,6 @@ public class ShellSectionHandlerTests : HandlerTestBase
         Assert.False(AvaloniaNavigationPage.GetHasNavigationBar(navPage));
     }
 
-    // --- Handler does not implement IStackNavigation ---
-
     [AvaloniaFact(DisplayName = "Handler does not implement IStackNavigation")]
     public async Task HandlerDoesNotImplementIStackNavigation()
     {
@@ -57,8 +53,6 @@ public class ShellSectionHandlerTests : HandlerTestBase
         // Navigation flows through VirtualView (ShellSection) directly.
         Assert.False(handler is IStackNavigation);
     }
-
-    // --- Initial content pushed on connect ---
 
     [AvaloniaFact(DisplayName = "Initial content page is pushed on connect")]
     public async Task InitialContentPushedOnConnect()
@@ -72,8 +66,6 @@ public class ShellSectionHandlerTests : HandlerTestBase
         // The NavigationPage should have content after connect
         Assert.True(navPage.StackDepth > 0);
     }
-
-    // --- CurrentItem mapping ---
 
     [AvaloniaFact(DisplayName = "Switching CurrentItem updates navigation stack")]
     public async Task SwitchingCurrentItemUpdatesStack()
@@ -123,8 +115,6 @@ public class ShellSectionHandlerTests : HandlerTestBase
         Assert.Equal(stackDepthBefore, navPage.StackDepth);
     }
 
-    // --- Items mapping ---
-
     [AvaloniaFact(DisplayName = "Items change triggers sync")]
     public async Task ItemsChangeTriggerSync()
     {
@@ -146,8 +136,6 @@ public class ShellSectionHandlerTests : HandlerTestBase
         // Should still have content — no crash or empty state
         Assert.True(navPage.StackDepth > 0);
     }
-
-    // --- Multiple ShellContent switching ---
 
     [AvaloniaFact(DisplayName = "Multiple ShellContent items - switching between them works")]
     public async Task MultipleShellContentSwitching()
@@ -188,8 +176,6 @@ public class ShellSectionHandlerTests : HandlerTestBase
         });
         Assert.True(navPage.StackDepth > 0);
     }
-
-    // --- RequestNavigation command (push) ---
 
     [AvaloniaFact(DisplayName = "RequestNavigation command pushes page onto navigation stack")]
     public async Task RequestNavigationCommandPushesPage()
@@ -239,7 +225,29 @@ public class ShellSectionHandlerTests : HandlerTestBase
         Assert.True(navPage.StackDepth > 1);
     }
 
-    // --- RequestNavigation command (pop / back navigation) ---
+    [AvaloniaFact(DisplayName = "PresentationMode NotAnimated Disables Shell Navigation Transition")]
+    public void PresentationModeNotAnimatedDisablesTransition()
+    {
+        var manager = new TestShellStackNavigationManager(MauiContext);
+        var page = new MauiContentPage { Title = "No Animation" };
+        Shell.SetPresentationMode(page, PresentationMode.NotAnimated);
+
+        var transition = manager.ResolveForTest(new NavigationRequest(new List<IView> { page }, animated: true));
+
+        Assert.Null(transition);
+    }
+
+    [AvaloniaFact(DisplayName = "PresentationMode Modal Uses Vertical Shell Navigation Transition")]
+    public void PresentationModeModalUsesVerticalTransition()
+    {
+        var manager = new TestShellStackNavigationManager(MauiContext);
+        var page = new MauiContentPage { Title = "Modal" };
+        Shell.SetPresentationMode(page, PresentationMode.ModalAnimated);
+
+        var transition = manager.ResolveForTest(new NavigationRequest(new List<IView> { page }, animated: true));
+
+        Assert.IsType<PageSlide>(transition);
+    }
 
     [AvaloniaFact(DisplayName = "RequestNavigation pops page when stack shrinks")]
     public async Task RequestNavigationPopsPage()
@@ -372,8 +380,6 @@ public class ShellSectionHandlerTests : HandlerTestBase
         Assert.Equal(1, navPage.StackDepth);
     }
 
-    // --- Disconnect ---
-
     [AvaloniaFact(DisplayName = "Handler disconnect cleans up without errors")]
     public async Task HandlerDisconnectCleansUp()
     {
@@ -410,13 +416,24 @@ public class ShellSectionHandlerTests : HandlerTestBase
         Assert.True(navPage2.StackDepth > 0);
     }
 
-    // --- Helpers ---
-
     private static ShellSection CreateSection(MauiContentPage? page = null)
     {
         return new ShellSection
         {
             Items = { new ShellContent { Content = page ?? new MauiContentPage() } }
         };
+    }
+
+    private sealed class TestShellStackNavigationManager : ShellStackNavigationManager
+    {
+        public TestShellStackNavigationManager(IMauiContext mauiContext)
+            : base(mauiContext)
+        {
+        }
+
+        public IPageTransition? ResolveForTest(NavigationRequest request)
+        {
+            return ResolveTransition(request);
+        }
     }
 }
