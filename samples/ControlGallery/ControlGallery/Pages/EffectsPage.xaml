@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:effects="clr-namespace:ControlGallery.Effects"
+             x:Class="ControlGallery.Pages.EffectsPage"
+             Title="Effects">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Border Stroke="Gray" Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Focus Effect"
+                           FontAttributes="Bold"
+                           FontSize="20"/>
+                    <Label Text="Focus the entry to let the PlatformEffect update its native background."
+                           FontSize="13"
+                           TextColor="Gray"/>
+
+                    <Entry x:Name="FocusEffectEntry"
+                           Text="Focus me"
+                           Placeholder="Focus background effect">
+                        <Entry.Effects>
+                            <effects:FocusRoutingEffect />
+                        </Entry.Effects>
+                    </Entry>
+
+                    <Label x:Name="EffectStatusLabel"
+                           FontSize="13"
+                           TextColor="Gray"/>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

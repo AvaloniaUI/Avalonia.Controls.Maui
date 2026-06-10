@@ -1,5 +1,8 @@
+using Avalonia;
 using Avalonia.Controls.Maui.Platform;
+using Avalonia.Animation;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.Headless.XUnit;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -11,6 +14,7 @@ using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 using Avalonia.Controls.Maui.Controls;
 using NSubstitute;
 using Avalonia.Controls.Maui.Handlers.Shell;
+using MauiWindow = Microsoft.Maui.Controls.Window;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
 
@@ -247,6 +251,54 @@ public partial class ShellHandlerTests : HandlerTestBase
         });
 
         Assert.Equal(secondItem, shell.CurrentItem);
+    }
+
+    [AvaloniaFact(DisplayName = "CurrentState Updates When CurrentItem Changes")]
+    public async Task CurrentStateUpdatesWhenCurrentItemChanges()
+    {
+        var shell = CreateShellWithMultipleItems();
+        var secondItem = shell.Items[1];
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+        var initialState = shell.CurrentState?.Location.ToString();
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            shell.CurrentItem = secondItem;
+            handler.UpdateValue(nameof(Shell.CurrentItem));
+        });
+
+        var updatedState = shell.CurrentState?.Location.ToString();
+
+        Assert.False(string.IsNullOrEmpty(initialState));
+        Assert.False(string.IsNullOrEmpty(updatedState));
+        Assert.NotEqual(initialState, updatedState);
+    }
+
+    [AvaloniaFact(DisplayName = "Shell Navigating And Navigated Fire When CurrentItem Changes")]
+    public async Task ShellNavigatingAndNavigatedFireWhenCurrentItemChanges()
+    {
+        var shell = CreateShellWithMultipleItems();
+        var secondItem = shell.Items[1];
+        var window = new MauiWindow(shell);
+        _ = window;
+
+        var navigatingSources = new List<ShellNavigationSource>();
+        var navigatedSources = new List<ShellNavigationSource>();
+
+        shell.Navigating += (_, args) => navigatingSources.Add(args.Source);
+        shell.Navigated += (_, args) => navigatedSources.Add(args.Source);
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            shell.CurrentItem = secondItem;
+            handler.UpdateValue(nameof(Shell.CurrentItem));
+        });
+
+        Assert.Contains(ShellNavigationSource.ShellItemChanged, navigatingSources);
+        Assert.Contains(ShellNavigationSource.ShellItemChanged, navigatedSources);
     }
 
     [AvaloniaFact(DisplayName = "ItemTemplate Initializes Correctly")]
@@ -709,6 +761,41 @@ public partial class ShellHandlerTests : HandlerTestBase
         
         Assert.False(Shell.GetNavBarIsVisible(shell));
         // You could also verify if the top bar height is set to 0 or it's hidden in the platform view
+    }
+
+    [AvaloniaFact(DisplayName = "Shell NavBarVisibilityAnimationEnabled Controls NavBar Transitions")]
+    public async Task ShellNavBarVisibilityAnimationEnabledControlsTransitions()
+    {
+        var shell = CreateBasicShell();
+        Shell.SetNavBarVisibilityAnimationEnabled(shell, true);
+
+        var handler = await CreateHandlerAsync<MauiShellHandler>(shell);
+
+        Assert.NotNull(handler._topBarBorder);
+        var transitionProperties = handler._topBarBorder.Transitions!
+            .OfType<DoubleTransition>()
+            .Select(transition => transition.Property)
+            .ToArray();
+
+        Assert.Contains(Layoutable.HeightProperty, transitionProperties);
+        Assert.Contains(Visual.OpacityProperty, transitionProperties);
+        Assert.True(handler._topBarBorder.IsHitTestVisible);
+        Assert.NotNull(handler._topBarShadow);
+        Assert.False(handler._topBarShadow.IsHitTestVisible);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            Shell.SetNavBarVisibilityAnimationEnabled(shell, false);
+            handler.UpdateValue(Shell.NavBarVisibilityAnimationEnabledProperty.PropertyName);
+        });
+
+        transitionProperties = handler._topBarBorder.Transitions?
+            .OfType<DoubleTransition>()
+            .Select(transition => transition.Property)
+            .ToArray() ?? Array.Empty<AvaloniaProperty>();
+
+        Assert.DoesNotContain(Layoutable.HeightProperty, transitionProperties);
+        Assert.DoesNotContain(Visual.OpacityProperty, transitionProperties);
     }
 
     [AvaloniaFact(DisplayName = "Shell NavBarHasShadow Property Verified")]
