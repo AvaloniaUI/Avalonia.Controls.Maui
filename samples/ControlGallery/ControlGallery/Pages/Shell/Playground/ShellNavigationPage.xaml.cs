@@ -24,6 +24,7 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
             {
                 shell.Navigating += OnShellNavigating;
                 shell.Navigated += OnShellNavigated;
+                UpdateCurrentStateLabel(shell);
             }
 
             if (BackButtonBehaviorPicker.SelectedIndex < 0 && BackButtonBehaviorPicker.Items.Count > 0)
@@ -51,6 +52,8 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
         private void OnShellNavigated(object? sender, ShellNavigatedEventArgs e)
         {
             LogEvent($"Navigated: {e.Source} -> {e.Current.Location}");
+            if (sender is Shell shell)
+                UpdateCurrentStateLabel(shell);
         }
 
         private void LogEvent(string message)
@@ -61,6 +64,11 @@ namespace ControlGallery.Pages.ShellSamples.ShellPlayground
         private void OnClearLog(object sender, EventArgs e)
         {
             EventsLabel.Text = string.Empty;
+        }
+
+        private void UpdateCurrentStateLabel(Shell shell)
+        {
+            CurrentStateLabel.Text = $"CurrentState: {shell.CurrentState?.Location}";
         }
 
         private async void OnGoToDetailRelative(object sender, EventArgs e)

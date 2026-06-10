@@ -8,7 +8,7 @@ namespace Avalonia.Controls.Maui.Platform;
 
 internal class AlertManager
 {
-    internal class AlertRequestHelper : Microsoft.Maui.Controls.Platform.AlertManager.IAlertManagerSubscription
+    internal class AlertRequestHelper : Microsoft.Maui.Controls.Platform.IAlertManagerSubscription
     {
         readonly Dictionary<Control, OverlayHelper> _helpers = new();
 

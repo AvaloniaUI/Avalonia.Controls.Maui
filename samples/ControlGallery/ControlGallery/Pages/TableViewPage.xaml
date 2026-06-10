@@ -81,6 +81,15 @@
                             </TableSection>
                         </TableRoot>
                     </TableView>
+                    <TableView Intent="Form" RowHeight="72">
+                        <TableRoot>
+                            <TableSection Title="Vertical Text Alignment">
+                                <EntryCell Label="Start" Text="Top aligned" VerticalTextAlignment="Start"/>
+                                <EntryCell Label="Center" Text="Center aligned" VerticalTextAlignment="Center"/>
+                                <EntryCell Label="End" Text="Bottom aligned" VerticalTextAlignment="End"/>
+                            </TableSection>
+                        </TableRoot>
+                    </TableView>
                 </VerticalStackLayout>
             </Border>
 
