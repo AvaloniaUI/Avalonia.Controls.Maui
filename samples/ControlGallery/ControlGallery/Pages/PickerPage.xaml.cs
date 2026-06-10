@@ -22,11 +22,15 @@ public partial class PickerPage : ContentPage
     void OnBasicPickerChanged(object? sender, EventArgs e) =>
         UpdateSelectedLabel(BasicPickerControl, SelectedFruitLabelControl);
 
+    void OnIndexedPickerChanged(object? sender, EventArgs e) =>
+        UpdateSelectedLabel(IndexedPickerControl, PreselectedIndexLabelControl);
+
     void OnItemPickerChanged(object? sender, EventArgs e) =>
         UpdateSelectedLabel(ItemPickerControl, SelectedItemLabelControl);
 
     void InitializeSelections()
     {
+        SetInitialSelectionForIndexedPicker();
         SetInitialSelectionForItemPicker();
         UpdateSelectedLabel(IndexedPickerControl, PreselectedIndexLabelControl);
         UpdateSelectedLabel(ItemPickerControl, SelectedItemLabelControl);
@@ -48,6 +52,14 @@ public partial class PickerPage : ContentPage
         {
             label.Text = "Selected item: none";
         }
+    }
+
+    void SetInitialSelectionForIndexedPicker()
+    {
+        if (IndexedPickerControl == null)
+            return;
+
+        IndexedPickerControl.SelectedIndex = 2;
     }
 
     void SetInitialSelectionForItemPicker()
