@@ -79,10 +79,12 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         _currentImageResult?.Dispose();
         _currentImageResult = null;
 
+        ResetClip(_staticImage);
         _staticImage.Source = null;
 
         if (_gifImage != null)
         {
+            ResetClip(_gifImage);
             try { _gifImage.Source = null!; } catch { }
             _gifImage = null;
         }
@@ -133,16 +135,20 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
     private void UpdateImageClip(IView view)
     {
-        // Apply clip to the inner image controls instead of the container Grid
-        // This ensures the clip geometry coordinates align with the actual image content
-        var avaloniaGeometry = (view.Clip as Microsoft.Maui.Controls.Shapes.Geometry)?.ToPlatform();
-
-        _staticImage.Clip = avaloniaGeometry;
+        // Apply clip to the inner image controls instead of the container Grid so the
+        // clip coordinates stay aligned with the rendered image content.
+        _staticImage.UpdateClip(view);
 
         if (_gifImage != null)
         {
-            _gifImage.Clip = avaloniaGeometry;
+            _gifImage.UpdateClip(view);
         }
+    }
+
+    private static void ResetClip(global::Avalonia.Controls.Control control)
+    {
+        global::Avalonia.Controls.Maui.Extensions.ViewExtensions.DisposeClipSubscription(control);
+        control.Clip = null;
     }
 
     internal async Task LoadSourceAsync(IImage image, CancellationToken token)
@@ -228,7 +234,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
             return;
         }
 
-        EnsureGifControl();
+        EnsureGifControl(VirtualView);
 
         if (!PlatformView.Children.Contains(_gifImage!))
         {
@@ -257,7 +263,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
     }
     
-    private void EnsureGifControl()
+    private void EnsureGifControl(IView? view)
     {
         if (_gifImage == null)
         {
@@ -265,15 +271,18 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
             {
                 IsVisible = false,
                 Stretch = _staticImage.Stretch,
-                Opacity = _staticImage.Opacity,
-                Clip = _staticImage.Clip
+                Opacity = _staticImage.Opacity
             };
         }
         else
         {
             _gifImage.Stretch = _staticImage.Stretch;
             _gifImage.Opacity = _staticImage.Opacity;
-            _gifImage.Clip = _staticImage.Clip;
+        }
+
+        if (view is not null)
+        {
+            _gifImage.UpdateClip(view);
         }
     }
 

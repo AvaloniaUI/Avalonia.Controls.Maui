@@ -112,6 +112,10 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Navigation Events" FontSize="18" FontAttributes="Bold" />
                     <Label Text="Log of navigation events." FontSize="12" />
+                    <Label x:Name="CurrentStateLabel"
+                           Text="CurrentState: (not available)"
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
                     <Button Text="Test Navigation (Go to Detail)" Clicked="OnGoToDetailRelative" />
                     
                     <ScrollView HeightRequest="150" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=DarkGray}">
