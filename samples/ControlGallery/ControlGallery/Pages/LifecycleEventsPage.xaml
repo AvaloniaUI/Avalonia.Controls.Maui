@@ -11,6 +11,7 @@
         <Color x:Key="SectionBorderDark">#444444</Color>
         <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
         <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
+        <Color x:Key="InheritedAccentColor">#2E7D32</Color>
     </ContentPage.Resources>
 
     <ScrollView>
@@ -117,6 +118,51 @@
                                     <BoxView x:Name="SiblingBoxB" Color="#FFDDDDDD" HeightRequest="20" WidthRequest="80" />
                                 </VerticalStackLayout>
                             </Border>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1"
+                             Color="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Inherited properties" FontAttributes="Bold"/>
+                        <Grid ColumnDefinitions="140,*"
+                              RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                              ColumnSpacing="12"
+                              RowSpacing="6">
+                            <Label Text="BindingContext" />
+                            <Label x:Name="BindingContextValueLabel"
+                                   Grid.Column="1"
+                                   TextColor="{StaticResource InheritedAccentColor}" />
+
+                            <Label Grid.Row="1" Text="Bounds" />
+                            <Label x:Name="BoundsValueLabel" Grid.Row="1" Grid.Column="1" />
+
+                            <Label Grid.Row="2" Text="Frame" />
+                            <Label x:Name="FrameValueLabel" Grid.Row="2" Grid.Column="1" />
+
+                            <Label Grid.Row="3" Text="Parent" />
+                            <Label x:Name="ParentValueLabel" Grid.Row="3" Grid.Column="1" />
+
+                            <Label Grid.Row="4" Text="Resources" />
+                            <Label x:Name="ResourcesValueLabel"
+                                   Grid.Row="4"
+                                   Grid.Column="1"
+                                   TextColor="{StaticResource InheritedAccentColor}" />
+
+                            <Label Grid.Row="5" Text="Window" />
+                            <Label x:Name="WindowValueLabel" Grid.Row="5" Grid.Column="1" />
+
+                            <Label Grid.Row="6" Text="X / Y" />
+                            <Label x:Name="PositionValueLabel" Grid.Row="6" Grid.Column="1" />
+
+                            <Label Grid.Row="7" Text="Effects" />
+                            <Label x:Name="EffectsValueLabel" Grid.Row="7" Grid.Column="1" />
+
+                            <Button Grid.Row="8"
+                                    Grid.ColumnSpan="2"
+                                    Text="Toggle Effect"
+                                    Clicked="OnToggleEffectClicked" />
                         </Grid>
                     </VerticalStackLayout>
 

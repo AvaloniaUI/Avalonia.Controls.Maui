@@ -33,7 +33,7 @@ public class MauiEntryCell : Border
 
         Input = new TextBox
         {
-            VerticalAlignment = VerticalAlignment.Center
+            VerticalAlignment = VerticalAlignment.Stretch
         };
 
         var grid = new Grid

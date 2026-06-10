@@ -91,7 +91,7 @@ public static class EntryCellExtensions
     /// <param name="cell">The MAUI cell.</param>
     public static void UpdateVerticalTextAlignment(this MauiEntryCell platformView, EntryCell cell)
     {
-        // TODO: Vertical Text Alignment is not directly supported in Avalonia TextBox yet.
+        platformView.Input.UpdateVerticalTextAlignment(cell.VerticalTextAlignment);
     }
 
     /// <summary>

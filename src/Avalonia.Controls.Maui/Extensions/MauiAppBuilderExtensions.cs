@@ -123,7 +123,7 @@ public static class MauiAppBuilderExtensions
         builder.Services.RemoveAll<ITicker>();
         builder.Services.AddSingleton<ITicker>(svcs => new AvaloniaTicker());
 
-        builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.AlertManager.IAlertManagerSubscription, AlertManager.AlertRequestHelper>();
+        builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.IAlertManagerSubscription, AlertManager.AlertRequestHelper>();
 
         return builder
             .ConfigureMauiHandlers(handlers =>
