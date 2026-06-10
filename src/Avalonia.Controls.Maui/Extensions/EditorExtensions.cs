@@ -4,7 +4,6 @@ using Avalonia.Input.TextInput;
 using Microsoft.Maui;
 using AvaloniaTextBox = Avalonia.Controls.TextBox;
 using AvaloniaTextAlignment = Avalonia.Media.TextAlignment;
-using AvaloniaVerticalAlignment = Avalonia.Layout.VerticalAlignment;
 
 namespace Avalonia.Controls.Maui.Extensions
 {
@@ -104,18 +103,7 @@ namespace Avalonia.Controls.Maui.Extensions
         /// <param name="editor">The virtual view.</param>
         public static void UpdateEditorVerticalTextAlignment(this AvaloniaTextBox textBox, IEditor editor)
         {
-            switch (editor.VerticalTextAlignment)
-            {
-                case TextAlignment.Start:
-                    textBox.VerticalContentAlignment = AvaloniaVerticalAlignment.Top;
-                    break;
-                case TextAlignment.Center:
-                    textBox.VerticalContentAlignment = AvaloniaVerticalAlignment.Center;
-                    break;
-                case TextAlignment.End:
-                    textBox.VerticalContentAlignment = AvaloniaVerticalAlignment.Bottom;
-                    break;
-            }
+            textBox.UpdateVerticalTextAlignment(editor.VerticalTextAlignment);
         }
 
         /// <summary>
