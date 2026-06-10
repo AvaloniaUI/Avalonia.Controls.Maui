@@ -323,15 +323,15 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : ViewHan
     private static class VisualElementLifecycle
     {
         [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "SendLoaded")]
-        private static extern void SendLoaded(VisualElement element);
+        private static extern void SendLoaded(VisualElement element, bool updateWiring);
 
         [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "SendUnloaded")]
-        private static extern void SendUnloaded(VisualElement element);
+        private static extern void SendUnloaded(VisualElement element, bool updateWiring);
 
         public static void TrySendLoaded(VisualElement element) =>
-            SendLoaded(element);
+            SendLoaded(element, false);
 
         public static void TrySendUnloaded(VisualElement element) =>
-            SendUnloaded(element);
+            SendUnloaded(element, false);
     }
 }

@@ -73,6 +73,8 @@ public static class MauiTestAppBuilderExtensions
             handlers.AddHandler<Microsoft.Maui.Controls.ContentPage, PageHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.Layout, LayoutHandler>();
             handlers.AddHandler<Microsoft.Maui.Controls.TabbedPage, TabbedPageHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.TableView, Avalonia.Controls.Maui.Compatibility.Handlers.TableViewHandler>();
+            handlers.AddHandler<Microsoft.Maui.Controls.EntryCell, Avalonia.Controls.Maui.Compatibility.EntryCellHandler>();
 
             // Shell handlers
             handlers.AddHandler<Microsoft.Maui.Controls.Shell, ShellHandler>();

@@ -82,7 +82,17 @@ public static class EntryExtensions
     /// <param name="entry">The .NET MAUI Entry.</param>
     public static void UpdateVerticalTextAlignment(this AvaloniaTextBox textBox, IEntry entry)
     {
-        textBox.VerticalContentAlignment = entry.VerticalTextAlignment switch
+        textBox.UpdateVerticalTextAlignment(entry.VerticalTextAlignment);
+    }
+
+    /// <summary>
+    /// Updates the vertical content alignment of the TextBox from a MAUI text alignment value.
+    /// </summary>
+    /// <param name="textBox">The Avalonia TextBox.</param>
+    /// <param name="verticalTextAlignment">The MAUI vertical text alignment.</param>
+    public static void UpdateVerticalTextAlignment(this AvaloniaTextBox textBox, TextAlignment verticalTextAlignment)
+    {
+        textBox.VerticalContentAlignment = verticalTextAlignment switch
         {
             TextAlignment.Start => AvaloniaVerticalAlignment.Top,
             TextAlignment.Center => AvaloniaVerticalAlignment.Center,
