@@ -612,7 +612,12 @@ public class StackNavigationManager
     /// <returns>The Avalonia ContentPage.</returns>
     protected virtual AvaloniaContentPage WrapPage(IView mauiPage)
     {
-        return (AvaloniaContentPage)mauiPage.ToPlatform(MauiContext);
+        var platformPage = mauiPage.ToPlatform(MauiContext);
+        if (platformPage is AvaloniaContentPage cp)
+            return cp;
+        if (platformPage is Avalonia.Controls.Control control)
+            return new AvaloniaContentPage { Content = control };
+        throw new InvalidOperationException($"Cannot wrap page of type {platformPage.GetType()}");
     }
 
     /// <summary>
