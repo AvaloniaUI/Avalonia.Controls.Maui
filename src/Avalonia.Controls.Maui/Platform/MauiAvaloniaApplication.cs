@@ -106,6 +106,10 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
         // Connect the MAUI Application to its handler
         this.SetApplicationHandler(Application, ApplicationContext);
 
+        // Fire OnStart lifecycle — the Avalonia bridge does not call it automatically
+        if (this.Application is Microsoft.Maui.Controls.Application startApp)
+            startApp.SendStart();
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var avaloniaWindow = CreatePlatformWindow();
