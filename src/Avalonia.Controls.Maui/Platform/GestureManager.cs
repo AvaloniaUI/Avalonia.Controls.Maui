@@ -82,6 +82,14 @@ internal class GestureManager : IDisposable
         if (handler == null ||
             (_didHaveWindow && _view.Window == null))
         {
+            // Navigation pop temporarily detaches views from the visual tree.
+            // Don't disconnect when handler is valid but window is null during transition —
+            // keep existing gesture handlers connected so they work when re-attached.
+            if (handler != null && _view.Window == null)
+            {
+                _didHaveWindow = false;
+                return;
+            }
             DisconnectGestures();
             return;
         }
