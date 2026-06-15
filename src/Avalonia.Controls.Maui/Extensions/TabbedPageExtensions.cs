@@ -115,7 +115,16 @@ public static class TabbedPageExtensions
 
         foreach (var page in mauiTabbedPage.Children)
         {
-            var wrappedPage = (AvaloniaContentPage)page.ToPlatform(mauiContext);
+            var contentPage = page is Microsoft.Maui.Controls.NavigationPage np ? np.RootPage : page;
+            var platformPage = contentPage.ToPlatform(mauiContext);
+            var wrappedPage = platformPage as AvaloniaContentPage;
+            if (wrappedPage == null)
+            {
+                if (platformPage is AvaloniaPage avPage)
+                    wrappedPage = new AvaloniaContentPage { Content = (Avalonia.Controls.Control)avPage };
+                else
+                    continue;
+            }
             wrappedPage.Header = CreateTabHeader(page);
             pages.Add(wrappedPage);
             pagesToLoadIcons.Add((wrappedPage, page));
