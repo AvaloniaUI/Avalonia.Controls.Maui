@@ -617,7 +617,15 @@ public class StackNavigationManager
     /// </remarks>
     protected virtual AvaloniaPage WrapPage(IView mauiPage)
     {
-        return (AvaloniaPage)mauiPage.ToPlatform(MauiContext);
+        var platformPage = (AvaloniaPage)mauiPage.ToPlatform(MauiContext);
+
+        // The NavigationPage title bar binds to CurrentPage.Header. ContentPage gets its Header
+        // set from Title by PageHandler.MapTitle, but other page types don't map Title -> Header, so fall back to the MAUI Title here to avoid
+        // a blank navigation title.
+        if (platformPage.Header is null && mauiPage is MauiPage { Title.Length: > 0 } page)
+            platformPage.Header = page.Title;
+
+        return platformPage;
     }
 
     /// <summary>

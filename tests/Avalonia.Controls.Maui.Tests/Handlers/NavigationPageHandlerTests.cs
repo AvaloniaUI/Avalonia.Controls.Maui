@@ -458,7 +458,12 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
 
                 Assert.Equal(2, navigationPage.Navigation.NavigationStack.Count);
                 Assert.Equal(tabbedPage, navigationPage.CurrentPage);
-                Assert.IsType<AvaloniaTabbedPage>(handler.PlatformView.NavigationStack[^1]);
+
+                var platformTop = handler.PlatformView.NavigationStack[^1];
+                Assert.IsType<AvaloniaTabbedPage>(platformTop);
+                // The nav bar title binds to CurrentPage.Header; a non-ContentPage must still
+                // carry its Title there so the title isn't blank.
+                Assert.Equal("Tabs", platformTop.Header);
             });
         }
 
