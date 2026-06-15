@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using AvaloniaContentPage = Avalonia.Controls.ContentPage;
+using AvaloniaPage = Avalonia.Controls.Page;
 using AvaloniaNavigationPage = Avalonia.Controls.NavigationPage;
 using MauiPage = Microsoft.Maui.Controls.Page;
 using MauiElement = Microsoft.Maui.Controls.Element;
@@ -410,11 +411,11 @@ public class StackNavigationManager
         if (_navigationPage == null) return;
 
         // Build the target list of wrapped pages
-        var targetWrapped = new List<AvaloniaContentPage>(targetMauiStack.Count);
+        var targetWrapped = new List<AvaloniaPage>(targetMauiStack.Count);
         for (int i = 0; i < targetMauiStack.Count; i++)
             targetWrapped.Add(WrapPage(targetMauiStack[i]));
 
-        var targetSet = new HashSet<AvaloniaContentPage>(targetWrapped);
+        var targetSet = new HashSet<AvaloniaPage>(targetWrapped);
 
         var avaloniaStack = _navigationPage.NavigationStack;
         var avaloniaTop = avaloniaStack.Count > 0 ? avaloniaStack[^1] : null;
@@ -606,13 +607,17 @@ public class StackNavigationManager
     }
 
     /// <summary>
-    /// Wraps a MAUI page as an Avalonia ContentPage. Override to customize page setup (e.g. hiding the navigation bar).
+    /// Wraps a MAUI page as an Avalonia page. Override to customize page setup (e.g. hiding the navigation bar).
     /// </summary>
     /// <param name="mauiPage">The MAUI page to wrap.</param>
-    /// <returns>The Avalonia ContentPage.</returns>
-    protected virtual AvaloniaContentPage WrapPage(IView mauiPage)
+    /// <returns>The Avalonia page.</returns>
+    /// <remarks>
+    /// A navigation stack may hold any <see cref="MauiPage"/> (ContentPage, TabbedPage, nested NavigationPage, ...),
+    /// so the platform view is returned as the base <see cref="AvaloniaPage"/> rather than assuming a ContentPage.
+    /// </remarks>
+    protected virtual AvaloniaPage WrapPage(IView mauiPage)
     {
-        return (AvaloniaContentPage)mauiPage.ToPlatform(MauiContext);
+        return (AvaloniaPage)mauiPage.ToPlatform(MauiContext);
     }
 
     /// <summary>
