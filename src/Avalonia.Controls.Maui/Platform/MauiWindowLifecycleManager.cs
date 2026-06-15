@@ -33,11 +33,26 @@ internal sealed class MauiWindowLifecycleManager : MauiWindowLifecycleDispatcher
         // The handler may connect after the window is already shown; treat that as creation.
         if (platformView.IsVisible)
         {
-            NotifyCreated();
+            HandleShown();
         }
     }
 
-    private void OnOpened(object? sender, EventArgs e) => NotifyCreated();
+    private void OnOpened(object? sender, EventArgs e) => HandleShown();
+
+    private void HandleShown()
+    {
+        var firstCreate = !IsCreated;
+        NotifyCreated();
+
+        // A window that opens while already minimized must still go through Stopped so that a later
+        // restore produces a matching Resumed (MAUI raises Resumed/Stopped without ordering guards,
+        // but emitting Resumed with no preceding Stopped would be an asymmetric lifecycle). Gate on
+        // the first creation so the Stopped is not re-sent if HandleShown runs again.
+        if (firstCreate && _isMinimized)
+        {
+            NotifyStopped();
+        }
+    }
 
     private void OnActivated(object? sender, EventArgs e) => NotifyActivated();
 

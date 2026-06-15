@@ -94,6 +94,7 @@ public class SingleViewLifecycleTests : HandlerTestBase
             harness.Window.Destroying += (_, _) => destroying++;
 
             host.Content = null;
+            Dispatcher.UIThread.RunJobs();
 
             Assert.Equal(1, destroying);
 
@@ -114,6 +115,7 @@ public class SingleViewLifecycleTests : HandlerTestBase
 
             // Detach and reattach the content; Created/OnStart must not fire again.
             host.Content = null;
+            Dispatcher.UIThread.RunJobs();
             host.Content = harness.Content;
             Dispatcher.UIThread.RunJobs();
 

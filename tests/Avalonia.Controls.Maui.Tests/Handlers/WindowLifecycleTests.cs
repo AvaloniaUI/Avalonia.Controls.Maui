@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Headless.XUnit;
+using Avalonia.Threading;
 using Microsoft.Maui;
 using MauiApplication = Microsoft.Maui.Controls.Application;
 using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
@@ -70,6 +71,7 @@ public class WindowLifecycleTests : HandlerTestBase
             harness.Window.Created += (_, _) => created++;
 
             harness.Platform.Show();
+            Dispatcher.UIThread.RunJobs();
 
             Assert.Equal(1, created);
             Assert.Equal(1, harness.App.StartCount);
@@ -85,6 +87,7 @@ public class WindowLifecycleTests : HandlerTestBase
         {
             var harness = CreateHarness();
             harness.Platform.Show();
+            Dispatcher.UIThread.RunJobs();
 
             var stopped = 0;
             harness.Window.Stopped += (_, _) => stopped++;
@@ -105,6 +108,7 @@ public class WindowLifecycleTests : HandlerTestBase
         {
             var harness = CreateHarness();
             harness.Platform.Show();
+            Dispatcher.UIThread.RunJobs();
             harness.Platform.WindowState = WindowState.Minimized;
 
             var resumed = 0;
@@ -126,6 +130,7 @@ public class WindowLifecycleTests : HandlerTestBase
         {
             var harness = CreateHarness();
             harness.Platform.Show();
+            Dispatcher.UIThread.RunJobs();
 
             var destroying = 0;
             harness.Window.Destroying += (_, _) => destroying++;
@@ -133,6 +138,38 @@ public class WindowLifecycleTests : HandlerTestBase
             harness.Platform.Close();
 
             Assert.Equal(1, destroying);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "A window opened while minimized raises Stopped so a later restore is symmetric")]
+    public async Task WindowOpenedWhileMinimizedRaisesStoppedThenResumed()
+    {
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var harness = CreateHarness();
+
+            var stopped = 0;
+            var resumed = 0;
+            harness.Window.Stopped += (_, _) => stopped++;
+            harness.Window.Resumed += (_, _) => resumed++;
+
+            // Open the window already minimized; Created must be followed by a Stopped so that the
+            // later restore produces a matching Resumed rather than an orphaned one.
+            harness.Platform.WindowState = WindowState.Minimized;
+            harness.Platform.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Equal(1, stopped);
+            Assert.Equal(1, harness.App.SleepCount);
+            Assert.Equal(0, resumed);
+
+            harness.Platform.WindowState = WindowState.Normal;
+
+            Assert.Equal(1, resumed);
+            Assert.Equal(1, harness.App.ResumeCount);
+            Assert.Equal(1, stopped);
+
+            harness.Platform.Close();
         });
     }
 
