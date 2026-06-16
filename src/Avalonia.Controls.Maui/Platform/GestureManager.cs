@@ -1,4 +1,5 @@
 using Avalonia.Input;
+using Avalonia.Input.GestureRecognizers;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Microsoft.Maui.Controls;
@@ -8,12 +9,10 @@ using AvaloniaControl = Avalonia.Controls.Control;
 using AvaloniaDragEventArgs = Avalonia.Input.DragEventArgs;
 using AvaloniaPinchGestureRecognizer = Avalonia.Input.PinchGestureRecognizer;
 using AvaloniaTopLevel = Avalonia.Controls.TopLevel;
+using AvaloniaTappedEventArgs = Avalonia.Input.TappedEventArgs;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-/// <summary>
-/// Manages gesture recognizers for Avalonia.Controls.Maui platform
-/// </summary>
 internal class GestureManager : IDisposable
 {
     private IControlsView? _view;
@@ -22,6 +21,9 @@ internal class GestureManager : IDisposable
     private object? _handler;
     private bool _didHaveWindow;
     private bool _disposed;
+
+    private ScrollGestureRecognizer? _scrollRecognizer;
+    private Avalonia.Input.GestureRecognizers.SwipeGestureRecognizer? _swipeRecognizer;
 
     public bool IsConnected => _platformView != null && _handler != null;
 
@@ -53,6 +55,7 @@ internal class GestureManager : IDisposable
         if (_platformView is AvaloniaControl control)
         {
             UnsubscribeFromGestureEvents(control);
+            TearDownScrollSwipeRecognizers(control);
             TearDownDropHandlers(control);
             TearDownPinchHandlers(control);
         }
@@ -67,9 +70,10 @@ internal class GestureManager : IDisposable
         _containerView = null;
         _platformView = null;
 
-        // Reset drag state
         _isDragPending = false;
         _dragPointerArgs = null;
+        _isPanning = false;
+        _isScrollActive = false;
     }
 
     private void SetupGestureManager()
@@ -82,9 +86,6 @@ internal class GestureManager : IDisposable
         if (handler == null ||
             (_didHaveWindow && _view.Window == null))
         {
-            // Navigation pop temporarily detaches views from the visual tree.
-            // Don't disconnect when handler is valid but window is null during transition —
-            // keep existing gesture handlers connected so they work when re-attached.
             if (handler != null && _view.Window == null)
             {
                 _didHaveWindow = false;
@@ -101,7 +102,6 @@ internal class GestureManager : IDisposable
             DisconnectGestures();
         }
 
-        // Already setup and watching the correct view
         if (IsConnected)
             return;
 
@@ -109,6 +109,7 @@ internal class GestureManager : IDisposable
         {
             _platformView = control;
             SubscribeToGestureEvents(control);
+            SetupScrollSwipeRecognizers(control);
 
             if (_view is View view)
             {
@@ -132,46 +133,55 @@ internal class GestureManager : IDisposable
         if (_platformView is not AvaloniaControl control || _view is not View view)
             return;
 
-        // Check if drop recognizers were added or removed
         bool hasDropRecognizers = view.GetCompositeGestureRecognizers()
             ?.OfType<DropGestureRecognizer>()
             .Any(r => r.AllowDrop) == true;
 
         if (hasDropRecognizers && !_isDropSubscribed)
-        {
             SetupDropHandlers(control);
-        }
         else if (!hasDropRecognizers && _isDropSubscribed)
-        {
             TearDownDropHandlers(control);
-        }
 
-        // Check if pinch recognizers were added or removed
         bool hasPinchRecognizers = view.GetCompositeGestureRecognizers()
             ?.OfType<Microsoft.Maui.Controls.PinchGestureRecognizer>()
             .Any() == true;
 
         if (hasPinchRecognizers && !_isPinchSubscribed)
-        {
             SetupPinchHandlers(control);
-        }
         else if (!hasPinchRecognizers && _isPinchSubscribed)
-        {
             TearDownPinchHandlers(control);
-        }
     }
+
+    // ── Subscriptions ──────────────────────────────────────────────────────
 
     private void SubscribeToGestureEvents(AvaloniaControl control)
     {
+        // Tapped works for ALL pointer types (touch AND mouse) — scroll-safe
+        control.AddHandler(InputElement.TappedEvent, OnTapped, RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.DoubleTappedEvent, OnDoubleTapped, RoutingStrategies.Bubble);
+
+        // Scroll & swipe events for touch (via Avalonia gesture recognizers)
+        control.AddHandler(InputElement.ScrollGestureEvent, OnScrollGesture, RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.ScrollGestureEndedEvent, OnScrollGestureEnded, RoutingStrategies.Bubble);
+        control.AddHandler(InputElement.SwipeGestureEvent, OnSwipe, RoutingStrategies.Bubble);
+
+        // Manual pointer tracking for mouse pan/swipe (touch uses ScrollGestureRecognizer/SwipeGestureRecognizer instead)
         control.AddHandler(AvaloniaControl.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Bubble);
         control.AddHandler(InputElement.PointerMovedEvent, OnPointerMoved, RoutingStrategies.Bubble);
         control.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Bubble);
+
+        // PointerGestureRecognizer (no Avalonia equivalent)
         control.AddHandler(InputElement.PointerEnteredEvent, OnPointerEntered, RoutingStrategies.Direct | RoutingStrategies.Bubble);
         control.AddHandler(InputElement.PointerExitedEvent, OnPointerExited, RoutingStrategies.Direct | RoutingStrategies.Bubble);
     }
 
     private void UnsubscribeFromGestureEvents(AvaloniaControl control)
     {
+        control.RemoveHandler(InputElement.TappedEvent, OnTapped);
+        control.RemoveHandler(InputElement.DoubleTappedEvent, OnDoubleTapped);
+        control.RemoveHandler(InputElement.ScrollGestureEvent, OnScrollGesture);
+        control.RemoveHandler(InputElement.ScrollGestureEndedEvent, OnScrollGestureEnded);
+        control.RemoveHandler(InputElement.SwipeGestureEvent, OnSwipe);
         control.RemoveHandler(AvaloniaControl.PointerPressedEvent, OnPointerPressed);
         control.RemoveHandler(InputElement.PointerMovedEvent, OnPointerMoved);
         control.RemoveHandler(InputElement.PointerReleasedEvent, OnPointerReleased);
@@ -179,92 +189,97 @@ internal class GestureManager : IDisposable
         control.RemoveHandler(InputElement.PointerExitedEvent, OnPointerExited);
     }
 
-    private CancellationTokenSource? _singleTapCts;
-    private const int DoubleTapDelayMs = 300;
-
-    // Pan gesture state
-    private bool _isPanning;
-    private Point _panStartPoint;
-    private Visual? _panOriginVisual;
-    private Visual? _panRootVisual;
-
-    // Drag gesture state
-    private bool _isDragPending;
-    private Point _dragStartPoint;
-    private PointerPressedEventArgs? _dragPointerArgs;
-    private const double DragThreshold = 5.0;
-
-    // Drop gesture state
-    private bool _isDropSubscribed;
-
-    // Pinch gesture state
-    private bool _isPinchSubscribed;
-    private bool _isPinchActive;
-    private double _previousPinchScale;
-
-    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    private void SetupScrollSwipeRecognizers(AvaloniaControl control)
     {
-        // Skip if already handled by another GestureManager
-        if (e.Handled)
-            return;
+        var recognizers = _view is View v ? v.GetCompositeGestureRecognizers() : null;
+        if (recognizers == null) return;
 
-        if (_view is not View view)
-            return;
+        if (recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().Any())
+        {
+            _scrollRecognizer = new ScrollGestureRecognizer
+            {
+                CanHorizontallyScroll = true,
+                CanVerticallyScroll = true,
+            };
+            control.GestureRecognizers.Add(_scrollRecognizer);
+        }
+
+        if (recognizers.OfType<Microsoft.Maui.Controls.SwipeGestureRecognizer>().Any())
+        {
+            _swipeRecognizer = new Avalonia.Input.GestureRecognizers.SwipeGestureRecognizer();
+            control.GestureRecognizers.Add(_swipeRecognizer);
+        }
+    }
+
+    private void TearDownScrollSwipeRecognizers(AvaloniaControl control)
+    {
+        if (_scrollRecognizer != null)
+        {
+            control.GestureRecognizers.Remove(_scrollRecognizer);
+            _scrollRecognizer = null;
+        }
+        if (_swipeRecognizer != null)
+        {
+            control.GestureRecognizers.Remove(_swipeRecognizer);
+            _swipeRecognizer = null;
+        }
+    }
+
+    // ── Tap (Avalonia routed events — scroll-safe, works on all input types) ──
+
+    private void OnTapped(object? sender, AvaloniaTappedEventArgs e)
+    {
+        if (_view is not View view) return;
 
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null || recognizers.Count == 0)
-            return;
+        if (recognizers == null) return;
 
         var point = e.GetPosition(sender as Visual);
-        var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
-
-        // Handle PointerGestureRecognizer.PointerPressed
-        if (pointerRecognizers.Count > 0)
-        {
-            var args = GetPointerArgs(point);
-            foreach (var recognizer in pointerRecognizers)
-            {
-                recognizer.SendPointerPressed(view, args.GetPosition, null, args.Buttons);
-            }
-        }
-
-        // Check for drag gesture recognizers
-        var dragRecognizers = recognizers.OfType<DragGestureRecognizer>()
-            .Where(r => r.CanDrag)
+        var singleTapRecognizers = recognizers.OfType<TapGestureRecognizer>()
+            .Where(r => r.NumberOfTapsRequired == 1)
             .ToList();
 
-        if (dragRecognizers.Count > 0)
-        {
-            _isDragPending = true;
-            _dragStartPoint = point;
-            _dragPointerArgs = e;
-        }
+        foreach (var recognizer in singleTapRecognizers)
+            recognizer.SendTapped(view, GetPositionFunc(point));
+    }
 
-        int clickCount = e.ClickCount;
+    private void OnDoubleTapped(object? sender, AvaloniaTappedEventArgs e)
+    {
+        if (_view is not View view) return;
 
-        // Handle pan & swipe gesture recognizers
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null) return;
+
+        var point = e.GetPosition(sender as Visual);
+        var doubleTapRecognizers = recognizers.OfType<TapGestureRecognizer>()
+            .Where(r => r.NumberOfTapsRequired == 2)
+            .ToList();
+
+        foreach (var recognizer in doubleTapRecognizers)
+            recognizer.SendTapped(view, GetPositionFunc(point));
+    }
+
+    // ── Touch pan/swipe (via Avalonia ScrollGestureRecognizer/SwipeGestureRecognizer) ──
+
+    private bool _isScrollActive;
+    private double _scrollTotalX;
+    private double _scrollTotalY;
+
+    private void OnScrollGesture(object? sender, ScrollGestureEventArgs e)
+    {
+        if (_view is not View view) return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null) return;
+
         var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
-        var swipeRecognizers = recognizers.OfType<Microsoft.Maui.Controls.SwipeGestureRecognizer>().ToList();
+        if (panRecognizers.Count == 0) return;
 
-        if (panRecognizers.Count > 0 || swipeRecognizers.Count > 0)
+        if (!_isScrollActive)
         {
-            // Only set Handled if we have recognizers that need to capture input
-            e.Handled = true;
-
-            _isPanning = true;
-            _panOriginVisual = sender as Visual;
-            // Use TopLevel for coordinates
-            _panRootVisual = (_panOriginVisual as AvaloniaControl) != null
-                ? AvaloniaTopLevel.GetTopLevel(_panOriginVisual as AvaloniaControl)
-                : _panOriginVisual;
-            if (_panRootVisual == null) _panRootVisual = _panOriginVisual;
-            _panStartPoint = e.GetPosition(_panRootVisual);
-
-            if (sender is IInputElement inputElement)
-            {
-                e.Pointer.Capture(inputElement);
-            }
-
+            _isScrollActive = true;
+            _scrollTotalX = 0;
+            _scrollTotalY = 0;
             foreach (var recognizer in panRecognizers)
             {
                 if (recognizer is IPanGestureController controller)
@@ -272,133 +287,177 @@ internal class GestureManager : IDisposable
             }
         }
 
-        // Handle tap gesture recognizers
-        var tapRecognizers = recognizers.OfType<TapGestureRecognizer>().ToList();
-        if (tapRecognizers.Count == 0)
-            return;
+        _scrollTotalX += e.Delta.X;
+        _scrollTotalY += e.Delta.Y;
 
-        // Separate recognizers by type
-        var singleTapRecognizers = tapRecognizers.Where(r => r.NumberOfTapsRequired == 1).ToList();
-        var doubleTapRecognizers = tapRecognizers.Where(r => r.NumberOfTapsRequired == 2).ToList();
-
-        bool hasSingleTap = singleTapRecognizers.Count > 0;
-        bool hasDoubleTap = doubleTapRecognizers.Count > 0;
-
-        // Only single-tap: fire immediately
-        if (hasSingleTap && !hasDoubleTap)
+        foreach (var recognizer in panRecognizers)
         {
-            foreach (var recognizer in singleTapRecognizers)
-                recognizer.SendTapped(view, GetPositionFunc(point));
-            e.Handled = true;
-            return;
+            if (recognizer is IPanGestureController controller)
+                controller.SendPan(view, _scrollTotalX, _scrollTotalY, 0);
+        }
+    }
+
+    private void OnScrollGestureEnded(object? sender, ScrollGestureEndedEventArgs e)
+    {
+        if (!_isScrollActive) return;
+        _isScrollActive = false;
+
+        if (_view is not View view) return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null) return;
+
+        var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
+        foreach (var recognizer in panRecognizers)
+        {
+            if (recognizer is IPanGestureController controller)
+                controller.SendPanCompleted(view, 0);
+        }
+    }
+
+    private void OnSwipe(object? sender, SwipeGestureEventArgs e)
+    {
+        if (_view is not View view) return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null) return;
+
+        var swipeRecognizers = recognizers.OfType<Microsoft.Maui.Controls.SwipeGestureRecognizer>().ToList();
+        if (swipeRecognizers.Count == 0) return;
+
+        Microsoft.Maui.SwipeDirection direction = e.SwipeDirection switch
+        {
+            Avalonia.Input.SwipeDirection.Left => Microsoft.Maui.SwipeDirection.Left,
+            Avalonia.Input.SwipeDirection.Right => Microsoft.Maui.SwipeDirection.Right,
+            Avalonia.Input.SwipeDirection.Up => Microsoft.Maui.SwipeDirection.Up,
+            Avalonia.Input.SwipeDirection.Down => Microsoft.Maui.SwipeDirection.Down,
+            _ => Microsoft.Maui.SwipeDirection.Left,
+        };
+
+        foreach (var recognizer in swipeRecognizers)
+        {
+            if ((recognizer.Direction & direction) == direction)
+                recognizer.SendSwiped(view, direction);
+        }
+    }
+
+    // ── Mouse pan/swipe (manual pointer tracking — works on desktop) ──
+
+    private bool _isPanning;
+    private Point _panStartPoint;
+    private Visual? _panOriginVisual;
+    private Visual? _panRootVisual;
+
+    private bool _isDragPending;
+    private Point _dragStartPoint;
+    private PointerPressedEventArgs? _dragPointerArgs;
+    private const double DragThreshold = 5.0;
+
+    private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.Handled) return;
+
+        if (_view is not View view) return;
+
+        var recognizers = view.GetCompositeGestureRecognizers();
+        if (recognizers == null || recognizers.Count == 0) return;
+
+        var point = e.GetPosition(sender as Visual);
+
+        // PointerGestureRecognizer (always)
+        var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
+        if (pointerRecognizers.Count > 0)
+        {
+            var args = GetPointerArgs(point);
+            foreach (var recognizer in pointerRecognizers)
+                recognizer.SendPointerPressed(view, args.GetPosition, null, args.Buttons);
         }
 
-        // Only double-tap: fire when ClickCount >= 2
-        if (hasDoubleTap && !hasSingleTap)
+        // DragGestureRecognizer (always)
+        var dragRecognizers = recognizers.OfType<DragGestureRecognizer>()
+            .Where(r => r.CanDrag).ToList();
+        if (dragRecognizers.Count > 0)
         {
-            if (clickCount >= 2)
+            _isDragPending = true;
+            _dragStartPoint = point;
+            _dragPointerArgs = e;
+        }
+
+        // Touch → skip manual pan/swipe (use ScrollGestureRecognizer/SwipeGestureRecognizer instead)
+        if (e.Pointer.Type == PointerType.Touch)
+            return;
+
+        // Mouse → manual pan/swipe tracking with e.Handled
+        var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
+        var swipeRecognizers = recognizers.OfType<Microsoft.Maui.Controls.SwipeGestureRecognizer>().ToList();
+
+        if (panRecognizers.Count > 0 || swipeRecognizers.Count > 0)
+        {
+            e.Handled = true;
+
+            _isPanning = true;
+            _panOriginVisual = sender as Visual;
+            _panRootVisual = (_panOriginVisual as AvaloniaControl) != null
+                ? AvaloniaTopLevel.GetTopLevel(_panOriginVisual as AvaloniaControl)
+                : _panOriginVisual;
+            if (_panRootVisual == null) _panRootVisual = _panOriginVisual;
+            _panStartPoint = e.GetPosition(_panRootVisual);
+
+            if (sender is IInputElement inputElement)
+                e.Pointer.Capture(inputElement);
+
+            foreach (var recognizer in panRecognizers)
             {
-                foreach (var recognizer in doubleTapRecognizers)
-                    recognizer.SendTapped(view, GetPositionFunc(point));
-                e.Handled = true;
+                if (recognizer is IPanGestureController controller)
+                    controller.SendPanStarted(view, 0);
             }
-            return;
-        }
-
-        // Both single and double-tap: delay single-tap to detect double-tap
-        if (clickCount >= 2)
-        {
-            _singleTapCts?.Cancel();
-            _singleTapCts = null;
-
-            foreach (var recognizer in doubleTapRecognizers)
-                recognizer.SendTapped(view, GetPositionFunc(point));
-            e.Handled = true;
-        }
-        else if (clickCount == 1)
-        {
-            _singleTapCts?.Cancel();
-            _singleTapCts = new CancellationTokenSource();
-            var cts = _singleTapCts;
-            var capturedPoint = point;
-            var capturedView = view;
-            var capturedRecognizers = singleTapRecognizers.ToList();
-
-            _ = Task.Delay(DoubleTapDelayMs, cts.Token).ContinueWith(t =>
-            {
-                if (!t.IsCanceled)
-                {
-                    Threading.Dispatcher.UIThread.Post(() =>
-                    {
-                        foreach (var recognizer in capturedRecognizers)
-                        {
-                            recognizer.SendTapped(capturedView, GetPositionFunc(capturedPoint));
-                        }
-                    });
-                }
-            }, TaskScheduler.Default);
         }
     }
 
     private void OnPointerMoved(object? sender, Input.PointerEventArgs e)
     {
-        if (e.Handled)
-            return;
+        if (e.Handled) return;
 
-        if (_view is not View view)
-            return;
+        if (_view is not View view) return;
 
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null || recognizers.Count == 0)
-            return;
+        if (recognizers == null || recognizers.Count == 0) return;
 
-        // 1. Handle PointerGestureRecognizer (Always)
+        // PointerGestureRecognizer
         var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
         if (pointerRecognizers.Count > 0)
         {
-             var point = e.GetPosition(sender as Visual);
-             var args = GetPointerArgs(point);
-             foreach (var recognizer in pointerRecognizers)
-             {
-                 recognizer.SendPointerMoved(view, args.GetPosition, null, args.Buttons);
-             }
+            var point = e.GetPosition(sender as Visual);
+            var args = GetPointerArgs(point);
+            foreach (var recognizer in pointerRecognizers)
+                recognizer.SendPointerMoved(view, args.GetPosition, null, args.Buttons);
         }
 
-        // 2. Check for drag threshold
+        // Drag threshold
         if (_isDragPending && _dragPointerArgs != null)
         {
             var currentPoint = e.GetPosition(sender as Visual);
-            double deltaX = currentPoint.X - _dragStartPoint.X;
-            double deltaY = currentPoint.Y - _dragStartPoint.Y;
-            double distance = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+            double distance = Math.Sqrt(
+                Math.Pow(currentPoint.X - _dragStartPoint.X, 2) +
+                Math.Pow(currentPoint.Y - _dragStartPoint.Y, 2));
 
             if (distance >= DragThreshold)
             {
                 _isDragPending = false;
                 var dragArgs = _dragPointerArgs;
                 _dragPointerArgs = null;
-
-                // Cancel any pending tap
-                _singleTapCts?.Cancel();
-                _singleTapCts = null;
-
                 _ = InitiateDragAsync(view, dragArgs, sender as Visual);
                 e.Handled = true;
                 return;
             }
         }
 
-        // 3. Handle PanGestureRecognizer (Only if panning)
-        if (!_isPanning)
-            return;
-
-        // For Pan, we strictly check origin
-        if (sender as Visual != _panOriginVisual)
-            return;
+        // Mouse pan
+        if (!_isPanning) return;
+        if (sender as Visual != _panOriginVisual) return;
 
         var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
-        if (panRecognizers.Count == 0)
-            return;
+        if (panRecognizers.Count == 0) return;
 
         var panPoint = e.GetPosition(_panRootVisual);
         double totalX = panPoint.X - _panStartPoint.X;
@@ -414,42 +473,31 @@ internal class GestureManager : IDisposable
 
     private void OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        // Reset drag state on release (no drag threshold was reached)
         _isDragPending = false;
         _dragPointerArgs = null;
 
-        if (e.Handled)
-            return;
+        if (e.Handled) return;
 
-        if (_view is not View view)
-            return;
+        if (_view is not View view) return;
 
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null || recognizers.Count == 0)
-            return;
+        if (recognizers == null || recognizers.Count == 0) return;
 
-        // 1. Handle PointerGestureRecognizer (Always)
+        // PointerGestureRecognizer
         var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
         if (pointerRecognizers.Count > 0)
         {
-             var point = e.GetPosition(sender as Visual);
-             var args = GetPointerArgs(point);
-             foreach (var recognizer in pointerRecognizers)
-             {
-                 recognizer.SendPointerReleased(view, args.GetPosition, null, args.Buttons);
-             }
+            var point = e.GetPosition(sender as Visual);
+            var args = GetPointerArgs(point);
+            foreach (var recognizer in pointerRecognizers)
+                recognizer.SendPointerReleased(view, args.GetPosition, null, args.Buttons);
         }
 
-        // 2. Handle PanGestureRecognizer (Only if panning)
-        if (!_isPanning)
-            return;
-
-        if (sender as Visual != _panOriginVisual)
-            return;
+        // Mouse pan/swipe completion
+        if (!_isPanning) return;
+        if (sender as Visual != _panOriginVisual) return;
 
         _isPanning = false;
-
-        // Release pointer capture
         e.Pointer.Capture(null);
 
         var panRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PanGestureRecognizer>().ToList();
@@ -459,7 +507,7 @@ internal class GestureManager : IDisposable
                 controller.SendPanCompleted(view, 0);
         }
 
-        var swipeRecognizers = recognizers.OfType<SwipeGestureRecognizer>().ToList();
+        var swipeRecognizers = recognizers.OfType<Microsoft.Maui.Controls.SwipeGestureRecognizer>().ToList();
         if (swipeRecognizers.Count > 0)
         {
             var releasedPoint = e.GetPosition(_panRootVisual);
@@ -468,11 +516,8 @@ internal class GestureManager : IDisposable
 
             foreach (var recognizer in swipeRecognizers)
             {
-                // Check if horizontal or vertical
                 bool isHorizontal = Math.Abs(totalX) > Math.Abs(totalY);
-                double threshold = recognizer.Threshold; // Default is usually 100
-
-                // If Threshold is 0, use a reasonable default.
+                double threshold = recognizer.Threshold;
                 if (threshold <= 0) threshold = 48;
 
                 Microsoft.Maui.SwipeDirection? detectedDirection = null;
@@ -494,12 +539,10 @@ internal class GestureManager : IDisposable
                     }
                 }
 
-                if (detectedDirection.HasValue)
+                if (detectedDirection.HasValue &&
+                    (recognizer.Direction & detectedDirection.Value) == detectedDirection.Value)
                 {
-                    if ((recognizer.Direction & detectedDirection.Value) == detectedDirection.Value)
-                    {
-                        recognizer.SendSwiped(view, detectedDirection.Value);
-                    }
+                    recognizer.SendSwiped(view, detectedDirection.Value);
                 }
             }
         }
@@ -509,68 +552,56 @@ internal class GestureManager : IDisposable
         e.Handled = true;
     }
 
+    // ── PointerGestureRecognizer enter/exit ────────────────────────────────
+
     private void OnPointerEntered(object? sender, Input.PointerEventArgs e)
     {
-        if (_view is not View view)
-            return;
+        if (_view is not View view) return;
 
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null || recognizers.Count == 0)
-            return;
+        if (recognizers == null) return;
 
         var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
-        if (pointerRecognizers.Count == 0)
-            return;
+        if (pointerRecognizers.Count == 0) return;
 
         var point = e.GetPosition(sender as Visual);
         var args = GetPointerArgs(point);
 
         foreach (var recognizer in pointerRecognizers)
-        {
             recognizer.SendPointerEntered(view, args.GetPosition, null, args.Buttons);
-        }
         e.Handled = true;
     }
 
     private void OnPointerExited(object? sender, Input.PointerEventArgs e)
     {
-        if (_view is not View view)
-            return;
+        if (_view is not View view) return;
 
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null || recognizers.Count == 0)
-            return;
+        if (recognizers == null) return;
 
         var pointerRecognizers = recognizers.OfType<PointerGestureRecognizer>().ToList();
-        if (pointerRecognizers.Count == 0)
-            return;
+        if (pointerRecognizers.Count == 0) return;
 
         var point = e.GetPosition(sender as Visual);
         var args = GetPointerArgs(point);
 
         foreach (var recognizer in pointerRecognizers)
-        {
             recognizer.SendPointerExited(view, args.GetPosition, null, args.Buttons);
-        }
         e.Handled = true;
     }
 
-    // --- Drag Source Logic ---
+    // ── Drag Source Logic ──────────────────────────────────────────────────
 
     private async Task InitiateDragAsync(View view, PointerPressedEventArgs pointerArgs, Visual? senderVisual)
     {
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null)
-            return;
+        if (recognizers == null) return;
 
         var dragRecognizers = recognizers.OfType<DragGestureRecognizer>()
-            .Where(r => r.CanDrag)
-            .ToList();
+            .Where(r => r.CanDrag).ToList();
 
-        if (dragRecognizers.Count == 0)
-            return;
+        if (dragRecognizers.Count == 0) return;
 
-        // Call SendDragStarting on each recognizer to get the DataPackage
         DataPackage? dataPackage = null;
         bool cancelled = false;
 
@@ -588,33 +619,24 @@ internal class GestureManager : IDisposable
             dataPackage ??= dragStartingArgs.Data;
         }
 
-        if (cancelled || dataPackage == null)
-            return;
+        if (cancelled || dataPackage == null) return;
 
-        // Populate the bridge for drop targets
         DragDropDataBridge.ActiveDataPackage = dataPackage;
         DragDropDataBridge.ActiveDragSourceView = view;
         DragDropDataBridge.ActiveDragRecognizers = dragRecognizers;
 
         try
         {
-            // Create Avalonia DataTransfer with text content
             var dataTransfer = new DataTransfer();
             var text = dataPackage.Text;
             if (!string.IsNullOrEmpty(text))
-            {
                 dataTransfer.Add(DataTransferItem.CreateText(text));
-            }
 
-            // Initiate Avalonia drag-and-drop
             await DragDrop.DoDragDropAsync(pointerArgs, dataTransfer, DragDropEffects.Copy | DragDropEffects.Move);
 
-            // Notify source recognizers that the drop completed
             var dropCompletedArgs = new DropCompletedEventArgs();
             foreach (var recognizer in dragRecognizers)
-            {
                 recognizer.SendDropCompleted(dropCompletedArgs);
-            }
         }
         finally
         {
@@ -622,27 +644,22 @@ internal class GestureManager : IDisposable
         }
     }
 
-    // --- Drop Target Logic ---
+    // ── Drop Target Logic ──────────────────────────────────────────────────
+
+    private bool _isDropSubscribed;
 
     private void SetupDropHandlersIfNeeded(AvaloniaControl control, View view)
     {
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null)
-            return;
+        if (recognizers == null) return;
 
-        bool hasDropRecognizers = recognizers.OfType<DropGestureRecognizer>()
-            .Any(r => r.AllowDrop);
-
-        if (hasDropRecognizers)
-        {
-            SetupDropHandlers(control);
-        }
+        bool hasDropRecognizers = recognizers.OfType<DropGestureRecognizer>().Any(r => r.AllowDrop);
+        if (hasDropRecognizers) SetupDropHandlers(control);
     }
 
     private void SetupDropHandlers(AvaloniaControl control)
     {
-        if (_isDropSubscribed)
-            return;
+        if (_isDropSubscribed) return;
 
         DragDrop.SetAllowDrop(control, true);
         control.AddHandler(DragDrop.DragEnterEvent, OnDragEnter, RoutingStrategies.Bubble);
@@ -654,8 +671,7 @@ internal class GestureManager : IDisposable
 
     private void TearDownDropHandlers(AvaloniaControl control)
     {
-        if (!_isDropSubscribed)
-            return;
+        if (!_isDropSubscribed) return;
 
         DragDrop.SetAllowDrop(control, false);
         control.RemoveHandler(DragDrop.DragEnterEvent, OnDragEnter);
@@ -665,24 +681,24 @@ internal class GestureManager : IDisposable
         _isDropSubscribed = false;
     }
 
+    // ── Pinch (unchanged) ──────────────────────────────────────────────────
+
+    private bool _isPinchSubscribed;
+    private bool _isPinchActive;
+    private double _previousPinchScale;
+
     private void SetupPinchHandlersIfNeeded(AvaloniaControl control, View view)
     {
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null)
-            return;
+        if (recognizers == null) return;
 
         bool hasPinchRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PinchGestureRecognizer>().Any();
-
-        if (hasPinchRecognizers)
-        {
-            SetupPinchHandlers(control);
-        }
+        if (hasPinchRecognizers) SetupPinchHandlers(control);
     }
 
     private void SetupPinchHandlers(AvaloniaControl control)
     {
-        if (_isPinchSubscribed)
-            return;
+        if (_isPinchSubscribed) return;
 
         control.GestureRecognizers.Add(new AvaloniaPinchGestureRecognizer());
         control.AddHandler(InputElement.PinchEvent, OnPinch, RoutingStrategies.Bubble);
@@ -692,8 +708,7 @@ internal class GestureManager : IDisposable
 
     private void TearDownPinchHandlers(AvaloniaControl control)
     {
-        if (!_isPinchSubscribed)
-            return;
+        if (!_isPinchSubscribed) return;
 
         control.RemoveHandler(InputElement.PinchEvent, OnPinch);
         control.RemoveHandler(InputElement.PinchEndedEvent, OnPinchEnded);
@@ -705,16 +720,13 @@ internal class GestureManager : IDisposable
 
     private void OnPinch(object? sender, PinchEventArgs e)
     {
-        if (_view is not View view)
-            return;
+        if (_view is not View view) return;
 
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null || recognizers.Count == 0)
-            return;
+        if (recognizers == null || recognizers.Count == 0) return;
 
         var pinchRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PinchGestureRecognizer>().ToList();
-        if (pinchRecognizers.Count == 0)
-            return;
+        if (pinchRecognizers.Count == 0) return;
 
         var origin = e.ScaleOrigin;
         double viewWidth = view.Width;
@@ -746,15 +758,11 @@ internal class GestureManager : IDisposable
 
     private void OnPinchEnded(object? sender, PinchEndedEventArgs e)
     {
-        if (!_isPinchActive)
-            return;
-
-        if (_view is not View view)
-            return;
+        if (!_isPinchActive) return;
+        if (_view is not View view) return;
 
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null || recognizers.Count == 0)
-            return;
+        if (recognizers == null || recognizers.Count == 0) return;
 
         var pinchRecognizers = recognizers.OfType<Microsoft.Maui.Controls.PinchGestureRecognizer>().ToList();
         foreach (var recognizer in pinchRecognizers)
@@ -767,97 +775,71 @@ internal class GestureManager : IDisposable
         _previousPinchScale = 1.0;
     }
 
-    private void OnDragEnter(object? sender, AvaloniaDragEventArgs e)
-    {
-        HandleDragOver(e);
-    }
+    // ── Drop events (unchanged) ────────────────────────────────────────────
 
-    private void OnDragOver(object? sender, AvaloniaDragEventArgs e)
-    {
-        HandleDragOver(e);
-    }
+    private void OnDragEnter(object? sender, AvaloniaDragEventArgs e) => HandleDragOver(e);
+
+    private void OnDragOver(object? sender, AvaloniaDragEventArgs e) => HandleDragOver(e);
 
     private void HandleDragOver(AvaloniaDragEventArgs e)
     {
-        if (_view is not View view)
-            return;
-
+        if (_view is not View view) return;
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null)
-            return;
+        if (recognizers == null) return;
 
         var dropRecognizers = recognizers.OfType<DropGestureRecognizer>()
-            .Where(r => r.AllowDrop)
-            .ToList();
+            .Where(r => r.AllowDrop).ToList();
 
-        if (dropRecognizers.Count == 0)
-            return;
+        if (dropRecognizers.Count == 0) return;
 
         var dataPackage = GetOrCreateDataPackage(e.DataTransfer);
         var dragEventArgs = new Microsoft.Maui.Controls.DragEventArgs(dataPackage);
 
         foreach (var recognizer in dropRecognizers)
-        {
             recognizer.SendDragOver(dragEventArgs);
-        }
 
         e.DragEffects = dragEventArgs.AcceptedOperation == DataPackageOperation.None
-            ? DragDropEffects.None
-            : DragDropEffects.Copy;
+            ? DragDropEffects.None : DragDropEffects.Copy;
         e.Handled = true;
     }
 
     private void OnDragLeave(object? sender, AvaloniaDragEventArgs e)
     {
-        if (_view is not View view)
-            return;
-
+        if (_view is not View view) return;
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null)
-            return;
+        if (recognizers == null) return;
 
         var dropRecognizers = recognizers.OfType<DropGestureRecognizer>()
-            .Where(r => r.AllowDrop)
-            .ToList();
+            .Where(r => r.AllowDrop).ToList();
 
-        if (dropRecognizers.Count == 0)
-            return;
+        if (dropRecognizers.Count == 0) return;
 
         var dataPackage = GetOrCreateDataPackage(e.DataTransfer);
         var dragEventArgs = new Microsoft.Maui.Controls.DragEventArgs(dataPackage);
 
         foreach (var recognizer in dropRecognizers)
-        {
             recognizer.SendDragLeave(dragEventArgs);
-        }
 
         e.Handled = true;
     }
 
     private async void OnDrop(object? sender, AvaloniaDragEventArgs e)
     {
-        if (_view is not View view)
-            return;
-
+        if (_view is not View view) return;
         var recognizers = view.GetCompositeGestureRecognizers();
-        if (recognizers == null)
-            return;
+        if (recognizers == null) return;
 
         var dropRecognizers = recognizers.OfType<DropGestureRecognizer>()
-            .Where(r => r.AllowDrop)
-            .ToList();
+            .Where(r => r.AllowDrop).ToList();
 
-        if (dropRecognizers.Count == 0)
-            return;
+        if (dropRecognizers.Count == 0) return;
 
         var dataPackage = GetOrCreateDataPackage(e.DataTransfer);
         var dataPackageView = dataPackage.View;
         var dropEventArgs = new DropEventArgs(dataPackageView);
 
         foreach (var recognizer in dropRecognizers)
-        {
             await recognizer.SendDrop(dropEventArgs);
-        }
 
         e.DragEffects = dropEventArgs.Handled ? DragDropEffects.Copy : DragDropEffects.None;
         e.Handled = true;
@@ -865,21 +847,15 @@ internal class GestureManager : IDisposable
 
     private static DataPackage GetOrCreateDataPackage(IDataTransfer? dataTransfer)
     {
-        // Use bridge data for in-app drags
         if (DragDropDataBridge.ActiveDataPackage is { } bridgePackage)
             return bridgePackage;
 
-        // For external drags (files from OS, etc.), populate from Avalonia's data transfer
         var dataPackage = new DataPackage();
-
-        if (dataTransfer == null)
-            return dataPackage;
+        if (dataTransfer == null) return dataPackage;
 
         var text = dataTransfer.TryGetText();
         if (!string.IsNullOrEmpty(text))
-        {
             dataPackage.Text = text;
-        }
 
         var files = dataTransfer.TryGetFiles();
         if (files != null && files.Length > 0)
@@ -889,35 +865,26 @@ internal class GestureManager : IDisposable
             {
                 var localPath = file.TryGetLocalPath();
                 if (localPath != null)
-                {
                     filePaths.Add(localPath);
-                }
                 else
-                {
                     filePaths.Add(file.Path.ToString());
-                }
             }
 
-            // Store file paths as newline-separated text if no text was set
             if (string.IsNullOrEmpty(dataPackage.Text))
-            {
                 dataPackage.Text = string.Join(Environment.NewLine, filePaths);
-            }
 
-            // Also store in properties for structured access
             dataPackage.Properties["FilePaths"] = filePaths;
         }
 
         return dataPackage;
     }
 
-    // --- Helpers ---
+    // ── Helpers ────────────────────────────────────────────────────────────
 
     private (Func<Microsoft.Maui.IElement?, Microsoft.Maui.Graphics.Point?> GetPosition, ButtonsMask Buttons) GetPointerArgs(Point point)
     {
         return (GetPositionFunc(point), (ButtonsMask)1);
     }
-
 
     private static Func<Microsoft.Maui.IElement?, Microsoft.Maui.Graphics.Point?> GetPositionFunc(Point point)
     {
@@ -926,8 +893,7 @@ internal class GestureManager : IDisposable
 
     public void Dispose()
     {
-        if (_disposed)
-            return;
+        if (_disposed) return;
 
         _disposed = true;
         DisconnectGestures();
