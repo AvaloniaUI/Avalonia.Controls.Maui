@@ -79,12 +79,12 @@ Access device battery information and monitor changes.
 
 | Member | Type | Status |
 |--------|------|--------|
-| ChargeLevel | Property | ⏳ TODO |
-| State | Property | ⏳ TODO |
-| PowerSource | Property | ⏳ TODO |
-| EnergySaverStatus | Property | ⏳ TODO |
-| BatteryInfoChanged | Event | ⏳ TODO |
-| EnergySaverStatusChanged | Event | ⏳ TODO |
+| ChargeLevel | Property | ✅ Done |
+| State | Property | ✅ Done |
+| PowerSource | Property | ✅ Done |
+| EnergySaverStatus | Property | ✅ Done |
+| BatteryInfoChanged | Event | ✅ Done |
+| EnergySaverStatusChanged | Event | ✅ Done |
 
 ---
 
@@ -190,17 +190,17 @@ Get the device's screen metrics and request to keep the screen awake.
 
 | Member | Type | Status |
 |--------|------|--------|
-| MainDisplayInfo | Property | ⏳ TODO |
-| KeepScreenOn | Property | ⏳ TODO |
-| MainDisplayInfoChanged | Event | ⏳ TODO |
+| MainDisplayInfo | Property | ✅ Done |
+| KeepScreenOn | Property | ✅ Done |
+| MainDisplayInfoChanged | Event | ✅ Done |
 
 ### Supporting Types
 
 | Type | Status |
 |------|--------|
-| DisplayInfo | ⏳ TODO |
-| DisplayOrientation | ⏳ TODO |
-| DisplayRotation | ⏳ TODO |
+| DisplayInfo | ✅ Done |
+| DisplayOrientation | ✅ Done |
+| DisplayRotation | ✅ Done |
 
 ---
 
@@ -212,22 +212,22 @@ Get information about the device.
 
 | Member | Type | Status |
 |--------|------|--------|
-| Model | Property | ⏳ TODO |
-| Manufacturer | Property | ⏳ TODO |
-| Name | Property | ⏳ TODO |
-| VersionString | Property | ⏳ TODO |
-| Version | Property | ⏳ TODO |
-| Platform | Property | ⏳ TODO |
-| Idiom | Property | ⏳ TODO |
-| DeviceType | Property | ⏳ TODO |
+| Model | Property | ✅ Done |
+| Manufacturer | Property | ✅ Done |
+| Name | Property | ✅ Done |
+| VersionString | Property | ✅ Done |
+| Version | Property | ✅ Done |
+| Platform | Property | ✅ Done |
+| Idiom | Property | ✅ Done |
+| DeviceType | Property | ✅ Done |
 
 ### Supporting Types
 
 | Type | Status |
 |------|--------|
-| DevicePlatform | ⏳ TODO |
-| DeviceIdiom | ⏳ TODO |
-| DeviceType | ⏳ TODO |
+| DevicePlatform | ✅ Done |
+| DeviceIdiom | ✅ Done |
+| DeviceType | ✅ Done |
 
 ---
 
