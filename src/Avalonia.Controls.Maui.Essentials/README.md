@@ -24,6 +24,8 @@ builder
 | FileSystem | `Microsoft.Maui.Storage` | Implemented | `CacheDirectory`, `AppDataDirectory`, and app package file access via Avalonia's `avares://` asset loader. |
 | HapticFeedback | `Microsoft.Maui.Devices` | Stub | `IsSupported` returns `false`. `Perform()` is a no-op. Haptic feedback is not available on desktop platforms. |
 | Preferences | `Microsoft.Maui.Storage` | Implemented | Full support for all types (`string`, `int`, `bool`, `long`, `double`, `float`, `DateTime`, `DateTimeOffset`). Persists to a JSON file. Supports shared containers. |
+| WebAuthenticator | `Microsoft.Maui.Authentication` | Implemented | OAuth-style authentication flows via Avalonia's `WebAuthenticationBroker`. Supports ephemeral sessions and custom response decoders. |
+| VersionTracking | `Microsoft.Maui.ApplicationModel` | Implemented | Registered as an `IVersionTracking` service, auto-initialized at app startup, and available via `AvaloniaVersionTracking`. MAUI's internal static `VersionTracking` implementation is not overridden. |
 
 ## Not Implemented APIs
 

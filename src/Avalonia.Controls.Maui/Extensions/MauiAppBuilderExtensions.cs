@@ -92,6 +92,8 @@ public static class MauiAppBuilderExtensions
         Microsoft.Maui.Controls.DependencyService.Register<AvaloniaFontNamedSizeService>();
 #pragma warning restore CS0612 // Type or member is obsolete
 
+        builder.Services.TryAddSingleton<Microsoft.Maui.ApplicationModel.IAppInfo>(_ => new AvaloniaAppInfoImplementation());
+
         SetAppInfoImplementation();
         
         // Set Avalonia SemanticScreenReader implementation to prevent NotImplementedInReferenceAssemblyException

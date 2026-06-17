@@ -8,38 +8,45 @@ namespace Avalonia.Controls.Maui.Essentials;
 public partial class AvaloniaPreferences
 {
     static readonly string AppPreferencesPath = GetPreferencesPath();
+    static readonly object FileLock = new();
 
     partial void LoadPreferences()
     {
-        if (!File.Exists(AppPreferencesPath))
-            return;
-
-        try
+        lock (FileLock)
         {
-            using var stream = File.OpenRead(AppPreferencesPath);
-            var readPreferences = JsonSerializer.Deserialize(stream, AvaloniaPreferencesJsonSerializerContext.Default.PreferencesDictionary);
+            if (!File.Exists(AppPreferencesPath))
+                return;
 
-            if (readPreferences != null)
+            try
             {
-                _preferences.Clear();
-                foreach (var pair in readPreferences)
-                    _preferences.TryAdd(pair.Key, pair.Value);
+                using var stream = File.OpenRead(AppPreferencesPath);
+                var readPreferences = JsonSerializer.Deserialize(stream, AvaloniaPreferencesJsonSerializerContext.Default.PreferencesDictionary);
+
+                if (readPreferences != null)
+                {
+                    _preferences.Clear();
+                    foreach (var pair in readPreferences)
+                        _preferences.TryAdd(pair.Key, pair.Value);
+                }
             }
-        }
-        catch (JsonException)
-        {
-            // if deserialization fails proceed with empty settings
+            catch (JsonException)
+            {
+                // if deserialization fails proceed with empty settings
+            }
         }
     }
 
     partial void SavePreferences()
     {
-        var dir = Path.GetDirectoryName(AppPreferencesPath);
-        if (dir != null)
-            Directory.CreateDirectory(dir);
+        lock (FileLock)
+        {
+            var dir = Path.GetDirectoryName(AppPreferencesPath);
+            if (dir != null)
+                Directory.CreateDirectory(dir);
 
-        using var stream = File.Create(AppPreferencesPath);
-        JsonSerializer.Serialize(stream, _preferences, AvaloniaPreferencesJsonSerializerContext.Default.PreferencesDictionary);
+            using var stream = File.Create(AppPreferencesPath);
+            JsonSerializer.Serialize(stream, _preferences, AvaloniaPreferencesJsonSerializerContext.Default.PreferencesDictionary);
+        }
     }
 
     static string GetPreferencesPath()

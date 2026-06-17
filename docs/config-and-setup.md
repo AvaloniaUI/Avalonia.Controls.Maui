@@ -116,6 +116,7 @@ The following Essentials APIs are implemented:
 | `FileSystem` | `CacheDirectory`, `AppDataDirectory`, `avares://` asset loading |
 | `Preferences` | Full type support; persisted as JSON |
 | `HapticFeedback` | Stub implementation; `IsSupported` returns `false` |
+| `VersionTracking` | Registered as an `IVersionTracking` service and auto-initialized at startup; tracks first launch, current version/build, and version/build history |
 
 ### UseAvaloniaSkiaSharp
 
