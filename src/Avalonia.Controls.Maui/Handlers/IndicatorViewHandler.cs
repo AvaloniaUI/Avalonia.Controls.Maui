@@ -28,7 +28,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
 
     /// <summary>Command mapper for <see cref="IndicatorViewHandler"/>.</summary>
     public static readonly CommandMapper<IIndicatorView, IndicatorViewHandler> CommandMapper =
-        new(ViewCommandMapper)
+        new(ViewHandler.ViewCommandMapper)
         {
         };
 

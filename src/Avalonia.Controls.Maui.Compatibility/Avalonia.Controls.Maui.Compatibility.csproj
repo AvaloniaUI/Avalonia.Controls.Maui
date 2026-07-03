@@ -5,7 +5,6 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
     <IsAotCompatible>true</IsAotCompatible>
-    <AddMauiInternals>true</AddMauiInternals>
     <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>
     <PackageDescription>Avalonia.Controls.Maui.Compatibility provides handlers for legacy/obsolete MAUI controls (ListView, Frame, TableView, Cells) using Avalonia-based implementations. These controls are provided for backward compatibility with apps porting from Xamarin.Forms.</PackageDescription>
     <SignAssembly>true</SignAssembly>

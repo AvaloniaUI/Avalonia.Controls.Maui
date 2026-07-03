@@ -16,7 +16,7 @@ public partial class TabbedPageHandler : ViewHandler<MauiTabbedPage, AvaloniaTab
 
     /// <summary>Property mapper for <see cref="TabbedPageHandler"/>.</summary>
     public static IPropertyMapper<MauiTabbedPage, TabbedPageHandler> Mapper =
-        new PropertyMapper<MauiTabbedPage, TabbedPageHandler>(ViewMapper)
+        new PropertyMapper<MauiTabbedPage, TabbedPageHandler>(ViewHandler.ViewMapper)
         {
             [nameof(MauiTabbedPage.BarBackground)] = MapBarBackground,
             [nameof(MauiTabbedPage.BarBackgroundColor)] = MapBarBackgroundColor,
@@ -31,7 +31,7 @@ public partial class TabbedPageHandler : ViewHandler<MauiTabbedPage, AvaloniaTab
 
     /// <summary>Command mapper for <see cref="TabbedPageHandler"/>.</summary>
     public static CommandMapper<MauiTabbedPage, TabbedPageHandler> CommandMapper =
-        new(ViewCommandMapper);
+        new(ViewHandler.ViewCommandMapper);
 
     /// <summary>Initializes a new instance of <see cref="TabbedPageHandler"/>.</summary>
     public TabbedPageHandler() : base(Mapper, CommandMapper)

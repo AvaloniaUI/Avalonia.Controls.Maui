@@ -18,7 +18,7 @@ public class TimePickerHandler : ViewHandler<ITimePicker, PlatformView>
     };
 
     /// <summary>Command mapper for <see cref="TimePickerHandler"/>.</summary>
-    public static CommandMapper<ITimePicker, TimePickerHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<ITimePicker, TimePickerHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 

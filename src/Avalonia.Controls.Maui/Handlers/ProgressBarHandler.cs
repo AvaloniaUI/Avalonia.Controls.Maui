@@ -16,7 +16,7 @@ public class ProgressBarHandler : ViewHandler<Microsoft.Maui.IProgress, Avalonia
     };
 
     /// <summary>Command mapper for <see cref="ProgressBarHandler"/>.</summary>
-    public static CommandMapper<Microsoft.Maui.IProgress, ProgressBarHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<Microsoft.Maui.IProgress, ProgressBarHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 

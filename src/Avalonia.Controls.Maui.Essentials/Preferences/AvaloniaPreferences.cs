@@ -20,6 +20,29 @@ namespace Avalonia.Controls.Maui.Essentials;
 /// </remarks>
 public partial class AvaloniaPreferences : IPreferences
 {
+    // Mirrors MAUI's internal Preferences.SupportedTypes/CheckIsSupportedType, which are
+    // not accessible outside the MAUI assemblies.
+    static readonly Type[] s_supportedTypes =
+    {
+        typeof(string),
+        typeof(int),
+        typeof(bool),
+        typeof(long),
+        typeof(double),
+        typeof(float),
+        typeof(DateTime),
+        typeof(DateTimeOffset)
+    };
+
+    static void CheckIsSupportedType<T>()
+    {
+        var type = typeof(T);
+        if (!s_supportedTypes.Contains(type))
+        {
+            throw new NotSupportedException($"Preferences using '{type}' type is not supported");
+        }
+    }
+
     readonly PreferencesDictionary _preferences = new();
     readonly object _locker = new();
 
@@ -94,7 +117,7 @@ public partial class AvaloniaPreferences : IPreferences
     /// <param name="sharedName">Shared container name.</param>
     public void Set<T>(string key, T value, string? sharedName = null)
     {
-        Preferences.CheckIsSupportedType<T>();
+        CheckIsSupportedType<T>();
 
         lock (_locker)
         {

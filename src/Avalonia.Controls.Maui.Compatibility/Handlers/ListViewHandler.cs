@@ -47,7 +47,7 @@ public class ListViewHandler : ViewHandler<Microsoft.Maui.Controls.ListView, Mau
     /// Command mapper for <see cref="ListViewHandler"/>.
     /// </summary>
     public static CommandMapper<Microsoft.Maui.Controls.ListView, ListViewHandler> CommandMapper =
-        new(ViewCommandMapper)
+        new(ViewHandler.ViewCommandMapper)
         {
         };
 
@@ -125,7 +125,10 @@ public class ListViewHandler : ViewHandler<Microsoft.Maui.Controls.ListView, Mau
 
     private void OnScrollToRequested(object? sender, ScrollToRequestedEventArgs e)
     {
-        PlatformView?.ScrollTo(e.Item, e.Position, e.ShouldAnimate);
+        // ScrollToRequestedEventArgs.Item is internal; the public
+        // ITemplatedItemsListScrollToRequestedEventArgs interface exposes it.
+        var item = ((ITemplatedItemsListScrollToRequestedEventArgs)e).Item;
+        PlatformView?.ScrollTo(item, e.Position, e.ShouldAnimate);
     }
 
     private void OnScrolled(object? sender, ScrolledEventArgs e)

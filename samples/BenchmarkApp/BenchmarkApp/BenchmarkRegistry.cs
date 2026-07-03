@@ -23,7 +23,9 @@ public static class BenchmarkRegistry
         Register<ImageSourceLeakBenchmark>();
         Register<BindableLayoutLeakBenchmark>();
         Register<ScrollViewLeakBenchmark>();
-        Register<GestureRecognizerLeakBenchmark>();
+        // Gesture support removed pending a public MAUI IGesturePlatformManager API (dotnet/maui#33364);
+        // re-register once the gesture manager is rewritten against it.
+        //Register<GestureRecognizerLeakBenchmark>();
         Register<InputControlLeakBenchmark>();
         Register<CollectionViewLeakBenchmark>();
         Register<TabbedPageLeakBenchmark>();
@@ -81,7 +83,9 @@ public static class BenchmarkRegistry
         Register<ShellTabSwitchMemoryGrowthBenchmark>();
         Register<CompositionVisualLeakBenchmark>();
         Register<NavigationWithToolbarChurnLeakBenchmark>();
-        Register<GestureDoubleTapCancellationLeakBenchmark>();
+        // Gesture support removed pending a public MAUI IGesturePlatformManager API (dotnet/maui#33364);
+        // re-register once the gesture manager is rewritten against it.
+        //Register<GestureDoubleTapCancellationLeakBenchmark>();
         Register<ShellTabSwitchWithNavigationAndToolbarLeakBenchmark>();
         Register<ModalWithGesturesAndBindingsLeakBenchmark>();
         Register<RefreshViewWithNavigationAndBindingChurnLeakBenchmark>();

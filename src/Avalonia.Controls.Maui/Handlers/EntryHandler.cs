@@ -36,7 +36,7 @@ public class EntryHandler : ViewHandler<IEntry, MauiEntry>
     };
     
     /// <summary>Command mapper for <see cref="EntryHandler"/>.</summary>
-    public static CommandMapper<IEntry, EntryHandler> CommandMapper = new(ViewCommandMapper);
+    public static CommandMapper<IEntry, EntryHandler> CommandMapper = new(ViewHandler.ViewCommandMapper);
 
     /// <summary>Initializes a new instance of <see cref="EntryHandler"/>.</summary>
     public EntryHandler() : base(Mapper, CommandMapper)

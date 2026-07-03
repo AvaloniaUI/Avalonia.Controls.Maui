@@ -8,6 +8,16 @@
     <views:BasePage.Content>
         <StackLayout
             Margin="12">
+            <Border
+                Background="#33FFA500"
+                Stroke="Orange"
+                StrokeThickness="1"
+                Padding="10"
+                Margin="0, 0, 0, 12">
+                <Label
+                    Text="⚠ Temporarily unavailable: DisplayAlert / DisplayActionSheet / DisplayPromptAsync depend on a MAUI alert API that is not yet public, so these buttons will not show a dialog. See docs/known-issues.md."
+                    FontSize="13"/>
+            </Border>
             <Label
                 Text="Display Alert"
                 Style="{StaticResource Headline}"/>

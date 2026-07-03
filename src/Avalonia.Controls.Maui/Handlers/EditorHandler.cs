@@ -32,7 +32,7 @@ namespace Avalonia.Controls.Maui.Handlers
         };
 
         /// <summary>Command mapper for <see cref="EditorHandler"/>.</summary>
-        public static CommandMapper<IEditor, EditorHandler> CommandMapper = new(ViewCommandMapper)
+        public static CommandMapper<IEditor, EditorHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
         {
         };
 

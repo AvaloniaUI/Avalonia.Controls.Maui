@@ -72,7 +72,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [nameof(MauiShell.ItemTemplate)] = MapItemTemplate,
             [nameof(MauiShell.MenuItemTemplate)] = MapMenuItemTemplate,
             [nameof(VisualElement.BackgroundColor)] = MapBackgroundColor,
-            [nameof(MauiShell.TitleView)] = MapTitleView,
+            [MauiShell.TitleViewProperty.PropertyName] = MapTitleView,
             [MauiShell.SearchHandlerProperty.PropertyName] = MapSearchHandler,
             [MauiShell.ForegroundColorProperty.PropertyName] = MapForegroundColor,
             [MauiShell.TitleColorProperty.PropertyName] = MapTitleColor,
@@ -739,7 +739,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         }
         else if (e.PropertyName == MauiShell.NavBarHasShadowProperty.PropertyName)
             this.UpdateNavBarHasShadow(VirtualView);
-        else if (e.PropertyName == nameof(MauiShell.TitleView))
+        else if (e.PropertyName == MauiShell.TitleViewProperty.PropertyName)
             this.UpdateTitleView(VirtualView);
         else if (e.PropertyName == MauiShell.BackButtonBehaviorProperty.PropertyName)
             this.UpdateBackButtonBehavior(VirtualView);

@@ -41,7 +41,7 @@ public class WebViewHandler : ViewHandler<IWebView, Avalonia.Controls.Control>, 
     };
 
     /// <summary>Command mapper for <see cref="WebViewHandler"/>.</summary>
-    public static CommandMapper<IWebView, WebViewHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IWebView, WebViewHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
         [nameof(IWebView.GoBack)] = MapGoBack,
         [nameof(IWebView.GoForward)] = MapGoForward,

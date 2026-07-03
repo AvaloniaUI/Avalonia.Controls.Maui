@@ -91,7 +91,7 @@ public static class ElementExtensions
 
         if (elementHandler == null)
         {
-            throw new HandlerNotFoundException(view);
+            throw new InvalidOperationException($"Handler not found for view {view}.");
         }
 
         elementHandler.SetMauiContext(context);

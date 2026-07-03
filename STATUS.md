@@ -665,9 +665,9 @@ A Page that manages the navigation and user-experience of a stack of other pages
  
  | Method                  | Status |
  |-------------------------|--------|
- | DisplayAlertAsync       | ✅ Implemented |
- | DisplayActionSheetAsync | ✅ Implemented |
- | DisplayPromptAsync      | ✅ Implemented |
+ | DisplayAlertAsync       | ❌ Not supported (MAUI's alert seam is internal; see known-issues.md) |
+ | DisplayActionSheetAsync | ❌ Not supported (MAUI's alert seam is internal; see known-issues.md) |
+ | DisplayPromptAsync      | ❌ Not supported (MAUI's alert seam is internal; see known-issues.md) |
 
  ---
 
@@ -1399,7 +1399,7 @@ All controls inherit these common properties from the View and VisualElement bas
 | Effects | IList<Effect> | ✅ Verified |
 | FlowDirection | FlowDirection | ✅ Implemented |
 | Frame | Rect | ✅ Verified |
-| GestureRecognizers | IList<IGestureRecognizer> | ✅ Implemented |
+| GestureRecognizers | IList<IGestureRecognizer> | ❌ Not supported (pending public IGesturePlatformManager, dotnet/maui#33364) |
 | Handler | IViewHandler | ✅ Implemented |
 | Height | double | ✅ Implemented |
 | HeightRequest | double | ✅ Implemented |

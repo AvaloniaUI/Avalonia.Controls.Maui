@@ -34,7 +34,7 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
     };
 
     /// <summary>Command mapper for <see cref="ImageButtonHandler"/>.</summary>
-    public static CommandMapper<IImageButton, ImageButtonHandler> CommandMapper = new(ViewCommandMapper);
+    public static CommandMapper<IImageButton, ImageButtonHandler> CommandMapper = new(ViewHandler.ViewCommandMapper);
 
     /// <summary>Initializes a new instance of <see cref="ImageButtonHandler"/>.</summary>
     public ImageButtonHandler()

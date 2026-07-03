@@ -26,7 +26,7 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
     /// Property mapper for <see cref="PageHandler"/>.
     /// </summary>
     public static IPropertyMapper<MauiPage, PageHandler> Mapper =
-        new PropertyMapper<MauiPage, PageHandler>(ViewMapper)
+        new PropertyMapper<MauiPage, PageHandler>(ViewHandler.ViewMapper)
         {
             [nameof(MauiPage.Background)] = MapBackground,
             [nameof(MauiPage.BackgroundImageSource)] = MapBackgroundImageSource,
@@ -40,7 +40,7 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
     /// Command mapper for <see cref="PageHandler"/>.
     /// </summary>
     public static CommandMapper<MauiPage, PageHandler> CommandMapper =
-        new(ViewCommandMapper);
+        new(ViewHandler.ViewCommandMapper);
 
     /// <summary>
     /// Initializes a new instance of <see cref="PageHandler"/>.

@@ -111,8 +111,10 @@ public class AvaloniaMediaPickerTests
 
         var result = await picker.PickPhotoAsync();
 
-        Assert.NotNull(result);
-        await using var stream = await result.OpenReadAsync();
+        // OpenReadAsync must be called through the AvaloniaFileResult type; the base
+        // FileResult implementation is not functional on the portable Essentials build.
+        var avaloniaResult = Assert.IsType<AvaloniaFileResult>(result);
+        await using var stream = await avaloniaResult.OpenReadAsync();
         using var reader = new StreamReader(stream, Encoding.UTF8);
         var text = await reader.ReadToEndAsync(TestContext.Current.CancellationToken);
 
@@ -168,8 +170,10 @@ public class AvaloniaMediaPickerTests
 
         var result = await picker.PickVideoAsync();
 
-        Assert.NotNull(result);
-        await using var stream = await result.OpenReadAsync();
+        // OpenReadAsync must be called through the AvaloniaFileResult type; the base
+        // FileResult implementation is not functional on the portable Essentials build.
+        var avaloniaResult = Assert.IsType<AvaloniaFileResult>(result);
+        await using var stream = await avaloniaResult.OpenReadAsync();
         Assert.Same(underlying, stream);
         await file.Received(1).OpenReadAsync();
     }

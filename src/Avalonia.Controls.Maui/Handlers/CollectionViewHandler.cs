@@ -36,7 +36,7 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
 
     /// <summary>Command mapper for <see cref="CollectionViewHandler"/>.</summary>
     public static CommandMapper<CollectionView, CollectionViewHandler> CommandMapper =
-        new(ViewCommandMapper)
+        new(ViewHandler.ViewCommandMapper)
         {
 
         };

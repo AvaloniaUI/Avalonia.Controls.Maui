@@ -9,7 +9,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>
 {
     /// <summary>Property mapper for <see cref="BorderHandler"/>.</summary>
     public static IPropertyMapper<IBorderView, BorderHandler> Mapper =
-        new PropertyMapper<IBorderView, BorderHandler>(ViewMapper)
+        new PropertyMapper<IBorderView, BorderHandler>(ViewHandler.ViewMapper)
         {
             [nameof(IBorderView.Content)] = MapContent,
             [nameof(IBorderView.Background)] = MapBackground,
@@ -26,7 +26,7 @@ public class BorderHandler : ViewHandler<IBorderView, PlatformView>
 
     /// <summary>Command mapper for <see cref="BorderHandler"/>.</summary>
     public static CommandMapper<IBorderView, BorderHandler> CommandMapper =
-        new(ViewCommandMapper);
+        new(ViewHandler.ViewCommandMapper);
 
     /// <summary>Initializes a new instance of <see cref="BorderHandler"/>.</summary>
     public BorderHandler() : base(Mapper, CommandMapper)

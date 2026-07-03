@@ -101,11 +101,6 @@ When `AvaloniaSourcePath` or `MauiSourcePath` is set, `build/SourceBuild.targets
 - Adds explicit transitive dependencies (e.g. `Microsoft.Extensions.*`) that NuGet packages normally bring in but ProjectReferences do not.
 - Imports Avalonia's build tasks from the source tree (XAML compilation, source generators).
 
-When `MauiSourcePath` is set, the build also:
-
-- Defines the `MAUI_SOURCE_BUILD` compilation constant.
-- Generates `InternalsVisibleTo` attribute files in the MAUI source tree so that MAUI's internal APIs are accessible to Avalonia.Controls.Maui projects. These files are auto-generated at build time and cleaned on `dotnet clean`.
-
 ### Preparing the Source Checkouts
 
 Before building, make sure the source repos are restored and have been built at least once:

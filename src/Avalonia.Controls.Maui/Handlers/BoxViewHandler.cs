@@ -15,7 +15,7 @@ public class BoxViewHandler : ViewHandler<BoxView, Border>
     };
     
     /// <summary>Command mapper for <see cref="BoxViewHandler"/>.</summary>
-    public static CommandMapper<BoxView, BoxViewHandler> CommandMapper = new(ViewCommandMapper);
+    public static CommandMapper<BoxView, BoxViewHandler> CommandMapper = new(ViewHandler.ViewCommandMapper);
 
     /// <summary>Initializes a new instance of <see cref="BoxViewHandler"/>.</summary>
     public BoxViewHandler() : base(Mapper, CommandMapper)
