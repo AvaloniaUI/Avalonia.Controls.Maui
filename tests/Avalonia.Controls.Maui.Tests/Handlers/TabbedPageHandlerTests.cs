@@ -8,11 +8,13 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using AvaloniaImage = Avalonia.Controls.Image;
 using AvaloniaTabbedPage = Avalonia.Controls.TabbedPage;
+using AvaloniaNavigationPage = Avalonia.Controls.NavigationPage;
 using AvaloniaStackPanel = Avalonia.Controls.StackPanel;
 using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
 using AvaloniaWindow = Avalonia.Controls.Window;
 using MauiTabbedPage = Microsoft.Maui.Controls.TabbedPage;
 using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
+using MauiNavigationPage = Microsoft.Maui.Controls.NavigationPage;
 using MauiPage = Microsoft.Maui.Controls.Page;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
@@ -278,6 +280,71 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             Assert.Equal("Tab 1", stub.Children[0].Title);
             Assert.Equal("Tab 2", stub.Children[1].Title);
             Assert.Equal("Tab 3", stub.Children[2].Title);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "NavigationPage Child Creates Navigation Platform Page")]
+    public async Task NavigationPage_Child_Creates_Navigation_Platform_Page()
+    {
+        EnsureHandlerCreated();
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var stub = new TabbedPageStub();
+            stub.Children.Add(new MauiNavigationPage(new MauiContentPage { Title = "Root" }) { Title = "Nav" });
+
+            var handler = CreateHandler<TabbedPageHandler>(stub);
+
+            var platformPage = handler.PlatformView.Pages!.Single();
+            Assert.IsType<AvaloniaNavigationPage>(platformPage);
+            Assert.Equal("Nav", platformPage.Header);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Nested TabbedPage Child Creates TabbedPage Platform Page")]
+    public async Task Nested_TabbedPage_Child_Creates_TabbedPage_Platform_Page()
+    {
+        EnsureHandlerCreated();
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var nested = new MauiTabbedPage { Title = "Tabs" };
+            nested.Children.Add(new MauiContentPage { Title = "Inner A" });
+            nested.Children.Add(new MauiContentPage { Title = "Inner B" });
+
+            var stub = new TabbedPageStub();
+            stub.Children.Add(nested);
+
+            var handler = CreateHandler<TabbedPageHandler>(stub);
+
+            var platformPage = handler.PlatformView.Pages!.Single();
+            Assert.IsType<AvaloniaTabbedPage>(platformPage);
+            Assert.Equal("Tabs", platformPage.Header);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Mixed Page Type Children Create Pages Of Matching Types")]
+    public async Task Mixed_Page_Type_Children_Create_Pages_Of_Matching_Types()
+    {
+        EnsureHandlerCreated();
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var nested = new MauiTabbedPage { Title = "Tabs" };
+            nested.Children.Add(new MauiContentPage { Title = "Inner A" });
+
+            var stub = new TabbedPageStub();
+            stub.Children.Add(new MauiContentPage { Title = "Content" });
+            stub.Children.Add(new MauiNavigationPage(new MauiContentPage { Title = "Root" }) { Title = "Nav" });
+            stub.Children.Add(nested);
+
+            var handler = CreateHandler<TabbedPageHandler>(stub);
+
+            var pages = handler.PlatformView.Pages!.ToList();
+            Assert.Equal(3, pages.Count);
+            Assert.IsType<Avalonia.Controls.ContentPage>(pages[0]);
+            Assert.IsType<AvaloniaNavigationPage>(pages[1]);
+            Assert.IsType<AvaloniaTabbedPage>(pages[2]);
         });
     }
 
