@@ -1350,6 +1350,8 @@ Displays web pages or local HTML content.
 
 Note: `ProcessTerminated` remains unsupported until Avalonia `NativeWebView` exposes an equivalent process-failure event.
 
+Blazor Hybrid is supported through the opt-in `Avalonia.Controls.Maui.BlazorWebView` package. Its handler uses Avalonia `NativeWebView` directly and integrates the ASP.NET Core `WebViewManager` for assets, navigation, root components, hot reload, developer tools, and JS/.NET messaging. Assets are transported over a loopback-only HTTP origin because Avalonia's public resource-request event cannot return the response streams produced by `WebViewManager`. Custom responses through the official `BlazorWebView.WebResourceRequested` event remain unsupported for the same API limitation.
+
 ### Properties
 
 | Property | Status |

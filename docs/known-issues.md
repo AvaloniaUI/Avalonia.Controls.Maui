@@ -2,7 +2,8 @@
 
 ## Current Limitations
 
-- Blazor Hybrid is not yet implemented.
+- Blazor Hybrid is provided by the separate `Avalonia.Controls.Maui.BlazorWebView` package. Its platform view is Avalonia `NativeWebView`, with the ASP.NET Core `WebViewManager` integrated by the handler for assets, navigation, root components, hot reload, developer tools, and JS/.NET messaging. Because Avalonia's public `WebResourceRequested` event cannot supply a response stream, Blazor assets are transported to the control over a loopback-only HTTP origin. The random port is allocated per control, so WebView storage keyed by origin is not guaranteed to persist across launches.
+- The official `BlazorWebView.WebResourceRequested` custom-response event is not supported by the Avalonia handler yet. Avalonia's public resource event has no response setter, and MAUI's neutral `WebResourceRequestedEventArgs` has no generic request/response implementation.
 - Some `Microsoft.Maui.Essentials` APIs, such as [`MainThread`](https://github.com/dotnet/maui/blob/6c123d72970865ccb1312e118f5098ef6c44e892/src/Essentials/src/MainThread/MainThread.netstandard.cs), cannot be directly overridden. Code that calls them will fall through to the .NET Standard stub and throw `NotSupportedOrImplementedException`. Use alternative APIs such as the .NET MAUI `Dispatcher` as a workaround while support is being added.
 - Avalonia controls can be embedded into .NET MAUI native UI apps, but native UI elements cannot be embedded directly into `Avalonia.Controls.Maui` apps.
 - WinUI embedding of Avalonia and `Avalonia.Controls.Maui` views is not yet supported.

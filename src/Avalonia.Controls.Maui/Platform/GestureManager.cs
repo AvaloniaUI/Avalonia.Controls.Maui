@@ -1,6 +1,7 @@
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -35,6 +36,9 @@ internal class GestureManager : IDisposable
 
         SetupGestureManager();
     }
+
+    internal static IDisposable? CreateIfNeeded(IView view) =>
+        view is IControlsView controlsView ? new GestureManager(controlsView) : null;
 
     private void OnPlatformContainerViewChanged(object? sender, EventArgs e) =>
         SetupGestureManager();
