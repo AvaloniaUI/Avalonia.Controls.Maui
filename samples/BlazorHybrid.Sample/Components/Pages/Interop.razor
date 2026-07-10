@@ -1,0 +1,90 @@
+@page "/interop"
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<h1>Interop</h1>
+
+<p>This component verifies JavaScript interop in the Avalonia MAUI Blazor Hybrid backend.</p>
+
+<div class="mb-3">
+    <button id="run-interop" class="btn btn-primary" @onclick="RunInteropAsync" disabled="@isRunning">
+        @(isRunning ? "Running..." : "Run interop")
+    </button>
+</div>
+
+<dl>
+    <dt>.NET to JavaScript</dt>
+    <dd id="dotnet-to-javascript-result">@dotNetToJavaScriptResult</dd>
+
+    <dt>JavaScript to .NET</dt>
+    <dd id="javascript-to-dotnet-result">@javaScriptToDotNetResult</dd>
+</dl>
+
+@if (errorMessage is not null)
+{
+    <div id="interop-error" class="alert alert-danger" role="alert">@errorMessage</div>
+}
+
+@code {
+    private IJSObjectReference? module;
+    private DotNetObjectReference<Interop>? dotNetObjectReference;
+    private string dotNetToJavaScriptResult = "Not run";
+    private string javaScriptToDotNetResult = "Not run";
+    private string? errorMessage;
+    private bool isRunning;
+
+    private async Task RunInteropAsync()
+    {
+        if (isRunning)
+            return;
+
+        isRunning = true;
+        errorMessage = null;
+        dotNetToJavaScriptResult = "Running...";
+        javaScriptToDotNetResult = "Running...";
+
+        try
+        {
+            module ??= await JS.InvokeAsync<IJSObjectReference>("import", "./Components/Pages/Interop.razor.js");
+            dotNetObjectReference ??= DotNetObjectReference.Create(this);
+
+            dotNetToJavaScriptResult = await module.InvokeAsync<string>("echo", "ping");
+            javaScriptToDotNetResult = await module.InvokeAsync<string>("callback", dotNetObjectReference, "ok");
+        }
+        catch (Exception ex)
+        {
+            if (dotNetToJavaScriptResult == "Running...")
+                dotNetToJavaScriptResult = "Failed";
+            if (javaScriptToDotNetResult == "Running...")
+                javaScriptToDotNetResult = "Failed";
+
+            errorMessage = $"{ex.GetType().Name}: {ex.Message}";
+        }
+        finally
+        {
+            isRunning = false;
+        }
+    }
+
+    [JSInvokable]
+    public string ReceiveFromJavaScript(string value)
+    {
+        return $"callback:{value}";
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        dotNetObjectReference?.Dispose();
+
+        if (module is not null)
+        {
+            try
+            {
+                await module.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+    }
+}
