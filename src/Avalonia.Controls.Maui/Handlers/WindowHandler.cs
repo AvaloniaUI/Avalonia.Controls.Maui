@@ -21,6 +21,12 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 {
     static readonly AlertManager s_alertManager = new();
     ModalAnimationTrackingNavigation? _modalTracker;
+    MauiWindowLifecycleManager? _lifecycleManager;
+
+    /// <summary>
+    /// Gets the lifecycle manager for the <see cref="IWindow"/> MAUI lifecycle.
+    /// </summary>
+    internal MauiWindowLifecycleManager? LifecycleManager => _lifecycleManager;
 
     /// <summary>
     /// Property mapper for <see cref="WindowHandler"/>.
@@ -98,6 +104,8 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
         platformView.Resized += OnAvaloniaWindowResized;
         platformView.PositionChanged += OnAvaloniaWindowPositionChanged;
 
+        _lifecycleManager = new MauiWindowLifecycleManager(VirtualView, platformView);
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             window.AlertManager.Subscribe();
@@ -119,6 +127,9 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
         platformView.Resized -= OnAvaloniaWindowResized;
         platformView.PositionChanged -= OnAvaloniaWindowPositionChanged;
+
+        _lifecycleManager?.Dispose();
+        _lifecycleManager = null;
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {

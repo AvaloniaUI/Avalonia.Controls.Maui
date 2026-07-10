@@ -6,8 +6,10 @@ using Avalonia.Media;
 using MauiColors = Microsoft.Maui.Graphics.Colors;
 using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 using MauiNavigationPage = Microsoft.Maui.Controls.NavigationPage;
+using MauiTabbedPage = Microsoft.Maui.Controls.TabbedPage;
 using MauiFlyoutPage = Microsoft.Maui.Controls.FlyoutPage;
 using AvaloniaNavigationPage = Avalonia.Controls.NavigationPage;
+using AvaloniaTabbedPage = Avalonia.Controls.TabbedPage;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers
 {
@@ -435,6 +437,49 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
                 // MAUI stack should be synced back to 1
                 Assert.Single(navigationPage.Navigation.NavigationStack);
                 Assert.Equal(rootPage, navigationPage.CurrentPage);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "Push TabbedPage Onto Stack Does Not Throw")]
+        public async Task Push_TabbedPage_Onto_Stack_Does_Not_Throw()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                var tabbedPage = new MauiTabbedPage { Title = "Tabs" };
+                tabbedPage.Children.Add(new MauiContentPage { Title = "Tab 1" });
+
+                // A NavigationPage stack may hold any Page, not just ContentPage.
+                await navigationPage.PushAsync(tabbedPage);
+
+                Assert.Equal(2, navigationPage.Navigation.NavigationStack.Count);
+                Assert.Equal(tabbedPage, navigationPage.CurrentPage);
+
+                var platformTop = handler.PlatformView.NavigationStack[^1];
+                Assert.IsType<AvaloniaTabbedPage>(platformTop);
+                // The nav bar title binds to CurrentPage.Header; a non-ContentPage must still
+                // carry its Title there so the title isn't blank.
+                Assert.Equal("Tabs", platformTop.Header);
+            });
+        }
+
+        [AvaloniaFact(DisplayName = "NavigationPage With TabbedPage Root Wraps As TabbedPage")]
+        public async Task NavigationPage_With_TabbedPage_Root_Wraps_As_TabbedPage()
+        {
+            var tabbedRoot = new MauiTabbedPage { Title = "Tabs" };
+            tabbedRoot.Children.Add(new MauiContentPage { Title = "Tab 1" });
+            var navigationPage = new MauiNavigationPage(tabbedRoot);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                Assert.Single(navigationPage.Navigation.NavigationStack);
+                Assert.IsType<AvaloniaTabbedPage>(handler.PlatformView.NavigationStack[^1]);
             });
         }
 

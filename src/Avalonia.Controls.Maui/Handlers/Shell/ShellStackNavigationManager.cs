@@ -3,7 +3,7 @@ using Avalonia.Controls.Maui.Animations;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using AvaloniaContentPage = Avalonia.Controls.ContentPage;
+using AvaloniaPage = Avalonia.Controls.Page;
 using AvaloniaNavigationPage = Avalonia.Controls.NavigationPage;
 using MauiShell = Microsoft.Maui.Controls.Shell;
 
@@ -37,7 +37,7 @@ internal class ShellStackNavigationManager : StackNavigationManager
     }
 
     /// <inheritdoc/>
-    protected override AvaloniaContentPage WrapPage(IView mauiPage)
+    protected override AvaloniaPage WrapPage(IView mauiPage)
     {
         var page = base.WrapPage(mauiPage);
         // Shell manages the nav bar; hide it on individual pages.

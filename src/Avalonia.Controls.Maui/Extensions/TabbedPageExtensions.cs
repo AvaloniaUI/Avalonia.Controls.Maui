@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Platform;
-using AvaloniaContentPage = Avalonia.Controls.ContentPage;
 using AvaloniaImage = Avalonia.Controls.Image;
 using AvaloniaPage = Avalonia.Controls.Page;
 using AvaloniaTabbedPage = Avalonia.Controls.TabbedPage;
@@ -115,7 +114,7 @@ public static class TabbedPageExtensions
 
         foreach (var page in mauiTabbedPage.Children)
         {
-            var wrappedPage = (AvaloniaContentPage)page.ToPlatform(mauiContext);
+            var wrappedPage = (AvaloniaPage)page.ToPlatform(mauiContext);
             wrappedPage.Header = CreateTabHeader(page);
             pages.Add(wrappedPage);
             pagesToLoadIcons.Add((wrappedPage, page));
