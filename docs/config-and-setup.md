@@ -53,7 +53,7 @@ public static class MauiProgram
 builder.UseAvaloniaApp(useSingleViewLifetime: true);
 ```
 
-On current source state, the `net*-windows` WinUI path is not production-ready. For Avalonia on Windows, prefer the base desktop TFM (`net11.0`) with full hosting.
+On current source state, the `net*-windows` WinUI path does not support full hosting. For full-hosting Avalonia on Windows, prefer the base desktop TFM (`net11.0`); to place Avalonia content inside a MAUI WinUI app, use `UseAvaloniaEmbedding` on the `net*-windows` TFM.
 
 > [!IMPORTANT]
 > In full-hosting mode, call `UseAvaloniaApp` before optional package extensions such as `UseAvaloniaCompatibility`, `UseAvaloniaEssentials`, or `UseAvaloniaSkiaSharp`.
@@ -68,7 +68,7 @@ builder
     .UseAvaloniaEmbedding<AvaloniaApp>();
 ```
 
-Use embedding when incrementally adopting Avalonia in a MAUI-native app. On current source state, Windows embedding is a stub path and should not be treated as production-ready.
+Use embedding when incrementally adopting Avalonia in a MAUI-native app. On Windows, embedding is backed by the `Avalonia.WinUI` package: the `AvaloniaView` content renders into a WinUI 3 `SwapChainPanel` with input, IME, cursor, and drag-and-drop bridged to Avalonia.
 
 ### UseAvaloniaCompatibility
 

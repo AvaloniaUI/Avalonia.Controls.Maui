@@ -80,6 +80,12 @@ namespace Avalonia.Controls.Maui.Tests.Gestures
             var handler = await CreateHandlerAsync(label);
             var platformView = handler.PlatformView!;
 
+            // Since Avalonia 12.1, PointerEventArgs.GetPosition requires the visual to have a
+            // PresentationSource, so the platform view must be hosted in a shown window.
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 300 };
+            window.Show();
+            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+
             // Simulate Swipe Right: Press at 10,10 -> Release at 110,10
             var pressed = CreatePointerPressedEventArgs(platformView, new Point(10, 10));
             platformView.RaiseEvent(pressed);

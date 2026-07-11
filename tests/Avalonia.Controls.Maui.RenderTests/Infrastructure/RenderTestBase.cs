@@ -22,9 +22,14 @@ public class RenderTestBase : IAsyncDisposable
         if (_isCreated) return;
         _isCreated = true;
 
-        // Use invariant culture for consistent rendering across locales
+        // Use invariant culture for consistent rendering across locales.
+        // Also set the process-wide defaults: since Avalonia 12.1, controls such as
+        // DatePicker read CultureInfo.CurrentCulture from the dispatcher thread,
+        // which is not necessarily the thread running this method.
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
         CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
         var appBuilder = MauiApp.CreateBuilder();
         appBuilder.ConfigureTestBuilder();
