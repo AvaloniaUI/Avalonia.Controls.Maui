@@ -84,17 +84,25 @@ namespace Avalonia.Controls.Maui.Tests.Gestures
             // PresentationSource, so the platform view must be hosted in a shown window.
             var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 300 };
             window.Show();
-            Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            // Simulate Swipe Right: Press at 10,10 -> Release at 110,10
-            var pressed = CreatePointerPressedEventArgs(platformView, new Point(10, 10));
-            platformView.RaiseEvent(pressed);
+            try
+            {
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            var released = CreatePointerReleasedEventArgs(platformView, new Point(110, 10)); // +100 X
-            platformView.RaiseEvent(released);
+                // Simulate Swipe Right: Press at 10,10 -> Release at 110,10
+                var pressed = CreatePointerPressedEventArgs(platformView, new Point(10, 10));
+                platformView.RaiseEvent(pressed);
 
-            Assert.True(swiped, "Swipe Right should have fired");
-            Assert.Equal(Microsoft.Maui.SwipeDirection.Right, direction);
+                var released = CreatePointerReleasedEventArgs(platformView, new Point(110, 10)); // +100 X
+                platformView.RaiseEvent(released);
+
+                Assert.True(swiped, "Swipe Right should have fired");
+                Assert.Equal(Microsoft.Maui.SwipeDirection.Right, direction);
+            }
+            finally
+            {
+                window.Close();
+            }
         }
 
         [AvaloniaFact(DisplayName = "PanGestureRecognizer triggers PanUpdated events")]

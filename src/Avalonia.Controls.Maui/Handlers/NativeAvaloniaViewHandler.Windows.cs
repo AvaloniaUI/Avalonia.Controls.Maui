@@ -55,8 +55,9 @@ namespace Avalonia.Controls.Maui.Handlers
         }
 
         /// <summary>
-        /// Maps the Background property from the AvaloniaView to the Avalonia content area background.
-        /// Converts MAUI's <see cref="Microsoft.Maui.Controls.Brush"/> to an Avalonia brush.
+        /// Maps the BackgroundColor property from the AvaloniaView to the Avalonia content area background.
+        /// Converts MAUI's <see cref="Microsoft.Maui.Graphics.Color"/> to an Avalonia
+        /// <see cref="Avalonia.Media.SolidColorBrush"/>.
         /// </summary>
         /// <param name="handler">The handler that manages the connection between the AvaloniaView and the MauiAvaloniaView.</param>
         /// <param name="view">The AvaloniaView instance whose background is being mapped.</param>
