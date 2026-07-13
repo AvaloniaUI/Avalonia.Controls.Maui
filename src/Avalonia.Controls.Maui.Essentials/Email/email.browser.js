@@ -5,6 +5,6 @@
         const url = URL.createObjectURL(blob);
         window.location.href = url;
         // Clean up
-        setTimeout(() => URL.revokeObjectURL(url), 100);
+        setTimeout(() => URL.revokeObjectURL(url), 10_000);
     }
 };
