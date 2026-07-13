@@ -16,7 +16,7 @@ partial class AvaloniaEmail : IEmail
             return "mailto:";
         }
         else if (message.BodyFormat == EmailBodyFormat.PlainText &&
-            message.Attachments?.Count == 0)
+            (message.Attachments == null || message.Attachments.Count == 0))
         {
             return await message.ConvertToMailTo();
         }
