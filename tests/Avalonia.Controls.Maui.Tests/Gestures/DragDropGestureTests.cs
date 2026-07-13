@@ -31,18 +31,32 @@ namespace Avalonia.Controls.Maui.Tests.Gestures
             var handler = await CreateHandlerAsync(label);
             var platformView = handler.PlatformView!;
 
-            // Press at (10,10)
-            var pressed = CreatePointerPressedEventArgs(platformView, new Point(10, 10));
-            platformView.RaiseEvent(pressed);
+            // Since Avalonia 12.1, PointerEventArgs.GetPosition requires the visual to have a
+            // PresentationSource, so the platform view must be hosted in a shown window.
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 300 };
+            window.Show();
 
-            // Move past threshold (5px) to (20, 10) - distance = 10px
-            var moved = CreatePointerMovedEventArgs(platformView, new Point(20, 10));
-            platformView.RaiseEvent(moved);
+            try
+            {
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-            // Allow async drag initiation to run
-            await Task.Delay(50);
+                // Press at (10,10)
+                var pressed = CreatePointerPressedEventArgs(platformView, new Point(10, 10));
+                platformView.RaiseEvent(pressed);
 
-            Assert.True(dragStartingFired, "DragStarting should have fired after moving past threshold");
+                // Move past threshold (5px) to (20, 10) - distance = 10px
+                var moved = CreatePointerMovedEventArgs(platformView, new Point(20, 10));
+                platformView.RaiseEvent(moved);
+
+                // Allow async drag initiation to run
+                await Task.Delay(50);
+
+                Assert.True(dragStartingFired, "DragStarting should have fired after moving past threshold");
+            }
+            finally
+            {
+                window.Close();
+            }
         }
 
         [AvaloniaFact(DisplayName = "DragGesture does not fire on simple tap")]

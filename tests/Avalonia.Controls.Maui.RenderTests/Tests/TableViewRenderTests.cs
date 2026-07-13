@@ -5,6 +5,9 @@ using MauiTextAlignment = Microsoft.Maui.TextAlignment;
 
 namespace Avalonia.Controls.Maui.RenderTests.Tests;
 
+// Inside the namespace so it wins over Avalonia.Controls.TableView (added in Avalonia 12.1).
+using TableView = Microsoft.Maui.Controls.TableView;
+
 public class TableViewRenderTests : RenderTestBase
 {
     [AvaloniaFact]
