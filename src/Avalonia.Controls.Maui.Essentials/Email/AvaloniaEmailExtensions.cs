@@ -41,7 +41,7 @@ public static class AvaloniaEmailExtensions
     /// </summary>
     /// <param name="message">The email message to convert.</param>
     /// <returns>A properly formatted <c>mailto:</c> URI.</returns>
-    internal static async Task<string> ConvertToMailTo(this EmailMessage message)
+    internal static Task<string> ConvertToMailTo(this EmailMessage message)
     {
         var query = new List<string>();
 
@@ -63,7 +63,7 @@ public static class AvaloniaEmailExtensions
         if (query.Count > 0)
             uri += "?" + string.Join("&", query);
 
-        return uri;
+        return Task.FromResult(uri);
     }
 
     /// <summary>
@@ -172,7 +172,7 @@ public static class AvaloniaEmailExtensions
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Only {ComposeAsync} is supported");
+                    throw new InvalidOperationException($"Only {nameof(ComposeAsync)} is supported");
                 }
 
                 async Task AppendAttachement(string contentType, Stream stream)

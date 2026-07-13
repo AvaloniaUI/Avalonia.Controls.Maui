@@ -43,7 +43,14 @@ partial class AvaloniaEmail
         finally
         {
             if (!isMailTo)
-                File.Delete(uri);
+            {
+                var emlPath = uri;
+                _ = Task.Run(async () =>
+                {
+                    await Task.Delay(TimeSpan.FromMinutes(5));
+                    try { File.Delete(emlPath); } catch { }
+                });
+            }
         }
     }
 }

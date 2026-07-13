@@ -1,11 +1,5 @@
 ﻿using Avalonia.Controls.Maui.Essentials;
-using Avalonia.Platform.Storage;
 using Microsoft.Maui.ApplicationModel.Communication;
-using NSubstitute;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Xml.Linq;
 
 namespace Avalonia.Controls.Maui.Tests.Services;
 
