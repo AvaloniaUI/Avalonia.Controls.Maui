@@ -1,0 +1,87 @@
+<ContentPage x:Class="ControlGallery.Pages.EmailPage"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             Title="Compose Email">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="15" Padding="20">
+
+            <!-- Remarks / Info Section -->
+            <Border BackgroundColor="#FFF9C4" 
+       Padding="10" 
+       Margin="0,10,0,0">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="For html and/or attachments, email client needs to support eml" FontAttributes="Bold" FontSize="Small" TextColor="#F57F17"/>
+                    <Label Text="ℹ️ Tips" FontAttributes="Bold" FontSize="Small" TextColor="#F57F17"/>
+                    <Label Text="• On Linux, this can be configured with: xdg-mime default thunderbird.desktop message/rfc822" 
+               FontSize="Micro" TextColor="#333"/>
+                    <Label Text="• On Mac, command+shift+d to enter compose mode" 
+               FontSize="Micro" TextColor="#333"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- To -->
+            <Label Text="To:" FontAttributes="Bold" />
+            <Entry x:Name="ToEntry" Placeholder="recipient@example.com" Keyboard="Email" />
+
+            <!-- Subject -->
+            <Label Text="Subject:" FontAttributes="Bold" />
+            <Entry x:Name="SubjectEntry" Placeholder="Subject" />
+
+            <!-- Body -->
+            <Label Text="Message:" FontAttributes="Bold" />
+            <Editor x:Name="BodyEditor" 
+                    HeightRequest="200" 
+                    AutoSize="TextChanges"
+                    Placeholder="Write your message here..." />
+
+            <!-- Checkbox with label -->
+            <Grid ColumnDefinitions="Auto, *">
+                <CheckBox x:Name="HtmlCheckBox" Grid.Column="0" VerticalOptions="Center" />
+                <Label Text="Body as HTML" Grid.Column="1" VerticalOptions="Center" />
+            </Grid>
+
+            <!-- Attachments section -->
+            <HorizontalStackLayout Spacing="10">
+                <Button x:Name="AddAttachmentsButton"
+                        Text="📎 Add Attachments"
+                        CornerRadius="8"
+                        Clicked="OnAddAttachmentsClicked" />
+                <Button x:Name="ClearAttachmentsButton"
+                        Text="✕ Clear"
+                        CornerRadius="8"
+                        IsVisible="False"
+                        Clicked="OnClearAttachmentsClicked" />
+            </HorizontalStackLayout>
+
+            <!-- List of selected attachments -->
+            <CollectionView x:Name="AttachmentsCollection"
+                            HeightRequest="80"
+                            ItemsLayout="VerticalList"
+                            IsVisible="False">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <HorizontalStackLayout Spacing="5" Padding="2">
+                            <Label Text="📄" />
+                            <Label Text="{Binding FileName}" 
+                                   VerticalOptions="Center" />
+                            <Label Text="{Binding Size}" 
+                                   TextColor="Gray"
+                                   FontSize="Small"
+                                   VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+
+            <!-- Send button -->
+            <Button x:Name="SendButton" 
+                    Text="Send Email" 
+                    CornerRadius="8"
+                    HorizontalOptions="Fill"
+                    Clicked="OnSendClicked" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

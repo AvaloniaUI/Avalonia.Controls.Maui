@@ -60,7 +60,7 @@ public sealed class AvaloniaFileResult : FileResult
     /// <returns>A <see cref="Stream"/> with read access to the file contents.</returns>
     public override Task<Stream> PlatformOpenReadAsync() => StorageFile.OpenReadAsync();
 
-    static string ResolveContentType(string fileName)
+    internal static string ResolveContentType(string fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName))
             return FallbackContentType;

@@ -106,6 +106,7 @@ public partial class MainPage : FlyoutPage
         [typeof(PreferencesPage)] = () => new PreferencesPage(),
         [typeof(FilePickerPage)] = () => new FilePickerPage(),
         [typeof(MediaPickerPage)] = () => new MediaPickerPage(),
+        [typeof(EmailPage)] = () => new EmailPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
         // Embedding
@@ -285,10 +286,11 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Essentials", new List<SampleItem>
             {
+                new("Email", "Send emails from the app", typeof(EmailPage)),
                 new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
                 new("Media Picker", "Pick photos and videos from the device", typeof(MediaPickerPage)),
                 new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
-                new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
+                new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),                
             }),
 
             new SampleGroup("Embedding", new List<SampleItem>

@@ -23,6 +23,7 @@ public static class MauiEssentialsBuilderExtensions
         Microsoft.Maui.Storage.Preferences.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaPreferences());
         FileSystem.SetCurrent(new Avalonia.Controls.Maui.Essentials.AvaloniaFileSystem());
         Microsoft.Maui.Authentication.WebAuthenticator.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaWebAuthenticator(platformProvider));
+        Microsoft.Maui.ApplicationModel.Communication.Email.SetDefault(new Avalonia.Controls.Maui.Essentials.AvaloniaEmail());
 
         return builder;
     }
