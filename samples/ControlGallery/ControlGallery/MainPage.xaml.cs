@@ -106,6 +106,7 @@ public partial class MainPage : FlyoutPage
         [typeof(PreferencesPage)] = () => new PreferencesPage(),
         [typeof(FilePickerPage)] = () => new FilePickerPage(),
         [typeof(MediaPickerPage)] = () => new MediaPickerPage(),
+        [typeof(ConnectivityPage)] = () => new ConnectivityPage(),
         // Settings
         [typeof(ThemePage)] = () => new ThemePage(),
         // Embedding
@@ -285,6 +286,7 @@ public partial class MainPage : FlyoutPage
 
             new SampleGroup("Essentials", new List<SampleItem>
             {
+                new("Connectivity", "Monitor network access and connection profiles", typeof(ConnectivityPage)),
                 new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
                 new("Media Picker", "Pick photos and videos from the device", typeof(MediaPickerPage)),
                 new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),

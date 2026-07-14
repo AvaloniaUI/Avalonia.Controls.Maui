@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ControlGallery.Pages.ConnectivityPage"
+             Title="Connectivity">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+            <!-- Network Status -->
+            <Border Stroke="Gray"
+                    Padding="14">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Network Status"
+                           FontAttributes="Bold"
+                           FontSize="18"/>
+
+                    <Label Text="Network Access:"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="NetworkAccessLabel"
+                           Text="--"/>
+
+                    <BoxView HeightRequest="1"
+                             Color="LightGray"/>
+
+                    <Label Text="Connection Profiles:"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="ConnectionProfilesLabel"
+                           Text="--"/>
+
+                    <BoxView HeightRequest="1"
+                             Color="LightGray"/>
+
+                    <Button x:Name="RefreshButton"
+                            Text="Refresh"
+                            Clicked="OnRefreshClicked"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Change Events -->
+            <Border Stroke="Gray"
+                    Padding="14">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="Change Events"
+                           FontAttributes="Bold"
+                           FontSize="18"/>
+
+                    <Label x:Name="EventCountLabel"
+                           Text="Events received: 0"/>
+
+                    <Label x:Name="EventLogLabel"
+                           Text="Waiting for connectivity changes..."
+                           FontSize="12"/>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
