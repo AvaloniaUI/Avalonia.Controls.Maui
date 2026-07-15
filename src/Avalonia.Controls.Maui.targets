@@ -122,7 +122,7 @@
   </Target>
 
   <Target Name="ConvertMauiFontsToAvaloniaResources"
-          BeforeTargets="GenerateAvaloniaResources;CoreCompile"
+          BeforeTargets="AddAvaloniaResources;GenerateAvaloniaResources;CoreCompile"
           Condition="'@(MauiFont)' != ''">
 
     <ItemGroup>
@@ -136,14 +136,33 @@
   </Target>
 
   <Target Name="ConvertMauiAssetsToAvaloniaResources"
-          BeforeTargets="GenerateAvaloniaResources;CoreCompile"
+          BeforeTargets="AddAvaloniaResources;GenerateAvaloniaResources;CoreCompile"
           Condition="'@(MauiAsset)' != ''">
     <ItemGroup>
-      <AvaloniaResource Include="@(MauiAsset)">
-        <Link>%(MauiAsset.LogicalName)</Link>
+      <_AvaloniaMauiAssetWithLink Remove="@(_AvaloniaMauiAssetWithLink)" />
+      <_UniqueAvaloniaMauiAssetWithLink Remove="@(_UniqueAvaloniaMauiAssetWithLink)" />
+      <_AvaloniaMauiAssetWithLink Include="%(MauiAsset.LogicalName)" Condition="'%(MauiAsset.LogicalName)' != ''">
+        <OriginalIdentity>%(MauiAsset.Identity)</OriginalIdentity>
+      </_AvaloniaMauiAssetWithLink>
+      <_AvaloniaMauiAssetWithLink Include="%(MauiAsset.TargetPath)" Condition="'%(MauiAsset.LogicalName)' == '' And '%(MauiAsset.TargetPath)' != ''">
+        <OriginalIdentity>%(MauiAsset.Identity)</OriginalIdentity>
+      </_AvaloniaMauiAssetWithLink>
+      <_AvaloniaMauiAssetWithLink Include="%(MauiAsset.Link)" Condition="'%(MauiAsset.LogicalName)' == '' And '%(MauiAsset.TargetPath)' == '' And '%(MauiAsset.Link)' != ''">
+        <OriginalIdentity>%(MauiAsset.Identity)</OriginalIdentity>
+      </_AvaloniaMauiAssetWithLink>
+      <_AvaloniaMauiAssetWithLink Include="%(MauiAsset.Identity)" Condition="'%(MauiAsset.LogicalName)' == '' And '%(MauiAsset.TargetPath)' == '' And '%(MauiAsset.Link)' == ''">
+        <OriginalIdentity>%(MauiAsset.Identity)</OriginalIdentity>
+      </_AvaloniaMauiAssetWithLink>
+    </ItemGroup>
+    <RemoveDuplicates Inputs="@(_AvaloniaMauiAssetWithLink)">
+      <Output TaskParameter="Filtered" ItemName="_UniqueAvaloniaMauiAssetWithLink" />
+    </RemoveDuplicates>
+    <ItemGroup>
+      <AvaloniaResource Include="%(_UniqueAvaloniaMauiAssetWithLink.OriginalIdentity)">
+        <Link>%(_UniqueAvaloniaMauiAssetWithLink.Identity)</Link>
       </AvaloniaResource>
     </ItemGroup>
-    <Message Text="Converted MAUI assets to Avalonia resources: @(MauiAsset)" Importance="high" />
+    <Message Text="Converted MAUI assets to Avalonia resources: @(_UniqueAvaloniaMauiAssetWithLink)" Importance="high" />
   </Target>
 
   <!-- Ensure Avalonia resources are registered as EmbeddedResource before PrepareResources

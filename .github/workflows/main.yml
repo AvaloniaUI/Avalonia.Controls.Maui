@@ -26,6 +26,7 @@ jobs:
           filters: |
             maui:
               - 'src/Avalonia.Controls.Maui/**'
+              - 'src/Avalonia.Controls.Maui.BlazorWebView/**'
               - 'src/Avalonia.Controls.Maui.Compatibility/**'
               - 'src/Avalonia.Controls.Maui.Essentials/**'
               - 'src/Avalonia.Controls.Maui.SkiaSharp.Views/**'
@@ -35,6 +36,7 @@ jobs:
               - 'build/**'
             test:
               - 'tests/Avalonia.Controls.Maui.*/**'
+              - 'samples/BlazorHybrid.Sample/**'
               - 'samples/BenchmarkApp/**'
               - 'Directory.*.props'
               - 'Directory.*.targets'
@@ -109,6 +111,9 @@ jobs:
       run: dotnet run --project ${{github.workspace}}/build/_build.csproj -- --target RunTests --configuration Release
       continue-on-error: false
 
+    - name: Build Blazor Hybrid Sample
+      run: dotnet build ${{github.workspace}}/samples/BlazorHybrid.Sample/BlazorHybrid.Sample.csproj --configuration Release
+
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
       if: always()
@@ -121,6 +126,13 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libwebkit2gtk-4.1-dev at-spi2-core
+
+    - name: Run Blazor Hybrid Smoke Test
+      timeout-minutes: 2
+      env:
+        AVALONIA_MAUI_BLAZOR_SMOKE_TEST: '1'
+      run: |
+        xvfb-run --auto-servernum dotnet run --project ${{github.workspace}}/samples/BlazorHybrid.Sample/BlazorHybrid.Sample.csproj --configuration Release --no-build
 
     - name: Run Benchmark Tests
       run: |

@@ -10,7 +10,7 @@ The library is built on a small set of explicit constraints that shape every imp
 
 **No MAUI fork and no custom MAUI binaries.** Integration uses official .NET MAUI packages. Required upstream changes are expected to land in MAUI itself rather than in a private MAUI distribution.
 
-**No type swizzling.** The project avoids IL rewriting/Mono.Cecil-style hacks. Integration is primarily through handler registration and DI, with a small reflection-based workaround where MAUI does not yet expose a public hook (`SemanticScreenReader.SetDefault`).
+**No type swizzling.** The project avoids IL rewriting/Mono.Cecil-style hacks. Integration is primarily through handler registration and DI. Small compatibility shims are isolated where MAUI does not expose a public hook, including `SemanticScreenReader.SetDefault` and neutral-platform Blazor WebView integration points.
 
 **Shared handler logic.** The goal is to keep one logical MAUI-to-Avalonia handler mapping and thin platform host layers, minimizing platform-specific divergence.
 
@@ -23,10 +23,17 @@ The library is distributed as a set of NuGet packages, each covering a distinct 
 | Package | Purpose |
 |---|---|
 | `Avalonia.Controls.Maui` | Core handlers for all built-in .NET MAUI controls, including `GraphicsView` and `Microsoft.Maui.Graphics` |
+| `Avalonia.Controls.Maui.BlazorWebView` | Blazor Hybrid handler for the official MAUI `BlazorWebView`, backed by Avalonia `NativeWebView` |
 | `Avalonia.Controls.Maui.Essentials` | Avalonia-based implementations of `Microsoft.Maui.Essentials` APIs |
 | `Avalonia.Controls.Maui.Compatibility` | Handlers for deprecated .NET MAUI controls (`Frame`, `ListView`, `TableView`) |
 | `Avalonia.Controls.Maui.Desktop` | Metapackage that references the core package and runs source generation for desktop bootstrapping |
 | `Avalonia.Controls.Maui.SkiaSharp.Views` | Avalonia-backed handlers for `SKCanvasView` and `SKGLView` from `SkiaSharp.Views.Maui` |
+
+### Blazor Hybrid
+
+`Avalonia.Controls.Maui.BlazorWebView` keeps the official MAUI `BlazorWebView` as the virtual view and uses Avalonia `NativeWebView` as its platform view. The handler owns an ASP.NET Core `WebViewManager`, maps MAUI root components and navigation events, and bridges Avalonia web messages to the Blazor IPC channel. Messages from JavaScript carry a random per-document token because Avalonia's message event does not expose the sending frame URI.
+
+The `WebViewManager` returns static assets as streams. Avalonia's public `WebResourceRequested` API currently exposes only the request, so the handler publishes those streams through a loopback-only HTTP listener and navigates the same `NativeWebView` to that origin. This transport also preserves document-route fallback and the official static-content hot-reload hook.
 
 ## Platform support (current)
 
