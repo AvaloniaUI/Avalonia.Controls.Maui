@@ -19,7 +19,6 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// </summary>
 public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.Window>
 {
-    static readonly AlertManager s_alertManager = new();
     ModalAnimationTrackingNavigation? _modalTracker;
     MauiWindowLifecycleManager? _lifecycleManager;
 
@@ -108,7 +107,6 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            window.AlertManager.Subscribe();
             window.ModalPushed += OnModalPushed;
             window.ModalPopped += OnModalPopped;
 
@@ -133,7 +131,6 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            window.AlertManager.Unsubscribe();
             window.ModalPushed -= OnModalPushed;
             window.ModalPopped -= OnModalPopped;
             window.PropertyChanged -= OnWindowPropertyChanged;

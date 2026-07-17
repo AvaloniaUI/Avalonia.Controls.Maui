@@ -30,7 +30,7 @@ public partial class SearchBarHandler : ViewHandler<ISearchBar, PlatformView>
 
     /// <summary>Command mapper for <see cref="SearchBarHandler"/>.</summary>
     public static CommandMapper<ISearchBar, SearchBarHandler> CommandMapper =
-        new(ViewCommandMapper)
+        new(ViewHandler.ViewCommandMapper)
         {
             [nameof(ISearchBar.Focus)] = MapFocus,
         };

@@ -26,7 +26,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
     };
 
     /// <summary>Command mapper for <see cref="SliderHandler"/>.</summary>
-    public static CommandMapper<ISlider, SliderHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<ISlider, SliderHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 

@@ -11,9 +11,12 @@ namespace Avalonia.Controls.Maui.Essentials;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>Reading content:</b> use <c>OpenReadAsync()</c>. The override routes through the underlying
-/// <see cref="IStorageFile"/> and works on every Avalonia platform, including those without a real
-/// filesystem path.
+/// <b>Reading content:</b> use <c>OpenReadAsync()</c> on this type (or <see cref="StorageFile"/>).
+/// It routes through the underlying <see cref="IStorageFile"/> and works on every Avalonia platform,
+/// including those without a real filesystem path. Note that calling <c>OpenReadAsync()</c> through a
+/// <see cref="FileResult"/>-typed reference invokes the base MAUI implementation instead, which is not
+/// functional on the portable Microsoft.Maui.Essentials build; keep the <see cref="AvaloniaFileResult"/>
+/// type (or a <c>var</c>) when reading.
 /// </para>
 /// <para>
 /// <b>About <c>FullPath</c>:</b> when the wrapped <see cref="IStorageFile"/> exposes a local path
@@ -55,10 +58,15 @@ public sealed class AvaloniaFileResult : FileResult
     public IStorageFile StorageFile { get; }
 
     /// <summary>
-    /// Opens a stream to the underlying Avalonia <see cref="IStorageFile"/>. Invoked by <c>FileResult.OpenReadAsync</c>.
+    /// Opens a stream to the underlying Avalonia <see cref="IStorageFile"/>.
     /// </summary>
     /// <returns>A <see cref="Stream"/> with read access to the file contents.</returns>
-    public override Task<Stream> PlatformOpenReadAsync() => StorageFile.OpenReadAsync();
+    /// <remarks>
+    /// Shadows <c>FileResult.OpenReadAsync</c>: the base implementation depends on an internal
+    /// MAUI hook that cannot be overridden from this assembly and is non-functional on the
+    /// portable Microsoft.Maui.Essentials build.
+    /// </remarks>
+    public new Task<Stream> OpenReadAsync() => StorageFile.OpenReadAsync();
 
     static string ResolveContentType(string fileName)
     {

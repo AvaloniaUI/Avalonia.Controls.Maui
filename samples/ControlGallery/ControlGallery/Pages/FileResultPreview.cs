@@ -1,4 +1,5 @@
 using System.Text;
+using Avalonia.Controls.Maui.Essentials;
 
 namespace ControlGallery.Pages;
 
@@ -8,6 +9,16 @@ namespace ControlGallery.Pages;
 /// </summary>
 internal static class FileResultPreview
 {
+    /// <summary>
+    /// Opens the file contents, routing through <see cref="AvaloniaFileResult"/> when available.
+    /// The base <see cref="FileResult.OpenReadAsync"/> is not functional on the portable
+    /// Microsoft.Maui.Essentials build, so the Avalonia storage-backed method must be used.
+    /// </summary>
+    static Task<Stream> OpenReadAsync(FileResult file) =>
+        file is AvaloniaFileResult avaloniaFile
+            ? avaloniaFile.OpenReadAsync()
+            : file.OpenReadAsync();
+
     public static async Task AppendFileDetailsAsync(StringBuilder sb, FileResult file, int index, int total)
     {
         sb.AppendLine($"[{index}/{total}] {file.FileName}");
@@ -18,7 +29,7 @@ internal static class FileResultPreview
 
         try
         {
-            await using var stream = await file.OpenReadAsync();
+            await using var stream = await OpenReadAsync(file);
             long length;
             try
             {
@@ -50,7 +61,7 @@ internal static class FileResultPreview
         try
         {
             // Buffer the contents so the ImageSource has its own copy of the data.
-            using var source = await file.OpenReadAsync();
+            using var source = await OpenReadAsync(file);
             using var ms = new MemoryStream();
             await source.CopyToAsync(ms);
             var bytes = ms.ToArray();

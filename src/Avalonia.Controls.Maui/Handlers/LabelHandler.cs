@@ -40,7 +40,7 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>
     };
 
     /// <summary>Command mapper for <see cref="LabelHandler"/>.</summary>
-    public static CommandMapper<ILabel, LabelHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<ILabel, LabelHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 

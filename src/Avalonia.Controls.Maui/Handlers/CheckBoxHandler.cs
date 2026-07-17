@@ -18,7 +18,7 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>
         };
 
     /// <summary>Command mapper for <see cref="CheckBoxHandler"/>.</summary>
-    public static CommandMapper<ICheckBox, CheckBoxHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<ICheckBox, CheckBoxHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 

@@ -14,7 +14,7 @@ public class FrameHandler : ViewHandler<Microsoft.Maui.Controls.Frame, PlatformV
     /// Property mapper for <see cref="FrameHandler"/>.
     /// </summary>
     public static IPropertyMapper<Microsoft.Maui.Controls.Frame, FrameHandler> Mapper =
-        new PropertyMapper<Microsoft.Maui.Controls.Frame, FrameHandler>(ViewMapper)
+        new PropertyMapper<Microsoft.Maui.Controls.Frame, FrameHandler>(ViewHandler.ViewMapper)
         {
             [nameof(Microsoft.Maui.Controls.Frame.Content)] = MapContent,
             [nameof(Microsoft.Maui.Controls.Frame.BorderColor)] = MapBorderColor,
@@ -30,7 +30,7 @@ public class FrameHandler : ViewHandler<Microsoft.Maui.Controls.Frame, PlatformV
     /// Command mapper for <see cref="FrameHandler"/>.
     /// </summary>
     public static CommandMapper<Microsoft.Maui.Controls.Frame, FrameHandler> CommandMapper =
-        new(ViewCommandMapper);
+        new(ViewHandler.ViewCommandMapper);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="FrameHandler"/> class.

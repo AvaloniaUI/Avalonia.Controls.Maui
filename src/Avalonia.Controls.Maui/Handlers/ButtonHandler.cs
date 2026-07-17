@@ -47,7 +47,7 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
     };
 
     /// <summary>Command mapper for <see cref="ButtonHandler"/>.</summary>
-    public static CommandMapper<IButton, ButtonHandler> CommandMapper = new(ViewCommandMapper);
+    public static CommandMapper<IButton, ButtonHandler> CommandMapper = new(ViewHandler.ViewCommandMapper);
 
     /// <summary>Initializes a new instance of <see cref="ButtonHandler"/>.</summary>
     public ButtonHandler()

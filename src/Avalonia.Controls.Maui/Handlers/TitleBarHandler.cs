@@ -11,7 +11,7 @@ public partial class TitleBarHandler : ViewHandler<ITitleBar, TitleBarView>
 {
     /// <summary>Property mapper for <see cref="TitleBarHandler"/>.</summary>
     public static IPropertyMapper<ITitleBar, TitleBarHandler> Mapper =
-        new PropertyMapper<ITitleBar, TitleBarHandler>(ViewMapper)
+        new PropertyMapper<ITitleBar, TitleBarHandler>(ViewHandler.ViewMapper)
         {
             [nameof(ITitleBar.Title)] = MapTitle,
             [nameof(ITitleBar.Subtitle)] = MapSubtitle,
@@ -21,7 +21,7 @@ public partial class TitleBarHandler : ViewHandler<ITitleBar, TitleBarView>
 
     /// <summary>Command mapper for <see cref="TitleBarHandler"/>.</summary>
     public static CommandMapper<ITitleBar, TitleBarHandler> CommandMapper =
-        new(ViewCommandMapper);
+        new(ViewHandler.ViewCommandMapper);
 
     /// <summary>Initializes a new instance of <see cref="TitleBarHandler"/>.</summary>
     public TitleBarHandler() : base(Mapper, CommandMapper)

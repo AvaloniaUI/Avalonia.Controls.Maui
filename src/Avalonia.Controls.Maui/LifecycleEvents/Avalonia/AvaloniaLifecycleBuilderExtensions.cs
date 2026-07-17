@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.LifecycleEvents;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.Maui.LifecycleEvents;
 
 namespace Avalonia.Controls.Maui.LifecycleEvents;
 
@@ -7,6 +8,17 @@ namespace Avalonia.Controls.Maui.LifecycleEvents;
 /// </summary>
 public static class AvaloniaLifecycleBuilderExtensions
 {
+    /// <summary>
+    /// Registers the delegate under the caller's method name, mirroring MAUI's internal
+    /// LifecycleBuilderExtensions.OnEvent which is not accessible outside the MAUI assemblies.
+    /// </summary>
+    internal static IAvaloniaLifecycleBuilder OnEvent<TDelegate>(this IAvaloniaLifecycleBuilder builder, TDelegate action, [CallerMemberName] string? eventName = null)
+        where TDelegate : Delegate
+    {
+        builder.AddEvent(eventName ?? typeof(TDelegate).Name, action);
+        return builder;
+    }
+
     /// <summary>
     /// Registers a handler for the Activated event.
     /// </summary>

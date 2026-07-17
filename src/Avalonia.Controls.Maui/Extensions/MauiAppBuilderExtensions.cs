@@ -20,31 +20,13 @@ public static class MauiAppBuilderExtensions
     /// </summary>
     public static MauiAppBuilder ConfigureImageSources(this MauiAppBuilder builder)
     {
-        builder.ConfigureImageSources(services =>
+        Microsoft.Maui.Hosting.ImageSourcesMauiAppBuilderExtensions.ConfigureImageSources(builder, services =>
         {
             services.AddService<IFileImageSource, AvaloniaFileImageSourceService>();
             services.AddService<IUriImageSource, AvaloniaUriImageSourceService>();
             services.AddService<IFontImageSource, AvaloniaFontImageSourceService>();
             services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
         });
-
-        return builder;
-    }
-
-    /// <summary>
-    /// Configures Avalonia-specific services for MAUI image handling using a custom registration delegate.
-    /// </summary>
-    /// <param name="builder">The <see cref="MauiAppBuilder"/> to configure.</param>
-    /// <param name="configureDelegate">An optional delegate to register custom <see cref="IImageSourceService"/> implementations.</param>
-    public static MauiAppBuilder ConfigureImageSources(this MauiAppBuilder builder, Action<IImageSourceServiceCollection>? configureDelegate)
-    {
-        if (configureDelegate != null)
-        {
-            builder.Services.AddSingleton<ImageSourceRegistration>(new ImageSourceRegistration(configureDelegate));
-        }
-
-        builder.Services.AddSingleton<IImageSourceServiceProvider>(svcs => new ImageSourceServiceProvider(svcs.GetRequiredService<IImageSourceServiceCollection>(), svcs));
-        builder.Services.AddSingleton<IImageSourceServiceCollection>(svcs => new ImageSourceServiceBuilder(svcs.GetServices<ImageSourceRegistration>()));
 
         return builder;
     }
@@ -90,7 +72,6 @@ public static class MauiAppBuilderExtensions
         // Register the MAUI Controls assembly to scan for [Dependency] attributes
         // This is needed for ValueConverterProvider and other services used by triggers
         Microsoft.Maui.Controls.DependencyService.Register(new[] { typeof(Microsoft.Maui.Controls.VisualElement).Assembly });
-        Microsoft.Maui.Controls.DependencyService.SetToInitialized();
         Microsoft.Maui.Controls.DependencyService.Register<AvaloniaFontNamedSizeService>();
 #pragma warning restore CS0612 // Type or member is obsolete
 
@@ -123,6 +104,13 @@ public static class MauiAppBuilderExtensions
         builder.Services.RemoveAll<ITicker>();
         builder.Services.AddSingleton<ITicker>(svcs => new AvaloniaTicker());
 
+        // Register the gesture platform manager factory so MAUI's GestureManager routes
+        // gesture recognition through Avalonia input events. Registering another
+        // IGesturePlatformManagerFactory after UseAvaloniaApp overrides this one.
+        builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.IGesturePlatformManagerFactory, AvaloniaGesturePlatformManagerFactory>();
+
+        // Register the alert subscription so MAUI's AlertManager routes DisplayAlert/
+        // DisplayActionSheet/DisplayPromptAsync to Avalonia overlay dialogs.
         builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.IAlertManagerSubscription, AlertManager.AlertRequestHelper>();
 
         return builder

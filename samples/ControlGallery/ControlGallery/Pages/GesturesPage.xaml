@@ -12,7 +12,17 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
-            
+
+            <Border Background="#33FFA500"
+                    Stroke="Orange"
+                    StrokeThickness="1"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <Label Text="⚠ Temporarily unavailable: gesture recognizers are pending a public MAUI IGesturePlatformManager API (dotnet/maui#33364), so the samples below will not respond. See docs/known-issues.md."
+                       FontSize="13"/>
+            </Border>
 
             <!-- Single Tap -->
             <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"

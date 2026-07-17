@@ -33,7 +33,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
 
     /// <summary>Command mapper for <see cref="FlyoutViewHandler"/>.</summary>
     public static CommandMapper<IFlyoutView, FlyoutViewHandler> CommandMapper =
-        new(ViewCommandMapper)
+        new(ViewHandler.ViewCommandMapper)
         {
         };
 

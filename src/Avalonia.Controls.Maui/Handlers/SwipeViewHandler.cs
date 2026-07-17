@@ -22,7 +22,7 @@ public partial class SwipeViewHandler : ViewHandler<ISwipeView, PlatformView>
 
     /// <summary>Command mapper for <see cref="SwipeViewHandler"/>.</summary>
     public static CommandMapper<ISwipeView, SwipeViewHandler> CommandMapper =
-        new(ViewCommandMapper)
+        new(ViewHandler.ViewCommandMapper)
         {
             [nameof(ISwipeView.RequestOpen)] = MapRequestOpen,
             [nameof(ISwipeView.RequestClose)] = MapRequestClose,

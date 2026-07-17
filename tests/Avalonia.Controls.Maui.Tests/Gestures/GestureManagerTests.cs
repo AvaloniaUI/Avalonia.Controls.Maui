@@ -34,6 +34,53 @@ namespace Avalonia.Controls.Maui.Tests.Gestures
             Assert.Equal(1, tapCount);
         }
 
+        [AvaloniaFact(DisplayName = "TapGestureRecognizer still fires after window detach and reattach (#218)")]
+        public async Task TapGesture_Fires_After_Window_Detach_And_Reattach()
+        {
+            var label = new Microsoft.Maui.Controls.Label { Text = "Tap Me", WidthRequest = 100, HeightRequest = 50 };
+            int tapCount = 0;
+            var tapGesture = new Microsoft.Maui.Controls.TapGestureRecognizer();
+            tapGesture.Tapped += (s, e) => tapCount++;
+            label.GestureRecognizers.Add(tapGesture);
+
+            // Parent the label into a window BEFORE creating the handler so MAUI's GestureManager
+            // records that the view had a window.
+            var page = new Microsoft.Maui.Controls.ContentPage { Content = label };
+            var window = new Microsoft.Maui.Controls.Window(page);
+            Assert.NotNull(label.Window);
+
+            var handler = await CreateHandlerAsync(label);
+            var platformView = handler.PlatformView!;
+
+            platformView.RaiseEvent(CreatePointerPressedEventArgs(platformView, new Point(10, 10)));
+            platformView.RaiseEvent(CreatePointerReleasedEventArgs(platformView, new Point(10, 10)));
+            Assert.Equal(1, tapCount);
+
+            // Simulate navigation transiently detaching the view from the window, as happens to
+            // CollectionView item containers during a navigation pop.
+            await InvokeOnMainThreadAsync(() =>
+            {
+                page.Content = null;
+                Assert.Null(label.Window);
+            });
+
+            // While detached, MAUI's GestureManager has disposed the platform manager, so no
+            // gesture fires.
+            platformView.RaiseEvent(CreatePointerPressedEventArgs(platformView, new Point(10, 10)));
+            platformView.RaiseEvent(CreatePointerReleasedEventArgs(platformView, new Point(10, 10)));
+            Assert.Equal(1, tapCount);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                page.Content = label;
+                Assert.NotNull(label.Window);
+            });
+
+            platformView.RaiseEvent(CreatePointerPressedEventArgs(platformView, new Point(10, 10)));
+            platformView.RaiseEvent(CreatePointerReleasedEventArgs(platformView, new Point(10, 10)));
+            Assert.Equal(2, tapCount);
+        }
+
         [AvaloniaFact(DisplayName = "DoubleTapGestureRecognizer fires Tapped event")]
         public async Task DoubleTapGesture_Fires()
         {

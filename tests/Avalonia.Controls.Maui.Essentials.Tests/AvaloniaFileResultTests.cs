@@ -96,7 +96,7 @@ public class AvaloniaFileResultTests
     }
 
     [Fact]
-    public async Task PlatformOpenReadAsync_DelegatesToStorageFile()
+    public async Task OpenReadAsync_ReturnsUnderlyingStorageFileStream()
     {
         var underlying = new MemoryStream([1, 2, 3]);
         var file = CreateStorageFile("a.bin", new Uri("blob:test"));
@@ -104,7 +104,7 @@ public class AvaloniaFileResultTests
 
         var result = new AvaloniaFileResult(file);
 
-        await using var stream = await result.PlatformOpenReadAsync();
+        await using var stream = await result.OpenReadAsync();
 
         await file.Received(1).OpenReadAsync();
         Assert.Same(underlying, stream);
