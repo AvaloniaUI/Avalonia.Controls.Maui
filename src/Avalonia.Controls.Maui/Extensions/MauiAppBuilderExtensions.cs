@@ -109,9 +109,9 @@ public static class MauiAppBuilderExtensions
         // IGesturePlatformManagerFactory after UseAvaloniaApp overrides this one.
         builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.IGesturePlatformManagerFactory, AvaloniaGesturePlatformManagerFactory>();
 
-        // NOTE: DisplayAlert/DisplayActionSheet/DisplayPromptAsync are currently not supported.
-        // MAUI's alert subscription seam (IAlertManagerSubscription) is internal; support will
-        // return once MAUI exposes a public API for it.
+        // Register the alert subscription so MAUI's AlertManager routes DisplayAlert/
+        // DisplayActionSheet/DisplayPromptAsync to Avalonia overlay dialogs.
+        builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.IAlertManagerSubscription, AlertManager.AlertRequestHelper>();
 
         return builder
             .ConfigureMauiHandlers(handlers =>
