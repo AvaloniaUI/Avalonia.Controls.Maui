@@ -4,6 +4,8 @@ using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui.Compatibility.Handlers;
 
+using TableView = Microsoft.Maui.Controls.TableView;
+
 /// <summary>
 /// Avalonia handler for <see cref="TableView"/>.
 /// </summary>

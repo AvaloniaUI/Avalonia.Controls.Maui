@@ -2,6 +2,8 @@ using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui.Compatibility;
 
+using TableView = Microsoft.Maui.Controls.TableView;
+
 /// <summary>
 /// Extension methods for mapping TableView properties to Avalonia MauiTableView.
 /// </summary>

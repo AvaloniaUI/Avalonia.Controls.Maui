@@ -37,7 +37,7 @@ The practical support story is split between full hosting and embedding:
 | Android (`net*-android`) | Yes | Overlap with MAUI native target; not the primary path yet | Yes |
 | iOS (`net*-ios`) | Yes | Overlap with MAUI native target; not the primary path yet | Yes |
 | Mac Catalyst (`net*-maccatalyst`) | Yes | Overlap with MAUI native target; not the primary path yet | Yes |
-| Windows WinUI (`net*-windows`) | Yes | WinUI path currently includes stub handlers | No (current handler is stub) |
+| Windows WinUI (`net*-windows`) | Yes | WinUI full hosting currently includes stub handlers | Yes (via `Avalonia.WinUI` swap chain panel) |
 | Desktop generic (`net*` + `Avalonia.Desktop`) | No | Yes (Windows/macOS/Linux via Avalonia) | N/A |
 | Browser (`net*-browser`) | No | Yes (`useSingleViewLifetime: true`) | N/A |
 
