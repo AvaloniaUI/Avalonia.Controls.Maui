@@ -66,6 +66,14 @@ public class SKCanvasViewControl : Control
     }
 
     /// <inheritdoc/>
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        return new Size(
+            double.IsInfinity(availableSize.Width) ? 0 : availableSize.Width,
+            double.IsInfinity(availableSize.Height) ? 0 : availableSize.Height);
+    }
+
+    /// <inheritdoc/>
     public override void Render(DrawingContext context)
     {
         base.Render(context);
