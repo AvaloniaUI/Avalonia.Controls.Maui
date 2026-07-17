@@ -37,6 +37,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <ValidateXcodeVersion>false</ValidateXcodeVersion>
+        <AddMauiInternals>false</AddMauiInternals>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
     </PropertyGroup>
@@ -106,6 +107,16 @@
     </PropertyGroup>
 
     <!--
+        This is here to support accessing MAUI internals while we work on
+        upstreaming changes needed in MAUI to support Avalonia.Controls.Maui.
+        Remove this when no longer needed.
+
+        For NuGet builds (MauiSourcePath not set), we use IgnoresAccessChecksToGenerator
+        to bypass access checks at compile time.
+        For source builds (MauiSourcePath set), SourceBuild.targets writes
+        InternalsVisibleTo .cs files into the MAUI source directories instead.
+    -->
+    <!--
         Pin AndroidX Ktx packages and LiveData to versions compatible with the base
         AndroidX packages pulled in by Avalonia.Android. The MAUI Ktx packages have
         tight upper-bound constraints (e.g. Fragment.Ktx 1.8.8.1 requires Fragment
@@ -122,4 +133,14 @@
         <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.10.0.2" />
     </ItemGroup>
 
+    <ItemGroup Condition="'$(AddMauiInternals)' == 'true' AND '$(MauiSourcePath)' == ''">
+        <IgnoresAccessChecksTo Include="Microsoft.Maui" />
+        <IgnoresAccessChecksTo Include="Microsoft.Maui.Controls" />
+        <IgnoresAccessChecksTo Include="Microsoft.Maui.Essentials" />
+
+        <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.8.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 </Project>

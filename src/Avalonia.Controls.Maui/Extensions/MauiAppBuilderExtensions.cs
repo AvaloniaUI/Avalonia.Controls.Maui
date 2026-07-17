@@ -104,6 +104,11 @@ public static class MauiAppBuilderExtensions
         builder.Services.RemoveAll<ITicker>();
         builder.Services.AddSingleton<ITicker>(svcs => new AvaloniaTicker());
 
+        // Register the gesture platform manager factory so MAUI's GestureManager routes
+        // gesture recognition through Avalonia input events. Registering another
+        // IGesturePlatformManagerFactory after UseAvaloniaApp overrides this one.
+        builder.Services.AddSingleton<Microsoft.Maui.Controls.Platform.IGesturePlatformManagerFactory, AvaloniaGesturePlatformManagerFactory>();
+
         // NOTE: DisplayAlert/DisplayActionSheet/DisplayPromptAsync are currently not supported.
         // MAUI's alert subscription seam (IAlertManagerSubscription) is internal; support will
         // return once MAUI exposes a public API for it.

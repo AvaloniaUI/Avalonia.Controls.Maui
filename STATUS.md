@@ -1399,7 +1399,7 @@ All controls inherit these common properties from the View and VisualElement bas
 | Effects | IList<Effect> | ✅ Verified |
 | FlowDirection | FlowDirection | ✅ Implemented |
 | Frame | Rect | ✅ Verified |
-| GestureRecognizers | IList<IGestureRecognizer> | ❌ Not supported (pending public IGesturePlatformManager, dotnet/maui#33364) |
+| GestureRecognizers | IList<IGestureRecognizer> | ✅ Implemented (via MAUI's IGesturePlatformManager seam; interface is still internal pending dotnet/maui#33364) |
 | Handler | IViewHandler | ✅ Implemented |
 | Height | double | ✅ Implemented |
 | HeightRequest | double | ✅ Implemented |
