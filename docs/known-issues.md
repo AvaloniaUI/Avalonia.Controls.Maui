@@ -10,5 +10,4 @@
 - `IWindowOverlay` is not supported.
 - Deploying to existing .NET MAUI native targets (iOS, Mac Catalyst, Android, WinUI) in full-hosting mode is not yet supported. These platforms are planned.
 - `Microsoft.Maui.Maps` is not supported. As an alternative, use [Mapsui.Maui](https://www.nuget.org/packages/Mapsui.Maui/) configured through the `Avalonia.Controls.Maui.SkiaSharp.Views` package. See the `MapApp` sample for details.
-- `Page.DisplayAlert`, `DisplayActionSheet`, and `DisplayPromptAsync` are currently not supported. MAUI's alert subscription seam (`IAlertManagerSubscription`) is internal; support will return once MAUI exposes a public API for it.
 - `FileResult.OpenReadAsync()` only works when called through the `AvaloniaFileResult` type returned by the Avalonia `FilePicker`/`MediaPicker` implementations (or via its `StorageFile` property). Calling it through a `FileResult`-typed reference invokes the base MAUI implementation, which is not functional on the portable `Microsoft.Maui.Essentials` build.

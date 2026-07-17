@@ -665,9 +665,9 @@ A Page that manages the navigation and user-experience of a stack of other pages
  
  | Method                  | Status |
  |-------------------------|--------|
- | DisplayAlertAsync       | ❌ Not supported (MAUI's alert seam is internal; see known-issues.md) |
- | DisplayActionSheetAsync | ❌ Not supported (MAUI's alert seam is internal; see known-issues.md) |
- | DisplayPromptAsync      | ❌ Not supported (MAUI's alert seam is internal; see known-issues.md) |
+ | DisplayAlertAsync       | ✅ Implemented (via IAlertManagerSubscription; seam still internal, dotnet/maui#34228 reverted by #35024) |
+ | DisplayActionSheetAsync | ✅ Implemented (via IAlertManagerSubscription; seam still internal, dotnet/maui#34228 reverted by #35024) |
+ | DisplayPromptAsync      | ✅ Implemented (via IAlertManagerSubscription; seam still internal, dotnet/maui#34228 reverted by #35024) |
 
  ---
 
