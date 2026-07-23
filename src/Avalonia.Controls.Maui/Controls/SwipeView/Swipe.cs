@@ -296,6 +296,17 @@ public class Swipe : Grid
     private bool _isVerticalSwipe;
     private SwipeDirection _swipeDirection;
 
+    // Trackpad pans arrive as PointerWheelChanged deltas with no begin/end contract,
+    // so wheel input drives the pan pipeline and a short settle timer marks the end.
+    private const double WheelPanFactor = 50.0;
+    private static readonly TimeSpan WheelSettleInterval = TimeSpan.FromMilliseconds(150);
+
+    private DispatcherTimer? _wheelSettleTimer;
+    private bool _isWheelPanning;
+    private bool _isPointerPanning;
+    private double _wheelTotalX;
+    private double _wheelTotalY;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Swipe"/> class.
     /// </summary>
@@ -594,11 +605,96 @@ public class Swipe : Grid
         contentView.Content = DataContext;
     }
 
+    /// <summary>
+    /// Routes trackpad scrolling into the pan pipeline so two-finger swipes open and
+    /// close items like touch pans do.
+    /// </summary>
+    /// <param name="e">Wheel event args.</param>
+    protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
+    {
+        base.OnPointerWheelChanged(e);
+
+        if (e.Handled || _isPointerPanning || e.Delta == default)
+            return;
+
+        var horizontal = Math.Abs(e.Delta.X) >= Math.Abs(e.Delta.Y);
+        if (!_isWheelPanning && !CanWheelPan(horizontal))
+            return;
+
+        if (!_isWheelPanning)
+        {
+            _isWheelPanning = true;
+            _wheelTotalX = 0;
+            _wheelTotalY = 0;
+            HandlePanStarted();
+        }
+
+        _wheelTotalX += e.Delta.X * WheelPanFactor;
+        _wheelTotalY += e.Delta.Y * WheelPanFactor;
+        HandlePanRunning(new PanUpdatedEventArgs(PanGestureStatus.Running, _wheelTotalX, _wheelTotalY));
+
+        _wheelSettleTimer ??= CreateWheelSettleTimer();
+        _wheelSettleTimer.Stop();
+        _wheelSettleTimer.Start();
+
+        e.Handled = true;
+    }
+
+    private DispatcherTimer CreateWheelSettleTimer()
+    {
+        var timer = new DispatcherTimer { Interval = WheelSettleInterval };
+        timer.Tick += (_, _) => CompleteWheelPan();
+        return timer;
+    }
+
+    /// <summary>
+    /// Completes the active wheel pan immediately. Exposed for deterministic tests;
+    /// at runtime the settle timer invokes it.
+    /// </summary>
+    internal void CompleteWheelPan()
+    {
+        _wheelSettleTimer?.Stop();
+        if (!_isWheelPanning)
+            return;
+
+        _isWheelPanning = false;
+        HandlePanCompleted(new PanUpdatedEventArgs(PanGestureStatus.Completed, _wheelTotalX, _wheelTotalY));
+        _wheelTotalX = 0;
+        _wheelTotalY = 0;
+    }
+
+    private bool CanWheelPan(bool horizontal)
+    {
+        if (horizontal)
+        {
+            return Left != null || Right != null ||
+                SwipeState is SwipeState.LeftVisible or SwipeState.RightVisible;
+        }
+
+        // Vertical wheel input only closes an already open panel: consuming it to open
+        // would trap plain mouse-wheel scrolling over swipes hosted in scrollable lists.
+        return SwipeState is SwipeState.TopVisible or SwipeState.BottomVisible;
+    }
+
+    // Discards the active wheel pan so an explicit state change is never
+    // overridden by the settle timer.
+    private void CancelWheelPan()
+    {
+        _wheelSettleTimer?.Stop();
+        _isWheelPanning = false;
+        _wheelTotalX = 0;
+        _wheelTotalY = 0;
+    }
+
     private void PanUpdated(object? sender, PanUpdatedEventArgs e)
     {
         switch (e.StatusType)
         {
             case PanGestureStatus.Started:
+                // A pointer drag takes over: settle any active wheel pan first so the
+                // two input paths never drive the pipeline concurrently.
+                CompleteWheelPan();
+                _isPointerPanning = true;
                 HandlePanStarted();
                 break;
 
@@ -607,6 +703,7 @@ public class Swipe : Grid
                 break;
 
             case PanGestureStatus.Completed:
+                _isPointerPanning = false;
                 HandlePanCompleted(e);
                 break;
         }
@@ -808,6 +905,8 @@ public class Swipe : Grid
     /// </summary>
     internal void SetSwipeState(SwipeState targetState, bool animated = true)
     {
+        CancelWheelPan();
+
         var requested = targetState;
         if (requested != SwipeState.Hidden)
         {
@@ -865,7 +964,13 @@ public class Swipe : Grid
         {
             _panGestureRecognizer.OnPan -= PanUpdated;
         }
-        
+
+        _wheelSettleTimer?.Stop();
+        _isWheelPanning = false;
+        _isPointerPanning = false;
+        _wheelTotalX = 0;
+        _wheelTotalY = 0;
+
         _bodyContainer.RenderTransform = null;
     }
 }

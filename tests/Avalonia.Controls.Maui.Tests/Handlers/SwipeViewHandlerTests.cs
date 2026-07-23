@@ -1,5 +1,6 @@
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
+using Avalonia.Input;
 using Microsoft.Maui;
 using SwipeViewHandler = Avalonia.Controls.Maui.Handlers.SwipeViewHandler;
 
@@ -400,5 +401,379 @@ public partial class SwipeViewHandlerTests : HandlerTestBase<SwipeViewHandler, S
 
         // Should not throw and Left should be null or empty template
         Assert.NotNull(handler.PlatformView);
+    }
+
+    [AvaloniaFact(DisplayName = "Horizontal wheel pan opens right items")]
+    public async Task HorizontalWheelPanOpensRightItems()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            // Swipe materializes side items with the inherited DataContext, as pages
+            // with a binding context do at runtime.
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                // Layout runs between deltas, like frames during a real gesture.
+                for (var i = 0; i < 3; i++)
+                {
+                    platformView.RaiseEvent(CreateWheelEventArgs(platformView, new Vector(-1, 0)));
+                    Threading.Dispatcher.UIThread.RunJobs();
+                }
+
+                platformView.CompleteWheelPan();
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(SwipeState.RightVisible, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Horizontal wheel pan closes open items")]
+    public async Task HorizontalWheelPanClosesOpenItems()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+                platformView.SetSwipeState(SwipeState.RightVisible, animated: false);
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                for (var i = 0; i < 3; i++)
+                    platformView.RaiseEvent(CreateWheelEventArgs(platformView, new Vector(1, 0)));
+
+                platformView.CompleteWheelPan();
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(SwipeState.Hidden, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Vertical wheel is not consumed without vertical items")]
+    public async Task VerticalWheelNotConsumedWithoutVerticalItems()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                var args = CreateWheelEventArgs(platformView, new Vector(0, -1));
+                platformView.RaiseEvent(args);
+
+                // Ancestor scroll containers must keep receiving vertical scrolling.
+                Assert.False(args.Handled);
+                Assert.Equal(SwipeState.Hidden, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Wheel pan below threshold snaps back to hidden")]
+    public async Task WheelPanBelowThresholdSnapsBack()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                platformView.RaiseEvent(CreateWheelEventArgs(platformView, new Vector(-0.5, 0)));
+
+                platformView.CompleteWheelPan();
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(SwipeState.Hidden, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Wheel input is ignored while a pointer drag is active")]
+    public async Task WheelIgnoredWhilePointerDragActive()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                // Start a pointer drag on the body container (it owns the recognizer).
+                var body = (Avalonia.Controls.Control)platformView.Children[^1];
+                var pointer = new Pointer(1, PointerType.Mouse, true);
+                body.RaiseEvent(new PointerPressedEventArgs(
+                    body, pointer, body, new Point(150, 50), 0,
+                    new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.LeftButtonPressed),
+                    KeyModifiers.None));
+                body.RaiseEvent(new Avalonia.Input.PointerEventArgs(
+                    InputElement.PointerMovedEvent, body, pointer, body, new Point(120, 50), 0,
+                    new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.Other),
+                    KeyModifiers.None));
+
+                var args = CreateWheelEventArgs(platformView, new Vector(-1, 0));
+                platformView.RaiseEvent(args);
+
+                Assert.False(args.Handled);
+
+                body.RaiseEvent(new PointerReleasedEventArgs(
+                    body, pointer, body, new Point(120, 50), 0,
+                    new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.LeftButtonReleased),
+                    KeyModifiers.None, MouseButton.Left));
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Programmatic close during a wheel pan is not overridden by the settle")]
+    public async Task ProgrammaticCloseDuringWheelPanWins()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                for (var i = 0; i < 3; i++)
+                {
+                    platformView.RaiseEvent(CreateWheelEventArgs(platformView, new Vector(-1, 0)));
+                    Threading.Dispatcher.UIThread.RunJobs();
+                }
+
+                // Explicit close (Esc, MAUI Close(), item invocation) discards the stream.
+                platformView.SetSwipeState(SwipeState.Hidden, animated: false);
+                platformView.CompleteWheelPan();
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(SwipeState.Hidden, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Vertical wheel does not open vertical items")]
+    public async Task VerticalWheelDoesNotOpenVerticalItems()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            TopItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Pin" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                var args = CreateWheelEventArgs(platformView, new Vector(0, 1));
+                platformView.RaiseEvent(args);
+
+                // Plain mouse wheels must keep scrolling lists that host swipes.
+                Assert.False(args.Handled);
+                Assert.Equal(SwipeState.Hidden, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Vertical wheel closes an open vertical panel")]
+    public async Task VerticalWheelClosesOpenVerticalPanel()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            TopItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Pin" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+                platformView.SetSwipeState(SwipeState.TopVisible, animated: false);
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                for (var i = 0; i < 3; i++)
+                {
+                    platformView.RaiseEvent(CreateWheelEventArgs(platformView, new Vector(0, -1)));
+                    Threading.Dispatcher.UIThread.RunJobs();
+                }
+
+                platformView.CompleteWheelPan();
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(SwipeState.Hidden, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Zero-delta wheel events are not consumed")]
+    public async Task ZeroDeltaWheelNotConsumed()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                var args = CreateWheelEventArgs(platformView, new Vector(0, 0));
+                platformView.RaiseEvent(args);
+
+                Assert.False(args.Handled);
+                Assert.Equal(SwipeState.Hidden, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    private static PointerWheelEventArgs CreateWheelEventArgs(Visual target, Vector delta)
+    {
+        var pointer = new Pointer(1, PointerType.Mouse, true);
+        return new PointerWheelEventArgs(
+            target,
+            pointer,
+            target,
+            new Point(50, 50),
+            0,
+            new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.Other),
+            KeyModifiers.None,
+            delta);
     }
 }
