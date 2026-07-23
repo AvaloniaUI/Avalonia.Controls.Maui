@@ -419,7 +419,7 @@ public class CarouselViewHandler : ViewHandler<CarouselView, PlatformView>
 
     private void OnItemsSourceCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        global::Avalonia.Threading.Dispatcher.UIThread.Post(RefreshItemsSourceAfterCollectionChanged);
+        PlatformViewOrNull?.Dispatcher.Post(RefreshItemsSourceAfterCollectionChanged);
     }
 
     private void RefreshItemsSourceAfterCollectionChanged()

@@ -35,7 +35,7 @@ public class PlatformGraphicsView : Control
     /// </summary>
     public new void InvalidateVisual()
     {
-        Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+        this.Dispatcher.Post(() =>
         {
             base.InvalidateVisual();
         });

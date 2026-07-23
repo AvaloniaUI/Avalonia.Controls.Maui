@@ -227,7 +227,7 @@ internal class AlertManager
 
             public void SetBusy(bool busy)
             {
-                 Dispatcher.UIThread.InvokeAsync(() =>
+                 _host.Dispatcher.InvokeAsync(() =>
                  {
                      EnsureOverlay();
                      _busyCount = Math.Max(0, busy ? _busyCount + 1 : _busyCount - 1);
@@ -242,7 +242,7 @@ internal class AlertManager
             {
                  Grid? dialogContainer = null;
 
-                 await Dispatcher.UIThread.InvokeAsync(() =>
+                 await _host.Dispatcher.InvokeAsync(() =>
                  {
                      EnsureOverlay();
 
@@ -266,7 +266,7 @@ internal class AlertManager
                  });
 
                  // Trigger fade-in after the container is in the visual tree
-                 await Dispatcher.UIThread.InvokeAsync(() =>
+                 await _host.Dispatcher.InvokeAsync(() =>
                  {
                      if (dialogContainer != null)
                          dialogContainer.Opacity = 1;
@@ -279,7 +279,7 @@ internal class AlertManager
                  finally
                  {
                      // Trigger fade-out
-                     await Dispatcher.UIThread.InvokeAsync(() =>
+                     await _host.Dispatcher.InvokeAsync(() =>
                      {
                          if (_dialogGrid?.Children.Count > 0 && _dialogGrid.Children[^1] is Visual top)
                              top.Opacity = 0;
@@ -289,7 +289,7 @@ internal class AlertManager
                      await Task.Delay(DialogAnimationDuration);
 
                      // Remove from tree
-                     await Dispatcher.UIThread.InvokeAsync(() =>
+                     await _host.Dispatcher.InvokeAsync(() =>
                      {
                          if (_dialogGrid?.Children.Count > 0)
                              _dialogGrid.Children.RemoveAt(_dialogGrid.Children.Count - 1);
