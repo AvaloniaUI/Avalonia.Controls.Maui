@@ -638,7 +638,6 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                 this.Dispatcher.Post(() => 
                 {
                     if (_resultsList != null) _resultsList.SelectedItem = null;
-                    if (_resultsList != null) _resultsList.SelectedItem = null;
                     if (_searchBar != null)
                     {
                         _searchBar.IsEnabled = true;
