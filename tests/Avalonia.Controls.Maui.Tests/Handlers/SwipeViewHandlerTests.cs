@@ -1,7 +1,9 @@
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
 using Avalonia.Input;
+using Avalonia.VisualTree;
 using Microsoft.Maui;
+using MauiSwipeMode = Microsoft.Maui.SwipeMode;
 using SwipeViewHandler = Avalonia.Controls.Maui.Handlers.SwipeViewHandler;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
@@ -827,6 +829,11 @@ public partial class SwipeViewHandlerTests : HandlerTestBase<SwipeViewHandler, S
             {
                 Threading.Dispatcher.UIThread.RunJobs();
 
+                var started = 0;
+                var ended = 0;
+                platformView.AddHandler(Swipe.SwipeStartedEvent, (_, _) => started++);
+                platformView.AddHandler(Swipe.SwipeEndedEvent, (_, _) => ended++);
+
                 // Below the direction-lock threshold, so the axis is still undecided.
                 platformView.RaiseEvent(CreateWheelEventArgs(platformView, new Vector(-0.05, 0)));
                 Threading.Dispatcher.UIThread.RunJobs();
@@ -843,12 +850,192 @@ public partial class SwipeViewHandlerTests : HandlerTestBase<SwipeViewHandler, S
                 platformView.CompleteWheelPan();
                 Threading.Dispatcher.UIThread.RunJobs();
                 Assert.Equal(SwipeState.Hidden, platformView.SwipeState);
+
+                // Cancellation must keep the event pair balanced.
+                Assert.Equal(started, ended);
             }
             finally
             {
                 window.Close();
             }
         });
+    }
+
+    [AvaloniaFact(DisplayName = "Tapping the content of an open swipe closes it")]
+    public async Task TappingContentOfOpenSwipeClosesIt()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+                platformView.SetSwipeState(SwipeState.RightVisible, animated: false);
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                RaiseTap(platformView, new Point(50, 50));
+
+                Assert.Equal(SwipeState.Hidden, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Tapping the exposed items area does not close the swipe")]
+    public async Task TappingExposedItemsAreaDoesNotClose()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+                platformView.SetSwipeState(SwipeState.RightVisible, animated: false);
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                RaiseTap(platformView, new Point(295, 50));
+
+                Assert.Equal(SwipeState.RightVisible, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "A pan release is not treated as a content tap")]
+    public async Task PanReleaseIsNotTreatedAsContentTap()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+                platformView.SetSwipeState(SwipeState.RightVisible, animated: false);
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                // Press and release far apart, as a pan's own release does.
+                var pointer = new Pointer(1, PointerType.Mouse, true);
+                platformView.RaiseEvent(new PointerPressedEventArgs(
+                    platformView, pointer, platformView, new Point(200, 50), 0,
+                    new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.LeftButtonPressed),
+                    KeyModifiers.None));
+                platformView.RaiseEvent(new PointerReleasedEventArgs(
+                    platformView, pointer, platformView, new Point(120, 50), 0,
+                    new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.LeftButtonReleased),
+                    KeyModifiers.None, MouseButton.Left));
+
+                Assert.Equal(SwipeState.RightVisible, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaTheory(DisplayName = "Invoking a swipe item honors SwipeBehaviorOnInvoked")]
+    [InlineData(SwipeBehaviorOnInvoked.Auto, MauiSwipeMode.Reveal, true)]
+    [InlineData(SwipeBehaviorOnInvoked.Auto, MauiSwipeMode.Execute, false)]
+    [InlineData(SwipeBehaviorOnInvoked.Close, MauiSwipeMode.Execute, true)]
+    [InlineData(SwipeBehaviorOnInvoked.RemainOpen, MauiSwipeMode.Reveal, false)]
+    public async Task InvokingSwipeItemHonorsSwipeBehaviorOnInvoked(
+        SwipeBehaviorOnInvoked behavior, MauiSwipeMode mode, bool expectClosed)
+    {
+        var invokedCount = 0;
+        var swipeItem = new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" };
+        swipeItem.Invoked += (_, _) => invokedCount++;
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { swipeItem }
+        };
+        ((SwipeItemsStub)swipeView.RightItems).SwipeBehaviorOnInvoked = behavior;
+        ((SwipeItemsStub)swipeView.RightItems).Mode = mode;
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+                platformView.SetSwipeState(SwipeState.RightVisible, animated: false);
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                var button = platformView.GetVisualDescendants()
+                    .OfType<Avalonia.Controls.Button>()
+                    .First(b => b.Tag is ValueTuple<SwipeBehaviorOnInvoked, MauiSwipeMode, Swipe>);
+                button.RaiseEvent(new Interactivity.RoutedEventArgs(Avalonia.Controls.Button.ClickEvent));
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(1, invokedCount);
+                Assert.Equal(expectClosed ? SwipeState.Hidden : SwipeState.RightVisible, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    private static void RaiseTap(Swipe platformView, Point point)
+    {
+        var pointer = new Pointer(1, PointerType.Mouse, true);
+        platformView.RaiseEvent(new PointerPressedEventArgs(
+            platformView, pointer, platformView, point, 0,
+            new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.LeftButtonPressed),
+            KeyModifiers.None));
+        platformView.RaiseEvent(new PointerReleasedEventArgs(
+            platformView, pointer, platformView, point, 0,
+            new PointerPointProperties(RawInputModifiers.None, PointerUpdateKind.LeftButtonReleased),
+            KeyModifiers.None, MouseButton.Left));
     }
 
     private static PointerWheelEventArgs CreateWheelEventArgs(Visual target, Vector delta)

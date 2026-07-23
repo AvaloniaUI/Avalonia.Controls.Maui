@@ -306,6 +306,8 @@ public class Swipe : Grid
     private bool _isPointerPanning;
     private double _wheelTotalX;
     private double _wheelTotalY;
+    private Point _tapPressPoint;
+    private bool _tapPressActive;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Swipe"/> class.
@@ -343,6 +345,12 @@ public class Swipe : Grid
 
         _panGestureRecognizer.OnPan += PanUpdated;
         _bodyContainer.GestureRecognizers.Add(_panGestureRecognizer);
+
+        // MAUI parity: tapping the open swipe's content closes it (taps outside the
+        // control do not). Handled events are observed too so taps on interactive
+        // content still close, like the platform implementations.
+        AddHandler(PointerPressedEvent, OnTapPressed, RoutingStrategies.Bubble, handledEventsToo: true);
+        AddHandler(PointerReleasedEvent, OnTapReleased, RoutingStrategies.Bubble, handledEventsToo: true);
         
         _cachedSwipeChangingArgs = new SwipeChangingEventArgs(SwipeDirection.Left, 0);
 
@@ -650,6 +658,32 @@ public class Swipe : Grid
         e.Handled = true;
     }
 
+    private void OnTapPressed(object? sender, PointerPressedEventArgs e)
+    {
+        _tapPressActive = SwipeState != SwipeState.Hidden;
+        _tapPressPoint = e.GetPosition(this);
+    }
+
+    private void OnTapReleased(object? sender, PointerReleasedEventArgs e)
+    {
+        if (!_tapPressActive)
+            return;
+
+        _tapPressActive = false;
+        if (SwipeState == SwipeState.Hidden)
+            return;
+
+        // A pan's own release travels beyond the gesture threshold; a tap does not.
+        var point = e.GetPosition(this);
+        if (Math.Abs(point.X - _tapPressPoint.X) >= GestureThreshold ||
+            Math.Abs(point.Y - _tapPressPoint.Y) >= GestureThreshold)
+            return;
+
+        var contentBounds = _bodyContainer.Bounds.Translate(new Vector(_currentX, _currentY));
+        if (contentBounds.Contains(point))
+            SetSwipeState(SwipeState.Hidden);
+    }
+
     private DispatcherTimer CreateWheelSettleTimer()
     {
         var timer = new DispatcherTimer { Interval = WheelSettleInterval };
@@ -691,9 +725,20 @@ public class Swipe : Grid
     private void CancelWheelPan()
     {
         _wheelSettleTimer?.Stop();
+        if (!_isWheelPanning)
+            return;
+
         _isWheelPanning = false;
         _wheelTotalX = 0;
         _wheelTotalY = 0;
+
+        // Keep SwipeStarted/SwipeEnded balanced for subscribers.
+        if (_isHorizontalSwipe || _isVerticalSwipe)
+        {
+            _isHorizontalSwipe = false;
+            _isVerticalSwipe = false;
+            RaiseEvent(new SwipeEndedEventArgs(SwipeEndedEvent, _swipeDirection, SwipeState != SwipeState.Hidden));
+        }
     }
 
     private void PanUpdated(object? sender, PanUpdatedEventArgs e)

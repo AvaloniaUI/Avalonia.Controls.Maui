@@ -200,7 +200,7 @@ public static class SwipeViewExtensions
                     avaloniaControl.VerticalAlignment = VerticalAlignment.Stretch;
 
                     // Tag used for auto-close behavior
-                    avaloniaControl.Tag = (swipeItems.SwipeBehaviorOnInvoked, owner);
+                    avaloniaControl.Tag = (swipeItems.SwipeBehaviorOnInvoked, swipeItems.Mode, owner);
 
                     // Ensure the control is not already parented before adding it to a new panel
                     // This can happen when the SwipeView is recycled or re-materialized

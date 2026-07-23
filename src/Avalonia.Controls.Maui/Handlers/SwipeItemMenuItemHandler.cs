@@ -157,10 +157,10 @@ public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuIte
     private void TryCloseParentSwipeView()
     {
         // Use Tag is set when building swipe items for auto-close behavior.
-        if (PlatformView?.Tag is ValueTuple<SwipeBehaviorOnInvoked, Swipe> tag)
+        if (PlatformView?.Tag is ValueTuple<SwipeBehaviorOnInvoked, Microsoft.Maui.SwipeMode, Swipe> tag)
         {
-            var (behavior, swipe) = tag;
-            if (behavior == SwipeBehaviorOnInvoked.Close)
+            var (behavior, mode, swipe) = tag;
+            if (ShouldCloseOnInvoke(behavior, mode))
             {
                 swipe.SetSwipeState(SwipeState.Hidden, animated: true);
             }
@@ -183,9 +183,15 @@ public partial class SwipeItemMenuItemHandler : ElementHandler<ISwipeItemMenuIte
                 swipeView = sv;
         }
 
-        if (swipeItems?.SwipeBehaviorOnInvoked == SwipeBehaviorOnInvoked.Close && swipeView != null)
+        if (swipeItems != null && swipeView != null &&
+            ShouldCloseOnInvoke(swipeItems.SwipeBehaviorOnInvoked, swipeItems.Mode))
         {
             swipeView.RequestClose(new SwipeViewCloseRequest(true));
         }
     }
+
+    // Auto closes in Reveal mode and remains open in Execute mode, matching MAUI.
+    private static bool ShouldCloseOnInvoke(SwipeBehaviorOnInvoked behavior, Microsoft.Maui.SwipeMode mode) =>
+        behavior == SwipeBehaviorOnInvoked.Close ||
+        (behavior == SwipeBehaviorOnInvoked.Auto && mode == Microsoft.Maui.SwipeMode.Reveal);
 }
