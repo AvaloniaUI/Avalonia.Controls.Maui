@@ -429,6 +429,8 @@ public class Swipe : Grid
         }
         else if (e.Property == SwipeStateProperty)
         {
+            // Direct styled-property sets bypass SetSwipeState.
+            CancelWheelPan();
             ProcessSwipe(SwipeState);
         }
         else if (e.Property == AnimationDurationProperty)
@@ -632,6 +634,14 @@ public class Swipe : Grid
         _wheelTotalX += e.Delta.X * WheelPanFactor;
         _wheelTotalY += e.Delta.Y * WheelPanFactor;
         HandlePanRunning(new PanUpdatedEventArgs(PanGestureStatus.Running, _wheelTotalX, _wheelTotalY));
+
+        // A gesture locked to an inert axis releases the stream to ancestors.
+        if ((_isVerticalSwipe && !CanWheelPan(horizontal: false)) ||
+            (_isHorizontalSwipe && !CanWheelPan(horizontal: true)))
+        {
+            CancelWheelPan();
+            return;
+        }
 
         _wheelSettleTimer ??= CreateWheelSettleTimer();
         _wheelSettleTimer.Stop();

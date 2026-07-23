@@ -763,6 +763,94 @@ public partial class SwipeViewHandlerTests : HandlerTestBase<SwipeViewHandler, S
         });
     }
 
+    [AvaloniaFact(DisplayName = "Direct SwipeState set during a wheel pan is not overridden by the settle")]
+    public async Task DirectStateSetDuringWheelPanWins()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            LeftItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Pin" } },
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                for (var i = 0; i < 3; i++)
+                {
+                    platformView.RaiseEvent(CreateWheelEventArgs(platformView, new Vector(-1, 0)));
+                    Threading.Dispatcher.UIThread.RunJobs();
+                }
+
+                platformView.SwipeState = SwipeState.LeftVisible;
+                platformView.CompleteWheelPan();
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(SwipeState.LeftVisible, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Vertical scrolling after a tiny horizontal delta is released to ancestors")]
+    public async Task VerticalScrollAfterTinyHorizontalDeltaIsReleased()
+    {
+        var swipeView = new SwipeViewStub
+        {
+            RightItems = new SwipeItemsStub { new Microsoft.Maui.Controls.SwipeItem { Text = "Delete" } }
+        };
+        var handler = await CreateHandlerAsync(swipeView);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            platformView.Width = 300;
+            platformView.Height = 100;
+            platformView.DataContext = swipeView;
+            var window = new Avalonia.Controls.Window { Content = platformView, Width = 300, Height = 100 };
+            window.Show();
+
+            try
+            {
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                // Below the direction-lock threshold, so the axis is still undecided.
+                platformView.RaiseEvent(CreateWheelEventArgs(platformView, new Vector(-0.05, 0)));
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                // Locks the axis vertical with no vertical action available.
+                var vertical = CreateWheelEventArgs(platformView, new Vector(0, 1));
+                platformView.RaiseEvent(vertical);
+                Assert.False(vertical.Handled);
+
+                var next = CreateWheelEventArgs(platformView, new Vector(0, 1));
+                platformView.RaiseEvent(next);
+                Assert.False(next.Handled);
+
+                platformView.CompleteWheelPan();
+                Threading.Dispatcher.UIThread.RunJobs();
+                Assert.Equal(SwipeState.Hidden, platformView.SwipeState);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
     private static PointerWheelEventArgs CreateWheelEventArgs(Visual target, Vector delta)
     {
         var pointer = new Pointer(1, PointerType.Mouse, true);
