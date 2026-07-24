@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nuke.Common;
@@ -105,7 +106,15 @@ class Build : NukeBuild
             var sbomOutput = RootDirectory / "artifacts" / "sbom";
             sbomOutput.CreateOrCleanDirectory();
 
-            foreach (var nupkg in Output.GlobFiles("*.nupkg"))
+            // Mirror SbomGenerator.Generate's guard: producing zero SBOMs would look like success
+            // while shipping packages without CRA evidence. GenerateForPackage is called per-nupkg
+            // here (for the constituent-project mapping), so the empty-case guard must live here too.
+            var packages = Output.GlobFiles("*.nupkg");
+            if (packages.Count == 0)
+                throw new InvalidOperationException(
+                    $"SBOM: no .nupkg files found in {Output} - was CreateSbom run before packing?");
+
+            foreach (var nupkg in packages)
             {
                 var packageId = SbomGenerator.ReadPackageId(nupkg);
                 var constituents = SbomConstituentProjects.TryGetValue(packageId, out var projects)
