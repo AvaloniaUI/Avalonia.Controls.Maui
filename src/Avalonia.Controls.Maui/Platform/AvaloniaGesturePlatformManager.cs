@@ -233,12 +233,13 @@ internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
             var capturedPoint = point;
             var capturedView = view;
             var capturedRecognizers = singleTapRecognizers.ToList();
+            var dispatcher = _platformView?.Dispatcher;
 
             _ = Task.Delay(DoubleTapDelayMs, cts.Token).ContinueWith(t =>
             {
                 if (!t.IsCanceled)
                 {
-                    Threading.Dispatcher.UIThread.Post(() =>
+                    dispatcher?.Post(() =>
                     {
                         foreach (var recognizer in capturedRecognizers)
                         {

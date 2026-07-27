@@ -282,7 +282,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         {
             if (VirtualView != null)
             {
-                Threading.Dispatcher.UIThread.Post(() =>
+                PlatformViewOrNull?.Dispatcher.Post(() =>
                 {
                     this.UpdateFlyoutItemsAppearance(VirtualView);
                 }, Threading.DispatcherPriority.Render);
@@ -488,7 +488,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             TrackCurrentPage();
 
 
-            Threading.Dispatcher.UIThread.Post(() =>
+            PlatformViewOrNull?.Dispatcher.Post(() =>
             {
                 if (VirtualView != null)
                 {
@@ -604,7 +604,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (VirtualView != null)
         {
             VirtualView.FlyoutIsPresented = true;
-            Threading.Dispatcher.UIThread.Post(() =>
+            PlatformViewOrNull?.Dispatcher.Post(() =>
             {
                 if (VirtualView != null)
                 {
@@ -645,7 +645,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
                 _currentItemHandler?.UpdateTabBarVisibility(VirtualView.CurrentItem);
 
             // Force focus clear on page change to ensure navigation settles cleanly
-            Threading.Dispatcher.UIThread.Post(() => 
+            PlatformViewOrNull?.Dispatcher.Post(() => 
             {
                 var topLevel = _mainContainer != null ? TopLevel.GetTopLevel(_mainContainer) : null;
                 topLevel?.FocusManager?.Focus(null);
@@ -1250,7 +1250,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     {
         if (e.PropertyName == SearchHandler.SearchBoxVisibilityProperty.PropertyName)
         {
-            Threading.Dispatcher.UIThread.Post(() => 
+            PlatformViewOrNull?.Dispatcher.Post(() => 
             {
                 if (VirtualView != null)
                 {

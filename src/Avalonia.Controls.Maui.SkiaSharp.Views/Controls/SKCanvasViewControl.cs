@@ -59,7 +59,7 @@ public class SKCanvasViewControl : Control
     /// </summary>
     public void InvalidateCanvas()
     {
-        Threading.Dispatcher.UIThread.Post(() =>
+        this.Dispatcher.Post(() =>
         {
             base.InvalidateVisual();
         });
