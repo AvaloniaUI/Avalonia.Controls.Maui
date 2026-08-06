@@ -161,7 +161,7 @@ public partial class TabbedPageHandler : ViewHandler<MauiTabbedPage, AvaloniaTab
                     : null;
                 var preservedIconImageSource = page.IconImageSource;
 
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                platformView.Dispatcher.Post(() =>
                 {
                     if (((IElementHandler)this).VirtualView == virtualView &&
                         ((IElementHandler)this).PlatformView == platformView)

@@ -635,9 +635,8 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                 var controller = (ISearchHandlerController?)_mauiSearchHandler;
                 controller?.ItemSelected(selectedItem);
 
-                Avalonia.Threading.Dispatcher.UIThread.Post(() => 
+                this.Dispatcher.Post(() => 
                 {
-                    if (_resultsList != null) _resultsList.SelectedItem = null;
                     if (_resultsList != null) _resultsList.SelectedItem = null;
                     if (_searchBar != null)
                     {

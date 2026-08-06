@@ -105,7 +105,7 @@ public class SKGLViewControl : Control
     /// </summary>
     public void InvalidateCanvas()
     {
-        Threading.Dispatcher.UIThread.Post(() =>
+        this.Dispatcher.Post(() =>
         {
             base.InvalidateVisual();
         });
