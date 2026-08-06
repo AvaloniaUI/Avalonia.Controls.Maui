@@ -549,7 +549,7 @@ public class Swipe : Grid
         else
         {
             // If bounds are not ready, defer to next render pass.
-            Dispatcher.UIThread.Post(transformAction, DispatcherPriority.Render);
+            this.Dispatcher.Post(transformAction, DispatcherPriority.Render);
         }
 
     }
@@ -849,7 +849,7 @@ public class Swipe : Grid
 
         if (!animated)
         {
-            Dispatcher.UIThread.Post(() =>
+            this.Dispatcher.Post(() =>
             {
                 _transition.Duration = originalDuration;
             }, DispatcherPriority.Render);

@@ -35,7 +35,7 @@ public class AvaloniaScreenshot : IScreenshot
         var topLevel = _platformProvider.GetTopLevel()
             ?? throw new InvalidOperationException("Unable to get Avalonia TopLevel. Ensure the application has been fully initialized.");
 
-        return await Dispatcher.UIThread.InvokeAsync(() =>
+        return await topLevel.Dispatcher.InvokeAsync(() =>
         {
             var scaling = topLevel.RenderScaling;
             var clientSize = topLevel.ClientSize;

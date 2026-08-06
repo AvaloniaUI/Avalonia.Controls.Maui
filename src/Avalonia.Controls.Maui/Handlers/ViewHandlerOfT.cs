@@ -34,7 +34,7 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
     {
     }
 
-    PlatformView? PlatformViewOrNull => (PlatformView?)((IElementHandler)this).PlatformView;
+    private protected PlatformView? PlatformViewOrNull => (PlatformView?)((IElementHandler)this).PlatformView;
 
     IView? VirtualViewOrNull => (IView?)((IElementHandler)this).VirtualView;
 
@@ -178,13 +178,13 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
         // and carries the margin. Measure the outermost view for correct sizing.
         var viewToMeasure = ContainerView ?? platformView;
 
-        if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+        if (viewToMeasure.Dispatcher.CheckAccess())
         {
             return MeasureCore(viewToMeasure, widthConstraint, heightConstraint);
         }
         else
         {
-            return Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+            return viewToMeasure.Dispatcher.InvokeAsync(() =>
             {
                 return MeasureCore(viewToMeasure, widthConstraint, heightConstraint);
             }).GetAwaiter().GetResult();
@@ -215,10 +215,11 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
     /// <inheritdoc/>
     public virtual void PlatformArrange(Microsoft.Maui.Graphics.Rect frame)
     {
-        if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
+        var dispatcher = PlatformViewOrNull?.Dispatcher ?? Avalonia.Threading.Dispatcher.UIThread;
+        if (dispatcher.CheckAccess())
             Arrange(frame);
         else
-            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => Arrange(frame));
+            dispatcher.Invoke(() => Arrange(frame));
     }
 
     /// <summary>

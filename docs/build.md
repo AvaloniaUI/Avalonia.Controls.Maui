@@ -6,6 +6,12 @@
 
 ## Quick Start
 
+The Nuke build references the shared `build-common` submodule, so initialise it after cloning:
+
+```bash
+git submodule update --init
+```
+
 Restore required .NET workloads before building:
 
 ```bash
@@ -32,6 +38,10 @@ This project uses [Nuke](https://nuke.build/) for build automation. All commands
 | Build and copy to local NuGet cache | `dotnet run --project build/_build.csproj -- --target CopyPackagesToNuGetCache` |
 
 The `CopyPackagesToNuGetCache` target produces packages versioned `9999.0.0-localbuild` in your local `.nuget` folder.
+
+`CreateNugetPackages` also triggers `CreateSbom`, which generates a CycloneDX SBOM per package (EU
+Cyber Resilience Act evidence) into `artifacts/sbom/` and embeds a copy in each `.nupkg` at
+`_manifest/cyclonedx/bom.cdx.json`.
 
 ## Running Tests Directly
 

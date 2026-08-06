@@ -308,6 +308,7 @@ public static class ShellExtensions
         if (handler._flyoutPaneContainer == null || shell == null || handler.MauiContext == null)
             return;
 
+        var dispatcher = handler._flyoutPaneContainer.Dispatcher;
         var backgroundImage = shell.FlyoutBackgroundImage;
 
         if (backgroundImage != null)
@@ -323,7 +324,7 @@ public static class ShellExtensions
                     {
                         var result = await avaloniaService.GetImageAsync(backgroundImage, 1.0f);
                         
-                        await Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                        await dispatcher.InvokeAsync(() =>
                         {
                             if (result != null)
                             {
@@ -365,7 +366,7 @@ public static class ShellExtensions
             }
         }
 
-        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+        await dispatcher.InvokeAsync(() =>
         {
             handler.UpdateFlyoutBackground(shell);
         });
