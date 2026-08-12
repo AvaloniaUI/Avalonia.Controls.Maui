@@ -14,8 +14,7 @@
     <NoWarn>$(NoWarn);CS0618;CS8002</NoWarn>
     <IsAotCompatible>true</IsAotCompatible>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <!-- Needed for IGesturePlatformManager/IGesturePlatformManagerFactory, which are still
-         internal in MAUI (dotnet/maui#33364). Remove once they are made public. -->
+    <!-- Required for gesture types that need to be opened up -->
     <AddMauiInternals>true</AddMauiInternals>
     <LangVersion>preview</LangVersion>
     <AssemblyOriginatorKeyFile>$(BuildDirectory)/avalonia.snk</AssemblyOriginatorKeyFile>

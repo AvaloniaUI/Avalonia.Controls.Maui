@@ -3,13 +3,15 @@ using System.Runtime.CompilerServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.Internals;
 using Microsoft.Maui.LifecycleEvents;
 
 namespace Avalonia.Controls.Maui;
 
 /// <summary>
-/// Helpers mirroring small internal MAUI extension methods (TaskExtensions, LifecycleEventServiceExtensions,
-/// EnumerableExtensions, ViewExtensions.NeedsContainer) that are not accessible outside the MAUI assemblies.
+/// Helpers mirroring small internal MAUI extension methods that are
+/// not accessible outside the MAUI assemblies.
 /// </summary>
 internal static class MauiInternalExtensions
 {
@@ -50,6 +52,13 @@ internal static class MauiInternalExtensions
 
         return -1;
     }
+
+    /// <summary>
+    /// Returns the element's composite gesture recognizers, or <see langword="null"/> when the element does not
+    /// expose them.
+    /// </summary>
+    public static IList<Microsoft.Maui.Controls.IGestureRecognizer>? GetCompositeGestureRecognizers(this Element element)
+        => (element as IGestureController)?.CompositeGestureRecognizers;
 
     /// <summary>
     /// Indicates whether the view requires a container view for Clip/Shadow support.
