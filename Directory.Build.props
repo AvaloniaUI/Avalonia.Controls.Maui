@@ -55,6 +55,18 @@
     </PropertyGroup>
 
     <!--
+        The NativeAOT toolchain packs (ILCompiler and the NativeAOT runtime pack) are not shipped
+        inside the SDK: PublishAot restores them from NuGet at the SDK's own build number. A preview
+        SDK build whose matching packs were never pushed to nuget.org therefore fails restore with
+        NU1102/NU1603 - CI hit this on SDK build 26378.119 when only 26381.103 is published.
+        Pin them to a published build; Directory.Build.targets applies it to the net11.0 Known*Pack
+        items, which the SDK defines after this file is imported.
+    -->
+    <PropertyGroup>
+        <NativeAotPackVersion>11.0.0-preview.7.26381.103</NativeAotPackVersion>
+    </PropertyGroup>
+
+    <!--
         SkiaSharp, HarfBuzzSharp, and MicroCom versions must match what Avalonia uses.
         When AvaloniaSourcePath is set, read them directly from Avalonia's Directory.Packages.props
         so they stay in sync automatically. Otherwise, fall back to hardcoded values for NuGet builds.
