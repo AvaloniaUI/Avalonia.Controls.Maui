@@ -51,7 +51,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <MicrosoftExtensionsVersion>11.0.0-preview.6.26359.118</MicrosoftExtensionsVersion>
+        <MicrosoftExtensionsVersion>11.0.0-preview.7.26381.103</MicrosoftExtensionsVersion>
     </PropertyGroup>
 
     <!--
@@ -79,7 +79,7 @@
     </Target>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net11.0'">
-        <MauiVersion>11.0.0-preview.6.26360.8</MauiVersion>
+        <MauiVersion>11.0.0-preview.7.26406.9</MauiVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net10.0'">
