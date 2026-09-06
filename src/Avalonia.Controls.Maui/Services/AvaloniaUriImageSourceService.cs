@@ -46,7 +46,6 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     {
         _logger = logger;
         _httpClient = httpClient ?? new HttpClient();
-        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Avalonia.Controls.Maui/1.0");
         _inFlightCache = new ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>>();
 
         EnsureCacheDirectory();
