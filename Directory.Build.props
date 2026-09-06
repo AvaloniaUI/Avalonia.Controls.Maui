@@ -51,7 +51,19 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <MicrosoftExtensionsVersion>11.0.0-preview.6.26359.118</MicrosoftExtensionsVersion>
+        <MicrosoftExtensionsVersion>11.0.0-preview.7.26381.103</MicrosoftExtensionsVersion>
+    </PropertyGroup>
+
+    <!--
+        The NativeAOT toolchain packs (ILCompiler and the NativeAOT runtime pack) are not shipped
+        inside the SDK: PublishAot restores them from NuGet at the SDK's own build number. A preview
+        SDK build whose matching packs were never pushed to nuget.org therefore fails restore with
+        NU1102/NU1603 - CI hit this on SDK build 26378.119 when only 26381.103 is published.
+        Pin them to a published build; Directory.Build.targets applies it to the net11.0 Known*Pack
+        items, which the SDK defines after this file is imported.
+    -->
+    <PropertyGroup>
+        <NativeAotPackVersion>11.0.0-preview.7.26381.103</NativeAotPackVersion>
     </PropertyGroup>
 
     <!--
@@ -79,7 +91,7 @@
     </Target>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net11.0'">
-        <MauiVersion>11.0.0-preview.6.26360.8</MauiVersion>
+        <MauiVersion>11.0.0-preview.7.26406.9</MauiVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net10.0'">
@@ -123,14 +135,14 @@
         >= 1.8.8.1 && < 1.8.9) that conflict with the newer base packages from Avalonia.
     -->
     <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-        <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.2" />
-        <PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.12.4.1" />
-        <PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModel.Ktx" Version="2.10.0.2" />
-        <PackageReference Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.4.0.2" />
-        <PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android" Version="2.10.0.2" />
-        <PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx" Version="2.10.0.2" />
-        <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData.Core" Version="2.10.0.2" />
-        <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.10.0.2" />
+        <PackageReference Include="Xamarin.AndroidX.Fragment.Ktx" Version="1.8.9.4" />
+        <PackageReference Include="Xamarin.AndroidX.Activity.Ktx" Version="1.13.0.1" />
+        <PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModel.Ktx" Version="2.11.0.1" />
+        <PackageReference Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.5.0.1" />
+        <PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx.Android" Version="2.11.0.1" />
+        <PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime.Ktx" Version="2.11.0.1" />
+        <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData.Core" Version="2.11.0.1" />
+        <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.11.0.1" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(AddMauiInternals)' == 'true' AND '$(MauiSourcePath)' == ''">

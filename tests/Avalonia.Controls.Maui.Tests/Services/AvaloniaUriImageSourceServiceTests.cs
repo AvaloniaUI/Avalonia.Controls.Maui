@@ -1,8 +1,12 @@
 using System.Net;
+using System.Reflection;
 using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Maui.Tests;
 using Avalonia;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Hosting;
 
 namespace Avalonia.Controls.Maui.Tests.Services;
 
@@ -15,6 +19,62 @@ public class AvaloniaUriImageSourceServiceTests
     {
         // Ensure Avalonia platform services are available for Bitmap creation
         TestAppBuilder.BuildAvaloniaApp().SetupWithoutStarting();
+    }
+
+    [Fact(DisplayName = "Default URI image service sets no User-Agent")]
+    public void DefaultRequestSendsNoUserAgent()
+    {
+        using var client = new HttpClient(new CountingHandler(PngBytes));
+
+        _ = new AvaloniaUriImageSourceService(null, client);
+
+        Assert.Equal(string.Empty, client.DefaultRequestHeaders.UserAgent.ToString());
+    }
+
+    [Fact(DisplayName = "URI image service preserves supplied HttpClient User-Agent")]
+    public void SuppliedHttpClientUserAgentIsPreserved()
+    {
+        using var client = new HttpClient(new CountingHandler(PngBytes));
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("Existing.Client/2.0");
+
+        _ = new AvaloniaUriImageSourceService(null, client);
+
+        Assert.Equal("Existing.Client/2.0", client.DefaultRequestHeaders.UserAgent.ToString());
+    }
+
+    [Fact(DisplayName = "Default image source registration sets no URI image User-Agent")]
+    public void ConfigureImageSourcesSetsNoUriImageSourceUserAgent()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder.ConfigureImageSources();
+
+        using var app = builder.Build();
+        var imageSourceServiceProvider = app.Services.GetRequiredService<IImageSourceServiceProvider>();
+        var service = Assert.IsType<AvaloniaUriImageSourceService>(
+            imageSourceServiceProvider.GetImageSourceService(typeof(IUriImageSource)));
+        var httpClient = GetHttpClient(service);
+
+        Assert.Equal(string.Empty, httpClient.DefaultRequestHeaders.UserAgent.ToString());
+    }
+
+    [Fact(DisplayName = "Default image source registration uses registered HttpClient")]
+    public void ConfigureImageSourcesUsesRegisteredHttpClient()
+    {
+        var builder = MauiApp.CreateBuilder();
+        using var client = new HttpClient(new CountingHandler(PngBytes));
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("Registered.Client/5.0");
+
+        builder.Services.AddSingleton(client);
+        builder.ConfigureImageSources();
+
+        using var app = builder.Build();
+        var imageSourceServiceProvider = app.Services.GetRequiredService<IImageSourceServiceProvider>();
+        var service = Assert.IsType<AvaloniaUriImageSourceService>(
+            imageSourceServiceProvider.GetImageSourceService(typeof(IUriImageSource)));
+        var httpClient = GetHttpClient(service);
+
+        Assert.Same(client, httpClient);
+        Assert.Equal("Registered.Client/5.0", httpClient.DefaultRequestHeaders.UserAgent.ToString());
     }
 
     [Fact(DisplayName = "Uses cached file for subsequent requests", Skip = "https://github.com/AvaloniaUI/Avalonia.Controls.Maui/issues/74")]
@@ -108,6 +168,15 @@ public class AvaloniaUriImageSourceServiceTests
         {
             try { File.Delete(path); } catch { }
         }
+    }
+
+    private static HttpClient GetHttpClient(AvaloniaUriImageSourceService service)
+    {
+        var field = typeof(AvaloniaUriImageSourceService).GetField(
+            "_httpClient",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
+        return Assert.IsType<HttpClient>(field?.GetValue(service));
     }
 
     private sealed class CountingHandler : HttpMessageHandler

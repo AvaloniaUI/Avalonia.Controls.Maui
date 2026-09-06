@@ -11,7 +11,7 @@ internal static class FileResultPreview
 {
     /// <summary>
     /// Opens the file contents, routing through <see cref="AvaloniaFileResult"/> when available.
-    /// The base <see cref="FileResult.OpenReadAsync"/> is not functional on the portable
+    /// The base <c>FileResult.OpenReadAsync()</c> is not functional on the portable
     /// Microsoft.Maui.Essentials build, so the Avalonia storage-backed method must be used.
     /// </summary>
     static Task<Stream> OpenReadAsync(FileResult file) =>

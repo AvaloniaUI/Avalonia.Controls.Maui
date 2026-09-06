@@ -46,7 +46,7 @@ public static class PageExtensions
                             
                             if (bitmap != null)
                             {
-                                await Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                                await platformView.Dispatcher.InvokeAsync(() =>
                                 {
                                     platformView.Background = new global::Avalonia.Media.ImageBrush
                                     {

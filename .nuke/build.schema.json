@@ -27,6 +27,7 @@
         "Compile",
         "CopyPackagesToNuGetCache",
         "CreateNugetPackages",
+        "CreateSbom",
         "OutputParameters",
         "RunTests"
       ]

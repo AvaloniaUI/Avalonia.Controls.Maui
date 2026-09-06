@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Net.Http;
 using Avalonia;
 using Avalonia.Controls.Maui.Animations;
 using Avalonia.Controls.Maui.Handlers;
@@ -6,6 +7,7 @@ using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Animations;
 using Microsoft.Maui.Hosting;
@@ -23,7 +25,13 @@ public static class MauiAppBuilderExtensions
         Microsoft.Maui.Hosting.ImageSourcesMauiAppBuilderExtensions.ConfigureImageSources(builder, services =>
         {
             services.AddService<IFileImageSource, AvaloniaFileImageSourceService>();
-            services.AddService<IUriImageSource, AvaloniaUriImageSourceService>();
+            services.AddService<IUriImageSource>(provider =>
+            {
+                var logger = provider.GetService<ILogger<AvaloniaUriImageSourceService>>();
+                var httpClient = provider.GetService<HttpClient>();
+
+                return new AvaloniaUriImageSourceService(logger, httpClient);
+            });
             services.AddService<IFontImageSource, AvaloniaFontImageSourceService>();
             services.AddService<IStreamImageSource, AvaloniaStreamImageSourceService>();
         });

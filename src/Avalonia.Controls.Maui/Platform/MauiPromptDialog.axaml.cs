@@ -57,7 +57,7 @@ public partial class MauiPromptDialog : UserControl
     {
         base.OnAttachedToVisualTree(e);
         var tb = this.FindControl<TextBox>("InputTextBox");
-        Dispatcher.UIThread.Post(() => 
+        this.Dispatcher.Post(() => 
         {
             tb?.Focus();
             if (!string.IsNullOrEmpty(InputValue))

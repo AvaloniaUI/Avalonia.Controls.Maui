@@ -2,6 +2,25 @@
   <Import Project="build/SourceBuild.targets"
           Condition="'$(AvaloniaSourcePath)' != '' Or '$(MauiSourcePath)' != ''" />
 
+  <!--
+      Pin the NativeAOT toolchain packs to a build that exists on nuget.org (see NativeAotPackVersion
+      in Directory.Build.props). This lives in Directory.Build.targets because the SDK declares these
+      items in Microsoft.NETCoreSdk.BundledVersions.props, which is imported after Directory.Build.props.
+      The version is a net11.0 one, so only the net11.0 entries are updated.
+  -->
+  <Target Name="_PinNativeAotPackVersions"
+          BeforeTargets="ProcessFrameworkReferences"
+          Condition="'$(NativeAotPackVersion)' != ''">
+      <ItemGroup>
+          <KnownILCompilerPack Update="Microsoft.DotNet.ILCompiler"
+              Condition="'%(TargetFramework)' == 'net11.0'"
+              ILCompilerPackVersion="$(NativeAotPackVersion)" />
+          <KnownRuntimePack Update="Microsoft.NETCore.App"
+              Condition="'%(TargetFramework)' == 'net11.0' AND '%(RuntimePackLabels)' == 'NativeAOT'"
+              LatestRuntimeFrameworkVersion="$(NativeAotPackVersion)" />
+      </ItemGroup>
+  </Target>
+
   <PropertyGroup Condition="'$(IsPackable)' == 'true'">
       <Authors>Avalonia Team</Authors>
       <Copyright>Copyright 2025-$([System.DateTime]::Now.ToString(`yyyy`)) &#169; The AvaloniaUI
