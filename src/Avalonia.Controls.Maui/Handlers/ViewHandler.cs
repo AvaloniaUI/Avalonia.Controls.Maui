@@ -2,17 +2,16 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
 using Microsoft.Maui.Platform;
-using System.Diagnostics;
 using Avalonia.Controls.Maui.Extensions;
 using PlatformView = Avalonia.Controls.Control;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
 /// <summary>
-/// Base Avalonia handler for <see cref="IView"/>. Provides property and command mappers
-/// that translate MAUI view properties to Avalonia platform equivalents.
+/// Holds the base property and command mappers that translate MAUI view properties
+/// to Avalonia platform equivalents, along with the static mapping methods they use.
 /// </summary>
-public abstract partial class ViewHandler : ElementHandler, IViewHandler
+public static partial class ViewHandler
 {
     /// <summary>
     /// A dictionary that maps the virtual view properties to their platform view counterparts.
@@ -68,192 +67,6 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         [nameof(IView.Focus)] = MapFocus,
         [nameof(IView.Unfocus)] = MapUnfocus,
     };
-
-    bool _hasContainer;
-
-    /// <summary>
-    /// Gets or sets the data flow direction used for property mapping.
-    /// </summary>
-    internal DataFlowDirection DataFlowDirection { get; set; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ViewHandler"/> class.
-    /// </summary>
-    /// <param name="mapper">The default mapper to use for this handler.</param>
-    /// <param name="commandMapper">The command mapper to use for this handler.</param>
-    protected ViewHandler(IPropertyMapper mapper, CommandMapper? commandMapper = null)
-        : base(mapper, commandMapper ?? ViewCommandMapper)
-    {
-    }
-
-    /// <summary>
-    /// Gets or sets a value that indicates whether the <see cref="PlatformView"/> is contained within a view.
-    /// </summary>
-    /// <remarks>When set to <see langword="true"/>, <see cref="SetupContainer"/> is called to setup the container view.
-    /// When set to <see langword="false"/>, <see cref="RemoveContainer"/> is called to remove the current container view.</remarks>
-    public bool HasContainer
-    {
-        get => _hasContainer;
-        set
-        {
-            if (_hasContainer == value)
-                return;
-
-            _hasContainer = value;
-
-            if (value)
-                SetupContainer();
-            else
-                RemoveContainer();
-        }
-    }
-
-    /// <summary>
-    /// Gets a value that indicates whether or not the <see cref="VirtualView"/> needs a container view.
-    /// </summary>
-    public virtual bool NeedsContainer
-    {
-        get => VirtualView.NeedsContainer();
-    }
-
-    /// <summary>
-    /// Constructs the <see cref="ContainerView"/> and adds <see cref="PlatformView"/> to a container.
-    /// </summary>
-    /// <remarks>This method is called when <see cref="HasContainer"/> is set to <see langword="true"/>.</remarks>
-    protected abstract void SetupContainer();
-
-    /// <summary>
-    /// Deconstructs the <see cref="ContainerView"/> and removes <see cref="PlatformView"/> from its container. 
-    /// </summary>
-    /// <remarks>This method is called when <see cref="HasContainer"/> is set to <see langword="false"/>.</remarks>
-    protected abstract void RemoveContainer();
-
-    /// <summary>
-    /// Gets the view that acts as a container for the <see cref="PlatformView"/>.
-    /// </summary>
-    /// <remarks>Note that this can be <see langword="null"/>. Especially when <see cref="HasContainer"/> is set to <see langword="false"/> this value might not be set.</remarks>
-    public PlatformView? ContainerView { get; private protected set; }
-
-    object? IViewHandler.ContainerView => ContainerView;
-
-    /// <summary>
-    /// Gets or sets the platform representation of the view associated to this handler.
-    /// </summary>
-    /// <remarks>This property holds the reference to platform layer view, e.g. the iOS/macOS, Android or Windows view.
-    /// The abstract (.NET MAUI) view is found in <see cref="VirtualView"/>.</remarks>
-    public new PlatformView? PlatformView
-    {
-        get => (PlatformView?)base.PlatformView;
-        private protected set => base.PlatformView = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the .NET MAUI repesentation of the view associated to this handler.
-    /// </summary>
-    /// <remarks>This property holds the reference to the abstract (.NET MAUI) view.
-    /// The platform view is found in <see cref="PlatformView"/>.</remarks>
-    public new IView? VirtualView
-    {
-        get => (IView?)base.VirtualView;
-        private protected set => base.VirtualView = value;
-    }
-
-    /// <inheritdoc/>
-    public Microsoft.Maui.Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
-    {
-        var platformView = PlatformView;
-        if (platformView is null || VirtualView is null)
-            return Microsoft.Maui.Graphics.Size.Zero;
-
-        // When there's a ContainerView, it's the control in the parent's visual tree
-        // and carries the margin. Measure the outermost view for correct sizing.
-        var viewToMeasure = (ContainerView as PlatformView) ?? platformView;
-
-        if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
-        {
-            return MeasureCore(viewToMeasure, widthConstraint, heightConstraint);
-        }
-        else
-        {
-            return Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                return MeasureCore(viewToMeasure, widthConstraint, heightConstraint);
-            }).GetAwaiter().GetResult();
-        }
-    }
-
-    /// <summary>
-    /// Performs the core measurement of the platform view against the given constraints.
-    /// </summary>
-    /// <param name="viewToMeasure">The Avalonia view to measure (ContainerView if present, otherwise PlatformView).</param>
-    /// <param name="widthConstraint">The maximum width constraint.</param>
-    /// <param name="heightConstraint">The maximum height constraint.</param>
-    /// <returns>The desired size of the view.</returns>
-    private static Microsoft.Maui.Graphics.Size MeasureCore(PlatformView viewToMeasure, double widthConstraint, double heightConstraint)
-    {
-        var avaloniaConstraint = new global::Avalonia.Size(
-            double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
-            double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
-
-        viewToMeasure.Measure(avaloniaConstraint);
-
-        // Avalonia's DesiredSize includes the control's Margin, but MAUI's layout system
-        // adds margin separately when positioning children. Subtract it to avoid double-counting.
-        var contentSize = viewToMeasure.DesiredSize.Deflate(viewToMeasure.Margin);
-        return new Microsoft.Maui.Graphics.Size(contentSize.Width, contentSize.Height);
-    }
-
-    /// <inheritdoc/>
-    public virtual void PlatformArrange(Microsoft.Maui.Graphics.Rect frame)
-    {
-        if (Avalonia.Threading.Dispatcher.UIThread.CheckAccess())
-            Arrange(frame);
-        else
-            Avalonia.Threading.Dispatcher.UIThread.Invoke(() => Arrange(frame));
-    }
-
-    /// <summary>
-    /// Arranges the platform view within the specified frame, compensating for MAUI/Avalonia margin differences.
-    /// When a ContainerView exists (for Clip/Shadow), it is the control in the parent's visual tree
-    /// and must be arranged instead, with the PlatformView filling the container.
-    /// </summary>
-    /// <param name="frame">The frame rectangle provided by the MAUI layout system.</param>
-    private protected void Arrange(Microsoft.Maui.Graphics.Rect frame)
-    {
-        if (PlatformView is null)
-            return;
-
-        // Determine which view is in the parent's visual tree.
-        var viewToArrange = (ContainerView as PlatformView) ?? PlatformView;
-
-        // MAUI's frame already accounts for margin positioning. Avalonia's Arrange
-        // further deflates by Margin internally, so inflate to compensate.
-        var arrangeRect = new global::Avalonia.Rect(frame.X, frame.Y, frame.Width, frame.Height)
-            .Inflate(viewToArrange.Margin);
-
-        if (!viewToArrange.IsMeasureValid)
-        {
-            viewToArrange.Measure(arrangeRect.Size);
-        }
-
-        viewToArrange.Arrange(arrangeRect);
-    }
-
-
-    /// <summary>
-    /// Creates the Avalonia platform view for this handler.
-    /// </summary>
-    /// <returns>The newly created platform view.</returns>
-    private protected abstract PlatformView OnCreatePlatformView();
-
-    /// <inheritdoc/>
-#if MAUI_SOURCE_BUILD
-    private protected sealed override object OnCreatePlatformElement() =>
-#else
-    public sealed override object OnCreatePlatformElement() =>
-#endif
-        OnCreatePlatformView();
-
 
     /// <summary>
     /// Maps the abstract <see cref="IView.Width"/> property to the platform-specific implementations.
@@ -392,12 +205,16 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
         if (handler.PlatformView is not PlatformView platformView)
             return;
 
-        if (view.Background is ImageSourcePaint image)
+        // MAUI surfaces Page.BackgroundImageSource as an internal ImageSourcePaint that cannot
+        // be inspected outside the MAUI assemblies, so detect the page case via public API.
+        if (view is Microsoft.Maui.Controls.Page page &&
+            Microsoft.Maui.Controls.Brush.IsNullOrEmpty(page.Background) &&
+            page.BackgroundImageSource is not null)
         {
             var provider = handler.GetRequiredService<IImageSourceServiceProvider>();
 
-            var logger = handler.MauiContext?.Services?.CreateLogger<ViewHandler>();
-            platformView.UpdateBackgroundImageSourceAsync(image.ImageSource, provider)
+            var logger = handler.MauiContext?.Services?.CreateLogger(typeof(ViewHandler));
+            platformView.UpdateBackgroundImageSourceAsync(page.BackgroundImageSource, provider)
                 .FireAndForget(logger);
         }
         else
@@ -539,8 +356,8 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     {
         bool hasContainerOldValue = handler.HasContainer;
 
-        if (handler is ViewHandler viewHandler)
-            handler.HasContainer = viewHandler.NeedsContainer;
+        if (handler is IAvaloniaViewHandler avaloniaViewHandler)
+            handler.HasContainer = avaloniaViewHandler.NeedsContainer;
         else
             handler.HasContainer = view.NeedsContainer();
 
@@ -733,10 +550,10 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     /// <param name="view">The associated <see cref="IView"/> instance.</param>
     public static void MapToolTip(IViewHandler handler, IView view)
     {
-        if (handler.IsConnectingHandler() && view is not IToolTipElement)
+        if (view is not IToolTipElement toolTipElement)
             return;
 
-        if (((IToolTipElement)view).ToolTip?.Content is not string toolTip)
+        if (toolTipElement.ToolTip?.Content is not string toolTip)
             return;
 
         ((PlatformView?)handler.PlatformView)?.UpdateToolTip(toolTip);
@@ -808,20 +625,5 @@ public abstract partial class ViewHandler : ElementHandler, IViewHandler
     public static void MapVerticalLayoutAlignment(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateVerticalLayoutAlignment(view);
-    }
-
-    /// <summary>
-    /// Provides a string representation of the current object for debugging purposes.
-    /// </summary>
-    /// <remarks>
-    /// This method is used by the <see cref="DebuggerDisplayAttribute"/> to display
-    /// a concise and informative string representation of the <see cref="ViewHandler"/> instance
-    /// during debugging sessions.
-    /// </remarks>
-    /// <returns>A string containing the type name and key properties of the object.</returns>
-    private protected virtual string GetDebuggerDisplay()
-    {
-        var debugText = DebuggerDisplayHelpers.GetDebugText(nameof(VirtualView), VirtualView, nameof(PlatformView), PlatformView);
-        return $"{GetType().FullName}: {debugText}";
     }
 }

@@ -11,11 +11,16 @@ public partial class LifecycleEventsPage : ContentPage
     private int _sequence;
     private int _bindingContextVersion;
     private bool _isActive;
+    private readonly DiagnosticRoutingEffect _diagnosticEffect = new();
     private readonly Dictionary<Element, string> _labels = new();
     private readonly HashSet<string> _propertyFilter = new(StringComparer.Ordinal)
     {
         nameof(VisualElement.Width),
         nameof(VisualElement.Height),
+        nameof(VisualElement.X),
+        nameof(VisualElement.Y),
+        nameof(VisualElement.Bounds),
+        nameof(VisualElement.Frame),
         nameof(VisualElement.IsVisible),
         nameof(VisualElement.Opacity),
         nameof(VisualElement.IsFocused),
@@ -43,12 +48,14 @@ public partial class LifecycleEventsPage : ContentPage
         WidthSlider.Value = 160;
         HeightSlider.Value = 80;
         ApplyTrackedSize();
+        UpdateInheritedPropertyLabels();
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
         _isActive = true;
+        UpdateInheritedPropertyLabels();
     }
 
     protected override void OnDisappearing()
@@ -161,11 +168,13 @@ public partial class LifecycleEventsPage : ContentPage
         {
             parent.Children.Remove(TrackedBorder);
             Log("Action: Tracked element removed");
+            UpdateInheritedPropertyLabels();
             return;
         }
 
         InsertTracked(ParentA);
         Log("Action: Tracked element added to ParentA");
+        UpdateInheritedPropertyLabels();
     }
 
     private void OnMoveChildClicked(object? sender, EventArgs e)
@@ -187,6 +196,8 @@ public partial class LifecycleEventsPage : ContentPage
             InsertTracked(ParentA);
             Log("Action: Tracked element added to ParentA");
         }
+
+        UpdateInheritedPropertyLabels();
     }
 
     private void OnReorderChildrenClicked(object? sender, EventArgs e)
@@ -218,6 +229,23 @@ public partial class LifecycleEventsPage : ContentPage
         _bindingContextVersion++;
         TrackedBorder.BindingContext = new { Version = _bindingContextVersion };
         Log("Action: Tracked BindingContext updated");
+        UpdateInheritedPropertyLabels();
+    }
+
+    private void OnToggleEffectClicked(object? sender, EventArgs e)
+    {
+        if (TrackedBorder.Effects.Contains(_diagnosticEffect))
+        {
+            TrackedBorder.Effects.Remove(_diagnosticEffect);
+            Log("Action: Removed diagnostic effect");
+        }
+        else
+        {
+            TrackedBorder.Effects.Add(_diagnosticEffect);
+            Log("Action: Added diagnostic effect");
+        }
+
+        UpdateInheritedPropertyLabels();
     }
 
     private void OnClearLogClicked(object? sender, EventArgs e)
@@ -250,11 +278,41 @@ public partial class LifecycleEventsPage : ContentPage
 
         WidthValueLabel.Text = $"{WidthSlider.Value:0}";
         HeightValueLabel.Text = $"{HeightSlider.Value:0}";
+        UpdateInheritedPropertyLabels();
     }
 
     private void InsertTracked(Layout parent)
     {
         var insertIndex = Math.Min(1, parent.Children.Count);
         parent.Children.Insert(insertIndex, TrackedBorder);
+    }
+
+    private void UpdateInheritedPropertyLabels()
+    {
+        BindingContextValueLabel.Text = TrackedBorder.BindingContext switch
+        {
+            null => "null",
+            LifecycleEventsPage => "Inherited from page",
+            var value => value.GetType().Name
+        };
+
+        BoundsValueLabel.Text = FormatRect(TrackedBorder.Bounds);
+        FrameValueLabel.Text = FormatRect(TrackedBorder.Frame);
+        ParentValueLabel.Text = GetLabel(TrackedBorder.Parent);
+        ResourcesValueLabel.Text = Resources.ContainsKey("InheritedAccentColor")
+            ? "InheritedAccentColor available"
+            : "Missing";
+        WindowValueLabel.Text = TrackedBorder.Window?.GetType().Name ?? "null";
+        PositionValueLabel.Text = $"X={TrackedBorder.X:0.##}, Y={TrackedBorder.Y:0.##}";
+        EffectsValueLabel.Text = $"{TrackedBorder.Effects.Count}";
+    }
+
+    private static string FormatRect(Rect rect)
+    {
+        return $"{rect.X:0.##}, {rect.Y:0.##}, {rect.Width:0.##}, {rect.Height:0.##}";
+    }
+
+    private sealed class DiagnosticRoutingEffect : RoutingEffect
+    {
     }
 }

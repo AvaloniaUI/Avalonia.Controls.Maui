@@ -37,7 +37,7 @@ The practical support story is split between full hosting and embedding:
 | Android (`net*-android`) | Yes | Overlap with MAUI native target; not the primary path yet | Yes |
 | iOS (`net*-ios`) | Yes | Overlap with MAUI native target; not the primary path yet | Yes |
 | Mac Catalyst (`net*-maccatalyst`) | Yes | Overlap with MAUI native target; not the primary path yet | Yes |
-| Windows WinUI (`net*-windows`) | Yes | WinUI path currently includes stub handlers | No (current handler is stub) |
+| Windows WinUI (`net*-windows`) | Yes | WinUI full hosting currently includes stub handlers | Yes (via `Avalonia.WinUI` swap chain panel) |
 | Desktop generic (`net*` + `Avalonia.Desktop`) | No | Yes (Windows/macOS/Linux via Avalonia) | N/A |
 | Browser (`net*-browser`) | No | Yes (`useSingleViewLifetime: true`) | N/A |
 
@@ -188,6 +188,32 @@ Embedding mode also enables wrapping Avalonia controls into .NET MAUI views, wit
 
 `MauiAvaloniaApplication` listens to Avalonia's `ActualThemeVariantChanged` event and calls `Application.ThemeChanged()` on the .NET MAUI application when it fires. This keeps .NET MAUI's theme system in sync with the Avalonia theme.
 
+### Window and application lifecycle
+
+.NET MAUI's application lifecycle is window-driven: a platform host calls the `IWindow` lifecycle methods, which cascade to the `Application`. `IWindow.Created()` calls `Application.SendStart()` (`OnStart`), `IWindow.Resumed()` calls `SendResume()` (`OnResume`), and `IWindow.Stopped()` calls `SendSleep()` (`OnSleep`); `Activated`/`Deactivated`/`Destroying` raise the corresponding `Window` events.
+
+`WindowHandler` bridges this through `MauiWindowLifecycleManager`, which subscribes to the Avalonia window and forwards to the MAUI `IWindow`:
+
+| Avalonia window event | MAUI `IWindow` call | Application effect |
+|---|---|---|
+| `Opened` | `Created()` | `OnStart` |
+| `Activated` | `Activated()` | — |
+| `Deactivated` | `Deactivated()` | — |
+| `WindowState` → `Minimized` | `Stopped()` | `OnSleep` |
+| `WindowState` → restored from `Minimized` | `Resumed()` | `OnResume` |
+| `Closed` | `Destroying()` | window removed; handler disconnected |
+
+The manager tracks state so the calls stay well-ordered and idempotent (the MAUI methods throw on invalid transitions, such as activating an already-activated window). The Avalonia `Activated`/`Deactivated` events are not raised by the headless platform, so those forwards are exercised in tests through the manager's internal seam.
+
+Single-view lifetimes (for example browser) have no Avalonia `Window`, so there is no open/close or minimize/restore signal. `SingleViewWindowHandler` instead bridges through `MauiSingleViewLifecycleManager`, which subscribes to the root content control's `Loaded`/`Unloaded` events:
+
+| Avalonia control event | MAUI `IWindow` call | Application effect |
+|---|---|---|
+| `Loaded` | `Created()` | `OnStart` |
+| `Unloaded` | `Destroying()` | window removed; handler disconnected |
+
+Resume/sleep transitions (for example browser tab visibility) are not wired for single-view. Both managers share the same state machine and `IWindow`-forwarding logic in the `MauiWindowLifecycleDispatcher` base class; only the platform-event subscriptions differ.
+
 ### Lifecycle events
 
 `Avalonia.Controls.Maui` defines custom lifecycle events through `AvaloniaLifecycle` that can be subscribed to via `ConfigureLifecycleEvents`.
@@ -213,7 +239,7 @@ builder.ConfigureLifecycleEvents(events =>
 
 Additional delegates (`OnActivated`, `OnClosed`, `OnVisibilityChanged`, `OnResumed`, `OnPlatformMessage`) are defined in `AvaloniaLifecycle` but are not currently raised by the bootstrap/window pipeline in this repository.
 
-For single-view lifetimes (for example browser), `OnWindowCreated` is not raised because there is no `Window` instance, only a root `Control`.
+For single-view lifetimes (for example browser), this `AvaloniaLifecycle.OnWindowCreated` builder event is not raised because there is no `Window` instance, only a root `Control`. (This is distinct from the MAUI `IWindow.Created` lifecycle, which *is* bridged for single-view via the content control's `Loaded` event — see [Window and application lifecycle](#window-and-application-lifecycle) above.)
 
 ## Font system
 

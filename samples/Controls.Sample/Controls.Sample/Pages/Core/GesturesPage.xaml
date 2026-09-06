@@ -12,7 +12,7 @@
     <!-- TODO: Create a ControlTemplate -->
     <Grid
         RowSpacing="0"
-        RowDefinitions="48, 20, *">
+        RowDefinitions="48, 20, Auto, *">
         <!-- HEADER -->
         <Image
             Grid.Row="0"
@@ -42,10 +42,22 @@
                     VerticalOptions="Center"/>
             </Grid>
         </Frame>
+        <!-- NOTICE -->
+        <Border
+            Grid.Row="2"
+            Background="#33FFA500"
+            Stroke="Orange"
+            StrokeThickness="1"
+            Padding="10"
+            Margin="6, 12, 6, 0">
+            <Label
+                Text="⚠ Temporarily unavailable: gesture recognizers are pending a public MAUI IGesturePlatformManager API (dotnet/maui#33364), so these galleries will not respond. See docs/known-issues.md."
+                FontSize="13"/>
+        </Border>
         <!-- CONTENT -->
         <CollectionView
             x:Name="GesturesSections"
-            Grid.Row="2"
+            Grid.Row="3"
             BackgroundColor="Transparent"
             ItemsSource="{Binding FilteredItems}"
             SelectionMode="Single"

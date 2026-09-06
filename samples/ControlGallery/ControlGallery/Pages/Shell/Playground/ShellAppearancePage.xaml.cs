@@ -12,6 +12,12 @@ public partial class ShellAppearancePage : ContentPage
         BindingContext = this;
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        UpdateNavBarAnimationLabel();
+    }
+
     private static View CreateTitleView(string text, Color color)
     {
         return new Label
@@ -41,6 +47,18 @@ public partial class ShellAppearancePage : ContentPage
         shell?.Handler?.UpdateValue("TabBarIsVisible");
     }
 
+    private void OnToggleNavBarAnimation(object sender, EventArgs e)
+    {
+        var shell = this.GetShell();
+        BindableObject target = shell is not null ? shell : this;
+        bool isEnabled = Shell.GetNavBarVisibilityAnimationEnabled(target);
+
+        Shell.SetNavBarVisibilityAnimationEnabled(target, !isEnabled);
+        shell?.Handler?.UpdateValue(Shell.NavBarVisibilityAnimationEnabledProperty.PropertyName);
+
+        UpdateNavBarAnimationLabel();
+    }
+
     private void OnToggleTitleView(object sender, EventArgs e)
     {
         _hasTitleView = !_hasTitleView;
@@ -50,6 +68,15 @@ public partial class ShellAppearancePage : ContentPage
 
         var shell = this.GetShell();
         shell?.Handler?.UpdateValue("TitleView");
+    }
+
+    private void UpdateNavBarAnimationLabel()
+    {
+        var shell = this.GetShell();
+        BindableObject target = shell is not null ? shell : this;
+        bool isEnabled = Shell.GetNavBarVisibilityAnimationEnabled(target);
+
+        NavBarAnimationLabel.Text = $"NavBar animation: {(isEnabled ? "enabled" : "disabled")}";
     }
 
     private void OnUpdateTitleView(object sender, EventArgs e)

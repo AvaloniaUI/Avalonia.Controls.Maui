@@ -15,13 +15,13 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, A
 
     /// <summary>Property mapper for <see cref="NavigationViewHandler"/>.</summary>
     public static IPropertyMapper<IStackNavigationView, NavigationViewHandler> Mapper =
-        new PropertyMapper<IStackNavigationView, NavigationViewHandler>(ViewMapper)
+        new PropertyMapper<IStackNavigationView, NavigationViewHandler>(ViewHandler.ViewMapper)
         {
         };
 
     /// <summary>Command mapper for <see cref="NavigationViewHandler"/>.</summary>
     public static CommandMapper<IStackNavigationView, NavigationViewHandler> CommandMapper =
-        new(ViewCommandMapper)
+        new(ViewHandler.ViewCommandMapper)
         {
             [nameof(IStackNavigation.RequestNavigation)] = RequestNavigation
         };

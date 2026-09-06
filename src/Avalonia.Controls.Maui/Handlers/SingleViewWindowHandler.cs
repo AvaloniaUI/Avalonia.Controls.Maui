@@ -16,8 +16,13 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// </summary>
 public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.Controls.ContentControl>
 {
-    static readonly AlertManager s_alertManager = new();
     ModalAnimationTrackingNavigation? _modalTracker;
+    MauiSingleViewLifecycleManager? _lifecycleManager;
+
+    /// <summary>
+    /// Gets the lifecycle manager for the <see cref="IWindow"/> MAUI lifecycle.
+    /// </summary>
+    internal MauiSingleViewLifecycleManager? LifecycleManager => _lifecycleManager;
 
     /// <summary>
     /// Property mapper for <see cref="SingleViewWindowHandler"/>.
@@ -74,9 +79,11 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
     {
         base.ConnectHandler(platformView);
 
+        // Bridge the single-view content lifecycle to the MAUI IWindow (and Application) lifecycle.
+        _lifecycleManager = new MauiSingleViewLifecycleManager(VirtualView, platformView);
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            window.AlertManager.Subscribe();
             window.ModalPushed += OnModalPushed;
             window.ModalPopped += OnModalPopped;
 
@@ -91,9 +98,11 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
     /// <inheritdoc/>
     protected override void DisconnectHandler(Avalonia.Controls.ContentControl platformView)
     {
+        _lifecycleManager?.Dispose();
+        _lifecycleManager = null;
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
-            window.AlertManager.Unsubscribe();
             window.ModalPushed -= OnModalPushed;
             window.ModalPopped -= OnModalPopped;
             window.PropertyChanged -= OnWindowPropertyChanged;

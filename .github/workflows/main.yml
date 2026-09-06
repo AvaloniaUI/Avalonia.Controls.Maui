@@ -42,6 +42,7 @@ jobs:
               - 'build/**'
             build:
               - 'build/**'
+              - 'build-common'
               - '*.ps1'
               - '*.sh'
               - 'Directory.*.props'
@@ -54,6 +55,8 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: true
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
@@ -75,6 +78,14 @@ jobs:
           path: ${{github.workspace}}/artifacts/**/*.nupkg
           retention-days: 1
 
+    # Standalone copy of the per-package SBOMs that CreateSbom also embeds into each .nupkg.
+    - name: Upload SBOM artifacts
+      uses: actions/upload-artifact@v4
+      with:
+          name: sbom
+          path: ${{github.workspace}}/artifacts/sbom/*.cdx.json
+          retention-days: 1
+
   publish-nightly:
     runs-on: ubuntu-latest
     needs: build
@@ -94,6 +105,8 @@ jobs:
     needs: build
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: true
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4

@@ -1444,7 +1444,7 @@ public class MauiCollectionView : TemplatedControl
         if (_itemsControl == null || _scrollViewer == null)
             return;
 
-        Dispatcher.UIThread.Post(() =>
+        this.Dispatcher.Post(() =>
         {
             if (!IsGrouped &&
                 group == null &&
@@ -1474,7 +1474,7 @@ public class MauiCollectionView : TemplatedControl
         if (_itemsControl == null || _scrollViewer == null)
             return;
 
-        Dispatcher.UIThread.Post(() =>
+        this.Dispatcher.Post(() =>
         {
             if (!IsGrouped &&
                 groupIndex < 0 &&

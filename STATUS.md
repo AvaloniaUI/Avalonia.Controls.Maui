@@ -100,7 +100,7 @@ Displays a scrollable list of data items, where users swipe to move through the 
 | CurrentItemChangedCommandParameter | ✅ Implemented |
 | EmptyView | ✅ Implemented |
 | EmptyViewTemplate | ✅ Implemented |
-| IndicatorView | ⏳ TODO |
+| IndicatorView | ✅ Implemented |
 | IsBounceEnabled | ⏳ TODO |
 | IsScrollAnimated | ✅ Implemented |
 | IsSwipeEnabled | ✅ Implemented |
@@ -341,7 +341,7 @@ Displays an entry with a label and placeholder, for use in a TableView or ListVi
 | Placeholder | ✅ Implemented |
 | LabelColor | ✅ Implemented |
 | HorizontalTextAlignment | ✅ Implemented |
-| VerticalTextAlignment | ⏳ TODO |
+| VerticalTextAlignment | ✅ Implemented |
 | Keyboard | ✅ Implemented |
 | IsEnabled | ✅ Implemented |
 | ContextActions | ✅ Implemented |
@@ -656,18 +656,18 @@ A Page that manages the navigation and user-experience of a stack of other pages
  | BackgroundImageSource | ✅ Implemented |
  | Content | ✅ Implemented |
  | IsBusy | ✅ Implemented |
- | Padding | ⏳ TODO |
- | Title | ⏳ TODO |
- | IconImageSource | ⏳ TODO |
+ | Padding | ✅ Implemented |
+ | Title | ✅ Implemented |
+ | IconImageSource | ✅ Implemented |
  | ToolbarItems | ✅ Implemented |
  
  ### Methods
  
  | Method                  | Status |
  |-------------------------|--------|
- | DisplayAlertAsync       | ✅ Implemented |
- | DisplayActionSheetAsync | ✅ Implemented |
- | DisplayPromptAsync      | ✅ Implemented |
+ | DisplayAlertAsync       | ✅ Implemented (via IAlertManagerSubscription; seam still internal, dotnet/maui#34228 reverted by #35024) |
+ | DisplayActionSheetAsync | ✅ Implemented (via IAlertManagerSubscription; seam still internal, dotnet/maui#34228 reverted by #35024) |
+ | DisplayPromptAsync      | ✅ Implemented (via IAlertManagerSubscription; seam still internal, dotnet/maui#34228 reverted by #35024) |
 
  ---
 
@@ -707,7 +707,7 @@ Displays a short list of items, from which an item can be selected.
 | HorizontalTextAlignment | ✅ Implemented  |
 | ItemsSource | ✅ Implemented  |
 | ItemDisplayBinding | ✅ Implemented  |
-| SelectedIndex | ⏳ TODO |
+| SelectedIndex | ✅ Implemented |
 | SelectedItem | ✅ Implemented  |
 | TextColor | ✅ Implemented  |
 | Title | ✅ Implemented |
@@ -718,7 +718,7 @@ Displays a short list of items, from which an item can be selected.
 
 | Event | Status |
 |-------|--------|
-| SelectedIndexChanged | ⏳ TODO |
+| SelectedIndexChanged | ✅ Implemented |
 
 ---
 
@@ -987,7 +987,7 @@ A Page that provides fundamental UI features that most applications require, inc
 | BackgroundColor | ✅ Implemented |
 | CurrentItem | ✅ Implemented |
 | CurrentPage | ✅ Implemented (via DisplayedPage) |
-| CurrentState | ⏳ TODO |
+| CurrentState | ✅ Implemented |
 | DisabledColor | ✅ Implemented |
 | FlyoutBackdrop | ✅ Implemented |
 | FlyoutBackground | ✅ Implemented |
@@ -1014,8 +1014,8 @@ A Page that provides fundamental UI features that most applications require, inc
 | MenuItemTemplate | ✅ Implemented |
 | NavBarHasShadow | ✅ Implemented |
 | NavBarIsVisible | ✅ Implemented |
-| NavBarVisibilityAnimationEnabled | ⏳ TODO |
-| PresentationMode | ⏳ TODO |
+| NavBarVisibilityAnimationEnabled | ✅ Implemented |
+| PresentationMode | ✅ Implemented |
 | SearchHandler | ✅ Implemented |
 | TabBarBackgroundColor | ✅ Implemented |
 | TabBarDisabledColor | ✅ Implemented (placeholder) |
@@ -1026,15 +1026,14 @@ A Page that provides fundamental UI features that most applications require, inc
 | TitleColor | ✅ Implemented |
 | TitleView | ✅ Implemented |
 | UnselectedColor | ✅ Implemented |
-| PresentationMode | ✅ Implemented |
 | FlyoutDisplayOptions | ✅ Implemented (AsSingleItem/AsMultipleItems) |
 
 ### Events
 
 | Event | Status |
 |-------|--------|
-| Navigated | ⏳ TODO |
-| Navigating | ⏳ TODO |
+| Navigated | ✅ Implemented |
+| Navigating | ✅ Implemented |
 
 ### Methods
 
@@ -1393,14 +1392,14 @@ All controls inherit these common properties from the View and VisualElement bas
 | Background | Brush | ✅ Implemented |
 | BackgroundColor | Color | ✅ Implemented |
 | Behaviors | IList<Behavior> | ✅ Implemented |
-| BindingContext | object | ⏳ TODO |
-| Bounds | Rect | ⏳ TODO |
+| BindingContext | object | ✅ Verified |
+| Bounds | Rect | ✅ Verified |
 | Clip | Geometry | ✅ Implemented |
 | DesiredSize | Size | ✅ Implemented |
-| Effects | IList<Effect> | ⏳ TODO |
+| Effects | IList<Effect> | ✅ Verified |
 | FlowDirection | FlowDirection | ✅ Implemented |
-| Frame | Rect | ⏳ TODO |
-| GestureRecognizers | IList<IGestureRecognizer> | ✅ Implemented |
+| Frame | Rect | ✅ Verified |
+| GestureRecognizers | IList<IGestureRecognizer> | ✅ Implemented (via MAUI's IGesturePlatformManager seam; interface is still internal pending dotnet/maui#33364) |
 | Handler | IViewHandler | ✅ Implemented |
 | Height | double | ✅ Implemented |
 | HeightRequest | double | ✅ Implemented |
@@ -1416,8 +1415,8 @@ All controls inherit these common properties from the View and VisualElement bas
 | MinimumHeightRequest | double | ✅ Implemented |
 | MinimumWidthRequest | double | ✅ Implemented |
 | Opacity | double | ✅ Implemented |
-| Parent | Element | ⏳ TODO |
-| Resources | ResourceDictionary | ⏳ TODO |
+| Parent | Element | ✅ Verified |
+| Resources | ResourceDictionary | ✅ Verified |
 | Rotation | double | ✅ Implemented |
 | RotationX | double | ✅ Implemented |
 | RotationY | double | ✅ Implemented |
@@ -1433,9 +1432,9 @@ All controls inherit these common properties from the View and VisualElement bas
 | VerticalOptions | LayoutOptions | ✅ Implemented |
 | Width | double | ✅ Implemented |
 | WidthRequest | double | ✅ Implemented |
-| Window | Window | ⏳ TODO |
-| X | double | ⏳ TODO |
-| Y | double | ⏳ TODO |
+| Window | Window | ✅ Verified |
+| X | double | ✅ Verified |
+| Y | double | ✅ Verified |
 | ZIndex | int | ✅ Implemented |
 
 ---

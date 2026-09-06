@@ -10,7 +10,7 @@ public partial class PickerHandler : ViewHandler<IPicker, MauiComboBox>
     bool _isUpdatingSelection;
 
     /// <summary>Property mapper for <see cref="PickerHandler"/>.</summary>
-    public static IPropertyMapper<IPicker, PickerHandler> Mapper = new PropertyMapper<IPicker, PickerHandler>(ViewMapper)
+    public static IPropertyMapper<IPicker, PickerHandler> Mapper = new PropertyMapper<IPicker, PickerHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IPicker.CharacterSpacing)] = MapCharacterSpacing,
         [nameof(IPicker.Font)] = MapFont,
@@ -134,7 +134,7 @@ public partial class PickerHandler : ViewHandler<IPicker, MauiComboBox>
     }
 
     /// <summary>Command mapper for <see cref="PickerHandler"/>.</summary>
-    public static CommandMapper<IPicker, PickerHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IPicker, PickerHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 

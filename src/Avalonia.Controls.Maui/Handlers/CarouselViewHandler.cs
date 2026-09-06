@@ -40,7 +40,7 @@ public class CarouselViewHandler : ViewHandler<CarouselView, PlatformView>
     /// Command mapper for <see cref="CarouselViewHandler"/>.
     /// </summary>
     public static CommandMapper<CarouselView, CarouselViewHandler> CommandMapper =
-        new(ViewCommandMapper);
+        new(ViewHandler.ViewCommandMapper);
 
     /// <summary>
     /// Initializes a new instance of <see cref="CarouselViewHandler"/>.
@@ -419,7 +419,7 @@ public class CarouselViewHandler : ViewHandler<CarouselView, PlatformView>
 
     private void OnItemsSourceCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        global::Avalonia.Threading.Dispatcher.UIThread.Post(RefreshItemsSourceAfterCollectionChanged);
+        PlatformViewOrNull?.Dispatcher.Post(RefreshItemsSourceAfterCollectionChanged);
     }
 
     private void RefreshItemsSourceAfterCollectionChanged()

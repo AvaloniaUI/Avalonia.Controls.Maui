@@ -7,7 +7,6 @@
         <VerticalStackLayout Padding="20"
                              Spacing="20">
 
-
             <!-- Pick Files -->
             <Border Stroke="Gray"
                     Padding="10">
@@ -21,12 +20,30 @@
                             Clicked="OnPickSingleClicked"/>
                     <Button Text="Pick Multiple Files"
                             Clicked="OnPickMultipleClicked"/>
-                    <Label x:Name="FileNameLabel"
-                           Text="File: --"
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- File Details -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="File Details"
+                           FontAttributes="Bold"/>
+                    <Label x:Name="StatusLabel"
+                           Text="Status: idle"
                            FontAttributes="Italic"/>
-                    <Label x:Name="FilePathLabel"
-                           Text="Path: --"
-                           FontAttributes="Italic"/>
+                    <Label x:Name="DetailsLabel"
+                           Text="No file selected."
+                           FontFamily="Courier New"/>
+                    <Label Text="Image Preview:"
+                           FontAttributes="Bold"
+                           Margin="0,10,0,0"/>
+                    <Image x:Name="PreviewImage"
+                           HeightRequest="200"
+                           Aspect="AspectFit"/>
                 </VerticalStackLayout>
             </Border>
 

@@ -26,7 +26,7 @@ public class RadioButtonHandler : ViewHandler<IRadioButton, PlatformView>
     };
 
     /// <summary>Command mapper for <see cref="RadioButtonHandler"/>.</summary>
-    public static CommandMapper<IRadioButton, RadioButtonHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IRadioButton, RadioButtonHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 

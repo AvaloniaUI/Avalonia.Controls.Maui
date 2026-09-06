@@ -36,7 +36,7 @@ public abstract partial class ShapeViewHandler : ViewHandler<IShapeView, Platfor
     };
 
     /// <summary>Command mapper for <see cref="ShapeViewHandler"/>.</summary>
-    public static CommandMapper<IShapeView, IShapeViewHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IShapeView, IShapeViewHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 
@@ -210,24 +210,16 @@ public abstract class ShapeViewHandler<TVirtualView, TPlatformView> : ShapeViewH
     }
 
     /// <inheritdoc/>
-#if MAUI_SOURCE_BUILD
-    private protected sealed override void OnConnectHandler(object platformView)
-#else
-    public sealed override void OnConnectHandler(object platformView)
-#endif
+    protected sealed override void ConnectHandler(PlatformView platformView)
     {
-        base.OnConnectHandler(platformView);
+        base.ConnectHandler(platformView);
         ConnectHandler((TPlatformView)platformView);
     }
 
     /// <inheritdoc/>
-#if MAUI_SOURCE_BUILD
-    private protected sealed override void OnDisconnectHandler(object platformView)
-#else
-    public sealed override void OnDisconnectHandler(object platformView)
-#endif
+    protected sealed override void DisconnectHandler(PlatformView platformView)
     {
         DisconnectHandler((TPlatformView)platformView);
-        base.OnDisconnectHandler(platformView);
+        base.DisconnectHandler(platformView);
     }
 }

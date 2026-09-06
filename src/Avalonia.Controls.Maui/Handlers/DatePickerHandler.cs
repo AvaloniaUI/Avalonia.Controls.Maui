@@ -20,7 +20,7 @@ public class DatePickerHandler : ViewHandler<IDatePicker, PlatformView>
     };
 
     /// <summary>Command mapper for <see cref="DatePickerHandler"/>.</summary>
-    public static CommandMapper<IPicker, DatePickerHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IPicker, DatePickerHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
     };
 

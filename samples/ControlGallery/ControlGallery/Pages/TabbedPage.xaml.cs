@@ -52,7 +52,7 @@ public partial class TabbedPage : ContentPage
         var page1 = new ContentPage
         {
             Title = "Home",
-            IconImageSource = "dotnet_bot.png",
+            IconImageSource = "redbug.png",
             Content = CreateTabContent("Home Tab", "This tab has an icon")
         };
 
@@ -72,6 +72,31 @@ public partial class TabbedPage : ContentPage
         tabbedPage.Children.Add(page1);
         tabbedPage.Children.Add(page2);
         tabbedPage.Children.Add(page3);
+
+        Application.Current?.Windows[0].Page = tabbedPage;
+    }
+
+    private void OnOpenDynamicIconsTabbedPage(object? sender, EventArgs e)
+    {
+        var tabbedPage = new ControlsTabbedPage
+        {
+            Title = "Dynamic Tab Icons"
+        };
+
+        var homePage = new ContentPage
+        {
+            Title = "Home",
+            IconImageSource = "redbug.png"
+        };
+        homePage.Content = CreateDynamicIconContent(homePage);
+
+        tabbedPage.Children.Add(homePage);
+        tabbedPage.Children.Add(new ContentPage
+        {
+            Title = "Settings",
+            IconImageSource = "dotnet_logo.png",
+            Content = CreateTabContent("Settings", "Use the Home tab to change its title and icon at runtime.")
+        });
 
         Application.Current?.Windows[0].Page = tabbedPage;
     }
@@ -116,13 +141,13 @@ public partial class TabbedPage : ContentPage
             BarBackgroundColor = Color.FromArgb("#1F2937"), // Dark Slate
             BarTextColor = Colors.White,
             SelectedTabColor = Color.FromArgb("#8B5CF6"), // Vibrant Violet
-            UnselectedTabColor = Color.FromArgb("#6B7280") // Cool Gray
+            UnselectedTabColor = Color.FromArgb("#D1D5DB") // Gray 300
         };
 
         tabbedPage.Children.Add(new ContentPage
         {
             Title = "Feed",
-            IconImageSource = "dotnet_bot.png", 
+            IconImageSource = "redbug.png",
             Content = CreateTabContent("Feed", "News feed content")
         });
 
@@ -173,7 +198,7 @@ public partial class TabbedPage : ContentPage
             BarBackgroundColor = Color.FromArgb("#312E81"), // Indigo 900
             BarTextColor = Colors.White,
             SelectedTabColor = Color.FromArgb("#4338CA"), // Indigo 700
-            UnselectedTabColor = Color.FromArgb("#3b38a5")
+            UnselectedTabColor = Color.FromArgb("#C7D2FE") // Indigo 200
         };
 
         var controlPage = new ContentPage
@@ -383,6 +408,77 @@ public partial class TabbedPage : ContentPage
         return cardBorder;
     }
 
+    private View CreateDynamicIconContent(ContentPage page)
+    {
+        var titleCounter = 1;
+        var usingBugIcon = true;
+
+        var statusLabel = new Label
+        {
+            Text = "Current icon: redbug.png",
+            FontSize = 16,
+            HorizontalOptions = LayoutOptions.Center
+        };
+
+        var renameButton = new Button
+        {
+            Text = "Rename Tab"
+        };
+        renameButton.Clicked += (_, _) =>
+        {
+            titleCounter++;
+            page.Title = $"Home {titleCounter}";
+        };
+
+        var toggleIconButton = new Button
+        {
+            Text = "Toggle Icon"
+        };
+        toggleIconButton.Clicked += (_, _) =>
+        {
+            usingBugIcon = !usingBugIcon;
+            page.IconImageSource = usingBugIcon ? "redbug.png" : "dotnet_logo.png";
+            statusLabel.Text = $"Current icon: {(usingBugIcon ? "redbug.png" : "dotnet_logo.png")}";
+        };
+
+        var clearIconButton = new Button
+        {
+            Text = "Clear Icon"
+        };
+        clearIconButton.Clicked += (_, _) =>
+        {
+            page.IconImageSource = null;
+            statusLabel.Text = "Current icon: none";
+        };
+
+        return new VerticalStackLayout
+        {
+            Spacing = 15,
+            Padding = 20,
+            VerticalOptions = LayoutOptions.Center,
+            HorizontalOptions = LayoutOptions.Center,
+            Children =
+            {
+                new Button
+                {
+                    Text = "Back",
+                    Command = new Command(NavigateBackToDemo)
+                },
+                new Label
+                {
+                    Text = "Dynamic Tab Header",
+                    FontSize = 28,
+                    FontAttributes = FontAttributes.Bold,
+                    HorizontalOptions = LayoutOptions.Center
+                },
+                statusLabel,
+                renameButton,
+                toggleIconButton,
+                clearIconButton
+            }
+        };
+    }
+
     private void OnOpenSelectedItemTabbedPage(object? sender, EventArgs e)
     {
         var tabbedPage = new ControlsTabbedPage
@@ -511,4 +607,3 @@ public class TabInfo
     public string Title { get; set; } = "";
     public string Description { get; set; } = "";
 }
-

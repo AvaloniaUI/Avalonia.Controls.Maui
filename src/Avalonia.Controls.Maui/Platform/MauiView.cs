@@ -8,8 +8,12 @@ namespace Avalonia.Controls.Maui.Platform;
 /// <summary>
 /// Abstract base panel that bridges MAUI's cross-platform layout system with Avalonia's layout infrastructure.
 /// </summary>
-public abstract partial class MauiView : Panel, ICrossPlatformLayoutBacking, IVisualTreeElementProvidable
+public abstract partial class MauiView : Panel, ICrossPlatformLayoutBacking
 {
+    // MAUI's fixed-constraints fast path relies on the internal IConstrainedView interface,
+    // which is not accessible outside the MAUI assemblies. Treat all views as unconstrained.
+    static bool HasFixedConstraints => false;
+
     bool _invalidateParentWhenMovedToWindow;
     double _lastMeasureHeight = double.NaN;
     double _lastMeasureWidth = double.NaN;
@@ -26,7 +30,6 @@ public abstract partial class MauiView : Panel, ICrossPlatformLayoutBacking, IVi
         set => _reference = value == null ? null : new(value);
     }
 
-    bool HasFixedConstraints => CrossPlatformLayout is IConstrainedView { HasFixedConstraints: true };
 
     /// <summary>
     /// Gets or sets the cross-platform layout delegate used for measure and arrange passes.
@@ -140,44 +143,21 @@ public abstract partial class MauiView : Panel, ICrossPlatformLayoutBacking, IVi
     /// <returns>The matching <see cref="IVisualTreeElement"/>, or <see langword="null"/> if no match is found.</returns>
     public IVisualTreeElement? GetElement()
     {
-#if IOS || MACCATALYST || ANDROID || WINDOWS
-        // On platform builds, we can't use IsThisMyPlatformView because it expects native views.
-        // Instead, we check if the handler's platform view matches this MauiView.
-        if (View is IVisualTreeElement viewElement)
-        {
-            if (IsAvaloniaViewMatch(viewElement))
-            {
-                return viewElement;
-            }
-        }
-
-        if (CrossPlatformLayout is IVisualTreeElement layoutElement)
-        {
-            if (IsAvaloniaViewMatch(layoutElement))
-            {
-                return layoutElement;
-            }
-        }
-
-        return null;
-#else
         if (View is IVisualTreeElement viewElement &&
-            viewElement.IsThisMyPlatformView(this))
+            IsAvaloniaViewMatch(viewElement))
         {
             return viewElement;
         }
 
         if (CrossPlatformLayout is IVisualTreeElement layoutElement &&
-            layoutElement.IsThisMyPlatformView(this))
+            IsAvaloniaViewMatch(layoutElement))
         {
             return layoutElement;
         }
 
         return null;
-#endif
     }
 
-#if IOS || MACCATALYST || ANDROID || WINDOWS
     /// <summary>
     /// Checks if this MauiView is the platform view for the given visual tree element.
     /// </summary>
@@ -190,7 +170,6 @@ public abstract partial class MauiView : Panel, ICrossPlatformLayoutBacking, IVi
         }
         return false;
     }
-#endif
 
     /// <summary>
     /// Schedules invalidation of ancestor layout measures when this view is next attached to the visual tree.
@@ -210,11 +189,9 @@ public abstract partial class MauiView : Panel, ICrossPlatformLayoutBacking, IVi
         InvalidateConstraintsCache();
         base.InvalidateMeasure();
 
-        if (isPropagating && HasFixedConstraints)
-        {
-            return false;
-        }
-
+        // NOTE: MAUI stops upward propagation here for views with fixed constraints
+        // (internal IConstrainedView). That optimization is not accessible outside the
+        // MAUI assemblies, so invalidation always propagates to ancestors.
         return true;
     }
 

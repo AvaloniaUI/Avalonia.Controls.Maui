@@ -15,7 +15,7 @@ public partial class ActivityIndicatorHandler : ViewHandler<IActivityIndicator, 
     };
 
     /// <summary>Command mapper for <see cref="ActivityIndicatorHandler"/>.</summary>
-    public static CommandMapper<IActivityIndicator, ActivityIndicatorHandler> CommandMapper = new(ViewCommandMapper);
+    public static CommandMapper<IActivityIndicator, ActivityIndicatorHandler> CommandMapper = new(ViewHandler.ViewCommandMapper);
 
     /// <summary>Initializes a new instance of <see cref="ActivityIndicatorHandler"/>.</summary>
     public ActivityIndicatorHandler() : base(Mapper, CommandMapper)

@@ -28,7 +28,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
 
     /// <summary>Command mapper for <see cref="IndicatorViewHandler"/>.</summary>
     public static readonly CommandMapper<IIndicatorView, IndicatorViewHandler> CommandMapper =
-        new(ViewCommandMapper)
+        new(ViewHandler.ViewCommandMapper)
         {
         };
 
@@ -83,7 +83,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
 
         // Property mappers fire before the control template is applied, so pip containers do not
         // exist yet. Defer size and selection sync to after the first layout pass.
-        Dispatcher.UIThread.Post(() =>
+        pv.Dispatcher.Post(() =>
         {
             pv.UpdatePipSize(VirtualView);
             pv.ForceSelection(VirtualView);

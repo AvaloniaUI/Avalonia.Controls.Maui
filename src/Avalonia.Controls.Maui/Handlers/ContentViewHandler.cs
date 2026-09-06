@@ -16,14 +16,14 @@ public partial class ContentViewHandler : ViewHandler<IContentView, Avalonia.Con
 {
     /// <summary>Property mapper for <see cref="ContentViewHandler"/>.</summary>
     public static IPropertyMapper<IContentView, ContentViewHandler> Mapper =
-        new PropertyMapper<IContentView, ContentViewHandler>(ViewMapper)
+        new PropertyMapper<IContentView, ContentViewHandler>(ViewHandler.ViewMapper)
         {
             [nameof(IContentView.Content)] = MapContent,
         };
 
     /// <summary>Command mapper for <see cref="ContentViewHandler"/>.</summary>
     public static CommandMapper<IContentView, ContentViewHandler> CommandMapper =
-        new(ViewCommandMapper);
+        new(ViewHandler.ViewCommandMapper);
 
     /// <summary>Initializes a new instance of <see cref="ContentViewHandler"/>.</summary>
     public ContentViewHandler() : base(Mapper, CommandMapper)

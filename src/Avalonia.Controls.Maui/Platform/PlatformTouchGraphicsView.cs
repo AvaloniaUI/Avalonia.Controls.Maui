@@ -42,6 +42,15 @@ public class PlatformTouchGraphicsView : UserControl
     /// </summary>
     public void InvalidateDrawable() => _platformGraphicsView.InvalidateVisual();
 
+    /// <inheritdoc/>
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        base.MeasureOverride(availableSize);
+        return new Size(
+            double.IsInfinity(availableSize.Width) ? 0 : availableSize.Width,
+            double.IsInfinity(availableSize.Height) ? 0 : availableSize.Height);
+    }
+
     private PointF[] GetViewPoints(PointerEventArgs e)
     {
         var point = e.GetPosition(this);

@@ -77,9 +77,9 @@ public partial class ApplicationHandler : ElementHandler<IApplication, Applicati
     /// <summary>
     /// Creates the Avalonia <see cref="Application"/> platform element for this handler.
     /// </summary>
-    /// <returns>The Avalonia <see cref="Application"/> instance from the service provider.</returns>
+    /// <returns>The Avalonia <see cref="Application"/> instance from the service provider or the current application.</returns>
     protected override Application CreatePlatformElement() =>
-        MauiContext?.Services?.GetService<Application>() ?? throw new InvalidOperationException($"MauiContext did not have a valid application.");
+        MauiContext?.Services?.GetService<Application>() ?? Application.Current ?? throw new InvalidOperationException($"MauiContext did not have a valid application.");
 
     /// <summary>
     /// Maps the abstract "Terminate" command to the platform-specific implementations.

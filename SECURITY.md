@@ -13,7 +13,7 @@ Security fixes are applied to the latest release only. Older versions do not rec
 
 **Please do not report security vulnerabilities through public GitHub issues.**
 
-Report vulnerabilities privately using [GitHub's private vulnerability reporting](https://github.com/AvaloniaUI/Avalonia.Controls.Maui/security/advisories/new), or send an email to **tim@avaloniaui.net or javier@avaloniaui.net**.
+Report vulnerabilities privately using [GitHub's private vulnerability reporting](https://github.com/AvaloniaUI/Avalonia.Controls.Maui/security/advisories/new), or send an email to **security@avaloniaui.net**.
 
 Include as much of the following as possible:
 
@@ -22,7 +22,7 @@ Include as much of the following as possible:
 - Steps to reproduce or a proof-of-concept
 - Any suggested mitigations, if known
 
-We aim to acknowledge reports within **5 business days** and to provide a resolution timeline within **14 business days**. We will keep you informed of progress and credit you in the advisory unless you prefer to remain anonymous.
+We will acknowledge reports within **2 business days** and provide a resolution timeline within **10 business days**. We will keep you informed of progress and credit you in the advisory unless you prefer to remain anonymous.
 
 ## Scope
 

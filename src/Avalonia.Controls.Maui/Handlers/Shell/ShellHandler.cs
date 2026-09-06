@@ -49,6 +49,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         new PropertyMapper<MauiShell, ShellHandler>(ViewHandler.ViewMapper)
         {
             [nameof(MauiShell.CurrentItem)] = MapCurrentItem,
+            [MauiShell.CurrentStateProperty.PropertyName] = MapCurrentState,
             [nameof(MauiShell.FlyoutBehavior)] = MapFlyoutBehavior,
             [nameof(MauiShell.FlyoutIsPresented)] = MapFlyoutIsPresented,
             [nameof(MauiShell.FlyoutIcon)] = MapFlyoutIcon,
@@ -71,13 +72,14 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             [nameof(MauiShell.ItemTemplate)] = MapItemTemplate,
             [nameof(MauiShell.MenuItemTemplate)] = MapMenuItemTemplate,
             [nameof(VisualElement.BackgroundColor)] = MapBackgroundColor,
-            [nameof(MauiShell.TitleView)] = MapTitleView,
+            [MauiShell.TitleViewProperty.PropertyName] = MapTitleView,
             [MauiShell.SearchHandlerProperty.PropertyName] = MapSearchHandler,
             [MauiShell.ForegroundColorProperty.PropertyName] = MapForegroundColor,
             [MauiShell.TitleColorProperty.PropertyName] = MapTitleColor,
             [MauiShell.DisabledColorProperty.PropertyName] = MapDisabledColor,
             [MauiShell.UnselectedColorProperty.PropertyName] = MapUnselectedColor,
             [MauiShell.NavBarIsVisibleProperty.PropertyName] = MapNavBarIsVisible,
+            [MauiShell.NavBarVisibilityAnimationEnabledProperty.PropertyName] = MapNavBarVisibilityAnimationEnabled,
             [MauiShell.NavBarHasShadowProperty.PropertyName] = MapNavBarHasShadow,
             [MauiShell.BackButtonBehaviorProperty.PropertyName] = MapBackButtonBehavior,
             [MauiShell.TabBarIsVisibleProperty.PropertyName] = MapTabBarIsVisible,
@@ -280,7 +282,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         {
             if (VirtualView != null)
             {
-                Threading.Dispatcher.UIThread.Post(() =>
+                PlatformViewOrNull?.Dispatcher.Post(() =>
                 {
                     this.UpdateFlyoutItemsAppearance(VirtualView);
                 }, Threading.DispatcherPriority.Render);
@@ -306,6 +308,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             Child = _topBar,
             Padding = new Thickness(5),
             Height = DefaultBarHeight,
+            ClipToBounds = true,
             [DockPanel.DockProperty] = Dock.Top,
             ZIndex = 1
         };
@@ -320,6 +323,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             Height = 4,
             IsVisible = false,
             IsHitTestVisible = false,
+            ClipToBounds = true,
             [DockPanel.DockProperty] = Dock.Top
         };
         _topBarShadow.Background = new Avalonia.Media.LinearGradientBrush
@@ -484,7 +488,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             TrackCurrentPage();
 
 
-            Threading.Dispatcher.UIThread.Post(() =>
+            PlatformViewOrNull?.Dispatcher.Post(() =>
             {
                 if (VirtualView != null)
                 {
@@ -600,7 +604,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         if (VirtualView != null)
         {
             VirtualView.FlyoutIsPresented = true;
-            Threading.Dispatcher.UIThread.Post(() =>
+            PlatformViewOrNull?.Dispatcher.Post(() =>
             {
                 if (VirtualView != null)
                 {
@@ -641,7 +645,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
                 _currentItemHandler?.UpdateTabBarVisibility(VirtualView.CurrentItem);
 
             // Force focus clear on page change to ensure navigation settles cleanly
-            Threading.Dispatcher.UIThread.Post(() => 
+            PlatformViewOrNull?.Dispatcher.Post(() => 
             {
                 var topLevel = _mainContainer != null ? TopLevel.GetTopLevel(_mainContainer) : null;
                 topLevel?.FocusManager?.Focus(null);
@@ -692,6 +696,10 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         {
             MapSearchHandler(this, VirtualView!);
         }
+        else if (e.PropertyName == MauiShell.NavBarVisibilityAnimationEnabledProperty.PropertyName)
+        {
+            MapNavBarVisibilityAnimationEnabled(this, VirtualView!);
+        }
     }
 
     private void TrackCurrentPage()
@@ -724,9 +732,14 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
             this.UpdateNavBarIsVisible(VirtualView);
             this.UpdateNavBarHasShadow(VirtualView);
         }
+        else if (e.PropertyName == MauiShell.NavBarVisibilityAnimationEnabledProperty.PropertyName)
+        {
+            this.UpdateNavBarIsVisible(VirtualView);
+            this.UpdateNavBarHasShadow(VirtualView);
+        }
         else if (e.PropertyName == MauiShell.NavBarHasShadowProperty.PropertyName)
             this.UpdateNavBarHasShadow(VirtualView);
-        else if (e.PropertyName == nameof(MauiShell.TitleView))
+        else if (e.PropertyName == MauiShell.TitleViewProperty.PropertyName)
             this.UpdateTitleView(VirtualView);
         else if (e.PropertyName == MauiShell.BackButtonBehaviorProperty.PropertyName)
             this.UpdateBackButtonBehavior(VirtualView);
@@ -745,6 +758,18 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
         {
             handler.UpdateCurrentItem(shell);
         }
+    }
+
+    /// <summary>Maps the CurrentState property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
+    public static void MapCurrentState(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateTitle(shell);
+        handler.UpdateSearchHandler(shell);
+        handler.UpdateBackButtonBehavior(shell);
+        handler.UpdateFlyoutItemsAppearance(shell);
+        handler.UpdateBackgroundColor(shell);
     }
 
     /// <summary>Maps the FlyoutBehavior property to the platform view.</summary>
@@ -936,6 +961,15 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     /// <param name="handler">The shell handler.</param>
     /// <param name="shell">The MAUI Shell virtual view.</param>
     public static void MapNavBarIsVisible(ShellHandler handler, MauiShell shell)
+    {
+        handler.UpdateNavBarIsVisible(shell);
+        handler.UpdateNavBarHasShadow(shell);
+    }
+
+    /// <summary>Maps the NavBarVisibilityAnimationEnabled property to the platform view.</summary>
+    /// <param name="handler">The shell handler.</param>
+    /// <param name="shell">The MAUI Shell virtual view.</param>
+    public static void MapNavBarVisibilityAnimationEnabled(ShellHandler handler, MauiShell shell)
     {
         handler.UpdateNavBarIsVisible(shell);
         handler.UpdateNavBarHasShadow(shell);
@@ -1216,7 +1250,7 @@ public partial class ShellHandler : ViewHandler<MauiShell, AvaloniaControl>
     {
         if (e.PropertyName == SearchHandler.SearchBoxVisibilityProperty.PropertyName)
         {
-            Threading.Dispatcher.UIThread.Post(() => 
+            PlatformViewOrNull?.Dispatcher.Post(() => 
             {
                 if (VirtualView != null)
                 {

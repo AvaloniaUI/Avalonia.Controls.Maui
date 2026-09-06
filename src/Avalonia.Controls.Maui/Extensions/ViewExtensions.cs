@@ -21,7 +21,7 @@ public static class ViewExtensions
     /// to handle all transformation properties from the .NET MAUI view.</remarks>
     public static void UpdateTransformation(this PlatformView control, IView view)
     {
-        Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+        control.Dispatcher.InvokeAsync(() =>
         {
             if (control.RenderTransform is not global::Avalonia.Media.TransformGroup group)
             {

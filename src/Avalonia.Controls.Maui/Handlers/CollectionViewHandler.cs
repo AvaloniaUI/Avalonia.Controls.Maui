@@ -36,7 +36,7 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
 
     /// <summary>Command mapper for <see cref="CollectionViewHandler"/>.</summary>
     public static CommandMapper<CollectionView, CollectionViewHandler> CommandMapper =
-        new(ViewCommandMapper)
+        new(ViewHandler.ViewCommandMapper)
         {
 
         };
@@ -133,7 +133,7 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
         var selectedItem = PlatformView.SelectedItem;
         var selectedItems = PlatformView.SelectedItems?.Cast<object>().ToList();
 
-        Dispatcher.UIThread.Post(() =>
+        PlatformView.Dispatcher.Post(() =>
         {
             if (VirtualView == null || PlatformView == null || _isUpdatingSelection)
                 return;
@@ -200,7 +200,7 @@ public class CollectionViewHandler : ViewHandler<CollectionView, MauiCollectionV
 
     private void OnRemainingItemsThresholdReached(object? sender, EventArgs e)
     {
-        Dispatcher.UIThread.Post(() =>
+        PlatformViewOrNull?.Dispatcher.Post(() =>
         {
             // Use MAUI's built-in method which fires both the event and command
             VirtualView?.SendRemainingItemsThresholdReached();

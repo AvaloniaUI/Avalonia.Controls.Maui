@@ -86,12 +86,9 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
 
         var mauiApp = CreateMauiApp();
 
-        var rootContext = new MauiContext(mauiApp.Services);
-
-        // Create application scope and register the Avalonia Application
-        // We need to register with the correct type (Application) since MakeApplicationScope
-        // registers as Object for non-platform builds
-        ApplicationContext = MakeAvaloniaApplicationScope(rootContext, this);
+        // The ApplicationHandler resolves the Avalonia Application via Application.Current,
+        // so no application-specific service registration is needed on the context.
+        ApplicationContext = new MauiContext(mauiApp.Services);
 
         Services = ApplicationContext.Services;
 
@@ -158,6 +155,11 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
         return avaloniaWindow;
     }
 
+    // Keeps each window's IServiceScope alive for the lifetime of its scoped context.
+    // Mirrors MAUI's internal MauiContext.SetWindowScope, which is not accessible
+    // outside the MAUI assemblies.
+    private static readonly System.Runtime.CompilerServices.ConditionalWeakTable<IMauiContext, IServiceScope> s_windowScopes = new();
+
     /// <summary>
     /// Creates a window-scoped MauiContext with a proper DI scope.
     /// </summary>
@@ -165,22 +167,11 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
     {
         var scope = mauiContext.Services.CreateScope();
         var scopedContext = new MauiContext(scope.ServiceProvider);
-        scopedContext.SetWindowScope(scope);
-        scopedContext.InitializeScopedServices();
-        return scopedContext;
-    }
+        s_windowScopes.Add(scopedContext, scope);
 
-    /// <summary>
-    /// Creates an application-scoped MauiContext and registers the Avalonia Application
-    /// with the correct type so it can be resolved by the ApplicationHandler.
-    /// </summary>
-    private static MauiContext MakeAvaloniaApplicationScope(MauiContext mauiContext, Application avaloniaApplication)
-    {
-        var scopedContext = new MauiContext(mauiContext.Services);
-
-        // Register the Avalonia Application with the correct type
-        // This allows ApplicationHandler.CreatePlatformElement() to resolve it via GetService<Application>()
-        scopedContext.AddSpecific(avaloniaApplication);
+        // Initialize any window-scoped services, for example dispatchers and animation tickers.
+        foreach (var service in scopedContext.Services.GetServices<IMauiInitializeScopedService>())
+            service.Initialize(scopedContext.Services);
 
         return scopedContext;
     }

@@ -17,7 +17,7 @@ public class SKCanvasViewHandler : Avalonia.Controls.Maui.Handlers.ViewHandler<I
     /// The property mapper that maps <see cref="ISKCanvasView"/> properties to <see cref="SKCanvasViewHandler"/> methods.
     /// </summary>
     public static IPropertyMapper<ISKCanvasView, SKCanvasViewHandler> Mapper =
-        new PropertyMapper<ISKCanvasView, SKCanvasViewHandler>(ViewMapper)
+        new PropertyMapper<ISKCanvasView, SKCanvasViewHandler>(ViewHandler.ViewMapper)
         {
             [nameof(ISKCanvasView.EnableTouchEvents)] = MapEnableTouchEvents,
             [nameof(ISKCanvasView.IgnorePixelScaling)] = MapIgnorePixelScaling,
@@ -27,7 +27,7 @@ public class SKCanvasViewHandler : Avalonia.Controls.Maui.Handlers.ViewHandler<I
     /// The command mapper that maps <see cref="ISKCanvasView"/> commands to <see cref="SKCanvasViewHandler"/> methods.
     /// </summary>
     public static CommandMapper<ISKCanvasView, SKCanvasViewHandler> CommandMapper =
-        new(ViewCommandMapper)
+        new(ViewHandler.ViewCommandMapper)
         {
             [nameof(ISKCanvasView.InvalidateSurface)] = OnInvalidateSurface,
         };

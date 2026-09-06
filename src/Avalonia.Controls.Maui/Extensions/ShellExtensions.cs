@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Media;
 using Avalonia.Layout;
 using Avalonia.Controls.Maui.Services;
@@ -24,6 +25,8 @@ namespace Avalonia.Controls.Maui.Extensions;
 /// </summary>
 public static class ShellExtensions
 {
+    private static readonly TimeSpan NavBarVisibilityTransitionDuration = TimeSpan.FromMilliseconds(180);
+
     /// <summary>
     /// Updates the background color of the main container.
     /// </summary>
@@ -109,7 +112,14 @@ public static class ShellExtensions
         var isVisible = shell.CurrentPage != null && shell.CurrentPage.IsSet(MauiShell.NavBarIsVisibleProperty)
             ? MauiShell.GetNavBarIsVisible(shell.CurrentPage)
             : MauiShell.GetNavBarIsVisible(shell);
-        handler._topBarBorder.IsVisible = isVisible;
+        var animate = GetNavBarVisibilityAnimationEnabled(shell);
+
+        ApplyNavBarElementVisibility(
+            handler._topBarBorder,
+            ShellHandler.DefaultBarHeight,
+            isVisible,
+            animate,
+            hitTestWhenVisible: true);
     }
 
     /// <summary>
@@ -128,7 +138,90 @@ public static class ShellExtensions
         var isVisible = shell.CurrentPage != null && shell.CurrentPage.IsSet(MauiShell.NavBarIsVisibleProperty)
             ? MauiShell.GetNavBarIsVisible(shell.CurrentPage)
             : MauiShell.GetNavBarIsVisible(shell);
-        handler._topBarShadow.IsVisible = hasShadow && isVisible;
+        var animate = GetNavBarVisibilityAnimationEnabled(shell);
+
+        ApplyNavBarElementVisibility(
+            handler._topBarShadow,
+            4,
+            hasShadow && isVisible,
+            animate,
+            hitTestWhenVisible: false);
+    }
+
+    private static bool GetNavBarVisibilityAnimationEnabled(MauiShell shell)
+    {
+        return shell.CurrentPage != null && shell.CurrentPage.IsSet(MauiShell.NavBarVisibilityAnimationEnabledProperty)
+            ? MauiShell.GetNavBarVisibilityAnimationEnabled(shell.CurrentPage)
+            : MauiShell.GetNavBarVisibilityAnimationEnabled(shell);
+    }
+
+    private static void ApplyNavBarElementVisibility(
+        Control element,
+        double visibleHeight,
+        bool isVisible,
+        bool animate,
+        bool hitTestWhenVisible)
+    {
+        element.IsHitTestVisible = isVisible && hitTestWhenVisible;
+
+        if (animate)
+        {
+            EnsureNavBarTransitions(element);
+            element.IsVisible = true;
+        }
+        else
+        {
+            RemoveNavBarTransitions(element);
+            element.IsVisible = isVisible;
+        }
+
+        element.Height = isVisible ? visibleHeight : 0;
+        element.Opacity = isVisible ? 1 : 0;
+    }
+
+    private static void EnsureNavBarTransitions(Control element)
+    {
+        element.Transitions ??= new Transitions();
+
+        EnsureDoubleTransition(element.Transitions, Layoutable.HeightProperty);
+        EnsureDoubleTransition(element.Transitions, Visual.OpacityProperty);
+    }
+
+    private static void EnsureDoubleTransition(Transitions transitions, AvaloniaProperty property)
+    {
+        var transition = transitions
+            .OfType<DoubleTransition>()
+            .FirstOrDefault(x => x.Property == property);
+
+        if (transition != null)
+        {
+            transition.Duration = NavBarVisibilityTransitionDuration;
+            return;
+        }
+
+        transitions.Add(new DoubleTransition
+        {
+            Property = property,
+            Duration = NavBarVisibilityTransitionDuration
+        });
+    }
+
+    private static void RemoveNavBarTransitions(Control element)
+    {
+        if (element.Transitions == null)
+            return;
+
+        for (var i = element.Transitions.Count - 1; i >= 0; i--)
+        {
+            if (element.Transitions[i] is DoubleTransition transition &&
+                (transition.Property == Layoutable.HeightProperty || transition.Property == Visual.OpacityProperty))
+            {
+                element.Transitions.RemoveAt(i);
+            }
+        }
+
+        if (element.Transitions.Count == 0)
+            element.Transitions = null;
     }
 
     /// <summary>
@@ -215,6 +308,7 @@ public static class ShellExtensions
         if (handler._flyoutPaneContainer == null || shell == null || handler.MauiContext == null)
             return;
 
+        var dispatcher = handler._flyoutPaneContainer.Dispatcher;
         var backgroundImage = shell.FlyoutBackgroundImage;
 
         if (backgroundImage != null)
@@ -230,7 +324,7 @@ public static class ShellExtensions
                     {
                         var result = await avaloniaService.GetImageAsync(backgroundImage, 1.0f);
                         
-                        await Threading.Dispatcher.UIThread.InvokeAsync(() =>
+                        await dispatcher.InvokeAsync(() =>
                         {
                             if (result != null)
                             {
@@ -272,7 +366,7 @@ public static class ShellExtensions
             }
         }
 
-        await Avalonia.Threading.Dispatcher.UIThread.InvokeAsync(() =>
+        await dispatcher.InvokeAsync(() =>
         {
             handler.UpdateFlyoutBackground(shell);
         });

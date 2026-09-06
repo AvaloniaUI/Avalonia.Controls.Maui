@@ -14,14 +14,14 @@ public partial class ContentPresenterHandler : ViewHandler<IContentView, Avaloni
 {
     /// <summary>Property mapper for <see cref="ContentPresenterHandler"/>.</summary>
     public static IPropertyMapper<IContentView, ContentPresenterHandler> Mapper =
-        new PropertyMapper<IContentView, ContentPresenterHandler>(ViewMapper)
+        new PropertyMapper<IContentView, ContentPresenterHandler>(ViewHandler.ViewMapper)
         {
             [nameof(IContentView.Content)] = MapContent,
         };
 
     /// <summary>Command mapper for <see cref="ContentPresenterHandler"/>.</summary>
     public static CommandMapper<IContentView, ContentPresenterHandler> CommandMapper =
-        new(ViewCommandMapper);
+        new(ViewHandler.ViewCommandMapper);
 
     /// <summary>Initializes a new instance of <see cref="ContentPresenterHandler"/>.</summary>
     public ContentPresenterHandler() : base(Mapper, CommandMapper)

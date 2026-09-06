@@ -1,7 +1,9 @@
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Controls.Platform;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using AvaloniaControl = Avalonia.Controls.Control;
@@ -11,112 +13,28 @@ using AvaloniaTopLevel = Avalonia.Controls.TopLevel;
 
 namespace Avalonia.Controls.Maui.Platform;
 
-/// <summary>
-/// Manages gesture recognizers for Avalonia.Controls.Maui platform
-/// </summary>
-internal class GestureManager : IDisposable
+internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
 {
-    private IControlsView? _view;
-    private object? _containerView;
-    private object? _platformView;
-    private object? _handler;
-    private bool _didHaveWindow;
+    private readonly View? _view;
+    private readonly AvaloniaControl? _platformView;
     private bool _disposed;
 
-    public bool IsConnected => _platformView != null && _handler != null;
-
-    public GestureManager(IControlsView view)
+    public AvaloniaGesturePlatformManager(IViewHandler handler)
     {
-        _view = view;
-        view.HandlerChanging += OnHandlerChanging;
-        view.HandlerChanged += OnHandlerChanged;
-        view.WindowChanged += OnWindowChanged;
-        view.PlatformContainerViewChanged += OnPlatformContainerViewChanged;
+        _view = handler.VirtualView as View;
+        _platformView = handler.PlatformView as AvaloniaControl;
 
-        SetupGestureManager();
-    }
-
-    private void OnPlatformContainerViewChanged(object? sender, EventArgs e) =>
-        SetupGestureManager();
-
-    private void OnWindowChanged(object? sender, EventArgs e) =>
-        SetupGestureManager();
-
-    private void OnHandlerChanged(object? sender, EventArgs e) =>
-        SetupGestureManager();
-
-    private void OnHandlerChanging(object? sender, HandlerChangingEventArgs e) =>
-        DisconnectGestures();
-
-    private void DisconnectGestures()
-    {
-        if (_platformView is AvaloniaControl control)
-        {
-            UnsubscribeFromGestureEvents(control);
-            TearDownDropHandlers(control);
-            TearDownPinchHandlers(control);
-        }
-
-        if (_view is View view && view.GetCompositeGestureRecognizers() is ObservableCollection<IGestureRecognizer> recognizers)
-        {
-            recognizers.CollectionChanged -= OnGestureRecognizersCollectionChanged;
-        }
-
-        _handler = null;
-        _didHaveWindow = false;
-        _containerView = null;
-        _platformView = null;
-
-        // Reset drag state
-        _isDragPending = false;
-        _dragPointerArgs = null;
-    }
-
-    private void SetupGestureManager()
-    {
-        if (_view == null)
+        if (_platformView == null || _view == null)
             return;
 
-        var handler = _view.Handler;
+        SubscribeToGestureEvents(_platformView);
+        SetupDropHandlersIfNeeded(_platformView, _view);
+        SetupPinchHandlersIfNeeded(_platformView, _view);
 
-        if (handler == null ||
-            (_didHaveWindow && _view.Window == null))
-        {
-            DisconnectGestures();
-            return;
-        }
-
-        if (_containerView != handler.ContainerView ||
-            _platformView != handler.PlatformView ||
-            _handler != handler)
-        {
-            DisconnectGestures();
-        }
-
-        // Already setup and watching the correct view
-        if (IsConnected)
-            return;
-
-        if (handler.PlatformView is AvaloniaControl control)
-        {
-            _platformView = control;
-            SubscribeToGestureEvents(control);
-
-            if (_view is View view)
-            {
-                SetupDropHandlersIfNeeded(control, view);
-                SetupPinchHandlersIfNeeded(control, view);
-            }
-        }
-
-        if (_view is View v && v.GetCompositeGestureRecognizers() is ObservableCollection<IGestureRecognizer> recognizers)
+        if (_view.GetCompositeGestureRecognizers() is ObservableCollection<IGestureRecognizer> recognizers)
         {
             recognizers.CollectionChanged += OnGestureRecognizersCollectionChanged;
         }
-
-        _handler = handler;
-        _containerView = handler.ContainerView;
-        _didHaveWindow = _view.Window != null;
     }
 
     private void OnGestureRecognizersCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
@@ -196,7 +114,7 @@ internal class GestureManager : IDisposable
 
     private void OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        // Skip if already handled by another GestureManager
+        // Skip if already handled by another gesture platform manager
         if (e.Handled)
             return;
 
@@ -315,12 +233,13 @@ internal class GestureManager : IDisposable
             var capturedPoint = point;
             var capturedView = view;
             var capturedRecognizers = singleTapRecognizers.ToList();
+            var dispatcher = _platformView?.Dispatcher;
 
             _ = Task.Delay(DoubleTapDelayMs, cts.Token).ContinueWith(t =>
             {
                 if (!t.IsCanceled)
                 {
-                    Threading.Dispatcher.UIThread.Post(() =>
+                    dispatcher?.Post(() =>
                     {
                         foreach (var recognizer in capturedRecognizers)
                         {
@@ -922,15 +841,26 @@ internal class GestureManager : IDisposable
             return;
 
         _disposed = true;
-        DisconnectGestures();
 
-        if (_view != null)
+        _singleTapCts?.Cancel();
+        _singleTapCts = null;
+
+        if (_platformView is { } control)
         {
-            _view.HandlerChanging -= OnHandlerChanging;
-            _view.HandlerChanged -= OnHandlerChanged;
-            _view.WindowChanged -= OnWindowChanged;
-            _view.PlatformContainerViewChanged -= OnPlatformContainerViewChanged;
-            _view = null;
+            UnsubscribeFromGestureEvents(control);
+            TearDownDropHandlers(control);
+            TearDownPinchHandlers(control);
         }
+
+        if (_view?.GetCompositeGestureRecognizers() is ObservableCollection<IGestureRecognizer> recognizers)
+        {
+            recognizers.CollectionChanged -= OnGestureRecognizersCollectionChanged;
+        }
+
+        _isDragPending = false;
+        _dragPointerArgs = null;
+        _isPanning = false;
+        _panOriginVisual = null;
+        _panRootVisual = null;
     }
 }

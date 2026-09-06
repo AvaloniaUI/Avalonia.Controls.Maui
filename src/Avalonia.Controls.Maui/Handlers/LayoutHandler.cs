@@ -17,7 +17,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
     /// <summary>
     /// Property mapper for <see cref="LayoutHandler"/>.
     /// </summary>
-    public static IPropertyMapper<ILayout, LayoutHandler> Mapper = new PropertyMapper<ILayout, LayoutHandler>(ViewMapper)
+    public static IPropertyMapper<ILayout, LayoutHandler> Mapper = new PropertyMapper<ILayout, LayoutHandler>(ViewHandler.ViewMapper)
     {
         [nameof(ILayout.Background)] = MapBackground,
         [nameof(ILayout.ClipsToBounds)] = MapClipsToBounds,
@@ -27,7 +27,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
     /// <summary>
     /// Command mapper for <see cref="LayoutHandler"/>.
     /// </summary>
-    public static CommandMapper<ILayout, LayoutHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<ILayout, LayoutHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
         [nameof(LayoutHandler.Add)] = MapAdd,
         [nameof(LayoutHandler.Remove)] = MapRemove,

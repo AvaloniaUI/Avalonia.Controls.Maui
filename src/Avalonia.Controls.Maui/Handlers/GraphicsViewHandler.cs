@@ -14,7 +14,7 @@ public partial class GraphicsViewHandler : ViewHandler<IGraphicsView, PlatformTo
     /// <summary>
     /// The property mapper that maps <see cref="IGraphicsView"/> properties to <see cref="GraphicsViewHandler"/> methods.
     /// </summary>
-    public static IPropertyMapper<IGraphicsView, GraphicsViewHandler> Mapper = new PropertyMapper<IGraphicsView, GraphicsViewHandler>(ViewMapper)
+    public static IPropertyMapper<IGraphicsView, GraphicsViewHandler> Mapper = new PropertyMapper<IGraphicsView, GraphicsViewHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IView.Background)] = MapBackground,
         [nameof(IGraphicsView.Drawable)] = MapDrawable,
@@ -24,7 +24,7 @@ public partial class GraphicsViewHandler : ViewHandler<IGraphicsView, PlatformTo
     /// <summary>
     /// The command mapper that maps <see cref="IGraphicsView"/> commands to <see cref="GraphicsViewHandler"/> methods.
     /// </summary>
-    public static CommandMapper<IGraphicsView, GraphicsViewHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IGraphicsView, GraphicsViewHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
         [nameof(IGraphicsView.Invalidate)] = MapInvalidate
     };

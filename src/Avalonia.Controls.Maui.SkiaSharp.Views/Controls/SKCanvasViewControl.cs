@@ -59,10 +59,18 @@ public class SKCanvasViewControl : Control
     /// </summary>
     public void InvalidateCanvas()
     {
-        Threading.Dispatcher.UIThread.Post(() =>
+        this.Dispatcher.Post(() =>
         {
             base.InvalidateVisual();
         });
+    }
+
+    /// <inheritdoc/>
+    protected override Size MeasureOverride(Size availableSize)
+    {
+        return new Size(
+            double.IsInfinity(availableSize.Width) ? 0 : availableSize.Width,
+            double.IsInfinity(availableSize.Height) ? 0 : availableSize.Height);
     }
 
     /// <inheritdoc/>

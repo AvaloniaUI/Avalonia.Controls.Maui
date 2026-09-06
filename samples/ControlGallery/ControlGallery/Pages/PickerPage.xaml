@@ -39,6 +39,31 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Preselected SelectedIndex -->
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Preselected SelectedIndex"
+                           FontAttributes="Bold" />
+                    <Picker x:Name="IndexedPicker"
+                            Title="Choose a color"
+                            SelectedIndexChanged="OnIndexedPickerChanged">
+                        <Picker.Items>
+                            <x:String>Red</x:String>
+                            <x:String>Green</x:String>
+                            <x:String>Blue</x:String>
+                            <x:String>Purple</x:String>
+                        </Picker.Items>
+                    </Picker>
+                    <Label x:Name="PreselectedIndexLabel"
+                           Text="Selected item: Blue"
+                           FontAttributes="Italic" />
+                </VerticalStackLayout>
+            </Border>
+
             <!-- Preselected SelectedItem -->
             <Border Stroke="Gray"
                     Padding="12">

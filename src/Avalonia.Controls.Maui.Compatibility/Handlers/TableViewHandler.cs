@@ -4,6 +4,8 @@ using Microsoft.Maui.Controls;
 
 namespace Avalonia.Controls.Maui.Compatibility.Handlers;
 
+using TableView = Microsoft.Maui.Controls.TableView;
+
 /// <summary>
 /// Avalonia handler for <see cref="TableView"/>.
 /// </summary>
@@ -25,7 +27,7 @@ public class TableViewHandler : ViewHandler<TableView, MauiTableView>
     /// Command mapper for <see cref="TableViewHandler"/>.
     /// </summary>
     public static CommandMapper<TableView, TableViewHandler> CommandMapper =
-        new(ViewCommandMapper);
+        new(ViewHandler.ViewCommandMapper);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TableViewHandler"/> class.

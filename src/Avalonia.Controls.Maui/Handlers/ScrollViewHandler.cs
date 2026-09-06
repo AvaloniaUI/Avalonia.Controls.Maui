@@ -13,7 +13,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
     private EventHandler<ScrollChangedEventArgs>? _scrollChangedHandler;
 
     /// <summary>Property mapper for <see cref="ScrollViewHandler"/>.</summary>
-    public static IPropertyMapper<IScrollView, ScrollViewHandler> Mapper = new PropertyMapper<IScrollView, ScrollViewHandler>(ViewMapper)
+    public static IPropertyMapper<IScrollView, ScrollViewHandler> Mapper = new PropertyMapper<IScrollView, ScrollViewHandler>(ViewHandler.ViewMapper)
     {
         [nameof(IScrollView.Content)] = MapContent,
         [nameof(IScrollView.HorizontalScrollBarVisibility)] = MapHorizontalScrollBarVisibility,
@@ -22,7 +22,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
     };
 
     /// <summary>Command mapper for <see cref="ScrollViewHandler"/>.</summary>
-    public static CommandMapper<IScrollView, ScrollViewHandler> CommandMapper = new(ViewCommandMapper)
+    public static CommandMapper<IScrollView, ScrollViewHandler> CommandMapper = new(ViewHandler.ViewCommandMapper)
     {
         [nameof(IScrollView.RequestScrollTo)] = MapRequestScrollTo,
     };
