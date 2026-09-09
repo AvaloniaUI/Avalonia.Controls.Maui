@@ -51,7 +51,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <MicrosoftExtensionsVersion>11.0.0-preview.7.26381.103</MicrosoftExtensionsVersion>
+        <MicrosoftExtensionsVersion>11.0.0-rc.1.26425.128</MicrosoftExtensionsVersion>
     </PropertyGroup>
 
     <!--
@@ -63,7 +63,7 @@
         items, which the SDK defines after this file is imported.
     -->
     <PropertyGroup>
-        <NativeAotPackVersion>11.0.0-preview.7.26381.103</NativeAotPackVersion>
+        <NativeAotPackVersion>11.0.0-rc.1.26425.128</NativeAotPackVersion>
     </PropertyGroup>
 
     <!--
@@ -91,7 +91,7 @@
     </Target>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net11.0'">
-        <MauiVersion>11.0.0-preview.7.26406.9</MauiVersion>
+        <MauiVersion>11.0.0-rc.1.26451.6</MauiVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net10.0'">
