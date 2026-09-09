@@ -40,6 +40,22 @@
     <PackageReference Include="Microsoft.Maui.Graphics.Skia" Version="$(MauiVersion)" />
   </ItemGroup>
 
+  <!-- Explicit SkiaSharp/HarfBuzzSharp pins (NuGet builds only; source builds get these from
+       SourceBuild.targets). Direct references override the older transitive versions that
+       Avalonia.Skia declares. The Linux and WebAssembly native asset packages are listed
+       explicitly because the SkiaSharp/HarfBuzzSharp packages themselves only pull in the
+       macOS/Windows/mobile native assets, so without these the Linux and WASM native
+       libraries would stay at the Avalonia.Skia transitive version and mismatch the managed
+       assemblies. -->
+  <ItemGroup Condition="'$(AvaloniaSourcePath)' == ''">
+    <PackageReference Include="SkiaSharp" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="SkiaSharp.NativeAssets.WebAssembly" Version="$(SkiaSharpVersion)" />
+    <PackageReference Include="HarfBuzzSharp" Version="$(HarfBuzzSharpVersion)" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.Linux" Version="$(HarfBuzzSharpVersion)" />
+    <PackageReference Include="HarfBuzzSharp.NativeAssets.WebAssembly" Version="$(HarfBuzzSharpVersion)" />
+  </ItemGroup>
+
   <!-- Source generator -->
   <ItemGroup>
     <ProjectReference Include="../Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj"

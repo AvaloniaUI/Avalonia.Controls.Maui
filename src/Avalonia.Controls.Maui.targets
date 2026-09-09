@@ -56,6 +56,24 @@
     </ItemGroup>
   </Target>
 
+  <!-- SkiaSharp 4.151+ and HarfBuzzSharp 14.2.1.102+ ship Emscripten 5.0.6 static libraries for
+       net11.0+ and select them from their own buildTransitive targets. Avalonia.Browser.targets
+       (12.1.x) predates that and still adds the Emscripten 3.1.56 archives for every TFM >= net9.0,
+       so on net11.0 both sets would be handed to the linker. Drop the stale 3.1.56 archives so only
+       the ones SkiaSharp/HarfBuzzSharp picked for this TFM are linked. -->
+  <Target Name="_AvMauiRemoveLegacyEmscriptenNativeRefs"
+          BeforeTargets="_PrepareForBrowserWasmBuildNative;_CoreCLRPrepareForNativeBuild"
+          Condition="'$(_AvMauiTargetPlatformId)' == 'browser' And '$(TargetFrameworkVersion)' != '' And $([MSBuild]::VersionGreaterThanOrEquals('$(TargetFrameworkVersion)', '11.0'))">
+    <ItemGroup>
+      <_AvMauiLegacyNativeRef Include="@(NativeFileReference)"
+          Condition="$([System.String]::Copy('%(FullPath)').Replace('\', '/').Contains('/3.1.56/')) And ($([System.String]::Copy('%(FullPath)').Contains('libSkiaSharp.a')) Or $([System.String]::Copy('%(FullPath)').Contains('libHarfBuzzSharp.a')))" />
+      <NativeFileReference Remove="@(_AvMauiLegacyNativeRef)" />
+    </ItemGroup>
+    <Message Importance="high"
+             Text="Avalonia.Controls.Maui: removed Emscripten 3.1.56 native references superseded by the net11.0 SkiaSharp/HarfBuzzSharp libraries: @(_AvMauiLegacyNativeRef)"
+             Condition="'@(_AvMauiLegacyNativeRef)' != ''" />
+  </Target>
+
   <Target Name="ConvertMauiImagesToAvaloniaResources"
           BeforeTargets="AddAvaloniaResources"
           DependsOnTargets="ResizetizeImages;_ReadResizetizeImagesOutputs">

@@ -26,7 +26,7 @@
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.1.0</AvaloniaVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.1.2</AvaloniaVersion>
         <AvaloniaWebViewVersion Condition="'$(AvaloniaWebViewVersion)' == ''">12.0.0</AvaloniaWebViewVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net11.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
@@ -78,6 +78,16 @@
         <HarfBuzzSharpVersion>$([System.Text.RegularExpressions.Regex]::Match('$(_AvaloniaPackagesPropsContent)', 'Include="HarfBuzzSharp" Version="([^"]+)"').Groups[1].Value)</HarfBuzzSharpVersion>
         <MicroComVersion>$([System.Text.RegularExpressions.Regex]::Match('$(_AvaloniaPackagesPropsContent)', 'Include="MicroCom\.Runtime" Version="([^"]+)"').Groups[1].Value)</MicroComVersion>
         <_AvaloniaPackagesPropsContent />
+    </PropertyGroup>
+    <!--
+        NuGet builds: pin SkiaSharp/HarfBuzzSharp explicitly instead of taking the transitive
+        versions from Avalonia.Skia (3.119.4 / 8.3.1.3 as of Avalonia 12.1). SkiaSharp 4.151.0 is the
+        first release that ships Emscripten 5.0.6 WebAssembly static libraries for net11.0, and
+        HarfBuzzSharp 14.2.1.102 is the matching HarfBuzzSharp release with the same net11.0 support.
+    -->
+    <PropertyGroup Condition="'$(AvaloniaSourcePath)' == ''">
+        <SkiaSharpVersion Condition="'$(SkiaSharpVersion)' == ''">4.151.0</SkiaSharpVersion>
+        <HarfBuzzSharpVersion Condition="'$(HarfBuzzSharpVersion)' == ''">14.2.1.102</HarfBuzzSharpVersion>
     </PropertyGroup>
     <Target Name="_ValidateAvaloniaSourceVersions"
             BeforeTargets="PrepareForBuild"
