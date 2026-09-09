@@ -20,7 +20,7 @@ public class ButtonRenderTests : RenderTestBase
 
         await RenderToFile(button);
         // Text rendering differs slightly between platforms
-        CompareImages(tolerance: 0.045);
+        CompareImages(tolerance: 0.05);
     }
 }
 

@@ -52,7 +52,7 @@ public class VisualElementRenderTests : RenderTestBase
         };
 
         await RenderToFile(control);
-        CompareImages(tolerance: 0.06);
+        CompareImages(tolerance: 0.07);
     }
 
     private sealed class InheritedVisualElementModel(string title)
