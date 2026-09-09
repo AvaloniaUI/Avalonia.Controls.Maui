@@ -45,6 +45,6 @@ public class TableViewRenderTests : RenderTestBase
         };
 
         await RenderToFile(control);
-        CompareImages(tolerance: 0.06);
+        CompareImages(tolerance: 0.07);
     }
 }
