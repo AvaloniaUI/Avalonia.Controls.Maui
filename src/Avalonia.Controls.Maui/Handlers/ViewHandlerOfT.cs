@@ -182,14 +182,17 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
         {
             return MeasureCore(viewToMeasure, widthConstraint, heightConstraint);
         }
-        else
-        {
-            return viewToMeasure.Dispatcher.InvokeAsync(() =>
-            {
-                return MeasureCore(viewToMeasure, widthConstraint, heightConstraint);
-            }).GetAwaiter().GetResult();
-        }
+
+        return MeasureOnDispatcher(viewToMeasure, widthConstraint, heightConstraint);
     }
+
+    // Separate and not inlined so the closure is only allocated on the cross-thread path:
+    // captured locals are hoisted at method entry, so an inline lambda would allocate on
+    // every measure including the same-thread fast path.
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private static Microsoft.Maui.Graphics.Size MeasureOnDispatcher(PlatformView viewToMeasure, double widthConstraint, double heightConstraint) =>
+        viewToMeasure.Dispatcher.InvokeAsync(
+            () => MeasureCore(viewToMeasure, widthConstraint, heightConstraint)).GetAwaiter().GetResult();
 
     /// <summary>
     /// Performs the core measurement of the platform view against the given constraints.
@@ -219,8 +222,13 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
         if (dispatcher.CheckAccess())
             Arrange(frame);
         else
-            dispatcher.Invoke(() => Arrange(frame));
+            ArrangeOnDispatcher(dispatcher, frame);
     }
+
+    // See MeasureOnDispatcher: keeps the closure off the same-thread fast path.
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private void ArrangeOnDispatcher(Avalonia.Threading.Dispatcher dispatcher, Microsoft.Maui.Graphics.Rect frame) =>
+        dispatcher.Invoke(() => Arrange(frame));
 
     /// <summary>
     /// Arranges the platform view within the specified frame, compensating for MAUI/Avalonia margin differences.
