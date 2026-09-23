@@ -786,6 +786,7 @@ public class BlazorWebViewHandler : MauiBlazorWebViewHandler
     {
         try
         {
+            await MauiBlazorWebViewCompatibility.DetachStaticContentHotReloadAsync(manager, logger).ConfigureAwait(false);
             await manager.DisposeAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
@@ -798,6 +799,7 @@ public class BlazorWebViewHandler : MauiBlazorWebViewHandler
     {
         try
         {
+            MauiBlazorWebViewCompatibility.DetachStaticContentHotReloadAsync(manager, logger).GetAwaiter().GetResult();
             manager.DisposeAsync().AsTask().GetAwaiter().GetResult();
         }
         catch (Exception ex)

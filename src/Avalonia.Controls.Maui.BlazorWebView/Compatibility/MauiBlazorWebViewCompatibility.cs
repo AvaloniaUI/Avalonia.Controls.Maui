@@ -17,15 +17,19 @@ internal static class MauiBlazorWebViewCompatibility
         GetCreateUrlLoadingEventArgsMethod().CreateDelegate<CreateUrlLoadingEventArgsDelegate>());
     private static readonly Lazy<Type?> DeveloperToolsType = new(() =>
         typeof(UrlLoadingEventArgs).Assembly.GetType(DeveloperToolsTypeName, throwOnError: false));
-    private static readonly Lazy<Action<WebViewManager>?> AttachStaticContentHotReloadCallback = new(() =>
-        GetStaticContentHotReloadMethod("AttachToWebViewManagerIfEnabled")
-            ?.CreateDelegate<Action<WebViewManager>>());
+    private static readonly Lazy<Func<WebViewManager, Task>?> AttachStaticContentHotReloadCallback = new(() =>
+        GetStaticContentHotReloadMethod("TryAttachToWebViewManager")
+            ?.CreateDelegate<Func<WebViewManager, Task>>());
+    private static readonly Lazy<Func<WebViewManager, Task>?> DetachStaticContentHotReloadCallback = new(() =>
+        GetStaticContentHotReloadMethod("TryDetachFromWebViewManager")
+            ?.CreateDelegate<Func<WebViewManager, Task>>());
     private static readonly Lazy<TryReplaceStaticContentHotReloadResponseDelegate?> ReplaceStaticContentHotReloadCallback = new(() =>
         GetStaticContentHotReloadMethod("TryReplaceResponseContent")
             ?.CreateDelegate<TryReplaceStaticContentHotReloadResponseDelegate>());
 
     internal static bool IsStaticContentHotReloadSupported =>
         AttachStaticContentHotReloadCallback.Value is not null &&
+        DetachStaticContentHotReloadCallback.Value is not null &&
         ReplaceStaticContentHotReloadCallback.Value is not null;
 
     [DynamicDependency("CreateWithDefaultLoadingStrategy", typeof(UrlLoadingEventArgs))]
@@ -61,14 +65,21 @@ internal static class MauiBlazorWebViewCompatibility
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, StaticContentHotReloadManagerTypeName, MauiAssemblyName)]
     public static void AttachStaticContentHotReload(WebViewManager manager, ILogger logger)
     {
-        try
-        {
-            AttachStaticContentHotReloadCallback.Value?.Invoke(manager);
-        }
-        catch (Exception ex)
-        {
-            logger.LogWarning(ex, "Unable to attach MAUI BlazorWebView static-content hot reload.");
-        }
+        _ = InvokeStaticContentHotReloadAsync(
+            AttachStaticContentHotReloadCallback.Value,
+            manager,
+            logger,
+            "Unable to attach MAUI BlazorWebView static-content hot reload.");
+    }
+
+    [DynamicDependency(DynamicallyAccessedMemberTypes.All, StaticContentHotReloadManagerTypeName, MauiAssemblyName)]
+    public static Task DetachStaticContentHotReloadAsync(WebViewManager manager, ILogger logger)
+    {
+        return InvokeStaticContentHotReloadAsync(
+            DetachStaticContentHotReloadCallback.Value,
+            manager,
+            logger,
+            "Unable to detach MAUI BlazorWebView static-content hot reload.");
     }
 
     [DynamicDependency(DynamicallyAccessedMemberTypes.All, StaticContentHotReloadManagerTypeName, MauiAssemblyName)]
@@ -93,6 +104,25 @@ internal static class MauiBlazorWebViewCompatibility
         {
             logger.LogWarning(ex, "Unable to apply a MAUI BlazorWebView static-content hot-reload response.");
             return false;
+        }
+    }
+
+    private static async Task InvokeStaticContentHotReloadAsync(
+        Func<WebViewManager, Task>? callback,
+        WebViewManager manager,
+        ILogger logger,
+        string failureMessage)
+    {
+        if (callback is null)
+            return;
+
+        try
+        {
+            await callback(manager).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, failureMessage);
         }
     }
 
