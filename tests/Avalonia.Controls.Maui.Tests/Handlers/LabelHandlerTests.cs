@@ -3,6 +3,7 @@ using Avalonia.Headless.XUnit;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using MauiLabelHandler = Avalonia.Controls.Maui.Handlers.LabelHandler;
 
@@ -451,5 +452,196 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
         var nativeText = await GetValueAsync<string?, MauiLabelHandler>(label, GetNativeText);
 
         Assert.Equal("Plain text", nativeText);
+    }
+
+    [AvaloniaFact(DisplayName = "TextType Html Creates Inlines")]
+    public async Task TextTypeHtmlCreatesInlines()
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = "<b>Bold</b> and <i>Italic</i>",
+            TextType = TextType.Html,
+            WidthRequest = 300,
+            HeightRequest = 50
+        };
+
+        var inlineCount = await GetValueAsync<int, MauiLabelHandler>(label, GetNativeInlineCount);
+
+        // Should have multiple inlines (bold run, " and " run, italic run)
+        Assert.True(inlineCount >= 3);
+    }
+
+    [AvaloniaFact(DisplayName = "TextType Text Uses Plain Text")]
+    public async Task TextTypeTextUsesPlainText()
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = "<b>Not Bold</b>",
+            TextType = TextType.Text,
+            WidthRequest = 300,
+            HeightRequest = 50
+        };
+
+        var nativeText = await GetValueAsync<string?, MauiLabelHandler>(label, GetNativeText);
+
+        // Should display raw HTML as plain text
+        Assert.Equal("<b>Not Bold</b>", nativeText);
+    }
+
+    [AvaloniaFact(DisplayName = "TextType Switch From Text To Html")]
+    public async Task TextTypeSwitchFromTextToHtml()
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = "<b>Bold</b>",
+            TextType = TextType.Text,
+            WidthRequest = 300,
+            HeightRequest = 50
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        // Initially plain text
+        var plainText = await InvokeOnMainThreadAsync(() => GetNativeText(handler));
+        Assert.Equal("<b>Bold</b>", plainText);
+
+        // Switch to HTML
+        var inlineCount = await InvokeOnMainThreadAsync(() =>
+        {
+            label.TextType = TextType.Html;
+            handler.UpdateValue(nameof(Microsoft.Maui.Controls.Label.TextType));
+            return GetNativeInlineCount(handler);
+        });
+
+        Assert.True(inlineCount >= 1);
+    }
+
+    [AvaloniaFact(DisplayName = "TextType Html Takes Precedence Over FormattedText")]
+    public async Task TextTypeHtmlTakesPrecedenceOverFormattedText()
+    {
+        var formattedString = new Microsoft.Maui.Controls.FormattedString();
+        formattedString.Spans.Add(new Microsoft.Maui.Controls.Span { Text = "Formatted" });
+
+        // Setting FormattedText clears Text, so the Html render is empty, matching MAUI native.
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            FormattedText = formattedString,
+            WidthRequest = 300,
+            HeightRequest = 50
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        var initialText = await InvokeOnMainThreadAsync(() => GetNativeRunText(handler, 0));
+        Assert.Equal("Formatted", initialText);
+
+        var htmlInlineCount = await InvokeOnMainThreadAsync(() =>
+        {
+            label.TextType = TextType.Html;
+            handler.UpdateValue(nameof(Microsoft.Maui.Controls.Label.TextType));
+            return GetNativeInlineCount(handler);
+        });
+        Assert.Equal(0, htmlInlineCount);
+
+        var restoredText = await InvokeOnMainThreadAsync(() =>
+        {
+            label.TextType = TextType.Text;
+            handler.UpdateValue(nameof(Microsoft.Maui.Controls.Label.TextType));
+            return GetNativeRunText(handler, 0);
+        });
+        Assert.Equal("Formatted", restoredText);
+    }
+
+    [AvaloniaFact(DisplayName = "TextType Switch From Html To Text Restores Plain Text")]
+    public async Task TextTypeSwitchFromHtmlToText()
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = "<b>Bold</b>",
+            TextType = TextType.Html,
+            WidthRequest = 300,
+            HeightRequest = 50
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        var result = await InvokeOnMainThreadAsync(() =>
+        {
+            label.TextType = TextType.Text;
+            handler.UpdateValue(nameof(Microsoft.Maui.Controls.Label.TextType));
+            return (Text: GetNativeText(handler), Inlines: GetNativeInlineCount(handler));
+        });
+
+        Assert.Equal("<b>Bold</b>", result.Text);
+        Assert.Equal(0, result.Inlines);
+    }
+
+    [AvaloniaFact(DisplayName = "TextType Html Applies TextTransform To Content Only")]
+    public async Task TextTypeHtmlAppliesTextTransform()
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = "<b>bold</b> text",
+            TextType = TextType.Html,
+            TextTransform = TextTransform.Uppercase,
+            WidthRequest = 300,
+            HeightRequest = 50
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        var initial = await InvokeOnMainThreadAsync(() => (GetNativeRunText(handler, 0), GetNativeRunText(handler, 1)));
+        Assert.Equal(("BOLD", " TEXT"), initial);
+
+        var updated = await InvokeOnMainThreadAsync(() =>
+        {
+            label.TextTransform = TextTransform.None;
+            handler.UpdateValue(nameof(Microsoft.Maui.Controls.Label.TextTransform));
+            return GetNativeRunText(handler, 0);
+        });
+        Assert.Equal("bold", updated);
+    }
+
+    [AvaloniaFact(DisplayName = "TextType Html Empty Text Clears Inlines")]
+    public async Task TextTypeHtmlEmptyTextClearsInlines()
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = "<b>Bold</b>",
+            TextType = TextType.Html,
+            WidthRequest = 300,
+            HeightRequest = 50
+        };
+
+        var handler = await CreateHandlerAsync<MauiLabelHandler>(label);
+
+        var initialInlineCount = await InvokeOnMainThreadAsync(() => GetNativeInlineCount(handler));
+        Assert.True(initialInlineCount > 0);
+
+        var clearedInlineCount = await InvokeOnMainThreadAsync(() =>
+        {
+            label.Text = string.Empty;
+            handler.UpdateValue(nameof(Microsoft.Maui.Controls.Label.Text));
+            return GetNativeInlineCount(handler);
+        });
+
+        Assert.Equal(0, clearedInlineCount);
+    }
+
+    [AvaloniaFact(DisplayName = "FormattedText Null With TextType Html Renders Html")]
+    public async Task FormattedTextNullWithTextTypeHtmlRendersHtml()
+    {
+        var label = new Microsoft.Maui.Controls.Label
+        {
+            Text = "<b>Bold</b>",
+            TextType = TextType.Html,
+            FormattedText = null!,
+            WidthRequest = 300,
+            HeightRequest = 50
+        };
+
+        var inlineCount = await GetValueAsync<int, MauiLabelHandler>(label, GetNativeInlineCount);
+
+        Assert.True(inlineCount > 0);
     }
 }
