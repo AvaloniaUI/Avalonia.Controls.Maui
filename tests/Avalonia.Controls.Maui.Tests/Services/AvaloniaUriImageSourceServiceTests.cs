@@ -1,8 +1,6 @@
 using System.Net;
 using System.Reflection;
 using Avalonia.Controls.Maui.Services;
-using Avalonia.Controls.Maui.Tests;
-using Avalonia;
 using Avalonia.Headless.XUnit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
@@ -13,8 +11,10 @@ namespace Avalonia.Controls.Maui.Tests.Services;
 
 public class AvaloniaUriImageSourceServiceTests
 {
+    // A valid 1x1 PNG; the service decodes with the real Skia backend, so the
+    // payload must be a genuinely decodable image.
     private static readonly byte[] PngBytes = Convert.FromBase64String(
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z/C/HwAFgwJ/lkVfoQAAAABJRU5ErkJggg==");
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==");
 
     [AvaloniaFact(DisplayName = "Default URI image service sets no User-Agent")]
     public void DefaultRequestSendsNoUserAgent()
@@ -72,7 +72,7 @@ public class AvaloniaUriImageSourceServiceTests
         Assert.Equal("Registered.Client/5.0", httpClient.DefaultRequestHeaders.UserAgent.ToString());
     }
 
-    [AvaloniaFact(DisplayName = "Uses cached file for subsequent requests", Skip = "https://github.com/AvaloniaUI/Avalonia.Controls.Maui/issues/74")]
+    [AvaloniaFact(DisplayName = "Uses cached file for subsequent requests")]
     public async Task UsesCachedFile()
     {
         var handler = new CountingHandler(PngBytes);
@@ -109,7 +109,7 @@ public class AvaloniaUriImageSourceServiceTests
         }
     }
 
-    [AvaloniaFact(DisplayName = "Expired cache downloads again", Skip = "https://github.com/AvaloniaUI/Avalonia.Controls.Maui/issues/74")]
+    [AvaloniaFact(DisplayName = "Expired cache downloads again")]
     public async Task ExpiredCacheDownloadsAgain()
     {
         var handler = new CountingHandler(PngBytes);
