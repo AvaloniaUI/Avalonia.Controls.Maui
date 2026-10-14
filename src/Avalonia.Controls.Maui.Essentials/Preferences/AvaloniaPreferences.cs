@@ -66,6 +66,8 @@ public partial class AvaloniaPreferences : IPreferences
     {
         lock (_locker)
         {
+            ReloadPreferences();
+
             if (_preferences.TryGetValue(CleanSharedName(sharedName), out var inner))
             {
                 return inner.ContainsKey(key);
@@ -84,6 +86,8 @@ public partial class AvaloniaPreferences : IPreferences
     {
         lock (_locker)
         {
+            ReloadPreferences();
+
             if (_preferences.TryGetValue(CleanSharedName(sharedName), out var inner))
             {
                 inner.TryRemove(key, out _);
@@ -100,6 +104,8 @@ public partial class AvaloniaPreferences : IPreferences
     {
         lock (_locker)
         {
+            ReloadPreferences();
+
             if (_preferences.TryGetValue(CleanSharedName(sharedName), out var prefs))
             {
                 prefs.Clear();
@@ -121,6 +127,8 @@ public partial class AvaloniaPreferences : IPreferences
 
         lock (_locker)
         {
+            ReloadPreferences();
+
             var prefs = _preferences.GetOrAdd(CleanSharedName(sharedName), _ => new ShareNameDictionary());
 
             if (value is null)
@@ -148,6 +156,8 @@ public partial class AvaloniaPreferences : IPreferences
     {
         lock (_locker)
         {
+            ReloadPreferences();
+
             if (_preferences.TryGetValue(CleanSharedName(sharedName), out var inner))
             {
                 if (inner.TryGetValue(key, out var value) && value is not null)
@@ -183,6 +193,9 @@ public partial class AvaloniaPreferences : IPreferences
     }
 
     partial void LoadPreferences();
+
+    // Implemented in the browser to pick up changes from other tabs.
+    partial void ReloadPreferences();
 
     partial void SavePreferences();
 
