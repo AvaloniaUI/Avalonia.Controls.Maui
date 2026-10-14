@@ -1,6 +1,4 @@
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 
 namespace Avalonia.Controls.Maui.RenderTests.Infrastructure;
 
@@ -12,8 +10,8 @@ public static class TestRenderHelper
     {
         var allowedError = tolerance ?? DefaultAllowedError;
         
-        using var actual = SixLabors.ImageSharp.Image.Load<Rgba32>(actualPath);
-        using var expected = SixLabors.ImageSharp.Image.Load<Rgba32>(expectedPath);
+        using var actual = LoadImage(actualPath);
+        using var expected = LoadImage(expectedPath);
 
         if (actual.Width != expected.Width || actual.Height != expected.Height)
         {
@@ -30,7 +28,7 @@ public static class TestRenderHelper
         }
     }
 
-    private static void GenerateComparisonImage(Image<Rgba32> actual, Image<Rgba32> expected, string actualPath, bool sizeMismatch)
+    private static void GenerateComparisonImage(SKBitmap actual, SKBitmap expected, string actualPath, bool sizeMismatch)
     {
         try
         {
@@ -42,10 +40,10 @@ public static class TestRenderHelper
             var comparisonWidth = maxWidth * 3 + 4; // 2px border between images
             var comparisonHeight = maxHeight + labelHeight;
             
-            using var comparison = new Image<Rgba32>(comparisonWidth, comparisonHeight);
+            using var comparison = CreateImage(comparisonWidth, comparisonHeight);
             
             // Fill with gray background
-            comparison.Mutate(ctx => ctx.BackgroundColor(new Rgba32(128, 128, 128)));
+            comparison.Erase(new SKColor(128, 128, 128));
             
             // Draw colored label bars: Green=Expected, Blue=Actual, Red=Diff
             var actualOffsetX = maxWidth + 2;
@@ -55,9 +53,9 @@ public static class TestRenderHelper
             {
                 for (int y = 2; y < labelHeight - 2; y++)
                 {
-                    comparison[x, y] = new Rgba32(0, 180, 0, 255); // Green for Expected
-                    comparison[actualOffsetX + x, y] = new Rgba32(0, 120, 215, 255); // Blue for Actual
-                    comparison[diffOffsetX + x, y] = new Rgba32(215, 0, 0, 255); // Red for Diff
+                    comparison.SetPixel(x, y, new SKColor(0, 180, 0, 255)); // Green for Expected
+                    comparison.SetPixel(actualOffsetX + x, y, new SKColor(0, 120, 215, 255)); // Blue for Actual
+                    comparison.SetPixel(diffOffsetX + x, y, new SKColor(215, 0, 0, 255)); // Red for Diff
                 }
             }
             
@@ -66,7 +64,7 @@ public static class TestRenderHelper
             {
                 for (int x = 0; x < expected.Width; x++)
                 {
-                    comparison[x, y + labelHeight] = expected[x, y];
+                    comparison.SetPixel(x, y + labelHeight, expected.GetPixel(x, y));
                 }
             }
             
@@ -75,7 +73,7 @@ public static class TestRenderHelper
             {
                 for (int x = 0; x < actual.Width; x++)
                 {
-                    comparison[actualOffsetX + x, y + labelHeight] = actual[x, y];
+                    comparison.SetPixel(actualOffsetX + x, y + labelHeight, actual.GetPixel(x, y));
                 }
             }
             
@@ -86,32 +84,34 @@ public static class TestRenderHelper
                 {
                     for (int x = 0; x < actual.Width; x++)
                     {
-                        var p1 = actual[x, y];
-                        var p2 = expected[x, y];
+                        var p1 = actual.GetPixel(x, y);
+                        var p2 = expected.GetPixel(x, y);
                         
-                        var rDiff = Math.Abs(p1.R - p2.R);
-                        var gDiff = Math.Abs(p1.G - p2.G);
-                        var bDiff = Math.Abs(p1.B - p2.B);
+                        var rDiff = Math.Abs(p1.Red - p2.Red);
+                        var gDiff = Math.Abs(p1.Green - p2.Green);
+                        var bDiff = Math.Abs(p1.Blue - p2.Blue);
                         var maxDiff = Math.Max(rDiff, Math.Max(gDiff, bDiff));
                         
                         if (maxDiff > 0)
                         {
                             // Highlight differences: amplify and show in red channel
                             var intensity = (byte)Math.Min(255, maxDiff * 4);
-                            comparison[diffOffsetX + x, y + labelHeight] = new Rgba32(intensity, 0, 0, 255);
+                            comparison.SetPixel(diffOffsetX + x, y + labelHeight, new SKColor(intensity, 0, 0, 255));
                         }
                         else
                         {
                             // No difference: show grayscale of original
-                            var gray = (byte)((p1.R + p1.G + p1.B) / 3);
-                            comparison[diffOffsetX + x, y + labelHeight] = new Rgba32(gray, gray, gray, 255);
+                            var gray = (byte)((p1.Red + p1.Green + p1.Blue) / 3);
+                            comparison.SetPixel(diffOffsetX + x, y + labelHeight, new SKColor(gray, gray, gray, 255));
                         }
                     }
                 }
             }
             
             var comparisonPath = actualPath.Replace(".out.png", ".diff.png");
-            comparison.Save(comparisonPath);
+            using var data = comparison.Encode(SKEncodedImageFormat.Png, 100);
+            using var stream = File.Create(comparisonPath);
+            data.SaveTo(stream);
         }
         catch (Exception ex)
         {
@@ -119,7 +119,17 @@ public static class TestRenderHelper
         }
     }
 
-    private static double CalculateRmse(Image<Rgba32> actual, Image<Rgba32> expected)
+    private static SKBitmap LoadImage(string path)
+    {
+        using var codec = SKCodec.Create(path) ?? throw new InvalidOperationException($"Could not decode image: {path}");
+        var info = new SKImageInfo(codec.Info.Width, codec.Info.Height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
+        return SKBitmap.Decode(codec, info);
+    }
+
+    private static SKBitmap CreateImage(int width, int height) =>
+        new(new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Unpremul));
+
+    private static double CalculateRmse(SKBitmap actual, SKBitmap expected)
     {
         double totalError = 0;
         int pixels = actual.Width * actual.Height;
@@ -128,12 +138,12 @@ public static class TestRenderHelper
         {
             for (int x = 0; x < actual.Width; x++)
             {
-                var p1 = actual[x, y];
-                var p2 = expected[x, y];
+                var p1 = actual.GetPixel(x, y);
+                var p2 = expected.GetPixel(x, y);
 
-                var rDiff = p1.R - p2.R;
-                var gDiff = p1.G - p2.G;
-                var bDiff = p1.B - p2.B;
+                var rDiff = p1.Red - p2.Red;
+                var gDiff = p1.Green - p2.Green;
+                var bDiff = p1.Blue - p2.Blue;
 
                 totalError += rDiff * (double)rDiff + gDiff * (double)gDiff + bDiff * (double)bDiff;
             }
