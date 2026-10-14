@@ -26,8 +26,8 @@
     <PropertyGroup>
         <!-- <AvaloniaVersion>9999.0.0-localbuild</AvaloniaVersion> -->
         <IsPackable>false</IsPackable>
-        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.1.2</AvaloniaVersion>
-        <AvaloniaWebViewVersion Condition="'$(AvaloniaWebViewVersion)' == ''">12.1.0</AvaloniaWebViewVersion>
+        <AvaloniaVersion Condition="'$(AvaloniaVersion)' == ''">12.1.4</AvaloniaVersion>
+        <AvaloniaWebViewVersion Condition="'$(AvaloniaWebViewVersion)' == ''">12.1.1</AvaloniaWebViewVersion>
         <DotNetTfm Condition="'$(DotNetTfm)' == ''">net11.0</DotNetTfm>
         <MauiSrcDirectory>$(MSBuildThisFileDirectory)/src/</MauiSrcDirectory>
         <BuildDirectory>$(MSBuildThisFileDirectory)/build/</BuildDirectory>
@@ -51,7 +51,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <MicrosoftExtensionsVersion>11.0.0-rc.1.26425.128</MicrosoftExtensionsVersion>
+        <MicrosoftExtensionsVersion>11.0.0-rc.2.26504.105</MicrosoftExtensionsVersion>
     </PropertyGroup>
 
     <!--
@@ -63,7 +63,7 @@
         items, which the SDK defines after this file is imported.
     -->
     <PropertyGroup>
-        <NativeAotPackVersion>11.0.0-rc.1.26425.128</NativeAotPackVersion>
+        <NativeAotPackVersion>11.0.0-rc.2.26504.105</NativeAotPackVersion>
     </PropertyGroup>
 
     <!--
@@ -101,7 +101,7 @@
     </Target>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net11.0'">
-        <MauiVersion>11.0.0-rc.1.26451.6</MauiVersion>
+        <MauiVersion>11.0.0-rc.2.26505.5</MauiVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(DotNetTfm)' == 'net10.0'">
@@ -160,7 +160,7 @@
         <IgnoresAccessChecksTo Include="Microsoft.Maui.Controls" />
         <IgnoresAccessChecksTo Include="Microsoft.Maui.Essentials" />
 
-        <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.8.0">
+        <PackageReference Include="IgnoresAccessChecksToGenerator" Version="1.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
         </PackageReference>
