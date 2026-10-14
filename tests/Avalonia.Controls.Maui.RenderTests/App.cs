@@ -8,9 +8,6 @@ public class App : Application
     {
         RequestedThemeVariant = ThemeVariant.Light;
         Styles.Add(new Themes.Simple.SimpleTheme());
-        Styles.Add(new Avalonia.Markup.Xaml.Styling.StyleInclude(new Uri("avares://Avalonia.Controls.Maui/Styles/Controls.axaml"))
-        {
-            Source = new Uri("avares://Avalonia.Controls.Maui/Styles/Controls.axaml")
-        });
+        Styles.Add(new ControlStyles());
     }
 }
