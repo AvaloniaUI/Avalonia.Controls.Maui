@@ -266,6 +266,7 @@
         Controls.Maps → Controls.Core, Core, Maps, Graphics, Essentials
         Controls      → Controls.Core, Controls.Xaml, Core, Graphics, Essentials
         Controls.Core → Controls.Xaml, Core, Graphics, Essentials
+        BlazorWebView → Controls.Core, Core
         Core          → Essentials
         Graphics.Skia → Graphics (standalone)
         Graphics      → (standalone)
@@ -278,11 +279,13 @@
       <_HasMauiGraphics Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Graphics'))">true</_HasMauiGraphics>
       <_HasMauiGraphicsSkia Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Graphics.Skia'))">true</_HasMauiGraphicsSkia>
       <_HasMauiControlsMaps Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.Maui.Controls.Maps'))">true</_HasMauiControlsMaps>
+      <_HasMauiBlazorWebView Condition="@(PackageReference->AnyHaveMetadataValue('Identity', 'Microsoft.AspNetCore.Components.WebView.Maui'))">true</_HasMauiBlazorWebView>
 
       <!-- Derived flags: each project added once based on who needs it -->
       <_NeedsMauiControlsCore Condition="'$(_HasMauiControlsCore)' == 'true'
                                       OR '$(_HasMauiControls)' == 'true'
-                                      OR '$(_HasMauiControlsMaps)' == 'true'">true</_NeedsMauiControlsCore>
+                                      OR '$(_HasMauiControlsMaps)' == 'true'
+                                      OR '$(_HasMauiBlazorWebView)' == 'true'">true</_NeedsMauiControlsCore>
       <_NeedsMauiCore Condition="'$(_NeedsMauiControlsCore)' == 'true'
                               OR '$(_HasMauiCore)' == 'true'
                               OR '$(_HasMauiControlsMaps)' == 'true'">true</_NeedsMauiCore>
@@ -326,6 +329,10 @@
       <ProjectReference Include="$(MauiSourcePath)/src/Core/maps/src/Maps.csproj"
                         Condition="'$(_HasMauiControlsMaps)' == 'true'" />
 
+      <!-- Blazor Hybrid -->
+      <ProjectReference Include="$(MauiSourcePath)/src/BlazorWebView/src/Maui/Microsoft.AspNetCore.Components.WebView.Maui.csproj"
+                        Condition="'$(_HasMauiBlazorWebView)' == 'true'" />
+
       <!-- Remove all MAUI PackageReferences (Remove is a no-op if not present) -->
       <PackageReference Remove="Microsoft.Maui.Controls.Core" />
       <PackageReference Remove="Microsoft.Maui.Controls" />
@@ -333,6 +340,7 @@
       <PackageReference Remove="Microsoft.Maui.Graphics" />
       <PackageReference Remove="Microsoft.Maui.Graphics.Skia" />
       <PackageReference Remove="Microsoft.Maui.Controls.Maps" />
+      <PackageReference Remove="Microsoft.AspNetCore.Components.WebView.Maui" />
 
       <!--
         ═══════════════════════════════════════════════════════════════════
@@ -458,6 +466,18 @@
   -->
   <Import Project="$(MauiSourcePath)/.buildtasks/Microsoft.Maui.Resizetizer.targets"
           Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'" />
+
+  <!-- Preserve the official Blazor Hybrid Razor/static-web-assets behavior when its
+       NuGet package is replaced by the MAUI source project above. The Razor SDK
+       fallback covers in-repo ProjectReferences, which do not import package props. -->
+  <PropertyGroup Condition="'$(MauiSourcePath)' != '' AND '$(UseMaui)' == 'true'">
+    <_ImportMauiBlazorWebViewBuildAssets
+        Condition="'$(AvaloniaControlsMauiBlazorWebViewEnabled)' == 'true' OR '$(UsingMicrosoftNETSdkRazor)' == 'true'">true</_ImportMauiBlazorWebViewBuildAssets>
+  </PropertyGroup>
+  <Import Project="$(MauiSourcePath)/src/BlazorWebView/src/Maui/build/Microsoft.AspNetCore.Components.WebView.Maui.props"
+          Condition="'$(_ImportMauiBlazorWebViewBuildAssets)' == 'true' AND Exists('$(MauiSourcePath)/src/BlazorWebView/src/Maui/build/Microsoft.AspNetCore.Components.WebView.Maui.props')" />
+  <Import Project="$(MauiSourcePath)/src/BlazorWebView/src/Maui/build/Microsoft.AspNetCore.Components.WebView.Maui.targets"
+          Condition="'$(_ImportMauiBlazorWebViewBuildAssets)' == 'true' AND Exists('$(MauiSourcePath)/src/BlazorWebView/src/Maui/build/Microsoft.AspNetCore.Components.WebView.Maui.targets')" />
 
   <!--
     When building browser projects from Avalonia source, the Avalonia.Browser NuGet
