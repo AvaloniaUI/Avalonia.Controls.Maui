@@ -9,8 +9,15 @@ public partial class AvaloniaPreferences
 {
     const string LocalStorageKey = "__avalonia_maui_preferences";
 
+    // Set while some values exist only in memory because saving failed, so a reload doesn't replace them.
+    bool _unsaved;
+
     // Other tabs of the app may have saved since the last read, so every read and write starts from localStorage.
-    partial void ReloadPreferences() => LoadPreferences();
+    partial void ReloadPreferences()
+    {
+        if (!_unsaved)
+            LoadPreferences();
+    }
 
     partial void LoadPreferences()
     {
@@ -45,10 +52,12 @@ public partial class AvaloniaPreferences
         try
         {
             LocalStorageInterop.SetItem(LocalStorageKey, json);
+            _unsaved = false;
         }
         catch (JSException)
         {
             // localStorage is unavailable or full; keep preferences in memory
+            _unsaved = true;
         }
     }
 }
