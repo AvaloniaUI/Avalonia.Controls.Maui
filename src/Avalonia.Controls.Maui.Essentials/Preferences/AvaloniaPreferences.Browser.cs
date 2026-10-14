@@ -9,29 +9,42 @@ public partial class AvaloniaPreferences
 {
     const string LocalStorageKey = "__avalonia_maui_preferences";
 
-    // Set while some values exist only in memory because saving failed, so a reload doesn't replace them.
-    bool _unsaved;
+    // Changes on every save, so reads can skip reloading when nothing changed.
+    const string VersionKey = "__avalonia_maui_preferences_version";
 
-    // Other tabs of the app may have saved since the last read, so every read and write starts from localStorage.
+    // Set when localStorage fails, so reloads don't drop values kept only in memory.
+    bool _memoryOnly;
+
+    string? _lastVersion;
+
     partial void ReloadPreferences()
     {
-        if (!_unsaved)
-            LoadPreferences();
+        if (!_memoryOnly)
+            Load(force: false);
     }
 
-    partial void LoadPreferences()
+    partial void LoadPreferences() => Load(force: true);
+
+    void Load(bool force)
     {
         try
         {
-            var json = LocalStorageInterop.GetItem(LocalStorageKey);
-            if (string.IsNullOrEmpty(json))
+            // Read the version first, since saves write it last.
+            var version = LocalStorageInterop.GetItem(VersionKey);
+            if (!force && version == _lastVersion)
                 return;
 
-            var readPreferences = JsonSerializer.Deserialize(json, AvaloniaPreferencesJsonSerializerContext.Default.PreferencesDictionary);
+            _lastVersion = version;
 
+            var json = LocalStorageInterop.GetItem(LocalStorageKey);
+            var readPreferences = string.IsNullOrEmpty(json)
+                ? null
+                : JsonSerializer.Deserialize(json, AvaloniaPreferencesJsonSerializerContext.Default.PreferencesDictionary);
+
+            // Clear even if the key is missing, so cleared site data stays cleared.
+            _preferences.Clear();
             if (readPreferences != null)
             {
-                _preferences.Clear();
                 foreach (var pair in readPreferences)
                     _preferences.TryAdd(pair.Key, pair.Value);
             }
@@ -42,7 +55,8 @@ public partial class AvaloniaPreferences
         }
         catch (JSException)
         {
-            // localStorage is unavailable, for example when the user blocks site data; keep preferences in memory
+            // localStorage is blocked, so keep preferences in memory
+            _memoryOnly = true;
         }
     }
 
@@ -52,12 +66,16 @@ public partial class AvaloniaPreferences
         try
         {
             LocalStorageInterop.SetItem(LocalStorageKey, json);
-            _unsaved = false;
+
+            var version = Guid.NewGuid().ToString("N");
+            LocalStorageInterop.SetItem(VersionKey, version);
+            _lastVersion = version;
+            _memoryOnly = false;
         }
         catch (JSException)
         {
-            // localStorage is unavailable or full; keep preferences in memory
-            _unsaved = true;
+            // localStorage is blocked or full, so keep preferences in memory
+            _memoryOnly = true;
         }
     }
 }

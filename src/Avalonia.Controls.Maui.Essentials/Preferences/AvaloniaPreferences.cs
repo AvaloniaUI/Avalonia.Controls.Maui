@@ -194,7 +194,7 @@ public partial class AvaloniaPreferences : IPreferences
 
     partial void LoadPreferences();
 
-    // Picks up values saved by another instance; implemented in the browser, where tabs share localStorage.
+    // Implemented in the browser to pick up changes from other tabs.
     partial void ReloadPreferences();
 
     partial void SavePreferences();
