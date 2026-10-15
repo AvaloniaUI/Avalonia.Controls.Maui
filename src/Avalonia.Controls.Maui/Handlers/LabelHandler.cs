@@ -37,6 +37,7 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>
         [nameof(ILabel.Background)] = MapBackground,
         [nameof(MauiLabel.TextTransform)] = MapTextTransform,
         [nameof(MauiLabel.FormattedText)] = MapFormattedText,
+        [nameof(MauiLabel.TextType)] = MapTextType,
     };
 
     /// <summary>Command mapper for <see cref="LabelHandler"/>.</summary>
@@ -86,7 +87,7 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>
     /// <param name="handler">The handler.</param>
     /// <param name="label">The virtual view.</param>
     public static void MapText(LabelHandler handler, ILabel label) =>
-        ((AvaloniaTextBlock)handler.PlatformView)?.UpdateText(label);
+        ((AvaloniaTextBlock)handler.PlatformView)?.UpdateTextOrFormattedText(label, handler);
 
     /// <summary>Maps the TextColor property to the platform view.</summary>
     /// <param name="handler">The handler.</param>
@@ -156,13 +157,28 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>
     /// <param name="handler">The handler.</param>
     /// <param name="label">The virtual view.</param>
     public static void MapTextTransform(LabelHandler handler, ILabel label) =>
-        ((AvaloniaTextBlock)handler.PlatformView)?.UpdateTextTransform(label);
+        MapTextOrFormattedText(handler, label);
 
     /// <summary>Maps the FormattedText property to the platform view.</summary>
     /// <param name="handler">The handler.</param>
     /// <param name="label">The virtual view.</param>
     public static void MapFormattedText(LabelHandler handler, ILabel label) =>
-        ((AvaloniaTextBlock)handler.PlatformView)?.UpdateFormattedText(label, handler);
+        MapTextOrFormattedText(handler, label);
+
+    /// <summary>Maps the TextType property to the platform view.</summary>
+    /// <param name="handler">The handler.</param>
+    /// <param name="label">The virtual view.</param>
+    public static void MapTextType(LabelHandler handler, ILabel label) =>
+        MapTextOrFormattedText(handler, label);
+
+    // Text, FormattedText, TextType and TextTransform produce a single render, which MapText already does while connecting.
+    static void MapTextOrFormattedText(LabelHandler handler, ILabel label)
+    {
+        if (handler.IsConnectingHandler())
+            return;
+
+        MapText(handler, label);
+    }
 }
 
 /// <summary>Extension methods for mapping MAUI Label properties to Avalonia controls.</summary>
@@ -173,7 +189,28 @@ public static class LabelTextBlockExtensions
     /// <param name="label">The MAUI label providing the text.</param>
     public static void UpdateText(this AvaloniaTextBlock textBlock, ILabel label)
     {
+        if (label is MauiLabel mauiLabel)
+        {
+            // Like MAUI, TextType.Html wins over FormattedText.
+            if (mauiLabel.TextType == TextType.Html)
+            {
+                textBlock.UpdateHtmlText(mauiLabel);
+                return;
+            }
+
+            if (mauiLabel.FormattedText != null)
+                return;
+        }
+
         textBlock.UpdateTextPlainText(label);
+    }
+
+    internal static void UpdateTextOrFormattedText(this AvaloniaTextBlock textBlock, ILabel label, LabelHandler handler)
+    {
+        if (label is MauiLabel { TextType: TextType.Text, FormattedText: not null })
+            textBlock.UpdateFormattedText(label, handler);
+        else
+            textBlock.UpdateText(label);
     }
 
     /// <summary>Updates the TextColor property on the platform view.</summary>
@@ -359,6 +396,21 @@ public static class LabelTextBlockExtensions
     internal static void DetermineTruncatedTextWrapping(this AvaloniaTextBlock textBlock) =>
         textBlock.TextWrapping = textBlock.MaxLines > 1 ? TextWrapping.Wrap : TextWrapping.NoWrap;
 
+    internal static void UpdateHtmlText(this AvaloniaTextBlock textBlock, MauiLabel label)
+    {
+        textBlock.Text = null;
+
+        if (string.IsNullOrEmpty(label.Text))
+        {
+            textBlock.Inlines?.Clear();
+            return;
+        }
+
+        var inlines = new InlineCollection();
+        inlines.AddRange(HtmlToInlinesConverter.Convert(label.Text, label.TextTransform));
+        textBlock.Inlines = inlines;
+    }
+
     internal static void UpdateTextPlainText(this AvaloniaTextBlock textBlock, ILabel label)
     {
         var text = label.Text ?? string.Empty;
@@ -397,8 +449,8 @@ public static class LabelTextBlockExtensions
             return;
         }
 
-        // Re-apply text with transform
-        textBlock.UpdateTextPlainText(label);
+        // Re-apply text (respects TextType)
+        textBlock.UpdateText(label);
     }
 
     
@@ -415,29 +467,31 @@ public static class LabelTextBlockExtensions
         }
 
         var formattedText = mauiLabel.FormattedText;
-        if (formattedText == null || formattedText.Spans.Count == 0)
+        if (formattedText == null || mauiLabel.TextType == TextType.Html)
         {
-            // Fall back to plain text if no formatted text
-            textBlock.UpdateTextPlainText(label);
+            textBlock.UpdateText(label);
             return;
         }
 
-        // Clear existing content
+        if (formattedText.Spans.Count == 0)
+        {
+            textBlock.Text = string.Empty;
+            textBlock.Inlines?.Clear();
+            return;
+        }
+
         textBlock.Text = null;
-        textBlock.Inlines?.Clear();
-
-        if (textBlock.Inlines == null)
-        {
-            return;
-        }
+        var inlines = new InlineCollection();
 
         var fontManager = handler.GetRequiredService<IFontManager>();
 
         foreach (var span in formattedText.Spans)
         {
             var run = CreateRun(span, fontManager);
-            textBlock.Inlines.Add(run);
+            inlines.Add(run);
         }
+
+        textBlock.Inlines = inlines;
     }
 
     private static Run CreateRun(MauiSpan span, IFontManager fontManager)
