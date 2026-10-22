@@ -1,6 +1,0 @@
-<Solution>
-  <Project Path="../../src/Avalonia.Controls.Maui.Desktop/Avalonia.Controls.Maui.Desktop.csproj" />
-  <Project Path="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
-  <Project Path="AlohaKit.Gallery.Browser/AlohaKit.Gallery.Browser.csproj" />
-  <Project Path="AlohaKit.Gallery/AlohaKit.Gallery.csproj" />
-</Solution>

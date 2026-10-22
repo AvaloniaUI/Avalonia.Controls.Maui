@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# run-with-trace.sh — Run a sample/showcase app and collect an EventPipe trace.
+# run-with-trace.sh — Run a sample app and collect an EventPipe trace.
 #
 # Usage:
 #   ./scripts/run-with-trace.sh <app-name> [-c Configuration] [-p Providers] [-- app args...]
@@ -64,18 +64,11 @@ PRESET_PROVIDERS=(
 # Apps marked with "multi" in APP_TFMS are multi-TFM single-project apps that
 # need -f net11.0 passed to dotnet build/msbuild.
 APP_NAMES=(
-    # Samples
     MauiSandboxApp
     AvaloniaSandboxApp
     ControlGallery
     ControlsSample
     BenchmarkApp
-    # Showcase
-    2048Game
-    AlohaKit
-    AlohaAI
-    MauiPlanets
-    WeatherTwentyOne
 )
 
 APP_PROJECTS=(
@@ -84,11 +77,6 @@ APP_PROJECTS=(
     samples/ControlGallery/ControlGallery/ControlGallery.csproj
     samples/Controls.Sample/Controls.Sample/Maui.Controls.Sample.csproj
     samples/BenchmarkApp/BenchmarkApp.Desktop/BenchmarkApp.Desktop.csproj
-    showcase/2048Game/2048Game/2048Game.csproj
-    showcase/AlohaKit.Gallery/AlohaKit.Gallery/AlohaKit.Gallery.csproj
-    showcase/AlohaAI/AlohaAI/AlohaAI.csproj
-    showcase/MauiPlanets/MauiPlanets/MauiPlanets.csproj
-    showcase/WeatherTwentyOne/WeatherTwentyOne/WeatherTwentyOne.csproj
 )
 
 # "multi" = multi-TFM project, needs -f net11.0; "single" = single-TFM, no flag needed
@@ -98,18 +86,13 @@ APP_TFMS=(
     multi
     multi
     single
-    multi
-    multi
-    multi
-    multi
-    multi
 )
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 usage() {
     echo "Usage: $0 <app-name> [-c Configuration] [-p Preset] [-- app args...]"
     echo ""
-    echo "Run a sample/showcase app and collect an EventPipe trace."
+    echo "Run a sample app and collect an EventPipe trace."
     echo "The app binary is executed directly (not via 'dotnet run') so that"
     echo "dotnet-trace captures the correct process."
     echo ""

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# run-with-dump.sh — Run a sample/showcase app and collect full process dumps with dotnet-dump.
+# run-with-dump.sh — Run a sample app and collect full process dumps with dotnet-dump.
 #
 # Unlike dotnet-gcdump (which reconstructs the heap from EventPipe events and can
 # drop data on large heaps), dotnet-dump captures a complete process dump that
@@ -33,18 +33,11 @@ DIAG_DIR="$REPO_ROOT/diagnostics"
 # Apps marked with "multi" in APP_TFMS are multi-TFM single-project apps that
 # need -f net11.0 passed to dotnet build/msbuild.
 APP_NAMES=(
-    # Samples
     MauiSandboxApp
     AvaloniaSandboxApp
     ControlGallery
     ControlsSample
     BenchmarkApp
-    # Showcase
-    2048Game
-    AlohaKit
-    AlohaAI
-    MauiPlanets
-    WeatherTwentyOne
 )
 
 APP_PROJECTS=(
@@ -53,11 +46,6 @@ APP_PROJECTS=(
     samples/ControlGallery/ControlGallery/ControlGallery.csproj
     samples/Controls.Sample/Controls.Sample/Maui.Controls.Sample.csproj
     samples/BenchmarkApp/BenchmarkApp.Desktop/BenchmarkApp.Desktop.csproj
-    showcase/2048Game/2048Game/2048Game.csproj
-    showcase/AlohaKit.Gallery/AlohaKit.Gallery/AlohaKit.Gallery.csproj
-    showcase/AlohaAI/AlohaAI/AlohaAI.csproj
-    showcase/MauiPlanets/MauiPlanets/MauiPlanets.csproj
-    showcase/WeatherTwentyOne/WeatherTwentyOne/WeatherTwentyOne.csproj
 )
 
 # "multi" = multi-TFM project, needs explicit TFM; "single" = single-TFM, no flag needed
@@ -67,18 +55,13 @@ APP_TFMS=(
     multi
     multi
     single
-    multi
-    multi
-    multi
-    multi
-    multi
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 usage() {
     echo "Usage: $0 <app-name> [-c Configuration] [-- app args...]"
     echo ""
-    echo "Run a sample/showcase app and collect full process dumps with dotnet-dump."
+    echo "Run a sample app and collect full process dumps with dotnet-dump."
     echo "The app binary is executed directly (not via 'dotnet run') so that"
     echo "dotnet-dump captures the correct process."
     echo ""
