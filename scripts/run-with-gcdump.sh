@@ -32,7 +32,6 @@ APP_NAMES=(
     MauiSandboxApp
     AvaloniaSandboxApp
     ControlGallery
-    ControlsSample
     BenchmarkApp
 )
 
@@ -40,7 +39,6 @@ APP_PROJECTS=(
     samples/MauiSandboxApp/MauiSandboxApp/MauiSandboxApp.csproj
     samples/AvaloniaSandboxApp/AvaloniaSandboxApp.csproj
     samples/ControlGallery/ControlGallery/ControlGallery.csproj
-    samples/Controls.Sample/Controls.Sample/Maui.Controls.Sample.csproj
     samples/BenchmarkApp/BenchmarkApp.Desktop/BenchmarkApp.Desktop.csproj
 )
 
@@ -48,7 +46,6 @@ APP_PROJECTS=(
 APP_TFMS=(
     multi
     single
-    multi
     multi
     single
 )
