@@ -1,3 +1,4 @@
 {
-    "dotnetTfm": "net11.0"
+    "dotnetTfm": "net11.0",
+    "dotnet.defaultSolution": "Avalonia.Controls.Maui.slnx"
 }

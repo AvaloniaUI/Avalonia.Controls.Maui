@@ -1,8 +1,0 @@
-{
-  "modules": [
-    "01-prompt-design",
-    "02-advanced-patterns",
-    "03-llm-evaluation",
-    "04-model-strategy"
-  ]
-}
