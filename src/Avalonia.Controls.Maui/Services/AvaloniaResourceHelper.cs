@@ -10,15 +10,26 @@ internal static class AvaloniaResourceHelper
     internal static bool TryResolveResourceUri(string fileName, out Uri? uri)
     {
         uri = null;
+        var resourcePath = GetResourcePath(fileName);
+
+        // MAUI images are embedded in the MAUI app's assembly. That is usually the entry assembly,
+        // but not when a separate head project (such as a browser app) starts the MAUI app.
+        var entryAssembly = System.Reflection.Assembly.GetEntryAssembly();
+        var appAssembly = Microsoft.Maui.Controls.Application.Current?.GetType().Assembly;
+
+        return TryResolveResourceUri(entryAssembly, resourcePath, out uri)
+            || (appAssembly != entryAssembly && TryResolveResourceUri(appAssembly, resourcePath, out uri));
+    }
+
+    private static bool TryResolveResourceUri(System.Reflection.Assembly? assembly, string resourcePath, out Uri? uri)
+    {
+        uri = null;
+        if (assembly == null)
+            return false;
+
         try
         {
-            var assembly = System.Reflection.Assembly.GetEntryAssembly();
-            if (assembly == null)
-                return false;
-
-            var assemblyName = assembly.GetName().Name;
-            var resourcePath = GetResourcePath(fileName);
-            var candidate = new Uri($"avares://{assemblyName}{resourcePath}");
+            var candidate = new Uri($"avares://{assembly.GetName().Name}{resourcePath}");
 
             // Verify the resource actually exists by trying to open it
             using var stream = AssetLoader.Open(candidate);

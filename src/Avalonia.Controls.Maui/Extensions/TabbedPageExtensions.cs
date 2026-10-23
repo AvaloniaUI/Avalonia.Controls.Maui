@@ -264,7 +264,7 @@ public static class TabbedPageExtensions
         {
             var services = mauiContext.Services;
             var imageSourceServiceProvider = services.GetRequiredService<IImageSourceServiceProvider>();
-            var imageSourceService = imageSourceServiceProvider.GetImageSourceService(GetImageSourceInterfaceType(imageSource));
+            var imageSourceService = imageSourceServiceProvider.ResolveImageSourceService(imageSource);
 
             if (imageSourceService is IAvaloniaImageSourceService avaloniaImageSourceService)
             {
@@ -348,15 +348,6 @@ public static class TabbedPageExtensions
             DisposeHeaderIconImages(page.Header);
         }
     }
-
-    private static Type GetImageSourceInterfaceType(ImageSource imageSource) => imageSource switch
-    {
-        IFileImageSource => typeof(IFileImageSource),
-        IFontImageSource => typeof(IFontImageSource),
-        IUriImageSource => typeof(IUriImageSource),
-        IStreamImageSource => typeof(IStreamImageSource),
-        _ => imageSource.GetType()
-    };
 
     /// <summary>
     /// Updates the selected tab to match the TabbedPage's CurrentPage property.

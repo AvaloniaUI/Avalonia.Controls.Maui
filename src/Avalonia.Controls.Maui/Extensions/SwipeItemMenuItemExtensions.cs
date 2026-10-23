@@ -126,7 +126,7 @@ public static class SwipeItemMenuItemExtensions
         try
         {
             var imageSourceServiceProvider = handler.GetRequiredService<IImageSourceServiceProvider>();
-            var serviceSource = imageSourceServiceProvider?.GetImageSourceService(menuElement.Source.GetType());
+            var serviceSource = imageSourceServiceProvider?.ResolveImageSourceService(menuElement.Source);
 
             if (serviceSource is IAvaloniaImageSourceService service)
             {

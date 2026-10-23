@@ -442,7 +442,7 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             try
             {
                 var imageSourceServiceProvider = _mauiContext.Services.GetRequiredService<IImageSourceServiceProvider>();
-                var serviceSource = imageSourceServiceProvider.GetImageSourceService(imageSource.GetType());
+                var serviceSource = imageSourceServiceProvider.ResolveImageSourceService(imageSource);
 
                 if (serviceSource is IAvaloniaImageSourceService avaloniaService)
                 {

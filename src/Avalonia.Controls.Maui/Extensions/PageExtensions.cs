@@ -27,7 +27,7 @@ public static class PageExtensions
         if (page.BackgroundImageSource != null)
         {
             var provider = mauiContext.Services.GetRequiredService<IImageSourceServiceProvider>();
-            var service = provider.GetImageSourceService(page.BackgroundImageSource);
+            var service = provider.ResolveImageSourceService(page.BackgroundImageSource);
 
             if (service != null)
             {

@@ -316,7 +316,7 @@ public static class ShellExtensions
             var provider = handler.MauiContext.Services.GetService(typeof(IImageSourceServiceProvider)) as IImageSourceServiceProvider;
             if (provider != null)
             {
-                var service = provider.GetImageSourceService(backgroundImage.GetType());
+                var service = provider.ResolveImageSourceService(backgroundImage);
 
                 if (service is IAvaloniaImageSourceService avaloniaService)
                 {
@@ -993,7 +993,7 @@ public static class ShellExtensions
         try
         {
             var imageSourceServiceProvider = handler.GetRequiredService<IImageSourceServiceProvider>();
-            var serviceSource = imageSourceServiceProvider.GetImageSourceService(imageSource.GetType());
+            var serviceSource = imageSourceServiceProvider.ResolveImageSourceService(imageSource);
 
             if (serviceSource is IAvaloniaImageSourceService avaloniaService)
             {

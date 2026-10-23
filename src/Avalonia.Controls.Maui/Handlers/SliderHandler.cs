@@ -180,7 +180,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
         try
         {
             var provider = this.GetRequiredService<IImageSourceServiceProvider>();
-            if (provider.GetImageSourceService(imageSource.GetType()) is IAvaloniaImageSourceService service)
+            if (provider.ResolveImageSourceService(imageSource) is IAvaloniaImageSourceService service)
             {
                 var result = await service.GetImageAsync(imageSource, 1.0f, token);
                 if (token.IsCancellationRequested)

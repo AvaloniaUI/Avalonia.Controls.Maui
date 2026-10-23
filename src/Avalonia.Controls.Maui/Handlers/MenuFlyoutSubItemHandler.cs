@@ -109,7 +109,7 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
         try
         {
             var imageSourceServiceProvider = handler.GetRequiredService<IImageSourceServiceProvider>();
-            var serviceSource = imageSourceServiceProvider?.GetImageSourceService(view.Source.GetType());
+            var serviceSource = imageSourceServiceProvider?.ResolveImageSourceService(view.Source);
 
             if (serviceSource is IAvaloniaImageSourceService service)
             {
