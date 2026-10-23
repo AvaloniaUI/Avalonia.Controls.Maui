@@ -6,6 +6,7 @@
     <Project Path="samples/AvaloniaSandboxApp/AvaloniaSandboxApp.csproj" />
     <Project Path="samples/BenchmarkApp/BenchmarkApp.Desktop/BenchmarkApp.Desktop.csproj" />
     <Project Path="samples/BenchmarkApp/BenchmarkApp/BenchmarkApp.csproj" />
+    <Project Path="samples/BlazorHybrid.Sample/BlazorHybrid.Sample.csproj" />
   </Folder>
   <Folder Name="/Samples/ControlGallery/">
     <Project Path="samples/ControlGallery/ControlGallery.Browser/ControlGallery.Browser.csproj" />
@@ -13,6 +14,7 @@
   </Folder>
   <Folder Name="/Source/">
     <Project Path="src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
+    <Project Path="src/Avalonia.Controls.Maui.BlazorWebView/Avalonia.Controls.Maui.BlazorWebView.csproj" />
     <Project Path="src/Avalonia.Controls.Maui.Essentials/Avalonia.Controls.Maui.Essentials.csproj" />
     <Project Path="src/Avalonia.Controls.Maui.SkiaSharp.Views/Avalonia.Controls.Maui.SkiaSharp.Views.csproj" />
     <Project Path="src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
@@ -20,6 +22,7 @@
     <Project Path="src/Avalonia.Controls.Maui.SourceGenerators/Avalonia.Controls.Maui.SourceGenerators.csproj" />
   </Folder>
   <Folder Name="/Tests/">
+    <Project Path="tests/Avalonia.Controls.Maui.BlazorWebView.Tests/Avalonia.Controls.Maui.BlazorWebView.Tests.csproj" />
     <Project Path="tests/Avalonia.Controls.Maui.RenderTests/Avalonia.Controls.Maui.RenderTests.csproj" />
     <Project Path="tests/Avalonia.Controls.Maui.Tests/Avalonia.Controls.Maui.Tests.csproj" />
     <Project Path="tests/Avalonia.Controls.Maui.Essentials.Tests/Avalonia.Controls.Maui.Essentials.Tests.csproj" />
