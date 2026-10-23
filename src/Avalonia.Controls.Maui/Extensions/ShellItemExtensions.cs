@@ -161,7 +161,7 @@ public static class ShellItemExtensions
             if (imageSourceServiceProvider == null)
                 return;
 
-            var service = imageSourceServiceProvider.GetImageSourceService(iconSource.GetType());
+            var service = imageSourceServiceProvider.ResolveImageSourceService(iconSource);
             if (service is IAvaloniaImageSourceService avaloniaService)
             {
                 var result = await avaloniaService.GetImageAsync(iconSource);
@@ -192,7 +192,7 @@ public static class ShellItemExtensions
             if (imageSourceServiceProvider == null)
                 return;
 
-            var service = imageSourceServiceProvider.GetImageSourceService(iconSource.GetType());
+            var service = imageSourceServiceProvider.ResolveImageSourceService(iconSource);
             if (service is IAvaloniaImageSourceService avaloniaService)
             {
                 var result = await avaloniaService.GetImageAsync(iconSource);

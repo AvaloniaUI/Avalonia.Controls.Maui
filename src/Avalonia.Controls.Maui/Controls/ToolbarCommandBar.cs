@@ -201,7 +201,7 @@ public class ToolbarCommandBar : StackPanel
                 return;
 
             var imageSourceServiceProvider = mauiContext.Services.GetService<IImageSourceServiceProvider>();
-            var service = imageSourceServiceProvider?.GetImageSourceService(item.IconImageSource.GetType());
+            var service = imageSourceServiceProvider?.ResolveImageSourceService(item.IconImageSource);
 
             if (service is IAvaloniaImageSourceService avaloniaService)
             {

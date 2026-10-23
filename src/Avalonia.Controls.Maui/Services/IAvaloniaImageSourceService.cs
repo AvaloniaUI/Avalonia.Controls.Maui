@@ -55,4 +55,23 @@ public static class ImageSourceServiceExtensions
         // Fallback for platform-specific services
         return null;
     }
+
+    /// <summary>
+    /// Resolves the image source service for <paramref name="imageSource"/> by its image source interface.
+    /// </summary>
+    /// <remarks>
+    /// Resolving by concrete type can return MAUI's own service (for example, <c>FileImageSourceService</c>
+    /// for <c>FileImageSource</c>) instead of the Avalonia one, and is ambiguous for <c>UriImageSource</c>,
+    /// which implements both <see cref="IUriImageSource"/> and <see cref="IStreamImageSource"/>.
+    /// More specific interfaces are checked first.
+    /// </remarks>
+    internal static IImageSourceService? ResolveImageSourceService(this IImageSourceServiceProvider provider, IImageSource imageSource) =>
+        provider.GetImageSourceService(imageSource switch
+        {
+            IFileImageSource => typeof(IFileImageSource),
+            IFontImageSource => typeof(IFontImageSource),
+            IUriImageSource => typeof(IUriImageSource),
+            IStreamImageSource => typeof(IStreamImageSource),
+            _ => imageSource.GetType()
+        });
 }
