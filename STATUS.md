@@ -497,7 +497,7 @@ Displays single-line and multi-line text.
 | TextColor | ✅ Implemented |
 | TextDecorations | ✅ Implemented |
 | TextTransform | ✅ Implemented |
-| TextType | ⏳ TODO |
+| TextType | ✅ Implemented |
 | VerticalTextAlignment | ⏳ TODO |
 
 ---
