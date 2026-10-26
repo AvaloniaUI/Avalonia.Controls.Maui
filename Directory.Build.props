@@ -63,7 +63,7 @@
         items, which the SDK defines after this file is imported.
     -->
     <PropertyGroup>
-        <NativeAotPackVersion>11.0.0-rc.2.26504.105</NativeAotPackVersion>
+        <NativeAotPackVersion>11.0.0-rc.3.26522.148</NativeAotPackVersion>
     </PropertyGroup>
 
     <!--
