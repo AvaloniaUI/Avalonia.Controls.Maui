@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# run-with-gcdump.sh — Run a sample/showcase app and collect a GC heap dump.
+# run-with-gcdump.sh — Run a sample app and collect a GC heap dump.
 #
 # Usage:
 #   ./scripts/run-with-gcdump.sh <app-name> [-c Configuration] [-- app args...]
@@ -29,31 +29,17 @@ DIAG_DIR="$REPO_ROOT/diagnostics"
 # Apps marked with "multi" in APP_TFMS are multi-TFM single-project apps that
 # need -f net11.0 passed to dotnet build/msbuild.
 APP_NAMES=(
-    # Samples
     MauiSandboxApp
     AvaloniaSandboxApp
     ControlGallery
-    ControlsSample
     BenchmarkApp
-    # Showcase
-    2048Game
-    AlohaKit
-    AlohaAI
-    MauiPlanets
-    WeatherTwentyOne
 )
 
 APP_PROJECTS=(
     samples/MauiSandboxApp/MauiSandboxApp/MauiSandboxApp.csproj
     samples/AvaloniaSandboxApp/AvaloniaSandboxApp.csproj
     samples/ControlGallery/ControlGallery/ControlGallery.csproj
-    samples/Controls.Sample/Controls.Sample/Maui.Controls.Sample.csproj
     samples/BenchmarkApp/BenchmarkApp.Desktop/BenchmarkApp.Desktop.csproj
-    showcase/2048Game/2048Game/2048Game.csproj
-    showcase/AlohaKit.Gallery/AlohaKit.Gallery/AlohaKit.Gallery.csproj
-    showcase/AlohaAI/AlohaAI/AlohaAI.csproj
-    showcase/MauiPlanets/MauiPlanets/MauiPlanets.csproj
-    showcase/WeatherTwentyOne/WeatherTwentyOne/WeatherTwentyOne.csproj
 )
 
 # "multi" = multi-TFM project, needs -f net11.0; "single" = single-TFM, no flag needed
@@ -61,20 +47,14 @@ APP_TFMS=(
     multi
     single
     multi
-    multi
     single
-    multi
-    multi
-    multi
-    multi
-    multi
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 usage() {
     echo "Usage: $0 <app-name> [-c Configuration] [-- app args...]"
     echo ""
-    echo "Run a sample/showcase app and collect a GC heap dump while it runs."
+    echo "Run a sample app and collect a GC heap dump while it runs."
     echo "The app binary is executed directly (not via 'dotnet run') so that"
     echo "dotnet-gcdump captures the correct process."
     echo ""

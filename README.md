@@ -6,6 +6,8 @@ This repository contains the Avalonia-based Handlers and target files for .NET M
 
 For info on how to build the project, reference our [build docs](/docs/build.md).
 
+For sample applications, visit our [sample repository](https://github.com/AvaloniaUI/avalonia-maui-samples).
+
 ## Documentation
 
 - [Configuration and Setup](/docs/config-and-setup.md)

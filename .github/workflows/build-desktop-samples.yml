@@ -12,22 +12,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Note: Controls.Sample is not included here as it is not yet NativeAOT compatible.
         app:
           - name: ControlGallery
             project: samples/ControlGallery/ControlGallery/ControlGallery.csproj
-          - name: MauiPlanets
-            project: showcase/MauiPlanets/MauiPlanets/MauiPlanets.csproj
-          - name: AlohaKit.Gallery
-            project: showcase/AlohaKit.Gallery/AlohaKit.Gallery/AlohaKit.Gallery.csproj
-          - name: 2048Game
-            project: showcase/2048Game/2048Game/2048Game.csproj
-          - name: WeatherTwentyOne
-            project: showcase/WeatherTwentyOne/WeatherTwentyOne/WeatherTwentyOne.csproj
-          - name: AlohaAI
-            project: showcase/AlohaAI/AlohaAI/AlohaAI.csproj
-          - name: MapApp
-            project: showcase/MapApp/MapApp/MapApp.csproj
 
     runs-on: ubuntu-latest
     name: ${{ matrix.app.name }} (NativeAOT)
