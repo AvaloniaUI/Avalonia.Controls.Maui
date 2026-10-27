@@ -22,6 +22,7 @@ For sample applications, visit our [sample repository](https://github.com/Avalon
 |---|---|
 | [Avalonia.Controls.Maui](/src/Avalonia.Controls.Maui/) | Core handlers for all built-in .NET MAUI controls |
 | [Avalonia.Controls.Maui.Desktop](/src/Avalonia.Controls.Maui.Desktop/) | Metapackage for desktop bootstrapping |
+| [Avalonia.Controls.Maui.BlazorWebView](/src/Avalonia.Controls.Maui.BlazorWebView/) | Blazor Hybrid handler for the official MAUI `BlazorWebView` on Avalonia `NativeWebView` |
 | [Avalonia.Controls.Maui.Essentials](/src/Avalonia.Controls.Maui.Essentials/) | Avalonia implementations of `Microsoft.Maui.Essentials` APIs |
 | [Avalonia.Controls.Maui.Compatibility](/src/Avalonia.Controls.Maui.Compatibility/) | Handlers for deprecated MAUI controls (`Frame`, `ListView`, `TableView`) |
 | [Avalonia.Controls.Maui.SkiaSharp.Views](/src/Avalonia.Controls.Maui.SkiaSharp.Views/) | Avalonia handlers for `SKCanvasView` and `SKGLView` |

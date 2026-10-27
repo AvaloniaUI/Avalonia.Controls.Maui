@@ -1,0 +1,13 @@
+<Project>
+  <Target Name="_AvaloniaControlsMauiBlazorWebViewRequireMauiBlazorWebViewPackage"
+          BeforeTargets="ResolveStaticWebAssetsInputs"
+          Condition="'$(DesignTimeBuild)' != 'true' and '$(UseMaui)' == 'true' and '$(MauiSourcePath)' == ''">
+    <ItemGroup>
+      <_AvaloniaControlsMauiOfficialBlazorWebViewPackage Include="@(PackageReference)"
+          Condition="'%(PackageReference.Identity)' == 'Microsoft.AspNetCore.Components.WebView.Maui'" />
+    </ItemGroup>
+
+    <Error Condition="'@(_AvaloniaControlsMauiOfficialBlazorWebViewPackage)' == ''"
+           Text="Projects using Avalonia.Controls.Maui.BlazorWebView must also reference Microsoft.AspNetCore.Components.WebView.Maui directly so the official Blazor Hybrid static web assets targets run." />
+  </Target>
+</Project>
