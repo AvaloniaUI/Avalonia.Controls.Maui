@@ -1,6 +1,7 @@
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Avalonia.Headless.XUnit;
+using Avalonia.VisualTree;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using MauiCheckBoxHandler = Avalonia.Controls.Maui.Handlers.CheckBoxHandler;
@@ -18,6 +19,56 @@ public partial class CheckBoxHandlerTests : HandlerTestBase<MauiCheckBoxHandler,
         };
 
         await ValidatePropertyInitValue(checkBox, () => checkBox.IsChecked, GetNativeIsChecked, checkBox.IsChecked);
+    }
+
+    [AvaloniaFact(DisplayName = "Box Is Vertically Centered When Taller Than Template")]
+    public async Task BoxIsVerticallyCenteredWhenTallerThanTemplate()
+    {
+        var checkBox = new CheckBoxStub
+        {
+            Height = Microsoft.Maui.Primitives.Dimension.Unset,
+            MinimumHeight = 44
+        };
+
+        var handler = await CreateHandlerAsync(checkBox);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            // ACM apps use the Fluent theme by default; the test app uses the Simple theme
+            var fluent = new Avalonia.Themes.Fluent.FluentTheme();
+            Assert.True(fluent.TryGetResource(typeof(CheckBox), null, out var theme));
+
+            var platformView = handler.PlatformView;
+            platformView.Theme = (Avalonia.Styling.ControlTheme)theme!;
+            var window = new Window
+            {
+                Width = 200,
+                Height = 200,
+                Content = new Avalonia.Controls.Canvas { Children = { platformView } }
+            };
+            window.Styles.Add(fluent);
+            window.Show();
+
+            try
+            {
+                platformView.Measure(new global::Avalonia.Size(100, 44));
+                platformView.Arrange(new global::Avalonia.Rect(0, 0, 100, 44));
+
+                Assert.Equal(44, platformView.Bounds.Height, 3);
+
+                var box = platformView.GetVisualDescendants()
+                    .OfType<Border>()
+                    .Single(b => b.Name == "NormalRectangle");
+                var boxTop = box.TranslatePoint(new global::Avalonia.Point(0, 0), platformView)!.Value.Y;
+                var boxCenter = boxTop + box.Bounds.Height / 2;
+
+                Assert.Equal(platformView.Bounds.Height / 2, boxCenter, 1);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
     }
 
     [AvaloniaTheory(DisplayName = "IsChecked Updates Correctly")]

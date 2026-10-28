@@ -53,6 +53,7 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>
     {
         base.ConnectHandler(platformView);
         platformView.IsCheckedChanged += OnIsCheckedChanged;
+        platformView.TemplateApplied += OnTemplateApplied;
     }
 
     /// <inheritdoc/>
@@ -60,6 +61,7 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>
     {
         base.DisconnectHandler(platformView);
         platformView.IsCheckedChanged -= OnIsCheckedChanged;
+        platformView.TemplateApplied -= OnTemplateApplied;
     }
 
     void OnIsCheckedChanged(object? sender, Interactivity.RoutedEventArgs e)
@@ -68,6 +70,12 @@ public class CheckBoxHandler : ViewHandler<ICheckBox, PlatformView>
         {
             VirtualView.IsChecked = platformView.IsChecked ?? false;
         }
+    }
+
+    static void OnTemplateApplied(object? sender, Primitives.TemplateAppliedEventArgs e)
+    {
+        if (e.NameScope.Find<Border>("NormalRectangle")?.Parent is Layout.Layoutable boxArea)
+            boxArea.VerticalAlignment = Layout.VerticalAlignment.Center;
     }
 
     /// <summary>Gets a value indicating whether this handler requires a container view.</summary>
