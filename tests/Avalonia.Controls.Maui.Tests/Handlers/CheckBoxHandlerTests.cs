@@ -36,6 +36,23 @@ public partial class CheckBoxHandlerTests : HandlerTestBase<MauiCheckBoxHandler,
         });
     }
 
+    [AvaloniaFact(DisplayName = "A Foreground Paint Without A Color Removes The Box Colors")]
+    public async Task ForegroundPaintWithoutColorRemovesBoxColors()
+    {
+        var checkBox = new CheckBoxStub { Foreground = new SolidPaint(Colors.Red) };
+        var handler = await CreateHandlerAsync(checkBox);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            checkBox.Foreground = new SolidPaint();
+            handler.UpdateValue(nameof(ICheckBox.Foreground));
+
+            Assert.False(handler.PlatformView.Resources.ContainsKey("CheckBoxCheckBackgroundFillChecked"));
+            Assert.False(handler.PlatformView.IsSet(Avalonia.Controls.Primitives.TemplatedControl.ForegroundProperty));
+            Assert.False(handler.PlatformView.IsSet(Avalonia.Controls.Primitives.TemplatedControl.BorderBrushProperty));
+        });
+    }
+
     [AvaloniaFact(DisplayName = "IsChecked Initializes Correctly")]
     public async Task IsCheckedInitializesCorrectly()
     {

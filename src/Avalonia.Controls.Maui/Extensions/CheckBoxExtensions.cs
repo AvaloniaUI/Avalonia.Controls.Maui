@@ -21,22 +21,20 @@ public static class CheckBoxExtensions
 
     /// <summary>
     /// Updates the foreground and border brush of the Avalonia CheckBox from the MAUI ICheckBox.
-    /// Clears the properties if no foreground is specified.
+    /// Clears the properties if no foreground is specified, or if it does not convert to a brush.
     /// </summary>
     /// <param name="platformView">The Avalonia CheckBox control to update.</param>
     /// <param name="virtualCheckBox">The .NET MAUI ICheckBox providing the foreground brush.</param>
     public static void UpdateForeground(this PlatformView platformView, ICheckBox virtualCheckBox)
     {
-        if (virtualCheckBox.Foreground != null)
+        // A paint that gives no brush, such as a solid paint without a color, is treated as no foreground
+        var brush = virtualCheckBox.Foreground?.ToPlatform();
+        if (brush != null)
         {
-            var brush = virtualCheckBox.Foreground.ToPlatform();
             platformView.BorderBrush = brush;
             platformView.Foreground = brush;
-            if (brush != null)
-            {
-                foreach (var key in TintColorResourceKeys)
-                    platformView.Resources[key] = brush;
-            }
+            foreach (var key in TintColorResourceKeys)
+                platformView.Resources[key] = brush;
         }
         else
         {
