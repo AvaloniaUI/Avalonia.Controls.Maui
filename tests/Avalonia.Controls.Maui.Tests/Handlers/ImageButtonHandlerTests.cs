@@ -117,6 +117,42 @@ public partial class ImageButtonHandlerTests : HandlerTestBase<MauiImageButtonHa
         Assert.Equal(bottom, platformPadding.Bottom);
     }
 
+    [AvaloniaFact(DisplayName = "Zero Padding Is Applied")]
+    public async Task ZeroPaddingIsApplied()
+    {
+        var imageButton = new ImageButtonStub { Padding = new MauiThickness(0) };
+
+        // The theme's padding only applies once the button is in a window
+        var platformPadding = await GetValueAsync(imageButton, handler => InWindow(handler, () => GetPlatformPadding(handler)));
+
+        Assert.Equal(new MauiThickness(0), platformPadding);
+    }
+
+    [AvaloniaFact(DisplayName = "Unset Padding Keeps The Theme Padding")]
+    public async Task UnsetPaddingKeepsThemePadding()
+    {
+        var imageButton = new ImageButtonStub { Padding = new MauiThickness(double.NaN) };
+
+        var platformPadding = await GetValueAsync(imageButton, handler => InWindow(handler, () => GetPlatformPadding(handler)));
+
+        Assert.NotEqual(new MauiThickness(0), platformPadding);
+    }
+
+    static T InWindow<T>(MauiImageButtonHandler handler, Func<T> read)
+    {
+        var window = new Window { Content = handler.PlatformView };
+        window.Show();
+        window.UpdateLayout();
+        try
+        {
+            return read();
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
     [AvaloniaFact(DisplayName = "Uniform Padding Works")]
     public async Task UniformPaddingWorks()
     {
