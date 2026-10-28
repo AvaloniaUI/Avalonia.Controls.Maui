@@ -59,7 +59,26 @@ public class SKViewControlTouchTests
         Assert.Empty(touches);
     }
 
-    static List<SKTouchEventArgs> HostAndRecord(string controlType, Action<Window> input, bool enableTouchEvents = true)
+    [AvaloniaTheory(DisplayName = "Touch locations are in pixels at a render scaling of 2")]
+    [InlineData(nameof(SKCanvasViewControl), false, 40f)]
+    [InlineData(nameof(SKCanvasViewControl), true, 20f)]
+    [InlineData(nameof(SKGLViewControl), false, 40f)]
+    [InlineData(nameof(SKGLViewControl), true, 20f)]
+    public void TouchLocationsAreInPixelsAtScaling2(string controlType, bool ignorePixelScaling, float expected)
+    {
+        var touches = HostAndRecord(controlType, window =>
+        {
+            window.MouseMove(new Point(20, 20));
+            window.MouseDown(new Point(20, 20), MouseButton.Left);
+            window.MouseUp(new Point(20, 20), MouseButton.Left);
+        }, scaling: 2, ignorePixelScaling: ignorePixelScaling);
+
+        Assert.NotEmpty(touches);
+        Assert.All(touches, t => Assert.Equal(new global::SkiaSharp.SKPoint(expected, expected), t.Location));
+    }
+
+    static List<SKTouchEventArgs> HostAndRecord(string controlType, Action<Window> input, bool enableTouchEvents = true,
+        double scaling = 1, bool ignorePixelScaling = false)
     {
         var touches = new List<SKTouchEventArgs>();
         Func<SKTouchEventArgs, bool> record = args =>
@@ -70,8 +89,8 @@ public class SKViewControlTouchTests
 
         // The handlers always set a paint action; without one the control draws nothing to hit test
         Control control = controlType == nameof(SKCanvasViewControl)
-            ? new SKCanvasViewControl { EnableTouchEvents = enableTouchEvents, TouchAction = record, PaintSurfaceAction = _ => { } }
-            : new SKGLViewControl { EnableTouchEvents = enableTouchEvents, TouchAction = record, PaintSurfaceAction = _ => { } };
+            ? new SKCanvasViewControl { EnableTouchEvents = enableTouchEvents, TouchAction = record, PaintSurfaceAction = _ => { }, IgnorePixelScaling = ignorePixelScaling }
+            : new SKGLViewControl { EnableTouchEvents = enableTouchEvents, TouchAction = record, PaintSurfaceAction = _ => { }, IgnorePixelScaling = ignorePixelScaling };
         control.Width = 100;
         control.Height = 100;
         control.HorizontalAlignment = Layout.HorizontalAlignment.Left;
@@ -81,16 +100,19 @@ public class SKViewControlTouchTests
         window.Show();
         try
         {
+            if (scaling != 1)
+                window.SetRenderScaling(scaling);
             window.UpdateLayout();
             // Input is hit tested against the composited scene, so render a frame first
             window.CaptureRenderedFrame();
             input(window);
+
+            // Closing the window raises an Exited of its own, which is not part of the test input
+            return touches.ToList();
         }
         finally
         {
             window.Close();
         }
-
-        return touches;
     }
 }
