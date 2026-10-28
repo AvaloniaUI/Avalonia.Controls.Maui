@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using SkiaSharp.Views.Maui.Controls;
@@ -6,7 +7,8 @@ namespace ControlGallery.Pages;
 
 public partial class SkiaSharpPage : ContentPage
 {
-    private readonly Dictionary<object, SKTouchEventArgs> _lastTouches = new();
+    // Written on the UI thread and read by SKGLView, which paints on the render thread
+    private readonly ConcurrentDictionary<object, SKTouchEventArgs> _lastTouches = new();
     private IDispatcherTimer? _animationTimer;
     private float _animationAngle;
     private int _paintCount;
