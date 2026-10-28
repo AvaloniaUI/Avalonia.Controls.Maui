@@ -96,6 +96,7 @@ public class ImageRenderTests : RenderTestBase
         };
 
         await RenderToFile(control);
-        CompareImages();
+        // The glyph is drawn into a bitmap of its own, which is hinted on Linux and not on macOS
+        CompareImages(tolerance: 0.03);
     }
 }
