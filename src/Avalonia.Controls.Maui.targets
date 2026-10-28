@@ -154,7 +154,7 @@
   </Target>
 
   <Target Name="ConvertMauiAssetsToAvaloniaResources"
-          BeforeTargets="GenerateAvaloniaResources;CoreCompile"
+          BeforeTargets="AddAvaloniaResources"
           Condition="'@(MauiAsset)' != ''">
     <ItemGroup>
       <AvaloniaResource Include="@(MauiAsset)">
