@@ -175,6 +175,52 @@ public class SKCanvasViewControlPaintTests
         }
     }
 
+    [AvaloniaFact(DisplayName = "Removing the canvas during its paint lets the paint finish and paints it again when added back")]
+    public void RemovingDuringPaintLetsPaintFinish()
+    {
+        // The first paint removes the canvas from its window and then keeps drawing
+        var paintCount = 0;
+        Window? window = null;
+        var control = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = e =>
+            {
+                if (++paintCount == 1)
+                    window!.Content = null;
+
+                using var paint = new SKPaint { Color = SKColors.Red };
+                e.Surface.Canvas.DrawRect(0, 0, e.Info.Width, e.Info.Height, paint);
+            },
+        };
+        control.HorizontalAlignment = Layout.HorizontalAlignment.Left;
+        control.VerticalAlignment = Layout.VerticalAlignment.Top;
+
+        window = new Window { Width = 200, Height = 200, Background = Avalonia.Media.Brushes.White, Content = control };
+        window.Show();
+        try
+        {
+            window.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(1, paintCount);
+            Assert.Null(window.Content);
+
+            window.Content = control;
+            window.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(2, paintCount);
+
+            using var frame = window.CaptureRenderedFrame()!;
+            using var locked = frame.Lock();
+            Assert.Equal(Avalonia.Media.Colors.Red, GetPixel(locked, 50, 25));
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
     [AvaloniaFact(DisplayName = "A paint requested before the canvas is removed from the window does not run")]
     public void PaintRequestedBeforeRemovalDoesNotRun()
     {

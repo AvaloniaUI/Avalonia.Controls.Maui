@@ -107,7 +107,10 @@ public class SKCanvasViewControl : Control
         }
 
         StopWatchingAncestors();
-        _bitmap?.Dispose();
+
+        // A bitmap that is being painted is disposed by the paint once it is done with it
+        if (!_painting)
+            _bitmap?.Dispose();
         _bitmap = null;
     }
 
@@ -161,7 +164,25 @@ public class SKCanvasViewControl : Control
                 AlphaFormat.Premul);
         }
 
-        using (var framebuffer = _bitmap.Lock())
+        var bitmap = _bitmap;
+        try
+        {
+            PaintBitmap(bitmap, PaintSurfaceAction, pixelSize, viewSize, scaling);
+        }
+        finally
+        {
+            // The canvas left the window during the paint
+            if (bitmap != _bitmap)
+                bitmap.Dispose();
+        }
+
+        InvalidateVisual();
+    }
+
+    private void PaintBitmap(WriteableBitmap bitmap, Action<SKPaintSurfaceEventArgs> paintSurface,
+        PixelSize pixelSize, PixelSize viewSize, double scaling)
+    {
+        using (var framebuffer = bitmap.Lock())
         {
             var colorType = framebuffer.Format == PixelFormat.Rgba8888 ? SKColorType.Rgba8888 : SKColorType.Bgra8888;
             var rawInfo = new SKImageInfo(pixelSize.Width, pixelSize.Height, colorType, SKAlphaType.Premul);
@@ -184,7 +205,7 @@ public class SKCanvasViewControl : Control
             _painting = true;
             try
             {
-                PaintSurfaceAction(new SKPaintSurfaceEventArgs(surface, info, rawInfo));
+                paintSurface(new SKPaintSurfaceEventArgs(surface, info, rawInfo));
             }
             finally
             {
@@ -192,8 +213,6 @@ public class SKCanvasViewControl : Control
             }
             surface.Flush();
         }
-
-        InvalidateVisual();
     }
 
     // A hidden ancestor keeps the canvas from being seen, so it is painted once the ancestors
