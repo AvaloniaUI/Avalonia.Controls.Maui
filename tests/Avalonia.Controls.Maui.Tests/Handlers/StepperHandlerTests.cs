@@ -7,6 +7,72 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public class StepperHandlerTests : HandlerTestBase<MauiStepperHandler, StepperStub>
 {
+    [AvaloniaFact(DisplayName = "Buttons keep the theme background without a stepper background")]
+    public async Task ButtonsKeepThemeBackgroundWithoutStepperBackground()
+    {
+        var stepper = new StepperStub();
+        var handler = await CreateHandlerAsync(stepper);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            using var host = ShowInWindow(handler);
+            foreach (var button in GetButtons(handler))
+            {
+                Assert.False(HasLocalBackground(button));
+                var brush = Assert.IsAssignableFrom<Avalonia.Media.ISolidColorBrush>(button.Background);
+                Assert.NotEqual(0, brush.Color.A);
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Stepper background colors both buttons and can be cleared")]
+    public async Task StepperBackgroundColorsButtonsAndCanBeCleared()
+    {
+        var stepper = new StepperStub { Background = new Microsoft.Maui.Graphics.SolidPaint(Microsoft.Maui.Graphics.Colors.Red) };
+        var handler = await CreateHandlerAsync(stepper);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            using var host = ShowInWindow(handler);
+            foreach (var button in GetButtons(handler))
+            {
+                var brush = Assert.IsAssignableFrom<Avalonia.Media.ISolidColorBrush>(button.Background);
+                Assert.Equal(Avalonia.Media.Colors.Red, brush.Color);
+            }
+
+            stepper.Background = null;
+            handler.UpdateValue(nameof(Microsoft.Maui.IView.Background));
+
+            foreach (var button in GetButtons(handler))
+                Assert.False(HasLocalBackground(button));
+        });
+    }
+
+    // The stepper's template comes from the app's styles, which apply once it is in a window
+    static IDisposable ShowInWindow(MauiStepperHandler handler)
+    {
+        var window = new Window { Content = GetPlatformStepper(handler) };
+        window.Show();
+        window.UpdateLayout();
+        return new WindowCloser(window);
+    }
+
+    sealed class WindowCloser(Window window) : IDisposable
+    {
+        public void Dispose() => window.Close();
+    }
+
+    static bool HasLocalBackground(Button button) =>
+        Avalonia.Diagnostics.AvaloniaObjectExtensions.GetDiagnostic(button, Button.BackgroundProperty).Priority == Avalonia.Data.BindingPriority.LocalValue;
+
+    static IEnumerable<Button> GetButtons(MauiStepperHandler handler)
+    {
+        var stepper = GetPlatformStepper(handler);
+        var buttons = Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(stepper).OfType<Button>().ToList();
+        Assert.Equal(2, buttons.Count);
+        return buttons;
+    }
+
     [AvaloniaFact(DisplayName = "Minimum initializes correctly")]
     public async Task MinimumInitializesCorrectly()
     {
