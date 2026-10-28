@@ -84,7 +84,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
     /// <param name="layout">The associated <see cref="ILayout"/> instance.</param>
     public static void MapInputTransparent(LayoutHandler handler, ILayout layout)
     {
-        if (handler.PlatformView is LayoutPanel layoutPanel)
+        if (handler.PlatformView is Avalonia.Controls.Maui.Platform.LayoutPanel layoutPanel)
             layoutPanel.InputTransparent = layout.InputTransparent;
         else
             ViewHandler.MapInputTransparent(handler, layout);
