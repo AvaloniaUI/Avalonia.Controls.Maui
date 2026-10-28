@@ -32,6 +32,32 @@ namespace Avalonia.Controls.Maui.Controls
         }
 
         /// <inheritdoc/>
+        protected override Size ArrangeOverride(Size finalSize)
+        {
+            var size = base.ArrangeOverride(finalSize);
+            UpdateClipToBounds(size);
+            return size;
+        }
+
+        // Text is measured by advance width, which glyphs such as italic letters, a hooked f or
+        // a script flourish draw past. Text that fits is not clipped, so those glyphs are drawn
+        // whole; text that does not fit is clipped to the label's bounds.
+        private void UpdateClipToBounds(Size size)
+        {
+            // Allows for layout rounding
+            const double tolerance = 0.5;
+
+            var padding = Padding;
+            var fits = TextLayout.WidthIncludingTrailingWhitespace + padding.Left + padding.Right <= size.Width + tolerance
+                && TextLayout.Height + padding.Top + padding.Bottom <= size.Height + tolerance;
+
+            if (fits)
+                ClipToBounds = false;
+            else
+                ClearValue(ClipToBoundsProperty);
+        }
+
+        /// <inheritdoc/>
         protected override void RenderTextLayout(DrawingContext context, Point origin)
         {
             var space = Bounds.Height - Padding.Top - Padding.Bottom - TextLayout.Height;
