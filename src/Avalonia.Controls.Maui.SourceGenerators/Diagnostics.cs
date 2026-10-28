@@ -20,6 +20,15 @@ internal static class Diagnostics
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true);
 
+    public static readonly DiagnosticDescriptor PortableViewHandler = new(
+        id: "ACMSG004",
+        title: "Handler derives from the .NET MAUI ViewHandler",
+        messageFormat: "'{0}' derives from Microsoft.Maui.Handlers.ViewHandler<{1}, {2}>, which does not measure or arrange its Avalonia control or map view properties to it, so the control does not appear. Derive from Avalonia.Controls.Maui.Handlers.ViewHandler<{1}, {2}> instead.",
+        category: "Avalonia.Controls.Maui",
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        helpLinkUri: "https://github.com/AvaloniaUI/Avalonia.Controls.Maui/blob/main/docs/config-and-setup.md#create-a-handler");
+
     public static readonly DiagnosticDescriptor BootstrapGenerated = new(
         id: "ACMSG003",
         title: "Bootstrap code generated",

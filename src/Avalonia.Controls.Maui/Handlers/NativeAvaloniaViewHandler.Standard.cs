@@ -9,6 +9,8 @@ namespace Avalonia.Controls.Maui.Handlers
     /// <summary>
     /// A handler that connects the AvaloniaView control to its platform-specific implementations, allowing Avalonia content to be hosted within a .NET MAUI application across multiple platforms.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Avalonia.Controls.Maui", "ACMSG004",
+        Justification = "This handler hosts an AvaloniaView in a native .NET MAUI element, so its base is the platform's .NET MAUI ViewHandler. Apps that run on Avalonia use AvaloniaViewHandler instead.")]
     public partial class NativeAvaloniaViewHandler : Microsoft.Maui.Handlers.ViewHandler<AvaloniaView, Avalonia.Controls.Maui.Platforms.Standard.MauiAvaloniaView>
     {
         /// <summary>
