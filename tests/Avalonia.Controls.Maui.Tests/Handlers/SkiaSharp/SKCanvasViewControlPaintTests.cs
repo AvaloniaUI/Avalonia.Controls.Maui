@@ -314,6 +314,9 @@ public class SKCanvasViewControlPaintTests
         var second = new Window { Width = 200, Height = 200, Background = Avalonia.Media.Brushes.White };
         first.Show();
         second.Show();
+
+        // The window the canvas ends up in
+        var target = second;
         try
         {
             first.UpdateLayout();
@@ -332,7 +335,7 @@ public class SKCanvasViewControlPaintTests
                 case "AnimatingSameWindow":
                     parent.Child = null;
                     parent.Child = control;
-                    second = first;
+                    target = first;
                     break;
                 case "PaintQueued":
                     control.InvalidateCanvas();
@@ -361,14 +364,14 @@ public class SKCanvasViewControlPaintTests
                     AvaloniaHeadlessPlatform.ForceRenderTimerTick();
                     Dispatcher.UIThread.RunJobs();
                     Assert.Same(otherParent, control.Parent);
-                    second = first;
+                    target = first;
                     break;
             }
 
-            if (second != first && second.Content == null)
+            if (target == second && second.Content == null)
                 second.Content = control;
-            second.Background = Avalonia.Media.Brushes.White;
-            second.UpdateLayout();
+            target.Background = Avalonia.Media.Brushes.White;
+            target.UpdateLayout();
 
             var paintsBefore = paintCount;
             for (var i = 0; i < 3; i++)
@@ -382,7 +385,7 @@ public class SKCanvasViewControlPaintTests
             if (animating)
                 Assert.True(paintCount - paintsBefore >= 3, $"{paintCount - paintsBefore} paints in 3 frames");
 
-            using (var frame = second.CaptureRenderedFrame()!)
+            using (var frame = target.CaptureRenderedFrame()!)
             using (var locked = frame.Lock())
                 Assert.Equal(Avalonia.Media.Colors.Red, GetPixel(locked, 50, 25));
 
