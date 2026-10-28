@@ -19,6 +19,7 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
         [nameof(IScrollView.HorizontalScrollBarVisibility)] = MapHorizontalScrollBarVisibility,
         [nameof(IScrollView.VerticalScrollBarVisibility)] = MapVerticalScrollBarVisibility,
         [nameof(IScrollView.Orientation)] = MapOrientation,
+        [nameof(IPadding.Padding)] = MapPadding,
     };
 
     /// <summary>Command mapper for <see cref="ScrollViewHandler"/>.</summary>
@@ -127,6 +128,19 @@ public partial class ScrollViewHandler : ViewHandler<IScrollView, ScrollViewer>
         if (handler.PlatformView is ScrollViewer platformView)
         {
             platformView.UpdateOrientation(scrollView);
+            UpdateContentSize(scrollView, platformView);
+        }
+    }
+
+    /// <summary>Maps the Padding property to the platform view.</summary>
+    /// <param name="handler">The handler for the scroll view.</param>
+    /// <param name="scrollView">The virtual scroll view.</param>
+    /// <remarks>The padding insets the content inside the scrollable area, so it scrolls with the content.</remarks>
+    public static void MapPadding(ScrollViewHandler handler, IScrollView scrollView)
+    {
+        if (handler.PlatformView is ScrollViewer platformView)
+        {
+            platformView.Padding = scrollView.Padding.ToPlatform();
             UpdateContentSize(scrollView, platformView);
         }
     }

@@ -63,6 +63,47 @@ public class ScrollViewHandlerTests : HandlerTestBase<ScrollViewHandler, ScrollV
         });
     }
 
+    [AvaloniaFact(DisplayName = "Padding Insets The Scrollable Content")]
+    public async Task PaddingInsetsScrollableContent()
+    {
+        var content = new Microsoft.Maui.Controls.BoxView
+        {
+            HeightRequest = 300,
+            VerticalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+        };
+        var scrollView = new Microsoft.Maui.Controls.ScrollView
+        {
+            Padding = new Microsoft.Maui.Thickness(20),
+            Content = content,
+        };
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<ScrollViewHandler>(scrollView);
+            var window = new Window { Width = 200, Height = 200, Content = handler.PlatformView };
+            window.Show();
+            window.UpdateLayout();
+            try
+            {
+                var platformContent = (Control)content.Handler!.PlatformView!;
+                var position = platformContent.TranslatePoint(default, handler.PlatformView)!.Value;
+
+                Assert.Equal(20, position.X, 1);
+                Assert.Equal(20, position.Y, 1);
+                Assert.Equal(340, handler.PlatformView.Extent.Height, 1);
+
+                scrollView.Padding = new Microsoft.Maui.Thickness(0);
+                window.UpdateLayout();
+
+                Assert.Equal(0, platformContent.TranslatePoint(default, handler.PlatformView)!.Value.Y, 1);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
     [AvaloniaFact(DisplayName = "Scroll Bars Update Correctly")]
     public async Task ScrollBarsUpdateCorrectly()
     {
