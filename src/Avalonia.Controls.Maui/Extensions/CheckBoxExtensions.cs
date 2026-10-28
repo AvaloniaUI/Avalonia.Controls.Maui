@@ -32,13 +32,41 @@ public static class CheckBoxExtensions
             var brush = virtualCheckBox.Foreground.ToPlatform();
             platformView.BorderBrush = brush;
             platformView.Foreground = brush;
+            if (brush != null)
+            {
+                foreach (var key in TintColorResourceKeys)
+                    platformView.Resources[key] = brush;
+            }
         }
         else
         {
             platformView.ClearValue(TemplatedControl.BorderBrushProperty);
             platformView.ClearValue(TemplatedControl.ForegroundProperty);
+            foreach (var key in TintColorResourceKeys)
+                platformView.Resources.Remove(key);
         }
     }
+
+    // The Fluent template draws the box's stroke and checked fill from these resources
+    static readonly string[] TintColorResourceKeys =
+    {
+        "CheckBoxCheckBackgroundFillChecked",
+        "CheckBoxCheckBackgroundFillCheckedPointerOver",
+        "CheckBoxCheckBackgroundFillCheckedPressed",
+        "CheckBoxCheckBackgroundFillCheckedDisabled",
+        "CheckBoxCheckBackgroundStrokeUnchecked",
+        "CheckBoxCheckBackgroundStrokeUncheckedPointerOver",
+        "CheckBoxCheckBackgroundStrokeUncheckedPressed",
+        "CheckBoxCheckBackgroundStrokeUncheckedDisabled",
+        "CheckBoxCheckBackgroundStrokeChecked",
+        "CheckBoxCheckBackgroundStrokeCheckedPointerOver",
+        "CheckBoxCheckBackgroundStrokeCheckedPressed",
+        "CheckBoxCheckBackgroundStrokeCheckedDisabled",
+        "CheckBoxCheckBackgroundStrokeIndeterminate",
+        "CheckBoxCheckBackgroundStrokeIndeterminatePointerOver",
+        "CheckBoxCheckBackgroundStrokeIndeterminatePressed",
+        "CheckBoxCheckBackgroundStrokeIndeterminateDisabled",
+    };
 
     /// <summary>
     /// Updates the background brush of the Avalonia CheckBox from the MAUI IView.

@@ -13,6 +13,27 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, ButtonStub>
 {
+    [AvaloniaFact(DisplayName = "TextColor Applies To Every Button State")]
+    public async Task TextColorAppliesToEveryButtonState()
+    {
+        var button = new ButtonStub { Text = "Test", TextColor = Colors.Red };
+        var handler = await CreateHandlerAsync(button);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            foreach (var key in new[] { "ButtonForeground", "ButtonForegroundPointerOver", "ButtonForegroundPressed", "ButtonForegroundDisabled" })
+            {
+                var brush = Assert.IsAssignableFrom<Avalonia.Media.ISolidColorBrush>(handler.PlatformView.Resources[key]);
+                Assert.Equal(Avalonia.Media.Colors.Red, brush.Color);
+            }
+
+            button.TextColor = null!;
+            handler.UpdateValue(nameof(ITextStyle.TextColor));
+
+            Assert.False(handler.PlatformView.Resources.ContainsKey("ButtonForegroundDisabled"));
+        });
+    }
+
     [AvaloniaFact(DisplayName = "Text Initializes Correctly")]
     public async Task TextInitializesCorrectly()
     {

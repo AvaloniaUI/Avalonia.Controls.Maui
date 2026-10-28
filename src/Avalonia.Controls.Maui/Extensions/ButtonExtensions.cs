@@ -179,17 +179,25 @@ public static class ButtonExtensions
             platformView.Foreground = brush;
             if (brush != null)
             {
-                platformView.Resources["ButtonForegroundPointerOver"] = brush;
-                platformView.Resources["ButtonForegroundPressed"] = brush;
+                foreach (var key in TextColorResourceKeys)
+                    platformView.Resources[key] = brush;
             }
         }
         else
         {
             platformView.ClearValue(TemplatedControl.ForegroundProperty);
-            platformView.Resources.Remove("ButtonForegroundPointerOver");
-            platformView.Resources.Remove("ButtonForegroundPressed");
+            foreach (var key in TextColorResourceKeys)
+                platformView.Resources.Remove(key);
         }
     }
+
+    static readonly string[] TextColorResourceKeys =
+    {
+        "ButtonForeground",
+        "ButtonForegroundPointerOver",
+        "ButtonForegroundPressed",
+        "ButtonForegroundDisabled",
+    };
 
     /// <summary>
     /// Updates the character spacing (letter spacing) of the button text.

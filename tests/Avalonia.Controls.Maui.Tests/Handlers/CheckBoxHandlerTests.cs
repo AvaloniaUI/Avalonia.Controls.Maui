@@ -10,6 +10,32 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public partial class CheckBoxHandlerTests : HandlerTestBase<MauiCheckBoxHandler, CheckBoxStub>
 {
+    [AvaloniaFact(DisplayName = "Foreground Colors The Box In Every State")]
+    public async Task ForegroundColorsTheBoxInEveryState()
+    {
+        var checkBox = new CheckBoxStub { Foreground = new SolidPaint(Colors.Red) };
+        var handler = await CreateHandlerAsync(checkBox);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            foreach (var key in new[]
+            {
+                "CheckBoxCheckBackgroundStrokeUnchecked", "CheckBoxCheckBackgroundStrokeUncheckedDisabled",
+                "CheckBoxCheckBackgroundStrokeChecked", "CheckBoxCheckBackgroundStrokeIndeterminate",
+                "CheckBoxCheckBackgroundFillChecked", "CheckBoxCheckBackgroundFillCheckedPointerOver",
+            })
+            {
+                var brush = Assert.IsAssignableFrom<Avalonia.Media.ISolidColorBrush>(handler.PlatformView.Resources[key]);
+                Assert.Equal(Avalonia.Media.Colors.Red, brush.Color);
+            }
+
+            checkBox.Foreground = null;
+            handler.UpdateValue(nameof(ICheckBox.Foreground));
+
+            Assert.False(handler.PlatformView.Resources.ContainsKey("CheckBoxCheckBackgroundFillChecked"));
+        });
+    }
+
     [AvaloniaFact(DisplayName = "IsChecked Initializes Correctly")]
     public async Task IsCheckedInitializesCorrectly()
     {
