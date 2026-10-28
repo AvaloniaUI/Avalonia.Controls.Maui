@@ -47,6 +47,72 @@ public partial class CheckBoxHandlerTests : HandlerTestBase<MauiCheckBoxHandler,
         await ValidatePropertyInitValue(checkBox, () => checkBox.IsChecked, GetNativeIsChecked, checkBox.IsChecked);
     }
 
+    [AvaloniaTheory(DisplayName = "CheckBox Stays Inside A Small Grid Cell")]
+    [InlineData(-1, 20, 20)]
+    [InlineData(44, 24, 24)]
+    public async Task CheckBoxStaysInsideSmallGridCell(double minimumRequest, double column, double row)
+    {
+        var checkBox = new Microsoft.Maui.Controls.CheckBox { IsChecked = true };
+        if (minimumRequest > 0)
+        {
+            checkBox.MinimumWidthRequest = minimumRequest;
+            checkBox.MinimumHeightRequest = minimumRequest;
+        }
+        var grid = new Microsoft.Maui.Controls.Grid
+        {
+            ColumnDefinitions = new Microsoft.Maui.Controls.ColumnDefinitionCollection(new Microsoft.Maui.Controls.ColumnDefinition(column), new Microsoft.Maui.Controls.ColumnDefinition(Microsoft.Maui.GridLength.Star)),
+            RowDefinitions = new Microsoft.Maui.Controls.RowDefinitionCollection(new Microsoft.Maui.Controls.RowDefinition(row), new Microsoft.Maui.Controls.RowDefinition(Microsoft.Maui.GridLength.Star)),
+        };
+        grid.Add(checkBox);
+
+        var bounds = await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(grid);
+            var window = new Window { Width = 200, Height = 200, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                var platformView = (Control)checkBox.Handler!.PlatformView!;
+                var origin = platformView.TranslatePoint(default, (Visual)handler.PlatformView!)!.Value;
+                return new Rect(origin, platformView.Bounds.Size);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.True(bounds.X >= 0 && bounds.Y >= 0 && bounds.Right <= column + 0.01 && bounds.Bottom <= row + 0.01,
+            $"CheckBox {bounds} spills out of its {column}x{row} cell");
+    }
+
+    [AvaloniaFact(DisplayName = "MinimumWidthRequest Still Widens The CheckBox When There Is Room")]
+    public async Task MinimumWidthRequestStillWidensCheckBox()
+    {
+        var checkBox = new Microsoft.Maui.Controls.CheckBox { MinimumWidthRequest = 44 };
+        var layout = new Microsoft.Maui.Controls.HorizontalStackLayout { checkBox };
+
+        var width = await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(layout);
+            var window = new Window { Width = 200, Height = 100, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                return ((Control)checkBox.Handler!.PlatformView!).Bounds.Width;
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.True(checkBox.Frame.Width >= 44, $"CheckBox frame is {checkBox.Frame.Width} wide");
+        Assert.True(width >= 44, $"CheckBox is {width} wide");
+    }
+
     [AvaloniaFact(DisplayName = "Box Is Vertically Centered When Taller Than Template")]
     public async Task BoxIsVerticallyCenteredWhenTallerThanTemplate()
     {
