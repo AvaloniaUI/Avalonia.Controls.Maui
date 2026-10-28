@@ -375,11 +375,14 @@ public class ApplicationHandlerTests : HandlerTestBase
         }
     }
 
-    // The Avalonia application is shared by every test, so its theme is put back afterwards
+    // The Avalonia application is shared by every test, so its theme is put back afterwards. A .NET MAUI
+    // application makes itself the current application, which later tests reach through it, so the
+    // previous one is put back too.
     private async Task WithAvaloniaThemeRestored(Func<Application, Task> test)
     {
         var avaloniaApp = App.Current!;
         var original = avaloniaApp.RequestedThemeVariant;
+        var originalMauiApp = Microsoft.Maui.Controls.Application.Current;
         try
         {
             avaloniaApp.RequestedThemeVariant = ThemeVariant.Default;
@@ -389,6 +392,7 @@ public class ApplicationHandlerTests : HandlerTestBase
         finally
         {
             avaloniaApp.RequestedThemeVariant = original;
+            Microsoft.Maui.Controls.Application.Current = originalMauiApp;
         }
     }
 }
