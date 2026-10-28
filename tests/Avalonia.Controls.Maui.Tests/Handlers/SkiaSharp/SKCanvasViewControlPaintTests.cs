@@ -237,6 +237,37 @@ public class SKCanvasViewControlPaintTests
         });
     }
 
+    [AvaloniaFact(DisplayName = "The canvas is drawn at its size when a resize and a scaling change keep its pixel size")]
+    public void CanvasIsDrawnAtItsSizeWhenPixelSizeIsUnchanged()
+    {
+        var control = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = e => e.Surface.Canvas.Clear(SKColors.Red),
+        };
+
+        Host(control, window =>
+        {
+            // 100 x 50 at a scaling of 1 and 50 x 25 at a scaling of 2 are both 100 x 50 pixels.
+            // The resize is made with the scaling change so that one paint sees both.
+            window.ScalingChanged += (_, _) =>
+            {
+                control.Width = 50;
+                control.Height = 25;
+            };
+            window.SetRenderScaling(2);
+            window.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+
+            using var frame = window.CaptureRenderedFrame()!;
+            using var locked = frame.Lock();
+            Assert.Equal(Avalonia.Media.Colors.Red, GetPixel(locked, 90, 40));
+            Assert.NotEqual(Avalonia.Media.Colors.Red, GetPixel(locked, 110, 10));
+            Assert.NotEqual(Avalonia.Media.Colors.Red, GetPixel(locked, 10, 60));
+        });
+    }
+
     static void Host(SKCanvasViewControl control, Action<Window> test, double scaling = 1)
     {
         control.HorizontalAlignment = Layout.HorizontalAlignment.Left;

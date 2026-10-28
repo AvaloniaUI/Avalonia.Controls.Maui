@@ -134,12 +134,13 @@ public class SKCanvasViewControl : Control
         if (pixelSize.Width <= 0 || pixelSize.Height <= 0)
             return;
 
-        if (_bitmap == null || _bitmap.PixelSize != pixelSize)
+        var dpi = new Vector(96 * scaling, 96 * scaling);
+        if (_bitmap == null || _bitmap.PixelSize != pixelSize || _bitmap.Dpi != dpi)
         {
             _bitmap?.Dispose();
             _bitmap = new WriteableBitmap(
                 pixelSize,
-                new Vector(96 * scaling, 96 * scaling),
+                dpi,
                 SKImageInfo.PlatformColorType == SKColorType.Rgba8888 ? PixelFormat.Rgba8888 : PixelFormat.Bgra8888,
                 AlphaFormat.Premul);
         }
