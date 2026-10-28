@@ -136,6 +136,34 @@ public class SKCanvasViewControlPaintTests
         });
     }
 
+    [AvaloniaFact(DisplayName = "Invalidations from another thread before a paint are merged into one paint")]
+    public void InvalidationsFromAnotherThreadAreMerged()
+    {
+        var paintCount = 0;
+        var control = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = _ => paintCount++,
+        };
+
+        Host(control, window =>
+        {
+            paintCount = 0;
+
+            var thread = new Thread(() =>
+            {
+                for (var i = 0; i < 5; i++)
+                    control.InvalidateCanvas();
+            });
+            thread.Start();
+            thread.Join();
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Equal(1, paintCount);
+        });
+    }
+
     [AvaloniaFact(DisplayName = "Input is handled before a paint requested from another thread")]
     public void InputIsHandledBeforePaintFromAnotherThread()
     {

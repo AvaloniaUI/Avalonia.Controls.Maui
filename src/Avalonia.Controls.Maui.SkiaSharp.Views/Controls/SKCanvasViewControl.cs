@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -27,6 +28,7 @@ public class SKCanvasViewControl : Control
     private TopLevel? _topLevel;
     private bool _paintPending;
     private bool _painting;
+    private int _invalidateQueued;
     private List<Visual>? _watchedAncestors;
 
     /// <summary>
@@ -68,10 +70,12 @@ public class SKCanvasViewControl : Control
     /// </summary>
     public void InvalidateCanvas()
     {
-        // Below input, so a thread that keeps invalidating the canvas cannot hold up input
+        // Below input, so a thread that keeps invalidating the canvas cannot hold up input. One
+        // request at a time is queued, so a burst of requests is merged into one paint.
         if (!Dispatcher.CheckAccess())
         {
-            Dispatcher.Post(InvalidateCanvas, DispatcherPriority.Background);
+            if (Interlocked.Exchange(ref _invalidateQueued, 1) == 0)
+                Dispatcher.Post(InvalidateQueued, DispatcherPriority.Background);
             return;
         }
 
@@ -83,6 +87,12 @@ public class SKCanvasViewControl : Control
             _topLevel.RequestAnimationFrame(_ => PaintCanvas());
         else
             Dispatcher.Post(PaintCanvas);
+    }
+
+    private void InvalidateQueued()
+    {
+        Interlocked.Exchange(ref _invalidateQueued, 0);
+        InvalidateCanvas();
     }
 
     /// <inheritdoc/>
