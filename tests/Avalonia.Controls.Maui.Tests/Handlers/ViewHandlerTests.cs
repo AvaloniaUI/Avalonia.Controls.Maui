@@ -183,6 +183,50 @@ public class ViewHandlerTests : HandlerTestBase
         });
     }
 
+    [AvaloniaFact(DisplayName = "A clip container keeps the view's alignment")]
+    public async Task ClipContainerKeepsViewAlignment()
+    {
+        var content = new MauiContentView
+        {
+            WidthRequest = 100,
+            HeightRequest = 50,
+            HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.Center,
+        };
+        var scrollView = new Microsoft.Maui.Controls.ScrollView { Content = content };
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<ScrollViewHandler>(scrollView);
+            var contentHandler = (ContentViewHandler)content.Handler!;
+            var window = new Window { Width = 300, Height = 200, Content = handler.PlatformView };
+            window.Show();
+
+            try
+            {
+                window.UpdateLayout();
+                var unclipped = contentHandler.PlatformView.Bounds;
+
+                content.Clip = new MauiEllipseGeometry(new MauiPoint(50, 25), 50, 25);
+                window.UpdateLayout();
+
+                // The container has the bounds the view had, and the view fills it
+                var container = Assert.IsAssignableFrom<Control>(contentHandler.ContainerView);
+                Assert.Equal(unclipped, container.Bounds);
+                Assert.Equal(new Rect(unclipped.Size), contentHandler.PlatformView.Bounds);
+
+                content.HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.End;
+                content.WidthRequest = 80;
+                window.UpdateLayout();
+                Assert.Equal(new Rect(220, unclipped.Y, 80, 50), container.Bounds);
+                Assert.Equal(new Rect(0, 0, 80, 50), contentHandler.PlatformView.Bounds);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
     [AvaloniaFact(DisplayName = "Clip added later wraps Border content in a container")]
     public async Task ClipAddedLaterWrapsBorderContent()
     {

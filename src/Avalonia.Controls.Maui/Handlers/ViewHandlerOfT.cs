@@ -288,8 +288,25 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
             platformView.Margin = new Avalonia.Thickness(0);
         }
 
+        // The ContainerView follows the PlatformView's size and alignment, so it is placed where the
+        // PlatformView would be and has its bounds, which Clip/Shadow are defined over
+        foreach (var property in s_containerLayoutProperties)
+            containerView.Bind(property, platformView.GetObservable(property));
+
         attach?.Invoke(containerView);
     }
+
+    private static readonly Avalonia.AvaloniaProperty[] s_containerLayoutProperties =
+    [
+        Avalonia.Layout.Layoutable.WidthProperty,
+        Avalonia.Layout.Layoutable.HeightProperty,
+        Avalonia.Layout.Layoutable.MinWidthProperty,
+        Avalonia.Layout.Layoutable.MinHeightProperty,
+        Avalonia.Layout.Layoutable.MaxWidthProperty,
+        Avalonia.Layout.Layoutable.MaxHeightProperty,
+        Avalonia.Layout.Layoutable.HorizontalAlignmentProperty,
+        Avalonia.Layout.Layoutable.VerticalAlignmentProperty,
+    ];
 
     /// <summary>
     /// Deconstructs the <see cref="ContainerView"/> and removes the platform view from its container.
