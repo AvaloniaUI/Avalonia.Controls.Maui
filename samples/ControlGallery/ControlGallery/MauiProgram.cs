@@ -3,6 +3,9 @@ using ControlGallery.Views;
 using ControlGallery.Effects;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
+#if IOS || MACCATALYST || ANDROID || WINDOWS
+using SkiaSharp.Views.Maui.Controls.Hosting;
+#endif
 
 namespace ControlGallery;
 
@@ -17,8 +20,10 @@ public static class MauiProgram
 			.UseAvaloniaApp(useSingleAppLifetime)
 			.UseAvaloniaCompatibility()
 			.UseAvaloniaEssentials()
+			.UseAvaloniaSkiaSharp()
 			#else
 			.UseAvaloniaEmbedding<AvaloniaApp>()
+			.UseSkiaSharp()
 			#endif
 			.ConfigureMauiHandlers(handlers =>
 			{
@@ -33,6 +38,7 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 				fonts.AddFont("bpg-banner-webfont.ttf", "BgpBanner");
+				fonts.AddFont("GalleryScript-Regular.ttf", "GalleryScript");
 			});
 
 #if DEBUG

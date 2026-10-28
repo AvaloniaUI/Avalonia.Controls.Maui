@@ -82,6 +82,11 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
         // Bridge the single-view content lifecycle to the MAUI IWindow (and Application) lifecycle.
         _lifecycleManager = new MauiSingleViewLifecycleManager(VirtualView, platformView);
 
+        // Scaling belongs to the top level that hosts the content, which can change
+        platformView.AttachedToVisualTree += OnContentAttachedToVisualTree;
+        platformView.DetachedFromVisualTree += OnContentDetachedFromVisualTree;
+        SetTopLevel(TopLevel.GetTopLevel(platformView));
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             window.ModalPushed += OnModalPushed;
@@ -101,6 +106,10 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
         _lifecycleManager?.Dispose();
         _lifecycleManager = null;
 
+        platformView.AttachedToVisualTree -= OnContentAttachedToVisualTree;
+        platformView.DetachedFromVisualTree -= OnContentDetachedFromVisualTree;
+        SetTopLevel(null);
+
         if (VirtualView is Microsoft.Maui.Controls.Window window)
         {
             window.ModalPushed -= OnModalPushed;
@@ -111,6 +120,32 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
         _modalTracker = null;
 
         base.DisconnectHandler(platformView);
+    }
+
+    private TopLevel? _topLevel;
+
+    private void OnContentAttachedToVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e) =>
+        SetTopLevel(TopLevel.GetTopLevel(PlatformView));
+
+    private void OnContentDetachedFromVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e) =>
+        SetTopLevel(null);
+
+    private void SetTopLevel(TopLevel? topLevel)
+    {
+        if (_topLevel != null)
+            _topLevel.ScalingChanged -= OnTopLevelScalingChanged;
+
+        _topLevel = topLevel;
+
+        if (_topLevel != null)
+            _topLevel.ScalingChanged += OnTopLevelScalingChanged;
+    }
+
+    // As on Windows, where a DPI change raises it; the content's layout is redone by Avalonia
+    private void OnTopLevelScalingChanged(object? sender, EventArgs e)
+    {
+        if (_topLevel != null)
+            VirtualView?.DisplayDensityChanged((float)_topLevel.RenderScaling);
     }
 
     private void OnModalPushed(object? sender, Microsoft.Maui.Controls.ModalPushedEventArgs e)

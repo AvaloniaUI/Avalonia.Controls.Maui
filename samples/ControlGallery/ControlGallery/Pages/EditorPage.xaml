@@ -83,6 +83,8 @@
                     <Editor Text="Blue Text" TextColor="Blue"/>
                     <Editor Text="Green Text" TextColor="Green"/>
                     <Editor Text="Red Text" TextColor="Red"/>
+                    <Label Text="Light text on a dark background (click the editor to see the caret):" FontSize="12" />
+                    <Editor Text="White text" BackgroundColor="#202020" TextColor="White" HeightRequest="60"/>
                 </VerticalStackLayout>
             </Border>
             

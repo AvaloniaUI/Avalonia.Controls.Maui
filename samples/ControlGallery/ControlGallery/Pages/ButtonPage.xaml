@@ -51,6 +51,13 @@
                     <Button Text="White Text"
                             TextColor="White"
                             BackgroundColor="Black"/>
+                    <Button Text="Red Text (disabled)"
+                            TextColor="Red"
+                            IsEnabled="False"/>
+                    <Button Text="White Text (disabled)"
+                            TextColor="White"
+                            BackgroundColor="Black"
+                            IsEnabled="False"/>
                 </VerticalStackLayout>
             </Border>
 

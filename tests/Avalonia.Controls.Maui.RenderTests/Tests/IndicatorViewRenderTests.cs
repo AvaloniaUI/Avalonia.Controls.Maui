@@ -65,4 +65,22 @@ public class IndicatorViewRenderTests : RenderTestBase
         await RenderToFile(control);
         CompareImages();
     }
+
+    [AvaloniaFact]
+    public async Task Render_IndicatorView_SizeAndShape()
+    {
+        var control = new IndicatorView
+        {
+            Count = 5,
+            Position = 1,
+            IndicatorSize = 12,
+            IndicatorsShape = IndicatorShape.Square,
+            IndicatorColor = Colors.LightGray,
+            SelectedIndicatorColor = Colors.Blue,
+            WidthRequest = 200,
+            HeightRequest = 40
+        };
+        await RenderToFile(control);
+        CompareImages();
+    }
 }

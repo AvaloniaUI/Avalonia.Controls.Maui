@@ -108,6 +108,180 @@ public class ViewHandlerTests : HandlerTestBase
         Assert.Equal(new global::Avalonia.Thickness(1, 2, 3, 4), platformMargin);
     }
 
+    [AvaloniaFact(DisplayName = "Margin is subtracted from measure constraints only once")]
+    public async Task MarginIsSubtractedFromMeasureConstraintsOnlyOnce()
+    {
+        const string text = "The quick brown fox jumps over the lazy dog and keeps on running far away";
+
+        var withMargin = new Microsoft.Maui.Controls.Label
+        {
+            Text = text,
+            LineBreakMode = Microsoft.Maui.LineBreakMode.WordWrap,
+            Margin = new Microsoft.Maui.Thickness(50, 5, 50, 5)
+        };
+        var withoutMargin = new Microsoft.Maui.Controls.Label
+        {
+            Text = text,
+            LineBreakMode = Microsoft.Maui.LineBreakMode.WordWrap
+        };
+
+        var (marginSize, plainSize) = await InvokeOnMainThreadAsync(() =>
+        {
+            CreateHandler<LabelHandler>(withMargin);
+            CreateHandler<LabelHandler>(withoutMargin);
+
+            // MAUI deflates the constraints by the margin before asking the handler, so the
+            // label with a margin must see the same 150-wide space as the plain one.
+            var marginSize = ((Microsoft.Maui.IView)withMargin).Measure(250, double.PositiveInfinity);
+            var plainSize = ((Microsoft.Maui.IView)withoutMargin).Measure(150, double.PositiveInfinity);
+            return (marginSize, plainSize);
+        });
+
+        Assert.Equal(plainSize.Width + 100, marginSize.Width, 3);
+        Assert.Equal(plainSize.Height + 10, marginSize.Height, 3);
+    }
+
+    [AvaloniaFact(DisplayName = "Derived handler can override GetDesiredSize")]
+    public async Task DerivedHandlerCanOverrideGetDesiredSize()
+    {
+        var view = new MauiContentView
+        {
+            Margin = new Microsoft.Maui.Thickness(5)
+        };
+
+        var size = await InvokeOnMainThreadAsync(() =>
+        {
+            CreateHandler<FixedSizeContentViewHandler>(view);
+            return ((Microsoft.Maui.IView)view).Measure(500, 500);
+        });
+
+        Assert.Equal(FixedSizeContentViewHandler.FixedSize.Width + 10, size.Width, 3);
+        Assert.Equal(FixedSizeContentViewHandler.FixedSize.Height + 10, size.Height, 3);
+    }
+
+    [AvaloniaFact(DisplayName = "Clip added later wraps ScrollView content in a container")]
+    public async Task ClipAddedLaterWrapsScrollViewContent()
+    {
+        var content = new MauiContentView();
+        var scrollView = new Microsoft.Maui.Controls.ScrollView { Content = content };
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<ScrollViewHandler>(scrollView);
+            var contentHandler = (ContentViewHandler)content.Handler!;
+
+            content.Clip = new MauiEllipseGeometry(new MauiPoint(10, 10), 10, 10);
+
+            var container = Assert.IsAssignableFrom<Control>(contentHandler.ContainerView);
+            Assert.Same(container, handler.PlatformView.Content);
+            Assert.Same(container, contentHandler.PlatformView.Parent);
+
+            content.Clip = null;
+
+            Assert.Null(contentHandler.ContainerView);
+            Assert.Same(contentHandler.PlatformView, handler.PlatformView.Content);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "A clip container keeps the view's alignment")]
+    public async Task ClipContainerKeepsViewAlignment()
+    {
+        var content = new MauiContentView
+        {
+            WidthRequest = 100,
+            HeightRequest = 50,
+            HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.Center,
+        };
+        var scrollView = new Microsoft.Maui.Controls.ScrollView { Content = content };
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<ScrollViewHandler>(scrollView);
+            var contentHandler = (ContentViewHandler)content.Handler!;
+            var window = new Window { Width = 300, Height = 200, Content = handler.PlatformView };
+            window.Show();
+
+            try
+            {
+                window.UpdateLayout();
+                var unclipped = contentHandler.PlatformView.Bounds;
+
+                content.Clip = new MauiEllipseGeometry(new MauiPoint(50, 25), 50, 25);
+                window.UpdateLayout();
+
+                // The container has the bounds the view had, and the view fills it
+                var container = Assert.IsAssignableFrom<Control>(contentHandler.ContainerView);
+                Assert.Equal(unclipped, container.Bounds);
+                Assert.Equal(new Rect(unclipped.Size), contentHandler.PlatformView.Bounds);
+
+                content.HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.End;
+                content.WidthRequest = 80;
+                window.UpdateLayout();
+                Assert.Equal(new Rect(220, unclipped.Y, 80, 50), container.Bounds);
+                Assert.Equal(new Rect(0, 0, 80, 50), contentHandler.PlatformView.Bounds);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Clip added later wraps Border content in a container")]
+    public async Task ClipAddedLaterWrapsBorderContent()
+    {
+        var content = new MauiContentView();
+        var border = new Microsoft.Maui.Controls.Border { Content = content };
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<BorderHandler>(border);
+            var contentHandler = (ContentViewHandler)content.Handler!;
+            var host = Assert.IsAssignableFrom<Decorator>(contentHandler.PlatformView.Parent);
+
+            content.Clip = new MauiEllipseGeometry(new MauiPoint(10, 10), 10, 10);
+
+            var container = Assert.IsAssignableFrom<Control>(contentHandler.ContainerView);
+            Assert.Same(container, host.Child);
+            Assert.Same(container, contentHandler.PlatformView.Parent);
+
+            content.Clip = null;
+
+            Assert.Null(contentHandler.ContainerView);
+            Assert.Same(contentHandler.PlatformView, host.Child);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Clip added later wraps window content in a container")]
+    public async Task ClipAddedLaterWrapsWindowContent()
+    {
+        var content = new MauiContentView();
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<ContentViewHandler>(content);
+            var window = new Window { Content = handler.PlatformView };
+            window.Show();
+
+            try
+            {
+                content.Clip = new MauiEllipseGeometry(new MauiPoint(10, 10), 10, 10);
+
+                var container = Assert.IsAssignableFrom<Control>(handler.ContainerView);
+                Assert.Same(container, window.Content);
+
+                content.Clip = null;
+
+                Assert.Null(handler.ContainerView);
+                Assert.Same(handler.PlatformView, window.Content);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
     [AvaloniaFact(DisplayName = "InputTransparent maps to IsHitTestVisible")]
     public async Task InputTransparentMapsToIsHitTestVisible()
     {
@@ -318,6 +492,49 @@ public class ViewHandlerTests : HandlerTestBase
         }
     }
 
+    [AvaloniaFact(DisplayName = "Loaded handler can change its row while the row's binding context is applied")]
+    public async Task LoadedHandlerCanChangeRowWhileBindingContextIsApplied()
+    {
+        // The row's content comes from a binding, so it is created and attached while MAUI
+        // passes the row's binding context to the row's children
+        var row = new Microsoft.Maui.Controls.Grid();
+        var content = new MauiContentView();
+        content.SetBinding(MauiContentView.ContentProperty, new Microsoft.Maui.Controls.Binding(".", converter: new LabelWithLoadedHandler(row)));
+        row.Add(content);
+        row.Add(new Microsoft.Maui.Controls.Label { Text = "Sibling" });
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<LayoutHandler>(row);
+            var window = new Window { Width = 200, Height = 200, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                row.BindingContext = "Title";
+                Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(3, row.Count);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    private sealed class LabelWithLoadedHandler(Microsoft.Maui.Controls.Grid row) : Microsoft.Maui.Controls.IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+        {
+            var label = new Microsoft.Maui.Controls.Label { Text = value as string };
+            label.Loaded += (_, _) => row.Add(new Microsoft.Maui.Controls.BoxView { HeightRequest = 2 });
+            return label;
+        }
+
+        public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture) =>
+            throw new NotSupportedException();
+    }
+
     [AvaloniaFact(DisplayName = "Focused/Unfocused reflect platform focus")]
     public async Task FocusedAndUnfocusedReflectPlatformFocus()
     {
@@ -388,6 +605,14 @@ public class ViewHandlerTests : HandlerTestBase
         {
             window.Close();
         }
+    }
+
+    private sealed class FixedSizeContentViewHandler : ContentViewHandler
+    {
+        public static readonly Microsoft.Maui.Graphics.Size FixedSize = new(80, 30);
+
+        public override Microsoft.Maui.Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint) =>
+            FixedSize;
     }
 
     private sealed class InheritedPropertyViewModel(string text)

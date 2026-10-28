@@ -29,6 +29,10 @@
                     <Label Text="BgpBanner (alias)"
                            FontFamily="BgpBanner"
                            FontSize="18"/>
+
+                    <Label Text="GalleryScript (alias)"
+                           FontFamily="GalleryScript"
+                           FontSize="24"/>
                 </VerticalStackLayout>
             </Border>
 

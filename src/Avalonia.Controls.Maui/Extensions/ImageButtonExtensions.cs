@@ -106,13 +106,10 @@ public static class ImageButtonExtensions
             return;
 
         var mauiPadding = padding.Padding;
-        if (mauiPadding == Microsoft.Maui.Thickness.Zero)
+        if (mauiPadding.IsNaN)
         {
+            // An unset padding keeps the theme's padding
             platformView.ClearValue(TemplatedControl.PaddingProperty);
-        }
-        else if (double.IsNaN(mauiPadding.Left) && double.IsNaN(mauiPadding.Top) && double.IsNaN(mauiPadding.Right) && double.IsNaN(mauiPadding.Bottom))
-        {
-            return;
         }
         else
         {

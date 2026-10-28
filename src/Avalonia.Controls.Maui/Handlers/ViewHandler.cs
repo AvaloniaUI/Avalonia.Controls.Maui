@@ -52,6 +52,8 @@ public static partial class ViewHandler
             [nameof(IContextFlyoutElement.ContextFlyout)] = MapContextFlyout,
             [nameof(IView.HorizontalLayoutAlignment)] = MapHorizontalLayoutAlignment,
             [nameof(IView.VerticalLayoutAlignment)] = MapVerticalLayoutAlignment,
+            ["HorizontalOptions"] = MapHorizontalOptions,
+            ["VerticalOptions"] = MapVerticalOptions,
         };
 
     /// <summary>
@@ -615,6 +617,34 @@ public static partial class ViewHandler
     public static void MapHorizontalLayoutAlignment(IViewHandler handler, IView view)
     {
         ((PlatformView?)handler.PlatformView)?.UpdateHorizontalLayoutAlignment(view);
+    }
+
+    /// <summary>
+    /// Maps the HorizontalOptions property to trigger a <see cref="IView.HorizontalLayoutAlignment"/> update.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
+    public static void MapHorizontalOptions(IViewHandler handler, IView view)
+    {
+        // The HorizontalLayoutAlignment key is mapped on its own while connecting
+        if (handler.IsConnectingHandler())
+            return;
+
+        handler.UpdateValue(nameof(IView.HorizontalLayoutAlignment));
+    }
+
+    /// <summary>
+    /// Maps the VerticalOptions property to trigger a <see cref="IView.VerticalLayoutAlignment"/> update.
+    /// </summary>
+    /// <param name="handler">The associated handler.</param>
+    /// <param name="view">The associated <see cref="IView"/> instance.</param>
+    public static void MapVerticalOptions(IViewHandler handler, IView view)
+    {
+        // The VerticalLayoutAlignment key is mapped on its own while connecting
+        if (handler.IsConnectingHandler())
+            return;
+
+        handler.UpdateValue(nameof(IView.VerticalLayoutAlignment));
     }
 
     /// <summary>

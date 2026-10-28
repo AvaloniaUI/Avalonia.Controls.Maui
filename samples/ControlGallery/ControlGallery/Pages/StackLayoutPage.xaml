@@ -249,6 +249,37 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Margins -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Margins"
+                           FontAttributes="Bold"/>
+                    <Label Text="Drag the slider to change the label&apos;s horizontal margin. The label wraps its text within the space between its margins."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <Label x:Name="MarginValueLabel"
+                           Text="Horizontal margin: 40"/>
+                    <Slider x:Name="MarginSlider"
+                            Minimum="0"
+                            Maximum="150"
+                            Value="40"
+                            ValueChanged="OnMarginSliderValueChanged"/>
+
+                    <VerticalStackLayout BackgroundColor="LightGray">
+                        <Label x:Name="MarginLabel"
+                               Text="The quick brown fox jumps over the lazy dog, then keeps on running far away over the hills."
+                               LineBreakMode="WordWrap"
+                               BackgroundColor="LightYellow"
+                               Margin="40,5"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -40,17 +40,27 @@
     <ProjectReference
       Include="../../src/Avalonia.Controls.Maui.Compatibility/Avalonia.Controls.Maui.Compatibility.csproj" />
     <ProjectReference Include="../../src/Avalonia.Controls.Maui/Avalonia.Controls.Maui.csproj" />
+    <ProjectReference Include="../../src/Avalonia.Controls.Maui.SkiaSharp.Views/Avalonia.Controls.Maui.SkiaSharp.Views.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <AvaloniaResource Include="Resources\Raw\**">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </AvaloniaResource>
+    <!-- Fonts for the font registrar tests, at the path the registrar reads MauiFont files from -->
+    <AvaloniaResource Include="../../samples/ControlGallery/ControlGallery/Resources/Fonts/GalleryScript-Regular.ttf;../../samples/ControlGallery/ControlGallery/Resources/Fonts/OpenSans-Regular.ttf">
+      <Link>Assets/Fonts/%(Filename)%(Extension)</Link>
+    </AvaloniaResource>
   </ItemGroup>
 
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <!--
+      The SkiaSharp views reference brings in Microsoft.Maui.Controls, whose build tasks add
+      MAUI's implicit global usings. They clash with the test stubs, so keep them out.
+    -->
+    <Using Remove="@(Using->WithMetadataValue('Sdk', 'Maui'))" />
   </ItemGroup>
 
 </Project>

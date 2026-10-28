@@ -75,6 +75,31 @@ public class Stepper : TemplatedControl
             _minusButton.Click += OnMinusClicked;
 
         UpdateButtonStates();
+        UpdateButtonBackgrounds();
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == BackgroundProperty)
+            UpdateButtonBackgrounds();
+    }
+
+    // The buttons keep their theme background unless the stepper has a background of its own
+    private void UpdateButtonBackgrounds()
+    {
+        foreach (var button in new[] { _plusButton, _minusButton })
+        {
+            if (button is null)
+                continue;
+
+            if (Background is null)
+                button.ClearValue(BackgroundProperty);
+            else
+                button.Background = Background;
+        }
     }
 
     private void OnPlusClicked(object? sender, RoutedEventArgs e)

@@ -99,9 +99,10 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
             mauiWindow.SetMauiContext(MauiContext);
         }
 
-        // Track Avalonia window size/position changes
+        // Track Avalonia window size/position/scaling changes
         platformView.Resized += OnAvaloniaWindowResized;
         platformView.PositionChanged += OnAvaloniaWindowPositionChanged;
+        platformView.ScalingChanged += OnAvaloniaWindowScalingChanged;
 
         _lifecycleManager = new MauiWindowLifecycleManager(VirtualView, platformView);
 
@@ -125,6 +126,7 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
         platformView.Resized -= OnAvaloniaWindowResized;
         platformView.PositionChanged -= OnAvaloniaWindowPositionChanged;
+        platformView.ScalingChanged -= OnAvaloniaWindowScalingChanged;
 
         _lifecycleManager?.Dispose();
         _lifecycleManager = null;
@@ -143,6 +145,13 @@ public partial class WindowHandler : ElementHandler<IWindow, Avalonia.Controls.W
 
     private void OnAvaloniaWindowResized(object? sender, WindowResizedEventArgs e)
     {
+        UpdateVirtualViewFrame();
+    }
+
+    // As on Windows, where a DPI change raises it; the window's layout is redone by Avalonia
+    private void OnAvaloniaWindowScalingChanged(object? sender, EventArgs e)
+    {
+        VirtualView?.DisplayDensityChanged((float)PlatformView.RenderScaling);
         UpdateVirtualViewFrame();
     }
 

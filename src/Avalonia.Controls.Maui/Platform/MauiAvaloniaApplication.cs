@@ -100,6 +100,11 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
         // Subscribe to Avalonia theme changes to notify MAUI's AppThemeBinding system
         ActualThemeVariantChanged += OnActualThemeVariantChanged;
 
+        // The desktop theme can change while the app's own theme stays the same, which
+        // ActualThemeVariantChanged does not report; MAUI's PlatformAppTheme follows the desktop
+        if (PlatformSettings is { } platformSettings)
+            platformSettings.ColorValuesChanged += OnPlatformColorValuesChanged;
+
         // Connect the MAUI Application to its handler
         this.SetApplicationHandler(Application, ApplicationContext);
 
@@ -181,6 +186,11 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
     /// This enables AppThemeBinding to update when the theme changes.
     /// </summary>
     private void OnActualThemeVariantChanged(object? sender, EventArgs e)
+    {
+        Application?.ThemeChanged();
+    }
+
+    private void OnPlatformColorValuesChanged(object? sender, Avalonia.Platform.PlatformColorValues e)
     {
         Application?.ThemeChanged();
     }

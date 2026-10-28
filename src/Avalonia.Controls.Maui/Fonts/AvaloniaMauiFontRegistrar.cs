@@ -177,7 +177,15 @@ public class AvaloniaMauiFontRegistrar : IFontRegistrar
             ushort count = ReadUInt16BigEndian(reader);
             ushort stringOffset = ReadUInt16BigEndian(reader);
 
-            // Look for font family name (nameID = 1)
+            // Pick the font family name (nameID = 1) record the way Avalonia's GlyphTypeface does,
+            // so the name matches the family Avalonia resolves: a Windows record in the invariant
+            // culture's language, then Windows US English, then the first Windows record, then the
+            // first record of any platform.
+            NameRecord? invariant = null;
+            NameRecord? usEnglish = null;
+            NameRecord? firstWindows = null;
+            NameRecord? first = null;
+
             for (int i = 0; i < count; i++)
             {
                 ushort platformID = ReadUInt16BigEndian(reader);
@@ -187,35 +195,42 @@ public class AvaloniaMauiFontRegistrar : IFontRegistrar
                 ushort length = ReadUInt16BigEndian(reader);
                 ushort offset = ReadUInt16BigEndian(reader);
 
-                if (nameID == 1) // Font Family name
+                if (nameID != 1)
+                    continue;
+
+                var record = new NameRecord(encodingID, length, offset);
+                first ??= record;
+
+                if (platformID == WindowsPlatformId)
                 {
-                    long pos = fontStream.Position;
-                    fontStream.Seek(nameTableOffset + stringOffset + offset, SeekOrigin.Begin);
-
-                    byte[] nameBytes = reader.ReadBytes(length);
-
-                    // Decode based on platform
-                    string familyName;
-                    if (platformID == 3) // Windows
-                    {
-                        familyName = Encoding.BigEndianUnicode.GetString(nameBytes);
-                    }
-                    else if (platformID == 1) // Macintosh
-                    {
-                        familyName = Encoding.ASCII.GetString(nameBytes);
-                    }
-                    else
-                    {
-                        familyName = Encoding.UTF8.GetString(nameBytes);
-                    }
-
-                    return familyName;
+                    firstWindows ??= record;
+                    if (languageID == USEnglishLanguageId)
+                        usEnglish ??= record;
+                    if (languageID == InvariantLanguageId)
+                        invariant ??= record;
                 }
             }
-        }
 
-        return null;
+            var selected = invariant ?? usEnglish ?? firstWindows ?? first;
+            if (selected is not { } name)
+                return null;
+
+            fontStream.Seek(nameTableOffset + stringOffset + name.Offset, SeekOrigin.Begin);
+            byte[] nameBytes = reader.ReadBytes(name.Length);
+
+            // Avalonia decodes by encoding ID alone: Unicode 1.1 and Unicode 2.0 BMP as UTF-16BE,
+            // anything else as UTF-8
+            return name.EncodingId is 1 or 3
+                ? Encoding.BigEndianUnicode.GetString(nameBytes)
+                : Encoding.UTF8.GetString(nameBytes);
+        }
     }
+
+    private const ushort WindowsPlatformId = 3;
+    private const ushort USEnglishLanguageId = 0x0409;
+    private static readonly ushort InvariantLanguageId = (ushort)System.Globalization.CultureInfo.InvariantCulture.LCID;
+
+    private readonly record struct NameRecord(ushort EncodingId, ushort Length, ushort Offset);
 
     private ushort ReadUInt16BigEndian(BinaryReader reader)
     {

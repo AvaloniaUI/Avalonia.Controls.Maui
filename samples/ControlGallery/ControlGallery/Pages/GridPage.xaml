@@ -366,6 +366,63 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Input Transparency -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Input Transparency"
+                           FontAttributes="Bold"/>
+                    <Label Text="A tinted overlay grid lies over the buttons below it. An input transparent overlay lets clicks reach the buttons below. With CascadeInputTransparent off, the overlay's own button still takes clicks."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Switch x:Name="InputTransparentSwitch"
+                                IsToggled="True"
+                                Toggled="OnOverlayInputToggled"/>
+                        <Label Text="InputTransparent"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="10">
+                        <Switch x:Name="CascadeSwitch"
+                                IsToggled="False"
+                                Toggled="OnOverlayInputToggled"/>
+                        <Label Text="CascadeInputTransparent"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+
+                    <Grid HeightRequest="140">
+                        <Grid ColumnDefinitions="*,*"
+                              ColumnSpacing="10"
+                              VerticalOptions="End">
+                            <Button Text="Below 1"
+                                    Clicked="OnInputTargetClicked"/>
+                            <Button Grid.Column="1"
+                                    Text="Below 2"
+                                    Clicked="OnInputTargetClicked"/>
+                        </Grid>
+
+                        <Grid x:Name="InputOverlay"
+                              BackgroundColor="#4000A0FF"
+                              InputTransparent="True"
+                              CascadeInputTransparent="False">
+                            <Button Text="Overlay Button"
+                                    HorizontalOptions="Center"
+                                    VerticalOptions="Start"
+                                    Margin="0,8"
+                                    Clicked="OnInputTargetClicked"/>
+                        </Grid>
+                    </Grid>
+
+                    <Label x:Name="InputTargetLabel"
+                           Text="Last clicked: (none)"
+                           FontAttributes="Italic"/>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -57,6 +57,32 @@ public class SingleViewLifecycleTests : HandlerTestBase
         };
     }
 
+    [AvaloniaFact(DisplayName = "A scaling change of the hosting top level raises DisplayDensityChanged")]
+    public async Task ScalingChangeRaisesDisplayDensityChanged()
+    {
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var harness = CreateHarness();
+            var densities = new List<float>();
+            harness.Window.DisplayDensityChanged += (_, e) => densities.Add(e.DisplayDensity);
+
+            var host = new Window { Width = 400, Height = 300, Content = harness.Content };
+            host.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            Avalonia.Headless.HeadlessWindowExtensions.SetRenderScaling(host, 2);
+            Assert.Equal(new[] { 2f }, densities);
+
+            // Once the content leaves the top level, its scaling changes no longer apply
+            host.Content = null;
+            Dispatcher.UIThread.RunJobs();
+            Avalonia.Headless.HeadlessWindowExtensions.SetRenderScaling(host, 1);
+            Assert.Equal(new[] { 2f }, densities);
+
+            host.Close();
+        });
+    }
+
     [AvaloniaFact(DisplayName = "Loading the single-view content raises Window.Created and Application.OnStart")]
     public async Task LoadingContentRaisesCreatedAndStart()
     {

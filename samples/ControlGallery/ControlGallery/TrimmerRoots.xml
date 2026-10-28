@@ -1,0 +1,8 @@
+<linker>
+  <!-- SKGLView binds to its own Window property by name, which MAUI resolves by reflection -->
+  <assembly fullname="Microsoft.Maui.Controls">
+    <type fullname="Microsoft.Maui.Controls.VisualElement">
+      <property name="Window" />
+    </type>
+  </assembly>
+</linker>

@@ -3,6 +3,7 @@ using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Avalonia.Headless.XUnit;
+using Avalonia.VisualTree;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using MauiLayoutHandler = Avalonia.Controls.Maui.Handlers.LayoutHandler;
@@ -818,6 +819,130 @@ public class LayoutHandlerTests : HandlerTestBase<MauiLayoutHandler, LayoutStub>
         });
 
         Assert.False(isReadOnly);
+    }
+
+    #endregion
+
+    #region InputTransparent Tests
+
+    [AvaloniaTheory(DisplayName = "InputTransparent Layout Does Not Catch Input Outside Children")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task InputTransparentLayoutDoesNotCatchInputOutsideChildren(bool cascade)
+    {
+        var hit = await HitTestLayoutAsync(inputTransparent: true, cascade, new Point(150, 150));
+
+        Assert.Null(hit.Element);
+    }
+
+    [AvaloniaFact(DisplayName = "Non-Cascading InputTransparent Layout Lets Children Catch Input")]
+    public async Task NonCascadingInputTransparentLayoutLetsChildrenCatchInput()
+    {
+        var hit = await HitTestLayoutAsync(inputTransparent: true, cascade: false, new Point(25, 25));
+
+        Assert.Same(hit.Child, hit.Element);
+    }
+
+    [AvaloniaFact(DisplayName = "Cascading InputTransparent Layout Keeps Children From Catching Input")]
+    public async Task CascadingInputTransparentLayoutKeepsChildrenFromCatchingInput()
+    {
+        var hit = await HitTestLayoutAsync(inputTransparent: true, cascade: true, new Point(25, 25));
+
+        Assert.Null(hit.Element);
+    }
+
+    [AvaloniaFact(DisplayName = "Layout Catches Input When Not InputTransparent")]
+    public async Task LayoutCatchesInputWhenNotInputTransparent()
+    {
+        var hit = await HitTestLayoutAsync(inputTransparent: false, cascade: true, new Point(150, 150));
+
+        Assert.Same(hit.Layout, hit.Element);
+    }
+
+    [AvaloniaFact(DisplayName = "Layout Catches Input Again When InputTransparent Is Cleared")]
+    public async Task LayoutCatchesInputAgainWhenInputTransparentIsCleared()
+    {
+        var hit = await HitTestLayoutAsync(inputTransparent: true, cascade: false, new Point(150, 150),
+            grid => grid.InputTransparent = false);
+
+        Assert.Same(hit.Layout, hit.Element);
+    }
+
+    [AvaloniaFact(DisplayName = "Layout Does Not Catch Input Outside Its Clip")]
+    public async Task LayoutDoesNotCatchInputOutsideItsClip()
+    {
+        var hit = await HitTestLayoutAsync(inputTransparent: false, cascade: true, new Point(195, 195),
+            configure: grid => grid.Clip = new Microsoft.Maui.Controls.Shapes.EllipseGeometry(new Microsoft.Maui.Graphics.Point(100, 100), 100, 100));
+
+        Assert.Null(hit.Element);
+    }
+
+    [AvaloniaFact(DisplayName = "Layout Catches Input Inside Its Clip")]
+    public async Task LayoutCatchesInputInsideItsClip()
+    {
+        var hit = await HitTestLayoutAsync(inputTransparent: false, cascade: true, new Point(150, 150),
+            configure: grid => grid.Clip = new Microsoft.Maui.Controls.Shapes.EllipseGeometry(new Microsoft.Maui.Graphics.Point(100, 100), 100, 100));
+
+        Assert.Same(hit.Layout, hit.Element);
+    }
+
+    async Task<(Avalonia.Input.IInputElement? Element, Control Layout, Control Child)> HitTestLayoutAsync(
+        bool inputTransparent, bool cascade, Avalonia.Point point, Action<Microsoft.Maui.Controls.Grid>? update = null,
+        Action<Microsoft.Maui.Controls.Grid>? configure = null)
+    {
+        var child = new Microsoft.Maui.Controls.Button
+        {
+            Text = "Child",
+            WidthRequest = 50,
+            HeightRequest = 50,
+            HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+            VerticalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+        };
+        var grid = new Microsoft.Maui.Controls.Grid
+        {
+            Background = Microsoft.Maui.Controls.Brush.Red,
+            InputTransparent = inputTransparent,
+            CascadeInputTransparent = cascade,
+            Children = { child }
+        };
+        configure?.Invoke(grid);
+
+        return await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<MauiLayoutHandler>(grid);
+            var layout = (Control)handler.PlatformView!;
+            var window = new Window
+            {
+                Width = 200,
+                Height = 200,
+                Content = handler.ContainerView ?? layout
+            };
+            window.Show();
+
+            try
+            {
+                update?.Invoke(grid);
+                window.UpdateLayout();
+                // Hit testing uses the composited scene, so render a frame first
+                Avalonia.Headless.HeadlessWindowExtensions.CaptureRenderedFrame(window);
+
+                var childView = (Control)child.Handler!.PlatformView!;
+                var element = Avalonia.Input.InputExtensions.InputHitTest(window, point);
+
+                // A hit on any visual inside the child counts as a hit on the child, and a hit
+                // outside the layout (the window behind it) counts as no hit
+                if (element is Visual visual && childView.IsVisualAncestorOf(visual))
+                    element = childView;
+                else if (element != layout && element != childView)
+                    element = null;
+
+                return (element, layout, childView);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
     }
 
     #endregion

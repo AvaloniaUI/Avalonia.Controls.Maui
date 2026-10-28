@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:skia="clr-namespace:SkiaSharp.Views.Maui.Controls;assembly=SkiaSharp.Views.Maui.Controls"
+             x:Class="ControlGallery.Pages.SkiaSharpPage"
+             Title="SkiaSharp">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Resolution -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Drawing at the Display's Resolution"
+                           FontAttributes="Bold"/>
+                    <Label Text="The canvas draws a grid of one-unit lines and reports its size. By default the canvas is sized in device pixels; with IgnorePixelScaling it is sized in view units."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Switch x:Name="IgnorePixelScalingSwitch"
+                                Toggled="OnIgnorePixelScalingToggled"/>
+                        <Label Text="IgnorePixelScaling"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <skia:SKCanvasView x:Name="ResolutionCanvas"
+                                       HeightRequest="120"
+                                       PaintSurface="OnResolutionPaintSurface"/>
+                    <Label x:Name="ResolutionLabel"
+                           Text="Canvas size: -"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Pointer tracking -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Pointer Tracking"
+                           FontAttributes="Bold"/>
+                    <Label Text="Move the mouse over a view, or press and drag. Each view reports the last touch action, its location and whether the pointer is in contact."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="10">
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="SKCanvasView" FontSize="12"/>
+                            <skia:SKCanvasView x:Name="TouchCanvas"
+                                               HeightRequest="140"
+                                               EnableTouchEvents="True"
+                                               Touch="OnViewTouch"
+                                               PaintSurface="OnTouchCanvasPaintSurface"/>
+                            <Label x:Name="TouchCanvasLabel"
+                                   Text="No touch actions yet"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1"
+                                             Spacing="5">
+                            <Label Text="SKGLView" FontSize="12"/>
+                            <skia:SKGLView x:Name="TouchGLView"
+                                           HeightRequest="140"
+                                           EnableTouchEvents="True"
+                                           Touch="OnViewTouch"
+                                           PaintSurface="OnTouchGLViewPaintSurface"/>
+                            <Label x:Name="TouchGLViewLabel"
+                                   Text="No touch actions yet"
+                                   FontSize="12"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- View properties -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="View Properties"
+                           FontAttributes="Bold"/>
+                    <Label Text="Skia views take the usual view properties: visibility, opacity, size requests and layout options."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <HorizontalStackLayout Spacing="10">
+                        <Switch x:Name="PropertiesVisibleSwitch"
+                                IsToggled="True"
+                                Toggled="OnPropertiesVisibleToggled"/>
+                        <Label Text="IsVisible"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    <Label x:Name="PropertiesOpacityLabel"
+                           Text="Opacity: 1.0"/>
+                    <Slider Minimum="0"
+                            Maximum="1"
+                            Value="1"
+                            ValueChanged="OnPropertiesOpacityChanged"/>
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Start" Clicked="OnPropertiesAlignmentClicked"/>
+                        <Button Text="Center" Clicked="OnPropertiesAlignmentClicked"/>
+                        <Button Text="End" Clicked="OnPropertiesAlignmentClicked"/>
+                        <Button Text="Fill" Clicked="OnPropertiesAlignmentClicked"/>
+                    </HorizontalStackLayout>
+                    <Grid BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2A2A2A}"
+                          HeightRequest="80">
+                        <skia:SKCanvasView x:Name="PropertiesCanvas"
+                                           WidthRequest="120"
+                                           HorizontalOptions="Center"
+                                           PaintSurface="OnPropertiesPaintSurface"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Updating the page while painting -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Updating the Page While Painting"
+                           FontAttributes="Bold"/>
+                    <Label Text="The paint handler updates the label below every time the canvas paints. Start the animation to repaint the canvas continuously."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+                    <Button x:Name="AnimationButton"
+                            Text="Start Animation"
+                            Clicked="OnAnimationClicked"/>
+                    <skia:SKCanvasView x:Name="AnimatedCanvas"
+                                       HeightRequest="100"
+                                       PaintSurface="OnAnimatedPaintSurface"/>
+                    <Label x:Name="PaintCountLabel"
+                           Text="Painted 0 times"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -39,11 +39,14 @@ namespace Avalonia.Controls.Maui.Extensions
         {
             if (editor.TextColor != null)
             {
-                textBox.Foreground = editor.TextColor.ToPlatform();
+                var brush = editor.TextColor.ToPlatform();
+                textBox.Foreground = brush;
+                textBox.CaretBrush = brush;
             }
             else
             {
                 textBox.ClearValue(AvaloniaTextBox.ForegroundProperty);
+                textBox.ClearValue(AvaloniaTextBox.CaretBrushProperty);
             }
         }
 

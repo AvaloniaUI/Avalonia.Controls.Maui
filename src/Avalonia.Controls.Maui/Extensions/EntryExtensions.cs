@@ -41,11 +41,14 @@ public static class EntryExtensions
     {
         if (entry.TextColor != null)
         {
-            textBox.Foreground = entry.TextColor.ToPlatform();
+            var brush = entry.TextColor.ToPlatform();
+            textBox.Foreground = brush;
+            textBox.CaretBrush = brush;
         }
         else
         {
             textBox.ClearValue(AvaloniaTextBox.ForegroundProperty);
+            textBox.ClearValue(AvaloniaTextBox.CaretBrushProperty);
         }
     }
 

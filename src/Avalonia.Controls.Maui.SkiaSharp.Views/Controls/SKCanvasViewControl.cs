@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using Avalonia.Rendering.SceneGraph;
-using Avalonia.Skia;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using PointerEventArgs = Avalonia.Input.PointerEventArgs;
@@ -19,8 +21,15 @@ public class SKCanvasViewControl : Control
 {
     private bool _enableTouchEvents;
     private bool _ignorePixelScaling;
-    private long _nextTouchId;
-    private readonly Dictionary<IPointer, long> _pointerTouchIds = new();
+    // Avalonia gives every mouse, pen and touch contact its own pointer ID, which the touch
+    // actions report, so the IDs of pointers in use never collide
+    private readonly HashSet<IPointer> _pressedPointers = new();
+    private WriteableBitmap? _bitmap;
+    private TopLevel? _topLevel;
+    private bool _paintPending;
+    private bool _painting;
+    private int _invalidateQueued;
+    private List<Visual>? _watchedAncestors;
 
     /// <summary>
     /// Gets or sets whether pixel scaling should be ignored when reporting canvas size.
@@ -55,14 +64,201 @@ public class SKCanvasViewControl : Control
     public Func<SKTouchEventArgs, bool>? TouchAction { get; set; }
 
     /// <summary>
-    /// Invalidates the canvas, triggering a re-render on the UI thread.
+    /// Invalidates the canvas. The canvas is painted on the UI thread, outside the render pass,
+    /// and requests made before the paint runs are merged into one paint. A request made while
+    /// the canvas paints is painted on the next frame. Can be called from any thread.
     /// </summary>
     public void InvalidateCanvas()
     {
-        this.Dispatcher.Post(() =>
+        // Below input, so a thread that keeps invalidating the canvas cannot hold up input. One
+        // request at a time is queued, so a burst of requests is merged into one paint.
+        if (!Dispatcher.CheckAccess())
         {
-            base.InvalidateVisual();
-        });
+            if (Interlocked.Exchange(ref _invalidateQueued, 1) == 0)
+                Dispatcher.Post(InvalidateQueued, DispatcherPriority.Background);
+            return;
+        }
+
+        if (_paintPending)
+            return;
+
+        _paintPending = true;
+        if (_painting && _topLevel != null)
+            _topLevel.RequestAnimationFrame(_ => PaintCanvas());
+        else
+            Dispatcher.Post(PaintCanvas);
+    }
+
+    private void InvalidateQueued()
+    {
+        Interlocked.Exchange(ref _invalidateQueued, 0);
+        InvalidateCanvas();
+    }
+
+    /// <inheritdoc/>
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+
+        _topLevel = TopLevel.GetTopLevel(this);
+        if (_topLevel != null)
+            _topLevel.ScalingChanged += OnScalingChanged;
+
+        InvalidateCanvas();
+    }
+
+    /// <inheritdoc/>
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+
+        if (_topLevel != null)
+        {
+            _topLevel.ScalingChanged -= OnScalingChanged;
+            _topLevel = null;
+        }
+
+        StopWatchingAncestors();
+
+        // A bitmap that is being painted is disposed by the paint once it is done with it
+        if (!_painting)
+            _bitmap?.Dispose();
+        _bitmap = null;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == BoundsProperty)
+        {
+            var (oldBounds, newBounds) = change.GetOldAndNewValue<Rect>();
+            if (oldBounds.Size != newBounds.Size)
+                InvalidateCanvas();
+        }
+        else if (change.Property == IsVisibleProperty && IsVisible)
+        {
+            InvalidateCanvas();
+        }
+    }
+
+    private void OnScalingChanged(object? sender, EventArgs e) => InvalidateCanvas();
+
+    private void PaintCanvas()
+    {
+        _paintPending = false;
+
+        // A paint queued before the canvas left the window; attaching requests a new one
+        if (PaintSurfaceAction == null || !IsVisible || _topLevel == null)
+            return;
+
+        if (!IsEffectivelyVisible)
+        {
+            WatchAncestorsUntilVisible();
+            return;
+        }
+
+        var scaling = _topLevel.RenderScaling;
+        var viewSize = new PixelSize((int)Bounds.Width, (int)Bounds.Height);
+        var pixelSize = new PixelSize((int)(Bounds.Width * scaling), (int)(Bounds.Height * scaling));
+        if (pixelSize.Width <= 0 || pixelSize.Height <= 0)
+            return;
+
+        var dpi = new Vector(96 * scaling, 96 * scaling);
+        if (_bitmap == null || _bitmap.PixelSize != pixelSize || _bitmap.Dpi != dpi)
+        {
+            _bitmap?.Dispose();
+            _bitmap = new WriteableBitmap(
+                pixelSize,
+                dpi,
+                SKImageInfo.PlatformColorType == SKColorType.Rgba8888 ? PixelFormat.Rgba8888 : PixelFormat.Bgra8888,
+                AlphaFormat.Premul);
+        }
+
+        var bitmap = _bitmap;
+        try
+        {
+            PaintBitmap(bitmap, PaintSurfaceAction, pixelSize, viewSize, scaling);
+        }
+        finally
+        {
+            // The canvas left the window during the paint
+            if (bitmap != _bitmap)
+                bitmap.Dispose();
+        }
+
+        InvalidateVisual();
+    }
+
+    private void PaintBitmap(WriteableBitmap bitmap, Action<SKPaintSurfaceEventArgs> paintSurface,
+        PixelSize pixelSize, PixelSize viewSize, double scaling)
+    {
+        using (var framebuffer = bitmap.Lock())
+        {
+            var colorType = framebuffer.Format == PixelFormat.Rgba8888 ? SKColorType.Rgba8888 : SKColorType.Bgra8888;
+            var rawInfo = new SKImageInfo(pixelSize.Width, pixelSize.Height, colorType, SKAlphaType.Premul);
+
+            using var surface = SKSurface.Create(rawInfo, framebuffer.Address, framebuffer.RowBytes);
+            if (surface == null)
+                return;
+
+            SKImageInfo info;
+            if (_ignorePixelScaling)
+            {
+                info = rawInfo.WithSize(viewSize.Width, viewSize.Height);
+                surface.Canvas.Scale((float)scaling);
+            }
+            else
+            {
+                info = rawInfo;
+            }
+
+            _painting = true;
+            try
+            {
+                paintSurface(new SKPaintSurfaceEventArgs(surface, info, rawInfo));
+            }
+            finally
+            {
+                _painting = false;
+            }
+            surface.Flush();
+        }
+    }
+
+    // A hidden ancestor keeps the canvas from being seen, so it is painted once the ancestors
+    // that hide it are shown instead
+    private void WatchAncestorsUntilVisible()
+    {
+        if (_watchedAncestors != null)
+            return;
+
+        _watchedAncestors = new List<Visual>();
+        for (var ancestor = this.GetVisualParent(); ancestor != null; ancestor = ancestor.GetVisualParent())
+        {
+            ancestor.PropertyChanged += OnAncestorPropertyChanged;
+            _watchedAncestors.Add(ancestor);
+        }
+    }
+
+    private void StopWatchingAncestors()
+    {
+        if (_watchedAncestors == null)
+            return;
+
+        foreach (var ancestor in _watchedAncestors)
+            ancestor.PropertyChanged -= OnAncestorPropertyChanged;
+        _watchedAncestors = null;
+    }
+
+    private void OnAncestorPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property != IsVisibleProperty || !IsEffectivelyVisible)
+            return;
+
+        StopWatchingAncestors();
+        InvalidateCanvas();
     }
 
     /// <inheritdoc/>
@@ -81,17 +277,16 @@ public class SKCanvasViewControl : Control
         if (PaintSurfaceAction == null)
             return;
 
-        var bounds = Bounds;
-        if (bounds.Width <= 0 || bounds.Height <= 0)
-            return;
+        // Keeps the whole control hit-testable, also before the first paint
+        context.FillRectangle(Brushes.Transparent, new Rect(Bounds.Size));
 
-        var scaling = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
-        var operation = new SkiaCanvasDrawOperation(
-            new Rect(bounds.Size),
-            PaintSurfaceAction,
-            _ignorePixelScaling,
-            scaling);
-        context.Custom(operation);
+        // The source rect is in pixels: Avalonia's Skia backend reads it that way, so passing
+        // the bitmap's DPI-scaled Size would crop a high-DPI bitmap
+        if (_bitmap != null)
+        {
+            var pixelSize = _bitmap.PixelSize;
+            context.DrawImage(_bitmap, new Rect(0, 0, pixelSize.Width, pixelSize.Height), new Rect(_bitmap.Size));
+        }
     }
 
     /// <inheritdoc/>
@@ -101,9 +296,8 @@ public class SKCanvasViewControl : Control
         if (!_enableTouchEvents)
             return;
 
-        var touchId = ++_nextTouchId;
-        _pointerTouchIds[e.Pointer] = touchId;
-        var args = CreateTouchArgs(e, SKTouchAction.Pressed, true, touchId);
+        _pressedPointers.Add(e.Pointer);
+        var args = CreateTouchArgs(e, SKTouchAction.Pressed, true);
         if (TouchAction?.Invoke(args) == true || args.Handled)
         {
             e.Handled = true;
@@ -121,15 +315,49 @@ public class SKCanvasViewControl : Control
         if (!_enableTouchEvents)
             return;
 
-        if (!_pointerTouchIds.TryGetValue(e.Pointer, out var touchId))
-            return;
-
         var props = e.GetCurrentPoint(this).Properties;
         var inContact = props.IsLeftButtonPressed || props.IsMiddleButtonPressed || props.IsRightButtonPressed;
+
         if (!inContact)
+        {
+            RaiseHover(e, SKTouchAction.Moved);
+            return;
+        }
+
+        if (!_pressedPointers.Contains(e.Pointer))
             return;
 
-        var args = CreateTouchArgs(e, SKTouchAction.Moved, inContact, touchId);
+        var args = CreateTouchArgs(e, SKTouchAction.Moved, inContact);
+        if (TouchAction?.Invoke(args) == true || args.Handled)
+            e.Handled = true;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPointerEntered(PointerEventArgs e)
+    {
+        base.OnPointerEntered(e);
+        if (!_enableTouchEvents)
+            return;
+
+        RaiseHover(e, SKTouchAction.Entered);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPointerExited(PointerEventArgs e)
+    {
+        base.OnPointerExited(e);
+        if (!_enableTouchEvents)
+            return;
+
+        RaiseHover(e, SKTouchAction.Exited);
+    }
+
+    private void RaiseHover(PointerEventArgs e, SKTouchAction action)
+    {
+        var props = e.GetCurrentPoint(this).Properties;
+        var inContact = props.IsLeftButtonPressed || props.IsMiddleButtonPressed || props.IsRightButtonPressed;
+
+        var args = CreateTouchArgs(e, action, inContact);
         if (TouchAction?.Invoke(args) == true || args.Handled)
             e.Handled = true;
     }
@@ -141,10 +369,10 @@ public class SKCanvasViewControl : Control
         if (!_enableTouchEvents)
             return;
 
-        if (!_pointerTouchIds.Remove(e.Pointer, out var touchId))
+        if (!_pressedPointers.Remove(e.Pointer))
             return;
 
-        var args = CreateTouchArgs(e, SKTouchAction.Released, false, touchId);
+        var args = CreateTouchArgs(e, SKTouchAction.Released, false);
         if (TouchAction?.Invoke(args) == true || args.Handled)
             e.Handled = true;
     }
@@ -162,10 +390,9 @@ public class SKCanvasViewControl : Control
             ? new SKPoint((float)point.X, (float)point.Y)
             : new SKPoint((float)(point.X * scaling), (float)(point.Y * scaling));
 
-        _pointerTouchIds.TryGetValue(e.Pointer, out var touchId);
         var wheelDelta = (int)(e.Delta.Y * 120);
         var args = new SKTouchEventArgs(
-            touchId,
+            e.Pointer.Id,
             SKTouchAction.WheelChanged,
             SKMouseButton.Unknown,
             SKTouchDeviceType.Mouse,
@@ -184,10 +411,10 @@ public class SKCanvasViewControl : Control
         if (!_enableTouchEvents)
             return;
 
-        _pointerTouchIds.Remove(e.Pointer);
+        _pressedPointers.Remove(e.Pointer);
     }
 
-    private SKTouchEventArgs CreateTouchArgs(PointerEventArgs e, SKTouchAction action, bool inContact, long touchId)
+    private SKTouchEventArgs CreateTouchArgs(PointerEventArgs e, SKTouchAction action, bool inContact)
     {
         var point = e.GetPosition(this);
         var scaling = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
@@ -233,91 +460,11 @@ public class SKCanvasViewControl : Control
         }
 
         return new SKTouchEventArgs(
-            touchId,
+            e.Pointer.Id,
             action,
             mouseButton,
             deviceType,
             location,
             inContact);
-    }
-
-    private class SkiaCanvasDrawOperation : ICustomDrawOperation
-    {
-        private readonly Action<SKPaintSurfaceEventArgs> _paintAction;
-        private readonly bool _ignorePixelScaling;
-        private readonly double _scaling;
-
-        public SkiaCanvasDrawOperation(
-            Rect bounds,
-            Action<SKPaintSurfaceEventArgs> paintAction,
-            bool ignorePixelScaling,
-            double scaling)
-        {
-            Bounds = bounds;
-            _paintAction = paintAction;
-            _ignorePixelScaling = ignorePixelScaling;
-            _scaling = scaling;
-        }
-
-        public Rect Bounds { get; }
-
-        public void Dispose()
-        {
-        }
-
-        public bool Equals(ICustomDrawOperation? other) => other is SkiaCanvasDrawOperation;
-
-        public bool HitTest(Point p) => Bounds.Contains(p);
-
-        public void Render(ImmediateDrawingContext context)
-        {
-            var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
-            if (leaseFeature == null)
-                return;
-
-            using var lease = leaseFeature.Lease();
-            var canvas = lease?.SkCanvas;
-            if (canvas == null)
-                return;
-
-            var pixelWidth = (int)(Bounds.Width * _scaling);
-            var pixelHeight = (int)(Bounds.Height * _scaling);
-
-            if (pixelWidth <= 0 || pixelHeight <= 0)
-                return;
-
-            var rawInfo = new SKImageInfo(pixelWidth, pixelHeight, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
-
-            // Create a dedicated surface sized to our control's bounds.
-            // The lease surface is the entire window — passing it to the callback
-            // would expose wrong dimensions and canvas transforms to the consumer.
-            using var surface = SKSurface.Create(rawInfo);
-            if (surface == null)
-                return;
-
-            var surfaceCanvas = surface.Canvas;
-
-            SKImageInfo info;
-            if (_ignorePixelScaling)
-            {
-                info = new SKImageInfo((int)Bounds.Width, (int)Bounds.Height, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
-                surfaceCanvas.Scale((float)_scaling);
-            }
-            else
-            {
-                info = rawInfo;
-            }
-
-            var args = new SKPaintSurfaceEventArgs(surface, info, rawInfo);
-            _paintAction(args);
-
-            // Blit the result onto the lease canvas at the control's position
-            surface.Flush();
-            using var image = surface.Snapshot();
-            canvas.Save();
-            canvas.Scale(1.0f / (float)_scaling);
-            canvas.DrawImage(image, 0, 0);
-            canvas.Restore();
-        }
     }
 }

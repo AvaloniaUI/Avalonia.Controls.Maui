@@ -12,6 +12,24 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
 {
     public class EntryHandlerTests : HandlerTestBase<EntryHandler, EntryStub>
     {
+        [AvaloniaFact(DisplayName = "Caret Uses TextColor")]
+        public async Task CaretUsesTextColor()
+        {
+            var view = new EntryStub { TextColor = Microsoft.Maui.Graphics.Colors.Red };
+            var handler = await CreateHandlerAsync(view);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                var caret = Assert.IsAssignableFrom<ISolidColorBrush>(handler.PlatformView.CaretBrush);
+                Assert.Equal(Avalonia.Media.Colors.Red, caret.Color);
+
+                view.TextColor = null!;
+                handler.UpdateValue(nameof(ITextStyle.TextColor));
+
+                Assert.False(handler.PlatformView.IsSet(Avalonia.Controls.TextBox.CaretBrushProperty));
+            });
+        }
+
         [AvaloniaFact(DisplayName = "Handler Creates Platform View")]
         public async Task HandlerCreatesPlatformView()
         {

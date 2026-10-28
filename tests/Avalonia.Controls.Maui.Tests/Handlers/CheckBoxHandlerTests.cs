@@ -1,6 +1,7 @@
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Avalonia.Headless.XUnit;
+using Avalonia.VisualTree;
 using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
 using MauiCheckBoxHandler = Avalonia.Controls.Maui.Handlers.CheckBoxHandler;
@@ -9,6 +10,49 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public partial class CheckBoxHandlerTests : HandlerTestBase<MauiCheckBoxHandler, CheckBoxStub>
 {
+    [AvaloniaFact(DisplayName = "Foreground Colors The Box In Every State")]
+    public async Task ForegroundColorsTheBoxInEveryState()
+    {
+        var checkBox = new CheckBoxStub { Foreground = new SolidPaint(Colors.Red) };
+        var handler = await CreateHandlerAsync(checkBox);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            foreach (var key in new[]
+            {
+                "CheckBoxCheckBackgroundStrokeUnchecked", "CheckBoxCheckBackgroundStrokeUncheckedDisabled",
+                "CheckBoxCheckBackgroundStrokeChecked", "CheckBoxCheckBackgroundStrokeIndeterminate",
+                "CheckBoxCheckBackgroundFillChecked", "CheckBoxCheckBackgroundFillCheckedPointerOver",
+            })
+            {
+                var brush = Assert.IsAssignableFrom<Avalonia.Media.ISolidColorBrush>(handler.PlatformView.Resources[key]);
+                Assert.Equal(Avalonia.Media.Colors.Red, brush.Color);
+            }
+
+            checkBox.Foreground = null;
+            handler.UpdateValue(nameof(ICheckBox.Foreground));
+
+            Assert.False(handler.PlatformView.Resources.ContainsKey("CheckBoxCheckBackgroundFillChecked"));
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "A Foreground Paint Without A Color Removes The Box Colors")]
+    public async Task ForegroundPaintWithoutColorRemovesBoxColors()
+    {
+        var checkBox = new CheckBoxStub { Foreground = new SolidPaint(Colors.Red) };
+        var handler = await CreateHandlerAsync(checkBox);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            checkBox.Foreground = new SolidPaint();
+            handler.UpdateValue(nameof(ICheckBox.Foreground));
+
+            Assert.False(handler.PlatformView.Resources.ContainsKey("CheckBoxCheckBackgroundFillChecked"));
+            Assert.False(handler.PlatformView.IsSet(Avalonia.Controls.Primitives.TemplatedControl.ForegroundProperty));
+            Assert.False(handler.PlatformView.IsSet(Avalonia.Controls.Primitives.TemplatedControl.BorderBrushProperty));
+        });
+    }
+
     [AvaloniaFact(DisplayName = "IsChecked Initializes Correctly")]
     public async Task IsCheckedInitializesCorrectly()
     {
@@ -18,6 +62,116 @@ public partial class CheckBoxHandlerTests : HandlerTestBase<MauiCheckBoxHandler,
         };
 
         await ValidatePropertyInitValue(checkBox, () => checkBox.IsChecked, GetNativeIsChecked, checkBox.IsChecked);
+    }
+
+    [AvaloniaTheory(DisplayName = "CheckBox Stays Inside A Small Grid Cell")]
+    [InlineData(-1, 20, 20)]
+    [InlineData(44, 24, 24)]
+    public async Task CheckBoxStaysInsideSmallGridCell(double minimumRequest, double column, double row)
+    {
+        var checkBox = new Microsoft.Maui.Controls.CheckBox { IsChecked = true };
+        if (minimumRequest > 0)
+        {
+            checkBox.MinimumWidthRequest = minimumRequest;
+            checkBox.MinimumHeightRequest = minimumRequest;
+        }
+        var grid = new Microsoft.Maui.Controls.Grid
+        {
+            ColumnDefinitions = new Microsoft.Maui.Controls.ColumnDefinitionCollection(new Microsoft.Maui.Controls.ColumnDefinition(column), new Microsoft.Maui.Controls.ColumnDefinition(Microsoft.Maui.GridLength.Star)),
+            RowDefinitions = new Microsoft.Maui.Controls.RowDefinitionCollection(new Microsoft.Maui.Controls.RowDefinition(row), new Microsoft.Maui.Controls.RowDefinition(Microsoft.Maui.GridLength.Star)),
+        };
+        grid.Add(checkBox);
+
+        var bounds = await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(grid);
+            var window = new Window { Width = 200, Height = 200, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                var platformView = (Control)checkBox.Handler!.PlatformView!;
+                var origin = platformView.TranslatePoint(default, (Visual)handler.PlatformView!)!.Value;
+                return new Rect(origin, platformView.Bounds.Size);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.True(bounds.X >= 0 && bounds.Y >= 0 && bounds.Right <= column + 0.01 && bounds.Bottom <= row + 0.01,
+            $"CheckBox {bounds} spills out of its {column}x{row} cell");
+    }
+
+    [AvaloniaFact(DisplayName = "MinimumWidthRequest Still Widens The CheckBox When There Is Room")]
+    public async Task MinimumWidthRequestStillWidensCheckBox()
+    {
+        var checkBox = new Microsoft.Maui.Controls.CheckBox { MinimumWidthRequest = 44 };
+        var layout = new Microsoft.Maui.Controls.HorizontalStackLayout { checkBox };
+
+        var width = await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(layout);
+            var window = new Window { Width = 200, Height = 100, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                return ((Control)checkBox.Handler!.PlatformView!).Bounds.Width;
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.True(checkBox.Frame.Width >= 44, $"CheckBox frame is {checkBox.Frame.Width} wide");
+        Assert.True(width >= 44, $"CheckBox is {width} wide");
+    }
+
+    [AvaloniaFact(DisplayName = "Box Is Vertically Centered When Taller Than Template")]
+    public async Task BoxIsVerticallyCenteredWhenTallerThanTemplate()
+    {
+        var checkBox = new CheckBoxStub
+        {
+            Height = Microsoft.Maui.Primitives.Dimension.Unset,
+            MinimumHeight = 44
+        };
+
+        var handler = await CreateHandlerAsync(checkBox);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var platformView = handler.PlatformView;
+            var window = new Window
+            {
+                Width = 200,
+                Height = 200,
+                Content = new Avalonia.Controls.Canvas { Children = { platformView } }
+            };
+            window.Show();
+
+            try
+            {
+                platformView.Measure(new global::Avalonia.Size(100, 44));
+                platformView.Arrange(new global::Avalonia.Rect(0, 0, 100, 44));
+
+                Assert.Equal(44, platformView.Bounds.Height, 3);
+
+                var box = platformView.GetVisualDescendants()
+                    .OfType<Border>()
+                    .Single(b => b.Name == "NormalRectangle");
+                var boxTop = box.TranslatePoint(new global::Avalonia.Point(0, 0), platformView)!.Value.Y;
+                var boxCenter = boxTop + box.Bounds.Height / 2;
+
+                Assert.Equal(platformView.Bounds.Height / 2, boxCenter, 1);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
     }
 
     [AvaloniaTheory(DisplayName = "IsChecked Updates Correctly")]

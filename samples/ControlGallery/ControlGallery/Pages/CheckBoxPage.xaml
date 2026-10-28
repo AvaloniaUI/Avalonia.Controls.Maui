@@ -99,6 +99,52 @@
                         <Label Text="Purple"
                                VerticalOptions="Center"/>
                     </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="False"
+                                  Color="Red"/>
+                        <Label Text="Red (unchecked)"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Height -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Minimum Height"
+                           FontAttributes="Bold"/>
+                    <Label Text="Check boxes with a MinimumHeightRequest of 44, shaded to show their height, next to vertically centered labels."
+                           FontSize="12"
+                           FontAttributes="Italic"/>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="True"
+                                  MinimumHeightRequest="44"
+                                  BackgroundColor="{AppThemeBinding Light=#EEEEEE, Dark=#333333}"/>
+                        <Label Text="Checked"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="False"
+                                  MinimumHeightRequest="44"
+                                  BackgroundColor="{AppThemeBinding Light=#EEEEEE, Dark=#333333}"/>
+                        <Label Text="Unchecked"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <CheckBox IsChecked="True"
+                                  HeightRequest="64"
+                                  BackgroundColor="{AppThemeBinding Light=#EEEEEE, Dark=#333333}"/>
+                        <Label Text="HeightRequest 64"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
 

@@ -10,6 +10,227 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, LabelStub>
 {
+    [AvaloniaTheory(DisplayName = "VerticalTextAlignment Positions The Text")]
+    [InlineData(TextAlignment.Start, 0, 10)]
+    [InlineData(TextAlignment.Center, 35, 50)]
+    [InlineData(TextAlignment.End, 75, 100)]
+    public async Task VerticalTextAlignmentPositionsText(TextAlignment alignment, int minTop, int maxTop)
+    {
+        var label = new LabelStub
+        {
+            Text = "Hi",
+            TextColor = Colors.Black,
+            Height = 100,
+            Width = 100,
+            VerticalTextAlignment = alignment,
+        };
+        var handler = await CreateHandlerAsync(label);
+
+        var top = await InvokeOnMainThreadAsync(() =>
+        {
+            var window = new Window
+            {
+                Width = 100,
+                Height = 100,
+                Background = Avalonia.Media.Brushes.White,
+                Content = handler.PlatformView,
+            };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                using var frame = Avalonia.Headless.HeadlessWindowExtensions.CaptureRenderedFrame(window)!;
+                return FirstInkRow(frame);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.InRange(top, minTop, maxTop);
+    }
+
+    [AvaloniaFact(DisplayName = "TextBlock styles apply to labels")]
+    public async Task TextBlockStylesApplyToLabels()
+    {
+        var handler = await CreateHandlerAsync(new LabelStub { Text = "Hi" });
+
+        var tag = await InvokeOnMainThreadAsync(() =>
+        {
+            var window = new Window { Content = handler.PlatformView };
+            window.Styles.Add(new Avalonia.Styling.Style(x => Avalonia.Styling.Selectors.OfType<TextBlock>(x))
+            {
+                Setters = { new Avalonia.Styling.Setter(Control.TagProperty, "styled") },
+            });
+            window.Show();
+            try
+            {
+                return ((Control)handler.PlatformView).Tag;
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.Equal("styled", tag);
+    }
+
+    [AvaloniaTheory(DisplayName = "Glyphs that reach past the text's width are drawn whole")]
+    // Open Sans and Gallery Script have no italic or bold faces, so those are made from the regular face
+    [InlineData("OpenSans-Regular.ttf#Open Sans", false, false, "fff")]
+    [InlineData("OpenSans-Regular.ttf#Open Sans", false, true, "Click count: 4")]
+    [InlineData("OpenSans-Regular.ttf#Open Sans", true, false, "fff")]
+    [InlineData("OpenSans-Regular.ttf#Open Sans", true, true, "Click count: 4")]
+    [InlineData("GalleryScript-Regular.ttf#Gallery Script", false, false, "Wj")]
+    [InlineData("GalleryScript-Regular.ttf#Gallery Script", false, true, "fff")]
+    [InlineData("GalleryScript-Regular.ttf#Gallery Script", true, false, "fff")]
+    [InlineData("GalleryScript-Regular.ttf#Gallery Script", true, true, "fff")]
+    [InlineData(null, false, true, "Click count: 4")]
+    [InlineData(null, true, true, "Wj")]
+    public async Task GlyphsPastTextWidthAreDrawnWhole(string? font, bool bold, bool italic, string text)
+    {
+        var family = font is null ? null : $"avares://{typeof(LabelHandlerTests).Assembly.GetName().Name}/Assets/Fonts/{font}";
+        var mauiFont = Microsoft.Maui.Font.OfSize(family, 40, bold ? FontWeight.Bold : FontWeight.Regular);
+        var label = new LabelStub
+        {
+            Text = text,
+            TextColor = Colors.Black,
+            Font = italic ? mauiFont.WithSlant(FontSlant.Italic) : mauiFont,
+            Width = double.NaN,
+            Height = double.NaN,
+        };
+        var handler = await CreateHandlerAsync(label);
+
+        var (labelInk, unclippedInk) = await InvokeOnMainThreadAsync(() =>
+        {
+            // The label above, and below it the same text drawn without any clipping
+            var textBlock = (TextBlock)handler.PlatformView;
+            textBlock.Margin = new Avalonia.Thickness(50, 10, 0, 0);
+            var unclipped = new TextBlock
+            {
+                Text = textBlock.Text,
+                FontFamily = textBlock.FontFamily,
+                FontSize = textBlock.FontSize,
+                FontStyle = textBlock.FontStyle,
+                FontWeight = textBlock.FontWeight,
+                Foreground = Avalonia.Media.Brushes.Black,
+                ClipToBounds = false,
+                Margin = new Avalonia.Thickness(50, 110, 0, 0),
+            };
+            foreach (var control in new[] { textBlock, unclipped })
+            {
+                control.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
+                control.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top;
+            }
+
+            var window = new Window
+            {
+                Width = 500,
+                Height = 220,
+                Background = Avalonia.Media.Brushes.White,
+                Content = new Panel { Children = { textBlock, unclipped } },
+            };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                using var frame = Avalonia.Headless.HeadlessWindowExtensions.CaptureRenderedFrame(window)!;
+                return (InkColumns(frame, 0, 105), InkColumns(frame, 105, 215));
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.Equal(unclippedInk, labelInk);
+    }
+
+    [AvaloniaFact(DisplayName = "Text that does not fit is clipped to the label's bounds")]
+    public async Task TextThatDoesNotFitIsClipped()
+    {
+        var label = new LabelStub
+        {
+            Text = "Text that is much wider than the label",
+            TextColor = Colors.Black,
+            Width = 50,
+            Height = double.NaN,
+        };
+        var handler = await CreateHandlerAsync(label);
+
+        var (labelRight, inkRight) = await InvokeOnMainThreadAsync(() =>
+        {
+            var textBlock = (TextBlock)handler.PlatformView;
+            textBlock.HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
+            textBlock.VerticalAlignment = Avalonia.Layout.VerticalAlignment.Top;
+
+            var window = new Window
+            {
+                Width = 400,
+                Height = 100,
+                Background = Avalonia.Media.Brushes.White,
+                Content = textBlock,
+            };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                using var frame = Avalonia.Headless.HeadlessWindowExtensions.CaptureRenderedFrame(window)!;
+                return (textBlock.Bounds.Right, InkColumns(frame, 0, 100).Last);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.True(inkRight < labelRight, $"Ink ends at {inkRight}, the label at {labelRight}");
+    }
+
+    // The first and last pixel columns that hold dark text pixels, between two rows
+    static (int First, int Last) InkColumns(Avalonia.Media.Imaging.WriteableBitmap frame, int top, int bottom)
+    {
+        using var locked = frame.Lock();
+        int first = -1, last = -1;
+        for (var x = 0; x < locked.Size.Width; x++)
+        {
+            for (var y = top; y < bottom; y++)
+            {
+                var offset = y * locked.RowBytes + x * 4;
+                if (System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset) < 128)
+                {
+                    if (first < 0)
+                        first = x;
+                    last = x;
+                    break;
+                }
+            }
+        }
+
+        return (first, last);
+    }
+
+    // The first pixel row that holds dark text pixels
+    static int FirstInkRow(Avalonia.Media.Imaging.WriteableBitmap frame)
+    {
+        using var locked = frame.Lock();
+        for (var y = 0; y < locked.Size.Height; y++)
+        {
+            for (var x = 0; x < locked.Size.Width; x++)
+            {
+                var offset = y * locked.RowBytes + x * 4;
+                var b0 = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset);
+                var b1 = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset + 1);
+                if (b0 < 128 && b1 < 128)
+                    return y;
+            }
+        }
+
+        return -1;
+    }
+
     [AvaloniaFact(DisplayName = "Text Initializes Correctly")]
     public async Task TextInitializesCorrectly()
     {

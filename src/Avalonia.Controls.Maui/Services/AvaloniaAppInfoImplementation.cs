@@ -1,3 +1,4 @@
+using Avalonia.Platform;
 using Avalonia.Styling;
 using Microsoft.Maui.ApplicationModel;
 using System;
@@ -52,27 +53,32 @@ internal class AvaloniaAppInfoImplementation : IAppInfo
     }
 
     /// <summary>
-    /// Gets the requested theme of the application based on Avalonia's current theme variant.
-    /// Returns <see cref="AppTheme.Dark"/> for dark theme, <see cref="AppTheme.Light"/> for light theme,
-    /// or <see cref="AppTheme.Unspecified"/> if the theme cannot be determined.
+    /// Gets the theme of the platform: the desktop's light or dark setting, which an app's own theme
+    /// (<c>Application.UserAppTheme</c>) does not change.
+    /// Returns <see cref="AppTheme.Unspecified"/> if the theme cannot be determined.
     /// </summary>
     public AppTheme RequestedTheme
     {
         get
         {
-            // Check if we're running on the UI thread and have access to the application
-            if (Application.Current != null)
-            {
-                // Avalonia uses ThemeVariant for theme detection
-                var theme = Application.Current.ActualThemeVariant;
+            var application = Application.Current;
+            if (application == null)
+                return AppTheme.Unspecified;
 
-                if (theme == ThemeVariant.Dark)
-                    return AppTheme.Dark;
-                else if (theme == ThemeVariant.Light)
-                    return AppTheme.Light;
+            if (application.PlatformSettings is { } platformSettings)
+            {
+                return platformSettings.GetColorValues().ThemeVariant == PlatformThemeVariant.Dark
+                    ? AppTheme.Dark
+                    : AppTheme.Light;
             }
 
-            // Default to unspecified if we can't determine the theme
+            // Without platform settings, the application's theme is the best indication
+            var theme = application.ActualThemeVariant;
+            if (theme == ThemeVariant.Dark)
+                return AppTheme.Dark;
+            if (theme == ThemeVariant.Light)
+                return AppTheme.Light;
+
             return AppTheme.Unspecified;
         }
     }
