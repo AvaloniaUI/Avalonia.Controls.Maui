@@ -54,7 +54,22 @@
 		<EnableTrimAnalyzer>true</EnableTrimAnalyzer>
 		<ILLinkTreatWarningsAsErrors>true</ILLinkTreatWarningsAsErrors>
 		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
+		<WarningsNotAsErrors>$(WarningsNotAsErrors);IL2104</WarningsNotAsErrors>
 	</PropertyGroup>
+
+	<!-- SKGLView's constructor makes a string-path binding (IL2026): keep the property it binds to,
+	     and report SkiaSharp.Views.Maui.Controls' trim warnings as one non-error IL2104 -->
+	<ItemGroup>
+		<TrimmerRootDescriptor Include="TrimmerRoots.xml" />
+	</ItemGroup>
+
+	<Target Name="_SkiaSharpViewsSingleTrimWarning" BeforeTargets="_ComputeIlcCompileInputs">
+		<ItemGroup>
+			<ResolvedFileToPublish Condition="'%(Filename)' == 'SkiaSharp.Views.Maui.Controls'">
+				<TrimmerSingleWarn>true</TrimmerSingleWarn>
+			</ResolvedFileToPublish>
+		</ItemGroup>
+	</Target>
 
 	<ItemGroup>
 		<!-- App Icon -->
