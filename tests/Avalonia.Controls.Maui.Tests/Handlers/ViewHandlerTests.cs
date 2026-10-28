@@ -448,6 +448,49 @@ public class ViewHandlerTests : HandlerTestBase
         }
     }
 
+    [AvaloniaFact(DisplayName = "Loaded handler can change its row while the row's binding context is applied")]
+    public async Task LoadedHandlerCanChangeRowWhileBindingContextIsApplied()
+    {
+        // The row's content comes from a binding, so it is created and attached while MAUI
+        // passes the row's binding context to the row's children
+        var row = new Microsoft.Maui.Controls.Grid();
+        var content = new MauiContentView();
+        content.SetBinding(MauiContentView.ContentProperty, new Microsoft.Maui.Controls.Binding(".", converter: new LabelWithLoadedHandler(row)));
+        row.Add(content);
+        row.Add(new Microsoft.Maui.Controls.Label { Text = "Sibling" });
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<LayoutHandler>(row);
+            var window = new Window { Width = 200, Height = 200, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                row.BindingContext = "Title";
+                Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(3, row.Count);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    private sealed class LabelWithLoadedHandler(Microsoft.Maui.Controls.Grid row) : Microsoft.Maui.Controls.IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
+        {
+            var label = new Microsoft.Maui.Controls.Label { Text = value as string };
+            label.Loaded += (_, _) => row.Add(new Microsoft.Maui.Controls.BoxView { HeightRequest = 2 });
+            return label;
+        }
+
+        public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture) =>
+            throw new NotSupportedException();
+    }
+
     [AvaloniaFact(DisplayName = "Focused/Unfocused reflect platform focus")]
     public async Task FocusedAndUnfocusedReflectPlatformFocus()
     {

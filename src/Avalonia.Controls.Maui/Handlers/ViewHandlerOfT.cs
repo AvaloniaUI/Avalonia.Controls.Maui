@@ -357,13 +357,13 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
     /// </summary>
     private void AttachPlatformViewEvents(TPlatformView platformView)
     {
-        platformView.AttachedToVisualTree += OnPlatformViewAttachedToVisualTree;
-        platformView.DetachedFromVisualTree += OnPlatformViewDetachedFromVisualTree;
+        platformView.Loaded += OnPlatformViewLoaded;
+        platformView.Unloaded += OnPlatformViewUnloaded;
         platformView.GotFocus += OnPlatformViewGotFocus;
         platformView.LostFocus += OnPlatformViewLostFocus;
         platformView.PropertyChanged += OnPlatformViewPropertyChanged;
 
-        if (platformView.Parent != null)
+        if (platformView.IsLoaded)
         {
             _isLoaded = true;
             TrySendLoaded();
@@ -380,14 +380,17 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
     /// </summary>
     private void DetachPlatformViewEvents(TPlatformView platformView)
     {
-        platformView.AttachedToVisualTree -= OnPlatformViewAttachedToVisualTree;
-        platformView.DetachedFromVisualTree -= OnPlatformViewDetachedFromVisualTree;
+        platformView.Loaded -= OnPlatformViewLoaded;
+        platformView.Unloaded -= OnPlatformViewUnloaded;
         platformView.GotFocus -= OnPlatformViewGotFocus;
         platformView.LostFocus -= OnPlatformViewLostFocus;
         platformView.PropertyChanged -= OnPlatformViewPropertyChanged;
     }
 
-    private void OnPlatformViewAttachedToVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
+    // Avalonia raises Loaded after the view joins the visual tree, from the dispatcher, as the other
+    // platforms do. Attaching can happen while MAUI is updating the view's parent, for example while
+    // it passes a binding context to its children, so a Loaded handler must not run at that point.
+    private void OnPlatformViewLoaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (_isLoaded)
             return;
@@ -396,7 +399,7 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
         TrySendLoaded();
     }
 
-    private void OnPlatformViewDetachedFromVisualTree(object? sender, Avalonia.VisualTreeAttachmentEventArgs e)
+    private void OnPlatformViewUnloaded(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (!_isLoaded)
             return;
