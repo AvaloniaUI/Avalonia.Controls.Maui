@@ -203,9 +203,12 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
     /// <returns>The desired size of the view.</returns>
     private static Microsoft.Maui.Graphics.Size MeasureCore(PlatformView viewToMeasure, double widthConstraint, double heightConstraint)
     {
+        // MAUI has already deflated the constraints by the view's margin, but Avalonia's Measure
+        // deflates them by the control's Margin again. Inflate first so it is only removed once.
         var avaloniaConstraint = new global::Avalonia.Size(
             double.IsNaN(widthConstraint) ? double.PositiveInfinity : widthConstraint,
-            double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint);
+            double.IsNaN(heightConstraint) ? double.PositiveInfinity : heightConstraint)
+            .Inflate(viewToMeasure.Margin);
 
         viewToMeasure.Measure(avaloniaConstraint);
 

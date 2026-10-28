@@ -108,6 +108,39 @@ public class ViewHandlerTests : HandlerTestBase
         Assert.Equal(new global::Avalonia.Thickness(1, 2, 3, 4), platformMargin);
     }
 
+    [AvaloniaFact(DisplayName = "Margin is subtracted from measure constraints only once")]
+    public async Task MarginIsSubtractedFromMeasureConstraintsOnlyOnce()
+    {
+        const string text = "The quick brown fox jumps over the lazy dog and keeps on running far away";
+
+        var withMargin = new Microsoft.Maui.Controls.Label
+        {
+            Text = text,
+            LineBreakMode = Microsoft.Maui.LineBreakMode.WordWrap,
+            Margin = new Microsoft.Maui.Thickness(50, 5, 50, 5)
+        };
+        var withoutMargin = new Microsoft.Maui.Controls.Label
+        {
+            Text = text,
+            LineBreakMode = Microsoft.Maui.LineBreakMode.WordWrap
+        };
+
+        var (marginSize, plainSize) = await InvokeOnMainThreadAsync(() =>
+        {
+            CreateHandler<LabelHandler>(withMargin);
+            CreateHandler<LabelHandler>(withoutMargin);
+
+            // MAUI deflates the constraints by the margin before asking the handler, so the
+            // label with a margin must see the same 150-wide space as the plain one.
+            var marginSize = ((Microsoft.Maui.IView)withMargin).Measure(250, double.PositiveInfinity);
+            var plainSize = ((Microsoft.Maui.IView)withoutMargin).Measure(150, double.PositiveInfinity);
+            return (marginSize, plainSize);
+        });
+
+        Assert.Equal(plainSize.Width + 100, marginSize.Width, 3);
+        Assert.Equal(plainSize.Height + 10, marginSize.Height, 3);
+    }
+
     [AvaloniaFact(DisplayName = "InputTransparent maps to IsHitTestVisible")]
     public async Task InputTransparentMapsToIsHitTestVisible()
     {
