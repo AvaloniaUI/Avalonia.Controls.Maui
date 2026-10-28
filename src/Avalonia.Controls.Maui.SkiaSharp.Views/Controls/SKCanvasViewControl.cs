@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
@@ -67,9 +68,10 @@ public class SKCanvasViewControl : Control
     /// </summary>
     public void InvalidateCanvas()
     {
+        // Below input, so a thread that keeps invalidating the canvas cannot hold up input
         if (!Dispatcher.CheckAccess())
         {
-            Dispatcher.Post(InvalidateCanvas);
+            Dispatcher.Post(InvalidateCanvas, DispatcherPriority.Background);
             return;
         }
 

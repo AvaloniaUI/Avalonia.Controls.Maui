@@ -136,6 +136,32 @@ public class SKCanvasViewControlPaintTests
         });
     }
 
+    [AvaloniaFact(DisplayName = "Input is handled before a paint requested from another thread")]
+    public void InputIsHandledBeforePaintFromAnotherThread()
+    {
+        // A thread that keeps invalidating the canvas, such as a game loop, must not hold up input
+        var events = new List<string>();
+        var control = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = _ => events.Add("paint"),
+        };
+
+        Host(control, window =>
+        {
+            events.Clear();
+
+            var thread = new Thread(control.InvalidateCanvas);
+            thread.Start();
+            thread.Join();
+            Dispatcher.UIThread.Post(() => events.Add("input"), DispatcherPriority.Input);
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Equal(new[] { "input", "paint" }, events);
+        });
+    }
+
     [AvaloniaFact(DisplayName = "A canvas in a hidden parent paints once the parent is shown")]
     public void CanvasInHiddenParentPaintsWhenShown()
     {
