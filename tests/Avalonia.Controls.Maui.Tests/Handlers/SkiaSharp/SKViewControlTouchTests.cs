@@ -46,6 +46,26 @@ public class SKViewControlTouchTests
         Assert.True(contact[1].InContact);
     }
 
+    [AvaloniaTheory(DisplayName = "Exited and Entered during a drag have the drag's touch ID")]
+    [MemberData(nameof(Controls))]
+    public void ExitedAndEnteredDuringDragHaveDragTouchId(string controlType)
+    {
+        var touches = HostAndRecord(controlType, window =>
+        {
+            window.MouseMove(new Point(20, 20));
+            window.MouseDown(new Point(20, 20), MouseButton.Left);
+            window.MouseMove(new Point(150, 150), RawInputModifiers.LeftMouseButton);
+            window.MouseMove(new Point(30, 30), RawInputModifiers.LeftMouseButton);
+            window.MouseUp(new Point(30, 30), MouseButton.Left);
+        });
+
+        var pressed = Assert.Single(touches, t => t.ActionType == SKTouchAction.Pressed);
+        var drag = touches.SkipWhile(t => t != pressed).ToList();
+        Assert.Contains(drag, t => t.ActionType == SKTouchAction.Exited);
+        Assert.Contains(drag, t => t.ActionType == SKTouchAction.Entered);
+        Assert.All(drag, t => Assert.Equal(pressed.Id, t.Id));
+    }
+
     [AvaloniaTheory(DisplayName = "No touch actions are raised while touch events are disabled")]
     [MemberData(nameof(Controls))]
     public void NoTouchActionsAreRaisedWhileTouchEventsAreDisabled(string controlType)

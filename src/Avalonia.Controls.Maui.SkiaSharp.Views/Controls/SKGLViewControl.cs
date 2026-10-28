@@ -246,7 +246,11 @@ public class SKGLViewControl : Control
         var props = e.GetCurrentPoint(this).Properties;
         var inContact = props.IsLeftButtonPressed || props.IsMiddleButtonPressed || props.IsRightButtonPressed;
 
-        var args = CreateTouchArgs(e, action, inContact, e.Pointer.Id);
+        // During a drag, the pointer keeps the drag's touch ID
+        if (!_pointerTouchIds.TryGetValue(e.Pointer, out var touchId))
+            touchId = e.Pointer.Id;
+
+        var args = CreateTouchArgs(e, action, inContact, touchId);
         if (TouchAction?.Invoke(args) == true || args.Handled)
             e.Handled = true;
     }
