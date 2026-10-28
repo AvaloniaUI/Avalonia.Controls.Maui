@@ -38,6 +38,7 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 				fonts.AddFont("bpg-banner-webfont.ttf", "BgpBanner");
+				fonts.AddFont("GalleryScript-Regular.ttf", "GalleryScript");
 			});
 
 #if DEBUG
