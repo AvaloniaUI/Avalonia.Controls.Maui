@@ -258,12 +258,18 @@ public static class SliderExtensions
             });
     }
 
+    // The track's Thumb is set as soon as the template is applied, before the thumb joins
+    // the visual tree, and the themes name the thumb differently
+    private static Thumb? FindThumb(AvaloniaSlider slider, TemplateAppliedEventArgs? args) =>
+        args?.NameScope.Find<Track>("PART_Track")?.Thumb ??
+        slider.GetVisualDescendants().OfType<Track>().FirstOrDefault()?.Thumb ??
+        slider.GetVisualDescendants().OfType<Thumb>().FirstOrDefault();
+
     private static void ApplyThumbTemplate(AvaloniaSlider control, IBrush brush)
     {
         void Apply(AvaloniaSlider slider, TemplateAppliedEventArgs? args = null)
         {
-            var thumb = args?.NameScope.Find<Thumb>("PART_Thumb") ??
-                        slider.GetVisualDescendants().OfType<Thumb>().FirstOrDefault();
+            var thumb = FindThumb(slider, args);
 
             if (thumb == null)
                 return;
@@ -311,8 +317,7 @@ public static class SliderExtensions
     {
         void Apply(AvaloniaSlider slider, TemplateAppliedEventArgs? args = null)
         {
-            var thumb = args?.NameScope.Find<Thumb>("PART_Thumb") ??
-                        slider.GetVisualDescendants().OfType<Thumb>().FirstOrDefault();
+            var thumb = FindThumb(slider, args);
 
             if (thumb == null)
                 return;
