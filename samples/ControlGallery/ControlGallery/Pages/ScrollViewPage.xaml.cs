@@ -9,6 +9,20 @@ public partial class ScrollViewPage : ContentPage
         InitializeComponent();
     }
 
+    private void OnContentAlignmentClicked(object? sender, EventArgs e)
+    {
+        if (sender is not Button button)
+            return;
+
+        AlignedContent.HorizontalOptions = button.Text switch
+        {
+            "Center" => LayoutOptions.Center,
+            "End" => LayoutOptions.End,
+            _ => LayoutOptions.Start,
+        };
+        AlignedContentLabel.Text = button.Text;
+    }
+
     protected override void OnAppearing()
     {
         base.OnAppearing();
