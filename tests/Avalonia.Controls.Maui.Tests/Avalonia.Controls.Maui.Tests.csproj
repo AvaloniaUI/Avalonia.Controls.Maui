@@ -47,6 +47,10 @@
     <AvaloniaResource Include="Resources\Raw\**">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
     </AvaloniaResource>
+    <!-- Fonts for the font registrar tests, at the path the registrar reads MauiFont files from -->
+    <AvaloniaResource Include="../../samples/ControlGallery/ControlGallery/Resources/Fonts/GalleryScript-Regular.ttf;../../samples/ControlGallery/ControlGallery/Resources/Fonts/OpenSans-Regular.ttf">
+      <Link>Assets/Fonts/%(Filename)%(Extension)</Link>
+    </AvaloniaResource>
   </ItemGroup>
 
 

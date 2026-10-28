@@ -1,5 +1,9 @@
 using System.Buffers.Binary;
 using System.Text;
+using Avalonia.Headless.XUnit;
+using Avalonia.Media;
+using Avalonia.Media.Fonts;
+using Avalonia.Platform;
 
 namespace Avalonia.Controls.Maui.Tests.Fonts;
 
@@ -63,6 +67,41 @@ public class AvaloniaMauiFontRegistrarTests
             (MacintoshPlatform, 0, 0, Encoding.ASCII.GetBytes("Diablo")));
 
         Assert.Equal("Diablo", GetFontFamilyName(font));
+    }
+
+    [AvaloniaTheory(DisplayName = "Family name matches the one Avalonia reads from the font")]
+    [InlineData("GalleryScript-Regular.ttf")]
+    [InlineData("OpenSans-Regular.ttf")]
+    public void FamilyNameMatchesTheOneAvaloniaReads(string fileName)
+    {
+        var avaloniaName = new TestFontCollection().Load(OpenTestFont(fileName))?.FamilyName;
+        var registrarName = new AvaloniaMauiFontRegistrar().GetFontFamilyName(OpenTestFont(fileName));
+
+        Assert.False(string.IsNullOrEmpty(avaloniaName));
+        Assert.Equal(avaloniaName, registrarName);
+    }
+
+    [AvaloniaFact(DisplayName = "Registered font alias resolves to a font Avalonia loads")]
+    public void RegisteredFontAliasResolvesToFontAvaloniaLoads()
+    {
+        var registrar = new AvaloniaMauiFontRegistrar();
+        registrar.Register("GalleryScript-Regular.ttf", "GalleryScript", typeof(AvaloniaMauiFontRegistrarTests).Assembly);
+
+        var font = registrar.GetFont("GalleryScript");
+
+        Assert.NotNull(font);
+        Assert.True(Avalonia.Media.FontManager.Current.TryGetGlyphTypeface(new Typeface(new FontFamily(font!)), out var glyphTypeface));
+        Assert.Equal("Gallery Script", glyphTypeface!.FamilyName);
+    }
+
+    static Stream OpenTestFont(string fileName) =>
+        AssetLoader.Open(new Uri($"avares://{typeof(AvaloniaMauiFontRegistrarTests).Assembly.GetName().Name}/Assets/Fonts/{fileName}"));
+
+    sealed class TestFontCollection : FontCollectionBase
+    {
+        public override Uri Key { get; } = new("fonts:AvaloniaMauiFontRegistrarTests");
+
+        public GlyphTypeface? Load(Stream stream) => TryAddGlyphTypeface(stream, out var glyphTypeface) ? glyphTypeface : null;
     }
 
     static string? GetFontFamilyName(byte[] font) =>
