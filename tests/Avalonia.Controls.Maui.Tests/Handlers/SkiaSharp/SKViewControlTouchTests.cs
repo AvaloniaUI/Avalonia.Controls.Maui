@@ -66,6 +66,26 @@ public class SKViewControlTouchTests
         Assert.All(drag, t => Assert.Equal(pressed.Id, t.Id));
     }
 
+    [AvaloniaTheory(DisplayName = "Every touch action of a pointer has the pointer's ID")]
+    [MemberData(nameof(Controls))]
+    public void EveryTouchActionOfPointerHasPointerId(string controlType)
+    {
+        // Hover and contact share one ID policy, so a hovering mouse and a touch contact cannot share an ID
+        var touches = HostAndRecord(controlType, window =>
+        {
+            window.MouseMove(new Point(20, 20));
+            window.MouseDown(new Point(20, 20), MouseButton.Left);
+            window.MouseMove(new Point(30, 30), RawInputModifiers.LeftMouseButton);
+            window.MouseUp(new Point(30, 30), MouseButton.Left);
+            window.MouseMove(new Point(40, 40));
+            window.MouseDown(new Point(40, 40), MouseButton.Left);
+            window.MouseUp(new Point(40, 40), MouseButton.Left);
+        });
+
+        Assert.Equal(2, touches.Count(t => t.ActionType == SKTouchAction.Pressed));
+        Assert.Single(touches.Select(t => t.Id).Distinct());
+    }
+
     [AvaloniaTheory(DisplayName = "No touch actions are raised while touch events are disabled")]
     [MemberData(nameof(Controls))]
     public void NoTouchActionsAreRaisedWhileTouchEventsAreDisabled(string controlType)
