@@ -58,26 +58,40 @@ public class SKCanvasViewControlPaintTests
         });
     }
 
-    [AvaloniaFact(DisplayName = "Painted pixels appear in the rendered frame")]
-    public void PaintedPixelsAppearInRenderedFrame()
+    [AvaloniaTheory(DisplayName = "Painted pixels appear where they were painted in the rendered frame")]
+    [InlineData(1.0, false)]
+    [InlineData(2.0, false)]
+    [InlineData(1.0, true)]
+    [InlineData(2.0, true)]
+    public void PaintedPixelsAppearWhereTheyWerePainted(double scaling, bool ignorePixelScaling)
     {
+        // Paints the left half of the canvas red, in the units the canvas reports
         var control = new SKCanvasViewControl
         {
             Width = 100,
             Height = 50,
-            PaintSurfaceAction = e => e.Surface.Canvas.Clear(SKColors.Red),
+            IgnorePixelScaling = ignorePixelScaling,
+            PaintSurfaceAction = e =>
+            {
+                e.Surface.Canvas.Clear(SKColors.Transparent);
+                using var paint = new SKPaint { Color = SKColors.Red };
+                e.Surface.Canvas.DrawRect(0, 0, e.Info.Width / 2f, e.Info.Height, paint);
+            },
         };
 
         Host(control, window =>
         {
+            // The frame is in device pixels: the control covers 100 x 50 view units from the origin
             using var frame = window.CaptureRenderedFrame()!;
             using var locked = frame.Lock();
-            var pixel = GetPixel(locked, 10, 10);
-            var outside = GetPixel(locked, 150, 150);
+            int Px(double viewUnits) => (int)(viewUnits * scaling);
 
-            Assert.Equal(Avalonia.Media.Colors.Red, pixel);
-            Assert.NotEqual(Avalonia.Media.Colors.Red, outside);
-        });
+            Assert.Equal(Avalonia.Media.Colors.Red, GetPixel(locked, Px(5), Px(5)));
+            Assert.Equal(Avalonia.Media.Colors.Red, GetPixel(locked, Px(45), Px(45)));
+            Assert.NotEqual(Avalonia.Media.Colors.Red, GetPixel(locked, Px(55), Px(5)));
+            Assert.NotEqual(Avalonia.Media.Colors.Red, GetPixel(locked, Px(95), Px(45)));
+            Assert.NotEqual(Avalonia.Media.Colors.Red, GetPixel(locked, Px(150), Px(150)));
+        }, scaling);
     }
 
     [AvaloniaFact(DisplayName = "Resizing the canvas paints it again at the new size")]
@@ -103,7 +117,70 @@ public class SKCanvasViewControlPaintTests
         });
     }
 
-    static void Host(SKCanvasViewControl control, Action<Window> test)
+    [AvaloniaFact(DisplayName = "Canvas is sized in pixels at a render scaling of 2")]
+    public void CanvasIsSizedInPixelsAtScaling2()
+    {
+        var paints = new List<(SKImageInfo Info, SKImageInfo RawInfo)>();
+        var control = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = e => paints.Add((e.Info, e.RawInfo)),
+        };
+
+        Host(control, window =>
+        {
+            var (info, rawInfo) = paints[^1];
+            Assert.Equal(new SKSizeI(200, 100), info.Size);
+            Assert.Equal(new SKSizeI(200, 100), rawInfo.Size);
+        }, scaling: 2);
+    }
+
+    [AvaloniaFact(DisplayName = "IgnorePixelScaling sizes the canvas in view units at a render scaling of 2")]
+    public void IgnorePixelScalingSizesCanvasInViewUnitsAtScaling2()
+    {
+        var paints = new List<(SKImageInfo Info, SKImageInfo RawInfo, float Scale)>();
+        var control = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            IgnorePixelScaling = true,
+            PaintSurfaceAction = e => paints.Add((e.Info, e.RawInfo, e.Surface.Canvas.TotalMatrix.ScaleX)),
+        };
+
+        Host(control, window =>
+        {
+            var (info, rawInfo, scale) = paints[^1];
+            Assert.Equal(new SKSizeI(100, 50), info.Size);
+            Assert.Equal(new SKSizeI(200, 100), rawInfo.Size);
+            Assert.Equal(2f, scale);
+        }, scaling: 2);
+    }
+
+    [AvaloniaFact(DisplayName = "Changing the render scaling paints the canvas again at the new pixel size")]
+    public void ChangingRenderScalingPaintsAgain()
+    {
+        var sizes = new List<SKSizeI>();
+        var control = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = e => sizes.Add(e.Info.Size),
+        };
+
+        Host(control, window =>
+        {
+            Assert.Equal(new SKSizeI(100, 50), sizes[^1]);
+
+            window.SetRenderScaling(1.5);
+            window.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Equal(new SKSizeI(150, 75), sizes[^1]);
+        });
+    }
+
+    static void Host(SKCanvasViewControl control, Action<Window> test, double scaling = 1)
     {
         control.HorizontalAlignment = Layout.HorizontalAlignment.Left;
         control.VerticalAlignment = Layout.VerticalAlignment.Top;
@@ -112,6 +189,8 @@ public class SKCanvasViewControlPaintTests
         window.Show();
         try
         {
+            if (scaling != 1)
+                window.SetRenderScaling(scaling);
             window.UpdateLayout();
             Dispatcher.UIThread.RunJobs();
             test(window);

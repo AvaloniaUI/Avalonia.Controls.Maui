@@ -184,8 +184,13 @@ public class SKCanvasViewControl : Control
         // Keeps the whole control hit-testable, also before the first paint
         context.FillRectangle(Brushes.Transparent, new Rect(Bounds.Size));
 
+        // The source rect is in pixels: Avalonia's Skia backend reads it that way, so passing
+        // the bitmap's DPI-scaled Size would crop a high-DPI bitmap
         if (_bitmap != null)
-            context.DrawImage(_bitmap, new Rect(_bitmap.Size));
+        {
+            var pixelSize = _bitmap.PixelSize;
+            context.DrawImage(_bitmap, new Rect(0, 0, pixelSize.Width, pixelSize.Height), new Rect(_bitmap.Size));
+        }
     }
 
     /// <inheritdoc/>
