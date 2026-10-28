@@ -24,7 +24,7 @@ public class SKGLViewHandler : Avalonia.Controls.Maui.Handlers.ViewHandler<ISKGL
     /// The property mapper that maps <see cref="ISKGLView"/> properties to <see cref="SKGLViewHandler"/> methods.
     /// </summary>
     public static IPropertyMapper<ISKGLView, SKGLViewHandler> Mapper =
-        new PropertyMapper<ISKGLView, SKGLViewHandler>(ViewHandler.ViewMapper)
+        new PropertyMapper<ISKGLView, SKGLViewHandler>(Avalonia.Controls.Maui.Handlers.ViewHandler.ViewMapper)
         {
             [nameof(ISKGLView.EnableTouchEvents)] = MapEnableTouchEvents,
             [nameof(ISKGLView.IgnorePixelScaling)] = MapIgnorePixelScaling,
@@ -35,7 +35,7 @@ public class SKGLViewHandler : Avalonia.Controls.Maui.Handlers.ViewHandler<ISKGL
     /// The command mapper that maps <see cref="ISKGLView"/> commands to <see cref="SKGLViewHandler"/> methods.
     /// </summary>
     public static CommandMapper<ISKGLView, SKGLViewHandler> CommandMapper =
-        new(ViewHandler.ViewCommandMapper)
+        new(Avalonia.Controls.Maui.Handlers.ViewHandler.ViewCommandMapper)
         {
             [nameof(ISKGLView.InvalidateSurface)] = OnInvalidateSurface,
         };
