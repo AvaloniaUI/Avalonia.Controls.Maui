@@ -104,7 +104,7 @@ public static void MapText(ButtonHandler handler, IButton button)
 
 ### Generic base handler
 
-`AvaloniaControlHandler<TVirtualView, TControl>` is a reusable base for hosting a custom Avalonia control inside a MAUI handler. In the current codebase, built-in handlers generally inherit directly from `ViewHandler<TVirtualView, TPlatformView>`, while this base remains useful for extension scenarios.
+`AvaloniaControlHandler<TVirtualView, TControl>` is a reusable base for hosting a custom Avalonia control inside a MAUI handler. In the current codebase, built-in handlers generally inherit directly from `Avalonia.Controls.Maui.Handlers.ViewHandler<TVirtualView, TPlatformView>`, while this base remains useful for extension scenarios.
 
 Platform-specific host behavior for this base is split via partial class files (`.Android.cs`, `.iOS.cs`, `.Standard.cs`, `.Windows.cs`).
 
@@ -114,7 +114,7 @@ public partial class AvaloniaControlHandler<TVirtualView, TControl>
     where TControl : Avalonia.Controls.Control, new()
 ```
 
-Handlers that require more control, such as `ButtonHandler` or `EntryHandler`, inherit directly from .NET MAUI's `ViewHandler<TVirtualView, TPlatformView>` and manage the Avalonia control themselves.
+Handlers that require more control, such as `ButtonHandler` or `EntryHandler`, inherit directly from `Avalonia.Controls.Maui.Handlers.ViewHandler<TVirtualView, TPlatformView>` and manage the Avalonia control themselves. This base class, not the `ViewHandler<TVirtualView, TPlatformView>` in `Microsoft.Maui.Handlers`, measures and arranges the Avalonia control and maps the common view properties to it. In the portable build of .NET MAUI, the `Microsoft.Maui.Handlers` base class does neither.
 
 ### Handler registration
 

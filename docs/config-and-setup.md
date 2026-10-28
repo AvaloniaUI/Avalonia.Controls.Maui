@@ -323,16 +323,18 @@ Handlers map a .NET MAUI virtual view to a platform view rendered by Avalonia. Y
 
 ### Create a handler
 
-A handler inherits from `ViewHandler<TVirtualView, TPlatformView>`. A property mapper defines which handler methods are invoked when properties on the virtual view change:
+A handler inherits from `ViewHandler<TVirtualView, TPlatformView>` in the `Avalonia.Controls.Maui.Handlers` namespace. A property mapper defines which handler methods are invoked when properties on the virtual view change:
 
 ```csharp
 using Avalonia.Controls;
-using Microsoft.Maui.Handlers;
+using Avalonia.Controls.Maui.Handlers;
+using Avalonia.Layout;
+using Microsoft.Maui;
 
 public class RatingViewHandler : ViewHandler<RatingView, StackPanel>
 {
     public static IPropertyMapper<RatingView, RatingViewHandler> Mapper =
-        new PropertyMapper<RatingView, RatingViewHandler>(ViewMapper)
+        new PropertyMapper<RatingView, RatingViewHandler>(ViewHandler.ViewMapper)
         {
             [nameof(RatingView.Value)] = MapValue,
             [nameof(RatingView.Maximum)] = MapMaximum,
@@ -356,6 +358,9 @@ public class RatingViewHandler : ViewHandler<RatingView, StackPanel>
     }
 }
 ```
+
+> [!IMPORTANT]
+> Do not inherit from `ViewHandler<TVirtualView, TPlatformView>` in `Microsoft.Maui.Handlers`. An app that targets plain `net11.0` uses the portable build of .NET MAUI, where that base class reports a size of zero, does not arrange the platform view, and ignores view properties such as `Margin`, `IsVisible` and `Opacity`. The handler's Avalonia control then does not appear. The `ViewHandler<TVirtualView, TPlatformView>` in `Avalonia.Controls.Maui.Handlers` measures and arranges the Avalonia control and maps the view properties to it.
 
 ### Register a handler
 
