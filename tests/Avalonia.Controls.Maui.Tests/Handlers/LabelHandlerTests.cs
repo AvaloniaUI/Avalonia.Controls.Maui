@@ -51,6 +51,32 @@ public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, Label
         Assert.InRange(top, minTop, maxTop);
     }
 
+    [AvaloniaFact(DisplayName = "TextBlock styles apply to labels")]
+    public async Task TextBlockStylesApplyToLabels()
+    {
+        var handler = await CreateHandlerAsync(new LabelStub { Text = "Hi" });
+
+        var tag = await InvokeOnMainThreadAsync(() =>
+        {
+            var window = new Window { Content = handler.PlatformView };
+            window.Styles.Add(new Avalonia.Styling.Style(x => Avalonia.Styling.Selectors.OfType<TextBlock>(x))
+            {
+                Setters = { new Avalonia.Styling.Setter(Control.TagProperty, "styled") },
+            });
+            window.Show();
+            try
+            {
+                return ((Control)handler.PlatformView).Tag;
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.Equal("styled", tag);
+    }
+
     // The first pixel row that holds dark text pixels
     static int FirstInkRow(Avalonia.Media.Imaging.WriteableBitmap frame)
     {

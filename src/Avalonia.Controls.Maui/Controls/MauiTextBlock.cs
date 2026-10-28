@@ -18,6 +18,11 @@ namespace Avalonia.Controls.Maui.Controls
         }
 
         /// <summary>
+        /// Gets the style key override, resolving to the base <see cref="TextBlock"/> type.
+        /// </summary>
+        protected override System.Type StyleKeyOverride => typeof(TextBlock);
+
+        /// <summary>
         /// Gets or sets the vertical position of the text within the space inside the padding.
         /// </summary>
         public VerticalAlignment VerticalTextAlignment
