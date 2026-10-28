@@ -60,19 +60,13 @@ public partial class CheckBoxHandlerTests : HandlerTestBase<MauiCheckBoxHandler,
 
         await InvokeOnMainThreadAsync(() =>
         {
-            // ACM apps use the Fluent theme by default; the test app uses the Simple theme
-            var fluent = new Avalonia.Themes.Fluent.FluentTheme();
-            Assert.True(fluent.TryGetResource(typeof(CheckBox), null, out var theme));
-
             var platformView = handler.PlatformView;
-            platformView.Theme = (Avalonia.Styling.ControlTheme)theme!;
             var window = new Window
             {
                 Width = 200,
                 Height = 200,
                 Content = new Avalonia.Controls.Canvas { Children = { platformView } }
             };
-            window.Styles.Add(fluent);
             window.Show();
 
             try
