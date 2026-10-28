@@ -333,4 +333,62 @@ public class ApplicationHandlerTests : HandlerTestBase
         // Verify that UserAppTheme is registered in the mapper
         Assert.Contains(nameof(IApplication.UserAppTheme), MauiApplicationHandler.Mapper.GetKeys());
     }
+
+    [AvaloniaFact(DisplayName = "UserAppTheme Set In The Application Constructor Is Applied At Launch")]
+    public async Task UserAppThemeSetInConstructorIsAppliedAtLaunch()
+    {
+        await WithAvaloniaThemeRestored(async avaloniaApp =>
+        {
+            var application = new SavedThemeApplication(AppTheme.Dark);
+
+            await CreateHandlerAsync<MauiApplicationHandler>(application);
+
+            Assert.Equal(ThemeVariant.Dark, avaloniaApp.RequestedThemeVariant);
+            Assert.Equal(ThemeVariant.Dark, avaloniaApp.ActualThemeVariant);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "UserAppTheme Set After The Handler Connects Is Applied")]
+    public async Task UserAppThemeSetAfterConnectIsApplied()
+    {
+        await WithAvaloniaThemeRestored(async avaloniaApp =>
+        {
+            var application = new SavedThemeApplication(null);
+            await CreateHandlerAsync<MauiApplicationHandler>(application);
+
+            await InvokeOnMainThreadAsync(() => application.UserAppTheme = AppTheme.Dark);
+            Assert.Equal(ThemeVariant.Dark, avaloniaApp.RequestedThemeVariant);
+
+            // Unspecified follows the system theme again
+            await InvokeOnMainThreadAsync(() => application.UserAppTheme = AppTheme.Unspecified);
+            Assert.Null(avaloniaApp.RequestedThemeVariant);
+        });
+    }
+
+    // A .NET MAUI application that applies a saved theme in its constructor, as apps do at launch
+    private sealed class SavedThemeApplication : Microsoft.Maui.Controls.Application
+    {
+        public SavedThemeApplication(AppTheme? savedTheme)
+        {
+            if (savedTheme is { } theme)
+                UserAppTheme = theme;
+        }
+    }
+
+    // The Avalonia application is shared by every test, so its theme is put back afterwards
+    private async Task WithAvaloniaThemeRestored(Func<Application, Task> test)
+    {
+        var avaloniaApp = App.Current!;
+        var original = avaloniaApp.RequestedThemeVariant;
+        try
+        {
+            avaloniaApp.RequestedThemeVariant = ThemeVariant.Default;
+            EnsureHandlerCreated(builder => builder.Services.AddSingleton<Application>(avaloniaApp));
+            await test(avaloniaApp);
+        }
+        finally
+        {
+            avaloniaApp.RequestedThemeVariant = original;
+        }
+    }
 }
