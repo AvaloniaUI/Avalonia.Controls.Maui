@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform;
-using Avalonia.Rendering.SceneGraph;
-using Avalonia.Skia;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using PointerEventArgs = Avalonia.Input.PointerEventArgs;
@@ -21,6 +20,9 @@ public class SKCanvasViewControl : Control
     private bool _ignorePixelScaling;
     private long _nextTouchId;
     private readonly Dictionary<IPointer, long> _pointerTouchIds = new();
+    private WriteableBitmap? _bitmap;
+    private TopLevel? _topLevel;
+    private bool _paintPending;
 
     /// <summary>
     /// Gets or sets whether pixel scaling should be ignored when reporting canvas size.
@@ -55,14 +57,112 @@ public class SKCanvasViewControl : Control
     public Func<SKTouchEventArgs, bool>? TouchAction { get; set; }
 
     /// <summary>
-    /// Invalidates the canvas, triggering a re-render on the UI thread.
+    /// Invalidates the canvas. The canvas is painted on the UI thread, outside the render pass,
+    /// and requests made before the paint runs are merged into one paint.
     /// </summary>
     public void InvalidateCanvas()
     {
-        this.Dispatcher.Post(() =>
+        if (_paintPending)
+            return;
+
+        _paintPending = true;
+        Dispatcher.Post(PaintCanvas);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnAttachedToVisualTree(e);
+
+        _topLevel = TopLevel.GetTopLevel(this);
+        if (_topLevel != null)
+            _topLevel.ScalingChanged += OnScalingChanged;
+
+        InvalidateCanvas();
+    }
+
+    /// <inheritdoc/>
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        base.OnDetachedFromVisualTree(e);
+
+        if (_topLevel != null)
         {
-            base.InvalidateVisual();
-        });
+            _topLevel.ScalingChanged -= OnScalingChanged;
+            _topLevel = null;
+        }
+
+        _bitmap?.Dispose();
+        _bitmap = null;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == BoundsProperty)
+        {
+            var (oldBounds, newBounds) = change.GetOldAndNewValue<Rect>();
+            if (oldBounds.Size != newBounds.Size)
+                InvalidateCanvas();
+        }
+        else if (change.Property == IsVisibleProperty && IsVisible)
+        {
+            InvalidateCanvas();
+        }
+    }
+
+    private void OnScalingChanged(object? sender, EventArgs e) => InvalidateCanvas();
+
+    private void PaintCanvas()
+    {
+        _paintPending = false;
+
+        if (PaintSurfaceAction == null || !IsVisible)
+            return;
+
+        var scaling = _topLevel?.RenderScaling ?? 1.0;
+        var viewSize = new PixelSize((int)Bounds.Width, (int)Bounds.Height);
+        var pixelSize = new PixelSize((int)(Bounds.Width * scaling), (int)(Bounds.Height * scaling));
+        if (pixelSize.Width <= 0 || pixelSize.Height <= 0)
+            return;
+
+        if (_bitmap == null || _bitmap.PixelSize != pixelSize)
+        {
+            _bitmap?.Dispose();
+            _bitmap = new WriteableBitmap(
+                pixelSize,
+                new Vector(96 * scaling, 96 * scaling),
+                SKImageInfo.PlatformColorType == SKColorType.Rgba8888 ? PixelFormat.Rgba8888 : PixelFormat.Bgra8888,
+                AlphaFormat.Premul);
+        }
+
+        using (var framebuffer = _bitmap.Lock())
+        {
+            var colorType = framebuffer.Format == PixelFormat.Rgba8888 ? SKColorType.Rgba8888 : SKColorType.Bgra8888;
+            var rawInfo = new SKImageInfo(pixelSize.Width, pixelSize.Height, colorType, SKAlphaType.Premul);
+
+            using var surface = SKSurface.Create(rawInfo, framebuffer.Address, framebuffer.RowBytes);
+            if (surface == null)
+                return;
+
+            SKImageInfo info;
+            if (_ignorePixelScaling)
+            {
+                info = rawInfo.WithSize(viewSize.Width, viewSize.Height);
+                surface.Canvas.Scale((float)scaling);
+            }
+            else
+            {
+                info = rawInfo;
+            }
+
+            PaintSurfaceAction(new SKPaintSurfaceEventArgs(surface, info, rawInfo));
+            surface.Flush();
+        }
+
+        InvalidateVisual();
     }
 
     /// <inheritdoc/>
@@ -81,17 +181,11 @@ public class SKCanvasViewControl : Control
         if (PaintSurfaceAction == null)
             return;
 
-        var bounds = Bounds;
-        if (bounds.Width <= 0 || bounds.Height <= 0)
-            return;
+        // Keeps the whole control hit-testable, also before the first paint
+        context.FillRectangle(Brushes.Transparent, new Rect(Bounds.Size));
 
-        var scaling = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1.0;
-        var operation = new SkiaCanvasDrawOperation(
-            new Rect(bounds.Size),
-            PaintSurfaceAction,
-            _ignorePixelScaling,
-            scaling);
-        context.Custom(operation);
+        if (_bitmap != null)
+            context.DrawImage(_bitmap, new Rect(_bitmap.Size));
     }
 
     /// <inheritdoc/>
@@ -273,85 +367,5 @@ public class SKCanvasViewControl : Control
             deviceType,
             location,
             inContact);
-    }
-
-    private class SkiaCanvasDrawOperation : ICustomDrawOperation
-    {
-        private readonly Action<SKPaintSurfaceEventArgs> _paintAction;
-        private readonly bool _ignorePixelScaling;
-        private readonly double _scaling;
-
-        public SkiaCanvasDrawOperation(
-            Rect bounds,
-            Action<SKPaintSurfaceEventArgs> paintAction,
-            bool ignorePixelScaling,
-            double scaling)
-        {
-            Bounds = bounds;
-            _paintAction = paintAction;
-            _ignorePixelScaling = ignorePixelScaling;
-            _scaling = scaling;
-        }
-
-        public Rect Bounds { get; }
-
-        public void Dispose()
-        {
-        }
-
-        public bool Equals(ICustomDrawOperation? other) => other is SkiaCanvasDrawOperation;
-
-        public bool HitTest(Point p) => Bounds.Contains(p);
-
-        public void Render(ImmediateDrawingContext context)
-        {
-            var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
-            if (leaseFeature == null)
-                return;
-
-            using var lease = leaseFeature.Lease();
-            var canvas = lease?.SkCanvas;
-            if (canvas == null)
-                return;
-
-            var pixelWidth = (int)(Bounds.Width * _scaling);
-            var pixelHeight = (int)(Bounds.Height * _scaling);
-
-            if (pixelWidth <= 0 || pixelHeight <= 0)
-                return;
-
-            var rawInfo = new SKImageInfo(pixelWidth, pixelHeight, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
-
-            // Create a dedicated surface sized to our control's bounds.
-            // The lease surface is the entire window — passing it to the callback
-            // would expose wrong dimensions and canvas transforms to the consumer.
-            using var surface = SKSurface.Create(rawInfo);
-            if (surface == null)
-                return;
-
-            var surfaceCanvas = surface.Canvas;
-
-            SKImageInfo info;
-            if (_ignorePixelScaling)
-            {
-                info = new SKImageInfo((int)Bounds.Width, (int)Bounds.Height, SKImageInfo.PlatformColorType, SKAlphaType.Premul);
-                surfaceCanvas.Scale((float)_scaling);
-            }
-            else
-            {
-                info = rawInfo;
-            }
-
-            var args = new SKPaintSurfaceEventArgs(surface, info, rawInfo);
-            _paintAction(args);
-
-            // Blit the result onto the lease canvas at the control's position
-            surface.Flush();
-            using var image = surface.Snapshot();
-            canvas.Save();
-            canvas.Scale(1.0f / (float)_scaling);
-            canvas.DrawImage(image, 0, 0);
-            canvas.Restore();
-        }
     }
 }
