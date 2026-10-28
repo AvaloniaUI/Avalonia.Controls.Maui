@@ -140,7 +140,7 @@
   </Target>
 
   <Target Name="ConvertMauiFontsToAvaloniaResources"
-          BeforeTargets="GenerateAvaloniaResources;CoreCompile"
+          BeforeTargets="AddAvaloniaResources"
           Condition="'@(MauiFont)' != ''">
 
     <ItemGroup>
