@@ -92,6 +92,29 @@ public class SKCanvasViewControlPaintTests
         });
     }
 
+    [AvaloniaFact(DisplayName = "A paint requested before the canvas is removed from the window does not run")]
+    public void PaintRequestedBeforeRemovalDoesNotRun()
+    {
+        var paintCount = 0;
+        var control = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = _ => paintCount++,
+        };
+
+        Host(control, window =>
+        {
+            paintCount = 0;
+
+            control.InvalidateCanvas();
+            window.Content = null;
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Equal(0, paintCount);
+        });
+    }
+
     [AvaloniaTheory(DisplayName = "Painted pixels appear where they were painted in the rendered frame")]
     [InlineData(1.0, false)]
     [InlineData(2.0, false)]

@@ -124,10 +124,11 @@ public class SKCanvasViewControl : Control
     {
         _paintPending = false;
 
-        if (PaintSurfaceAction == null || !IsVisible)
+        // A paint queued before the canvas left the window; attaching requests a new one
+        if (PaintSurfaceAction == null || !IsVisible || _topLevel == null)
             return;
 
-        var scaling = _topLevel?.RenderScaling ?? 1.0;
+        var scaling = _topLevel.RenderScaling;
         var viewSize = new PixelSize((int)Bounds.Width, (int)Bounds.Height);
         var pixelSize = new PixelSize((int)(Bounds.Width * scaling), (int)(Bounds.Height * scaling));
         if (pixelSize.Width <= 0 || pixelSize.Height <= 0)
