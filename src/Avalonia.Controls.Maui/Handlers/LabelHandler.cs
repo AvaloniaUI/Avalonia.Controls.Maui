@@ -67,7 +67,7 @@ public class LabelHandler : ViewHandler<ILabel, AvaloniaTextBlock>
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override AvaloniaTextBlock CreatePlatformView()
     {
-        return new AvaloniaTextBlock();
+        return new Avalonia.Controls.Maui.Controls.MauiTextBlock();
     }
 
     /// <summary>Gets a value indicating whether this handler requires a container view.</summary>
@@ -312,7 +312,15 @@ public static class LabelTextBlockExtensions
     /// <param name="label">The MAUI label providing the vertical text alignment.</param>
     public static void UpdateVerticalTextAlignment(this TextBlock textBlock, ILabel label)
     {
-        // TODO: Vertical Text Alignment is not directly supported in Avalonia TextBox yet.
+        if (textBlock is not Avalonia.Controls.Maui.Controls.MauiTextBlock mauiTextBlock)
+            return;
+
+        mauiTextBlock.VerticalTextAlignment = label.VerticalTextAlignment switch
+        {
+            Microsoft.Maui.TextAlignment.Center => AvaloniaVerticalAlignment.Center,
+            Microsoft.Maui.TextAlignment.End => AvaloniaVerticalAlignment.Bottom,
+            _ => AvaloniaVerticalAlignment.Top,
+        };
     }
 
     /// <summary>Updates the LineBreakMode property on the platform view.</summary>

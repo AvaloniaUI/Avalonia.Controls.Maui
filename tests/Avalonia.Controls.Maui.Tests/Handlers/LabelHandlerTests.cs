@@ -10,6 +10,66 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public partial class LabelHandlerTests : HandlerTestBase<MauiLabelHandler, LabelStub>
 {
+    [AvaloniaTheory(DisplayName = "VerticalTextAlignment Positions The Text")]
+    [InlineData(TextAlignment.Start, 0, 10)]
+    [InlineData(TextAlignment.Center, 35, 50)]
+    [InlineData(TextAlignment.End, 75, 100)]
+    public async Task VerticalTextAlignmentPositionsText(TextAlignment alignment, int minTop, int maxTop)
+    {
+        var label = new LabelStub
+        {
+            Text = "Hi",
+            TextColor = Colors.Black,
+            Height = 100,
+            Width = 100,
+            VerticalTextAlignment = alignment,
+        };
+        var handler = await CreateHandlerAsync(label);
+
+        var top = await InvokeOnMainThreadAsync(() =>
+        {
+            var window = new Window
+            {
+                Width = 100,
+                Height = 100,
+                Background = Avalonia.Media.Brushes.White,
+                Content = handler.PlatformView,
+            };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                using var frame = Avalonia.Headless.HeadlessWindowExtensions.CaptureRenderedFrame(window)!;
+                return FirstInkRow(frame);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.InRange(top, minTop, maxTop);
+    }
+
+    // The first pixel row that holds dark text pixels
+    static int FirstInkRow(Avalonia.Media.Imaging.WriteableBitmap frame)
+    {
+        using var locked = frame.Lock();
+        for (var y = 0; y < locked.Size.Height; y++)
+        {
+            for (var x = 0; x < locked.Size.Width; x++)
+            {
+                var offset = y * locked.RowBytes + x * 4;
+                var b0 = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset);
+                var b1 = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset + 1);
+                if (b0 < 128 && b1 < 128)
+                    return y;
+            }
+        }
+
+        return -1;
+    }
+
     [AvaloniaFact(DisplayName = "Text Initializes Correctly")]
     public async Task TextInitializesCorrectly()
     {
