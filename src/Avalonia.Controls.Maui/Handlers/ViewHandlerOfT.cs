@@ -271,12 +271,8 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
         if (platformView == null)
             return;
 
-        // Remember PlatformView's current parent and position so we can swap in the container
-        var parentPanel = platformView.Parent as Avalonia.Controls.Panel;
-        int index = parentPanel?.Children.IndexOf(platformView) ?? -1;
-
-        if (parentPanel != null && index >= 0)
-            parentPanel.Children.RemoveAt(index);
+        // Detach PlatformView from its host so the container can take its place
+        var attach = DetachFromHost(platformView);
 
         var containerView = new Avalonia.Controls.Maui.Platform.ContentView();
         containerView.Children.Add(platformView);
@@ -292,8 +288,7 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
             platformView.Margin = new Avalonia.Thickness(0);
         }
 
-        if (parentPanel != null && index >= 0)
-            parentPanel.Children.Insert(Math.Min(index, parentPanel.Children.Count), containerView);
+        attach?.Invoke(containerView);
     }
 
     /// <summary>
@@ -312,20 +307,49 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
                 container.Margin = new Avalonia.Thickness(0);
             }
 
-            // Remember the container's parent and position so we can swap PlatformView back in
-            var parentPanel = container.Parent as Avalonia.Controls.Panel;
-            int index = parentPanel?.Children.IndexOf(container) ?? -1;
-
-            if (parentPanel != null && index >= 0)
-                parentPanel.Children.RemoveAt(index);
+            // Detach the container from its host so PlatformView can take its place
+            var attach = DetachFromHost(container);
 
             container.Children.Remove(platformView);
 
-            if (parentPanel != null && index >= 0)
-                parentPanel.Children.Insert(Math.Min(index, parentPanel.Children.Count), platformView);
+            attach?.Invoke(platformView);
         }
 
         ContainerView = null;
+    }
+
+    /// <summary>
+    /// Removes a control from the panel, content control, decorator or content presenter that hosts it.
+    /// </summary>
+    /// <param name="control">The control to detach.</param>
+    /// <returns>An action that puts a replacement control where <paramref name="control"/> was,
+    /// or <see langword="null"/> if the control has no supported host.</returns>
+    private static Action<PlatformView>? DetachFromHost(PlatformView control)
+    {
+        switch (control.Parent)
+        {
+            case Avalonia.Controls.Panel panel:
+                var index = panel.Children.IndexOf(control);
+                if (index < 0)
+                    return null;
+                panel.Children.RemoveAt(index);
+                return replacement => panel.Children.Insert(Math.Min(index, panel.Children.Count), replacement);
+
+            case Avalonia.Controls.ContentControl contentControl when ReferenceEquals(contentControl.Content, control):
+                contentControl.Content = null;
+                return replacement => contentControl.Content = replacement;
+
+            case Avalonia.Controls.Decorator decorator when ReferenceEquals(decorator.Child, control):
+                decorator.Child = null;
+                return replacement => decorator.Child = replacement;
+
+            case Avalonia.Controls.Presenters.ContentPresenter presenter when ReferenceEquals(presenter.Content, control):
+                presenter.Content = null;
+                return replacement => presenter.Content = replacement;
+
+            default:
+                return null;
+        }
     }
 
     /// <summary>

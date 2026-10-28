@@ -159,6 +159,85 @@ public class ViewHandlerTests : HandlerTestBase
         Assert.Equal(FixedSizeContentViewHandler.FixedSize.Height + 10, size.Height, 3);
     }
 
+    [AvaloniaFact(DisplayName = "Clip added later wraps ScrollView content in a container")]
+    public async Task ClipAddedLaterWrapsScrollViewContent()
+    {
+        var content = new MauiContentView();
+        var scrollView = new Microsoft.Maui.Controls.ScrollView { Content = content };
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<ScrollViewHandler>(scrollView);
+            var contentHandler = (ContentViewHandler)content.Handler!;
+
+            content.Clip = new MauiEllipseGeometry(new MauiPoint(10, 10), 10, 10);
+
+            var container = Assert.IsAssignableFrom<Control>(contentHandler.ContainerView);
+            Assert.Same(container, handler.PlatformView.Content);
+            Assert.Same(container, contentHandler.PlatformView.Parent);
+
+            content.Clip = null;
+
+            Assert.Null(contentHandler.ContainerView);
+            Assert.Same(contentHandler.PlatformView, handler.PlatformView.Content);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Clip added later wraps Border content in a container")]
+    public async Task ClipAddedLaterWrapsBorderContent()
+    {
+        var content = new MauiContentView();
+        var border = new Microsoft.Maui.Controls.Border { Content = content };
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<BorderHandler>(border);
+            var contentHandler = (ContentViewHandler)content.Handler!;
+            var host = Assert.IsAssignableFrom<Decorator>(contentHandler.PlatformView.Parent);
+
+            content.Clip = new MauiEllipseGeometry(new MauiPoint(10, 10), 10, 10);
+
+            var container = Assert.IsAssignableFrom<Control>(contentHandler.ContainerView);
+            Assert.Same(container, host.Child);
+            Assert.Same(container, contentHandler.PlatformView.Parent);
+
+            content.Clip = null;
+
+            Assert.Null(contentHandler.ContainerView);
+            Assert.Same(contentHandler.PlatformView, host.Child);
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Clip added later wraps window content in a container")]
+    public async Task ClipAddedLaterWrapsWindowContent()
+    {
+        var content = new MauiContentView();
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<ContentViewHandler>(content);
+            var window = new Window { Content = handler.PlatformView };
+            window.Show();
+
+            try
+            {
+                content.Clip = new MauiEllipseGeometry(new MauiPoint(10, 10), 10, 10);
+
+                var container = Assert.IsAssignableFrom<Control>(handler.ContainerView);
+                Assert.Same(container, window.Content);
+
+                content.Clip = null;
+
+                Assert.Null(handler.ContainerView);
+                Assert.Same(handler.PlatformView, window.Content);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
     [AvaloniaFact(DisplayName = "InputTransparent maps to IsHitTestVisible")]
     public async Task InputTransparentMapsToIsHitTestVisible()
     {
