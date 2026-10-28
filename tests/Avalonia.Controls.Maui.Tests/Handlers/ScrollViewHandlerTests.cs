@@ -30,6 +30,39 @@ public class ScrollViewHandlerTests : HandlerTestBase<ScrollViewHandler, ScrollV
         Assert.NotNull(platformContent);
     }
 
+    [AvaloniaFact(DisplayName = "Content Alignment Updates When Its Options Change")]
+    public async Task ContentAlignmentUpdatesWhenOptionsChange()
+    {
+        var content = new Microsoft.Maui.Controls.Label
+        {
+            Text = "Item",
+            HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+            VerticalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+        };
+        var scrollView = new Microsoft.Maui.Controls.ScrollView
+        {
+            Content = content
+        };
+
+        var platformContent = await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<ScrollViewHandler>(scrollView);
+            return Assert.IsAssignableFrom<Control>(handler.PlatformView.Content);
+        });
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            Assert.Equal(Avalonia.Layout.HorizontalAlignment.Left, platformContent.HorizontalAlignment);
+            Assert.Equal(Avalonia.Layout.VerticalAlignment.Top, platformContent.VerticalAlignment);
+
+            content.HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.Center;
+            content.VerticalOptions = Microsoft.Maui.Controls.LayoutOptions.End;
+
+            Assert.Equal(Avalonia.Layout.HorizontalAlignment.Center, platformContent.HorizontalAlignment);
+            Assert.Equal(Avalonia.Layout.VerticalAlignment.Bottom, platformContent.VerticalAlignment);
+        });
+    }
+
     [AvaloniaFact(DisplayName = "Scroll Bars Update Correctly")]
     public async Task ScrollBarsUpdateCorrectly()
     {
