@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Rendering;
 
 using AvaloniaSize = Avalonia.Size;
 using MauiSize = Microsoft.Maui.Graphics.Size;
@@ -9,8 +10,14 @@ namespace Avalonia.Controls.Maui.Platform;
 /// <summary>
 /// Avalonia panel that delegates measure and arrange passes to MAUI's cross-platform layout system.
 /// </summary>
-public class LayoutPanel : Panel
+public class LayoutPanel : Panel, ICustomHitTest
 {
+    /// <summary>
+    /// Gets or sets a value indicating whether the panel itself ignores input. Its children
+    /// can still receive input.
+    /// </summary>
+    internal bool InputTransparent { get; set; }
+
     /// <summary>
     /// Gets or sets the delegate invoked during the measure pass to compute the desired size using MAUI's cross-platform layout.
     /// </summary>
@@ -59,5 +66,15 @@ public class LayoutPanel : Panel
         // In Avalonia, returning a smaller size would cause the panel to be repositioned
         // (e.g., centered for Stretch alignment), shifting all children.
         return finalSize;
+    }
+
+    /// <inheritdoc/>
+    bool ICustomHitTest.HitTest(Point point)
+    {
+        if (InputTransparent || Background is null)
+            return false;
+
+        var localPoint = TopLevel.GetTopLevel(this)?.TranslatePoint(point, this);
+        return localPoint is { } p && new Rect(Bounds.Size).Contains(p);
     }
 }

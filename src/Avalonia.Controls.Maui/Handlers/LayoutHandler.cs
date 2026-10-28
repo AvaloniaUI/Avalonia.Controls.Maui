@@ -84,7 +84,10 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
     /// <param name="layout">The associated <see cref="ILayout"/> instance.</param>
     public static void MapInputTransparent(LayoutHandler handler, ILayout layout)
     {
-        // TODO: Implement InputTransparent
+        if (handler.PlatformView is LayoutPanel layoutPanel)
+            layoutPanel.InputTransparent = layout.InputTransparent;
+        else
+            ViewHandler.MapInputTransparent(handler, layout);
     }
 
     /// <summary>
