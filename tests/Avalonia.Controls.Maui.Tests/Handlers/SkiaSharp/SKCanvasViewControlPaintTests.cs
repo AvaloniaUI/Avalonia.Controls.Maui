@@ -136,6 +136,45 @@ public class SKCanvasViewControlPaintTests
         });
     }
 
+    [AvaloniaFact(DisplayName = "A canvas in a hidden parent paints once the parent is shown")]
+    public void CanvasInHiddenParentPaintsWhenShown()
+    {
+        var paintCount = 0;
+        var control = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = _ => paintCount++,
+        };
+        var parent = new Border { Child = control };
+
+        var window = new Window { Width = 200, Height = 200, Content = new Panel { Children = { parent } } };
+        window.Show();
+        try
+        {
+            window.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+            parent.IsVisible = false;
+            window.UpdateLayout();
+            paintCount = 0;
+
+            control.InvalidateCanvas();
+            Dispatcher.UIThread.RunJobs();
+            control.InvalidateCanvas();
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(0, paintCount);
+
+            parent.IsVisible = true;
+            window.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(1, paintCount);
+        }
+        finally
+        {
+            window.Close();
+        }
+    }
+
     [AvaloniaFact(DisplayName = "A paint requested before the canvas is removed from the window does not run")]
     public void PaintRequestedBeforeRemovalDoesNotRun()
     {

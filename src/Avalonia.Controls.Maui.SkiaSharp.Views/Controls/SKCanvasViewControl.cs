@@ -5,6 +5,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.VisualTree;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
 using PointerEventArgs = Avalonia.Input.PointerEventArgs;
@@ -24,6 +25,7 @@ public class SKCanvasViewControl : Control
     private TopLevel? _topLevel;
     private bool _paintPending;
     private bool _painting;
+    private List<Visual>? _watchedAncestors;
 
     /// <summary>
     /// Gets or sets whether pixel scaling should be ignored when reporting canvas size.
@@ -103,6 +105,7 @@ public class SKCanvasViewControl : Control
             _topLevel = null;
         }
 
+        StopWatchingAncestors();
         _bitmap?.Dispose();
         _bitmap = null;
     }
@@ -133,6 +136,12 @@ public class SKCanvasViewControl : Control
         // A paint queued before the canvas left the window; attaching requests a new one
         if (PaintSurfaceAction == null || !IsVisible || _topLevel == null)
             return;
+
+        if (!IsEffectivelyVisible)
+        {
+            WatchAncestorsUntilVisible();
+            return;
+        }
 
         var scaling = _topLevel.RenderScaling;
         var viewSize = new PixelSize((int)Bounds.Width, (int)Bounds.Height);
@@ -184,6 +193,40 @@ public class SKCanvasViewControl : Control
         }
 
         InvalidateVisual();
+    }
+
+    // A hidden ancestor keeps the canvas from being seen, so it is painted once the ancestors
+    // that hide it are shown instead
+    private void WatchAncestorsUntilVisible()
+    {
+        if (_watchedAncestors != null)
+            return;
+
+        _watchedAncestors = new List<Visual>();
+        for (var ancestor = this.GetVisualParent(); ancestor != null; ancestor = ancestor.GetVisualParent())
+        {
+            ancestor.PropertyChanged += OnAncestorPropertyChanged;
+            _watchedAncestors.Add(ancestor);
+        }
+    }
+
+    private void StopWatchingAncestors()
+    {
+        if (_watchedAncestors == null)
+            return;
+
+        foreach (var ancestor in _watchedAncestors)
+            ancestor.PropertyChanged -= OnAncestorPropertyChanged;
+        _watchedAncestors = null;
+    }
+
+    private void OnAncestorPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
+    {
+        if (e.Property != IsVisibleProperty || !IsEffectivelyVisible)
+            return;
+
+        StopWatchingAncestors();
+        InvalidateCanvas();
     }
 
     /// <inheritdoc/>
