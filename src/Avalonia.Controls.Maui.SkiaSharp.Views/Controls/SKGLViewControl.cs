@@ -204,15 +204,49 @@ public class SKGLViewControl : Control
         if (!_enableTouchEvents)
             return;
 
+        var props = e.GetCurrentPoint(this).Properties;
+        var inContact = props.IsLeftButtonPressed || props.IsMiddleButtonPressed || props.IsRightButtonPressed;
+
+        if (!inContact)
+        {
+            RaiseHover(e, SKTouchAction.Moved);
+            return;
+        }
+
         if (!_pointerTouchIds.TryGetValue(e.Pointer, out var touchId))
             return;
 
-        var props = e.GetCurrentPoint(this).Properties;
-        var inContact = props.IsLeftButtonPressed || props.IsMiddleButtonPressed || props.IsRightButtonPressed;
-        if (!inContact)
+        var args = CreateTouchArgs(e, SKTouchAction.Moved, inContact, touchId);
+        if (TouchAction?.Invoke(args) == true || args.Handled)
+            e.Handled = true;
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPointerEntered(PointerEventArgs e)
+    {
+        base.OnPointerEntered(e);
+        if (!_enableTouchEvents)
             return;
 
-        var args = CreateTouchArgs(e, SKTouchAction.Moved, inContact, touchId);
+        RaiseHover(e, SKTouchAction.Entered);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnPointerExited(PointerEventArgs e)
+    {
+        base.OnPointerExited(e);
+        if (!_enableTouchEvents)
+            return;
+
+        RaiseHover(e, SKTouchAction.Exited);
+    }
+
+    private void RaiseHover(PointerEventArgs e, SKTouchAction action)
+    {
+        var props = e.GetCurrentPoint(this).Properties;
+        var inContact = props.IsLeftButtonPressed || props.IsMiddleButtonPressed || props.IsRightButtonPressed;
+
+        var args = CreateTouchArgs(e, action, inContact, e.Pointer.Id);
         if (TouchAction?.Invoke(args) == true || args.Handled)
             e.Handled = true;
     }
