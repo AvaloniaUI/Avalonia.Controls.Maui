@@ -58,6 +58,40 @@ public class SKCanvasViewControlPaintTests
         });
     }
 
+    [AvaloniaFact(DisplayName = "Invalidating the canvas while it paints paints it once per frame")]
+    public void InvalidatingWhilePaintingPaintsOnNextFrame()
+    {
+        // Invalidates from every paint, as an animation does, up to a limit so a loop ends
+        var paintCount = 0;
+        SKCanvasViewControl? canvas = null;
+        var control = canvas = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = _ =>
+            {
+                if (++paintCount < 100)
+                    canvas!.InvalidateCanvas();
+            },
+        };
+
+        Host(control, window =>
+        {
+            // The first paint asked for another, which waits for a frame
+            Assert.Equal(1, paintCount);
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(1, paintCount);
+
+            AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(2, paintCount);
+
+            AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+            Dispatcher.UIThread.RunJobs();
+            Assert.Equal(3, paintCount);
+        });
+    }
+
     [AvaloniaTheory(DisplayName = "Painted pixels appear where they were painted in the rendered frame")]
     [InlineData(1.0, false)]
     [InlineData(2.0, false)]

@@ -23,6 +23,7 @@ public class SKCanvasViewControl : Control
     private WriteableBitmap? _bitmap;
     private TopLevel? _topLevel;
     private bool _paintPending;
+    private bool _painting;
 
     /// <summary>
     /// Gets or sets whether pixel scaling should be ignored when reporting canvas size.
@@ -58,7 +59,8 @@ public class SKCanvasViewControl : Control
 
     /// <summary>
     /// Invalidates the canvas. The canvas is painted on the UI thread, outside the render pass,
-    /// and requests made before the paint runs are merged into one paint.
+    /// and requests made before the paint runs are merged into one paint. A request made while
+    /// the canvas paints is painted on the next frame.
     /// </summary>
     public void InvalidateCanvas()
     {
@@ -66,7 +68,10 @@ public class SKCanvasViewControl : Control
             return;
 
         _paintPending = true;
-        Dispatcher.Post(PaintCanvas);
+        if (_painting && _topLevel != null)
+            _topLevel.RequestAnimationFrame(_ => PaintCanvas());
+        else
+            Dispatcher.Post(PaintCanvas);
     }
 
     /// <inheritdoc/>
@@ -158,7 +163,15 @@ public class SKCanvasViewControl : Control
                 info = rawInfo;
             }
 
-            PaintSurfaceAction(new SKPaintSurfaceEventArgs(surface, info, rawInfo));
+            _painting = true;
+            try
+            {
+                PaintSurfaceAction(new SKPaintSurfaceEventArgs(surface, info, rawInfo));
+            }
+            finally
+            {
+                _painting = false;
+            }
             surface.Flush();
         }
 
