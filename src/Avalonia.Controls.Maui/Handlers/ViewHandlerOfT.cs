@@ -168,7 +168,7 @@ public abstract partial class ViewHandler<TVirtualView, TPlatformView> : Element
     }
 
     /// <inheritdoc/>
-    public Microsoft.Maui.Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
+    public virtual Microsoft.Maui.Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
     {
         var platformView = PlatformViewOrNull;
         if (platformView is null || VirtualViewOrNull is null)

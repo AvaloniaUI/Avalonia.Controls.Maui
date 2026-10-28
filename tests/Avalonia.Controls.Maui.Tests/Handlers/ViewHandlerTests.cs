@@ -141,6 +141,24 @@ public class ViewHandlerTests : HandlerTestBase
         Assert.Equal(plainSize.Height + 10, marginSize.Height, 3);
     }
 
+    [AvaloniaFact(DisplayName = "Derived handler can override GetDesiredSize")]
+    public async Task DerivedHandlerCanOverrideGetDesiredSize()
+    {
+        var view = new MauiContentView
+        {
+            Margin = new Microsoft.Maui.Thickness(5)
+        };
+
+        var size = await InvokeOnMainThreadAsync(() =>
+        {
+            CreateHandler<FixedSizeContentViewHandler>(view);
+            return ((Microsoft.Maui.IView)view).Measure(500, 500);
+        });
+
+        Assert.Equal(FixedSizeContentViewHandler.FixedSize.Width + 10, size.Width, 3);
+        Assert.Equal(FixedSizeContentViewHandler.FixedSize.Height + 10, size.Height, 3);
+    }
+
     [AvaloniaFact(DisplayName = "InputTransparent maps to IsHitTestVisible")]
     public async Task InputTransparentMapsToIsHitTestVisible()
     {
@@ -421,6 +439,14 @@ public class ViewHandlerTests : HandlerTestBase
         {
             window.Close();
         }
+    }
+
+    private sealed class FixedSizeContentViewHandler : ContentViewHandler
+    {
+        public static readonly Microsoft.Maui.Graphics.Size FixedSize = new(80, 30);
+
+        public override Microsoft.Maui.Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint) =>
+            FixedSize;
     }
 
     private sealed class InheritedPropertyViewModel(string text)
