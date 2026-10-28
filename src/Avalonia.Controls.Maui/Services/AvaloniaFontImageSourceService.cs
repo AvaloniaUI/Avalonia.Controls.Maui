@@ -104,12 +104,6 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
 
             var font = imageSource.Font;
             var fontSize = font.Size > 0 ? font.Size : DefaultSize;
-            var size = (int)(fontSize * scale * 1.5); // Add some padding
-
-            // Create a render target bitmap
-            var pixelSize = new PixelSize(size, size);
-            var dpi = new Vector(96 * scale, 96 * scale);
-            var renderTarget = new RenderTargetBitmap(pixelSize, dpi);
 
             // Create Avalonia font - use FontManager if available to resolve registered fonts
             FontFamily fontFamily;
@@ -132,25 +126,36 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
             var typeface = new Typeface(fontFamily, fontStyle, fontWeight);
             var avaloniaColor = GetAvaloniaColor(imageSource.Color);
 
-            // Create formatted text
+            // Create formatted text, sized in device-independent units; the bitmap's DPI applies the scale
             var formattedText = new FormattedText(
                 imageSource.Glyph,
                 System.Globalization.CultureInfo.CurrentCulture,
                 Avalonia.Media.FlowDirection.LeftToRight,
                 typeface,
-                fontSize * scale,
+                fontSize,
                 new SolidColorBrush(avaloniaColor));
 
-            // Render to bitmap
+            // Size the image to the glyph's drawn bounds plus a one-unit border, as MAUI does on
+            // Windows. A glyph with no outline (such as a space) keeps its layout box.
+            var glyphBounds = formattedText.BuildGeometry(default)?.Bounds ?? default;
+            if (glyphBounds.Width <= 0 || glyphBounds.Height <= 0)
+                glyphBounds = new Rect(0, 0, formattedText.WidthIncludingTrailingWhitespace, formattedText.Height);
+
+            // Work in whole pixels so anti-aliased edges stay inside the border
+            var borderPixels = (int)Math.Ceiling(scale);
+            var left = (int)Math.Floor(glyphBounds.X * scale) - borderPixels;
+            var top = (int)Math.Floor(glyphBounds.Y * scale) - borderPixels;
+            var right = (int)Math.Ceiling(glyphBounds.Right * scale) + borderPixels;
+            var bottom = (int)Math.Ceiling(glyphBounds.Bottom * scale) + borderPixels;
+
+            var pixelSize = new PixelSize(Math.Max(1, right - left), Math.Max(1, bottom - top));
+            var dpi = new Vector(96 * scale, 96 * scale);
+            var renderTarget = new RenderTargetBitmap(pixelSize, dpi);
+
+            // Render to bitmap, moving the glyph's pixel-aligned bounds to the origin
             using (var context = renderTarget.CreateDrawingContext())
             {
-                // Calculate centered position
-                var textWidth = formattedText.Width;
-                var textHeight = formattedText.Height;
-                var x = (size - textWidth) / 2;
-                var y = (size - textHeight) / 2;
-
-                context.DrawText(formattedText, new Point(x, y));
+                context.DrawText(formattedText, new Point(-left / scale, -top / scale));
             }
 
             _logger?.LogDebug("Successfully rendered font glyph");
