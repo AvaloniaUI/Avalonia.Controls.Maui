@@ -88,6 +88,9 @@
                     
                     <Label Text="Background Color:" FontSize="12" />
                     <Entry Text="Light Yellow Background" BackgroundColor="LightGoldenrodYellow" TextColor="Black" />
+
+                    <Label Text="Light Text on a Dark Background (click the field to see the caret):" FontSize="12" />
+                    <Entry Text="White text" BackgroundColor="#202020" TextColor="White" />
                 </VerticalStackLayout>
             </Border>
 
