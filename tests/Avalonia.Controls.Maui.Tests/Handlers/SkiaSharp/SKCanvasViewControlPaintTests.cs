@@ -275,6 +275,136 @@ public class SKCanvasViewControlPaintTests
         }
     }
 
+    [AvaloniaTheory(DisplayName = "A canvas moved while a paint is pending is painted where it is moved to")]
+    [InlineData("AnimatingOldWindowClosed")]
+    [InlineData("AnimatingOldWindowOpen")]
+    [InlineData("AnimatingSameWindow")]
+    [InlineData("PaintQueued")]
+    [InlineData("WaitingForHiddenParent")]
+    [InlineData("QueuedFromAnotherThread")]
+    [InlineData("MovedToAnotherParentDuringItsPaint")]
+    public void CanvasMovedWhilePaintPendingIsPainted(string scenario)
+    {
+        // An animating canvas invalidates itself from every paint, so a paint is always pending
+        var animating = scenario.StartsWith("Animating") || scenario == "MovedToAnotherParentDuringItsPaint";
+        var paintCount = 0;
+        Action? duringPaint = null;
+        SKCanvasViewControl? canvas = null;
+        var control = canvas = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = e =>
+            {
+                paintCount++;
+                e.Surface.Canvas.Clear(SKColors.Red);
+                var action = duringPaint;
+                duringPaint = null;
+                action?.Invoke();
+                if (animating)
+                    canvas!.InvalidateCanvas();
+            },
+        };
+        control.HorizontalAlignment = Layout.HorizontalAlignment.Left;
+        control.VerticalAlignment = Layout.VerticalAlignment.Top;
+
+        var parent = new Border { Child = control };
+        var otherParent = new Border();
+        var first = new Window { Width = 200, Height = 200, Content = new Panel { Children = { parent, otherParent } } };
+        var second = new Window { Width = 200, Height = 200, Background = Avalonia.Media.Brushes.White };
+        first.Show();
+        second.Show();
+        try
+        {
+            first.UpdateLayout();
+            Dispatcher.UIThread.RunJobs();
+            Assert.True(paintCount > 0);
+
+            switch (scenario)
+            {
+                case "AnimatingOldWindowClosed":
+                    parent.Child = null;
+                    first.Close();
+                    break;
+                case "AnimatingOldWindowOpen":
+                    parent.Child = null;
+                    break;
+                case "AnimatingSameWindow":
+                    parent.Child = null;
+                    parent.Child = control;
+                    second = first;
+                    break;
+                case "PaintQueued":
+                    control.InvalidateCanvas();
+                    parent.Child = null;
+                    break;
+                case "WaitingForHiddenParent":
+                    parent.IsVisible = false;
+                    first.UpdateLayout();
+                    control.InvalidateCanvas();
+                    Dispatcher.UIThread.RunJobs();
+                    parent.Child = null;
+                    break;
+                case "QueuedFromAnotherThread":
+                    var thread = new Thread(control.InvalidateCanvas);
+                    thread.Start();
+                    thread.Join();
+                    parent.Child = null;
+                    break;
+                case "MovedToAnotherParentDuringItsPaint":
+                    // As navigating within the window from a paint handler does
+                    duringPaint = () =>
+                    {
+                        parent.Child = null;
+                        otherParent.Child = control;
+                    };
+                    AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+                    Dispatcher.UIThread.RunJobs();
+                    Assert.Same(otherParent, control.Parent);
+                    second = first;
+                    break;
+            }
+
+            if (second != first && second.Content == null)
+                second.Content = control;
+            second.Background = Avalonia.Media.Brushes.White;
+            second.UpdateLayout();
+
+            var paintsBefore = paintCount;
+            for (var i = 0; i < 3; i++)
+            {
+                AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+                Dispatcher.UIThread.RunJobs();
+            }
+
+            // Painted after the move, and every frame while it animates
+            Assert.True(paintCount > paintsBefore, $"No paint after the move ({paintCount} paints)");
+            if (animating)
+                Assert.True(paintCount - paintsBefore >= 3, $"{paintCount - paintsBefore} paints in 3 frames");
+
+            using (var frame = second.CaptureRenderedFrame()!)
+            using (var locked = frame.Lock())
+                Assert.Equal(Avalonia.Media.Colors.Red, GetPixel(locked, 50, 25));
+
+            // A later request from another thread still paints; an animating canvas merges it into
+            // the paint it has waiting for the next frame
+            if (animating)
+                return;
+
+            var paintsBeforeRequest = paintCount;
+            var later = new Thread(control.InvalidateCanvas);
+            later.Start();
+            later.Join();
+            Dispatcher.UIThread.RunJobs();
+            Assert.True(paintCount > paintsBeforeRequest, "A later request from another thread did not paint");
+        }
+        finally
+        {
+            first.Close();
+            second.Close();
+        }
+    }
+
     [AvaloniaFact(DisplayName = "A paint requested before the canvas is removed from the window does not run")]
     public void PaintRequestedBeforeRemovalDoesNotRun()
     {
