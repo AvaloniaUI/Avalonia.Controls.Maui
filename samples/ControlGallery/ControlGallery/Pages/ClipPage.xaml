@@ -133,6 +133,60 @@
                     </Grid>
                 </VerticalStackLayout>
             </Border>
+
+            <Border Stroke="Gray"
+                    Padding="12">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12" />
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="12"
+                                     WidthRequest="320"
+                                     HorizontalOptions="Center">
+                    <Label Text="Changing Clip and Shadow at Run Time"
+                           FontAttributes="Bold" />
+                    <Label Text="Add and remove a clip or a shadow on content inside a Border and inside a ScrollView."
+                           FontSize="12"
+                           FontAttributes="Italic" />
+
+                    <HorizontalStackLayout Spacing="8"
+                                           HorizontalOptions="Center">
+                        <Button x:Name="ToggleClipButton"
+                                Text="Add Clip"
+                                Clicked="OnToggleClipClicked" />
+                        <Button x:Name="ToggleShadowButton"
+                                Text="Add Shadow"
+                                Clicked="OnToggleShadowClicked" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="Inside a Border" FontSize="12" />
+                    <Border StrokeThickness="0"
+                            Padding="10"
+                            BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2A2A2A}">
+                        <Grid x:Name="BorderHostedContent"
+                              HeightRequest="100"
+                              BackgroundColor="#2563EB">
+                            <Label Text="Border content"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+
+                    <Label Text="Inside a ScrollView" FontSize="12" />
+                    <ScrollView HeightRequest="120"
+                                BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2A2A2A}">
+                        <Grid x:Name="ScrollHostedContent"
+                              HeightRequest="100"
+                              Margin="10"
+                              BackgroundColor="#16A34A">
+                            <Label Text="ScrollView content"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Grid>
+                    </ScrollView>
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
