@@ -81,4 +81,21 @@ public class ImageRenderTests : RenderTestBase
         await RenderToFile(layout);
         CompareImages();
     }
+
+    [AvaloniaFact]
+    public async Task Render_Image_FontImageSource_Sized()
+    {
+        // The image's background shows its bounds; the glyph is fitted into them
+        var control = new Microsoft.Maui.Controls.Image
+        {
+            Source = new Microsoft.Maui.Controls.FontImageSource { Glyph = "M", Size = 30, Color = Colors.Black },
+            WidthRequest = 60,
+            HeightRequest = 60,
+            Aspect = Microsoft.Maui.Aspect.AspectFit,
+            BackgroundColor = Colors.LightGray
+        };
+
+        await RenderToFile(control);
+        CompareImages();
+    }
 }
