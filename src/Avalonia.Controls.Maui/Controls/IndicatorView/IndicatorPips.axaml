@@ -1,0 +1,77 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Pip size and shape, overridden per IndicatorView through the PipsPager's resources -->
+    <x:Double x:Key="PipsPagerPipSize">4</x:Double>
+    <x:Double x:Key="PipsPagerPipSizeSelected">6</x:Double>
+    <x:Double x:Key="PipsPagerPipSizePointerOver">6</x:Double>
+    <CornerRadius x:Key="PipsPagerPipCornerRadius">999</CornerRadius>
+    <x:Double x:Key="PipsPagerPipContainerMinorSize">12</x:Double>
+    <x:Double x:Key="PipsPagerPipContainerMajorSize">24</x:Double>
+
+    <!-- Shows a pip, or the IndicatorTemplate content when the item has a content template.
+         Unselected custom indicators are dimmed. -->
+    <ControlTemplate x:Key="MauiIndicatorPipTemplate" TargetType="ListBoxItem">
+        <Grid Background="Transparent">
+            <Border Name="Pip"
+                    IsVisible="{TemplateBinding ContentTemplate, Converter={x:Static ObjectConverters.IsNull}}"
+                    Width="{DynamicResource PipsPagerPipSize}"
+                    Height="{DynamicResource PipsPagerPipSize}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    CornerRadius="{DynamicResource PipsPagerPipCornerRadius}"
+                    Background="{DynamicResource PipsPagerSelectionIndicatorForeground}">
+                <Border.Transitions>
+                    <Transitions>
+                        <BrushTransition Property="Background" Duration="0:0:0.167" />
+                    </Transitions>
+                </Border.Transitions>
+            </Border>
+            <ContentPresenter Name="PART_ContentPresenter"
+                              IsVisible="{TemplateBinding ContentTemplate, Converter={x:Static ObjectConverters.IsNotNull}}"
+                              Content="{TemplateBinding Content}"
+                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                              HorizontalContentAlignment="Center"
+                              VerticalContentAlignment="Center"
+                              Padding="2"
+                              Opacity="0.45" />
+        </Grid>
+    </ControlTemplate>
+
+    <ControlTheme x:Key="MauiIndicatorPipTheme" TargetType="ListBoxItem">
+        <Setter Property="Width" Value="{DynamicResource PipsPagerPipContainerMinorSize}" />
+        <Setter Property="Height" Value="{DynamicResource PipsPagerPipContainerMajorSize}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="MinWidth" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="ClipToBounds" Value="False" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template" Value="{StaticResource MauiIndicatorPipTemplate}" />
+
+        <Style Selector="^:pointerover /template/ Border#Pip">
+            <Setter Property="Width" Value="{DynamicResource PipsPagerPipSizePointerOver}" />
+            <Setter Property="Height" Value="{DynamicResource PipsPagerPipSizePointerOver}" />
+        </Style>
+        <Style Selector="^:selected /template/ Border#Pip">
+            <Setter Property="Width" Value="{DynamicResource PipsPagerPipSizeSelected}" />
+            <Setter Property="Height" Value="{DynamicResource PipsPagerPipSizeSelected}" />
+            <Setter Property="Background" Value="{DynamicResource PipsPagerSelectionIndicatorForegroundSelected}" />
+        </Style>
+        <Style Selector="^:selected:pointerover /template/ Border#Pip">
+            <Setter Property="Width" Value="{DynamicResource PipsPagerPipSizePointerOver}" />
+            <Setter Property="Height" Value="{DynamicResource PipsPagerPipSizePointerOver}" />
+        </Style>
+
+        <Style Selector="^:selected /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="1.0" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0.75" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Opacity" Value="0.3" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

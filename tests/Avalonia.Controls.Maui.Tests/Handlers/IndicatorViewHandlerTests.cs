@@ -11,6 +11,96 @@ namespace Avalonia.Controls.Maui.Tests.Handlers;
 
 public class IndicatorViewHandlerTests : HandlerTestBase<MauiIndicatorViewHandler, IndicatorViewStub>
 {
+    [AvaloniaFact(DisplayName = "Pips are drawn at IndicatorSize")]
+    public async Task PipsAreDrawnAtIndicatorSize()
+    {
+        var indicator = new IndicatorViewStub { Count = 3, Position = 1, IndicatorSize = 12 };
+        var handler = await CreateHandlerAsync(indicator);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var window = Show(handler.PlatformView);
+            try
+            {
+                var pips = GetPips(handler.PlatformView);
+                Assert.Equal(12, pips[1].Bounds.Width, 1);
+                Assert.Equal(12, pips[1].Bounds.Height, 1);
+                Assert.Equal(8, pips[0].Bounds.Width, 1);
+                Assert.Equal(8, pips[2].Bounds.Width, 1);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Rectangle IndicatorsShape draws square pips")]
+    public async Task RectangleIndicatorsShapeDrawsSquarePips()
+    {
+        var indicator = new IndicatorViewStub { Count = 3, IndicatorSize = 12, IndicatorsShape = new Rectangle() };
+        var handler = await CreateHandlerAsync(indicator);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var window = Show(handler.PlatformView);
+            try
+            {
+                foreach (var pip in GetPips(handler.PlatformView))
+                {
+                    var border = Assert.IsType<Border>(pip);
+                    Assert.Equal(new CornerRadius(0), border.CornerRadius);
+                }
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "IndicatorTemplate content is drawn for each indicator")]
+    public async Task IndicatorTemplateContentIsDrawn()
+    {
+        var indicator = new Microsoft.Maui.Controls.IndicatorView
+        {
+            Count = 3,
+            IndicatorTemplate = new Microsoft.Maui.Controls.DataTemplate(() => new Microsoft.Maui.Controls.Label { Text = "*" }),
+        };
+        var handler = await CreateHandlerAsync<MauiIndicatorViewHandler>(indicator);
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var window = Show(handler.PlatformView);
+            try
+            {
+                var shown = Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(handler.PlatformView)
+                    .OfType<TextBlock>()
+                    .Count(t => t.Text == "*" && t.IsEffectivelyVisible);
+                Assert.Equal(3, shown);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    static Window Show(Control control)
+    {
+        var window = new Window { Width = 200, Height = 100, Content = control };
+        window.Show();
+        window.UpdateLayout();
+        return window;
+    }
+
+    // The drawn pip of each indicator: the element named Pip in each item's template
+    static List<Control> GetPips(PipsPager pipsPager) =>
+        Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(pipsPager)
+            .OfType<ListBoxItem>()
+            .Select(item => Avalonia.VisualTree.VisualExtensions.GetVisualDescendants(item).OfType<Control>().Single(c => c.Name == "Pip"))
+            .ToList();
+
     [AvaloniaFact(DisplayName = "Handler creates PipsPager")]
     public async Task HandlerCreatesPipsPager()
     {

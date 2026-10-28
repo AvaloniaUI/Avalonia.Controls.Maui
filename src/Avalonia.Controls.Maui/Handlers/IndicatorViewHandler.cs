@@ -1,5 +1,7 @@
 using Avalonia.Controls.Maui.Platform;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Templates;
+using Avalonia.Styling;
 using Avalonia.Threading;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -73,6 +75,7 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
     {
         platformView.SelectedIndexChanged -= OnSelectedIndexChanged;
         platformView.TemplateApplied -= OnTemplateApplied;
+        SetPipsList(null);
         base.DisconnectHandler(platformView);
     }
 
@@ -81,6 +84,8 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
         if (sender is not PlatformView pv)
             return;
 
+        SetPipsList(e.NameScope.Find<ListBox>("PART_PipsPagerList"));
+
         // Property mappers fire before the control template is applied, so pip containers do not
         // exist yet. Defer size and selection sync to after the first layout pass.
         pv.Dispatcher.Post(() =>
@@ -88,6 +93,35 @@ public partial class IndicatorViewHandler : ViewHandler<IIndicatorView, Platform
             pv.UpdatePipSize(VirtualView);
             pv.ForceSelection(VirtualView);
         }, DispatcherPriority.Loaded);
+    }
+
+    private ListBox? _pipsList;
+
+    private void SetPipsList(ListBox? pipsList)
+    {
+        if (_pipsList != null)
+            _pipsList.ContainerPrepared -= OnPipContainerPrepared;
+
+        _pipsList = pipsList;
+
+        if (_pipsList != null)
+            _pipsList.ContainerPrepared += OnPipContainerPrepared;
+    }
+
+    // The themes draw pips at fixed sizes and as ellipses, and the Simple theme styles the
+    // containers directly, so each container gets the pip theme, template and size as local values
+    private void OnPipContainerPrepared(object? sender, ContainerPreparedEventArgs e)
+    {
+        if (e.Container is not ListBoxItem item)
+            return;
+
+        if (item.TryFindResource("MauiIndicatorPipTheme", out var theme) && theme is ControlTheme pipTheme)
+            item.Theme = pipTheme;
+        if (item.TryFindResource("MauiIndicatorPipTemplate", out var template) && template is IControlTemplate pipTemplate)
+            item.Template = pipTemplate;
+
+        item.Bind(Layout.Layoutable.WidthProperty, item.GetResourceObservable("PipsPagerPipContainerMinorSize"));
+        item.Bind(Layout.Layoutable.HeightProperty, item.GetResourceObservable("PipsPagerPipContainerMajorSize"));
     }
 
     private void OnSelectedIndexChanged(object? sender, Avalonia.Controls.PipsPagerSelectedIndexChangedEventArgs e)
