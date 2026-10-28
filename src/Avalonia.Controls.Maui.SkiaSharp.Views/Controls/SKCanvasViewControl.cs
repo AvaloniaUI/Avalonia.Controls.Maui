@@ -60,10 +60,16 @@ public class SKCanvasViewControl : Control
     /// <summary>
     /// Invalidates the canvas. The canvas is painted on the UI thread, outside the render pass,
     /// and requests made before the paint runs are merged into one paint. A request made while
-    /// the canvas paints is painted on the next frame.
+    /// the canvas paints is painted on the next frame. Can be called from any thread.
     /// </summary>
     public void InvalidateCanvas()
     {
+        if (!Dispatcher.CheckAccess())
+        {
+            Dispatcher.Post(InvalidateCanvas);
+            return;
+        }
+
         if (_paintPending)
             return;
 

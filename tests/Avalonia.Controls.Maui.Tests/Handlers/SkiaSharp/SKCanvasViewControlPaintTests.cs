@@ -92,6 +92,50 @@ public class SKCanvasViewControlPaintTests
         });
     }
 
+    [AvaloniaFact(DisplayName = "Invalidating the canvas from another thread paints it on the UI thread")]
+    public void InvalidatingFromAnotherThreadPaintsOnUIThread()
+    {
+        // The first paint invalidates the canvas from another thread while it is painting
+        var paints = new List<bool>();
+        Exception? threadException = null;
+        SKCanvasViewControl? canvas = null;
+        var control = canvas = new SKCanvasViewControl
+        {
+            Width = 100,
+            Height = 50,
+            PaintSurfaceAction = _ =>
+            {
+                paints.Add(Dispatcher.UIThread.CheckAccess());
+                if (paints.Count == 1)
+                {
+                    // A thread of its own; waiting on a task could run it on this thread
+                    var thread = new Thread(() =>
+                    {
+                        try
+                        {
+                            canvas!.InvalidateCanvas();
+                        }
+                        catch (Exception ex)
+                        {
+                            threadException = ex;
+                        }
+                    });
+                    thread.Start();
+                    thread.Join();
+                }
+            },
+        };
+
+        Host(control, window =>
+        {
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Null(threadException);
+            Assert.Equal(2, paints.Count);
+            Assert.All(paints, Assert.True);
+        });
+    }
+
     [AvaloniaFact(DisplayName = "A paint requested before the canvas is removed from the window does not run")]
     public void PaintRequestedBeforeRemovalDoesNotRun()
     {
