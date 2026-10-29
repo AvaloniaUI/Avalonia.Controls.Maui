@@ -527,6 +527,65 @@ public partial class BorderHandlerTests : HandlerTestBase<MauiBorderHandler, Bor
         return handler.PlatformView is MauiBorder borderView ? borderView.StrokeThickness : 0;
     }
 
+    [AvaloniaFact(DisplayName = "Border Grows When Hidden Content Is Shown")]
+    public async Task BorderGrowsWhenHiddenContentIsShown()
+    {
+        var details = new Microsoft.Maui.Controls.ContentView
+        {
+            Content = new Microsoft.Maui.Controls.BoxView { HeightRequest = 50 },
+            IsVisible = false,
+        };
+        var grid = new Microsoft.Maui.Controls.Grid
+        {
+            RowDefinitions =
+            {
+                new Microsoft.Maui.Controls.RowDefinition(Microsoft.Maui.GridLength.Auto),
+                new Microsoft.Maui.Controls.RowDefinition(Microsoft.Maui.GridLength.Auto),
+            }
+        };
+        var header = new Microsoft.Maui.Controls.BoxView { HeightRequest = 20 };
+        grid.Add(header);
+        grid.Add(details);
+        grid.SetRow(details, 1);
+        var border = new Microsoft.Maui.Controls.Border
+        {
+            Margin = new Microsoft.Maui.Thickness(10),
+            Padding = new Microsoft.Maui.Thickness(5),
+            Content = new Microsoft.Maui.Controls.ContentView { Content = grid }
+        };
+        var page = new Microsoft.Maui.Controls.VerticalStackLayout
+        {
+            Children = { border }
+        };
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(page);
+            var window = new Window { Width = 200, Height = 200, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                var platformBorder = (Control)border.Handler!.PlatformView!;
+                var collapsedHeight = platformBorder.Bounds.Height;
+
+                details.IsVisible = true;
+                window.UpdateLayout();
+
+                Assert.Equal(collapsedHeight + 50, platformBorder.Bounds.Height, 1);
+
+                details.IsVisible = false;
+                window.UpdateLayout();
+
+                Assert.Equal(collapsedHeight, platformBorder.Bounds.Height, 1);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
     Color? GetNativeBackgroundColor(MauiBorderHandler handler) =>
         AvaloniaPropertyHelpers.GetNativeBackgroundColor(handler);
 

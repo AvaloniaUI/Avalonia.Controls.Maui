@@ -142,6 +142,12 @@ public partial class BorderPage : ContentPage
         ShapeLabel.Text = "Asymmetric";
     }
 
+    private void OnExpandableHeaderTapped(object? sender, TappedEventArgs e)
+    {
+        ExpandableDetails.IsVisible = !ExpandableDetails.IsVisible;
+        ExpandableIndicator.Text = ExpandableDetails.IsVisible ? "Hide" : "Show";
+    }
+
     private void OnShapeEllipseClicked(object? sender, EventArgs e)
     {
         ShapeSwitchBorder.StrokeShape = new Ellipse();

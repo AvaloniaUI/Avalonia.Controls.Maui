@@ -242,6 +242,29 @@ public static class ViewExtensions
     public static void InvalidateMeasure(this PlatformView control, IView view)
     {
         control.InvalidateMeasure();
+        control.InvalidateAncestorsMeasures();
+    }
+
+    /// <summary>
+    /// Invalidates the measure of every ancestor of a platform view.
+    /// </summary>
+    /// <param name="control">The platform view whose ancestors to invalidate.</param>
+    internal static void InvalidateAncestorsMeasures(this PlatformView control)
+    {
+        for (var parent = global::Avalonia.VisualTree.VisualExtensions.GetVisualParent(control);
+             parent is not null;
+             parent = global::Avalonia.VisualTree.VisualExtensions.GetVisualParent(parent))
+        {
+            if (parent is MauiView mauiView)
+            {
+                if (!mauiView.InvalidateMeasure(isPropagating: true))
+                    return;
+            }
+            else if (parent is global::Avalonia.Layout.Layoutable layoutable)
+            {
+                layoutable.InvalidateMeasure();
+            }
+        }
     }
 
     /// <summary>
