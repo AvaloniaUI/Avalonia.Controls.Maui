@@ -65,6 +65,18 @@ public partial class MainPage : FlyoutPage
         [typeof(SwitchPage)] = () => new SwitchPage(),
         [typeof(TableViewPage)] = () => new TableViewPage(),
         [typeof(TimePickerPage)] = () => new TimePickerPage(),
+        // Community Toolkit
+        [typeof(ExpanderPage)] = () => new ExpanderPage(),
+        [typeof(AnimationBehaviorsPage)] = () => new AnimationBehaviorsPage(),
+        [typeof(AvatarViewPage)] = () => new AvatarViewPage(),
+        [typeof(DockLayoutPage)] = () => new DockLayoutPage(),
+        [typeof(InputBehaviorsPage)] = () => new InputBehaviorsPage(),
+        [typeof(LazyViewPage)] = () => new LazyViewPage(),
+        [typeof(RatingViewPage)] = () => new RatingViewPage(),
+        [typeof(StateContainerPage)] = () => new StateContainerPage(),
+        [typeof(ToolkitPopupPage)] = () => new ToolkitPopupPage(),
+        [typeof(UniformItemsLayoutPage)] = () => new UniformItemsLayoutPage(),
+        [typeof(ValidationBehaviorsPage)] = () => new ValidationBehaviorsPage(),
         // WebView
         [typeof(WebViewLoadWebPage)] = () => new WebViewLoadWebPage(),
         [typeof(WebViewLoadLocalPage)] = () => new WebViewLoadLocalPage(),
@@ -234,6 +246,21 @@ public partial class MainPage : FlyoutPage
                 new("Switch", "Binary toggle switch", typeof(SwitchPage)),
                 new("TableView", "Form-based data table", typeof(TableViewPage)),
                 new("TimePicker", "Time selection picker", typeof(TimePickerPage))
+            }),
+
+            new SampleGroup("Community Toolkit", new List<SampleItem>
+            {
+                new("Expander", "Content that shows and hides", typeof(ExpanderPage)),
+                new("Animation Behaviors", "Event commands and animations", typeof(AnimationBehaviorsPage)),
+                new("AvatarView", "Initials or image avatars", typeof(AvatarViewPage)),
+                new("DockLayout", "Dock children to the edges", typeof(DockLayoutPage)),
+                new("Input Behaviors", "Masks, length and typing events", typeof(InputBehaviorsPage)),
+                new("LazyView", "Create content on demand", typeof(LazyViewPage)),
+                new("Popup", "Popups over the page", typeof(ToolkitPopupPage)),
+                new("RatingView", "Star and shape ratings", typeof(RatingViewPage)),
+                new("StateContainer", "Loading, empty and error states", typeof(StateContainerPage)),
+                new("UniformItemsLayout", "Equal-size cells", typeof(UniformItemsLayoutPage)),
+                new("Validation Behaviors", "Validate text input", typeof(ValidationBehaviorsPage))
             }),
 
             new SampleGroup("WebView", new List<SampleItem>

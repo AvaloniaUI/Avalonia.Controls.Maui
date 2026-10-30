@@ -224,6 +224,13 @@ public abstract class HandlerTestBase : IAsyncDisposable
         await Dispatcher.UIThread.InvokeAsync(action);
     }
 
+    // Async lambdas would otherwise bind to Func<T> with T = Task, which does not wait for them
+    // and loses their failures
+    protected async Task InvokeOnMainThreadAsync(Func<Task> func)
+    {
+        await Dispatcher.UIThread.InvokeAsync(func);
+    }
+
     public virtual async ValueTask DisposeAsync()
     {
         foreach (var handler in _handlers)

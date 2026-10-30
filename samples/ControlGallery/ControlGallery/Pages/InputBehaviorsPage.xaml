@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ControlGallery.Pages.InputBehaviorsPage"
+             Title="Input Behaviors">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Masked Input -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Masked Input"
+                           FontAttributes="Bold"/>
+                    <Label Text="MaskedBehavior formats the text as it is typed. Each X in the mask is replaced by a typed character."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Entry Placeholder="(555) 123-4567"
+                           Keyboard="Telephone">
+                        <Entry.Behaviors>
+                            <toolkit:MaskedBehavior Mask="(XXX) XXX-XXXX"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Entry Placeholder="1234 5678 9012 3456"
+                           Keyboard="Numeric">
+                        <Entry.Behaviors>
+                            <toolkit:MaskedBehavior Mask="XXXX XXXX XXXX XXXX"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Max Length Reached -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Max Length Reached"
+                           FontAttributes="Bold"/>
+                    <Label Text="MaxLengthReachedBehavior runs a command when the text reaches the MaxLength of the entry."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Entry Placeholder="Type 5 characters"
+                           MaxLength="5">
+                        <Entry.Behaviors>
+                            <toolkit:MaxLengthReachedBehavior x:Name="MaxLengthBehavior"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Label x:Name="MaxLengthLabel"
+                           Text="Max length reached: (not yet)"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- User Stopped Typing -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="User Stopped Typing"
+                           FontAttributes="Bold"/>
+                    <Label Text="UserStoppedTypingBehavior runs a command after typing pauses for a short time, for example to start a search."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Entry Placeholder="Search">
+                        <Entry.Behaviors>
+                            <toolkit:UserStoppedTypingBehavior x:Name="StoppedTypingBehavior"
+                                                               StoppedTypingTimeThreshold="700"
+                                                               MinimumLengthThreshold="2"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Label x:Name="StoppedTypingLabel"
+                           Text="Search for: (nothing yet)"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Focus the Next Entry -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Focus the Next Entry"
+                           FontAttributes="Bold"/>
+                    <Label Text="SetFocusOnEntryCompletedBehavior moves the focus to the next entry when Enter is pressed."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Entry x:Name="FirstNameEntry"
+                           Placeholder="First name"
+                           ReturnType="Next"
+                           toolkit:SetFocusOnEntryCompletedBehavior.NextElement="{x:Reference LastNameEntry}"/>
+                    <Entry x:Name="LastNameEntry"
+                           Placeholder="Last name"
+                           ReturnType="Next"
+                           toolkit:SetFocusOnEntryCompletedBehavior.NextElement="{x:Reference CityEntry}"/>
+                    <Entry x:Name="CityEntry"
+                           Placeholder="City"
+                           ReturnType="Done"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

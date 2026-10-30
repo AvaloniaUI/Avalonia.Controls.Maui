@@ -10,6 +10,8 @@ public class AvaloniaDispatcher : IDispatcher
 {
     private readonly Threading.Dispatcher _avaloniaDispatcher;
 
+    internal Threading.Dispatcher AvaloniaDispatcherInstance => _avaloniaDispatcher;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="AvaloniaDispatcher"/> class.
     /// </summary>

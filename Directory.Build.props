@@ -52,6 +52,7 @@
 
     <PropertyGroup>
         <MicrosoftExtensionsVersion>11.0.0-rc.2.26504.105</MicrosoftExtensionsVersion>
+        <CommunityToolkitMauiVersion>15.0.1</CommunityToolkitMauiVersion>
     </PropertyGroup>
 
     <!--

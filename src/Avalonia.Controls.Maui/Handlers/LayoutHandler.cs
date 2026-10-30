@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Platform;
 using Microsoft.Maui;
 using Microsoft.Maui.Handlers;
@@ -341,6 +342,7 @@ public partial class LayoutHandler : ViewHandler<ILayout, Panel>
     private void OnMeasureInvalidated(object? sender, EventArgs e)
     {
         PlatformView?.InvalidateMeasure();
+        PlatformView?.InvalidateAncestorsMeasures();
     }
 }
 

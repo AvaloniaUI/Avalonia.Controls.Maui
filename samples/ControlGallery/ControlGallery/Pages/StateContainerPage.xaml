@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ControlGallery.Pages.StateContainerPage"
+             Title="StateContainer">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- States -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="States"
+                           FontAttributes="Bold"/>
+                    <Label Text="The buttons switch the layout between its content and its Loading, Empty and Error states."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <FlexLayout Wrap="Wrap"
+                                JustifyContent="Start">
+                        <Button Text="Content"
+                                Margin="0,0,8,8"
+                                Clicked="OnContentStateClicked"/>
+                        <Button Text="Loading"
+                                Margin="0,0,8,8"
+                                Clicked="OnLoadingStateClicked"/>
+                        <Button Text="Empty"
+                                Margin="0,0,8,8"
+                                Clicked="OnEmptyStateClicked"/>
+                        <Button Text="Error"
+                                Margin="0,0,8,8"
+                                Clicked="OnErrorStateClicked"/>
+                    </FlexLayout>
+                    <Label x:Name="CurrentStateLabel"
+                           Text="Current state: (none)"/>
+                    <VerticalStackLayout x:Name="StatesLayout"
+                                         Padding="10"
+                                         Spacing="6"
+                                         BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2A2A2A}">
+                        <toolkit:StateContainer.StateViews>
+                            <HorizontalStackLayout toolkit:StateView.StateKey="Loading"
+                                                   Spacing="10">
+                                <ActivityIndicator IsRunning="True"
+                                                   WidthRequest="20"
+                                                   HeightRequest="20"/>
+                                <Label Text="Loading the orders..."
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                            <Label toolkit:StateView.StateKey="Empty"
+                                   Text="There are no orders yet."
+                                   FontAttributes="Italic"/>
+                            <VerticalStackLayout toolkit:StateView.StateKey="Error"
+                                                 Spacing="4">
+                                <Label Text="The orders could not be loaded."
+                                       TextColor="Red"
+                                       FontAttributes="Bold"/>
+                                <Label Text="Check the connection and try again."/>
+                            </VerticalStackLayout>
+                        </toolkit:StateContainer.StateViews>
+
+                        <Label Text="Order 1001: Wireless keyboard"/>
+                        <Label Text="Order 1002: USB-C cable"/>
+                        <Label Text="Order 1003: Laptop stand"/>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Animated State Change -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Animated State Change"
+                           FontAttributes="Bold"/>
+                    <Label Text="ChangeStateWithAnimation fades the old state out and the new state in."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Button Text="Toggle State"
+                            HorizontalOptions="Start"
+                            Clicked="OnAnimatedToggleClicked"/>
+                    <Grid x:Name="AnimatedStatesGrid"
+                          HeightRequest="80"
+                          BackgroundColor="{AppThemeBinding Light=#F5F5F5, Dark=#2A2A2A}">
+                        <toolkit:StateContainer.StateViews>
+                            <Label toolkit:StateView.StateKey="Done"
+                                   Text="All tasks are done."
+                                   TextColor="Green"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </toolkit:StateContainer.StateViews>
+
+                        <Label Text="3 tasks to do"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

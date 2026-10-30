@@ -34,6 +34,7 @@
       replace it with direct MAUI source ProjectReferences.
     -->
     <PackageReference Include="Microsoft.Maui.Controls.Core" Version="$(MauiVersion)" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="$(CommunityToolkitMauiVersion)" />
   </ItemGroup>
 
   <ItemGroup>

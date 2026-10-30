@@ -527,6 +527,278 @@ public partial class BorderHandlerTests : HandlerTestBase<MauiBorderHandler, Bor
         return handler.PlatformView is MauiBorder borderView ? borderView.StrokeThickness : 0;
     }
 
+    [AvaloniaFact(DisplayName = "Border Grows When Hidden Content Is Shown")]
+    public async Task BorderGrowsWhenHiddenContentIsShown()
+    {
+        var details = new Microsoft.Maui.Controls.ContentView
+        {
+            Content = new Microsoft.Maui.Controls.BoxView { HeightRequest = 50 },
+            IsVisible = false,
+        };
+        var grid = new Microsoft.Maui.Controls.Grid
+        {
+            RowDefinitions =
+            {
+                new Microsoft.Maui.Controls.RowDefinition(Microsoft.Maui.GridLength.Auto),
+                new Microsoft.Maui.Controls.RowDefinition(Microsoft.Maui.GridLength.Auto),
+            }
+        };
+        var header = new Microsoft.Maui.Controls.BoxView { HeightRequest = 20 };
+        grid.Add(header);
+        grid.Add(details);
+        grid.SetRow(details, 1);
+        var border = new Microsoft.Maui.Controls.Border
+        {
+            Margin = new Microsoft.Maui.Thickness(10),
+            Padding = new Microsoft.Maui.Thickness(5),
+            Content = new Microsoft.Maui.Controls.ContentView { Content = grid }
+        };
+        var page = new Microsoft.Maui.Controls.VerticalStackLayout
+        {
+            Children = { border }
+        };
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(page);
+            var window = new Window { Width = 200, Height = 200, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                var platformBorder = (Control)border.Handler!.PlatformView!;
+                var collapsedHeight = platformBorder.Bounds.Height;
+
+                details.IsVisible = true;
+                window.UpdateLayout();
+
+                Assert.Equal(collapsedHeight + 50, platformBorder.Bounds.Height, 1);
+
+                details.IsVisible = false;
+                window.UpdateLayout();
+
+                Assert.Equal(collapsedHeight, platformBorder.Bounds.Height, 1);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
+
+    [AvaloniaFact(DisplayName = "Content Is Arranged Inside The Stroke And Padding")]
+    public async Task ContentIsArrangedInsideStrokeAndPadding()
+    {
+        var content = new Microsoft.Maui.Controls.BoxView();
+        var border = new Microsoft.Maui.Controls.Border
+        {
+            WidthRequest = 200,
+            HeightRequest = 100,
+            StrokeThickness = 4,
+            Padding = new Microsoft.Maui.Thickness(1, 2, 3, 5),
+            Content = content,
+        };
+
+        var bounds = await RunBorderInWindowAsync(border, content);
+
+        Assert.Equal(new Rect(5, 6, 200 - 4 - 4 - 1 - 3, 100 - 4 - 4 - 2 - 5), bounds);
+    }
+
+    [AvaloniaFact(DisplayName = "Border Sized To Its Content Includes The Stroke")]
+    public async Task BorderSizedToContentIncludesStroke()
+    {
+        var content = new Microsoft.Maui.Controls.BoxView { WidthRequest = 50, HeightRequest = 30 };
+        var border = new Microsoft.Maui.Controls.Border
+        {
+            StrokeThickness = 4,
+            Padding = 10,
+            HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+            VerticalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+            Content = content,
+        };
+
+        var bounds = await RunBorderInWindowAsync(border, content);
+
+        Assert.Equal(new Rect(14, 14, 50, 30), bounds);
+        Assert.Equal(50 + 2 * 10 + 2 * 4, ((Control)border.Handler!.PlatformView!).Bounds.Width, 1);
+        Assert.Equal(30 + 2 * 10 + 2 * 4, ((Control)border.Handler!.PlatformView!).Bounds.Height, 1);
+    }
+
+    /// <summary>
+    /// Lays out <paramref name="border"/> in a window and returns the bounds of
+    /// <paramref name="content"/> relative to the border.
+    /// </summary>
+    Task<Rect> RunBorderInWindowAsync(Microsoft.Maui.Controls.Border border, Microsoft.Maui.Controls.View content) =>
+        InvokeOnMainThreadAsync(() =>
+        {
+            var page = new Microsoft.Maui.Controls.Grid { Children = { border } };
+            var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(page);
+            var window = new Window { Width = 300, Height = 300, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                var platformBorder = (Control)border.Handler!.PlatformView!;
+                var platformContent = (Control)content.Handler!.PlatformView!;
+                var topLeft = platformContent.TranslatePoint(default, platformBorder)!.Value;
+                return new Rect(topLeft, platformContent.Bounds.Size);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+    [AvaloniaFact(DisplayName = "Content Is Clipped Inside The Stroke")]
+    public async Task ContentIsClippedInsideStroke()
+    {
+        // Content that fills the border must not paint over the stroke
+        var pixels = await RenderBorderAsync(new Rectangle());
+
+        Assert.Equal(Avalonia.Media.Colors.Red, pixels(3, 50));
+        Assert.Equal(Avalonia.Media.Colors.Red, pixels(50, 3));
+        Assert.Equal(Avalonia.Media.Colors.Lime, pixels(50, 50));
+    }
+
+    [AvaloniaFact(DisplayName = "Content Is Clipped To The Inner Corners Of A Round Rectangle")]
+    public async Task ContentIsClippedToInnerCornersOfRoundRectangle()
+    {
+        // With a corner radius of 30 and a stroke of 6, the inner corner has a radius of 24 around
+        // (30, 30). (10, 10) is inside the outer corner but outside the inner one.
+        var pixels = await RenderBorderAsync(new RoundRectangle { CornerRadius = 30 });
+
+        Assert.NotEqual(Avalonia.Media.Colors.Lime, pixels(10, 10));
+        Assert.Equal(Avalonia.Media.Colors.Lime, pixels(30, 30));
+        Assert.Equal(Avalonia.Media.Colors.Red, pixels(3, 50));
+    }
+
+    [AvaloniaFact(DisplayName = "Content Does Not Cover The Stroke At Rounded Corners")]
+    public async Task ContentDoesNotCoverStrokeAtRoundedCorners()
+    {
+        // Every pixel of the stroke drawn around an empty border must still be stroke once the
+        // border has content, including where the corners curve. Antialiasing where the stroke
+        // meets the content may tint a pixel slightly, but must not turn it to the content color.
+        await AssertContentDoesNotCoverStrokeAsync(() => new RoundRectangle { CornerRadius = 30 }, 6, 100, 100);
+    }
+
+    [AvaloniaFact(DisplayName = "Content Does Not Cover The Stroke Of An Ellipse")]
+    public async Task ContentDoesNotCoverStrokeOfEllipse()
+    {
+        // The inner edge of a thick stroke on a flat ellipse is not an ellipse, so it is checked
+        // where the ellipse curves most tightly
+        await AssertContentDoesNotCoverStrokeAsync(() => new Ellipse(), 20, 300, 80);
+    }
+
+    /// <summary>
+    /// Checks that every pixel of the stroke drawn around an empty border is still stroke once
+    /// the border has content.
+    /// </summary>
+    async Task AssertContentDoesNotCoverStrokeAsync(Func<IShape> shape, double strokeThickness, int width, int height)
+    {
+        var empty = await RenderBorderAsync(shape(), border =>
+        {
+            border.StrokeThickness = strokeThickness;
+            border.Content = null;
+        }, width, height);
+        var filled = await RenderBorderAsync(shape(), border => border.StrokeThickness = strokeThickness, width, height);
+
+        var stroke = 0;
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
+            {
+                if (empty(x, y) != Avalonia.Media.Colors.Red)
+                    continue;
+
+                stroke++;
+                Assert.True(filled(x, y) is { R: > 200, G: < 64 }, $"Content covers the stroke at ({x}, {y}): {filled(x, y)}.");
+            }
+        }
+
+        Assert.True(stroke > 0, "The stroke was not drawn.");
+        Assert.Equal(Avalonia.Media.Colors.Lime, filled(width / 2, height / 2));
+    }
+
+    [AvaloniaFact(DisplayName = "Background Fills To The Edge Without A Stroke Brush")]
+    public async Task BackgroundFillsToEdgeWithoutStrokeBrush()
+    {
+        var pixels = await RenderBorderAsync(new Rectangle(), border =>
+        {
+            border.Stroke = null;
+            border.Background = Microsoft.Maui.Controls.Brush.Blue;
+            border.Content = null;
+        });
+
+        Assert.Equal(Avalonia.Media.Colors.Blue, pixels(0, 50));
+        Assert.Equal(Avalonia.Media.Colors.Blue, pixels(50, 0));
+        Assert.Equal(Avalonia.Media.Colors.Blue, pixels(99, 50));
+        Assert.Equal(Avalonia.Media.Colors.Blue, pixels(50, 99));
+    }
+
+    /// <summary>
+    /// Renders a border, 100x100 unless given a size, with a 6-wide red stroke and lime content that fills it, and returns
+    /// a function that reads the color of a pixel of the border.
+    /// </summary>
+    async Task<Func<int, int, Avalonia.Media.Color>> RenderBorderAsync(IShape shape, Action<Microsoft.Maui.Controls.Border>? configure = null, int width = 100, int height = 100)
+    {
+        var border = new Microsoft.Maui.Controls.Border
+        {
+            WidthRequest = width,
+            HeightRequest = height,
+            HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+            VerticalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+            Stroke = Microsoft.Maui.Graphics.Colors.Red,
+            StrokeThickness = 6,
+            StrokeShape = (Microsoft.Maui.Controls.Shapes.Shape)shape,
+            Padding = 0,
+            Content = new Microsoft.Maui.Controls.BoxView { Color = Microsoft.Maui.Graphics.Colors.Lime },
+        };
+        configure?.Invoke(border);
+        var page = new Microsoft.Maui.Controls.Grid { Children = { border } };
+
+        var colors = await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(page);
+            var window = new Window
+            {
+                Width = width + 20,
+                Height = height + 20,
+                Background = Avalonia.Media.Brushes.White,
+                Content = handler.PlatformView,
+            };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                using var frame = Avalonia.Headless.HeadlessWindowExtensions.CaptureRenderedFrame(window)!;
+                using var locked = frame.Lock();
+                var isBgra = locked.Format == Avalonia.Platform.PixelFormat.Bgra8888;
+                var colors = new Avalonia.Media.Color[width, height];
+                for (var y = 0; y < height; y++)
+                {
+                    for (var x = 0; x < width; x++)
+                    {
+                        var offset = y * locked.RowBytes + x * 4;
+                        var first = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset);
+                        var g = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset + 1);
+                        var third = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset + 2);
+                        colors[x, y] = isBgra
+                            ? Avalonia.Media.Color.FromRgb(third, g, first)
+                            : Avalonia.Media.Color.FromRgb(first, g, third);
+                    }
+                }
+
+                return colors;
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        return (x, y) => colors[x, y];
+    }
+
     Color? GetNativeBackgroundColor(MauiBorderHandler handler) =>
         AvaloniaPropertyHelpers.GetNativeBackgroundColor(handler);
 

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ControlGallery.Pages.RatingViewPage"
+             Title="RatingView">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Default -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Default"
+                           FontAttributes="Bold"/>
+                    <Label Text="Tap a shape to set the rating."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <toolkit:RatingView x:Name="DefaultRating"
+                                        RatingChanged="OnDefaultRatingChanged"/>
+                    <Label x:Name="DefaultRatingLabel"
+                           Text="Rating: 0"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Shapes and Colors -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Shapes and Colors"
+                           FontAttributes="Bold"/>
+                    <Label Text="MaximumRating sets the number of shapes. FillColor and EmptyShapeColor color them."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <toolkit:RatingView Shape="Star"
+                                        MaximumRating="10"
+                                        Rating="7"
+                                        FillColor="Gold"
+                                        EmptyShapeColor="LightGray"/>
+                    <toolkit:RatingView Shape="Heart"
+                                        Rating="3"
+                                        FillColor="Red"
+                                        EmptyShapeColor="Pink"/>
+                    <toolkit:RatingView Shape="Circle"
+                                        Rating="4"
+                                        FillColor="{AppThemeBinding Light=#6200EE, Dark=#03DAC5}"/>
+                    <toolkit:RatingView Shape="Like"
+                                        MaximumRating="3"
+                                        Rating="2"
+                                        FillColor="Green"/>
+                    <toolkit:RatingView Shape="Dislike"
+                                        MaximumRating="3"
+                                        Rating="1"
+                                        FillColor="OrangeRed"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Size and Spacing -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Size and Spacing"
+                           FontAttributes="Bold"/>
+                    <Label Text="ShapeDiameter sets the size of each shape. Spacing sets the gap between them."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <toolkit:RatingView Rating="2"
+                                        ShapeDiameter="48"
+                                        Spacing="12"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Read-Only -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Read-Only"
+                           FontAttributes="Bold"/>
+                    <Label Text="A read-only rating shows a value and ignores taps."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <toolkit:RatingView Rating="4"
+                                        IsReadOnly="True"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Fractional Rating -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Fractional Rating"
+                           FontAttributes="Bold"/>
+                    <Label Text="A fractional rating fills part of a shape. FillOption fills the shape or the background behind it."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <toolkit:RatingView Rating="3.5"
+                                        IsReadOnly="True"
+                                        FillOption="Shape"/>
+                    <toolkit:RatingView Rating="3.5"
+                                        IsReadOnly="True"
+                                        FillOption="Background"/>
+                    <Slider x:Name="FractionalSlider"
+                            Minimum="0"
+                            Maximum="5"
+                            Value="2.5"
+                            ValueChanged="OnFractionalSliderChanged"/>
+                    <toolkit:RatingView x:Name="FractionalRating"
+                                        Rating="2.5"
+                                        IsReadOnly="True"/>
+                    <Label x:Name="FractionalRatingLabel"
+                           Text="Rating: 2.5"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

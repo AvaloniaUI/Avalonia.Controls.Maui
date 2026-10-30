@@ -1,8 +1,18 @@
 <linker>
-  <!-- SKGLView binds to its own Window property by name, which MAUI resolves by reflection -->
   <assembly fullname="Microsoft.Maui.Controls">
+    <!-- SKGLView binds to its own Window property by name, which MAUI resolves by reflection -->
     <type fullname="Microsoft.Maui.Controls.VisualElement">
       <property name="Window" />
+    </type>
+    <!-- The toolkit's validation behaviors bind to the Text property of their InputView by name -->
+    <type fullname="Microsoft.Maui.Controls.InputView">
+      <property name="Text" />
+    </type>
+  </assembly>
+  <!-- Expander binds its content's IsVisible to its own IsExpanded property by name -->
+  <assembly fullname="CommunityToolkit.Maui">
+    <type fullname="CommunityToolkit.Maui.Views.Expander">
+      <property name="IsExpanded" />
     </type>
   </assembly>
 </linker>

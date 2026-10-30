@@ -7,8 +7,8 @@ namespace Avalonia.Controls.Maui.Tests.Controls;
 
 public class MauiBorderTests
 {
-    [AvaloniaFact(DisplayName = "Child clip matches stroke path for round rectangle")]
-    public void ChildClip_MatchesStrokePath_ForRoundRectangle()
+    [AvaloniaFact(DisplayName = "Child is clipped inside the stroke for round rectangle")]
+    public void ChildClip_IsInsideStroke_ForRoundRectangle()
     {
         var border = new MauiBorder
         {
@@ -26,9 +26,9 @@ public class MauiBorderTests
 
         var padding = border.Padding;
         var stroke = border.StrokeThickness;
-        // Child is arranged inside padding only
-        var expectedChildWidth = finalSize.Width - padding.Left - padding.Right;
-        var expectedChildHeight = finalSize.Height - padding.Top - padding.Bottom;
+        // Child is arranged inside the stroke and the padding
+        var expectedChildWidth = finalSize.Width - padding.Left - padding.Right - 2 * stroke;
+        var expectedChildHeight = finalSize.Height - padding.Top - padding.Bottom - 2 * stroke;
 
         Assert.Equal(expectedChildWidth, child.Bounds.Width, 3);
         Assert.Equal(expectedChildHeight, child.Bounds.Height, 3);
@@ -97,9 +97,8 @@ public class MauiBorderTests
         border.Measure(finalSize);
         border.Arrange(new Rect(finalSize));
 
-        // Child uses full size when no padding
-        Assert.Equal(finalSize.Width, child.Bounds.Width, 3);
-        Assert.Equal(finalSize.Height, child.Bounds.Height, 3);
+        // Child fills the area inside the stroke when there is no padding
+        Assert.Equal(new Rect(2, 2, finalSize.Width - 4, finalSize.Height - 4), child.Bounds);
     }
 
     [AvaloniaFact(DisplayName = "Child arranged correctly with asymmetric padding")]
@@ -517,8 +516,9 @@ public class MauiBorderTests
         border.Measure(size);
         border.Arrange(new Rect(size));
         
-        Assert.Equal(size.Width - 20, child.Bounds.Width, 3);
-        Assert.Equal(size.Height - 20, child.Bounds.Height, 3);
+        // Padding of 10 and a stroke of 4 on each side
+        Assert.Equal(size.Width - 28, child.Bounds.Width, 3);
+        Assert.Equal(size.Height - 28, child.Bounds.Height, 3);
         Assert.NotNull(child.Clip);
     }
 }

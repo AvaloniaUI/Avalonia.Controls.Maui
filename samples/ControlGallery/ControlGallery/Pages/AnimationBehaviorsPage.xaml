@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ControlGallery.Pages.AnimationBehaviorsPage"
+             Title="Animation Behaviors">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Event to Command -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Event to Command"
+                           FontAttributes="Bold"/>
+                    <Label Text="EventToCommandBehavior runs a command when an event occurs. Here the Clicked event of the button runs it."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Button Text="Click Me"
+                            HorizontalOptions="Start">
+                        <Button.Behaviors>
+                            <toolkit:EventToCommandBehavior x:Name="ClickedToCommand"
+                                                            EventName="Clicked"/>
+                        </Button.Behaviors>
+                    </Button>
+                    <Label x:Name="ClickCountLabel"
+                           Text="Clicks: 0"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Fade Animation -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Fade Animation"
+                           FontAttributes="Bold"/>
+                    <Label Text="AnimationBehavior plays an animation when the view is tapped. FadeAnimation fades the view out and back in."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Border x:Name="FadeBorder"
+                            Padding="20"
+                            HorizontalOptions="Start"
+                            Stroke="{AppThemeBinding Light=#6200EE, Dark=#03DAC5}"
+                            BackgroundColor="{AppThemeBinding Light=#EDE7F6, Dark=#311B92}">
+                        <Border.Behaviors>
+                            <toolkit:AnimationBehavior AnimateOnTap="True">
+                                <toolkit:AnimationBehavior.AnimationType>
+                                    <toolkit:FadeAnimation Opacity="0.2"
+                                                           Length="400"/>
+                                </toolkit:AnimationBehavior.AnimationType>
+                            </toolkit:AnimationBehavior>
+                        </Border.Behaviors>
+                        <Label Text="Tap me"/>
+                    </Border>
+                    <Button Text="Fade on Click"
+                            HorizontalOptions="Start">
+                        <Button.Behaviors>
+                            <toolkit:AnimationBehavior EventName="Clicked">
+                                <toolkit:AnimationBehavior.AnimationType>
+                                    <toolkit:FadeAnimation Opacity="0.3"/>
+                                </toolkit:AnimationBehavior.AnimationType>
+                            </toolkit:AnimationBehavior>
+                        </Button.Behaviors>
+                    </Button>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Progress Bar Animation -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Progress Bar Animation"
+                           FontAttributes="Bold"/>
+                    <Label Text="ProgressBarAnimationBehavior animates the progress bar to a new value."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <ProgressBar>
+                        <ProgressBar.Behaviors>
+                            <toolkit:ProgressBarAnimationBehavior x:Name="ProgressAnimation"
+                                                                  Length="750"/>
+                        </ProgressBar.Behaviors>
+                    </ProgressBar>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="0%"
+                                Clicked="OnProgressZeroClicked"/>
+                        <Button Text="50%"
+                                Clicked="OnProgressHalfClicked"/>
+                        <Button Text="100%"
+                                Clicked="OnProgressFullClicked"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

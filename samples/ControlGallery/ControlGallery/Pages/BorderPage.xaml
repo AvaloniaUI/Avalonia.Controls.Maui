@@ -576,6 +576,54 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Expandable Content -->
+            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
+                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Expandable Content"
+                           FontAttributes="Bold"/>
+                    <Label Text="Show or hide the details with the button. The border grows and shrinks to fit its content."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+
+                    <Border Stroke="{AppThemeBinding Light={StaticResource AccentPrimary}, Dark={StaticResource AccentSecondary}}"
+                            StrokeThickness="2"
+                            Padding="12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Grid RowDefinitions="Auto,Auto"
+                              RowSpacing="8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Label Text="Order details"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center"/>
+                                <Button x:Name="ExpandableToggle"
+                                        Grid.Column="1"
+                                        Text="Show"
+                                        Clicked="OnExpandableToggleClicked"
+                                        VerticalOptions="Center"/>
+                            </Grid>
+                            <ContentView x:Name="ExpandableDetails"
+                                         Grid.Row="1"
+                                         IsVisible="False">
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="Item: Wireless keyboard"/>
+                                    <Label Text="Quantity: 1"/>
+                                    <Label Text="Shipping: 2 to 4 business days"/>
+                                    <Label Text="Total: $49.99"
+                                           FontAttributes="Bold"/>
+                                </VerticalStackLayout>
+                            </ContentView>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
