@@ -324,6 +324,11 @@ public class StackNavigationManager
         // Update the navigation stack
         NavigationStack = newPageStack;
 
+        // The navigation bar shows the new top page as soon as the transition starts, so apply that
+        // page's bar settings before the transition
+        if (topPageChanged)
+            UpdateCurrentPageWrapper();
+
         _isNavigatingFromMaui = true;
         try
         {

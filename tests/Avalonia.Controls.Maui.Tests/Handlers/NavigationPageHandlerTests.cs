@@ -267,6 +267,43 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
             });
         }
 
+        [AvaloniaFact(DisplayName = "Pushed Page Hides The Navigation Bar During The Transition")]
+        public async Task Pushed_Page_Hides_Navigation_Bar_During_Transition()
+        {
+            // HasNavigationBar comes from an implicit style, which applies when the page is pushed
+            var style = new Microsoft.Maui.Controls.Style(typeof(MauiContentPage)) { ApplyToDerivedTypes = true };
+            style.Setters.Add(new Microsoft.Maui.Controls.Setter { Property = MauiNavigationPage.HasNavigationBarProperty, Value = false });
+            var navigationPage = new MauiNavigationPage(new MauiContentPage { Title = "Root" });
+            navigationPage.Resources.Add(style);
+            var detailPage = new MauiContentPage { Title = "Detail" };
+
+            // Avalonia tests run on the UI thread, so the push is awaited directly
+            var mauiWindow = new Microsoft.Maui.Controls.Window(navigationPage);
+            var window = CreateHandler<Avalonia.Controls.Maui.Handlers.WindowHandler>(mauiWindow).PlatformView;
+            window.Width = 400;
+            window.Height = 400;
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+
+                var push = navigationPage.PushAsync(detailPage, animated: true);
+
+                // While the transition runs, the incoming page must already hide the bar,
+                // or the bar shows its title until the transition ends
+                Assert.False(push.IsCompleted, "The push finished before the transition could be observed.");
+                var platformDetailPage = Assert.IsAssignableFrom<Avalonia.Controls.ContentPage>(detailPage.Handler?.PlatformView);
+                Assert.False(AvaloniaNavigationPage.GetHasNavigationBar(platformDetailPage));
+
+                await push;
+                Assert.False(AvaloniaNavigationPage.GetHasNavigationBar(platformDetailPage));
+            }
+            finally
+            {
+                window.Close();
+            }
+        }
+
         [AvaloniaFact(DisplayName = "Multiple Pushes Build Stack Correctly")]
         public async Task Multiple_Pushes_Build_Stack_Correctly()
         {
