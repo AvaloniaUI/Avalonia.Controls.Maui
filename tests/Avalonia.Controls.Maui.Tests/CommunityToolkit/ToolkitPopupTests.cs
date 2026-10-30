@@ -121,6 +121,42 @@ public class ToolkitPopupTests : ToolkitTestBase
         });
     }
 
+    [AvaloniaFact(DisplayName = "Popup Overlay Uses The Page Overlay Color")]
+    public async Task PopupOverlayUsesPageOverlayColor()
+    {
+        var page = new ControlsContentPage { BackgroundColor = Microsoft.Maui.Graphics.Colors.White };
+        var popup = new Popup { Content = new MauiLabel { Text = "Popup", WidthRequest = 100, HeightRequest = 50 } };
+        var options = new PopupOptions { PageOverlayColor = Microsoft.Maui.Graphics.Color.FromRgba(98, 0, 238, 77) };
+
+        await RunInWindowAsync(page, async window =>
+        {
+            var showing = page.ShowPopupAsync(popup, options);
+            await WaitUntilAsync(window, () => IsShown(popup.Content!), message: "The popup was not shown.");
+
+            // 30% of (98, 0, 238) over the white page
+            using var frame = Avalonia.Headless.HeadlessWindowExtensions.CaptureRenderedFrame(window.Platform)!;
+            var pixel = ReadPixel(frame, 5, 5);
+            Assert.InRange(pixel.R, 205, 211);
+            Assert.InRange(pixel.G, 175, 182);
+            Assert.InRange(pixel.B, 246, 252);
+
+            await popup.CloseAsync();
+            await WaitUntilAsync(window, () => showing.IsCompleted, message: "The popup did not close.");
+        });
+    }
+
+    static Avalonia.Media.Color ReadPixel(Avalonia.Media.Imaging.WriteableBitmap frame, int x, int y)
+    {
+        using var locked = frame.Lock();
+        var offset = y * locked.RowBytes + x * 4;
+        var first = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset);
+        var g = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset + 1);
+        var third = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset + 2);
+        return locked.Format == Avalonia.Platform.PixelFormat.Bgra8888
+            ? Avalonia.Media.Color.FromRgb(third, g, first)
+            : Avalonia.Media.Color.FromRgb(first, g, third);
+    }
+
     static bool IsShown(Microsoft.Maui.IView view) =>
         view.Handler?.PlatformView is Control control && control.IsEffectivelyVisible && control.Bounds.Width > 0 && control.Bounds.Height > 0;
 

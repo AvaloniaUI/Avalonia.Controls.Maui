@@ -850,4 +850,37 @@ public partial class ButtonHandlerTests : HandlerTestBase<MauiButtonHandler, But
             Input.KeyModifiers.None,
             Input.MouseButton.Left);
     }
+
+    [AvaloniaTheory(DisplayName = "Keyboard Activates A Focused Button")]
+    [InlineData(Input.Key.Enter, Input.PhysicalKey.Enter, null)]
+    [InlineData(Input.Key.Space, Input.PhysicalKey.Space, " ")]
+    public async Task KeyboardActivatesFocusedButton(Input.Key key, Input.PhysicalKey physicalKey, string? keySymbol)
+    {
+        var button = new MButton { Text = "Toggle" };
+        var clicks = 0;
+        button.Clicked += (_, _) => clicks++;
+
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<MauiButtonHandler>(button);
+            var window = new Window { Width = 200, Height = 100, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                var platformButton = (Control)handler.PlatformView!;
+                Assert.True(platformButton.Focus(Input.NavigationMethod.Tab));
+
+                Avalonia.Headless.HeadlessWindowExtensions.KeyPress(window, key, Input.RawInputModifiers.None, physicalKey, keySymbol);
+                Avalonia.Headless.HeadlessWindowExtensions.KeyRelease(window, key, Input.RawInputModifiers.None, physicalKey, keySymbol);
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(1, clicks);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+    }
 }

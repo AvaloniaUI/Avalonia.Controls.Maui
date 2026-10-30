@@ -255,9 +255,7 @@ namespace Avalonia.Controls.Maui
 
             if (finalSize.Width > 0 && finalSize.Height > 0)
             {
-                _strokeGeometry = CreateGeometry(finalSize);
-                _backgroundGeometry = _strokeGeometry;
-                _lastRenderSize = finalSize;
+                UpdateGeometries(finalSize);
 
                 if (Child != null)
                 {
@@ -288,11 +286,7 @@ namespace Avalonia.Controls.Maui
                 return;
 
             if (_strokeGeometry == null || _lastRenderSize != bounds.Size)
-            {
-                _strokeGeometry = CreateGeometry(bounds.Size);
-                _backgroundGeometry = _strokeGeometry;
-                _lastRenderSize = bounds.Size;
-            }
+                UpdateGeometries(bounds.Size);
 
             if (Background != null && _backgroundGeometry != null)
             {
@@ -306,11 +300,22 @@ namespace Avalonia.Controls.Maui
             }
         }
 
-        // The stroke is drawn inside the bounds, centered on a path inset by half its thickness
+        // The background fills the shape to the outer edge of the stroke, so it shows through a
+        // transparent or dashed stroke
+        private void UpdateGeometries(Size size)
+        {
+            _strokeGeometry = CreateGeometry(size);
+            _backgroundGeometry = CreateShapeGeometry(size, 0, 0);
+            _lastRenderSize = size;
+        }
+
+        // The stroke is drawn inside the bounds, centered on a path inset by half its thickness.
+        // Reducing the corners by the same amount puts the outer edge of the stroke on the shape's
+        // corners and the inner edge on the content clip.
         private Geometry? CreateGeometry(Size size)
         {
             var inset = StrokeThickness / 2;
-            var geometry = CreateShapeGeometry(size, inset, 0);
+            var geometry = CreateShapeGeometry(size, inset, inset);
             if (geometry != null)
                 geometry.Transform = new TranslateTransform(inset, inset);
 
@@ -335,23 +340,34 @@ namespace Avalonia.Controls.Maui
                 Math.Max(0, size.Width - 2 * inset),
                 Math.Max(0, size.Height - 2 * inset));
 
-            MauiGraphics.PathF pathF;
-            if (Shape is MauiShapes.RoundRectangle rr)
+            // Common shapes are built directly, because PathForBounds also insets them by the
+            // shape's own StrokeThickness
+            var width = (float)bounds.Width;
+            var height = (float)bounds.Height;
+            var pathF = new MauiGraphics.PathF();
+            switch (Shape)
             {
-                var radii = rr.CornerRadius;
-                var roundRectangle = new MauiShapes.RoundRectangle
-                {
-                    CornerRadius = new Microsoft.Maui.CornerRadius(
-                        Math.Max(0, radii.TopLeft - cornerRadiusReduction),
-                        Math.Max(0, radii.TopRight - cornerRadiusReduction),
-                        Math.Max(0, radii.BottomLeft - cornerRadiusReduction),
-                        Math.Max(0, radii.BottomRight - cornerRadiusReduction))
-                };
-                pathF = ((MauiGraphics.IShape)roundRectangle).PathForBounds(bounds);
-            }
-            else
-            {
-                pathF = Shape.PathForBounds(bounds);
+                case MauiShapes.RoundRectangle rr:
+                    var radii = rr.CornerRadius;
+                    pathF.AppendRoundedRectangle(
+                        0,
+                        0,
+                        width,
+                        height,
+                        (float)Math.Max(0, radii.TopLeft - cornerRadiusReduction),
+                        (float)Math.Max(0, radii.TopRight - cornerRadiusReduction),
+                        (float)Math.Max(0, radii.BottomLeft - cornerRadiusReduction),
+                        (float)Math.Max(0, radii.BottomRight - cornerRadiusReduction));
+                    break;
+                case MauiShapes.Rectangle { RadiusX: 0, RadiusY: 0 }:
+                    pathF.AppendRectangle(0, 0, width, height);
+                    break;
+                case MauiShapes.Ellipse:
+                    pathF.AppendEllipse(0, 0, width, height);
+                    break;
+                default:
+                    pathF = Shape.PathForBounds(bounds);
+                    break;
             }
 
             return ShapeExtensions.ToAvaloniaGeometry(pathF);

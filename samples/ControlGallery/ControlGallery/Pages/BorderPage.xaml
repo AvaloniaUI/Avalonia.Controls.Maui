@@ -586,7 +586,7 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Expandable Content"
                            FontAttributes="Bold"/>
-                    <Label Text="Tap the header to show or hide the details. The border grows and shrinks to fit its content."
+                    <Label Text="Show or hide the details with the button. The border grows and shrinks to fit its content."
                            FontSize="12"
                            TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
 
@@ -599,17 +599,14 @@
                         <Grid RowDefinitions="Auto,Auto"
                               RowSpacing="8">
                             <Grid ColumnDefinitions="*,Auto">
-                                <Grid.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnExpandableHeaderTapped"/>
-                                </Grid.GestureRecognizers>
                                 <Label Text="Order details"
                                        FontAttributes="Bold"
                                        VerticalOptions="Center"/>
-                                <Label x:Name="ExpandableIndicator"
-                                       Grid.Column="1"
-                                       Text="Show"
-                                       TextColor="{AppThemeBinding Light={StaticResource AccentPrimary}, Dark={StaticResource AccentSecondary}}"
-                                       VerticalOptions="Center"/>
+                                <Button x:Name="ExpandableToggle"
+                                        Grid.Column="1"
+                                        Text="Show"
+                                        Clicked="OnExpandableToggleClicked"
+                                        VerticalOptions="Center"/>
                             </Grid>
                             <ContentView x:Name="ExpandableDetails"
                                          Grid.Row="1"

@@ -62,7 +62,7 @@ public partial class ToolkitPopupPage : ContentPage
 
         var result = await this.ShowPopupAsync(popup, new PopupOptions
         {
-            PageOverlayColor = Color.FromRgba(98, 0, 238, 0.3),
+            PageOverlayColor = Color.FromRgba(98, 0, 238, 77),
             Shape = new RoundRectangle
             {
                 CornerRadius = 24,

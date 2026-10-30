@@ -672,11 +672,46 @@ public partial class BorderHandlerTests : HandlerTestBase<MauiBorderHandler, Bor
         Assert.Equal(Avalonia.Media.Colors.Red, pixels(3, 50));
     }
 
+    [AvaloniaFact(DisplayName = "Content Does Not Cover The Stroke At Rounded Corners")]
+    public async Task ContentDoesNotCoverStrokeAtRoundedCorners()
+    {
+        // Every pixel of the stroke drawn around an empty border must still be stroke once the
+        // border has content, including where the corners curve. Antialiasing where the stroke
+        // meets the content may tint a pixel slightly, but must not turn it to the content color.
+        var empty = await RenderBorderAsync(new RoundRectangle { CornerRadius = 30 }, border => border.Content = null);
+        var filled = await RenderBorderAsync(new RoundRectangle { CornerRadius = 30 });
+
+        for (var y = 0; y < 100; y++)
+        {
+            for (var x = 0; x < 100; x++)
+            {
+                if (empty(x, y) == Avalonia.Media.Colors.Red)
+                    Assert.True(filled(x, y) is { R: > 200, G: < 64 }, $"Content covers the stroke at ({x}, {y}): {filled(x, y)}.");
+            }
+        }
+    }
+
+    [AvaloniaFact(DisplayName = "Background Fills To The Edge Without A Stroke Brush")]
+    public async Task BackgroundFillsToEdgeWithoutStrokeBrush()
+    {
+        var pixels = await RenderBorderAsync(new Rectangle(), border =>
+        {
+            border.Stroke = null;
+            border.Background = Microsoft.Maui.Controls.Brush.Blue;
+            border.Content = null;
+        });
+
+        Assert.Equal(Avalonia.Media.Colors.Blue, pixels(0, 50));
+        Assert.Equal(Avalonia.Media.Colors.Blue, pixels(50, 0));
+        Assert.Equal(Avalonia.Media.Colors.Blue, pixels(99, 50));
+        Assert.Equal(Avalonia.Media.Colors.Blue, pixels(50, 99));
+    }
+
     /// <summary>
     /// Renders a 100x100 border with a 6-wide red stroke and lime content that fills it, and returns
     /// a function that reads the color of a pixel of the border.
     /// </summary>
-    async Task<Func<int, int, Avalonia.Media.Color>> RenderBorderAsync(IShape shape)
+    async Task<Func<int, int, Avalonia.Media.Color>> RenderBorderAsync(IShape shape, Action<Microsoft.Maui.Controls.Border>? configure = null)
     {
         var border = new Microsoft.Maui.Controls.Border
         {
@@ -690,6 +725,7 @@ public partial class BorderHandlerTests : HandlerTestBase<MauiBorderHandler, Bor
             Padding = 0,
             Content = new Microsoft.Maui.Controls.BoxView { Color = Microsoft.Maui.Graphics.Colors.Lime },
         };
+        configure?.Invoke(border);
         var page = new Microsoft.Maui.Controls.Grid { Children = { border } };
 
         var colors = await InvokeOnMainThreadAsync(() =>
