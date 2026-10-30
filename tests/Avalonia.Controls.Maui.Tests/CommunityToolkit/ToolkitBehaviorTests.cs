@@ -100,7 +100,8 @@ public class ToolkitBehaviorTests : ToolkitTestBase
         var entry = new ControlsEntry();
         entry.Behaviors.Add(new UserStoppedTypingBehavior
         {
-            StoppedTypingTimeThreshold = 100,
+            // Long enough that typing finishes first, even while the test is still being compiled
+            StoppedTypingTimeThreshold = 1000,
             Command = new Command<string>(text => stopped = text),
         });
 

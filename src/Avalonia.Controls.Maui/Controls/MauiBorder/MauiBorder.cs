@@ -261,13 +261,13 @@ namespace Avalonia.Controls.Maui
                 {
                     // Clip the child to the inner edge of the stroke, as the native platforms do.
                     // The clip is in the child's coordinate space, which is offset by padding or alignment.
-                    var clipGeometry = CreateClipGeometry(finalSize);
+                    var (clipGeometry, clipOffset) = CreateClipGeometry(finalSize);
                     if (clipGeometry != null)
                     {
                         var childBounds = Child.Bounds;
                         clipGeometry.Transform = new TranslateTransform(
-                            StrokeThickness - childBounds.X,
-                            StrokeThickness - childBounds.Y);
+                            clipOffset - childBounds.X,
+                            clipOffset - childBounds.Y);
                     }
 
                     Child.Clip = clipGeometry;
@@ -323,9 +323,25 @@ namespace Avalonia.Controls.Maui
         }
 
         // The content is clipped to the inner edge of the stroke. The geometry is at the origin;
-        // ArrangeOverride moves it into the child's coordinate space.
-        private Geometry? CreateClipGeometry(Size size) =>
-            CreateShapeGeometry(size, StrokeThickness, StrokeThickness);
+        // ArrangeOverride moves it by the returned offset into the child's coordinate space.
+        private (Geometry? Geometry, double Offset) CreateClipGeometry(Size size)
+        {
+            var strokeThickness = StrokeThickness;
+
+            // Insetting a rectangle and reducing its corners gives the exact inner edge
+            if (strokeThickness <= 0 || Shape is MauiShapes.RoundRectangle or MauiShapes.Rectangle { RadiusX: 0, RadiusY: 0 })
+                return (CreateShapeGeometry(size, strokeThickness, strokeThickness), strokeThickness);
+
+            // The inner edge of other shapes, such as an ellipse, is not the shape inset by the
+            // stroke. Take the area inside the stroke's center line and remove the stroke itself.
+            var inset = strokeThickness / 2;
+            var centerLine = CreateShapeGeometry(size, inset, inset);
+            if (centerLine == null)
+                return (null, 0);
+
+            var stroke = centerLine.GetWidenedGeometry(new Pen(Brushes.Black, strokeThickness));
+            return (new CombinedGeometry(GeometryCombineMode.Exclude, centerLine, stroke), inset);
+        }
 
         // Creates the shape's geometry at the origin for the bounds inset by inset on each side,
         // with the corners of a round rectangle reduced by cornerRadiusReduction

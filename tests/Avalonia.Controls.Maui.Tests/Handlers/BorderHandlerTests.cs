@@ -678,17 +678,45 @@ public partial class BorderHandlerTests : HandlerTestBase<MauiBorderHandler, Bor
         // Every pixel of the stroke drawn around an empty border must still be stroke once the
         // border has content, including where the corners curve. Antialiasing where the stroke
         // meets the content may tint a pixel slightly, but must not turn it to the content color.
-        var empty = await RenderBorderAsync(new RoundRectangle { CornerRadius = 30 }, border => border.Content = null);
-        var filled = await RenderBorderAsync(new RoundRectangle { CornerRadius = 30 });
+        await AssertContentDoesNotCoverStrokeAsync(() => new RoundRectangle { CornerRadius = 30 }, 6, 100, 100);
+    }
 
-        for (var y = 0; y < 100; y++)
+    [AvaloniaFact(DisplayName = "Content Does Not Cover The Stroke Of An Ellipse")]
+    public async Task ContentDoesNotCoverStrokeOfEllipse()
+    {
+        // The inner edge of a thick stroke on a flat ellipse is not an ellipse, so it is checked
+        // where the ellipse curves most tightly
+        await AssertContentDoesNotCoverStrokeAsync(() => new Ellipse(), 20, 300, 80);
+    }
+
+    /// <summary>
+    /// Checks that every pixel of the stroke drawn around an empty border is still stroke once
+    /// the border has content.
+    /// </summary>
+    async Task AssertContentDoesNotCoverStrokeAsync(Func<IShape> shape, double strokeThickness, int width, int height)
+    {
+        var empty = await RenderBorderAsync(shape(), border =>
         {
-            for (var x = 0; x < 100; x++)
+            border.StrokeThickness = strokeThickness;
+            border.Content = null;
+        }, width, height);
+        var filled = await RenderBorderAsync(shape(), border => border.StrokeThickness = strokeThickness, width, height);
+
+        var stroke = 0;
+        for (var y = 0; y < height; y++)
+        {
+            for (var x = 0; x < width; x++)
             {
-                if (empty(x, y) == Avalonia.Media.Colors.Red)
-                    Assert.True(filled(x, y) is { R: > 200, G: < 64 }, $"Content covers the stroke at ({x}, {y}): {filled(x, y)}.");
+                if (empty(x, y) != Avalonia.Media.Colors.Red)
+                    continue;
+
+                stroke++;
+                Assert.True(filled(x, y) is { R: > 200, G: < 64 }, $"Content covers the stroke at ({x}, {y}): {filled(x, y)}.");
             }
         }
+
+        Assert.True(stroke > 0, "The stroke was not drawn.");
+        Assert.Equal(Avalonia.Media.Colors.Lime, filled(width / 2, height / 2));
     }
 
     [AvaloniaFact(DisplayName = "Background Fills To The Edge Without A Stroke Brush")]
@@ -708,15 +736,15 @@ public partial class BorderHandlerTests : HandlerTestBase<MauiBorderHandler, Bor
     }
 
     /// <summary>
-    /// Renders a 100x100 border with a 6-wide red stroke and lime content that fills it, and returns
+    /// Renders a border, 100x100 unless given a size, with a 6-wide red stroke and lime content that fills it, and returns
     /// a function that reads the color of a pixel of the border.
     /// </summary>
-    async Task<Func<int, int, Avalonia.Media.Color>> RenderBorderAsync(IShape shape, Action<Microsoft.Maui.Controls.Border>? configure = null)
+    async Task<Func<int, int, Avalonia.Media.Color>> RenderBorderAsync(IShape shape, Action<Microsoft.Maui.Controls.Border>? configure = null, int width = 100, int height = 100)
     {
         var border = new Microsoft.Maui.Controls.Border
         {
-            WidthRequest = 100,
-            HeightRequest = 100,
+            WidthRequest = width,
+            HeightRequest = height,
             HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
             VerticalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
             Stroke = Microsoft.Maui.Graphics.Colors.Red,
@@ -733,8 +761,8 @@ public partial class BorderHandlerTests : HandlerTestBase<MauiBorderHandler, Bor
             var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(page);
             var window = new Window
             {
-                Width = 120,
-                Height = 120,
+                Width = width + 20,
+                Height = height + 20,
                 Background = Avalonia.Media.Brushes.White,
                 Content = handler.PlatformView,
             };
@@ -745,10 +773,10 @@ public partial class BorderHandlerTests : HandlerTestBase<MauiBorderHandler, Bor
                 using var frame = Avalonia.Headless.HeadlessWindowExtensions.CaptureRenderedFrame(window)!;
                 using var locked = frame.Lock();
                 var isBgra = locked.Format == Avalonia.Platform.PixelFormat.Bgra8888;
-                var colors = new Avalonia.Media.Color[100, 100];
-                for (var y = 0; y < 100; y++)
+                var colors = new Avalonia.Media.Color[width, height];
+                for (var y = 0; y < height; y++)
                 {
-                    for (var x = 0; x < 100; x++)
+                    for (var x = 0; x < width; x++)
                     {
                         var offset = y * locked.RowBytes + x * 4;
                         var first = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset);
