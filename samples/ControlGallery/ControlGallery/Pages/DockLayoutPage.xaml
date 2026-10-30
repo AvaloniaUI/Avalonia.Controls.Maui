@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ControlGallery.Pages.DockLayoutPage"
+             Title="DockLayout">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Docking -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Docking"
+                           FontAttributes="Bold"/>
+                    <Label Text="Each child docks to the top, bottom, left or right. The last child fills the space that is left."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <toolkit:DockLayout x:Name="DemoDock"
+                                        HeightRequest="240">
+                        <Grid toolkit:DockLayout.DockPosition="Top"
+                              HeightRequest="40"
+                              BackgroundColor="#E57373">
+                            <Label Text="Top"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                        <Grid toolkit:DockLayout.DockPosition="Bottom"
+                              HeightRequest="40"
+                              BackgroundColor="#81C784">
+                            <Label Text="Bottom"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                        <Grid toolkit:DockLayout.DockPosition="Left"
+                              WidthRequest="70"
+                              BackgroundColor="#64B5F6">
+                            <Label Text="Left"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                        <Grid toolkit:DockLayout.DockPosition="Right"
+                              WidthRequest="70"
+                              BackgroundColor="#FFD54F">
+                            <Label Text="Right"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                        <Grid BackgroundColor="#BA68C8">
+                            <Label Text="None (last child)"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Grid>
+                    </toolkit:DockLayout>
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="ShouldExpandLastChild"
+                               VerticalOptions="Center"/>
+                        <Switch x:Name="ExpandLastChildSwitch"
+                                IsToggled="True"
+                                Toggled="OnExpandLastChildToggled"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Spacing -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Spacing"
+                           FontAttributes="Bold"/>
+                    <Label Text="HorizontalSpacing and VerticalSpacing add gaps between the docked children."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Label x:Name="SpacingLabel"
+                           Text="Spacing: 10"/>
+                    <Slider x:Name="SpacingSlider"
+                            Minimum="0"
+                            Maximum="30"
+                            Value="10"
+                            ValueChanged="OnSpacingChanged"/>
+                    <toolkit:DockLayout x:Name="SpacingDock"
+                                        HeightRequest="200"
+                                        HorizontalSpacing="10"
+                                        VerticalSpacing="10">
+                        <BoxView toolkit:DockLayout.DockPosition="Top"
+                                 HeightRequest="30"
+                                 Color="#E57373"/>
+                        <BoxView toolkit:DockLayout.DockPosition="Left"
+                                 WidthRequest="50"
+                                 Color="#64B5F6"/>
+                        <BoxView toolkit:DockLayout.DockPosition="Bottom"
+                                 HeightRequest="30"
+                                 Color="#81C784"/>
+                        <BoxView toolkit:DockLayout.DockPosition="Right"
+                                 WidthRequest="50"
+                                 Color="#FFD54F"/>
+                        <BoxView Color="#BA68C8"/>
+                    </toolkit:DockLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Order -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Order"
+                           FontAttributes="Bold"/>
+                    <Label Text="Children dock in the order they are added. A second Top child docks below the first."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <toolkit:DockLayout HeightRequest="160">
+                        <BoxView toolkit:DockLayout.DockPosition="Top"
+                                 HeightRequest="30"
+                                 Color="#E57373"/>
+                        <BoxView toolkit:DockLayout.DockPosition="Top"
+                                 HeightRequest="30"
+                                 Color="#F06292"/>
+                        <BoxView toolkit:DockLayout.DockPosition="Left"
+                                 WidthRequest="40"
+                                 Color="#64B5F6"/>
+                        <BoxView toolkit:DockLayout.DockPosition="Left"
+                                 WidthRequest="40"
+                                 Color="#4DD0E1"/>
+                        <BoxView Color="#BA68C8"/>
+                    </toolkit:DockLayout>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

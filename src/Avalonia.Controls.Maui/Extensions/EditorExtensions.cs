@@ -26,8 +26,7 @@ namespace Avalonia.Controls.Maui.Extensions
                 text = TextTransformUtilities.GetTransformedText(editor.Text, mauiEditor.TextTransform);
             }
 
-            if (textBox.Text != text)
-                textBox.Text = text;
+            textBox.UpdateTextAndCaret(text);
         }
 
         /// <summary>

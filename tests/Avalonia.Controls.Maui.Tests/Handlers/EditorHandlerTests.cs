@@ -482,5 +482,32 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
             Assert.True(Avalonia.Input.TextInput.TextInputOptions.GetShowSuggestions(platformView));
         }
 
+        [AvaloniaFact(DisplayName = "Text Changed While Typing Keeps The Caret Where The User Types")]
+        public async Task TextChangedWhileTypingKeepsCaret()
+        {
+            var view = new EditorStub { Text = "abcdef" };
+            var handler = await CreateHandlerAsync(view);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                var window = new Window { Content = handler.PlatformView };
+                window.Show();
+                try
+                {
+                    handler.PlatformView.Focus();
+                    handler.PlatformView.CaretIndex = 2;
+
+                    // Text changed by code while the user types, such as by a converter or a behavior
+                    view.Text = "abXcdef";
+                    handler.UpdateValue(nameof(IEditor.Text));
+
+                    Assert.Equal(3, handler.PlatformView.CaretIndex);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace Avalonia.Controls.Maui.Dispatching;
 public class AvaloniaDispatcherProvider : IDispatcherProvider
 {
     [ThreadStatic]
-    private static IDispatcher? _dispatcher;
+    private static AvaloniaDispatcher? _dispatcher;
 
     /// <summary>
     /// Gets the dispatcher for the current thread.
@@ -16,11 +16,12 @@ public class AvaloniaDispatcherProvider : IDispatcherProvider
     /// <returns>The dispatcher for the current thread, or null if none is available.</returns>
     public IDispatcher? GetForCurrentThread()
     {
-        if (_dispatcher == null)
-        {
-            var avaloniaDispatcher = Threading.Dispatcher.UIThread;
+        // Avalonia can replace its UI thread dispatcher, as the headless test platform does between
+        // tests. Work posted to the old one never runs, so wrap the current one.
+        var avaloniaDispatcher = Threading.Dispatcher.UIThread;
+        if (_dispatcher?.AvaloniaDispatcherInstance != avaloniaDispatcher)
             _dispatcher = new AvaloniaDispatcher(avaloniaDispatcher);
-        }
+
         return _dispatcher;
     }
 }

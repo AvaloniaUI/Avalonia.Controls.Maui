@@ -28,8 +28,33 @@ public static class EntryExtensions
             text = TextTransformUtilities.GetTransformedText(entry.Text, textElement.TextTransform);
         }
 
-        if (textBox.Text != text)
+        textBox.UpdateTextAndCaret(text);
+    }
+
+    /// <summary>
+    /// Sets the text of a TextBox from a .NET MAUI view, keeping the caret where the user is typing.
+    /// </summary>
+    /// <param name="textBox">The Avalonia TextBox.</param>
+    /// <param name="text">The text to show.</param>
+    internal static void UpdateTextAndCaret(this AvaloniaTextBox textBox, string? text)
+    {
+        if (textBox.Text == text)
+            return;
+
+        if (!textBox.IsFocused)
+        {
             textBox.Text = text;
+            return;
+        }
+
+        // Text changed while the user types, such as by a converter or a behavior, keeps the caret
+        // where they type, moved by the change in length, as on iOS and Windows
+        var oldLength = textBox.Text?.Length ?? 0;
+        var newLength = text?.Length ?? 0;
+        var caretIndex = Math.Clamp(textBox.CaretIndex + newLength - oldLength, 0, newLength);
+
+        textBox.Text = text;
+        textBox.CaretIndex = caretIndex;
     }
 
     /// <summary>

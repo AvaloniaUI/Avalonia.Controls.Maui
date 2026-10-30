@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ControlGallery.Pages.UniformItemsLayoutPage"
+             Title="UniformItemsLayout">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Equal Tiles -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Equal Tiles"
+                           FontAttributes="Bold"/>
+                    <Label Text="Every child gets a cell of the same size. The size comes from the largest child."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <toolkit:UniformItemsLayout x:Name="TilesLayout">
+                        <BoxView WidthRequest="60"
+                                 HeightRequest="60"
+                                 Margin="2"
+                                 Color="#E57373"/>
+                        <BoxView WidthRequest="60"
+                                 HeightRequest="60"
+                                 Margin="2"
+                                 Color="#81C784"/>
+                        <BoxView WidthRequest="60"
+                                 HeightRequest="60"
+                                 Margin="2"
+                                 Color="#64B5F6"/>
+                        <BoxView WidthRequest="60"
+                                 HeightRequest="60"
+                                 Margin="2"
+                                 Color="#FFD54F"/>
+                    </toolkit:UniformItemsLayout>
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Add Tile"
+                                Clicked="OnAddTileClicked"/>
+                        <Button Text="Remove Tile"
+                                Clicked="OnRemoveTileClicked"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Max Columns -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Max Columns"
+                           FontAttributes="Bold"/>
+                    <Label Text="MaxColumns limits the number of cells in each row."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <toolkit:UniformItemsLayout MaxColumns="3">
+                        <Label Text="1" WidthRequest="60" HeightRequest="40" BackgroundColor="#E57373" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                        <Label Text="2" WidthRequest="60" HeightRequest="40" BackgroundColor="#81C784" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                        <Label Text="3" WidthRequest="60" HeightRequest="40" BackgroundColor="#64B5F6" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                        <Label Text="4" WidthRequest="60" HeightRequest="40" BackgroundColor="#FFD54F" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                        <Label Text="5" WidthRequest="60" HeightRequest="40" BackgroundColor="#BA68C8" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                        <Label Text="6" WidthRequest="60" HeightRequest="40" BackgroundColor="#4DD0E1" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                        <Label Text="7" WidthRequest="60" HeightRequest="40" BackgroundColor="#F06292" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                    </toolkit:UniformItemsLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Max Rows -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Max Rows"
+                           FontAttributes="Bold"/>
+                    <Label Text="MaxRows limits the number of rows. Children that do not fit are not shown."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <toolkit:UniformItemsLayout MaxColumns="3"
+                                                MaxRows="1">
+                        <Label Text="1" WidthRequest="60" HeightRequest="40" BackgroundColor="#E57373" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                        <Label Text="2" WidthRequest="60" HeightRequest="40" BackgroundColor="#81C784" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                        <Label Text="3" WidthRequest="60" HeightRequest="40" BackgroundColor="#64B5F6" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                        <Label Text="4" WidthRequest="60" HeightRequest="40" BackgroundColor="#FFD54F" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                        <Label Text="5" WidthRequest="60" HeightRequest="40" BackgroundColor="#BA68C8" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"/>
+                    </toolkit:UniformItemsLayout>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

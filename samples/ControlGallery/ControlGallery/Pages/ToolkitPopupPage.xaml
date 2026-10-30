@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ControlGallery.Pages.ToolkitPopupPage"
+             Title="Popup">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Simple Popup -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Simple Popup"
+                           FontAttributes="Bold"/>
+                    <Label Text="Shows a popup over the page. Tap outside the popup or the button in it to close it."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Button Text="Show Popup"
+                            HorizontalOptions="Start"
+                            Clicked="OnShowSimplePopupClicked"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Popup with a Result -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Popup with a Result"
+                           FontAttributes="Bold"/>
+                    <Label Text="The popup returns the option that was chosen."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Button Text="Choose a Color"
+                            HorizontalOptions="Start"
+                            Clicked="OnShowResultPopupClicked"/>
+                    <Label x:Name="ResultLabel"
+                           Text="Result: (none)"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Popup Options -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Popup Options"
+                           FontAttributes="Bold"/>
+                    <Label Text="PopupOptions set the overlay color and the shape, and can stop a tap outside from closing the popup."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Button Text="Show Styled Popup"
+                            HorizontalOptions="Start"
+                            Clicked="OnShowStyledPopupClicked"/>
+                    <Button Text="Show Popup That Must Be Closed"
+                            HorizontalOptions="Start"
+                            Clicked="OnShowModalPopupClicked"/>
+                    <Label x:Name="OptionsLabel"
+                           Text="Closed by: (none)"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

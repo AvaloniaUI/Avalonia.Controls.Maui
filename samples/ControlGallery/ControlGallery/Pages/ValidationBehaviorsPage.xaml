@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ControlGallery.Pages.ValidationBehaviorsPage"
+             Title="Validation Behaviors">
+    <ContentPage.Resources>
+        <Style x:Key="ValidEntryStyle"
+               TargetType="Entry">
+            <Setter Property="TextColor"
+                    Value="Green"/>
+        </Style>
+        <Style x:Key="InvalidEntryStyle"
+               TargetType="Entry">
+            <Setter Property="TextColor"
+                    Value="Red"/>
+        </Style>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Text Validation -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Text Validation"
+                           FontAttributes="Bold"/>
+                    <Label Text="TextValidationBehavior checks the length of the text and can match it against a regular expression. Text that is not valid is red."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Label Text="Between 3 and 8 characters"/>
+                    <Entry Placeholder="Name">
+                        <Entry.Behaviors>
+                            <toolkit:TextValidationBehavior MinimumLength="3"
+                                                            MaximumLength="8"
+                                                            ValidStyle="{StaticResource ValidEntryStyle}"
+                                                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                                                            Flags="ValidateOnValueChanged"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Label Text="Three letters and three digits, such as ABC123"/>
+                    <Entry Placeholder="Code">
+                        <Entry.Behaviors>
+                            <toolkit:TextValidationBehavior RegexPattern="^[A-Za-z]{3}[0-9]{3}$"
+                                                            ValidStyle="{StaticResource ValidEntryStyle}"
+                                                            InvalidStyle="{StaticResource InvalidEntryStyle}"
+                                                            Flags="ValidateOnValueChanged"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Email Validation -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Email Validation"
+                           FontAttributes="Bold"/>
+                    <Label Text="EmailValidationBehavior checks that the text is an email address."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Entry Placeholder="Email"
+                           Keyboard="Email">
+                        <Entry.Behaviors>
+                            <toolkit:EmailValidationBehavior x:Name="EmailValidator"
+                                                             ValidStyle="{StaticResource ValidEntryStyle}"
+                                                             InvalidStyle="{StaticResource InvalidEntryStyle}"
+                                                             Flags="ValidateOnValueChanged"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Numeric Validation -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Numeric Validation"
+                           FontAttributes="Bold"/>
+                    <Label Text="NumericValidationBehavior checks that the text is a number in a range, with up to two decimal places."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Label Text="A number from 1 to 100"/>
+                    <Entry Placeholder="Number"
+                           Keyboard="Numeric">
+                        <Entry.Behaviors>
+                            <toolkit:NumericValidationBehavior MinimumValue="1"
+                                                               MaximumValue="100"
+                                                               MaximumDecimalPlaces="2"
+                                                               ValidStyle="{StaticResource ValidEntryStyle}"
+                                                               InvalidStyle="{StaticResource InvalidEntryStyle}"
+                                                               Flags="ValidateOnValueChanged"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Characters Validation -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Characters Validation"
+                           FontAttributes="Bold"/>
+                    <Label Text="CharactersValidationBehavior counts characters of a type. This entry needs at least two digits."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Entry Placeholder="At least two digits">
+                        <Entry.Behaviors>
+                            <toolkit:CharactersValidationBehavior CharacterType="Digit"
+                                                                  MinimumCharacterTypeCount="2"
+                                                                  ValidStyle="{StaticResource ValidEntryStyle}"
+                                                                  InvalidStyle="{StaticResource InvalidEntryStyle}"
+                                                                  Flags="ValidateOnValueChanged"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Required String -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Required String"
+                           FontAttributes="Bold"/>
+                    <Label Text="RequiredStringValidationBehavior checks that the text matches another value, such as a password confirmation."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Entry x:Name="PasswordEntry"
+                           Placeholder="Password"
+                           IsPassword="True"
+                           TextChanged="OnPasswordTextChanged"/>
+                    <Entry Placeholder="Confirm the password"
+                           IsPassword="True">
+                        <Entry.Behaviors>
+                            <toolkit:RequiredStringValidationBehavior x:Name="ConfirmPasswordValidator"
+                                                                      ValidStyle="{StaticResource ValidEntryStyle}"
+                                                                      InvalidStyle="{StaticResource InvalidEntryStyle}"
+                                                                      Flags="ValidateOnValueChanged"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- URI Validation -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="URI Validation"
+                           FontAttributes="Bold"/>
+                    <Label Text="UriValidationBehavior checks that the text is an absolute URI."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Entry Placeholder="https://example.com"
+                           Keyboard="Url">
+                        <Entry.Behaviors>
+                            <toolkit:UriValidationBehavior UriKind="Absolute"
+                                                           ValidStyle="{StaticResource ValidEntryStyle}"
+                                                           InvalidStyle="{StaticResource InvalidEntryStyle}"
+                                                           Flags="ValidateOnValueChanged"/>
+                        </Entry.Behaviors>
+                    </Entry>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Multiple Validators -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Multiple Validators"
+                           FontAttributes="Bold"/>
+                    <Label Text="MultiValidationBehavior combines validators. The label lists the rules that the password does not meet yet."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+                    <Entry Placeholder="Password"
+                           IsPassword="True">
+                        <Entry.Behaviors>
+                            <toolkit:MultiValidationBehavior x:Name="PasswordRules"
+                                                             ValidStyle="{StaticResource ValidEntryStyle}"
+                                                             InvalidStyle="{StaticResource InvalidEntryStyle}"
+                                                             Flags="ValidateOnValueChanged">
+                                <toolkit:CharactersValidationBehavior CharacterType="Digit"
+                                                                      MinimumCharacterTypeCount="1"
+                                                                      toolkit:MultiValidationBehavior.Error="At least one digit"/>
+                                <toolkit:CharactersValidationBehavior CharacterType="UppercaseLetter"
+                                                                      MinimumCharacterTypeCount="1"
+                                                                      toolkit:MultiValidationBehavior.Error="At least one uppercase letter"/>
+                                <toolkit:CharactersValidationBehavior CharacterType="NonAlphanumericSymbol"
+                                                                      MinimumCharacterTypeCount="1"
+                                                                      toolkit:MultiValidationBehavior.Error="At least one symbol"/>
+                                <toolkit:TextValidationBehavior MinimumLength="8"
+                                                                toolkit:MultiValidationBehavior.Error="At least 8 characters"/>
+                            </toolkit:MultiValidationBehavior>
+                        </Entry.Behaviors>
+                    </Entry>
+                    <Label x:Name="PasswordRulesLabel"
+                           FontSize="12"
+                           Text=""/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
