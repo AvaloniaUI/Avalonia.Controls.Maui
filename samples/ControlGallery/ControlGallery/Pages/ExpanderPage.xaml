@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ControlGallery.Pages.ExpanderPage"
+             Title="Expander">
+    <ScrollView>
+        <VerticalStackLayout Padding="20"
+                             Spacing="20">
+
+            <!-- Expander in a Border -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Expander in a Border"
+                           FontAttributes="Bold"/>
+                    <Label Text="Tap the header to show or hide the content. The border grows and shrinks to fit the expander."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+
+                    <Border Stroke="{AppThemeBinding Light=#6200EE, Dark=#03DAC5}"
+                            StrokeThickness="2"
+                            Padding="12">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <toolkit:Expander x:Name="BorderExpander"
+                                          ExpandedChanged="OnBorderExpanderExpandedChanged">
+                            <toolkit:Expander.Header>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <Label Text="Order details"
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center"/>
+                                    <Label x:Name="BorderExpanderIndicator"
+                                           Grid.Column="1"
+                                           Text="Show"
+                                           TextColor="{AppThemeBinding Light=#6200EE, Dark=#03DAC5}"
+                                           VerticalOptions="Center"/>
+                                </Grid>
+                            </toolkit:Expander.Header>
+                            <VerticalStackLayout Padding="0,8,0,0"
+                                                 Spacing="4">
+                                <Label Text="Item: Wireless keyboard"/>
+                                <Label Text="Quantity: 1"/>
+                                <Label Text="Shipping: 2 to 4 business days"/>
+                                <Label Text="Total: $49.99"
+                                       FontAttributes="Bold"/>
+                            </VerticalStackLayout>
+                        </toolkit:Expander>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Expander List -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Expander List"
+                           FontAttributes="Bold"/>
+                    <Label Text="Each question opens on its own. The items below move down to make room."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+
+                    <Border Padding="10"
+                            Stroke="LightGray">
+                        <toolkit:Expander>
+                            <toolkit:Expander.Header>
+                                <Label Text="What is an expander?"
+                                       FontAttributes="Bold"/>
+                            </toolkit:Expander.Header>
+                            <Label Padding="0,6,0,0"
+                                   Text="An expander has a header that is always visible and content that shows or hides when you tap the header."/>
+                        </toolkit:Expander>
+                    </Border>
+                    <Border Padding="10"
+                            Stroke="LightGray">
+                        <toolkit:Expander>
+                            <toolkit:Expander.Header>
+                                <Label Text="Can the content contain other controls?"
+                                       FontAttributes="Bold"/>
+                            </toolkit:Expander.Header>
+                            <VerticalStackLayout Padding="0,6,0,0"
+                                                 Spacing="6">
+                                <Label Text="Yes. The content can be any view, such as a layout with buttons and images."/>
+                                <Button Text="A button in the content"
+                                        HorizontalOptions="Start"/>
+                                <BoxView HeightRequest="40"
+                                         Color="{AppThemeBinding Light=#03DAC5, Dark=#6200EE}"/>
+                            </VerticalStackLayout>
+                        </toolkit:Expander>
+                    </Border>
+                    <Border Padding="10"
+                            Stroke="LightGray">
+                        <toolkit:Expander>
+                            <toolkit:Expander.Header>
+                                <Label Text="Can expanders be nested?"
+                                       FontAttributes="Bold"/>
+                            </toolkit:Expander.Header>
+                            <VerticalStackLayout Padding="12,6,0,0"
+                                                 Spacing="6">
+                                <Label Text="Yes. Open the inner expander below."/>
+                                <toolkit:Expander>
+                                    <toolkit:Expander.Header>
+                                        <Label Text="Inner expander"
+                                               FontAttributes="Italic"/>
+                                    </toolkit:Expander.Header>
+                                    <Label Padding="12,6,0,0"
+                                           Text="This content is inside two expanders and two borders."/>
+                                </toolkit:Expander>
+                            </VerticalStackLayout>
+                        </toolkit:Expander>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Expand Direction -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Expand Direction"
+                           FontAttributes="Bold"/>
+                    <Label Text="With the Up direction, the content shows above the header."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+
+                    <Border Padding="10"
+                            Stroke="LightGray">
+                        <toolkit:Expander Direction="Up">
+                            <toolkit:Expander.Header>
+                                <Label Text="Tap to expand up"
+                                       FontAttributes="Bold"/>
+                            </toolkit:Expander.Header>
+                            <Label Padding="0,0,0,6"
+                                   Text="This content shows above the header."/>
+                        </toolkit:Expander>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Programmatic Control -->
+            <Border Stroke="Gray"
+                    Padding="10">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="10"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Programmatic Control"
+                           FontAttributes="Bold"/>
+                    <Label Text="Set IsExpanded from code to open or close the expander."
+                           FontSize="12"
+                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
+
+                    <HorizontalStackLayout Spacing="10">
+                        <Button Text="Expand"
+                                Clicked="OnExpandClicked"/>
+                        <Button Text="Collapse"
+                                Clicked="OnCollapseClicked"/>
+                    </HorizontalStackLayout>
+
+                    <Border Padding="10"
+                            Stroke="LightGray">
+                        <toolkit:Expander x:Name="ProgrammaticExpander">
+                            <toolkit:Expander.Header>
+                                <Label Text="Controlled from the buttons"
+                                       FontAttributes="Bold"/>
+                            </toolkit:Expander.Header>
+                            <Label Padding="0,6,0,0"
+                                   Text="The buttons above set IsExpanded on this expander."/>
+                        </toolkit:Expander>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

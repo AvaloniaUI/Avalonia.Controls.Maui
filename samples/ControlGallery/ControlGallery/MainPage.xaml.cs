@@ -44,6 +44,7 @@ public partial class MainPage : FlyoutPage
         [typeof(ContentViewPage)] = () => new ContentViewPage(),
         [typeof(DatePickerPage)] = () => new DatePickerPage(),
         [typeof(EntryPage)] = () => new EntryPage(),
+        [typeof(ExpanderPage)] = () => new ExpanderPage(),
         [typeof(EditorPage)] = () => new EditorPage(),
         [typeof(FramePage)] = () => new FramePage(),
         [typeof(GraphicsViewPage)] = () => new GraphicsViewPage(),
@@ -234,6 +235,11 @@ public partial class MainPage : FlyoutPage
                 new("Switch", "Binary toggle switch", typeof(SwitchPage)),
                 new("TableView", "Form-based data table", typeof(TableViewPage)),
                 new("TimePicker", "Time selection picker", typeof(TimePickerPage))
+            }),
+
+            new SampleGroup("Community Toolkit", new List<SampleItem>
+            {
+                new("Expander", "Content that shows and hides", typeof(ExpanderPage))
             }),
 
             new SampleGroup("WebView", new List<SampleItem>

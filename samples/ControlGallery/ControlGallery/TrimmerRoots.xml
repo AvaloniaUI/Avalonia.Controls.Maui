@@ -5,4 +5,10 @@
       <property name="Window" />
     </type>
   </assembly>
+  <!-- Expander binds its content's IsVisible to its own IsExpanded property by name -->
+  <assembly fullname="CommunityToolkit.Maui">
+    <type fullname="CommunityToolkit.Maui.Views.Expander">
+      <property name="IsExpanded" />
+    </type>
+  </assembly>
 </linker>

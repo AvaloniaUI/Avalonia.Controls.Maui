@@ -1,6 +1,7 @@
 using ControlGallery.Handlers;
 using ControlGallery.Views;
 using ControlGallery.Effects;
+using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
 #if IOS || MACCATALYST || ANDROID || WINDOWS
@@ -14,6 +15,13 @@ public static class MauiProgram
 	public static MauiApp CreateMauiApp(bool useSingleAppLifetime = false)
 	{
 		var builder = MauiApp.CreateBuilder();
+
+		// The toolkit marks this as supported on the native platforms only, but the views it
+		// registers are cross-platform and work on Avalonia too
+#pragma warning disable CA1416
+		builder.UseMauiCommunityToolkit();
+#pragma warning restore CA1416
+
 		builder
 			.UseMauiApp<MauiAppStub>()
 			#if !IOS && !MACCATALYST && !ANDROID && !WINDOWS
