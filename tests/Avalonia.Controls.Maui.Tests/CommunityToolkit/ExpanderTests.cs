@@ -118,7 +118,8 @@ public class ExpanderTests : HandlerTestBase<MauiLayoutHandler, LayoutStub>
             window.UpdateLayout();
 
             Assert.Equal(collapsedHeight + 50, platformBorder.Bounds.Height, 1);
-            Assert.Equal(50, platformHeader.TranslatePoint(default, platformBorder)!.Value.Y, 1);
+            // The content shows above the header, inside the border's default stroke of 1
+            Assert.Equal(1 + 50, platformHeader.TranslatePoint(default, platformBorder)!.Value.Y, 1);
         });
     }
 

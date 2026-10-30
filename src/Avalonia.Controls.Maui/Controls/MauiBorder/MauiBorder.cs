@@ -199,6 +199,7 @@ namespace Avalonia.Controls.Maui
                 _backgroundGeometry = null;
                 _strokeGeometry = null;
                 Child?.Clip = null;
+                InvalidateMeasure();
                 InvalidateVisual();
             }
             else if (change.Property == StrokeProperty ||
@@ -240,10 +241,17 @@ namespace Avalonia.Controls.Maui
             }
         }
 
+        // The content goes inside the stroke and the padding, as on the native platforms
+        private Thickness StrokeInset => new(StrokeThickness);
+
+        /// <inheritdoc/>
+        protected override Size MeasureOverride(Size availableSize) =>
+            Layout.LayoutHelper.MeasureChild(Child, availableSize, Padding, StrokeInset);
+
         /// <inheritdoc/>
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var arrangedSize = base.ArrangeOverride(finalSize);
+            var arrangedSize = Layout.LayoutHelper.ArrangeChild(Child, finalSize, Padding, StrokeInset);
 
             if (finalSize.Width > 0 && finalSize.Height > 0)
             {
@@ -253,31 +261,18 @@ namespace Avalonia.Controls.Maui
 
                 if (Child != null)
                 {
-                    if (_strokeGeometry != null)
+                    // Clip the child to the inner edge of the stroke, as the native platforms do.
+                    // The clip is in the child's coordinate space, which is offset by padding or alignment.
+                    var clipGeometry = CreateClipGeometry(finalSize);
+                    if (clipGeometry != null)
                     {
                         var childBounds = Child.Bounds;
-                        if (childBounds.X == 0 && childBounds.Y == 0)
-                        {
-                            // Child starts at origin, clip geometry can be used directly
-                            Child.Clip = _strokeGeometry;
-                        }
-                        else
-                        {
-                            // Child is offset within the border (e.g. centered and smaller),
-                            // translate the clip geometry to the child's coordinate space
-                            var clipGeometry = CreateGeometry(finalSize);
-                            if (clipGeometry != null)
-                            {
-                                clipGeometry.Transform = new TranslateTransform(-childBounds.X, -childBounds.Y);
-                            }
+                        clipGeometry.Transform = new TranslateTransform(
+                            StrokeThickness - childBounds.X,
+                            StrokeThickness - childBounds.Y);
+                    }
 
-                            Child.Clip = clipGeometry;
-                        }
-                    }
-                    else
-                    {
-                        Child.Clip = null;
-                    }
+                    Child.Clip = clipGeometry;
                 }
             }
 
@@ -311,39 +306,55 @@ namespace Avalonia.Controls.Maui
             }
         }
 
+        // The stroke is drawn inside the bounds, centered on a path inset by half its thickness
         private Geometry? CreateGeometry(Size size)
         {
+            var inset = StrokeThickness / 2;
+            var geometry = CreateShapeGeometry(size, inset, 0);
+            if (geometry != null)
+                geometry.Transform = new TranslateTransform(inset, inset);
+
+            return geometry;
+        }
+
+        // The content is clipped to the inner edge of the stroke. The geometry is at the origin;
+        // ArrangeOverride moves it into the child's coordinate space.
+        private Geometry? CreateClipGeometry(Size size) =>
+            CreateShapeGeometry(size, StrokeThickness, StrokeThickness);
+
+        // Creates the shape's geometry at the origin for the bounds inset by inset on each side,
+        // with the corners of a round rectangle reduced by cornerRadiusReduction
+        private Geometry? CreateShapeGeometry(Size size, double inset, double cornerRadiusReduction)
+        {
+            if (Shape == null)
+                return null;
+
+            var bounds = new MauiGraphics.Rect(
+                0,
+                0,
+                Math.Max(0, size.Width - 2 * inset),
+                Math.Max(0, size.Height - 2 * inset));
+
+            MauiGraphics.PathF pathF;
             if (Shape is MauiShapes.RoundRectangle rr)
             {
-                var rect = new Rect(size).Deflate(0);
-                
-                var mauiRect = new MauiGraphics.Rect(rect.X, rect.Y, rect.Width, rect.Height);
-            
                 var radii = rr.CornerRadius;
-            
-                var newRadii = new Microsoft.Maui.CornerRadius(
-                    Math.Max(0, radii.TopLeft),
-                    Math.Max(0, radii.TopRight),
-                    Math.Max(0, radii.BottomLeft),
-                    Math.Max(0, radii.BottomRight)); 
-            
-                var tempRr = new MauiShapes.RoundRectangle
+                var roundRectangle = new MauiShapes.RoundRectangle
                 {
-                    CornerRadius = newRadii
+                    CornerRadius = new Microsoft.Maui.CornerRadius(
+                        Math.Max(0, radii.TopLeft - cornerRadiusReduction),
+                        Math.Max(0, radii.TopRight - cornerRadiusReduction),
+                        Math.Max(0, radii.BottomLeft - cornerRadiusReduction),
+                        Math.Max(0, radii.BottomRight - cornerRadiusReduction))
                 };
-                
-                var pathF = ((MauiGraphics.IShape)tempRr).PathForBounds(mauiRect);
-                return ShapeExtensions.ToAvaloniaGeometry(pathF);
+                pathF = ((MauiGraphics.IShape)roundRectangle).PathForBounds(bounds);
             }
-
-            if (Shape != null)
+            else
             {
-                var bounds = new MauiGraphics.Rect(0, 0, size.Width, size.Height);
-                var pathF = Shape.PathForBounds(bounds);
-                return ShapeExtensions.ToAvaloniaGeometry(pathF);
+                pathF = Shape.PathForBounds(bounds);
             }
 
-            return null;
+            return ShapeExtensions.ToAvaloniaGeometry(pathF);
         }
 
         private Pen CreatePen()

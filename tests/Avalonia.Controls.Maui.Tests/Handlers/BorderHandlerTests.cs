@@ -586,6 +586,155 @@ public partial class BorderHandlerTests : HandlerTestBase<MauiBorderHandler, Bor
         });
     }
 
+    [AvaloniaFact(DisplayName = "Content Is Arranged Inside The Stroke And Padding")]
+    public async Task ContentIsArrangedInsideStrokeAndPadding()
+    {
+        var content = new Microsoft.Maui.Controls.BoxView();
+        var border = new Microsoft.Maui.Controls.Border
+        {
+            WidthRequest = 200,
+            HeightRequest = 100,
+            StrokeThickness = 4,
+            Padding = new Microsoft.Maui.Thickness(1, 2, 3, 5),
+            Content = content,
+        };
+
+        var bounds = await RunBorderInWindowAsync(border, content);
+
+        Assert.Equal(new Rect(5, 6, 200 - 4 - 4 - 1 - 3, 100 - 4 - 4 - 2 - 5), bounds);
+    }
+
+    [AvaloniaFact(DisplayName = "Border Sized To Its Content Includes The Stroke")]
+    public async Task BorderSizedToContentIncludesStroke()
+    {
+        var content = new Microsoft.Maui.Controls.BoxView { WidthRequest = 50, HeightRequest = 30 };
+        var border = new Microsoft.Maui.Controls.Border
+        {
+            StrokeThickness = 4,
+            Padding = 10,
+            HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+            VerticalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+            Content = content,
+        };
+
+        var bounds = await RunBorderInWindowAsync(border, content);
+
+        Assert.Equal(new Rect(14, 14, 50, 30), bounds);
+        Assert.Equal(50 + 2 * 10 + 2 * 4, ((Control)border.Handler!.PlatformView!).Bounds.Width, 1);
+        Assert.Equal(30 + 2 * 10 + 2 * 4, ((Control)border.Handler!.PlatformView!).Bounds.Height, 1);
+    }
+
+    /// <summary>
+    /// Lays out <paramref name="border"/> in a window and returns the bounds of
+    /// <paramref name="content"/> relative to the border.
+    /// </summary>
+    Task<Rect> RunBorderInWindowAsync(Microsoft.Maui.Controls.Border border, Microsoft.Maui.Controls.View content) =>
+        InvokeOnMainThreadAsync(() =>
+        {
+            var page = new Microsoft.Maui.Controls.Grid { Children = { border } };
+            var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(page);
+            var window = new Window { Width = 300, Height = 300, Content = handler.PlatformView };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                var platformBorder = (Control)border.Handler!.PlatformView!;
+                var platformContent = (Control)content.Handler!.PlatformView!;
+                var topLeft = platformContent.TranslatePoint(default, platformBorder)!.Value;
+                return new Rect(topLeft, platformContent.Bounds.Size);
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+    [AvaloniaFact(DisplayName = "Content Is Clipped Inside The Stroke")]
+    public async Task ContentIsClippedInsideStroke()
+    {
+        // Content that fills the border must not paint over the stroke
+        var pixels = await RenderBorderAsync(new Rectangle());
+
+        Assert.Equal(Avalonia.Media.Colors.Red, pixels(3, 50));
+        Assert.Equal(Avalonia.Media.Colors.Red, pixels(50, 3));
+        Assert.Equal(Avalonia.Media.Colors.Lime, pixels(50, 50));
+    }
+
+    [AvaloniaFact(DisplayName = "Content Is Clipped To The Inner Corners Of A Round Rectangle")]
+    public async Task ContentIsClippedToInnerCornersOfRoundRectangle()
+    {
+        // With a corner radius of 30 and a stroke of 6, the inner corner has a radius of 24 around
+        // (30, 30). (10, 10) is inside the outer corner but outside the inner one.
+        var pixels = await RenderBorderAsync(new RoundRectangle { CornerRadius = 30 });
+
+        Assert.NotEqual(Avalonia.Media.Colors.Lime, pixels(10, 10));
+        Assert.Equal(Avalonia.Media.Colors.Lime, pixels(30, 30));
+        Assert.Equal(Avalonia.Media.Colors.Red, pixels(3, 50));
+    }
+
+    /// <summary>
+    /// Renders a 100x100 border with a 6-wide red stroke and lime content that fills it, and returns
+    /// a function that reads the color of a pixel of the border.
+    /// </summary>
+    async Task<Func<int, int, Avalonia.Media.Color>> RenderBorderAsync(IShape shape)
+    {
+        var border = new Microsoft.Maui.Controls.Border
+        {
+            WidthRequest = 100,
+            HeightRequest = 100,
+            HorizontalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+            VerticalOptions = Microsoft.Maui.Controls.LayoutOptions.Start,
+            Stroke = Microsoft.Maui.Graphics.Colors.Red,
+            StrokeThickness = 6,
+            StrokeShape = (Microsoft.Maui.Controls.Shapes.Shape)shape,
+            Padding = 0,
+            Content = new Microsoft.Maui.Controls.BoxView { Color = Microsoft.Maui.Graphics.Colors.Lime },
+        };
+        var page = new Microsoft.Maui.Controls.Grid { Children = { border } };
+
+        var colors = await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<Avalonia.Controls.Maui.Handlers.LayoutHandler>(page);
+            var window = new Window
+            {
+                Width = 120,
+                Height = 120,
+                Background = Avalonia.Media.Brushes.White,
+                Content = handler.PlatformView,
+            };
+            window.Show();
+            try
+            {
+                window.UpdateLayout();
+                using var frame = Avalonia.Headless.HeadlessWindowExtensions.CaptureRenderedFrame(window)!;
+                using var locked = frame.Lock();
+                var isBgra = locked.Format == Avalonia.Platform.PixelFormat.Bgra8888;
+                var colors = new Avalonia.Media.Color[100, 100];
+                for (var y = 0; y < 100; y++)
+                {
+                    for (var x = 0; x < 100; x++)
+                    {
+                        var offset = y * locked.RowBytes + x * 4;
+                        var first = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset);
+                        var g = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset + 1);
+                        var third = System.Runtime.InteropServices.Marshal.ReadByte(locked.Address, offset + 2);
+                        colors[x, y] = isBgra
+                            ? Avalonia.Media.Color.FromRgb(third, g, first)
+                            : Avalonia.Media.Color.FromRgb(first, g, third);
+                    }
+                }
+
+                return colors;
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        return (x, y) => colors[x, y];
+    }
+
     Color? GetNativeBackgroundColor(MauiBorderHandler handler) =>
         AvaloniaPropertyHelpers.GetNativeBackgroundColor(handler);
 

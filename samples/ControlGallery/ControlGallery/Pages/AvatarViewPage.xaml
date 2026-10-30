@@ -47,12 +47,14 @@
                            TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
                     <HorizontalStackLayout Spacing="10">
                         <toolkit:AvatarView Text="NET"
-                                            ImageSource="dotnet_logo.png"/>
+                                            ImageSource="dotnet_logo.png"
+                                            Padding="0"/>
                         <toolkit:AvatarView Text="NET"
                                             ImageSource="dotnet_logo.png"
                                             WidthRequest="80"
                                             HeightRequest="80"
-                                            CornerRadius="40"/>
+                                            CornerRadius="40"
+                                            Padding="0"/>
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
