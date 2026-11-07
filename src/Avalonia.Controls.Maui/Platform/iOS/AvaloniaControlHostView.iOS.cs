@@ -12,6 +12,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
     public class AvaloniaControlHostView : Avalonia.iOS.AvaloniaView, IAvaloniaControlHost
     {
         readonly Avalonia.Controls.Border _backgroundBorder = new();
+        readonly EmbeddedPopupHost _popupHost;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AvaloniaControlHostView"/> class.
@@ -25,6 +26,14 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             // Embedded views are not at the window edges, so skip the system bar padding.
             Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
+            _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
+        }
+
+        /// <inheritdoc/>
+        public override void LayoutSubviews()
+        {
+            base.LayoutSubviews();
+            _popupHost.OnLayout();
         }
 
         private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)

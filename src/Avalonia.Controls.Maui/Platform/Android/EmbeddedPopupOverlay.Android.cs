@@ -68,7 +68,7 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
             _view.SetBackgroundColor(AndroidColor.Transparent);
 
             if (TopLevel.GetTopLevel(AnchorLayer) is EmbeddableControlRoot root)
-                MakeTransparent(root);
+                EmbeddedPopupOverlayRoot.MakeTransparent(root);
         }
 
         public Canvas AnchorLayer { get; }
@@ -157,20 +157,6 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
             var location = new int[2];
             view.GetLocationOnScreen(location);
             return (location[0], location[1]);
-        }
-
-        private static void MakeTransparent(EmbeddableControlRoot root)
-        {
-            root.Background = null;
-            root.TransparencyBackgroundFallback = Avalonia.Media.Brushes.Transparent;
-            root.ApplyTemplate();
-
-            // The fallback border keeps the brush it got when the template was applied.
-            foreach (var child in root.GetVisualDescendants())
-            {
-                if (child is Border { Name: "PART_TransparencyFallback" } fallback)
-                    fallback.Background = null;
-            }
         }
 
         private sealed class OverlayView(Context context, EmbeddedPopupOverlay overlay) : Avalonia.Android.AvaloniaView(context)

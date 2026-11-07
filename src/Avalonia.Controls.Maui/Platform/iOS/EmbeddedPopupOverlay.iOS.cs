@@ -1,0 +1,134 @@
+using Avalonia.Controls.Embedding;
+using Avalonia.Controls.Maui.Platforms.EmbeddedPopups;
+using Avalonia.Input;
+using Avalonia.VisualTree;
+using CoreGraphics;
+using UIKit;
+
+namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
+{
+    /// <summary>
+    /// Connects a UIKit view that embeds Avalonia content to the popup overlay.
+    /// </summary>
+    internal sealed class EmbeddedPopupHost : IEmbeddedPopupHost
+    {
+        private readonly UIView _view;
+        private readonly TopLevel? _topLevel;
+
+        private EmbeddedPopupHost(UIView view, TopLevel? topLevel)
+        {
+            _view = view;
+            _topLevel = topLevel;
+        }
+
+        /// <summary>Registers <paramref name="view"/>, whose Avalonia content root is <paramref name="content"/>.</summary>
+        public static EmbeddedPopupHost Attach(UIView view, Control content)
+        {
+            var host = new EmbeddedPopupHost(view, TopLevel.GetTopLevel(content));
+            if (host._topLevel is not null)
+                EmbeddedPopupRedirector.Register(host._topLevel, host);
+            return host;
+        }
+
+        /// <summary>Gets the window that contains the host.</summary>
+        public UIWindow? Window => _view.Window;
+
+        /// <summary>Call when the host view was laid out.</summary>
+        public void OnLayout() => EmbeddedPopupRedirector.OnHostLayoutChanged(_topLevel);
+
+        // The host may not be in a window yet when its popups are redirected, so all hosts share one
+        // overlay. The overlay moves to the window of the host that shows it.
+        public IEmbeddedPopupOverlay GetOverlay() => EmbeddedPopupOverlay.Instance;
+
+        public Point? GetOriginInOverlay() => EmbeddedPopupOverlay.Instance.GetOrigin(_view);
+    }
+
+    /// <summary>
+    /// A transparent view on top of the window that shows the popups of embedded Avalonia views.
+    /// </summary>
+    internal sealed class EmbeddedPopupOverlay : IEmbeddedPopupOverlay
+    {
+        private static EmbeddedPopupOverlay? s_instance;
+
+        private readonly OverlayView _view;
+        private readonly EmbeddableControlRoot _root;
+
+        private EmbeddedPopupOverlay()
+        {
+            AnchorLayer = new Canvas();
+            TopLevel.SetAutoSafeAreaPadding(AnchorLayer, false);
+            AnchorLayer.SizeChanged += (_, _) => EmbeddedPopupRedirector.OnOverlayLayoutChanged(this);
+
+            _view = new OverlayView(this)
+            {
+                Content = AnchorLayer,
+                BackgroundColor = UIColor.Clear,
+                Opaque = false,
+                AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight,
+            };
+
+            _root = (EmbeddableControlRoot)TopLevel.GetTopLevel(AnchorLayer)!;
+            EmbeddedPopupOverlayRoot.MakeTransparent(_root);
+
+            // A Metal layer that is not in a window never returns its drawables. Rendering it would block
+            // the shared render loop, and with it all other Avalonia views. Render only while shown.
+            _root.StopRendering();
+        }
+
+        public static EmbeddedPopupOverlay Instance => s_instance ??= new EmbeddedPopupOverlay();
+
+        public Canvas AnchorLayer { get; }
+
+        public void Show(IEmbeddedPopupHost host)
+        {
+            if (((EmbeddedPopupHost)host).Window is not { } window)
+                return;
+
+            if (_view.Superview != window)
+            {
+                _view.RemoveFromSuperview();
+                window.AddSubview(_view);
+            }
+
+            _view.Frame = window.Bounds;
+            // Stay above views that were added to the window later, for example modal pages.
+            window.BringSubviewToFront(_view);
+            _root.StartRendering();
+        }
+
+        public void Hide()
+        {
+            _root.StopRendering();
+            _view.RemoveFromSuperview();
+        }
+
+        /// <summary>Gets the top-left of <paramref name="view"/> in overlay coordinates, in points.</summary>
+        public Point? GetOrigin(UIView view)
+        {
+            if (view.Window is not { } window)
+                return null;
+
+            // Before the overlay is in the window, it will cover the window from its origin.
+            UIView target = _view.Window == window ? _view : window;
+            var origin = view.ConvertPointToView(CGPoint.Empty, target);
+            return new Point(origin.X, origin.Y);
+        }
+
+        /// <summary>Returns true when the point is over popup content, including light-dismiss layers.</summary>
+        private bool HitsPopup(CGPoint point)
+        {
+            // UIKit points are Avalonia device-independent units.
+            return _root.InputHitTest(new Point(point.X, point.Y)) is Visual hit
+                && hit != _root
+                && !AnchorLayer.IsVisualAncestorOf(hit)
+                && !hit.IsVisualAncestorOf(AnchorLayer);
+        }
+
+        private sealed class OverlayView(EmbeddedPopupOverlay overlay) : Avalonia.iOS.AvaloniaView
+        {
+            // Touches that are not over a popup go to the views below the overlay.
+            public override UIView? HitTest(CGPoint point, UIEvent? uievent) =>
+                overlay.HitsPopup(point) ? base.HitTest(point, uievent) : null;
+        }
+    }
+}
