@@ -5,10 +5,17 @@
              xmlns:maui="clr-namespace:Avalonia.Controls.Maui.Controls;assembly=Avalonia.Controls.Maui"
              xmlns:controls="clr-namespace:ControlGallery.Controls"
              Title="Avalonia Embed Page">
-             <Grid Margin="10" RowDefinitions="Auto, *">
+             <Grid Margin="10" RowDefinitions="Auto, Auto, Auto, *" RowSpacing="8">
                 <Label LineBreakMode="WordWrap"
                     Text="This is an example of hosting an Avalonia control within a .NET MAUI application using the AvaloniaControlHost." />
-                <maui:AvaloniaView Grid.Row="1"
+                <Label Grid.Row="1" LineBreakMode="WordWrap"
+                    Text="A picker-sized AvaloniaView with an Avalonia ComboBox. Its drop-down extends past the view's bounds:" />
+                <maui:AvaloniaView Grid.Row="2"
+                    AutomationId="EmbeddedComboBoxHost"
+                    HorizontalOptions="Fill">
+                    <controls:EmbedComboBoxControl />
+                </maui:AvaloniaView>
+                <maui:AvaloniaView Grid.Row="3"
                     HorizontalOptions="Fill"
                     VerticalOptions="Fill">
                     <controls:EmbedDemoControl />

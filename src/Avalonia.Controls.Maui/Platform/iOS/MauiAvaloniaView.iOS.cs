@@ -18,6 +18,8 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
         public MauiAvaloniaView(AvaloniaView mauiView)
         {
             _mauiView = mauiView;
+            // Embedded views are not at the window edges, so skip the system bar padding.
+            Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
         }
 

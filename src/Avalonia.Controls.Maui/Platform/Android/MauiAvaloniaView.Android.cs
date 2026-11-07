@@ -11,6 +11,7 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
     {
         readonly AvaloniaView _mauiView;
         readonly Avalonia.Controls.Border _backgroundBorder = new();
+        readonly EmbeddedPopupHost _popupHost;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MauiAvaloniaView"/> class.
@@ -22,7 +23,18 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
             _mauiView = mauiView;
 
             SetBackgroundColor(Color.Transparent);
+            // Embedded views are not at the window edges, so skip the system bar padding.
+            Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
+            _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
+        }
+
+        /// <inheritdoc/>
+        protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
+        {
+            AvaloniaHostLayout.MeasureChildrenExactly(this, right - left, bottom - top);
+            base.OnLayout(changed, left, top, right, bottom);
+            _popupHost.OnLayout();
         }
 
         /// <summary>

@@ -22,6 +22,8 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             // by the base AvaloniaView constructor, so setting Content triggers
             // AttachedToVisualTree synchronously.
             _backgroundBorder.AttachedToVisualTree += OnAttachedToVisualTree;
+            // Embedded views are not at the window edges, so skip the system bar padding.
+            Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
         }
 
