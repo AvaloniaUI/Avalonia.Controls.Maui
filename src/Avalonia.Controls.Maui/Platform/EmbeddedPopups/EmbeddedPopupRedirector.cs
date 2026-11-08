@@ -41,7 +41,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
     /// Opens the popups of embedded Avalonia views in a window-sized overlay.
     /// </summary>
     /// <remarks>
-    /// On Android and iOS, Avalonia draws popups inside the surface of their <see cref="TopLevel"/>.
+    /// On Android, iOS and Windows (WinUI), Avalonia draws popups inside the surface of their <see cref="TopLevel"/>.
     /// An embedded view is often small (a picker, for example), so its popups are clipped. Each popup
     /// that targets a control in an embedded view gets an invisible anchor control in the overlay as its
     /// <see cref="Popup.PlacementTarget"/>. The anchor is moved over the real target when the popup opens.
@@ -78,6 +78,70 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 (_, e) => state.LastPointer = e.GetPosition(topLevel),
                 RoutingStrategies.Tunnel,
                 handledEventsToo: true);
+
+            // Where the overlay does not cover the window (Windows), a press in the embedded view never reaches
+            // the light-dismiss layer of the open popups. Presses in the popups are routed through their logical
+            // parents in the embedded view too, so only presses on the view's own visuals dismiss.
+            topLevel.AddHandler(
+                InputElement.PointerPressedEvent,
+                (_, e) =>
+                {
+                    if (e.Source is Visual source && TopLevel.GetTopLevel(source) == topLevel
+                        && LightDismiss(host.GetOverlay()))
+                        e.Handled = true;
+                },
+                RoutingStrategies.Tunnel);
+        }
+
+        /// <summary>
+        /// Closes the open light-dismiss popups of <paramref name="overlay"/> after a press outside of them.
+        /// </summary>
+        /// <returns>True if the press should be handled, because a closed popup does not pass it through.</returns>
+        public static bool LightDismiss(IEmbeddedPopupOverlay overlay)
+        {
+            var handled = false;
+            foreach (var state in s_open.ToArray())
+            {
+                if (state.Overlay != overlay || !state.Popup.IsLightDismissEnabled)
+                    continue;
+
+                handled |= !state.Popup.OverlayDismissEventPassThrough;
+                state.Popup.Close();
+            }
+
+            return handled;
+        }
+
+        /// <summary>Returns true if <paramref name="topLevel"/> has open light-dismiss popups in the overlay.</summary>
+        public static bool HasOpenLightDismissPopups(TopLevel topLevel)
+        {
+            foreach (var state in s_open)
+            {
+                if (state.HostTopLevel == topLevel && state.Popup.IsLightDismissEnabled)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>Closes the open light-dismiss popups of <paramref name="topLevel"/>.</summary>
+        public static void CloseLightDismissPopups(TopLevel topLevel)
+        {
+            foreach (var state in s_open.ToArray())
+            {
+                if (state.HostTopLevel == topLevel && state.Popup.IsLightDismissEnabled)
+                    state.Popup.Close();
+            }
+        }
+
+        /// <summary>Gets the open popups of <paramref name="overlay"/>.</summary>
+        public static IEnumerable<Popup> GetOpenPopups(IEmbeddedPopupOverlay overlay)
+        {
+            foreach (var state in s_open)
+            {
+                if (state.Overlay == overlay)
+                    yield return state.Popup;
+            }
         }
 
         /// <summary>
@@ -185,6 +249,8 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 popup.Opened += OnOpened;
                 popup.Closed += OnClosed;
             }
+
+            public Popup Popup => _popup;
 
             /// <summary>The placement target set by the app or the control, before the redirect.</summary>
             public Control? OriginalTarget { get; set; }

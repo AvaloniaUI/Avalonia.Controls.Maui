@@ -5,7 +5,8 @@
              xmlns:maui="clr-namespace:Avalonia.Controls.Maui.Controls;assembly=Avalonia.Controls.Maui"
              xmlns:controls="clr-namespace:ControlGallery.Controls"
              Title="Avalonia Embed Page">
-             <Grid Margin="10" RowDefinitions="Auto, Auto, Auto, *" RowSpacing="8">
+             <ScrollView>
+             <Grid Margin="10" RowDefinitions="Auto, Auto, Auto, Auto, Auto, 220" RowSpacing="8">
                 <Label LineBreakMode="WordWrap"
                     Text="This is an example of hosting an Avalonia control within a .NET MAUI application using the AvaloniaControlHost." />
                 <Label Grid.Row="1" LineBreakMode="WordWrap"
@@ -20,5 +21,33 @@
                     VerticalOptions="Fill">
                     <controls:EmbedDemoControl />
                 </maui:AvaloniaView>
+                <Label Grid.Row="4" LineBreakMode="WordWrap"
+                    Text="ComboBox in a scrolling page. Its drop-down closes when the page scrolls under it:" />
+                <Border Grid.Row="5" Stroke="LightGray" StrokeThickness="1" Padding="0">
+                    <ScrollView AutomationId="EmbeddedComboBoxScrollView">
+                        <VerticalStackLayout Padding="8" Spacing="8">
+                            <Label Text="Scroll filler 1 above" />
+                            <Label Text="Scroll filler 2 above" />
+                            <Label Text="Scroll filler 3 above" />
+                            <Label Text="Scroll filler 4 above" />
+                            <maui:AvaloniaView
+                                AutomationId="ScrollingEmbeddedComboBoxHost"
+                                HorizontalOptions="Fill">
+                                <controls:EmbedComboBoxControl />
+                            </maui:AvaloniaView>
+                            <Label Text="Scroll filler 1 below" />
+                            <Label Text="Scroll filler 2 below" />
+                            <Label Text="Scroll filler 3 below" />
+                            <Label Text="Scroll filler 4 below" />
+                            <Label Text="Scroll filler 5 below" />
+                            <Label Text="Scroll filler 6 below" />
+                            <Label Text="Scroll filler 7 below" />
+                            <Label Text="Scroll filler 8 below" />
+                            <Label Text="Scroll filler 9 below" />
+                            <Label Text="Scroll filler 10 below" />
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </Border>
              </Grid>
+             </ScrollView>
 </ContentPage>
