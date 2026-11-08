@@ -37,6 +37,13 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             _popupHost.OnLayout();
         }
 
+        /// <inheritdoc/>
+        public override void MovedToWindow()
+        {
+            base.MovedToWindow();
+            _popupHost.OnMovedToWindow();
+        }
+
         private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
         {
             _backgroundBorder.AttachedToVisualTree -= OnAttachedToVisualTree;

@@ -33,6 +33,13 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             _popupHost.OnLayout();
         }
 
+        /// <inheritdoc/>
+        public override void MovedToWindow()
+        {
+            base.MovedToWindow();
+            _popupHost.OnMovedToWindow();
+        }
+
         /// <summary>
         /// Updates the content of the Avalonia view.
         /// </summary>

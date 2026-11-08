@@ -24,10 +24,11 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
         }
 
         /// <summary>Sends the hover over <paramref name="view"/> to <paramref name="topLevel"/>.</summary>
-        public static void Attach(UIView view, TopLevel? topLevel)
+        /// <returns>The hover handler, or null if hover is not supported.</returns>
+        public static AvaloniaViewHover? Attach(UIView view, TopLevel? topLevel)
         {
             if (topLevel is null || !(OperatingSystem.IsIOSVersionAtLeast(13) || OperatingSystem.IsMacCatalyst()))
-                return;
+                return null;
 
             var hover = new AvaloniaViewHover(view, topLevel);
             view.AddGestureRecognizer(new UIHoverGestureRecognizer(hover.OnHover)
@@ -36,7 +37,17 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
                 DelaysTouchesBegan = false,
                 DelaysTouchesEnded = false,
             });
+            return hover;
         }
+
+        /// <summary>
+        /// Tells Avalonia that the pointer left the view, for example because the view leaves the window.
+        /// </summary>
+        /// <remarks>
+        /// A view that leaves the window gets no more pointer input, so Avalonia would keep the pointer over its
+        /// content. A later render then hit-tests at that old position, which closes tooltips of other views.
+        /// </remarks>
+        public void Leave() => Send(RawPointerEventType.LeaveWindow, default, RawInputModifiers.None);
 
         private void OnHover(UIHoverGestureRecognizer recognizer)
         {
@@ -48,23 +59,23 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
                 _ => (RawPointerEventType?)null,
             };
 
-            if (type is null
-                || _topLevel.PlatformImpl is not { } impl
-                || GetInput(impl) is not { } input
-                || _topLevel.GetPresentationSource() is not IInputRoot root)
+            if (type is null)
                 return;
 
             // UIKit points are Avalonia device-independent units.
             var location = recognizer.LocationInView(_view);
-            var timestamp = (ulong)(NSProcessInfo.ProcessInfo.SystemUptime * 1000);
+            Send(type.Value, new Point(location.X, location.Y), GetModifiers(recognizer));
+        }
 
-            input(CreatePointerEvent(
-                _device,
-                timestamp,
-                root,
-                type.Value,
-                new Point(location.X, location.Y),
-                GetModifiers(recognizer)));
+        private void Send(RawPointerEventType type, Point position, RawInputModifiers modifiers)
+        {
+            if (_topLevel.PlatformImpl is not { } impl
+                || GetInput(impl) is not { } input
+                || _topLevel.GetPresentationSource() is not IInputRoot root)
+                return;
+
+            var timestamp = (ulong)(NSProcessInfo.ProcessInfo.SystemUptime * 1000);
+            input(CreatePointerEvent(_device, timestamp, root, type, position, modifiers));
         }
 
         [UnsafeAccessor(UnsafeAccessorKind.Constructor)]

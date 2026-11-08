@@ -39,7 +39,11 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
         public AndroidView? WindowRoot => _view.IsAttachedToWindow ? _view.RootView : null;
 
         /// <summary>Call when the host view was laid out.</summary>
-        public void OnLayout() => EmbeddedPopupRedirector.OnHostLayoutChanged(_topLevel);
+        public void OnLayout()
+        {
+            ((EmbeddedPopupOverlay)GetOverlay()).Prepare(WindowRoot);
+            EmbeddedPopupRedirector.OnHostLayoutChanged(_topLevel);
+        }
 
         public IEmbeddedPopupOverlay GetOverlay() => EmbeddedPopupOverlay.ForContext(_view.Context!);
 
@@ -58,12 +62,20 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
         private PopupWindow? _window;
         private AndroidView? _windowRoot;
         private bool _hidePending;
+        private bool _warmedUp;
+        private bool _warmingUp;
 
         private EmbeddedPopupOverlay(Context context)
         {
             AnchorLayer = new Canvas();
             TopLevel.SetAutoSafeAreaPadding(AnchorLayer, false);
-            AnchorLayer.SizeChanged += (_, _) => EmbeddedPopupRedirector.OnOverlayLayoutChanged(this);
+            AnchorLayer.SizeChanged += (_, _) =>
+            {
+                EmbeddedPopupRedirector.OnOverlayLayoutChanged(this);
+                // The top level got its size, and its scaling with it.
+                if (_warmingUp)
+                    Avalonia.Threading.Dispatcher.UIThread.Post(EndWarmUp);
+            };
 
             _view = new OverlayView(context, this) { Content = AnchorLayer };
             _view.SetBackgroundColor(AndroidColor.Transparent);
@@ -84,12 +96,50 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
 
             _hidePending = false;
             _window ??= CreateWindow();
+            if (_warmingUp)
+            {
+                _warmingUp = false;
+                _window.Touchable = true;
+                _window.Update();
+            }
+
             if (_window.IsShowing && _windowRoot == windowRoot)
                 return;
 
             _window.Dismiss();
             _windowRoot = windowRoot;
             _window.ShowAtLocation(windowRoot, GravityFlags.NoGravity, 0, 0);
+        }
+
+        /// <summary>Shows the overlay once, so that its top level gets the size and scaling of the window.</summary>
+        /// <remarks>
+        /// A popup is laid out while it opens, before the overlay is shown. Avalonia gets the size and the scaling
+        /// of a view from its surface, which only exists while the view is in a window. Without this, the first
+        /// popup is laid out for an overlay with no size, and controls such as the time picker keep the wrong
+        /// layout. The overlay is not touchable while it warms up, and it has no content.
+        /// </remarks>
+        public void Prepare(AndroidView? windowRoot)
+        {
+            if (_warmedUp || windowRoot is not { WindowToken: not null } || _window?.IsShowing == true)
+                return;
+
+            _warmedUp = true;
+            _warmingUp = true;
+            _window ??= CreateWindow();
+            _window.Touchable = false;
+            _windowRoot = windowRoot;
+            _window.ShowAtLocation(windowRoot, GravityFlags.NoGravity, 0, 0);
+        }
+
+        private void EndWarmUp()
+        {
+            if (!_warmingUp || _window is null)
+                return;
+
+            _warmingUp = false;
+            _window.Dismiss();
+            _window.Touchable = true;
+            _windowRoot = null;
         }
 
         public void Hide()

@@ -36,7 +36,16 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
         public UIWindow? Window => _view.Window;
 
         /// <summary>Call when the host view was laid out.</summary>
-        public void OnLayout() => EmbeddedPopupRedirector.OnHostLayoutChanged(_topLevel);
+        public void OnLayout()
+        {
+            // The window may have been resized.
+            EmbeddedPopupOverlay.Instance.Prepare(_view.Window);
+            EmbeddedPopupRedirector.OnHostLayoutChanged(_topLevel);
+        }
+
+        /// <summary>Call when the host view was added to or removed from a window.</summary>
+        /// <remarks>MAUI can lay out the host before it is in a window, and not again after.</remarks>
+        public void OnMovedToWindow() => EmbeddedPopupOverlay.Instance.Prepare(_view.Window);
 
         // The host may not be in a window yet when its popups are redirected, so all hosts share one
         // overlay. The overlay moves to the window of the host that shows it.
@@ -54,6 +63,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
 
         private readonly OverlayView _view;
         private readonly EmbeddableControlRoot _root;
+        private readonly AvaloniaViewHover? _hover;
         private bool _hidePending;
 
         private EmbeddedPopupOverlay()
@@ -72,7 +82,12 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
 
             _root = (EmbeddableControlRoot)TopLevel.GetTopLevel(AnchorLayer)!;
             EmbeddedPopupOverlayRoot.MakeTransparent(_root);
-            AvaloniaViewHover.Attach(_view, _root);
+            // A transparent brush keeps the root hit-testable. Avalonia can then track the mouse over the root,
+            // and clears that when the pointer leaves. With no background, the root keeps IsPointerOver after a
+            // click in a popup, and its next render closes the tooltips of the embedded views.
+            // HitsPopup ignores the root, so input outside the popups still goes to the views below.
+            _root.Background = Avalonia.Media.Brushes.Transparent;
+            _hover = AvaloniaViewHover.Attach(_view, _root);
 
             // A Metal layer that is not in a window never returns its drawables. Rendering it would block
             // the shared render loop, and with it all other Avalonia views. Render only while shown.
@@ -101,6 +116,29 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             _root.StartRendering();
         }
 
+        /// <summary>Gives the hidden overlay the size and scale of <paramref name="window"/>.</summary>
+        /// <remarks>
+        /// A popup is laid out while it opens, before the overlay is shown. Without this, the first popup is laid
+        /// out for an overlay with no size, and controls such as the date picker keep the wrong layout.
+        /// </remarks>
+        public void Prepare(UIWindow? window)
+        {
+            if (window is null || _view.Superview is not null)
+                return;
+
+            // A view that is not in a window has a scale of 1. Avalonia gets the scaling from it, so set the scale
+            // of the window. Otherwise the scaling changes when the overlay is shown, after the popup was laid out.
+            var scale = window.Screen.Scale;
+            if (_view.Frame == window.Bounds && _view.ContentScaleFactor == scale)
+                return;
+
+            _view.Frame = window.Bounds;
+            _view.ContentScaleFactor = scale;
+            // Avalonia gets the new size and scaling in LayoutSubviews.
+            _view.SetNeedsLayout();
+            _view.LayoutIfNeeded();
+        }
+
         public void Hide()
         {
             // A press that light-dismissed the last popup is still in progress. A view that leaves the window
@@ -113,6 +151,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             }
 
             _hidePending = false;
+            _hover?.Leave();
             _root.StopRendering();
             _view.RemoveFromSuperview();
         }
