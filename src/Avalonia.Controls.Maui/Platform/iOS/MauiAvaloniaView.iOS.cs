@@ -23,6 +23,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
             _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
+            AvaloniaViewHover.Attach(this, Avalonia.Controls.TopLevel.GetTopLevel(_backgroundBorder));
         }
 
         /// <inheritdoc/>

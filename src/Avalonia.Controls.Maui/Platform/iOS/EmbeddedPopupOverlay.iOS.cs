@@ -69,6 +69,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
 
             _root = (EmbeddableControlRoot)TopLevel.GetTopLevel(AnchorLayer)!;
             EmbeddedPopupOverlayRoot.MakeTransparent(_root);
+            AvaloniaViewHover.Attach(_view, _root);
 
             // A Metal layer that is not in a window never returns its drawables. Rendering it would block
             // the shared render loop, and with it all other Avalonia views. Render only while shown.
