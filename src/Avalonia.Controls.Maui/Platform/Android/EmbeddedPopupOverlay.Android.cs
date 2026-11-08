@@ -57,6 +57,7 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
         private readonly OverlayView _view;
         private PopupWindow? _window;
         private AndroidView? _windowRoot;
+        private bool _hidePending;
 
         private EmbeddedPopupOverlay(Context context)
         {
@@ -81,6 +82,7 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
             if (((EmbeddedPopupHost)host).WindowRoot is not { WindowToken: not null } windowRoot)
                 return;
 
+            _hidePending = false;
             _window ??= CreateWindow();
             if (_window.IsShowing && _windowRoot == windowRoot)
                 return;
@@ -92,8 +94,24 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
 
         public void Hide()
         {
+            // A touch that light-dismissed the last popup is still in progress. A dismissed window does not get
+            // the end of its touches, so Avalonia would keep the pointer pressed and captured, and the next touch
+            // in the overlay would not reach the popup. Hide when the gesture ends.
+            if (_view.IsTouching)
+            {
+                _hidePending = true;
+                return;
+            }
+
+            _hidePending = false;
             _window?.Dismiss();
             _windowRoot = null;
+        }
+
+        private void OnGestureEnded()
+        {
+            if (_hidePending)
+                Hide();
         }
 
         /// <summary>Gets the top-left of <paramref name="view"/> in overlay coordinates, in DIPs.</summary>
@@ -163,21 +181,38 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
         {
             private bool _forwarding;
 
+            /// <summary>Gets a value indicating whether a touch gesture on the overlay is in progress.</summary>
+            public bool IsTouching { get; private set; }
+
             public override bool DispatchTouchEvent(MotionEvent? e)
             {
                 if (e is null)
                     return base.DispatchTouchEvent(e);
 
                 if (e.ActionMasked == MotionEventActions.Down)
+                {
+                    IsTouching = true;
                     _forwarding = !overlay.HitsPopup(e.GetX(), e.GetY());
+                }
 
+                var ended = e.ActionMasked is MotionEventActions.Up or MotionEventActions.Cancel;
+                bool handled;
                 if (!_forwarding)
-                    return base.DispatchTouchEvent(e);
+                    handled = base.DispatchTouchEvent(e);
+                else
+                {
+                    if (ended)
+                        _forwarding = false;
+                    handled = overlay.Forward(e);
+                }
 
-                if (e.ActionMasked is MotionEventActions.Up or MotionEventActions.Cancel)
-                    _forwarding = false;
+                if (ended)
+                {
+                    IsTouching = false;
+                    overlay.OnGestureEnded();
+                }
 
-                return overlay.Forward(e);
+                return handled;
             }
         }
     }

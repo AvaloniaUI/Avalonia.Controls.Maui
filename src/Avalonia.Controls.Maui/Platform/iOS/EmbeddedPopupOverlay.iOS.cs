@@ -2,7 +2,9 @@ using Avalonia.Controls.Embedding;
 using Avalonia.Controls.Maui.Platforms.EmbeddedPopups;
 using Avalonia.Input;
 using Avalonia.VisualTree;
+using System;
 using CoreGraphics;
+using Foundation;
 using UIKit;
 
 namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
@@ -52,6 +54,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
 
         private readonly OverlayView _view;
         private readonly EmbeddableControlRoot _root;
+        private bool _hidePending;
 
         private EmbeddedPopupOverlay()
         {
@@ -85,6 +88,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             if (((EmbeddedPopupHost)host).Window is not { } window)
                 return;
 
+            _hidePending = false;
             if (_view.Superview != window)
             {
                 _view.RemoveFromSuperview();
@@ -99,8 +103,24 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
 
         public void Hide()
         {
+            // A press that light-dismissed the last popup is still in progress. A view that leaves the window
+            // does not get the end of its touches, so Avalonia would keep the pointer pressed and captured,
+            // and the next press in the overlay would not reach the popup. Hide when the touches end.
+            if (_view.HasActiveTouches)
+            {
+                _hidePending = true;
+                return;
+            }
+
+            _hidePending = false;
             _root.StopRendering();
             _view.RemoveFromSuperview();
+        }
+
+        private void OnTouchesEnded()
+        {
+            if (_hidePending && !_view.HasActiveTouches)
+                Hide();
         }
 
         /// <summary>Gets the top-left of <paramref name="view"/> in overlay coordinates, in points.</summary>
@@ -127,9 +147,37 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
 
         private sealed class OverlayView(EmbeddedPopupOverlay overlay) : Avalonia.iOS.AvaloniaView
         {
+            private int _activeTouches;
+
+            public bool HasActiveTouches => _activeTouches > 0;
+
             // Touches that are not over a popup go to the views below the overlay.
             public override UIView? HitTest(CGPoint point, UIEvent? uievent) =>
                 overlay.HitsPopup(point) ? base.HitTest(point, uievent) : null;
+
+            public override void TouchesBegan(NSSet touches, UIEvent? evt)
+            {
+                _activeTouches += (int)touches.Count;
+                base.TouchesBegan(touches, evt);
+            }
+
+            public override void TouchesEnded(NSSet touches, UIEvent? evt)
+            {
+                base.TouchesEnded(touches, evt);
+                EndTouches(touches);
+            }
+
+            public override void TouchesCancelled(NSSet touches, UIEvent? evt)
+            {
+                base.TouchesCancelled(touches, evt);
+                EndTouches(touches);
+            }
+
+            private void EndTouches(NSSet touches)
+            {
+                _activeTouches = Math.Max(0, _activeTouches - (int)touches.Count);
+                overlay.OnTouchesEnded();
+            }
         }
     }
 }
