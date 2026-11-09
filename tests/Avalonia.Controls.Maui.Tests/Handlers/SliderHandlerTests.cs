@@ -152,6 +152,20 @@ public class SliderHandlerTests : HandlerTestBase<MauiSliderHandler, SliderStub>
         Assert.NotNull(brush);
     }
 
+    [AvaloniaFact(DisplayName = "A thumb image that fails to load keeps the thumb color")]
+    public async Task FailedThumbImageKeepsThumbColor()
+    {
+        var slider = new SliderStub
+        {
+            ThumbColor = MauiColors.Red,
+            ThumbImageSource = new Microsoft.Maui.Controls.FileImageSource { File = "missing-thumb.png" }
+        };
+
+        var platformColor = await GetValueAsync(slider, GetThumbColor);
+
+        Assert.Equal(MauiColors.Red, platformColor);
+    }
+
     [AvaloniaFact(DisplayName = "ThumbImageSource accepts vector and scaled images")]
     public async Task ThumbImageSourceAcceptsVectorAndScaledImages()
     {

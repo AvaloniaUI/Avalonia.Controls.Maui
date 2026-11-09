@@ -63,7 +63,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
     protected override void ConnectHandler(PlatformView platformView)
     {
         platformView.PropertyChanged += OnSliderPropertyChanged;
-        _thumbImageLoader = new ImageSourceLoader(platformView, MauiContext!, platformView.UpdateThumbImageSource);
+        _thumbImageLoader = new ImageSourceLoader(platformView, MauiContext!, image => ApplyThumbImage(platformView, image));
         base.ConnectHandler(platformView);
     }
 
@@ -153,11 +153,17 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
                 return;
 
             sh._thumbImageLoader?.SetSource(slider.ThumbImageSource);
-
-            if (slider.ThumbImageSource == null)
-                platformView.UpdateThumbColor(slider);
         }
-    }  
+    }
+
+    // With no image, from a cleared source or a failed load, the thumb shows its color again
+    private void ApplyThumbImage(PlatformView platformView, Avalonia.Media.IImage? image)
+    {
+        platformView.UpdateThumbImageSource(image);
+
+        if (image == null && ((IElementHandler)this).VirtualView is ISlider slider)
+            platformView.UpdateThumbColor(slider);
+    }
     
     private void OnSliderPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
