@@ -294,7 +294,16 @@ The `Avalonia.Controls.Maui.targets` file runs three MSBuild targets that conver
 
 ### Images
 
-`ConvertMauiImagesToAvaloniaResources` runs after Resizetizer has processed the declared `MauiImage` items. It selects the appropriate resolution output for each platform (for example, `drawable-mdpi` on Android and `scale-100` on Windows) and converts those files into `AvaloniaResource` items with a link path of `Images/<filename>`. The result is a single embedded image per platform at the base resolution, resolved at runtime by `AvaloniaFileImageSourceService`.
+`ConvertMauiImagesToAvaloniaResources` runs after Resizetizer has processed the declared `MauiImage` items. It converts Resizetizer's outputs into `AvaloniaResource` items under `Images/`, named as `AvaloniaFileImageSourceService` looks them up at runtime:
+
+| Platform | 1× | `@2x` | `@3x` | `@4x` |
+|---|---|---|---|---|
+| Android | `drawable-mdpi` | `drawable-xhdpi` | `drawable-xxhdpi` | |
+| iOS, Mac Catalyst | base file | `@2x` file | `@3x` file | |
+| Windows | `.scale-100` | `.scale-200` | | |
+| Desktop and browser | copied images | | | resized images |
+
+On desktop and in the browser, Resizetizer uses its `wpf` profile, which renders a resized image (an SVG, or an image with `BaseSize` or `Resize="true"`) once, at 4× its base size. The service loads that file as a `ScaledBitmapImage` with a scale of 4, so it has its base size in device-independent units and stays sharp up to a display scale of 4. An image that Resizetizer only copies keeps its own name and size.
 
 The build order is:
 

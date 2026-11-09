@@ -21,6 +21,8 @@ namespace Avalonia.Controls.Maui.Services;
 /// </remarks>
 public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IFileImageSource>
 {
+    private const int DesktopResizetizerScale = 4;
+
     private readonly ILogger<AvaloniaFileImageSourceService>? _logger;
 
     /// <summary>
@@ -104,6 +106,13 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             {
                 return Task.FromResult<IImageSourceServiceResult<IImage>?>(
                     new ImageSourceServiceResult(bitmap, resolutionDependent));
+            }
+
+            // On desktop, Resizetizer renders a resized MauiImage once, at 4x its base size
+            if (TryLoad(GetVariantFileName(fileName, DesktopResizetizerScale)) is { } desktop)
+            {
+                return Task.FromResult<IImageSourceServiceResult<IImage>?>(
+                    new ImageSourceServiceResult(new ScaledBitmapImage(desktop, DesktopResizetizerScale), resolutionDependent));
             }
 
             _logger?.LogWarning($"Could not find image: {fileName}");

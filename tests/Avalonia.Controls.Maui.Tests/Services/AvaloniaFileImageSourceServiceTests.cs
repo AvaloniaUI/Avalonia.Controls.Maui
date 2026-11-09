@@ -65,6 +65,19 @@ public sealed class AvaloniaFileImageSourceServiceTests : IDisposable
         Assert.True(at3!.IsResolutionDependent);
     }
 
+    [AvaloniaTheory(DisplayName = "A desktop Resizetizer image loads at a quarter of its pixel size")]
+    [InlineData(1f)]
+    [InlineData(2f)]
+    public async Task DesktopResizetizerImageLoadsAtBaseSize(float scale)
+    {
+        // Resizetizer's desktop output is a single file at 4x, embedded as icon@4x.png
+        var file = CreateImages(4);
+
+        using var result = await new AvaloniaFileImageSourceService().GetImageAsync(new FileImageSource { File = file }, scale);
+
+        AssertVariant(result, 4);
+    }
+
     [AvaloniaFact(DisplayName = "An image shows the whole of a variant at the variant's scale")]
     public async Task ImageShowsWholeVariant()
     {
