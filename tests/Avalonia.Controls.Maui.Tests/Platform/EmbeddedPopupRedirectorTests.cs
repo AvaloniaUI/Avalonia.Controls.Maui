@@ -820,6 +820,46 @@ public class EmbeddedPopupRedirectorTests
         Assert.False(outer.IsOpen);
     }
 
+    [AvaloniaFact(DisplayName = "Light dismiss keeps the parent of a pressed popup that is not in a visual tree")]
+    public void Light_Dismiss_Keeps_Parent_Of_Pressed_Popup_Outside_Visual_Tree()
+    {
+        FakeOverlay[] overlays = [new(), new(), new()];
+        var target = new Button { Width = 100, Height = 30 };
+        var content = new Border { Width = 50, Height = 100 };
+
+        // The popup of a flyout has its target as logical parent, and no visual parent.
+        var flyout = new Flyout { Content = content };
+        var nestedTarget = new Button { Width = 50, Height = 30, Flyout = flyout };
+        var outer = CreatePopup(target);
+        outer.IsLightDismissEnabled = true;
+        outer.Child = new StackPanel { Children = { nestedTarget } };
+        var host = new Window { Width = 200, Height = 100, Content = new StackPanel { Children = { target, outer } } };
+
+        EmbeddedPopupRedirector.Register(host, new OverlayPerPopupHost(overlays));
+        foreach (var overlay in overlays)
+            EmbeddedPopupRedirector.Register(overlay.Window, new OverlayPerPopupHost(overlays));
+        host.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        outer.Open();
+        Dispatcher.UIThread.RunJobs();
+        flyout.ShowAt(nestedTarget);
+        Dispatcher.UIThread.RunJobs();
+        var nested = Assert.IsType<Popup>(content.FindAncestorOfType<OverlayPopupHost>()?.Parent);
+        Assert.Null(TopLevel.GetTopLevel(nested));
+        Assert.Same(overlays[1].Window, TopLevel.GetTopLevel(content));
+
+        // A press in the flyout keeps both.
+        Assert.False(EmbeddedPopupRedirector.LightDismiss(overlays, overlays[1].Window));
+        Assert.True(flyout.IsOpen);
+        Assert.True(outer.IsOpen);
+
+        // A press in the outer popup closes the flyout.
+        Assert.True(EmbeddedPopupRedirector.LightDismiss(overlays, overlays[0].Window));
+        Assert.False(flyout.IsOpen);
+        Assert.True(outer.IsOpen);
+    }
+
     [AvaloniaFact(DisplayName = "Closed popups move out of an overlay that is removed, and open popups stay")]
     public void Closed_Popups_Move_Out_Of_Removed_Overlay()
     {

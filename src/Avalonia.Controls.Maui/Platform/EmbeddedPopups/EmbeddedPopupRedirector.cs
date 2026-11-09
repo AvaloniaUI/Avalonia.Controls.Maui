@@ -148,7 +148,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 foreach (var popup in popups)
                 {
                     if (popup.Child is { } child && TopLevel.GetTopLevel(child) == topLevel
-                        && TopLevel.GetTopLevel(popup) is { } owner)
+                        && GetOwner(popup) is { } owner)
                         pending.Push(owner);
                 }
             }
@@ -166,6 +166,21 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             }
 
             return handled;
+        }
+
+        /// <summary>Gets the top level that <paramref name="popup"/> was opened from.</summary>
+        /// <remarks>
+        /// A popup does not need a visual parent, for example the popup of a flyout, whose parent is only logical.
+        /// A redirected popup targets its anchor in the overlay, so its host is tracked. Otherwise its target is in
+        /// the top level that it was opened from.
+        /// </remarks>
+        private static TopLevel? GetOwner(Popup popup)
+        {
+            if (s_popups.TryGetValue(popup, out var state) && state.IsOpen && state.HostTopLevel is { } host)
+                return host;
+
+            return (popup.PlacementTarget is { } target ? TopLevel.GetTopLevel(target) : null)
+                ?? TopLevel.GetTopLevel(popup);
         }
 
         /// <summary>
@@ -365,7 +380,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 
                 if (host.MoveTracker.HasMoved(host.Host.GetOriginInOverlay()))
                 {
-                    if (resizedAt is not { } resized || time - resized > s_resizeMoveDelay)
+                    if (resizedAt is not { } resized || time - resized > ResizeMoveDelay)
                         CloseLightDismissPopups(topLevel);
                     OnHostLayoutChanged(topLevel);
                 }
@@ -377,7 +392,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
         }
 
         /// <summary>How long after a window resize a move of a host counts as caused by the resize.</summary>
-        private static readonly TimeSpan s_resizeMoveDelay = TimeSpan.FromMilliseconds(250);
+        internal static readonly TimeSpan ResizeMoveDelay = TimeSpan.FromMilliseconds(250);
 
         private static bool HasOpenPopups(TopLevel topLevel)
         {

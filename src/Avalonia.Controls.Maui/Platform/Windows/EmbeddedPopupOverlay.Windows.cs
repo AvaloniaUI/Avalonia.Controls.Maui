@@ -27,6 +27,8 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
         private readonly FrameworkElement _view;
         private readonly EmbeddedPopupHostMoveTracker _moveTracker = new();
         private TopLevel? _topLevel;
+        private global::Windows.Foundation.Size? _windowSize;
+        private long _resizedAt = long.MinValue / 2;
 
         private EmbeddedPopupHost(FrameworkElement view)
         {
@@ -58,18 +60,29 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
         /// <remarks>
         /// The overlays cover only the open popups, so the page below can scroll while a popup is open. A
         /// light-dismiss popup closes when its target moves, like a press outside of it. Other popups follow it.
+        /// A window resize can move the host too, for example when it is centered. Then the popups only move,
+        /// like after a layout of the host.
         /// </remarks>
         private void OnLayoutUpdated()
         {
             if (_topLevel is null)
                 return;
 
+            // The host can move a few layout passes after the window resized.
+            var windowSize = _view.XamlRoot?.Size;
+            if (windowSize != _windowSize)
+            {
+                _windowSize = windowSize;
+                _resizedAt = Environment.TickCount64;
+            }
+
             if (!EmbeddedPopupRedirector.HasOpenLightDismissPopups(_topLevel))
                 _moveTracker.Reset();
             else if (_moveTracker.HasMoved(GetOriginInOverlay()))
             {
                 _moveTracker.Reset();
-                EmbeddedPopupRedirector.CloseLightDismissPopups(_topLevel);
+                if (Environment.TickCount64 - _resizedAt > EmbeddedPopupRedirector.ResizeMoveDelay.TotalMilliseconds)
+                    EmbeddedPopupRedirector.CloseLightDismissPopups(_topLevel);
             }
 
             EmbeddedPopupRedirector.OnHostLayoutChanged(_topLevel);
