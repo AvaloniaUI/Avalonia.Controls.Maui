@@ -134,16 +134,6 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             }
         }
 
-        /// <summary>Gets the open popups of <paramref name="overlay"/>.</summary>
-        public static IEnumerable<Popup> GetOpenPopups(IEmbeddedPopupOverlay overlay)
-        {
-            foreach (var state in s_open)
-            {
-                if (state.Overlay == overlay)
-                    yield return state.Popup;
-            }
-        }
-
         /// <summary>
         /// Moves the open popups of <paramref name="topLevel"/> after its host view moved or resized.
         /// </summary>

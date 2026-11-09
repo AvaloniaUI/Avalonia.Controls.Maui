@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls.Embedding;
 using Avalonia.Controls.Maui.Platforms.EmbeddedPopups;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Input.Raw;
 using Avalonia.VisualTree;
@@ -258,19 +259,30 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
         }
 
         /// <summary>Clips the overlay to the union of the bounds of its open popups.</summary>
+        /// <remarks>
+        /// The popup hosts are read from the layers of the overlay, so that popups opened from a popup, such as the
+        /// drop-down of a ComboBox in a flyout, are included. Their targets are in the overlay, so they are not
+        /// redirected.
+        /// </remarks>
         private void UpdateClip()
         {
-            if (!_isShown || TopLevel.GetTopLevel(AnchorLayer) is not { } root)
+            if (!_isShown
+                || TopLevel.GetTopLevel(AnchorLayer) is not { } root
+                || AnchorLayer.FindAncestorOfType<VisualLayerManager>() is not { } layers)
                 return;
 
             Rect? bounds = null;
-            foreach (var popup in EmbeddedPopupRedirector.GetOpenPopups(this))
+            foreach (var layer in layers.GetVisualChildren())
             {
-                if (popup.Child is not { } child || child.TranslatePoint(default, root) is not { } origin)
-                    continue;
+                foreach (var child in layer.GetVisualChildren())
+                {
+                    if (child is not OverlayPopupHost { IsVisible: true } host
+                        || host.TranslatePoint(default, root) is not { } origin)
+                        continue;
 
-                var rect = new Rect(origin, child.Bounds.Size);
-                bounds = bounds is { } b ? b.Union(rect) : rect;
+                    var rect = new Rect(origin, host.Bounds.Size);
+                    bounds = bounds is { } b ? b.Union(rect) : rect;
+                }
             }
 
             var clip = bounds is { } r ? new global::Windows.Foundation.Rect(r.X, r.Y, r.Width, r.Height) : default;
