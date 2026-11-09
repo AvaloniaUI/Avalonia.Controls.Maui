@@ -130,8 +130,13 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
 
         var widthIsExplicit = Dimension.IsExplicitSet(view.Width);
         var heightIsExplicit = Dimension.IsExplicitSet(view.Height);
-        widthConstraint = widthIsExplicit ? view.Width : Math.Min(widthConstraint, view.MaximumWidth);
-        heightConstraint = heightIsExplicit ? view.Height : Math.Min(heightConstraint, view.MaximumHeight);
+        // A request is clamped before fitting, as Android does, so the other axis follows the clamped size
+        widthConstraint = widthIsExplicit
+            ? Math.Min(Math.Max(view.Width, Dimension.ResolveMinimum(view.MinimumWidth)), view.MaximumWidth)
+            : Math.Min(widthConstraint, view.MaximumWidth);
+        heightConstraint = heightIsExplicit
+            ? Math.Min(Math.Max(view.Height, Dimension.ResolveMinimum(view.MinimumHeight)), view.MaximumHeight)
+            : Math.Min(heightConstraint, view.MaximumHeight);
 
         var size = FitImage(natural, widthConstraint, heightConstraint, view.Aspect, widthIsExplicit, heightIsExplicit);
 

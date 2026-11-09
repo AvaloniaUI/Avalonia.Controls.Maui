@@ -6,6 +6,7 @@ using Avalonia.Media;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Primitives;
 using MauiCornerRadius = Microsoft.Maui.CornerRadius;
 using MauiImageHandler = Avalonia.Controls.Maui.Handlers.ImageHandler;
 using MauiIImage = Microsoft.Maui.IImage;
@@ -333,8 +334,19 @@ public partial class ImageHandlerTests : HandlerTestBase<MauiImageHandler, Image
     [InlineData(double.NaN, double.NaN, 16, double.PositiveInfinity, 16, 12)]
     [InlineData(64, double.NaN, 1000, double.PositiveInfinity, 64, 48)]
     [InlineData(64, 64, 1000, double.PositiveInfinity, 64, 64)]
-    public async Task UnsizedImageIsNotEnlarged(double width, double height, double widthConstraint, double heightConstraint,
-        double expectedWidth, double expectedHeight)
+    public Task UnsizedImageIsNotEnlarged(double width, double height, double widthConstraint, double heightConstraint,
+        double expectedWidth, double expectedHeight) =>
+        AssertDesiredSize(width, height, Dimension.Maximum, Dimension.Maximum, widthConstraint, heightConstraint, expectedWidth, expectedHeight);
+
+    [AvaloniaTheory(DisplayName = "A size request is clamped to its maximum before the image is fitted")]
+    [InlineData(64, double.NaN, 32, Dimension.Maximum, 32, 24)]
+    [InlineData(double.NaN, 48, Dimension.Maximum, 12, 16, 12)]
+    public Task RequestIsClampedBeforeFitting(double width, double height, double maximumWidth, double maximumHeight,
+        double expectedWidth, double expectedHeight) =>
+        AssertDesiredSize(width, height, maximumWidth, maximumHeight, 1000, double.PositiveInfinity, expectedWidth, expectedHeight);
+
+    async Task AssertDesiredSize(double width, double height, double maximumWidth, double maximumHeight,
+        double widthConstraint, double heightConstraint, double expectedWidth, double expectedHeight)
     {
         var directory = Path.Combine(Path.GetTempPath(), "Avalonia.Controls.Maui.Tests", $"image-size-{Guid.NewGuid():N}");
         Directory.CreateDirectory(directory);
@@ -343,7 +355,14 @@ public partial class ImageHandlerTests : HandlerTestBase<MauiImageHandler, Image
             var file = Path.Combine(directory, "icon.png");
             await InvokeOnMainThreadAsync(() => SavePng(file, new PixelSize(32, 24)));
 
-            var image = new ImageStub { Source = new FileImageSource { File = file }, Width = width, Height = height };
+            var image = new ImageStub
+            {
+                Source = new FileImageSource { File = file },
+                Width = width,
+                Height = height,
+                MaximumWidth = maximumWidth,
+                MaximumHeight = maximumHeight
+            };
             var handler = await CreateHandlerAsync(image);
 
             var desired = await InvokeOnMainThreadAsync(() =>
