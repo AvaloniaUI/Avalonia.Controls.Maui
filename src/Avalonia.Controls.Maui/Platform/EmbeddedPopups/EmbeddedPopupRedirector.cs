@@ -226,8 +226,8 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 
         /// <summary>Closes the open light-dismiss popups of <paramref name="topLevel"/>.</summary>
         /// <remarks>
-        /// This includes the popups that were opened from its popups, such as the drop-down of a ComboBox in a
-        /// popup that is not light-dismiss. They are not redirected, so they are not tracked as open.
+        /// This includes the popups that were opened from its popups, at any depth, such as the drop-down of a
+        /// ComboBox in a popup that is not light-dismiss.
         /// </remarks>
         public static void CloseLightDismissPopups(TopLevel topLevel)
         {
@@ -236,22 +236,38 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 popup.Close();
         }
 
+        /// <summary>
+        /// Gets the open light-dismiss popups of <paramref name="topLevel"/>, and of the popups opened from its popups.
+        /// </summary>
+        /// <remarks>
+        /// Where each popup has its own overlay (Windows), the overlays are hosts too, so a popup opened from a popup
+        /// is redirected, and is owned by the top level of the overlay that shows the popup it was opened from. Where
+        /// the popups share an overlay (Android, iOS), the popups opened from a popup are not redirected, and are
+        /// found in the overlay instead.
+        /// </remarks>
         private static List<Popup> GetOpenLightDismissPopups(TopLevel topLevel)
         {
             var popups = new List<Popup>();
-            foreach (var state in s_open)
+            var owners = new List<TopLevel> { topLevel };
+            for (var i = 0; i < owners.Count; i++)
             {
-                if (state.HostTopLevel != topLevel)
-                    continue;
-
-                if (state.Popup.IsLightDismissEnabled)
-                    popups.Add(state.Popup);
-                if (state.Overlay is { } overlay)
+                foreach (var state in s_open)
                 {
-                    foreach (var (_, nested) in state.GetNestedPopups(overlay))
+                    if (state.HostTopLevel != owners[i])
+                        continue;
+
+                    if (state.Popup.IsLightDismissEnabled && !popups.Contains(state.Popup))
+                        popups.Add(state.Popup);
+                    if (state.Popup.Child is { } child && TopLevel.GetTopLevel(child) is { } shownIn
+                        && !owners.Contains(shownIn))
+                        owners.Add(shownIn);
+                    if (state.Overlay is { } overlay)
                     {
-                        if (nested.IsOpen && nested.IsLightDismissEnabled && !popups.Contains(nested))
-                            popups.Add(nested);
+                        foreach (var (_, nested) in state.GetNestedPopups(overlay))
+                        {
+                            if (nested.IsOpen && nested.IsLightDismissEnabled && !popups.Contains(nested))
+                                popups.Add(nested);
+                        }
                     }
                 }
             }

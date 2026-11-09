@@ -22,6 +22,7 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
             Content = _backgroundBorder;
             _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
             AvaloniaPanelFocus.Attach(this);
+            AvaloniaPanelReload.Attach(this, _backgroundBorder);
         }
 
         /// <inheritdoc/>

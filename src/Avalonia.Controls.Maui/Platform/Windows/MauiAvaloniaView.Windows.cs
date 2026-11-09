@@ -25,6 +25,7 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
             Content = _backgroundBorder;
             _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
             AvaloniaPanelFocus.Attach(this);
+            AvaloniaPanelReload.Attach(this, _backgroundBorder);
 
             // The panel creates its top level when it is loaded, during a WinUI layout pass after MAUI first
             // measured the content. The content gets its template and styles then, so it is measured again after.

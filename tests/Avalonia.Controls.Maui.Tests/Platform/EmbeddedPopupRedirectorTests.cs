@@ -864,6 +864,40 @@ public class EmbeddedPopupRedirectorTests
         Assert.False(outer.IsOpen);
     }
 
+    [AvaloniaFact(DisplayName = "Light-dismiss popups opened in their own overlay from a host's popup close with the host's")]
+    public void Light_Dismiss_Popups_In_Own_Overlay_Close_With_Host()
+    {
+        FakeOverlay[] overlays = [new(), new(), new()];
+        var target = new Button { Width = 100, Height = 30 };
+        var nestedTarget = new Button { Width = 50, Height = 30 };
+        var nested = CreatePopup(nestedTarget);
+        var outer = CreatePopup(target);
+        nested.IsLightDismissEnabled = true;
+        outer.IsLightDismissEnabled = false;
+        outer.Child = new StackPanel { Children = { nestedTarget, nested } };
+        var host = new Window { Width = 200, Height = 100, Content = new StackPanel { Children = { target, outer } } };
+
+        // On Windows the overlays are hosts too, so that popups opened from their popups get their own overlay.
+        EmbeddedPopupRedirector.Register(host, new OverlayPerPopupHost(overlays));
+        foreach (var overlay in overlays)
+            EmbeddedPopupRedirector.Register(overlay.Window, new OverlayPerPopupHost(overlays));
+        host.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        outer.Open();
+        Dispatcher.UIThread.RunJobs();
+        nested.Open();
+        Assert.Same(overlays[1].Window, TopLevel.GetTopLevel(nested.Child));
+
+        // For example, the host moved because a native scroll view scrolled.
+        Assert.True(EmbeddedPopupRedirector.HasOpenLightDismissPopups(host));
+        EmbeddedPopupRedirector.CloseLightDismissPopups(host);
+
+        Assert.False(nested.IsOpen);
+        Assert.True(outer.IsOpen);
+        Assert.False(EmbeddedPopupRedirector.HasOpenLightDismissPopups(host));
+    }
+
     [AvaloniaFact(DisplayName = "Light dismiss keeps the parent of a pressed popup that is not in a visual tree")]
     public void Light_Dismiss_Keeps_Parent_Of_Pressed_Popup_Outside_Visual_Tree()
     {
