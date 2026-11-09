@@ -1,6 +1,11 @@
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Avalonia.Controls.Embedding;
 using Avalonia.Controls.Maui.Platforms.EmbeddedPopups;
+using Avalonia.Input;
+using Avalonia.Input.Raw;
+using Avalonia.VisualTree;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
@@ -108,7 +113,10 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
         private readonly RectangleGeometry _clip = new();
         private readonly WinUIPopup? _popup;
         private readonly XamlRoot? _xamlRoot;
+        private readonly HashSet<uint> _pressedPointers = new();
+        private readonly MouseDevice _leaveDevice = CreateMouseDevice(null);
         private bool _isShown;
+        private bool _hidePending;
 
         private EmbeddedPopupOverlay(XamlRoot? xamlRoot)
         {
@@ -128,6 +136,11 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
                 HorizontalAlignment = HorizontalAlignment.Left,
                 VerticalAlignment = VerticalAlignment.Top,
             };
+            // The panel handles pointer input, so listen for handled events too.
+            _panel.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnPanelPointerPressed), true);
+            _panel.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler(OnPanelPointerEnded), true);
+            _panel.AddHandler(UIElement.PointerCanceledEvent, new PointerEventHandler(OnPanelPointerEnded), true);
+            _panel.AddHandler(UIElement.PointerCaptureLostEvent, new PointerEventHandler(OnPanelPointerEnded), true);
             Hide();
 
             if (xamlRoot is null)
@@ -186,6 +199,7 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
 
             _popup.IsOpen = true;
             _isShown = true;
+            _hidePending = false;
             _panel.Opacity = 1;
             _panel.IsHitTestVisible = true;
             UpdateClip();
@@ -195,8 +209,26 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
         {
             _isShown = false;
             _panel.Opacity = 0;
-            _panel.IsHitTestVisible = false;
             _clip.Rect = default;
+
+            // A press that light-dismissed the last popup is still in progress, for example a press between two
+            // popups. The panel captured the pointer, and may not get the end of the press once it is no longer
+            // hit-testable, so Avalonia would keep the pointer pressed and captured. The empty clip already lets
+            // new input through to the window. Finish hiding when the press ends.
+            if (_pressedPointers.Count > 0)
+            {
+                _hidePending = true;
+                return;
+            }
+
+            _hidePending = false;
+            _panel.IsHitTestVisible = false;
+
+            // After a click in a popup, Avalonia keeps the pointer over the overlay until WinUI reports that it
+            // left. Until then, each render of the overlay updates the tooltip service with the control under that
+            // old position, which closes the tooltips of the embedded views. Hide can run while Avalonia handles
+            // the click, so send the leave after it.
+            Avalonia.Threading.Dispatcher.UIThread.Post(SendPointerLeave);
         }
 
         private void OnRootCreated(EmbeddableControlRoot? root)
@@ -205,6 +237,12 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
                 return;
 
             EmbeddedPopupOverlayRoot.MakeTransparent(root);
+
+            // A transparent brush keeps the root hit-testable, so Avalonia tracks the pointer over the root itself.
+            // With no background, the pointer is over nothing once the popup under it closes, and Avalonia can no
+            // longer clear IsPointerOver of the root. Its renders would then close the tooltips of embedded views.
+            // The clip of the panel still sends input outside the popups to the window.
+            root.Background = Avalonia.Media.Brushes.Transparent;
 
             // Popups are positioned and sized during Avalonia layout passes.
             root.LayoutUpdated += (_, _) => UpdateClip();
@@ -239,6 +277,51 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
             if (_clip.Rect != clip)
                 _clip.Rect = clip;
         }
+
+        private void OnPanelPointerPressed(object sender, PointerRoutedEventArgs e) =>
+            _pressedPointers.Add(e.Pointer.PointerId);
+
+        private void OnPanelPointerEnded(object sender, PointerRoutedEventArgs e)
+        {
+            if (_pressedPointers.Remove(e.Pointer.PointerId) && _pressedPointers.Count == 0 && _hidePending)
+                Hide();
+        }
+
+        /// <summary>Tells Avalonia that the pointer is no longer over the overlay.</summary>
+        private void SendPointerLeave()
+        {
+            if (_isShown
+                || TopLevel.GetTopLevel(AnchorLayer) is not { PlatformImpl: { } impl } root
+                || GetInput(impl) is not { } input
+                || root.GetPresentationSource() is not IInputRoot inputRoot)
+                return;
+
+            var timestamp = (ulong)Environment.TickCount64;
+            input(CreatePointerEvent(
+                _leaveDevice,
+                timestamp,
+                inputRoot,
+                RawPointerEventType.LeaveWindow,
+                default,
+                RawInputModifiers.None));
+        }
+
+        // The input types of Avalonia are not in its reference assemblies.
+        [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+        private static extern MouseDevice CreateMouseDevice(Avalonia.Input.Pointer? pointer);
+
+        [UnsafeAccessor(UnsafeAccessorKind.Constructor)]
+        private static extern RawPointerEventArgs CreatePointerEvent(
+            IInputDevice device,
+            ulong timestamp,
+            IInputRoot root,
+            RawPointerEventType type,
+            Point position,
+            RawInputModifiers inputModifiers);
+
+        [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_Input")]
+        private static extern Action<RawInputEventArgs>? GetInput(
+            [UnsafeAccessorType("Avalonia.Win32.SwapChainTopLevelImpl, Avalonia.Win32")] object topLevelImpl);
 
         private void OnWindowPointerPressed(object sender, PointerRoutedEventArgs e)
         {

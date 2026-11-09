@@ -21,6 +21,7 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
             Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
             _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
+            AvaloniaPanelFocus.Attach(this);
         }
 
         /// <inheritdoc/>

@@ -24,6 +24,7 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
             Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
             _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
+            AvaloniaPanelFocus.Attach(this);
 
             // The panel creates its top level when it is loaded, after MAUI first measured the content.
             // Without a top level the content has no template or styles yet, so it measured too small.
