@@ -107,6 +107,12 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     /// </remarks>
     public override Microsoft.Maui.Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
     {
+        // NaN means unconstrained, as in the base measure
+        if (double.IsNaN(widthConstraint))
+            widthConstraint = double.PositiveInfinity;
+        if (double.IsNaN(heightConstraint))
+            heightConstraint = double.PositiveInfinity;
+
         var desired = base.GetDesiredSize(widthConstraint, heightConstraint);
 
         var dispatcher = PlatformViewOrNull?.Dispatcher;

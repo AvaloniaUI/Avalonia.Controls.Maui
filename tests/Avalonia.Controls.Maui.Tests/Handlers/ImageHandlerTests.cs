@@ -334,6 +334,7 @@ public partial class ImageHandlerTests : HandlerTestBase<MauiImageHandler, Image
     [InlineData(double.NaN, double.NaN, 16, double.PositiveInfinity, 16, 12)]
     [InlineData(64, double.NaN, 1000, double.PositiveInfinity, 64, 48)]
     [InlineData(64, 64, 1000, double.PositiveInfinity, 64, 64)]
+    [InlineData(double.NaN, double.NaN, double.NaN, double.NaN, 32, 24)]
     public Task UnsizedImageIsNotEnlarged(double width, double height, double widthConstraint, double heightConstraint,
         double expectedWidth, double expectedHeight) =>
         AssertDesiredSize(width, height, Dimension.Maximum, Dimension.Maximum, widthConstraint, heightConstraint, expectedWidth, expectedHeight);
