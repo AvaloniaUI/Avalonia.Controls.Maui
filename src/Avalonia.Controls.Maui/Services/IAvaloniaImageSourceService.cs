@@ -1,7 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
+using Avalonia.Media;
 using Microsoft.Maui;
+using IImage = Avalonia.Media.IImage;
 
 namespace Avalonia.Controls.Maui.Services;
 
@@ -11,13 +12,14 @@ namespace Avalonia.Controls.Maui.Services;
 public interface IAvaloniaImageSourceService : IImageSourceService
 {
     /// <summary>
-    /// Gets an Avalonia Bitmap from the image source.
+    /// Gets an Avalonia image from the image source: a <see cref="Avalonia.Media.Imaging.Bitmap"/>
+    /// for bitmap sources, or a vector image such as a <see cref="DrawingImage"/>.
     /// On iOS/MacCatalyst, this hides the platform-specific GetImageAsync.
     /// </summary>
 #if IOS || MACCATALYST
-    new Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    new Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
 #else
-    Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
 #endif
         IImageSource imageSource,
         float scale = 1,

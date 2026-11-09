@@ -95,12 +95,12 @@ public partial class MenuFlyoutItemHandler : ElementHandler<IMenuFlyoutItem, Pla
             if (serviceSource is IAvaloniaImageSourceService service)
             {
                 var result = await service.GetImageAsync(view.Source, 1.0f);
-                if (result?.Value is global::Avalonia.Media.Imaging.Bitmap bitmap)
+                if (result?.Value is { } icon)
                 {
                     // Create an Image control to display as the icon
                     var iconImage = new global::Avalonia.Controls.Image
                     {
-                        Source = bitmap,
+                        Source = icon,
                         Width = 16,
                         Height = 16
                     };

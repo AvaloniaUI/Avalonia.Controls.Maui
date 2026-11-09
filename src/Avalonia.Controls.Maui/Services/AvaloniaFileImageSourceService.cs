@@ -3,10 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
+using IImage = Avalonia.Media.IImage;
 
 namespace Avalonia.Controls.Maui.Services;
 
@@ -44,10 +46,10 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
     /// <param name="scale">The display scale factor applied during image loading.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
     /// if the source is not a file image source.
     /// </returns>
-    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
@@ -57,7 +59,7 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             return GetImageAsync(fileImageSource, scale, cancellationToken);
         }
 
-        return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+        return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
     }
 
     /// <summary>
@@ -67,16 +69,16 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
     /// <param name="scale">The display scale factor applied during image loading.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
     /// if the file could not be found.
     /// </returns>
-    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IFileImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
     {
         if (imageSource == null || string.IsNullOrEmpty(imageSource.File))
-            return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+            return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
 
         try
         {
@@ -87,7 +89,7 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             if (TryLoadFromAvaloniaResource(fileName, out bitmap) && bitmap != null)
             {
                 _logger?.LogDebug($"Loaded image from Avalonia resource: {fileName}");
-                return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(
+                return Task.FromResult<IImageSourceServiceResult<IImage>?>(
                     new ImageSourceServiceResult(bitmap));
             }
 
@@ -97,12 +99,12 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             {
                 bitmap = new Bitmap(filePath);
                 _logger?.LogDebug($"Loaded image from file: {filePath}");
-                return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(
+                return Task.FromResult<IImageSourceServiceResult<IImage>?>(
                     new ImageSourceServiceResult(bitmap));
             }
 
             _logger?.LogWarning($"Could not find image: {fileName}");
-            return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+            return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
         }
         catch (Exception ex)
         {
@@ -128,57 +130,5 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             _logger?.LogDebug(ex, $"Resource URI resolved but failed to load bitmap: {uri}");
             return false;
         }
-    }
-}
-
-/// <summary>
-/// Wraps an Avalonia <see cref="Bitmap"/> as an <see cref="IImageSourceServiceResult{Bitmap}"/>.
-/// </summary>
-/// <remarks>
-/// This type manages the lifetime of the bitmap and an optional disposal action, ensuring
-/// resources are released when the result is no longer needed.
-/// </remarks>
-public class ImageSourceServiceResult : IImageSourceServiceResult<Bitmap>
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ImageSourceServiceResult"/> class.
-    /// </summary>
-    /// <param name="value">The loaded <see cref="Bitmap"/> instance.</param>
-    /// <param name="resolutionDependent">Indicates whether the image varies with display resolution.</param>
-    /// <param name="dispose">An optional callback invoked during disposal for additional cleanup.</param>
-    public ImageSourceServiceResult(Bitmap value, bool resolutionDependent = false, Action? dispose = null)
-    {
-        Value = value;
-        IsResolutionDependent = resolutionDependent;
-        DisposeAction = dispose;
-    }
-
-    /// <summary>
-    /// Gets the loaded <see cref="Bitmap"/> image.
-    /// </summary>
-    public Bitmap Value { get; }
-
-    /// <summary>
-    /// Gets a value indicating whether the image is resolution-dependent.
-    /// </summary>
-    public bool IsResolutionDependent { get; }
-    private Action? DisposeAction { get; }
-
-    /// <summary>
-    /// Gets a value indicating whether this result has been disposed.
-    /// </summary>
-    public bool IsDisposed { get; private set; }
-
-    /// <summary>
-    /// Disposes the bitmap and invokes any additional cleanup action.
-    /// </summary>
-    public void Dispose()
-    {
-        if (IsDisposed)
-            return;
-
-        IsDisposed = true;
-        DisposeAction?.Invoke();
-        Value?.Dispose();
     }
 }

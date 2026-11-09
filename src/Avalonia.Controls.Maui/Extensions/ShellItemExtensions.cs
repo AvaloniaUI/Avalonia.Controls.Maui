@@ -198,10 +198,9 @@ public static class ShellItemExtensions
                 var result = await avaloniaService.GetImageAsync(iconSource);
                 if (result?.Value != null)
                 {
-                    iconBorder.OpacityMask = new Avalonia.Media.ImageBrush(result.Value)
-                    {
-                        Stretch = Avalonia.Media.Stretch.Uniform
-                    };
+                    var mask = ImageBrushes.Create(result.Value);
+                    mask.Stretch = Avalonia.Media.Stretch.Uniform;
+                    iconBorder.OpacityMask = mask;
                 }
             }
         }

@@ -1,5 +1,4 @@
 using Avalonia.Controls.Maui.Services;
-using Avalonia.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -38,21 +37,13 @@ public static class PageExtensions
                         {
                             var result = task.Result;
                             
-                            Bitmap? bitmap = null;
-                            if (result is IImageSourceServiceResult<Bitmap> bitmapResult)
-                            {
-                                bitmap = bitmapResult.Value;
-                            }
-                            
-                            if (bitmap != null)
+                            if (result is IImageSourceServiceResult<Media.IImage> { Value: { } image })
                             {
                                 await platformView.Dispatcher.InvokeAsync(() =>
                                 {
-                                    platformView.Background = new global::Avalonia.Media.ImageBrush
-                                    {
-                                        Source = bitmap,
-                                        Stretch = Media.Stretch.Fill
-                                    };
+                                    var brush = ImageBrushes.Create(image);
+                                    brush.Stretch = Media.Stretch.Fill;
+                                    platformView.Background = brush;
                                 });
                             }
                         }

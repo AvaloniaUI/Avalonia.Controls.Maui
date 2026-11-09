@@ -2,7 +2,6 @@ using Avalonia.Controls.Maui.Controls;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Services;
 using Avalonia.Layout;
-using Avalonia.Media.Imaging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
@@ -254,7 +253,7 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
 
             var result = await avaloniaService.GetImageAsync(imageSource);
 
-            if (result is IImageSourceServiceResult<Bitmap> bitmapResult)
+            if (result?.Value is { } icon)
             {
                 var panel = new StackPanel
                 {
@@ -264,7 +263,7 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
 
                 panel.Children.Add(new AvaloniaImage
                 {
-                    Source = bitmapResult.Value,
+                    Source = icon,
                     Width = 20,
                     Height = 20,
                     VerticalAlignment = VerticalAlignment.Center

@@ -447,9 +447,9 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
                 if (serviceSource is IAvaloniaImageSourceService avaloniaService)
                 {
                     var result = await avaloniaService.GetImageAsync(imageSource, 1.0f);
-                    if (result?.Value is Media.Imaging.Bitmap bitmap)
+                    if (result?.Value is { } icon)
                     {
-                        image.Source = bitmap;
+                        image.Source = icon;
                     }
                 }
             }

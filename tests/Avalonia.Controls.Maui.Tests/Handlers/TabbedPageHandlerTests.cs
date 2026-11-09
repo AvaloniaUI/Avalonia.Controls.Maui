@@ -1059,12 +1059,12 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
 
     private sealed class DelayedStreamImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IStreamImageSource>
     {
-        private readonly TaskCompletionSource<IImageSourceServiceResult<Bitmap>?> _completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<IImageSourceServiceResult<Avalonia.Media.IImage>?> _completion = new(TaskCreationOptions.RunContinuationsAsynchronously);
         private Avalonia.Controls.Maui.Services.ImageSourceServiceResult? _result;
 
         public bool ResultDisposed => _result?.IsDisposed == true;
 
-        public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+        public Task<IImageSourceServiceResult<Avalonia.Media.IImage>?> GetImageAsync(
             IImageSource imageSource,
             float scale = 1,
             CancellationToken cancellationToken = default)
@@ -1072,7 +1072,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             return _completion.Task;
         }
 
-        public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+        public Task<IImageSourceServiceResult<Avalonia.Media.IImage>?> GetImageAsync(
             IStreamImageSource imageSource,
             float scale = 1,
             CancellationToken cancellationToken = default)

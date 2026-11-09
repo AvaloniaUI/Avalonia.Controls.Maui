@@ -6,9 +6,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
+using IImage = Avalonia.Media.IImage;
 
 namespace Avalonia.Controls.Maui.Services;
 
@@ -24,7 +26,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
 {
     private readonly ILogger<AvaloniaUriImageSourceService>? _logger;
     private readonly HttpClient _httpClient;
-    private readonly ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>> _inFlightCache;
+    private readonly ConcurrentDictionary<string, Task<IImageSourceServiceResult<IImage>?>> _inFlightCache;
 
     private static readonly string CacheDirectory =
         Path.Combine(Path.GetTempPath(), "AvaloniaMauiImageCache");
@@ -46,7 +48,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     {
         _logger = logger;
         _httpClient = httpClient ?? new HttpClient();
-        _inFlightCache = new ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>>();
+        _inFlightCache = new ConcurrentDictionary<string, Task<IImageSourceServiceResult<IImage>?>>();
 
         EnsureCacheDirectory();
     }
@@ -58,10 +60,10 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     /// <param name="scale">The display scale factor applied during image loading.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
     /// if the source is not a URI image source.
     /// </returns>
-    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
@@ -71,7 +73,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
             return GetImageAsync(uriImageSource, scale, cancellationToken);
         }
 
-        return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+        return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
     }
 
     /// <summary>
@@ -81,10 +83,10 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     /// <param name="scale">The display scale factor applied during image loading.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
     /// if the URI is <see langword="null"/> or uses an unsupported scheme.
     /// </returns>
-    public async Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public async Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IUriImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
@@ -132,7 +134,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         }
     }
 
-    private async Task<IImageSourceServiceResult<Bitmap>?> LoadImageInternalAsync(Uri uri, IUriImageSource imageSource, CancellationToken cancellationToken)
+    private async Task<IImageSourceServiceResult<IImage>?> LoadImageInternalAsync(Uri uri, IUriImageSource imageSource, CancellationToken cancellationToken)
     {
         // Handle different URI schemes
         if (uri.IsAbsoluteUri)
@@ -151,7 +153,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         return null;
     }
 
-    private async Task<IImageSourceServiceResult<Bitmap>?> LoadFromHttpAsync(Uri uri, IUriImageSource imageSource, CancellationToken cancellationToken)
+    private async Task<IImageSourceServiceResult<IImage>?> LoadFromHttpAsync(Uri uri, IUriImageSource imageSource, CancellationToken cancellationToken)
     {
         try
         {
@@ -177,7 +179,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         }
     }
 
-    private IImageSourceServiceResult<Bitmap>? LoadFromFile(Uri uri)
+    private IImageSourceServiceResult<IImage>? LoadFromFile(Uri uri)
     {
         try
         {
@@ -260,7 +262,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         return Path.Combine(CacheDirectory, $"{safeName}{ext}");
     }
 
-    private bool TryLoadFromCache(Uri uri, TimeSpan cacheValidity, out IImageSourceServiceResult<Bitmap>? result)
+    private bool TryLoadFromCache(Uri uri, TimeSpan cacheValidity, out IImageSourceServiceResult<IImage>? result)
     {
         result = null;
         var cachePath = GetCachePath(uri);

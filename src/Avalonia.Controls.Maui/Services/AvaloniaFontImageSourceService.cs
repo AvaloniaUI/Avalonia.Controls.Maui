@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using Microsoft.Maui.Platform;
 using AvaloniaFontManager = Avalonia.Controls.Maui.FontManager;
+using IImage = Avalonia.Media.IImage;
 
 namespace Avalonia.Controls.Maui.Services;
 
@@ -64,10 +65,10 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
     /// <param name="scale">The display scale factor applied during glyph rendering.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the rendered glyph bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the rendered glyph bitmap, or <see langword="null"/>
     /// if the source is not a font image source.
     /// </returns>
-    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
@@ -77,7 +78,7 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
             return GetImageAsync(fontImageSource, scale, cancellationToken);
         }
 
-        return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+        return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
     }
 
     /// <summary>
@@ -87,16 +88,16 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
     /// <param name="scale">The display scale factor applied during glyph rendering.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the rendered glyph bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the rendered glyph bitmap, or <see langword="null"/>
     /// if the source or its glyph is <see langword="null"/> or empty.
     /// </returns>
-    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IFontImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
     {
         if (imageSource == null || string.IsNullOrEmpty(imageSource.Glyph))
-            return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+            return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
 
         try
         {
@@ -160,7 +161,7 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
 
             _logger?.LogDebug("Successfully rendered font glyph");
 
-            return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(new ImageSourceServiceResult(renderTarget));
+            return Task.FromResult<IImageSourceServiceResult<IImage>?>(new ImageSourceServiceResult(renderTarget));
         }
         catch (Exception ex)
         {

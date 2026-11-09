@@ -2,9 +2,11 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
+using IImage = Avalonia.Media.IImage;
 
 namespace Avalonia.Controls.Maui.Services;
 
@@ -42,10 +44,10 @@ public partial class AvaloniaStreamImageSourceService : IAvaloniaImageSourceServ
     /// <param name="scale">The display scale factor applied during image loading.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
     /// if the source is not a stream image source.
     /// </returns>
-    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
@@ -55,7 +57,7 @@ public partial class AvaloniaStreamImageSourceService : IAvaloniaImageSourceServ
             return GetImageAsync(streamImageSource, scale, cancellationToken);
         }
 
-        return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+        return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
     }
 
     /// <summary>
@@ -65,10 +67,10 @@ public partial class AvaloniaStreamImageSourceService : IAvaloniaImageSourceServ
     /// <param name="scale">The display scale factor applied during image loading.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
     /// if the source is <see langword="null"/> or returns a <see langword="null"/> stream.
     /// </returns>
-    public async Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public async Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IStreamImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)

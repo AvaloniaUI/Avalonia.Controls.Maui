@@ -131,7 +131,7 @@ public static class SwipeItemMenuItemExtensions
             if (serviceSource is IAvaloniaImageSourceService service)
             {
                 var result = await service.GetImageAsync(menuElement.Source, 1.0f);
-                if (result?.Value is global::Avalonia.Media.Imaging.Bitmap bitmap)
+                if (result?.Value is { } icon)
                 {
                     // Create a StackPanel with image and text
                     var stackPanel = new StackPanel
@@ -144,7 +144,7 @@ public static class SwipeItemMenuItemExtensions
 
                     var image = new Image
                     {
-                        Source = bitmap,
+                        Source = icon,
                         Width = 16,
                         Height = 16,
                         VerticalAlignment = VerticalAlignment.Center

@@ -99,9 +99,9 @@ public static class ImageCellExtensions
 
             var result = await imageSourceService.GetImageAsync(cell.ImageSource, 1.0f);
 
-            if (result is IImageSourceServiceResult<Avalonia.Media.Imaging.Bitmap> bitmapResult)
+            if (result is IImageSourceServiceResult<Avalonia.Media.IImage> imageResult)
             {
-                platformView.ImageView.Source = bitmapResult.Value;
+                platformView.ImageView.Source = imageResult.Value;
             }
         }
         catch

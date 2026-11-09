@@ -331,7 +331,7 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
 
                 if (PlatformView is PlatformView platformView)
                 {
-                    platformView.ImageSource = result?.Value as Avalonia.Media.IImage;
+                    platformView.ImageSource = result?.Value;
                 }
             }
             else if (PlatformView is PlatformView platformView)

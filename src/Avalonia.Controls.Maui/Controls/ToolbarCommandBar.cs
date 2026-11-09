@@ -206,11 +206,11 @@ public class ToolbarCommandBar : StackPanel
             if (service is IAvaloniaImageSourceService avaloniaService)
             {
                 var result = await avaloniaService.GetImageAsync(item.IconImageSource, 1.0f);
-                if (result?.Value is Avalonia.Media.Imaging.Bitmap bitmap)
+                if (result?.Value is { } icon)
                 {
                     var image = new Image
                     {
-                        Source = bitmap,
+                        Source = icon,
                         Width = 20,
                         Height = 20
                     };

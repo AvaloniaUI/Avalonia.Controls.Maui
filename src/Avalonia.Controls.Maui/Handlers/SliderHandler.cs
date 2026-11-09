@@ -186,7 +186,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
                 if (token.IsCancellationRequested)
                     return;
 
-                PlatformView?.UpdateThumbImageSource(result?.Value as Avalonia.Media.IImage);
+                PlatformView?.UpdateThumbImageSource(result?.Value);
             }
             else
             {
