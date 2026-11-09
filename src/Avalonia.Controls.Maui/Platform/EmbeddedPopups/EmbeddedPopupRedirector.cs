@@ -133,22 +133,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
         /// <returns>True if the press should be handled, because a closed popup does not pass it through.</returns>
         public static bool LightDismiss(IEnumerable<IEmbeddedPopupOverlay> overlays, TopLevel? pressed)
         {
-            var popups = new List<Popup>();
-            foreach (var overlay in overlays)
-            {
-                foreach (var state in s_open)
-                {
-                    if (state.Overlay == overlay)
-                        popups.Add(state.Popup);
-                }
-
-                // Also the popups opened from a popup in the overlay, which are only tracked where they are redirected.
-                foreach (var host in EmbeddedPopupOverlayRoot.GetPopupHosts(overlay.AnchorLayer))
-                {
-                    if (EmbeddedPopupOverlayRoot.GetPopup(host) is { } popup && !popups.Contains(popup))
-                        popups.Add(popup);
-                }
-            }
+            var popups = GetOpenPopups(overlays);
 
             // A press in a popup keeps it open, and the popups it was opened from.
             var keep = new HashSet<TopLevel>();
@@ -181,6 +166,43 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             }
 
             return handled;
+        }
+
+        /// <summary>
+        /// Returns true if <paramref name="overlays"/> show a light-dismiss popup that does not pass the press that
+        /// closes it through to what is below.
+        /// </summary>
+        public static bool HasOpenBlockingPopups(IEnumerable<IEmbeddedPopupOverlay> overlays)
+        {
+            foreach (var popup in GetOpenPopups(overlays))
+            {
+                if (popup.IsOpen && popup.IsLightDismissEnabled && !popup.OverlayDismissEventPassThrough)
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static List<Popup> GetOpenPopups(IEnumerable<IEmbeddedPopupOverlay> overlays)
+        {
+            var popups = new List<Popup>();
+            foreach (var overlay in overlays)
+            {
+                foreach (var state in s_open)
+                {
+                    if (state.Overlay == overlay)
+                        popups.Add(state.Popup);
+                }
+
+                // Also the popups opened from a popup in the overlay, which are only tracked where they are redirected.
+                foreach (var host in EmbeddedPopupOverlayRoot.GetPopupHosts(overlay.AnchorLayer))
+                {
+                    if (EmbeddedPopupOverlayRoot.GetPopup(host) is { } popup && !popups.Contains(popup))
+                        popups.Add(popup);
+                }
+            }
+
+            return popups;
         }
 
         /// <summary>Returns true if <paramref name="topLevel"/> has open light-dismiss popups in the overlay.</summary>
@@ -433,7 +455,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 
             state.OriginalTarget = e.NewValue as Control;
             state.Redirect();
-            state.ReopenIfClosedForNewTarget();
+            state.ReopenIfClosedForNewTarget(e.NewValue as Control);
         }
 
         private static void AddOverlayUser(IEmbeddedPopupOverlay overlay, IEmbeddedPopupHost host)
@@ -536,6 +558,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             private Rect? _anchorBounds;
             private List<Control>? _hiddenHosts;
             private bool _closedForNewTarget;
+            private Control? _closedWithTarget;
             private bool _placementOverridden;
             private PlacementMode _savedPlacement;
             private PopupAnchor _savedAnchor;
@@ -629,15 +652,19 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             /// <summary>Opens the popup again if it closed because it got a new placement target.</summary>
             /// <remarks>
             /// A popup closes itself when its new placement target is in another top level than the one it is open
-            /// in. A redirected popup is open in the overlay, so that is always the case.
+            /// in. A redirected popup is open in the overlay, so that is always the case. The popup closes while it
+            /// handles the change, before the redirector does. A target set after the popup closed for another reason,
+            /// such as a flyout clearing it when its popup closes, does not open the popup.
             /// </remarks>
-            public void ReopenIfClosedForNewTarget()
+            public void ReopenIfClosedForNewTarget(Control? newTarget)
             {
                 if (!_closedForNewTarget)
                     return;
 
                 _closedForNewTarget = false;
-                if (!_popup.IsOpen)
+                var closedWithTarget = _closedWithTarget;
+                _closedWithTarget = null;
+                if (closedWithTarget == newTarget && !_popup.IsOpen)
                     _popup.Open();
             }
 
@@ -885,6 +912,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 
                 // The popup was redirected, so a target other than the anchor means that it got a new one.
                 _closedForNewTarget = _popup.PlacementTarget != _anchor;
+                _closedWithTarget = _popup.PlacementTarget;
 
                 if (_placementOverridden)
                 {

@@ -117,6 +117,7 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
 
         private readonly XamlRoot _xamlRoot;
         private readonly WinUIGrid _layers;
+        private readonly Microsoft.UI.Xaml.Controls.Border _dismissLayer;
         private static readonly TimeSpan TrimDelay = TimeSpan.FromSeconds(5);
 
         private readonly List<EmbeddedPopupOverlay> _overlays = new();
@@ -132,7 +133,20 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
                 VerticalAlignment = VerticalAlignment.Top,
             };
 
-            // A press in the window outside of the popups and the embedded views (which dismiss for themselves).
+            // Below the popups, it takes the presses that close them before they reach the window.
+            _dismissLayer = new Microsoft.UI.Xaml.Controls.Border
+            {
+                Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent),
+                IsHitTestVisible = false,
+            };
+            Microsoft.UI.Xaml.Controls.Canvas.SetZIndex(_dismissLayer, -1);
+            _dismissLayer.PointerPressed += OnDismissLayerPointerInput;
+            // The page below cannot scroll while the layer covers it, so the wheel closes the popups instead.
+            _dismissLayer.PointerWheelChanged += OnDismissLayerPointerInput;
+            _layers.Children.Add(_dismissLayer);
+
+            // A press in the window outside of the popups and the embedded views (which dismiss for themselves),
+            // while the open popups pass it through.
             if (xamlRoot.Content is UIElement content)
                 content.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler(OnWindowPointerPressed), true);
 
@@ -208,6 +222,7 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
             }
 
             Microsoft.UI.Xaml.Controls.Canvas.SetZIndex(overlay.Panel, ++_zIndex);
+            PostUpdateDismissLayer();
 
             // Keep an idle overlay, so that the closed popups of this one have somewhere to go.
             foreach (var other in _overlays)
@@ -226,6 +241,8 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
         /// </remarks>
         public void OnHidden()
         {
+            PostUpdateDismissLayer();
+
             if (_trimTimer is null)
             {
                 _trimTimer = new DispatcherTimer { Interval = TrimDelay };
@@ -274,6 +291,27 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
         {
             _layers.Width = _xamlRoot.Size.Width;
             _layers.Height = _xamlRoot.Size.Height;
+        }
+
+        /// <summary>
+        /// Makes the dismiss layer take the presses outside of the popups while a popup is open that closes on them
+        /// without passing them through, like the light-dismiss layer of an Avalonia window.
+        /// </summary>
+        public void UpdateDismissLayer()
+        {
+            var block = EmbeddedPopupRedirector.HasOpenBlockingPopups(_overlays);
+            if (_dismissLayer.IsHitTestVisible != block)
+                _dismissLayer.IsHitTestVisible = block;
+        }
+
+        // A popup opens after its overlay is shown.
+        private void PostUpdateDismissLayer() => Avalonia.Threading.Dispatcher.UIThread.Post(UpdateDismissLayer);
+
+        private void OnDismissLayerPointerInput(object sender, PointerRoutedEventArgs e)
+        {
+            EmbeddedPopupRedirector.LightDismiss(_overlays, null);
+            e.Handled = true;
+            UpdateDismissLayer();
         }
 
         private void OnWindowPointerPressed(object sender, PointerRoutedEventArgs e)
@@ -398,6 +436,7 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
             root.LayoutUpdated += (_, _) =>
             {
                 UpdateClip();
+                _window.UpdateDismissLayer();
                 EmbeddedPopupRedirector.OnHostLayoutChanged(root);
             };
 

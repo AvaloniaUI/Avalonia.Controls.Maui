@@ -107,6 +107,22 @@ public class EmbeddedPopupRedirectorTests
         return (host, target, popup, overlay);
     }
 
+    /// <summary>Runs the animation frames that are due now, and the next one.</summary>
+    /// <remarks>
+    /// A frame requested during a frame runs after the 16 ms animation timer of Avalonia when there is nothing to
+    /// commit. <see cref="Dispatcher.RunJobs()"/> only fires due timers after it runs a job, so one is posted.
+    /// </remarks>
+    private static void RunFrames()
+    {
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        Dispatcher.UIThread.RunJobs();
+        Thread.Sleep(20);
+        Dispatcher.UIThread.Post(() => { });
+        Dispatcher.UIThread.RunJobs();
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        Dispatcher.UIThread.RunJobs();
+    }
+
     private static OverlayPopupHost PopupHostOf(Popup popup) =>
         Assert.IsType<OverlayPopupHost>(popup.Child!.FindAncestorOfType<OverlayPopupHost>());
 
@@ -167,6 +183,32 @@ public class EmbeddedPopupRedirectorTests
         Assert.True(EmbeddedPopupRedirector.LightDismiss(overlay));
         Assert.False(nested.IsOpen);
         Assert.True(popup.IsOpen);
+    }
+
+    [AvaloniaFact(DisplayName = "Flyout shows its content again after light dismiss closed it")]
+    public void Flyout_Reopens_After_Light_Dismiss()
+    {
+        var content = new Border { Width = 50, Height = 100 };
+        var flyout = new Flyout { Content = content };
+        var target = new Button { Width = 100, Height = 30, Flyout = flyout };
+        var host = new Window { Width = 200, Height = 100, Content = target };
+        var overlay = new FakeOverlay();
+        EmbeddedPopupRedirector.Register(host, new FakeHost(overlay, new Point(10, 20)));
+        host.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        flyout.ShowAt(target);
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(EmbeddedPopupRedirector.LightDismiss(overlay));
+        Assert.False(flyout.IsOpen);
+        Dispatcher.UIThread.RunJobs();
+
+        flyout.ShowAt(target);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.True(flyout.IsOpen);
+        Assert.NotNull(content.FindAncestorOfType<OverlayPopupHost>());
+        Assert.Same(overlay.Window, TopLevel.GetTopLevel(content));
     }
 
     [AvaloniaFact(DisplayName = "Popup outside an embedded view keeps its placement target")]
@@ -574,14 +616,12 @@ public class EmbeddedPopupRedirectorTests
         var top = Canvas.GetTop(anchor);
 
         // A frame without a move changes nothing.
-        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
-        Dispatcher.UIThread.RunJobs();
+        RunFrames();
         Assert.True(lightDismiss.IsOpen);
 
         // For example, a native scroll view that contains the host scrolls, which does not lay out the host.
         fakeHost.Origin = new Point(10, -30);
-        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
-        Dispatcher.UIThread.RunJobs();
+        RunFrames();
 
         Assert.False(lightDismiss.IsOpen);
         Assert.True(popup.IsOpen);
@@ -598,14 +638,12 @@ public class EmbeddedPopupRedirectorTests
         popup.Open();
         var anchor = popup.PlacementTarget!;
         var left = Canvas.GetLeft(anchor);
-        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
-        Dispatcher.UIThread.RunJobs();
+        RunFrames();
 
         // For example, a centered host after the window got wider.
         fakeHost.WindowSize = new Size(900, 600);
         fakeHost.Origin = new Point(60, 20);
-        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
-        Dispatcher.UIThread.RunJobs();
+        RunFrames();
 
         Assert.True(popup.IsOpen);
         Assert.Equal(left + 50, Canvas.GetLeft(anchor));
@@ -621,8 +659,7 @@ public class EmbeddedPopupRedirectorTests
 
         fakeHost.Origin = new Point(10, -30);
         EmbeddedPopupRedirector.OnHostLayoutChanged(host);
-        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
-        Dispatcher.UIThread.RunJobs();
+        RunFrames();
 
         Assert.True(popup.IsOpen);
     }
