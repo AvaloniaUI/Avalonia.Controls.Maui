@@ -320,7 +320,11 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         {
             _gifImage!.Source = GifStreamSource.FromUri(gifUri);
             await Task.Yield();
-            
+
+            // A newer source took over during the yield; the loader and visibility are now its to set
+            if (token.IsCancellationRequested)
+                return true;
+
             _gifImage.IterationCount = shouldPlay
                 ? IterationCount.Infinite
                 : new IterationCount(0);

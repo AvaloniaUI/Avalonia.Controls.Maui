@@ -379,6 +379,47 @@ public partial class ImageHandlerTests : HandlerTestBase<MauiImageHandler, Image
         }
     }
 
+    [AvaloniaFact(DisplayName = "A GIF replaced by a static image before it shows does not hide the static image")]
+    public async Task StaleGifLoadDoesNotReplaceNewerStaticImage()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "Avalonia.Controls.Maui.Tests", $"image-gif-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            // GifImage reads GIFs through AssetLoader, so the GIF is an embedded resource
+            var gif = new Uri($"avares://{typeof(ImageHandlerTests).Assembly.GetName().Name}/Images/tiny.gif");
+            var png = Path.Combine(directory, "still.png");
+            await InvokeOnMainThreadAsync(() => SavePng(png, new PixelSize(8, 8)));
+
+            var image = new ImageStub();
+            var handler = await CreateHandlerAsync(image);
+
+            var (staticImage, gifVisible) = await InvokeOnMainThreadAsync(() =>
+            {
+                ShowInWindow(handler.PlatformView);
+
+                // The GIF load yields once before it shows the GIF; the PNG replaces it in the same turn
+                image.Source = new UriImageSource { Uri = gif };
+                MauiImageHandler.MapSource(handler, image);
+                image.Source = new FileImageSource { File = png };
+                MauiImageHandler.MapSource(handler, image);
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                var still = handler.PlatformView.Children.OfType<Image>().First();
+                var animated = handler.PlatformView.Children.OfType<Avalonia.Controls.Maui.Controls.Gif.GifImage>().FirstOrDefault();
+                return (still, animated?.IsVisible == true);
+            });
+
+            Assert.True(staticImage.IsVisible);
+            Assert.IsAssignableFrom<Media.Imaging.Bitmap>(staticImage.Source);
+            Assert.False(gifVisible);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
     static void SavePng(string path, PixelSize size)
     {
         using var bitmap = new Media.Imaging.RenderTargetBitmap(size);
