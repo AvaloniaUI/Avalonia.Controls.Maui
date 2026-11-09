@@ -99,4 +99,33 @@ public class ImageRenderTests : RenderTestBase
         // Glyph hinting differs between Linux and macOS
         CompareImages(tolerance: 0.03);
     }
+
+    [AvaloniaFact]
+    public async Task Render_Image_Unsized_NaturalSize()
+    {
+        // As on iOS and Android, an image with no size request is not enlarged to fill the available width;
+        // the backgrounds show the bounds each image is given
+        static Microsoft.Maui.Controls.Image Glyph(Microsoft.Maui.Controls.LayoutOptions horizontal) => new()
+        {
+            Source = new Microsoft.Maui.Controls.FontImageSource { Glyph = "M", Size = 30, Color = Colors.Black },
+            HorizontalOptions = horizontal,
+            BackgroundColor = Colors.LightGray
+        };
+
+        var layout = new Microsoft.Maui.Controls.VerticalStackLayout
+        {
+            WidthRequest = 250,
+            HeightRequest = 120,
+            Spacing = 8,
+            Children =
+            {
+                Glyph(Microsoft.Maui.Controls.LayoutOptions.Fill),
+                Glyph(Microsoft.Maui.Controls.LayoutOptions.Start)
+            }
+        };
+
+        await RenderToFile(layout);
+        // Glyph hinting differs between Linux and macOS
+        CompareImages(tolerance: 0.03);
+    }
 }

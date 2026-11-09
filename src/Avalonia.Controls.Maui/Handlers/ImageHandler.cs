@@ -13,6 +13,7 @@ using AImage = Avalonia.Controls.Image;
 using AGrid = Avalonia.Controls.Grid;
 using IImage = Microsoft.Maui.IImage;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Primitives;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -97,6 +98,78 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
 
         base.DisconnectHandler(platformView);
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// As on iOS and Android, an image with no size request measures at most its natural size: it shrinks to fit
+    /// the constraints but does not grow. A width or height request lets an <see cref="Aspect.AspectFit"/> image grow.
+    /// </remarks>
+    public override Microsoft.Maui.Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
+    {
+        var desired = base.GetDesiredSize(widthConstraint, heightConstraint);
+
+        var dispatcher = PlatformViewOrNull?.Dispatcher;
+        if (dispatcher is null)
+            return desired;
+
+        return dispatcher.CheckAccess()
+            ? MeasureStaticImage(widthConstraint, heightConstraint, desired)
+            : dispatcher.InvokeAsync(() => MeasureStaticImage(widthConstraint, heightConstraint, desired)).GetAwaiter().GetResult();
+    }
+
+    private Microsoft.Maui.Graphics.Size MeasureStaticImage(double widthConstraint, double heightConstraint, Microsoft.Maui.Graphics.Size desired)
+    {
+        // Avalonia's Image scales up to the constraints, so a static image measures from its natural size instead
+        if (VirtualView is not { } view || !_staticImage.IsVisible || _staticImage.Source is not { } source)
+            return desired;
+
+        var natural = new Microsoft.Maui.Graphics.Size(source.Size.Width, source.Size.Height);
+        if (natural.Width <= 0 || natural.Height <= 0)
+            return desired;
+
+        var widthIsExplicit = Dimension.IsExplicitSet(view.Width);
+        var heightIsExplicit = Dimension.IsExplicitSet(view.Height);
+        widthConstraint = widthIsExplicit ? view.Width : Math.Min(widthConstraint, view.MaximumWidth);
+        heightConstraint = heightIsExplicit ? view.Height : Math.Min(heightConstraint, view.MaximumHeight);
+
+        var size = FitImage(natural, widthConstraint, heightConstraint, view.Aspect, widthIsExplicit, heightIsExplicit);
+
+        return new Microsoft.Maui.Graphics.Size(
+            ResolveConstraints(size.Width, view.Width, view.MinimumWidth, view.MaximumWidth),
+            ResolveConstraints(size.Height, view.Height, view.MinimumHeight, view.MaximumHeight));
+    }
+
+    /// <summary>
+    /// The size an image asks for within the constraints, as MAUI's <c>SizeThatFitsImage</c> computes it on iOS.
+    /// </summary>
+    internal static Microsoft.Maui.Graphics.Size FitImage(
+        Microsoft.Maui.Graphics.Size natural,
+        double widthConstraint,
+        double heightConstraint,
+        Aspect aspect,
+        bool widthIsExplicit,
+        bool heightIsExplicit)
+    {
+        if (aspect != Aspect.AspectFit)
+            return new Microsoft.Maui.Graphics.Size(Math.Min(natural.Width, widthConstraint), Math.Min(natural.Height, heightConstraint));
+
+        // An unconstrained axis never limits the scale
+        var widthRatio = double.IsPositiveInfinity(widthConstraint) ? double.PositiveInfinity : widthConstraint / natural.Width;
+        var heightRatio = double.IsPositiveInfinity(heightConstraint) ? double.PositiveInfinity : heightConstraint / natural.Height;
+        var scale = Math.Min(widthRatio, heightRatio);
+
+        if (!widthIsExplicit && !heightIsExplicit)
+            scale = Math.Min(scale, 1);
+
+        return new Microsoft.Maui.Graphics.Size(natural.Width * scale, natural.Height * scale);
+    }
+
+    private static double ResolveConstraints(double measured, double explicitSize, double minimum, double maximum)
+    {
+        var resolved = Dimension.IsExplicitSet(explicitSize) ? explicitSize : measured;
+        resolved = Math.Max(resolved, Dimension.ResolveMinimum(minimum));
+        return Math.Min(resolved, maximum);
     }
 
     /// <summary>Maps the Source property to the platform view.</summary>

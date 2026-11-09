@@ -307,6 +307,59 @@ public partial class ImageHandlerTests : HandlerTestBase<MauiImageHandler, Image
         }
     }
 
+    [AvaloniaTheory(DisplayName = "An image measures as MAUI's SizeThatFitsImage does")]
+    // Unsized AspectFit: natural size, shrunk to fit, never enlarged
+    [InlineData(Aspect.AspectFit, 1000, double.PositiveInfinity, false, false, 32, 24)]
+    [InlineData(Aspect.AspectFit, 16, double.PositiveInfinity, false, false, 16, 12)]
+    [InlineData(Aspect.AspectFit, 1000, 12, false, false, 16, 12)]
+    [InlineData(Aspect.AspectFit, double.PositiveInfinity, double.PositiveInfinity, false, false, 32, 24)]
+    // A request on either axis lets AspectFit grow; the other axis follows the aspect ratio
+    [InlineData(Aspect.AspectFit, 64, double.PositiveInfinity, true, false, 64, 48)]
+    [InlineData(Aspect.AspectFit, 1000, 48, false, true, 64, 48)]
+    // Other aspects take the natural size, cut to the constraints, on each axis
+    [InlineData(Aspect.AspectFill, 1000, 1000, false, false, 32, 24)]
+    [InlineData(Aspect.Fill, 16, 1000, false, false, 16, 24)]
+    [InlineData(Aspect.Center, 1000, 10, false, false, 32, 10)]
+    public void FitImageMatchesMaui(Aspect aspect, double widthConstraint, double heightConstraint,
+        bool widthIsExplicit, bool heightIsExplicit, double expectedWidth, double expectedHeight)
+    {
+        var size = MauiImageHandler.FitImage(new Microsoft.Maui.Graphics.Size(32, 24), widthConstraint, heightConstraint, aspect, widthIsExplicit, heightIsExplicit);
+
+        Assert.Equal(new Microsoft.Maui.Graphics.Size(expectedWidth, expectedHeight), size);
+    }
+
+    [AvaloniaTheory(DisplayName = "An image with no size request is not enlarged")]
+    [InlineData(double.NaN, double.NaN, 1000, double.PositiveInfinity, 32, 24)]
+    [InlineData(double.NaN, double.NaN, 16, double.PositiveInfinity, 16, 12)]
+    [InlineData(64, double.NaN, 1000, double.PositiveInfinity, 64, 48)]
+    [InlineData(64, 64, 1000, double.PositiveInfinity, 64, 64)]
+    public async Task UnsizedImageIsNotEnlarged(double width, double height, double widthConstraint, double heightConstraint,
+        double expectedWidth, double expectedHeight)
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "Avalonia.Controls.Maui.Tests", $"image-size-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            var file = Path.Combine(directory, "icon.png");
+            await InvokeOnMainThreadAsync(() => SavePng(file, new PixelSize(32, 24)));
+
+            var image = new ImageStub { Source = new FileImageSource { File = file }, Width = width, Height = height };
+            var handler = await CreateHandlerAsync(image);
+
+            var desired = await InvokeOnMainThreadAsync(() =>
+            {
+                ShowInWindow(handler.PlatformView);
+                return handler.GetDesiredSize(widthConstraint, heightConstraint);
+            });
+
+            Assert.Equal(new Microsoft.Maui.Graphics.Size(expectedWidth, expectedHeight), desired);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
     static void SavePng(string path, PixelSize size)
     {
         using var bitmap = new Media.Imaging.RenderTargetBitmap(size);
