@@ -45,9 +45,18 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
         /// <remarks>MAUI can lay out the host before it is in a window, and not again after.</remarks>
         public void OnMovedToWindow()
         {
+            // The overlay of the old window would keep the open popups above the next page, for example after a
+            // navigation.
+            if (_view.Window is null)
+                EmbeddedPopupRedirector.OnHostLeftWindow(_topLevel);
+
             EmbeddedPopupOverlay.ForWindow(_view.Window).Prepare();
-            // The popups of the host were redirected to the overlay of the window it was in before, if any.
+            // The closed popups of the host were redirected to the overlay of the window it was in before, if any.
+            // A popup that opens while the host is not in a window opens in the detached overlay, which is not shown.
             EmbeddedPopupRedirector.OnHostOverlayChanged(_topLevel);
+
+            if (_view.Window is not null)
+                EmbeddedPopupRedirector.OnHostEnteredWindow(_topLevel);
         }
 
         public IEmbeddedPopupOverlay GetOverlay() => EmbeddedPopupOverlay.ForWindow(_view.Window);

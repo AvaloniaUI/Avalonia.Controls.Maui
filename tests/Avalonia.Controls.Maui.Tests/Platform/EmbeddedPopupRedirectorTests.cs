@@ -26,11 +26,20 @@ public class EmbeddedPopupRedirectorTests
 
         public int HideCount { get; private set; }
 
-        public bool IsShown => ShowCount > HideCount;
+        // Showing a shown overlay again keeps it shown, like the platform overlays.
+        public bool IsShown { get; private set; }
 
-        public void Show(IEmbeddedPopupHost host) => ShowCount++;
+        public void Show(IEmbeddedPopupHost host)
+        {
+            ShowCount++;
+            IsShown = true;
+        }
 
-        public void Hide() => HideCount++;
+        public void Hide()
+        {
+            HideCount++;
+            IsShown = false;
+        }
     }
 
     /// <summary>A host whose popups each open in an idle overlay, like on Windows.</summary>
@@ -86,6 +95,9 @@ public class EmbeddedPopupRedirectorTests
         Dispatcher.UIThread.RunJobs();
         return (host, target, popup, overlay);
     }
+
+    private static OverlayPopupHost PopupHostOf(Popup popup) =>
+        Assert.IsType<OverlayPopupHost>(popup.Child!.FindAncestorOfType<OverlayPopupHost>());
 
     [AvaloniaFact(DisplayName = "Popup in an embedded view opens on an anchor in the overlay")]
     public void Popup_Opens_On_Overlay_Anchor()
@@ -308,6 +320,164 @@ public class EmbeddedPopupRedirectorTests
 
         Assert.Null(anchor.Parent);
         Assert.Same(outsideTarget, popup.PlacementTarget);
+    }
+
+    [AvaloniaFact(DisplayName = "Closed popup follows its target to another embedded view")]
+    public void Closed_Popup_Follows_Target_To_Other_View()
+    {
+        var (_, target, popup, _) = CreateEmbeddedPopup();
+        var anchor = popup.PlacementTarget!;
+        var otherPanel = new StackPanel { HorizontalAlignment = HorizontalAlignment.Left };
+        var otherHost = new Window { Width = 200, Height = 100, Content = otherPanel };
+        var otherOverlay = new FakeOverlay();
+        EmbeddedPopupRedirector.Register(otherHost, new FakeHost(otherOverlay, new Point(300, 400)));
+        otherHost.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        ((StackPanel)target.Parent!).Children.Remove(target);
+        Dispatcher.UIThread.RunJobs();
+        otherPanel.Children.Add(target);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Same(otherOverlay.AnchorLayer, anchor.Parent);
+        popup.Open();
+        Assert.Same(otherOverlay.Window, TopLevel.GetTopLevel(popup.Child));
+        var targetOrigin = target.TranslatePoint(default, otherHost)!.Value;
+        Assert.Equal(400 + targetOrigin.Y, Canvas.GetTop(anchor));
+        Assert.Equal(1, otherOverlay.ShowCount);
+    }
+
+    [AvaloniaFact(DisplayName = "Closed popup is released when its target detaches, and redirected when it attaches")]
+    public void Closed_Popup_Released_When_Target_Detached()
+    {
+        var (_, target, popup, overlay) = CreateEmbeddedPopup();
+        var anchor = popup.PlacementTarget!;
+        var panel = (StackPanel)target.Parent!;
+
+        panel.Children.Remove(target);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Null(anchor.Parent);
+        Assert.Same(target, popup.PlacementTarget);
+
+        panel.Children.Insert(0, target);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Same(anchor, popup.PlacementTarget);
+        Assert.Same(overlay.AnchorLayer, anchor.Parent);
+    }
+
+    [AvaloniaFact(DisplayName = "Open popup follows its target when it moves in the embedded view")]
+    public void Open_Popup_Follows_Target_Moving_In_View()
+    {
+        var (_, target, popup, _) = CreateEmbeddedPopup();
+        popup.Open();
+        var anchor = popup.PlacementTarget!;
+        Assert.Equal(20 + 40, Canvas.GetTop(anchor));
+
+        // For example, a scroll viewer in the embedded view scrolls.
+        target.Margin = new Thickness(5, 10, 0, 0);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Equal(20 + 10, Canvas.GetTop(anchor));
+        Assert.True(popup.IsOpen);
+    }
+
+    [AvaloniaFact(DisplayName = "Popups are hidden while their host is out of its window, and shown when it returns")]
+    public void Popups_Hidden_While_Host_Out_Of_Window()
+    {
+        var (host, _, popup, overlay) = CreateEmbeddedPopup();
+        var nestedTarget = new Button { Width = 50, Height = 30 };
+        var nested = new Popup { PlacementTarget = nestedTarget, IsLightDismissEnabled = false, Child = new Border() };
+        var nestedLightDismiss = new Popup { PlacementTarget = nestedTarget, IsLightDismissEnabled = true, Child = new Border() };
+        popup.IsLightDismissEnabled = false;
+        popup.Child = new StackPanel { Children = { nestedTarget, nested, nestedLightDismiss } };
+        popup.Open();
+        nested.Open();
+        nestedLightDismiss.Open();
+        var popupHost = PopupHostOf(popup);
+        var nestedHost = PopupHostOf(nested);
+
+        EmbeddedPopupRedirector.OnHostLeftWindow(host);
+        Dispatcher.UIThread.RunJobs();
+
+        // The app opened the popups, so they stay open, but are not shown.
+        Assert.True(popup.IsOpen);
+        Assert.True(nested.IsOpen);
+        Assert.False(popupHost.IsVisible);
+        Assert.False(nestedHost.IsVisible);
+        Assert.False(nestedLightDismiss.IsOpen);
+        Assert.False(overlay.IsShown);
+
+        EmbeddedPopupRedirector.OnHostEnteredWindow(host);
+
+        Assert.True(popupHost.IsVisible);
+        Assert.True(nestedHost.IsVisible);
+        Assert.True(overlay.IsShown);
+
+        popup.Close();
+        Dispatcher.UIThread.RunJobs();
+        Assert.False(overlay.IsShown);
+    }
+
+    [AvaloniaFact(DisplayName = "Light-dismiss popups close when their host leaves its window")]
+    public void Light_Dismiss_Popups_Close_When_Host_Leaves_Window()
+    {
+        var (host, _, popup, overlay) = CreateEmbeddedPopup();
+        popup.IsLightDismissEnabled = true;
+        popup.Open();
+
+        EmbeddedPopupRedirector.OnHostLeftWindow(host);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.False(popup.IsOpen);
+        Assert.False(overlay.IsShown);
+
+        EmbeddedPopupRedirector.OnHostEnteredWindow(host);
+        Assert.False(popup.IsOpen);
+        Assert.False(overlay.IsShown);
+    }
+
+    [AvaloniaFact(DisplayName = "Hidden popup closed by the app stays closed when its host returns")]
+    public void Hidden_Popup_Closed_While_Host_Out_Of_Window()
+    {
+        var (host, _, popup, overlay) = CreateEmbeddedPopup();
+        popup.IsLightDismissEnabled = false;
+        popup.Open();
+
+        EmbeddedPopupRedirector.OnHostLeftWindow(host);
+        popup.Close();
+        Dispatcher.UIThread.RunJobs();
+        EmbeddedPopupRedirector.OnHostEnteredWindow(host);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.False(popup.IsOpen);
+        Assert.False(overlay.IsShown);
+
+        popup.Open();
+        Assert.True(overlay.IsShown);
+        Assert.True(PopupHostOf(popup).IsVisible);
+    }
+
+    [AvaloniaFact(DisplayName = "Popups reopen in the new overlay when their host returns in another window")]
+    public void Popups_Reopen_When_Host_Returns_In_Other_Window()
+    {
+        var (host, _, popup, overlay) = CreateEmbeddedPopup(out var fakeHost);
+        popup.IsLightDismissEnabled = false;
+        popup.Open();
+
+        EmbeddedPopupRedirector.OnHostLeftWindow(host);
+        var newOverlay = new FakeOverlay();
+        fakeHost.Overlay = newOverlay;
+        EmbeddedPopupRedirector.OnHostOverlayChanged(host);
+        EmbeddedPopupRedirector.OnHostEnteredWindow(host);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.True(popup.IsOpen);
+        Assert.Same(newOverlay.Window, TopLevel.GetTopLevel(popup.Child));
+        Assert.True(PopupHostOf(popup).IsVisible);
+        Assert.True(newOverlay.IsShown);
+        Assert.False(overlay.IsShown);
     }
 
     [AvaloniaFact(DisplayName = "Popups move to the new overlay of their host")]

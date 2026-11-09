@@ -7,6 +7,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 
 namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 {
@@ -186,6 +187,100 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
         }
 
         /// <summary>
+        /// Hides the open popups of <paramref name="topLevel"/> after its host view left its window, for example after
+        /// a navigation to another page. Closes its light-dismiss popups.
+        /// </summary>
+        /// <remarks>
+        /// The overlay stays in the window, so the popups would stay above the next page. The popups that the app
+        /// keeps open are only hidden, like the popups of a hidden Avalonia window, and are shown again when the host
+        /// returns.
+        /// </remarks>
+        public static void OnHostLeftWindow(TopLevel? topLevel)
+        {
+            if (topLevel is null)
+                return;
+
+            if (s_hosts.TryGetValue(topLevel, out var host))
+                host.FollowVersion++;
+
+            CloseLightDismissPopups(topLevel);
+            foreach (var state in s_open.ToArray())
+            {
+                if (state.HostTopLevel == topLevel)
+                    state.Hide();
+            }
+        }
+
+        /// <summary>
+        /// Shows the popups of <paramref name="topLevel"/> again after its host view was added to a window. Popups
+        /// that are open in the overlay of another window reopen in the overlay of the new one.
+        /// </summary>
+        public static void OnHostEnteredWindow(TopLevel? topLevel)
+        {
+            if (topLevel is null || !s_hosts.TryGetValue(topLevel, out var host))
+                return;
+
+            var overlay = host.Host.GetOverlay();
+            foreach (var state in s_open.ToArray())
+            {
+                if (state.HostTopLevel != topLevel)
+                    continue;
+
+                if (state.Overlay != overlay)
+                    state.Reopen();
+                else
+                    state.Show(host.Host);
+            }
+
+            // A popup that opened while its host was not in a window could not show the overlay.
+            if (s_overlayUsers.TryGetValue(overlay, out var users) && users > 0)
+            {
+                overlay.Show(host.Host);
+                FollowHost(topLevel, host, overlay);
+            }
+        }
+
+        /// <summary>How long the popups follow their host after it returns to a window.</summary>
+        private static readonly TimeSpan s_followDuration = TimeSpan.FromSeconds(1);
+
+        /// <summary>
+        /// Moves the open popups of <paramref name="topLevel"/> with its host on each frame of the overlay, for a
+        /// short time after the host returned to a window.
+        /// </summary>
+        /// <remarks>
+        /// A host usually returns at the start of a navigation transition, which moves the page with a transform.
+        /// That does not lay out the host, so without this, the popups keep the position of the first frame.
+        /// </remarks>
+        private static void FollowHost(TopLevel topLevel, HostState host, IEmbeddedPopupOverlay overlay)
+        {
+            if (TopLevel.GetTopLevel(overlay.AnchorLayer) is not { } overlayRoot)
+                return;
+
+            var version = ++host.FollowVersion;
+            var origin = host.Host.GetOriginInOverlay();
+            TimeSpan? start = null;
+
+            void OnFrame(TimeSpan time)
+            {
+                if (version != host.FollowVersion)
+                    return;
+
+                start ??= time;
+                var newOrigin = host.Host.GetOriginInOverlay();
+                if (newOrigin != origin)
+                {
+                    origin = newOrigin;
+                    OnHostLayoutChanged(topLevel);
+                }
+
+                if (time - start < s_followDuration)
+                    overlayRoot.RequestAnimationFrame(OnFrame);
+            }
+
+            overlayRoot.RequestAnimationFrame(OnFrame);
+        }
+
+        /// <summary>
         /// Moves the open popups of <paramref name="topLevel"/> after its host view moved or resized.
         /// </summary>
         public static void OnHostLayoutChanged(TopLevel? topLevel)
@@ -358,6 +453,9 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             public IEmbeddedPopupHost Host { get; } = host;
 
             public Point? LastPointer { get; set; }
+
+            /// <summary>Incremented to stop the popups from following the host.</summary>
+            public int FollowVersion { get; set; }
         }
 
         /// <summary>An invisible control in the overlay that stands in for the placement target of a popup.</summary>
@@ -371,6 +469,9 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             private readonly Popup _popup;
             private readonly OverlayAnchor _anchor;
             private Control? _openTarget;
+            private Control? _watchedTarget;
+            private Rect? _anchorBounds;
+            private List<Control>? _hiddenHosts;
             private bool _closedForNewTarget;
             private bool _placementOverridden;
             private PlacementMode _savedPlacement;
@@ -431,8 +532,10 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 }
                 else
                 {
-                    Release();
+                    ReleaseAnchor();
                 }
+
+                Watch(_popup.IsLoaded ? target : null);
             }
 
             /// <summary>
@@ -445,6 +548,12 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 if (_openTarget is not null)
                     return;
 
+                Watch(null);
+                ReleaseAnchor();
+            }
+
+            private void ReleaseAnchor()
+            {
                 if (_anchor.Parent is Canvas layer)
                     layer.Children.Remove(_anchor);
 
@@ -492,20 +601,10 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 
             public void UpdatePosition()
             {
-                if (_openTarget is null || HostTopLevel is null || !s_hosts.TryGetValue(HostTopLevel, out var host))
+                if (GetAnchorBounds() is not { } bounds)
                     return;
 
-                if (host.Host.GetOriginInOverlay() is not { } origin
-                    || _openTarget.TranslatePoint(default, HostTopLevel) is not { } targetOrigin)
-                    return;
-
-                var bounds = new Rect(origin + targetOrigin, _openTarget.Bounds.Size);
-                if (_placementOverridden)
-                {
-                    var pointer = host.LastPointer ?? targetOrigin;
-                    bounds = new Rect(origin + pointer, new Size(1, 1));
-                }
-
+                _anchorBounds = bounds;
                 Canvas.SetLeft(_anchor, bounds.X);
                 Canvas.SetTop(_anchor, bounds.Y);
                 _anchor.Width = bounds.Width;
@@ -517,6 +616,107 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 _popup.SetCurrentValue(Popup.HorizontalOffsetProperty, offset + 1);
                 _popup.SetCurrentValue(Popup.HorizontalOffsetProperty, offset);
             }
+
+            /// <summary>
+            /// Hides the open popup and the popups that were opened from it, while its host is not in a window.
+            /// The popups opened from it that are light-dismiss close.
+            /// </summary>
+            public void Hide()
+            {
+                if (_hiddenHosts is not null || Overlay is null)
+                    return;
+
+                _hiddenHosts = new List<Control>();
+                if (_popup.Child?.FindAncestorOfType<OverlayPopupHost>() is { } popupHost)
+                {
+                    popupHost.IsVisible = false;
+                    _hiddenHosts.Add(popupHost);
+                }
+
+                // Closing a popup removes its host from the overlay.
+                foreach (var nestedHost in new List<OverlayPopupHost>(EmbeddedPopupOverlayRoot.GetPopupHosts(Overlay.AnchorLayer)))
+                {
+                    if (EmbeddedPopupOverlayRoot.GetPopup(nestedHost) is not { } nested
+                        || _popup.Child is not { } child || !child.IsVisualAncestorOf(nested))
+                        continue;
+
+                    if (nested.IsLightDismissEnabled)
+                        nested.Close();
+                    else
+                    {
+                        nestedHost.IsVisible = false;
+                        _hiddenHosts.Add(nestedHost);
+                    }
+                }
+
+                RemoveOverlayUser(Overlay);
+            }
+
+            /// <summary>Shows the popups that <see cref="Hide"/> hid.</summary>
+            public void Show(IEmbeddedPopupHost host)
+            {
+                if (_hiddenHosts is not { } hiddenHosts || Overlay is null)
+                    return;
+
+                _hiddenHosts = null;
+                foreach (var hiddenHost in hiddenHosts)
+                    hiddenHost.IsVisible = true;
+
+                AddOverlayUser(Overlay, host);
+                UpdatePosition();
+            }
+
+            /// <summary>Opens the popup again, in the overlay that its host now returns.</summary>
+            public void Reopen()
+            {
+                _popup.Close();
+                _popup.Open();
+            }
+
+            /// <summary>Gets the bounds of the open target in overlay coordinates.</summary>
+            private Rect? GetAnchorBounds()
+            {
+                if (_openTarget is null || HostTopLevel is null || !s_hosts.TryGetValue(HostTopLevel, out var host))
+                    return null;
+
+                if (host.Host.GetOriginInOverlay() is not { } origin
+                    || _openTarget.TranslatePoint(default, HostTopLevel) is not { } targetOrigin)
+                    return null;
+
+                if (_placementOverridden)
+                {
+                    var pointer = host.LastPointer ?? targetOrigin;
+                    return new Rect(origin + pointer, new Size(1, 1));
+                }
+
+                return new Rect(origin + targetOrigin, _openTarget.Bounds.Size);
+            }
+
+            /// <summary>
+            /// Follows <paramref name="target"/> into and out of the embedded views while the popup is closed, so
+            /// that the popup opens in the overlay of the view that contains the target.
+            /// </summary>
+            private void Watch(Control? target)
+            {
+                if (_watchedTarget == target)
+                    return;
+
+                if (_watchedTarget is not null)
+                {
+                    _watchedTarget.AttachedToVisualTree -= OnWatchedTargetChanged;
+                    _watchedTarget.DetachedFromVisualTree -= OnWatchedTargetChanged;
+                }
+
+                _watchedTarget = target;
+                if (target is not null)
+                {
+                    target.AttachedToVisualTree += OnWatchedTargetChanged;
+                    target.DetachedFromVisualTree += OnWatchedTargetChanged;
+                }
+            }
+
+            // An open popup closes when its target detaches, and is redirected then.
+            private void OnWatchedTargetChanged(object? sender, VisualTreeAttachmentEventArgs e) => Redirect();
 
             private void SetTarget(Control? target)
             {
@@ -542,6 +742,8 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 
                 _openTarget = target;
                 _openTarget.DetachedFromVisualTree += OnTargetDetached;
+                // The target can move in its view without a layout of the host view, for example when it scrolls.
+                _openTarget.LayoutUpdated += OnTargetLayoutUpdated;
                 s_open.Add(this);
                 AddOverlayUser(Overlay, host.Host);
 
@@ -565,7 +767,9 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                     return;
 
                 _openTarget.DetachedFromVisualTree -= OnTargetDetached;
+                _openTarget.LayoutUpdated -= OnTargetLayoutUpdated;
                 _openTarget = null;
+                _anchorBounds = null;
                 s_open.Remove(this);
 
                 // The popup was redirected, so a target other than the anchor means that it got a new one.
@@ -579,8 +783,10 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                     _popup.SetCurrentValue(Popup.PlacementGravityProperty, _savedGravity);
                 }
 
-                if (Overlay is not null)
+                // A hidden popup is not a user of its overlay.
+                if (Overlay is not null && _hiddenHosts is null)
                     RemoveOverlayUser(Overlay);
+                _hiddenHosts = null;
 
                 // The target may have moved to another view while the popup was open. A new target is redirected
                 // when its change is handled.
@@ -589,6 +795,12 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             }
 
             private void OnTargetDetached(object? sender, VisualTreeAttachmentEventArgs e) => _popup.Close();
+
+            private void OnTargetLayoutUpdated(object? sender, EventArgs e)
+            {
+                if (GetAnchorBounds() is { } bounds && bounds != _anchorBounds)
+                    UpdatePosition();
+            }
         }
     }
 }

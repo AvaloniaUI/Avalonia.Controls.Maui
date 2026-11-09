@@ -30,8 +30,16 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
         public static EmbeddedPopupHost Attach(AndroidView view, Control content)
         {
             var host = new EmbeddedPopupHost(view, TopLevel.GetTopLevel(content));
-            if (host._topLevel is not null)
-                EmbeddedPopupRedirector.Register(host._topLevel, host);
+            if (host._topLevel is { } topLevel)
+            {
+                EmbeddedPopupRedirector.Register(topLevel, host);
+
+                // The overlay window stays above the activity, so it would keep the open popups above the next
+                // page, for example after a navigation.
+                view.ViewDetachedFromWindow += (_, _) => EmbeddedPopupRedirector.OnHostLeftWindow(topLevel);
+                view.ViewAttachedToWindow += (_, _) => EmbeddedPopupRedirector.OnHostEnteredWindow(topLevel);
+            }
+
             return host;
         }
 
