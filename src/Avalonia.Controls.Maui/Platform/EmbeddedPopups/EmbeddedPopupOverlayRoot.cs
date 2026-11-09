@@ -12,7 +12,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
         /// <summary>Nothing in the overlay. Input goes to the views below it.</summary>
         None,
 
-        /// <summary>The content of a popup.</summary>
+        /// <summary>The content of a popup, or another layer of the overlay. The overlay gets the input.</summary>
         Popup,
 
         /// <summary>The layer that closes light-dismiss popups when it is pressed.</summary>
@@ -72,8 +72,13 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 return EmbeddedPopupOverlayHit.Popup;
 
             // The light-dismiss layer is internal to Avalonia, so it is found by the name of its type.
-            return hit.GetType().FullName == LightDismissLayerTypeName
-                ? EmbeddedPopupOverlayHit.LightDismissLayer
+            if (hit.GetType().FullName == LightDismissLayerTypeName)
+                return EmbeddedPopupOverlayHit.LightDismissLayer;
+
+            // Another layer of the overlay, for example the light-dismiss layer if Avalonia renamed its type. The
+            // overlay gets the input, so that Avalonia still closes the popups, but does not pass the press through.
+            return hit.FindAncestorOfType<VisualLayerManager>() is not null
+                ? EmbeddedPopupOverlayHit.Popup
                 : EmbeddedPopupOverlayHit.None;
         }
 

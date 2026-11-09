@@ -694,6 +694,18 @@ public class EmbeddedPopupRedirectorTests
         Assert.Equal(EmbeddedPopupOverlayHit.LightDismissLayer, EmbeddedPopupOverlayRoot.HitTest(root, overlay.AnchorLayer, new Point(700, 500)));
     }
 
+    [AvaloniaFact(DisplayName = "Overlay keeps input over an unknown layer, so a renamed light-dismiss layer still dismisses")]
+    public void Overlay_Hit_Test_Keeps_Input_Over_Unknown_Layer()
+    {
+        var (_, _, _, overlay) = CreateEmbeddedPopup();
+        var root = overlay.Window;
+        var layer = Assert.IsType<AdornerLayer>(AdornerLayer.GetAdornerLayer(overlay.AnchorLayer));
+        layer.Children.Add(new Border { Width = 800, Height = 600, Background = Avalonia.Media.Brushes.Transparent });
+        RunFrames();
+
+        Assert.Equal(EmbeddedPopupOverlayHit.Popup, EmbeddedPopupOverlayRoot.HitTest(root, overlay.AnchorLayer, new Point(700, 500)));
+    }
+
     [AvaloniaTheory(DisplayName = "Press outside popups passes through only when all light-dismiss popups let it")]
     [InlineData(true, true, true)]
     [InlineData(true, false, false)]

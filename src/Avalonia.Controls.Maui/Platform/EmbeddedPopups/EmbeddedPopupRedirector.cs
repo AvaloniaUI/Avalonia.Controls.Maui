@@ -201,18 +201,19 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
         private static List<Popup> GetOpenPopups(IEnumerable<IEmbeddedPopupOverlay> overlays)
         {
             var popups = new List<Popup>();
+            var found = new HashSet<Popup>();
             foreach (var overlay in overlays)
             {
                 foreach (var state in s_open)
                 {
-                    if (state.Overlay == overlay)
+                    if (state.Overlay == overlay && found.Add(state.Popup))
                         popups.Add(state.Popup);
                 }
 
                 // Also the popups opened from a popup in the overlay, which are only tracked where they are redirected.
                 foreach (var host in EmbeddedPopupOverlayRoot.GetPopupHosts(overlay.AnchorLayer))
                 {
-                    if (EmbeddedPopupOverlayRoot.GetPopup(host) is { } popup && !popups.Contains(popup))
+                    if (EmbeddedPopupOverlayRoot.GetPopup(host) is { } popup && found.Add(popup))
                         popups.Add(popup);
                 }
             }
@@ -247,8 +248,11 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
         /// </remarks>
         private static List<Popup> GetOpenLightDismissPopups(TopLevel topLevel)
         {
+            // Lists keep the order in which the popups close, and sets the membership.
             var popups = new List<Popup>();
+            var found = new HashSet<Popup>();
             var owners = new List<TopLevel> { topLevel };
+            var knownOwners = new HashSet<TopLevel> { topLevel };
             for (var i = 0; i < owners.Count; i++)
             {
                 foreach (var state in s_open)
@@ -256,16 +260,16 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                     if (state.HostTopLevel != owners[i])
                         continue;
 
-                    if (state.Popup.IsLightDismissEnabled && !popups.Contains(state.Popup))
+                    if (state.Popup.IsLightDismissEnabled && found.Add(state.Popup))
                         popups.Add(state.Popup);
                     if (state.Popup.Child is { } child && TopLevel.GetTopLevel(child) is { } shownIn
-                        && !owners.Contains(shownIn))
+                        && knownOwners.Add(shownIn))
                         owners.Add(shownIn);
                     if (state.Overlay is { } overlay)
                     {
                         foreach (var (_, nested) in state.GetNestedPopups(overlay))
                         {
-                            if (nested.IsOpen && nested.IsLightDismissEnabled && !popups.Contains(nested))
+                            if (nested.IsOpen && nested.IsLightDismissEnabled && found.Add(nested))
                                 popups.Add(nested);
                         }
                     }
