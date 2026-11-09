@@ -22,7 +22,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     private readonly AImage _staticImage;
     private GifImage? _gifImage;
     private CancellationTokenSource? _loadCts;
-    private IDisposable? _currentImageResult;
+    private ImageSourceLoader? _staticImageLoader;
 
     private static readonly ConcurrentDictionary<string, Uri?> AssetCache = new();
 
@@ -70,14 +70,21 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     }
 
     /// <inheritdoc/>
+    protected override void ConnectHandler(AGrid platformView)
+    {
+        base.ConnectHandler(platformView);
+        _staticImageLoader = new ImageSourceLoader(_staticImage, MauiContext!, ApplyStaticImage);
+    }
+
+    /// <inheritdoc/>
     protected override void DisconnectHandler(AGrid platformView)
     {
         _loadCts?.Cancel();
         _loadCts?.Dispose();
         _loadCts = null;
 
-        _currentImageResult?.Dispose();
-        _currentImageResult = null;
+        _staticImageLoader?.Dispose();
+        _staticImageLoader = null;
 
         ResetClip(_staticImage);
         _staticImage.Source = null;
@@ -172,27 +179,22 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
                 _ => false
             };
 
-            if (isGif)
+            if (isGif && await TryLoadGifAsync(image.Source, image.IsAnimationPlaying, token))
             {
-                await LoadGifAsync(image.Source, image.IsAnimationPlaying, token);
+                if (!token.IsCancellationRequested)
+                    UpdateIsLoading(false);
+                return;
             }
-            else
-            {
-                await LoadStaticAsync(image.Source, token);
-            }
+
+            // The static loader clears the loading state when it applies the image
+            if (!token.IsCancellationRequested)
+                LoadStatic(image.Source);
         }
         catch (Exception ex)
         {
             Log(LogLevel.Error, ex, "Fatal error loading image source");
             ClearImages();
-        }
-        finally
-        {
-            // Clear loading state on success (unless cancelled)
-            if (!token.IsCancellationRequested)
-            {
-                UpdateIsLoading(false);
-            }
+            UpdateIsLoading(false);
         }
     }
 
@@ -204,7 +206,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
     }
 
-    private async Task LoadGifAsync(IImageSource source, bool shouldPlay, CancellationToken token)
+    private async Task<bool> TryLoadGifAsync(IImageSource source, bool shouldPlay, CancellationToken token)
     {
         Uri? gifUri = null;
         
@@ -218,20 +220,15 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
 
         if (gifUri == null)
-        {
-            // Fallback to static
-            await LoadStaticAsync(source, token);
-            return;
-        }
+            return false;
 
-        if (token.IsCancellationRequested) return;
+        if (token.IsCancellationRequested) return true;
         
         // This check prevents the NullReferenceException inside GifImage.InitializeGif
         if (gifUri.Scheme == "avares" && !AssetLoader.Exists(gifUri))
         {
             Log(LogLevel.Warning, null, $"GIF asset missing in bundle: {gifUri}. Falling back.");
-            await LoadStaticAsync(source, token);
-            return;
+            return false;
         }
 
         EnsureGifControl(VirtualView);
@@ -250,8 +247,10 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
                 ? IterationCount.Infinite
                 : new IterationCount(0);
 
+            _staticImageLoader?.SetSource(null);
             _staticImage.IsVisible = false;
             _gifImage.IsVisible = true;
+            return true;
         }
         catch (Exception ex)
         {
@@ -259,7 +258,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
             _gifImage = null; 
             
             Log(LogLevel.Error, ex, "GifImage crashed during property assignment.");
-            await LoadStaticAsync(source, token);
+            return false;
         }
     }
     
@@ -286,7 +285,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
     }
 
-    private async Task LoadStaticAsync(IImageSource source, CancellationToken token)
+    private void LoadStatic(IImageSource source)
     {
         if (_gifImage != null)
         {
@@ -294,50 +293,29 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
             try { _gifImage.Source = null!; } catch { }
         }
 
-        var provider = this.GetRequiredService<IImageSourceServiceProvider>();
-
-        if (provider.ResolveImageSourceService(source) is IAvaloniaImageSourceService service)
+        if (_staticImageLoader == null)
         {
-            try
-            {
-                var result = await service.GetImageAsync(source, 1.0f, token);
-                if (token.IsCancellationRequested)
-                {
-                    (result as IDisposable)?.Dispose();
-                    return;
-                }
-
-                var previousResult = _currentImageResult;
-
-                if (result?.Value is { } bitmap)
-                {
-                    _staticImage.Source = bitmap;
-                    _staticImage.IsVisible = true;
-                    _currentImageResult = result as IDisposable;
-                }
-                else
-                {
-                    _staticImage.Source = null;
-                    _currentImageResult = null;
-                }
-
-                // Dispose previous image result after replacing to avoid displaying a disposed bitmap
-                previousResult?.Dispose();
-            }
-            catch (Exception ex)
-            {
-                Log(LogLevel.Warning, ex, "Failed to load static image fallback.");
-                _staticImage.Source = null;
-            }
+            UpdateIsLoading(false);
+            return;
         }
+
+        _staticImageLoader.SetSource(source);
+    }
+
+    private void ApplyStaticImage(Avalonia.Media.IImage? image)
+    {
+        _staticImage.Source = image;
+        if (image != null)
+            _staticImage.IsVisible = true;
+
+        UpdateIsLoading(false);
     }
 
     private void ClearImages()
     {
+        _staticImageLoader?.SetSource(null);
         _staticImage.Source = null;
         _staticImage.IsVisible = false;
-        _currentImageResult?.Dispose();
-        _currentImageResult = null;
         if (_gifImage != null)
         {
             _gifImage.Source = null!;

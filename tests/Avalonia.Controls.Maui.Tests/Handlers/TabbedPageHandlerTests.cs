@@ -11,7 +11,6 @@ using AvaloniaTabbedPage = Avalonia.Controls.TabbedPage;
 using AvaloniaNavigationPage = Avalonia.Controls.NavigationPage;
 using AvaloniaStackPanel = Avalonia.Controls.StackPanel;
 using AvaloniaTextBlock = Avalonia.Controls.TextBlock;
-using AvaloniaWindow = Avalonia.Controls.Window;
 using MauiTabbedPage = Microsoft.Maui.Controls.TabbedPage;
 using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 using MauiNavigationPage = Microsoft.Maui.Controls.NavigationPage;
@@ -424,7 +423,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var stub = new TabbedPageStub();
             stub.Children.Add(page);
 
-            var handler = await CreateHandlerAsync<TabbedPageHandler>(stub);
+            var handler = await CreateShownHandlerAsync(stub);
             Assert.NotNull(await WaitForHeaderIconAsync(handler, 0));
 
             await InvokeOnMainThreadAsync(() =>
@@ -524,7 +523,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var stub = new TabbedPageStub();
             stub.Children.Add(page);
 
-            var handler = await CreateHandlerAsync<TabbedPageHandler>(stub);
+            var handler = await CreateShownHandlerAsync(stub);
             Assert.NotNull(await WaitForHeaderIconAsync(handler, 0));
 
             await InvokeOnMainThreadAsync(() =>
@@ -562,7 +561,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var stub = new TabbedPageStub();
             stub.Children.Add(page);
 
-            var handler = await CreateHandlerAsync<TabbedPageHandler>(stub);
+            var handler = await CreateShownHandlerAsync(stub);
             Assert.NotNull(await WaitForHeaderIconAsync(handler, 0));
 
             await InvokeOnMainThreadAsync(() =>
@@ -668,37 +667,23 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var stub = new TabbedPageStub();
             stub.Children.Add(page);
 
-            var handler = await CreateHandlerAsync<TabbedPageHandler>(stub);
+            var handler = await CreateShownHandlerAsync(stub);
             var icon = await WaitForHeaderIconAsync(handler, 0);
 
             Assert.NotNull(icon);
 
             await InvokeOnMainThreadAsync(() =>
             {
-                var window = new AvaloniaWindow
-                {
-                    Content = handler.PlatformView,
-                    Width = 320,
-                    Height = 240
-                };
-                try
-                {
-                    window.Show();
-                    Avalonia.Threading.Dispatcher.UIThread.RunJobs();
+                Avalonia.Threading.Dispatcher.UIThread.RunJobs();
 
-                    var bitmap = new RenderTargetBitmap(
-                        new Avalonia.PixelSize(320, 240),
-                        new Avalonia.Vector(96, 96));
-                    bitmap.Render(handler.PlatformView);
+                var bitmap = new RenderTargetBitmap(
+                    new Avalonia.PixelSize(320, 240),
+                    new Avalonia.Vector(96, 96));
+                bitmap.Render(handler.PlatformView);
 
-                    Assert.Equal(new Avalonia.PixelSize(320, 240), bitmap.PixelSize);
-                    Assert.NotNull(icon.Source);
-                    Assert.True(icon.Bounds.Width > 0 || icon.DesiredSize.Width > 0);
-                }
-                finally
-                {
-                    window.Close();
-                }
+                Assert.Equal(new Avalonia.PixelSize(320, 240), bitmap.PixelSize);
+                Assert.NotNull(icon.Source);
+                Assert.True(icon.Bounds.Width > 0 || icon.DesiredSize.Width > 0);
             });
         }
         finally
@@ -727,7 +712,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var stub = new TabbedPageStub();
             stub.Children.Add(page);
 
-            var handler = await CreateHandlerAsync<TabbedPageHandler>(stub);
+            var handler = await CreateShownHandlerAsync(stub);
 
             Assert.NotNull(await WaitForHeaderIconAsync(handler, 0));
         }
@@ -762,6 +747,7 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
             var mauiContext = new ImageSourceServiceMauiContext(ApplicationServices, imageService);
             var handler = CreateHandler<TabbedPageHandler>(stub, mauiContext);
             platformView = handler.PlatformView;
+            ShowInWindow(platformView);
             headerPanel = Assert.IsType<AvaloniaStackPanel>(GetTabHeader(handler, 0));
 
             Assert.Empty(headerPanel.Children.OfType<AvaloniaImage>());
@@ -1014,6 +1000,13 @@ public class TabbedPageHandlerTests : HandlerTestBase<TabbedPageHandler, TabbedP
         }
 
         return null;
+    }
+
+    private async Task<TabbedPageHandler> CreateShownHandlerAsync(TabbedPageStub stub)
+    {
+        var handler = await CreateHandlerAsync<TabbedPageHandler>(stub);
+        await InvokeOnMainThreadAsync(() => ShowInWindow(handler.PlatformView));
+        return handler;
     }
 
     private async Task<AvaloniaImage?> WaitForHeaderIconAsync(TabbedPageHandler handler, int index)

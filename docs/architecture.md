@@ -255,7 +255,7 @@ Because the URI includes the font family name extracted from the file itself, th
 
 ## Image source services
 
-.NET MAUI resolves images through `IImageSourceServiceProvider`, which selects the appropriate `IImageSourceService` implementation based on the type of `IImageSource`. `Avalonia.Controls.Maui` registers four services that each return an Avalonia `Bitmap` rather than a platform-native image type:
+.NET MAUI resolves images through `IImageSourceServiceProvider`, which selects the appropriate `IImageSourceService` implementation based on the type of `IImageSource`. `Avalonia.Controls.Maui` registers four services that each return an Avalonia `IImage` rather than a platform-native image type:
 
 | Image source type | Service |
 |---|---|
@@ -263,6 +263,12 @@ Because the URI includes the font family name extracted from the file itself, th
 | `IUriImageSource` | `AvaloniaUriImageSourceService` |
 | `IFontImageSource` | `AvaloniaFontImageSourceService` |
 | `IStreamImageSource` | `AvaloniaStreamImageSourceService` |
+
+Controls never call the services directly. Each one loads its image through the internal `ImageSourceLoader`, which waits for the control to attach to a `TopLevel`, asks for the image at that `TopLevel`'s `RenderScaling`, and cancels a load that a newer source makes stale. When the scale changes, for example when the window moves to another monitor, the loader loads a bitmap again at the new scale. A vector image is not loaded again.
+
+### Font images
+
+`AvaloniaFontImageSourceService` returns a `DrawingImage` of glyph runs, not a bitmap, so a `FontImageSource` glyph is sharp at every display scale. The glyph runs are drawn with greyscale antialiasing, as on the .NET MAUI platforms. The image is sized to the glyph's ink bounds plus a one-unit border on each side, as .NET MAUI does on Windows. Where an image is used as a brush (a page background or a tinted Shell tab icon), the brush is a `DrawingBrush`, so it stays sharp too.
 
 ### File image resolution
 

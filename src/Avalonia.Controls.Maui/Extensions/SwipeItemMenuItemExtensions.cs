@@ -114,76 +114,52 @@ public static class SwipeItemMenuItemExtensions
     /// <summary>
     /// Updates the icon/image source of the button from the SwipeItemMenuItem.
     /// </summary>
-    public static async Task UpdateSourceAsync(this PlatformView platformView, IMenuElement menuElement, IElementHandler handler)
+    public static Task UpdateSourceAsync(this PlatformView platformView, IMenuElement menuElement, IElementHandler handler)
     {
-        if (menuElement.Source == null)
+        var mauiContext = handler.MauiContext;
+        if (menuElement.Source == null || mauiContext == null)
         {
-            // Reset to text-only button
+            ImageSourceLoader.Clear(platformView);
             platformView.Content = menuElement.Text;
-            return;
+            return Task.CompletedTask;
         }
 
-        try
+        ImageSourceLoader.Set(platformView, mauiContext, menuElement.Source, icon =>
         {
-            var imageSourceServiceProvider = handler.GetRequiredService<IImageSourceServiceProvider>();
-            var serviceSource = imageSourceServiceProvider?.ResolveImageSourceService(menuElement.Source);
-
-            if (serviceSource is IAvaloniaImageSourceService service)
+            if (icon == null)
             {
-                var result = await service.GetImageAsync(menuElement.Source, 1.0f);
-                if (result?.Value is { } icon)
-                {
-                    // Create a StackPanel with image and text
-                    var stackPanel = new StackPanel
-                    {
-                        Orientation = Orientation.Horizontal,
-                        Spacing = 8,
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-
-                    var image = new Image
-                    {
-                        Source = icon,
-                        Width = 16,
-                        Height = 16,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-
-                    stackPanel.Children.Add(image);
-
-                    if (!string.IsNullOrEmpty(menuElement.Text))
-                    {
-                        var textBlock = new TextBlock
-                        {
-                            Text = menuElement.Text,
-                            VerticalAlignment = VerticalAlignment.Center
-                        };
-                        stackPanel.Children.Add(textBlock);
-                    }
-
-                    platformView.Content = stackPanel;
-                }
-                else
-                {
-                    // Fallback to text
-                    platformView.Content = menuElement.Text;
-                }
-            }
-            else
-            {
-                // Fallback to text
                 platformView.Content = menuElement.Text;
+                return;
             }
-        }
-        catch (Exception ex)
-        {
-            handler.GetRequiredService<ILoggerFactory>()
-                ?.CreateLogger(typeof(SwipeItemMenuItemExtensions))
-                ?.LogError(ex, "Error loading SwipeItem icon source");
 
-            // Fallback to text
-            platformView.Content = menuElement.Text;
-        }
+            var stackPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            stackPanel.Children.Add(new Image
+            {
+                Source = icon,
+                Width = 16,
+                Height = 16,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+
+            if (!string.IsNullOrEmpty(menuElement.Text))
+            {
+                stackPanel.Children.Add(new TextBlock
+                {
+                    Text = menuElement.Text,
+                    VerticalAlignment = VerticalAlignment.Center
+                });
+            }
+
+            platformView.Content = stackPanel;
+        });
+
+        return Task.CompletedTask;
     }
 }

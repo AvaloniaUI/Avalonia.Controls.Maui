@@ -21,6 +21,20 @@ public abstract class HandlerTestBase : IAsyncDisposable
     private IMauiContext? _mauiContext;
     private bool _isCreated;
     private readonly List<IElementHandler> _handlers = new();
+    private readonly List<Avalonia.Controls.Window> _windows = new();
+
+    /// <summary>
+    /// Shows <paramref name="control"/> in a window that closes when the test ends. Image sources load
+    /// once their control is attached to a window.
+    /// </summary>
+    protected Avalonia.Controls.Window ShowInWindow(Avalonia.Controls.Control control)
+    {
+        var window = new Avalonia.Controls.Window { Content = control, Width = 320, Height = 240 };
+        window.Show();
+        _windows.Add(window);
+        Dispatcher.UIThread.RunJobs();
+        return window;
+    }
 
     protected void EnsureHandlerCreated(Action<MauiAppBuilder>? additionalCreationActions = null)
     {
@@ -233,6 +247,16 @@ public abstract class HandlerTestBase : IAsyncDisposable
 
     public virtual async ValueTask DisposeAsync()
     {
+        if (_windows.Count > 0)
+        {
+            await InvokeOnMainThreadAsync(() =>
+            {
+                foreach (var window in _windows)
+                    window.Close();
+            });
+            _windows.Clear();
+        }
+
         foreach (var handler in _handlers)
         {
             if (handler is IViewHandler vh && vh.PlatformView != null)

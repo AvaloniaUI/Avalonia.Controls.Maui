@@ -23,37 +23,25 @@ public static class PageExtensions
         if (mauiContext == null)
             return;
 
-        if (page.BackgroundImageSource != null)
+        if (page.BackgroundImageSource == null)
         {
-            var provider = mauiContext.Services.GetRequiredService<IImageSourceServiceProvider>();
-            var service = provider.ResolveImageSourceService(page.BackgroundImageSource);
-
-            if (service != null)
-            {
-                service.GetImageAsync(page.BackgroundImageSource)
-                    .ContinueWith(async task =>
-                    {
-                        if (task.IsCompletedSuccessfully && task.Result != null)
-                        {
-                            var result = task.Result;
-                            
-                            if (result is IImageSourceServiceResult<Media.IImage> { Value: { } image })
-                            {
-                                await platformView.Dispatcher.InvokeAsync(() =>
-                                {
-                                    var brush = ImageBrushes.Create(image);
-                                    brush.Stretch = Media.Stretch.Fill;
-                                    platformView.Background = brush;
-                                });
-                            }
-                        }
-                    });
-            }
-        }
-        else
-        {
+            ImageSourceLoader.Clear(platformView);
             platformView.UpdateBackground(page);
+            return;
         }
+
+        ImageSourceLoader.Set(platformView, mauiContext, page.BackgroundImageSource, image =>
+        {
+            if (image == null)
+            {
+                platformView.UpdateBackground(page);
+                return;
+            }
+
+            var brush = ImageBrushes.Create(image);
+            brush.Stretch = Media.Stretch.Fill;
+            platformView.Background = brush;
+        });
     }
 
     /// <summary>

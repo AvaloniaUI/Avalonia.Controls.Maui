@@ -197,6 +197,7 @@ public partial class ImageHandlerTests : HandlerTestBase<MauiImageHandler, Image
 
         await InvokeOnMainThreadAsync(() =>
         {
+            ShowInWindow(handler.PlatformView);
             MauiImageHandler.MapSource(handler, image);
         });
 

@@ -126,7 +126,7 @@ public static class ShellItemExtensions
             };
             iconBorder.Classes.Add("shell-tab-header-icon");
 
-            _ = handler.LoadIconForTintAsync(section.Icon, iconBorder);
+            handler.LoadIconForTint(section.Icon, iconBorder);
             panel.Children.Add(iconBorder);
         }
 
@@ -145,69 +145,40 @@ public static class ShellItemExtensions
     }
 
     /// <summary>
-    /// Loads an icon asynchronously for a tab header.
+    /// Loads an icon for a tab header.
     /// </summary>
     /// <param name="handler">The <see cref="ShellItemHandler"/> instance.</param>
     /// <param name="iconSource">The icon source.</param>
     /// <param name="imageControl">The image control to display the icon.</param>
-    internal static async Task LoadIconAsync(this ShellItemHandler handler, ImageSource iconSource, Avalonia.Controls.Image imageControl)
+    internal static void LoadIcon(this ShellItemHandler handler, ImageSource iconSource, Avalonia.Controls.Image imageControl)
     {
-        try
-        {
-            if (handler.MauiContext == null)
-                return;
+        if (handler.MauiContext == null)
+            return;
 
-            var imageSourceServiceProvider = handler.MauiContext.Services.GetService<IImageSourceServiceProvider>();
-            if (imageSourceServiceProvider == null)
-                return;
-
-            var service = imageSourceServiceProvider.ResolveImageSourceService(iconSource);
-            if (service is IAvaloniaImageSourceService avaloniaService)
-            {
-                var result = await avaloniaService.GetImageAsync(iconSource);
-                if (result?.Value != null)
-                {
-                    imageControl.Source = result.Value;
-                }
-            }
-        }
-        catch
-        {
-            // Icon loading failed silently
-        }
+        ImageSourceLoader.Set(imageControl, handler.MauiContext, iconSource, icon => imageControl.Source = icon);
     }
 
     /// <summary>
-    /// Loads an icon asynchronously and applies it as an OpacityMask on a Border for tinting support.
+    /// Loads an icon and applies it as an OpacityMask on a Border for tinting support.
     /// The Border's Background acts as the tint color; the icon's opaque pixels determine visibility.
     /// </summary>
-    internal static async Task LoadIconForTintAsync(this ShellItemHandler handler, ImageSource iconSource, Border iconBorder)
+    internal static void LoadIconForTint(this ShellItemHandler handler, ImageSource iconSource, Border iconBorder)
     {
-        try
+        if (handler.MauiContext == null)
+            return;
+
+        ImageSourceLoader.Set(iconBorder, handler.MauiContext, iconSource, icon =>
         {
-            if (handler.MauiContext == null)
-                return;
-
-            var imageSourceServiceProvider = handler.MauiContext.Services.GetService<IImageSourceServiceProvider>();
-            if (imageSourceServiceProvider == null)
-                return;
-
-            var service = imageSourceServiceProvider.ResolveImageSourceService(iconSource);
-            if (service is IAvaloniaImageSourceService avaloniaService)
+            if (icon == null)
             {
-                var result = await avaloniaService.GetImageAsync(iconSource);
-                if (result?.Value != null)
-                {
-                    var mask = ImageBrushes.Create(result.Value);
-                    mask.Stretch = Avalonia.Media.Stretch.Uniform;
-                    iconBorder.OpacityMask = mask;
-                }
+                iconBorder.OpacityMask = null;
+                return;
             }
-        }
-        catch
-        {
-            // Icon loading failed silently
-        }
+
+            var mask = ImageBrushes.Create(icon);
+            mask.Stretch = Avalonia.Media.Stretch.Uniform;
+            iconBorder.OpacityMask = mask;
+        });
     }
 
     /// <summary>

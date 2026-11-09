@@ -7,6 +7,7 @@ using Microsoft.Maui.Platform;
 using System.Threading;
 using System.Threading.Tasks;
 using PlatformView = Avalonia.Controls.Maui.MauiButton;
+using AvaloniaImageSourceLoader = Avalonia.Controls.Maui.Services.ImageSourceLoader;
 using MButton = Microsoft.Maui.Controls.Button;
 
 namespace Avalonia.Controls.Maui.Handlers;
@@ -14,7 +15,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>Avalonia handler for <see cref="IButton"/>.</summary>
 public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
 {
-    private CancellationTokenSource? _imageSourceCts;
+    private AvaloniaImageSourceLoader? _imageLoader;
     private ImageSourcePartLoader? _imageSourcePartLoader;
 
     /// <summary>Property mapper for <see cref="ButtonHandler"/>.</summary>
@@ -218,9 +219,6 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         if (handler is not ButtonHandler buttonHandler || handler.VirtualView is null)
             return;
 
-        buttonHandler._imageSourceCts?.Cancel();
-        buttonHandler._imageSourceCts = null;
-
         var imageSource = button switch
         {
             MButton mauiButton => mauiButton.ImageSource,
@@ -228,18 +226,7 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
             _ => null
         };
 
-        if (imageSource == null)
-        {
-            if (handler.PlatformView is PlatformView pv)
-            {
-                pv.ImageSource = null;
-            }
-            return;
-        }
-
-        var cts = new CancellationTokenSource();
-        buttonHandler._imageSourceCts = cts;
-        _ = buttonHandler.LoadImageSourceAsync(imageSource, cts.Token);
+        buttonHandler._imageLoader?.SetSource(imageSource);
     }
     /// <summary>Maps the ContentLayout property to the platform view.</summary>
     /// <param name="handler">The handler for the button.</param>
@@ -280,6 +267,7 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
         platformView.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
         platformView.Click += OnClick;
+        _imageLoader = new AvaloniaImageSourceLoader(platformView, MauiContext!, image => platformView.ImageSource = image);
     }
 
     /// <inheritdoc/>
@@ -288,8 +276,8 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         platformView.RemoveHandler(InputElement.PointerPressedEvent, OnPointerPressed);
         platformView.RemoveHandler(InputElement.PointerReleasedEvent, OnPointerReleased);
         platformView.Click -= OnClick;
-        _imageSourceCts?.Cancel();
-        _imageSourceCts = null;
+        _imageLoader?.Dispose();
+        _imageLoader = null;
 
         base.DisconnectHandler(platformView);
     }
@@ -315,36 +303,6 @@ public partial class ButtonHandler : ViewHandler<IButton, PlatformView>
         if (VirtualView is IButton button)
         {
             button.Released();
-        }
-    }
-
-    private async Task LoadImageSourceAsync(IImageSource imageSource, CancellationToken token)
-    {
-        try
-        {
-            var provider = this.GetRequiredService<IImageSourceServiceProvider>();
-            if (provider.ResolveImageSourceService(imageSource) is IAvaloniaImageSourceService service)
-            {
-                var result = await service.GetImageAsync(imageSource, 1.0f, token);
-                if (token.IsCancellationRequested)
-                    return;
-
-                if (PlatformView is PlatformView platformView)
-                {
-                    platformView.ImageSource = result?.Value;
-                }
-            }
-            else if (PlatformView is PlatformView platformView)
-            {
-                platformView.ImageSource = null;
-            }
-        }
-        catch
-        {
-            if (PlatformView is PlatformView platformView)
-            {
-                platformView.ImageSource = null;
-            }
         }
     }
 

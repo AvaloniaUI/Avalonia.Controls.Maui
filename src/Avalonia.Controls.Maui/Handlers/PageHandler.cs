@@ -199,6 +199,7 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
     {
         if (mauiPage is MauiPage page)
         {
+            ImageSourceLoader.Clear(contentPage);
             contentPage.Header = page.Title;
 
             var hasNavigationBar = MauiNavigationPage.GetHasNavigationBar(page);
@@ -230,58 +231,48 @@ public partial class PageHandler : ViewHandler<MauiPage, AvaloniaContentPage>
                 if (titleIconSource != null && !titleIconSource.IsEmpty)
                 {
                     var mauiContext = page.Handler?.MauiContext ?? FindMauiContext(page);
-                    _ = LoadTitleIconAsync(contentPage, page.Title, titleIconSource, mauiContext);
+                    LoadTitleIcon(contentPage, page.Title, titleIconSource, mauiContext);
                 }
             }
         }
     }
 
-    private static async Task LoadTitleIconAsync(
+    private static void LoadTitleIcon(
         AvaloniaContentPage contentPage,
         string? title,
         ImageSource imageSource,
         IMauiContext mauiContext)
     {
-        try
+        ImageSourceLoader.Set(contentPage, mauiContext, imageSource, icon =>
         {
-            var services = mauiContext.Services;
-            var imageSourceServiceProvider = services.GetRequiredService<IImageSourceServiceProvider>();
-            var imageSourceService = imageSourceServiceProvider.GetRequiredImageSourceService(imageSource);
-
-            if (imageSourceService is not IAvaloniaImageSourceService avaloniaService)
-                return;
-
-            var result = await avaloniaService.GetImageAsync(imageSource);
-
-            if (result?.Value is { } icon)
+            if (icon == null)
             {
-                var panel = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    Spacing = 8
-                };
-
-                panel.Children.Add(new AvaloniaImage
-                {
-                    Source = icon,
-                    Width = 20,
-                    Height = 20,
-                    VerticalAlignment = VerticalAlignment.Center
-                });
-
-                panel.Children.Add(new Avalonia.Controls.TextBlock
-                {
-                    Text = title ?? string.Empty,
-                    VerticalAlignment = VerticalAlignment.Center
-                });
-
-                contentPage.Header = panel;
+                contentPage.Header = title;
+                return;
             }
-        }
-        catch
-        {
-            // Silently ignore icon loading failures
-        }
+
+            var panel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal,
+                Spacing = 8
+            };
+
+            panel.Children.Add(new AvaloniaImage
+            {
+                Source = icon,
+                Width = 20,
+                Height = 20,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+
+            panel.Children.Add(new Avalonia.Controls.TextBlock
+            {
+                Text = title ?? string.Empty,
+                VerticalAlignment = VerticalAlignment.Center
+            });
+
+            contentPage.Header = panel;
+        });
     }
 
     private static IMauiContext FindMauiContext(MauiPage page)
