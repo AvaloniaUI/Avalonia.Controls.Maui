@@ -112,7 +112,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             // A transparent brush keeps the root hit-testable. Avalonia can then track the mouse over the root,
             // and clears that when the pointer leaves. With no background, the root keeps IsPointerOver after a
             // click in a popup, and its next render closes the tooltips of the embedded views.
-            // HitsPopup ignores the root, so input outside the popups still goes to the views below.
+            // HitTestOverlay ignores the root, so input outside the popups still goes to the views below.
             _root.Background = Avalonia.Media.Brushes.Transparent;
             _hover = AvaloniaViewHover.Attach(_view, _root);
 
@@ -205,15 +205,10 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             return new Point(origin.X, origin.Y);
         }
 
-        /// <summary>Returns true when the point is over popup content, including light-dismiss layers.</summary>
-        private bool HitsPopup(CGPoint point)
-        {
-            // UIKit points are Avalonia device-independent units.
-            return _root.InputHitTest(new Point(point.X, point.Y)) is Visual hit
-                && hit != _root
-                && !AnchorLayer.IsVisualAncestorOf(hit)
-                && !hit.IsVisualAncestorOf(AnchorLayer);
-        }
+        /// <summary>Gets what <paramref name="point"/> is over.</summary>
+        // UIKit points are Avalonia device-independent units.
+        private EmbeddedPopupOverlayHit HitTestOverlay(CGPoint point) =>
+            EmbeddedPopupOverlayRoot.HitTest(_root, AnchorLayer, new Point(point.X, point.Y));
 
         private sealed class OverlayView(EmbeddedPopupOverlay overlay) : Avalonia.iOS.AvaloniaView
         {
@@ -221,9 +216,38 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
 
             public bool HasActiveTouches => _activeTouches > 0;
 
+            private double _passedThroughAt = -1;
+
             // Touches that are not over a popup go to the views below the overlay.
-            public override UIView? HitTest(CGPoint point, UIEvent? uievent) =>
-                overlay.HitsPopup(point) ? base.HitTest(point, uievent) : null;
+            public override UIView? HitTest(CGPoint point, UIEvent? uievent)
+            {
+                // UIKit can hit-test a touch more than once. The light-dismiss layer is still in the rendered scene
+                // after the popups closed, so answer the same for the same touch.
+                if (uievent is { Type: UIEventType.Touches } && uievent.Timestamp == _passedThroughAt)
+                    return null;
+
+                switch (overlay.HitTestOverlay(point))
+                {
+                    case EmbeddedPopupOverlayHit.Popup:
+                        return base.HitTest(point, uievent);
+
+                    case EmbeddedPopupOverlayHit.LightDismissLayer:
+                        // Avalonia passes a press that closes popups to what is below the light-dismiss layer, if
+                        // they let it. Here, that is the view below the overlay.
+                        if (uievent is { Type: UIEventType.Touches }
+                            && EmbeddedPopupRedirector.TryDismissPassingThrough(overlay))
+                        {
+                            _passedThroughAt = uievent.Timestamp;
+                            return null;
+                        }
+
+                        // Avalonia closes the popups when the overlay gets the press, and does not pass it on.
+                        return base.HitTest(point, uievent);
+
+                    default:
+                        return null;
+                }
+            }
 
             public override void TouchesBegan(NSSet touches, UIEvent? evt)
             {

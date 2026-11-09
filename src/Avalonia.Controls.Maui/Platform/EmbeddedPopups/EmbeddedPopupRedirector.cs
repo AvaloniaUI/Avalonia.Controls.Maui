@@ -206,25 +206,71 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
         }
 
         /// <summary>Returns true if <paramref name="topLevel"/> has open light-dismiss popups in the overlay.</summary>
-        public static bool HasOpenLightDismissPopups(TopLevel topLevel)
-        {
-            foreach (var state in s_open)
-            {
-                if (state.HostTopLevel == topLevel && state.Popup.IsLightDismissEnabled)
-                    return true;
-            }
-
-            return false;
-        }
+        /// <remarks>This includes the popups that were opened from its popups.</remarks>
+        public static bool HasOpenLightDismissPopups(TopLevel topLevel) => GetOpenLightDismissPopups(topLevel).Count > 0;
 
         /// <summary>Closes the open light-dismiss popups of <paramref name="topLevel"/>.</summary>
+        /// <remarks>
+        /// This includes the popups that were opened from its popups, such as the drop-down of a ComboBox in a
+        /// popup that is not light-dismiss. They are not redirected, so they are not tracked as open.
+        /// </remarks>
         public static void CloseLightDismissPopups(TopLevel topLevel)
         {
-            foreach (var state in s_open.ToArray())
+            // Closing a popup can close the popups that were opened from it.
+            foreach (var popup in GetOpenLightDismissPopups(topLevel))
+                popup.Close();
+        }
+
+        private static List<Popup> GetOpenLightDismissPopups(TopLevel topLevel)
+        {
+            var popups = new List<Popup>();
+            foreach (var state in s_open)
             {
-                if (state.HostTopLevel == topLevel && state.Popup.IsLightDismissEnabled)
-                    state.Popup.Close();
+                if (state.HostTopLevel != topLevel)
+                    continue;
+
+                if (state.Popup.IsLightDismissEnabled)
+                    popups.Add(state.Popup);
+                if (state.Overlay is { } overlay)
+                {
+                    foreach (var (_, nested) in state.GetNestedPopups(overlay))
+                    {
+                        if (nested.IsOpen && nested.IsLightDismissEnabled && !popups.Contains(nested))
+                            popups.Add(nested);
+                    }
+                }
             }
+
+            return popups;
+        }
+
+        /// <summary>
+        /// Closes the open light-dismiss popups of <paramref name="overlay"/> for a press on its light-dismiss layer,
+        /// if all of them pass that press through.
+        /// </summary>
+        /// <returns>
+        /// True if the popups were closed and the press must go to the views below the overlay. False if the overlay
+        /// must get the press, where Avalonia closes the popups and does not pass the press through.
+        /// </returns>
+        /// <remarks>
+        /// Avalonia passes such a press to what is below the light-dismiss layer in the same top level. In the
+        /// overlay, that is the native page, which only the platform can give the press to.
+        /// </remarks>
+        public static bool TryDismissPassingThrough(IEmbeddedPopupOverlay overlay)
+        {
+            var any = false;
+            foreach (var popup in GetOpenPopups(new[] { overlay }))
+            {
+                if (!popup.IsOpen || !popup.IsLightDismissEnabled)
+                    continue;
+                if (!popup.OverlayDismissEventPassThrough)
+                    return false;
+                any = true;
+            }
+
+            if (any)
+                LightDismiss(overlay);
+            return any;
         }
 
         /// <summary>
@@ -753,7 +799,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             /// <remarks>
             /// A popup is declared in the content of the popup it was opened from, which is shown in another host.
             /// </remarks>
-            private List<(OverlayPopupHost Host, Popup Popup)> GetNestedPopups(IEmbeddedPopupOverlay overlay)
+            public List<(OverlayPopupHost Host, Popup Popup)> GetNestedPopups(IEmbeddedPopupOverlay overlay)
             {
                 var nestedPopups = new List<(OverlayPopupHost, Popup)>();
                 if (_popup.Child is not { } child)

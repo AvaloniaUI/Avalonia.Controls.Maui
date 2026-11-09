@@ -1,10 +1,24 @@
 using System.Collections.Generic;
 using Avalonia.Controls.Embedding;
 using Avalonia.Controls.Primitives;
+using Avalonia.Input;
 using Avalonia.VisualTree;
 
 namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 {
+    /// <summary>What a point in a popup overlay is over.</summary>
+    internal enum EmbeddedPopupOverlayHit
+    {
+        /// <summary>Nothing in the overlay. Input goes to the views below it.</summary>
+        None,
+
+        /// <summary>The content of a popup.</summary>
+        Popup,
+
+        /// <summary>The layer that closes light-dismiss popups when it is pressed.</summary>
+        LightDismissLayer,
+    }
+
     /// <summary>
     /// Helpers for the Avalonia root of a popup overlay.
     /// </summary>
@@ -46,6 +60,24 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 }
             }
         }
+
+        /// <summary>Gets what <paramref name="point"/>, in <paramref name="root"/> coordinates, is over.</summary>
+        public static EmbeddedPopupOverlayHit HitTest(TopLevel root, Visual anchorLayer, Point point)
+        {
+            if (root.InputHitTest(point) is not Visual hit || hit == root || hit == anchorLayer
+                || anchorLayer.IsVisualAncestorOf(hit) || hit.IsVisualAncestorOf(anchorLayer))
+                return EmbeddedPopupOverlayHit.None;
+
+            if (hit.FindAncestorOfType<OverlayPopupHost>(includeSelf: true) is not null)
+                return EmbeddedPopupOverlayHit.Popup;
+
+            // The light-dismiss layer is internal to Avalonia, so it is found by the name of its type.
+            return hit.GetType().FullName == LightDismissLayerTypeName
+                ? EmbeddedPopupOverlayHit.LightDismissLayer
+                : EmbeddedPopupOverlayHit.None;
+        }
+
+        private const string LightDismissLayerTypeName = "Avalonia.Controls.Primitives.LightDismissOverlayLayer";
 
         /// <summary>Gets the popup that is shown in <paramref name="host"/>.</summary>
         public static Popup? GetPopup(OverlayPopupHost host) => (host.Content as StyledElement)?.Parent as Popup;

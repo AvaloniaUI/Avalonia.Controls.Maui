@@ -217,17 +217,23 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
             return window;
         }
 
-        /// <summary>Returns true when the touch point is over popup content, including light-dismiss layers.</summary>
-        private bool HitsPopup(float x, float y)
+        /// <summary>Returns true when a touch that starts at the point goes to the window below the overlay.</summary>
+        private bool PassesTouchThrough(float x, float y)
         {
             if (TopLevel.GetTopLevel(AnchorLayer) is not { } root)
-                return false;
+                return true;
 
             var scaling = root.RenderScaling;
-            return root.InputHitTest(new Point(x / scaling, y / scaling)) is Visual hit
-                && hit != root
-                && !AnchorLayer.IsVisualAncestorOf(hit)
-                && !hit.IsVisualAncestorOf(AnchorLayer);
+            return EmbeddedPopupOverlayRoot.HitTest(root, AnchorLayer, new Point(x / scaling, y / scaling)) switch
+            {
+                EmbeddedPopupOverlayHit.Popup => false,
+
+                // Avalonia passes a press that closes popups to what is below the light-dismiss layer, if they let
+                // it. Here, that is the window below the overlay. Otherwise the overlay gets the press, and Avalonia
+                // closes the popups.
+                EmbeddedPopupOverlayHit.LightDismissLayer => EmbeddedPopupRedirector.TryDismissPassingThrough(this),
+                _ => true,
+            };
         }
 
         /// <summary>Sends a touch that is not over a popup to the window below.</summary>
@@ -267,7 +273,7 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
                 if (e.ActionMasked == MotionEventActions.Down)
                 {
                     IsTouching = true;
-                    _forwarding = !overlay.HitsPopup(e.GetX(), e.GetY());
+                    _forwarding = overlay.PassesTouchThrough(e.GetX(), e.GetY());
                 }
 
                 var ended = e.ActionMasked is MotionEventActions.Up or MotionEventActions.Cancel;

@@ -3,6 +3,7 @@ using Avalonia.Controls.Maui.Platforms.EmbeddedPopups;
 using Avalonia.Controls.Primitives;
 using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
@@ -647,6 +648,73 @@ public class EmbeddedPopupRedirectorTests
 
         Assert.True(popup.IsOpen);
         Assert.Equal(left + 50, Canvas.GetLeft(anchor));
+    }
+
+    [AvaloniaFact(DisplayName = "Moving host closes light-dismiss popups opened from its popups, and keeps their parents")]
+    public void Moving_Host_Closes_Nested_Light_Dismiss_Popups()
+    {
+        var (host, _, popup, _) = CreateEmbeddedPopup(out var fakeHost);
+        fakeHost.FollowsMovesEachFrame = true;
+        var nestedTarget = new Button();
+        var nested = new Popup { PlacementTarget = nestedTarget, IsLightDismissEnabled = true, Child = new Border() };
+        popup.IsLightDismissEnabled = false;
+        popup.Child = new StackPanel { Children = { nestedTarget, nested } };
+        popup.Open();
+        nested.Open();
+        Assert.True(EmbeddedPopupRedirector.HasOpenLightDismissPopups(host));
+        RunFrames();
+
+        fakeHost.Origin = new Point(10, -30);
+        RunFrames();
+
+        Assert.False(nested.IsOpen);
+        Assert.True(popup.IsOpen);
+        Assert.False(EmbeddedPopupRedirector.HasOpenLightDismissPopups(host));
+    }
+
+    [AvaloniaFact(DisplayName = "Overlay hit test tells popup content from the light-dismiss layer")]
+    public void Overlay_Hit_Test_Finds_Light_Dismiss_Layer()
+    {
+        var (_, _, popup, overlay) = CreateEmbeddedPopup();
+        var root = overlay.Window;
+
+        // No popup is open, so nothing in the overlay is hit.
+        Assert.Equal(EmbeddedPopupOverlayHit.None, EmbeddedPopupOverlayRoot.HitTest(root, overlay.AnchorLayer, new Point(700, 500)));
+
+        popup.IsLightDismissEnabled = true;
+        ((Border)popup.Child!).Background = Avalonia.Media.Brushes.White;
+        popup.Open();
+
+        // Hit testing uses the rendered scene.
+        RunFrames();
+        var content = popup.Child!;
+        var inside = content.TranslatePoint(new Point(5, 5), root)!.Value;
+
+        Assert.Equal(EmbeddedPopupOverlayHit.Popup, EmbeddedPopupOverlayRoot.HitTest(root, overlay.AnchorLayer, inside));
+        Assert.Equal(EmbeddedPopupOverlayHit.LightDismissLayer, EmbeddedPopupOverlayRoot.HitTest(root, overlay.AnchorLayer, new Point(700, 500)));
+    }
+
+    [AvaloniaTheory(DisplayName = "Press outside popups passes through only when all light-dismiss popups let it")]
+    [InlineData(true, true, true)]
+    [InlineData(true, false, false)]
+    [InlineData(false, false, false)]
+    public void Press_Outside_Passes_Through_When_Allowed(bool firstPassesThrough, bool secondPassesThrough, bool expected)
+    {
+        var (_, target, popup, overlay) = CreateEmbeddedPopup();
+        var second = CreatePopup(target);
+        ((StackPanel)target.Parent!).Children.Add(second);
+        Dispatcher.UIThread.RunJobs();
+        popup.IsLightDismissEnabled = second.IsLightDismissEnabled = true;
+        popup.OverlayDismissEventPassThrough = firstPassesThrough;
+        second.OverlayDismissEventPassThrough = secondPassesThrough;
+        popup.Open();
+        second.Open();
+
+        Assert.Equal(expected, EmbeddedPopupRedirector.TryDismissPassingThrough(overlay));
+
+        // Popups that pass the press through are closed here, the others by Avalonia when the overlay gets the press.
+        Assert.Equal(!expected, popup.IsOpen);
+        Assert.Equal(!expected, second.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "Host layout moves popups without closing light-dismiss popups")]
