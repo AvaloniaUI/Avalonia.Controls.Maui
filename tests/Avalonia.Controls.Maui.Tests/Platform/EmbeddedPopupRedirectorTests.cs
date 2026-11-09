@@ -717,6 +717,50 @@ public class EmbeddedPopupRedirectorTests
         Assert.Equal(!expected, second.IsOpen);
     }
 
+    /// <summary>Opens a flyout from a button in an open popup that is not light-dismiss.</summary>
+    private static (Window Host, FakeHost FakeHost, Popup Outer, Flyout Flyout) OpenFlyoutInPopup()
+    {
+        var (host, _, outer, _) = CreateEmbeddedPopup(out var fakeHost);
+        var flyout = new Flyout { Content = new Border { Width = 50, Height = 100 } };
+        var flyoutTarget = new Button { Width = 50, Height = 30, Flyout = flyout };
+        outer.IsLightDismissEnabled = false;
+        outer.Child = new StackPanel { Children = { flyoutTarget } };
+        outer.Open();
+        Dispatcher.UIThread.RunJobs();
+        flyout.ShowAt(flyoutTarget);
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(flyout.IsOpen);
+        return (host, fakeHost, outer, flyout);
+    }
+
+    [AvaloniaFact(DisplayName = "Moving host closes a flyout opened from its popup")]
+    public void Moving_Host_Closes_Flyout_In_Popup()
+    {
+        var (host, fakeHost, outer, flyout) = OpenFlyoutInPopup();
+        Assert.True(EmbeddedPopupRedirector.HasOpenLightDismissPopups(host));
+        fakeHost.FollowsMovesEachFrame = true;
+        EmbeddedPopupRedirector.OnHostEnteredWindow(host);
+        RunFrames();
+
+        fakeHost.Origin = new Point(10, -30);
+        RunFrames();
+
+        Assert.False(flyout.IsOpen);
+        Assert.True(outer.IsOpen);
+    }
+
+    [AvaloniaFact(DisplayName = "Flyout opened from a popup closes when the host leaves its window")]
+    public void Flyout_In_Popup_Closes_When_Host_Leaves_Window()
+    {
+        var (host, _, outer, flyout) = OpenFlyoutInPopup();
+
+        EmbeddedPopupRedirector.OnHostLeftWindow(host);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.False(flyout.IsOpen);
+        Assert.True(outer.IsOpen);
+    }
+
     [AvaloniaFact(DisplayName = "Host layout moves popups without closing light-dismiss popups")]
     public void Host_Layout_Moves_Popups_Without_Closing()
     {

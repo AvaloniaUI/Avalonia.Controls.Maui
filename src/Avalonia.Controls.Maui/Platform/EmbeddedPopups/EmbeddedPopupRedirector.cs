@@ -648,7 +648,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             /// <summary>Gets a value indicating whether the popup is open in its overlay.</summary>
             public bool IsOpen => _openTarget is not null;
 
-            private Control? EffectiveTarget => OriginalTarget ?? _popup.FindLogicalAncestorOfType<Control>();
+            public Control? EffectiveTarget => OriginalTarget ?? _popup.FindLogicalAncestorOfType<Control>();
 
             /// <summary>
             /// Points the popup at the overlay anchor when its target is in an embedded view,
@@ -812,7 +812,9 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             /// was opened from it, at any depth.
             /// </summary>
             /// <remarks>
-            /// A popup is declared in the content of the popup it was opened from, which is shown in another host.
+            /// A popup was opened from a popup when it is declared in the content of that popup, such as the
+            /// drop-down of a ComboBox, or when its target is in that content, such as the popup of a flyout. The
+            /// popup of a flyout has its target as logical parent, and no visual parent.
             /// </remarks>
             public List<(OverlayPopupHost Host, Popup Popup)> GetNestedPopups(IEmbeddedPopupOverlay overlay)
             {
@@ -828,8 +830,13 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                     found = false;
                     for (var i = candidates.Count - 1; i >= 0; i--)
                     {
-                        if (EmbeddedPopupOverlayRoot.GetPopup(candidates[i]) is not { } nested || nested == _popup
-                            || !owners.Exists(owner => owner.IsVisualAncestorOf(nested)))
+                        if (EmbeddedPopupOverlayRoot.GetPopup(candidates[i]) is not { } nested || nested == _popup)
+                            continue;
+
+                        // A redirected popup targets its anchor, so use its original target.
+                        var target = s_popups.TryGetValue(nested, out var state) ? state.EffectiveTarget : nested.PlacementTarget;
+                        if (!owners.Exists(owner => owner.IsVisualAncestorOf(nested)
+                                || (target is not null && (target == owner || owner.IsVisualAncestorOf(target)))))
                             continue;
 
                         nestedPopups.Add((candidates[i], nested));
