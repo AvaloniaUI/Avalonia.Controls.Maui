@@ -152,6 +152,84 @@ public class SliderHandlerTests : HandlerTestBase<MauiSliderHandler, SliderStub>
         Assert.NotNull(brush);
     }
 
+    [AvaloniaFact(DisplayName = "ThumbImageSource accepts vector and scaled images")]
+    public async Task ThumbImageSourceAcceptsVectorAndScaledImages()
+    {
+        var slider = new SliderStub();
+        var handler = await CreateHandlerAsync(slider);
+
+        var bitmap = await CreateBitmapAsync(40, 40);
+        var brushes = await InvokeOnMainThreadAsync(() =>
+        {
+            var glyph = new DrawingImage(new GeometryDrawing
+            {
+                Brush = Brushes.Black,
+                Geometry = new RectangleGeometry(new Rect(0, 0, 20, 20))
+            });
+            var scaled = new Avalonia.Controls.Maui.Services.ScaledBitmapImage(bitmap, 2);
+
+            return InspectSlider(handler, s =>
+            {
+                SliderExtensions.UpdateThumbImageSource(s, glyph);
+                var glyphBrush = GetThumbBorder(GetThumb(s))?.Background;
+
+                SliderExtensions.UpdateThumbImageSource(s, scaled);
+                var scaledBrush = GetThumbBorder(GetThumb(s))?.Background;
+
+                return (glyphBrush, scaledBrush);
+            });
+        });
+
+        Assert.IsType<DrawingBrush>(brushes.glyphBrush);
+        Assert.IsType<DrawingBrush>(brushes.scaledBrush);
+    }
+
+    [AvaloniaFact(DisplayName = "Clearing ThumbImageSource restores the thumb template")]
+    public async Task ClearingThumbImageSourceRestoresThumbTemplate()
+    {
+        var slider = new SliderStub();
+        var handler = await CreateHandlerAsync(slider);
+        Avalonia.Media.IImage platformImage = await CreateBitmapAsync(32, 32);
+
+        var (withImage, cleared) = await InvokeOnMainThreadAsync(() => InspectSlider(handler, s =>
+        {
+            SliderExtensions.UpdateThumbImageSource(s, platformImage);
+            var thumb = GetThumb(s);
+            var before = GetImageBrush(thumb);
+
+            SliderExtensions.UpdateThumbImageSource(s, null);
+            thumb.ApplyTemplate();
+            thumb.UpdateLayout();
+
+            return (before, GetImageBrush(thumb));
+        }));
+
+        Assert.NotNull(withImage);
+        Assert.Null(cleared);
+    }
+
+    [AvaloniaFact(DisplayName = "Clearing ThumbImageSource before the template applies leaves no image template")]
+    public async Task ClearingThumbImageSourceBeforeTemplateLeavesNoImage()
+    {
+        var slider = new SliderStub();
+        var handler = await CreateHandlerAsync(slider);
+        Avalonia.Media.IImage platformImage = await CreateBitmapAsync(32, 32);
+
+        var brush = await InvokeOnMainThreadAsync(() =>
+        {
+            // The slider has no template yet, so the image waits for TemplateApplied
+            SliderExtensions.UpdateThumbImageSource(handler.PlatformView!, platformImage);
+            SliderExtensions.UpdateThumbImageSource(handler.PlatformView!, null);
+
+            return InspectSlider(handler, s => GetImageBrush(GetThumb(s)));
+        });
+
+        Assert.Null(brush);
+    }
+
+    private static Border? GetThumbBorder(Thumb thumb) =>
+        thumb.GetVisualDescendants().OfType<Border>().FirstOrDefault();
+
     private MauiColor? GetMinimumTrackColor(MauiSliderHandler handler)
     {
         var brush = InspectSlider(handler, slider => GetTrackBrush(slider, "PART_DecreaseButton"));
