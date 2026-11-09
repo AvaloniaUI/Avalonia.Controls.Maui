@@ -16,11 +16,13 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
         private static readonly MethodInfo? s_onLostFocus = typeof(AvaloniaSwapChainPanel).GetMethod(
             "OnLostFocus", BindingFlags.Instance | BindingFlags.NonPublic, [typeof(object), typeof(RoutedEventArgs)]);
 
-        /// <summary>Replaces the LostFocus handler of <paramref name="panel"/>.</summary>
+        private static readonly ConditionalWeakTable<AvaloniaSwapChainPanel, object> s_attached = new();
+
+        /// <summary>Replaces the LostFocus handler of <paramref name="panel"/>. Does nothing if it was already replaced.</summary>
         [DynamicDependency("OnLostFocus", typeof(AvaloniaSwapChainPanel))]
         public static void Attach(AvaloniaSwapChainPanel panel)
         {
-            if (s_onLostFocus is null)
+            if (s_onLostFocus is null || !s_attached.TryAdd(panel, s_attached))
                 return;
 
             var onLostFocus = s_onLostFocus.CreateDelegate<RoutedEventHandler>(panel);

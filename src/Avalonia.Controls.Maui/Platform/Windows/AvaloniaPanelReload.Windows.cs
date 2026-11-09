@@ -10,13 +10,18 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
     /// </summary>
     internal static class AvaloniaPanelReload
     {
+        private static readonly ConditionalWeakTable<AvaloniaSwapChainPanel, object> s_attached = new();
+
         /// <summary>
         /// When <paramref name="panel"/> is unloaded, removes <paramref name="content"/> from its top level, so that
         /// the top level the panel creates when it is loaded again can show it, and gives the panel new pointer
-        /// devices for its next top level.
+        /// devices for its next top level. Does nothing if <paramref name="panel"/> was already attached.
         /// </summary>
         public static void Attach(AvaloniaSwapChainPanel panel, Control content)
         {
+            if (!s_attached.TryAdd(panel, s_attached))
+                return;
+
             // Runs after the handler of the panel, which subscribed first.
             panel.Unloaded += (_, _) =>
             {
