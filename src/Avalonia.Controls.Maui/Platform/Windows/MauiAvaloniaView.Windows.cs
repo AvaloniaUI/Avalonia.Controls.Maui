@@ -26,9 +26,8 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
             _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
             AvaloniaPanelFocus.Attach(this);
 
-            // The panel creates its top level when it is loaded, after MAUI first measured the content.
-            // Without a top level the content has no template or styles yet, so it measured too small.
-            // The top level is created during a WinUI layout pass, so measure again after it.
+            // The panel creates its top level when it is loaded, during a WinUI layout pass after MAUI first
+            // measured the content. The content gets its template and styles then, so it is measured again after.
             _backgroundBorder.AttachedToVisualTree += (_, _) =>
                 DispatcherQueue.TryEnqueue(InvalidateMauiMeasure);
         }
@@ -37,8 +36,8 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
         {
             ((Microsoft.Maui.IView)_mauiView).InvalidateMeasure();
 
-            // The desired size of this panel does not depend on its Avalonia content, so WinUI would not
-            // measure the MAUI layouts above it again. They ask the handler for the size of the content.
+            // The MAUI layouts above the panel ask the handler for the size of the content. The desired size of the
+            // panel itself does not depend on its content, so they are invalidated directly.
             Microsoft.UI.Xaml.DependencyObject? element = this;
             while (element is not null)
             {

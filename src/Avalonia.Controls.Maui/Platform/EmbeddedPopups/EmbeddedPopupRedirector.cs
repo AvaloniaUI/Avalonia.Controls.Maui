@@ -30,8 +30,11 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
     /// </summary>
     internal interface IEmbeddedPopupHost
     {
-        /// <summary>Gets the overlay for the window of this host.</summary>
+        /// <summary>Gets the overlay for the window of this host, in which its next popup opens.</summary>
         IEmbeddedPopupOverlay GetOverlay();
+
+        /// <summary>Gets all overlays of the window of this host.</summary>
+        IEnumerable<IEmbeddedPopupOverlay> GetWindowOverlays() => new[] { GetOverlay() };
 
         /// <summary>Gets the top-left of this host in overlay coordinates, or null if it is not in a window.</summary>
         Point? GetOriginInOverlay();
@@ -87,7 +90,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 (_, e) =>
                 {
                     if (e.Source is Visual source && TopLevel.GetTopLevel(source) == topLevel
-                        && LightDismiss(host.GetOverlay()))
+                        && LightDismiss(host.GetWindowOverlays(), topLevel))
                         e.Handled = true;
                 },
                 RoutingStrategies.Tunnel);
@@ -97,16 +100,64 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
         /// Closes the open light-dismiss popups of <paramref name="overlay"/> after a press outside of them.
         /// </summary>
         /// <returns>True if the press should be handled, because a closed popup does not pass it through.</returns>
-        public static bool LightDismiss(IEmbeddedPopupOverlay overlay)
+        public static bool LightDismiss(IEmbeddedPopupOverlay overlay) => LightDismiss(new[] { overlay }, null);
+
+        /// <summary>
+        /// Closes the open light-dismiss popups of <paramref name="overlays"/> after a press outside of them.
+        /// </summary>
+        /// <param name="overlays">The overlays of the window that was pressed.</param>
+        /// <param name="pressed">
+        /// The top level that was pressed, or null for a press outside of Avalonia. Its popups, and the popups they
+        /// were opened from, stay open.
+        /// </param>
+        /// <returns>True if the press should be handled, because a closed popup does not pass it through.</returns>
+        public static bool LightDismiss(IEnumerable<IEmbeddedPopupOverlay> overlays, TopLevel? pressed)
         {
-            var handled = false;
-            foreach (var state in s_open.ToArray())
+            var popups = new List<Popup>();
+            foreach (var overlay in overlays)
             {
-                if (state.Overlay != overlay || !state.Popup.IsLightDismissEnabled)
+                foreach (var state in s_open)
+                {
+                    if (state.Overlay == overlay)
+                        popups.Add(state.Popup);
+                }
+
+                // Also the popups opened from a popup in the overlay, which are only tracked where they are redirected.
+                foreach (var host in EmbeddedPopupOverlayRoot.GetPopupHosts(overlay.AnchorLayer))
+                {
+                    if (EmbeddedPopupOverlayRoot.GetPopup(host) is { } popup && !popups.Contains(popup))
+                        popups.Add(popup);
+                }
+            }
+
+            // A press in a popup keeps it open, and the popups it was opened from.
+            var keep = new HashSet<TopLevel>();
+            var pending = new Stack<TopLevel>();
+            if (pressed is not null)
+                pending.Push(pressed);
+            while (pending.TryPop(out var topLevel))
+            {
+                if (!keep.Add(topLevel))
                     continue;
 
-                handled |= !state.Popup.OverlayDismissEventPassThrough;
-                state.Popup.Close();
+                foreach (var popup in popups)
+                {
+                    if (popup.Child is { } child && TopLevel.GetTopLevel(child) == topLevel
+                        && TopLevel.GetTopLevel(popup) is { } owner)
+                        pending.Push(owner);
+                }
+            }
+
+            var handled = false;
+            foreach (var popup in popups)
+            {
+                // Closing a popup can close the popups that were opened from it.
+                if (!popup.IsOpen || !popup.IsLightDismissEnabled
+                    || (popup.Child is { } child && TopLevel.GetTopLevel(child) is { } shownIn && keep.Contains(shownIn)))
+                    continue;
+
+                handled |= !popup.OverlayDismissEventPassThrough;
+                popup.Close();
             }
 
             return handled;
@@ -194,7 +245,42 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 if (s_popups.TryGetValue(popup, out var state))
                     state.Release();
             });
+
+            // Presses in a popup are routed through its logical parents, so they never reach the top level that
+            // shows it. Where that top level is registered (the overlays on Windows), handle them on the popup host.
+            InputElement.PointerPressedEvent.AddClassHandler<OverlayPopupHost>(OnPopupHostPressed, RoutingStrategies.Tunnel, true);
+            InputElement.PointerMovedEvent.AddClassHandler<OverlayPopupHost>(
+                (popupHost, e) =>
+                {
+                    if (GetPressedHost(popupHost, e) is var (topLevel, host))
+                        host.LastPointer = e.GetPosition(topLevel);
+                },
+                RoutingStrategies.Tunnel,
+                true);
         }
+
+        private static void OnPopupHostPressed(OverlayPopupHost popupHost, PointerPressedEventArgs e)
+        {
+            if (GetPressedHost(popupHost, e) is not var (topLevel, host))
+                return;
+
+            host.LastPointer = e.GetPosition(topLevel);
+            if (!e.Handled && LightDismiss(host.Host.GetWindowOverlays(), topLevel))
+                e.Handled = true;
+        }
+
+        /// <summary>
+        /// Gets the registered top level that shows <paramref name="popupHost"/>, if the pointer event is in it.
+        /// </summary>
+        /// <remarks>
+        /// A press in a popup that was opened from another popup is routed through the host of that one too.
+        /// </remarks>
+        private static (TopLevel, HostState)? GetPressedHost(OverlayPopupHost popupHost, RoutedEventArgs e) =>
+            TopLevel.GetTopLevel(popupHost) is { } topLevel
+            && e.Source is Visual source && TopLevel.GetTopLevel(source) == topLevel
+            && s_hosts.TryGetValue(topLevel, out var host)
+                ? (topLevel, host)
+                : null;
 
         private static PopupState GetState(Popup popup) => s_popups.GetValue(popup, p => new PopupState(p));
 
@@ -214,7 +300,37 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             s_overlayUsers.TryGetValue(overlay, out var count);
             s_overlayUsers[overlay] = count + 1;
             if (count == 0)
+            {
                 overlay.Show(host);
+
+                // Where each popup has its own overlay (Windows), the closed popups move to another overlay.
+                MoveClosedPopups(overlay);
+            }
+        }
+
+        /// <summary>
+        /// Moves the closed popups of <paramref name="overlay"/> to the overlay that their hosts now return, for
+        /// example before the overlay is removed.
+        /// </summary>
+        public static void MoveClosedPopups(IEmbeddedPopupOverlay overlay)
+        {
+            foreach (var (_, state) in s_popups)
+            {
+                if (state.Overlay == overlay && !state.IsOpen)
+                    state.Redirect();
+            }
+        }
+
+        /// <summary>
+        /// Opens the popups of <paramref name="overlay"/> that were asked to open before its top level existed.
+        /// </summary>
+        public static void OnOverlayReady(IEmbeddedPopupOverlay overlay)
+        {
+            foreach (var (_, state) in s_popups)
+            {
+                if (state.Overlay == overlay)
+                    state.OpenIfRequested();
+            }
         }
 
         private static void RemoveOverlayUser(IEmbeddedPopupOverlay overlay)
@@ -280,6 +396,9 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             public IEmbeddedPopupOverlay? Overlay { get; private set; }
 
             public TopLevel? HostTopLevel { get; private set; }
+
+            /// <summary>Gets a value indicating whether the popup is open in its overlay.</summary>
+            public bool IsOpen => _openTarget is not null;
 
             private Control? EffectiveTarget => OriginalTarget ?? _popup.FindLogicalAncestorOfType<Control>();
 
@@ -347,6 +466,17 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 
                 _closedForNewTarget = false;
                 if (!_popup.IsOpen)
+                    _popup.Open();
+            }
+
+            /// <summary>Opens the popup if it was asked to open while its anchor was not in a top level.</summary>
+            /// <remarks>
+            /// Popup only retries to open when it is attached to the visual tree itself, not when its target is.
+            /// </remarks>
+            public void OpenIfRequested()
+            {
+                if (_openTarget is null && _popup.IsOpen && _popup.PlacementTarget == _anchor
+                    && TopLevel.GetTopLevel(_anchor) is not null)
                     _popup.Open();
             }
 

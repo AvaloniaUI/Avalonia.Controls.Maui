@@ -12,9 +12,9 @@ public class EmbeddedPopupRedirectorTests
 {
     private sealed class FakeOverlay : IEmbeddedPopupOverlay
     {
-        public FakeOverlay()
+        public FakeOverlay(bool ready = true)
         {
-            Window = new Window { Width = 800, Height = 600, Content = AnchorLayer };
+            Window = new Window { Width = 800, Height = 600, Content = ready ? AnchorLayer : null };
             Window.Show();
         }
 
@@ -26,10 +26,30 @@ public class EmbeddedPopupRedirectorTests
 
         public int HideCount { get; private set; }
 
+        public bool IsShown => ShowCount > HideCount;
+
         public void Show(IEmbeddedPopupHost host) => ShowCount++;
 
         public void Hide() => HideCount++;
     }
+
+    /// <summary>A host whose popups each open in an idle overlay, like on Windows.</summary>
+    private sealed class OverlayPerPopupHost(params FakeOverlay[] overlays) : IEmbeddedPopupHost
+    {
+        public IEmbeddedPopupOverlay GetOverlay() => overlays.First(o => !o.IsShown);
+
+        public IEnumerable<IEmbeddedPopupOverlay> GetWindowOverlays() => overlays;
+
+        public Point? GetOriginInOverlay() => default(Point);
+    }
+
+    private static Popup CreatePopup(Control target) => new()
+    {
+        PlacementTarget = target,
+        Placement = PlacementMode.Bottom,
+        ShouldUseOverlayLayer = true,
+        Child = new Border { Width = 50, Height = 100 },
+    };
 
     private sealed class FakeHost(FakeOverlay overlay, Point origin) : IEmbeddedPopupHost
     {
@@ -100,6 +120,30 @@ public class EmbeddedPopupRedirectorTests
 
         popup.Open();
         Assert.Equal(2, overlay.ShowCount);
+    }
+
+    [AvaloniaFact(DisplayName = "Light dismiss closes a popup opened from a popup that is not light-dismiss")]
+    public void Light_Dismiss_Closes_Nested_Popup()
+    {
+        var (_, _, popup, overlay) = CreateEmbeddedPopup();
+        var nestedTarget = new Button { Width = 50, Height = 30 };
+        var nested = new Popup
+        {
+            PlacementTarget = nestedTarget,
+            IsLightDismissEnabled = true,
+            ShouldUseOverlayLayer = true,
+            Child = new Border { Width = 50, Height = 100 },
+        };
+        popup.IsLightDismissEnabled = false;
+        popup.Child = new StackPanel { Children = { nestedTarget, nested } };
+
+        popup.Open();
+        nested.Open();
+        Assert.Same(overlay.Window, TopLevel.GetTopLevel(nested.Child));
+
+        Assert.True(EmbeddedPopupRedirector.LightDismiss(overlay));
+        Assert.False(nested.IsOpen);
+        Assert.True(popup.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "Popup outside an embedded view keeps its placement target")]
@@ -280,5 +324,118 @@ public class EmbeddedPopupRedirectorTests
         popup.Open();
         Assert.Same(newOverlay.Window, TopLevel.GetTopLevel(popup.Child));
         Assert.Equal(1, newOverlay.ShowCount);
+    }
+
+    [AvaloniaFact(DisplayName = "Closed popups move to an idle overlay when a popup opens in theirs")]
+    public void Closed_Popups_Move_When_Their_Overlay_Shows()
+    {
+        var first = new FakeOverlay();
+        var second = new FakeOverlay();
+        var targetA = new Button { Width = 100, Height = 30 };
+        var targetB = new Button { Width = 100, Height = 30 };
+        var popupA = CreatePopup(targetA);
+        var popupB = CreatePopup(targetB);
+        var host = new Window
+        {
+            Width = 200,
+            Height = 100,
+            Content = new StackPanel { Children = { targetA, targetB, popupA, popupB } },
+        };
+        EmbeddedPopupRedirector.Register(host, new OverlayPerPopupHost(first, second));
+        host.Show();
+        Dispatcher.UIThread.RunJobs();
+        Assert.Same(first.AnchorLayer, popupB.PlacementTarget!.Parent);
+
+        popupA.Open();
+
+        Assert.Same(first.Window, TopLevel.GetTopLevel(popupA.Child));
+        Assert.Same(second.AnchorLayer, popupB.PlacementTarget!.Parent);
+        popupB.Open();
+        Assert.Same(second.Window, TopLevel.GetTopLevel(popupB.Child));
+    }
+
+    [AvaloniaFact(DisplayName = "Light dismiss keeps the pressed popup and the popups it was opened from")]
+    public void Light_Dismiss_Keeps_Pressed_Popup_And_Its_Parents()
+    {
+        FakeOverlay[] overlays = [new(), new(), new()];
+        var target = new Button { Width = 100, Height = 30 };
+        var nestedTarget = new Button { Width = 50, Height = 30 };
+        var nested = CreatePopup(nestedTarget);
+        var outer = CreatePopup(target);
+        nested.IsLightDismissEnabled = true;
+        outer.IsLightDismissEnabled = true;
+        outer.Child = new StackPanel { Children = { nestedTarget, nested } };
+        var host = new Window { Width = 200, Height = 100, Content = new StackPanel { Children = { target, outer } } };
+
+        // On Windows the overlays are hosts too, so that popups opened from their popups get their own overlay.
+        EmbeddedPopupRedirector.Register(host, new OverlayPerPopupHost(overlays));
+        foreach (var overlay in overlays)
+            EmbeddedPopupRedirector.Register(overlay.Window, new OverlayPerPopupHost(overlays));
+        host.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        outer.Open();
+        Dispatcher.UIThread.RunJobs();
+        nested.Open();
+        Assert.Same(overlays[0].Window, TopLevel.GetTopLevel(outer.Child));
+        Assert.Same(overlays[1].Window, TopLevel.GetTopLevel(nested.Child));
+
+        // A press in the nested popup keeps both.
+        Assert.False(EmbeddedPopupRedirector.LightDismiss(overlays, overlays[1].Window));
+        Assert.True(nested.IsOpen);
+        Assert.True(outer.IsOpen);
+
+        // A press in the outer popup closes the nested one.
+        Assert.True(EmbeddedPopupRedirector.LightDismiss(overlays, overlays[0].Window));
+        Assert.False(nested.IsOpen);
+        Assert.True(outer.IsOpen);
+
+        // A press in the embedded view closes both.
+        Dispatcher.UIThread.RunJobs();
+        nested.Open();
+        Assert.True(EmbeddedPopupRedirector.LightDismiss(overlays, host));
+        Assert.False(nested.IsOpen);
+        Assert.False(outer.IsOpen);
+    }
+
+    [AvaloniaFact(DisplayName = "Closed popups move out of an overlay that is removed, and open popups stay")]
+    public void Closed_Popups_Move_Out_Of_Removed_Overlay()
+    {
+        var (_, _, closed, removed) = CreateEmbeddedPopup(out var fakeHost);
+        var openTarget = new Button { Width = 100, Height = 30 };
+        var open = CreatePopup(openTarget);
+        ((StackPanel)closed.Parent!).Children.AddRange([openTarget, open]);
+        Dispatcher.UIThread.RunJobs();
+        open.Open();
+        var kept = new FakeOverlay();
+
+        fakeHost.Overlay = kept;
+        EmbeddedPopupRedirector.MoveClosedPopups(removed);
+
+        Assert.Same(kept.AnchorLayer, closed.PlacementTarget!.Parent);
+        Assert.Same(removed.Window, TopLevel.GetTopLevel(open.Child));
+        closed.Open();
+        Assert.Same(kept.Window, TopLevel.GetTopLevel(closed.Child));
+    }
+
+    [AvaloniaFact(DisplayName = "Popup that was asked to open before its overlay was ready opens when it is")]
+    public void Popup_Opens_When_Overlay_Ready()
+    {
+        var overlay = new FakeOverlay(ready: false);
+        var target = new Button { Width = 100, Height = 30 };
+        var popup = CreatePopup(target);
+        var host = new Window { Width = 200, Height = 100, Content = new StackPanel { Children = { target, popup } } };
+        EmbeddedPopupRedirector.Register(host, new FakeHost(overlay, default));
+        host.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        popup.IsOpen = true;
+        Assert.Null(TopLevel.GetTopLevel(popup.Child));
+
+        overlay.Window.Content = overlay.AnchorLayer;
+        EmbeddedPopupRedirector.OnOverlayReady(overlay);
+
+        Assert.Same(overlay.Window, TopLevel.GetTopLevel(popup.Child));
+        Assert.Equal(1, overlay.ShowCount);
     }
 }
