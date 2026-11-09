@@ -55,6 +55,13 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
 
         public IEmbeddedPopupOverlay GetOverlay() => EmbeddedPopupOverlay.ForContext(_view.Context!);
 
+        public bool IsInWindow => _view.IsAttachedToWindow;
+
+        // A scroll view that scrolls changes its scroll offset, which does not lay out the views in it.
+        public bool FollowsMovesEachFrame => true;
+
+        public Size? GetWindowSize() => WindowRoot is { } root ? new Size(root.Width, root.Height) : null;
+
         public Point? GetOriginInOverlay() =>
             _topLevel is null ? null : ((EmbeddedPopupOverlay)GetOverlay()).GetOrigin(_view, _topLevel.RenderScaling);
     }
@@ -271,7 +278,11 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
                 {
                     if (ended)
                         _forwarding = false;
-                    handled = overlay.Forward(e);
+                    overlay.Forward(e);
+
+                    // The page may not handle the press, for example on empty space. The overlay keeps the gesture
+                    // anyway, so that it gets its end and can forward it too.
+                    handled = true;
                 }
 
                 if (ended)

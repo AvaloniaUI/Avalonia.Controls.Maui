@@ -39,6 +39,25 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 
         /// <summary>Gets the top-left of this host in overlay coordinates, or null if it is not in a window.</summary>
         Point? GetOriginInOverlay();
+
+        /// <summary>
+        /// Gets a value indicating whether this host is in a window. The popups of a host that is not are hidden
+        /// until it is added to one.
+        /// </summary>
+        bool IsInWindow => true;
+
+        /// <summary>
+        /// Gets a value indicating whether the position of this host is checked on each frame of the overlay while
+        /// it has open popups.
+        /// </summary>
+        /// <remarks>
+        /// For platforms that do not lay out a view when a native scroll view that contains it scrolls.
+        /// </remarks>
+        bool FollowsMovesEachFrame => false;
+
+        /// <summary>Gets the size of the window of this host, or null if it is not in a window.</summary>
+        /// <remarks>Only compared with earlier values, so it can be in any unit.</remarks>
+        Size? GetWindowSize() => null;
     }
 
     /// <summary>
@@ -201,7 +220,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 return;
 
             if (s_hosts.TryGetValue(topLevel, out var host))
-                host.FollowVersion++;
+                host.StopFollowing();
 
             CloseLightDismissPopups(topLevel);
             foreach (var state in s_open.ToArray())
@@ -232,52 +251,75 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                     state.Show(host.Host);
             }
 
-            // A popup that opened while its host was not in a window could not show the overlay.
-            if (s_overlayUsers.TryGetValue(overlay, out var users) && users > 0)
-            {
-                overlay.Show(host.Host);
-                FollowHost(topLevel, host, overlay);
-            }
+            FollowHost(topLevel, host);
         }
 
-        /// <summary>How long the popups follow their host after it returns to a window.</summary>
-        private static readonly TimeSpan s_followDuration = TimeSpan.FromSeconds(1);
-
         /// <summary>
-        /// Moves the open popups of <paramref name="topLevel"/> with its host on each frame of the overlay, for a
-        /// short time after the host returned to a window.
+        /// Checks the position of the host of <paramref name="topLevel"/> on each frame of its overlay while it has
+        /// open popups, if the host asks for it. A move closes its light-dismiss popups and moves the others.
         /// </summary>
         /// <remarks>
-        /// A host usually returns at the start of a navigation transition, which moves the page with a transform.
-        /// That does not lay out the host, so without this, the popups keep the position of the first frame.
+        /// A native scroll view that scrolls, or a navigation transition, moves the host without a layout of it.
+        /// The popups of an Avalonia window close when the window moves, so light-dismiss popups close here too.
+        /// A window resize can move the host without a layout of it too, for example when it is centered. Then
+        /// the popups only move, like after a layout.
         /// </remarks>
-        private static void FollowHost(TopLevel topLevel, HostState host, IEmbeddedPopupOverlay overlay)
+        private static void FollowHost(TopLevel topLevel, HostState host)
         {
-            if (TopLevel.GetTopLevel(overlay.AnchorLayer) is not { } overlayRoot)
+            if (!host.Host.FollowsMovesEachFrame || host.IsFollowing || !host.Host.IsInWindow
+                || TopLevel.GetTopLevel(host.Host.GetOverlay().AnchorLayer) is not { } overlayRoot)
                 return;
 
-            var version = ++host.FollowVersion;
-            var origin = host.Host.GetOriginInOverlay();
-            TimeSpan? start = null;
+            host.IsFollowing = true;
+            var version = host.FollowVersion;
+            host.ResetMoveTracker();
+            var windowSize = host.Host.GetWindowSize();
+            TimeSpan? resizedAt = null;
 
             void OnFrame(TimeSpan time)
             {
                 if (version != host.FollowVersion)
                     return;
 
-                start ??= time;
-                var newOrigin = host.Host.GetOriginInOverlay();
-                if (newOrigin != origin)
+                if (!HasOpenPopups(topLevel))
                 {
-                    origin = newOrigin;
+                    host.IsFollowing = false;
+                    return;
+                }
+
+                // The host can move a few frames after the window resized, when the page was laid out.
+                var newWindowSize = host.Host.GetWindowSize();
+                if (newWindowSize != windowSize)
+                {
+                    windowSize = newWindowSize;
+                    resizedAt = time;
+                }
+
+                if (host.MoveTracker.HasMoved(host.Host.GetOriginInOverlay()))
+                {
+                    if (resizedAt is not { } resized || time - resized > s_resizeMoveDelay)
+                        CloseLightDismissPopups(topLevel);
                     OnHostLayoutChanged(topLevel);
                 }
 
-                if (time - start < s_followDuration)
-                    overlayRoot.RequestAnimationFrame(OnFrame);
+                overlayRoot.RequestAnimationFrame(OnFrame);
             }
 
             overlayRoot.RequestAnimationFrame(OnFrame);
+        }
+
+        /// <summary>How long after a window resize a move of a host counts as caused by the resize.</summary>
+        private static readonly TimeSpan s_resizeMoveDelay = TimeSpan.FromMilliseconds(250);
+
+        private static bool HasOpenPopups(TopLevel topLevel)
+        {
+            foreach (var state in s_open)
+            {
+                if (state.HostTopLevel == topLevel)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -287,6 +329,10 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
         {
             if (topLevel is null || s_open.Count == 0)
                 return;
+
+            // A layout moves the popups with the host, and does not close them.
+            if (s_hosts.TryGetValue(topLevel, out var host))
+                host.ResetMoveTracker();
 
             foreach (var state in s_open.ToArray())
             {
@@ -455,7 +501,24 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             public Point? LastPointer { get; set; }
 
             /// <summary>Incremented to stop the popups from following the host.</summary>
-            public int FollowVersion { get; set; }
+            public int FollowVersion { get; private set; }
+
+            public bool IsFollowing { get; set; }
+
+            public EmbeddedPopupHostMoveTracker MoveTracker { get; } = new();
+
+            /// <summary>Makes the current position of the host the reference for the next move.</summary>
+            public void ResetMoveTracker()
+            {
+                MoveTracker.Reset();
+                MoveTracker.HasMoved(Host.GetOriginInOverlay());
+            }
+
+            public void StopFollowing()
+            {
+                FollowVersion++;
+                IsFollowing = false;
+            }
         }
 
         /// <summary>An invisible control in the overlay that stands in for the placement target of a popup.</summary>
@@ -626,6 +689,13 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 if (_hiddenHosts is not null || Overlay is null)
                     return;
 
+                HideHosts();
+                RemoveOverlayUser(Overlay);
+            }
+
+            /// <summary>Hides the hosts of the popup and of the popups opened from it, and closes the light-dismiss ones.</summary>
+            private void HideHosts()
+            {
                 _hiddenHosts = new List<Control>();
                 if (_popup.Child?.FindAncestorOfType<OverlayPopupHost>() is { } popupHost)
                 {
@@ -633,13 +703,12 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                     _hiddenHosts.Add(popupHost);
                 }
 
-                // Closing a popup removes its host from the overlay.
-                foreach (var nestedHost in new List<OverlayPopupHost>(EmbeddedPopupOverlayRoot.GetPopupHosts(Overlay.AnchorLayer)))
-                {
-                    if (EmbeddedPopupOverlayRoot.GetPopup(nestedHost) is not { } nested
-                        || _popup.Child is not { } child || !child.IsVisualAncestorOf(nested))
-                        continue;
+                if (Overlay is null)
+                    return;
 
+                // Closing a popup removes its host from the overlay.
+                foreach (var (nestedHost, nested) in GetNestedPopups(Overlay))
+                {
                     if (nested.IsLightDismissEnabled)
                         nested.Close();
                     else
@@ -648,8 +717,43 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                         _hiddenHosts.Add(nestedHost);
                     }
                 }
+            }
 
-                RemoveOverlayUser(Overlay);
+            /// <summary>
+            /// Gets the popups in <paramref name="overlay"/> that were opened from this popup, or from a popup that
+            /// was opened from it, at any depth.
+            /// </summary>
+            /// <remarks>
+            /// A popup is declared in the content of the popup it was opened from, which is shown in another host.
+            /// </remarks>
+            private List<(OverlayPopupHost Host, Popup Popup)> GetNestedPopups(IEmbeddedPopupOverlay overlay)
+            {
+                var nestedPopups = new List<(OverlayPopupHost, Popup)>();
+                if (_popup.Child is not { } child)
+                    return nestedPopups;
+
+                var owners = new List<Visual> { child };
+                var candidates = new List<OverlayPopupHost>(EmbeddedPopupOverlayRoot.GetPopupHosts(overlay.AnchorLayer));
+                bool found;
+                do
+                {
+                    found = false;
+                    for (var i = candidates.Count - 1; i >= 0; i--)
+                    {
+                        if (EmbeddedPopupOverlayRoot.GetPopup(candidates[i]) is not { } nested || nested == _popup
+                            || !owners.Exists(owner => owner.IsVisualAncestorOf(nested)))
+                            continue;
+
+                        nestedPopups.Add((candidates[i], nested));
+                        if (nested.Child is { } nestedChild)
+                            owners.Add(nestedChild);
+                        candidates.RemoveAt(i);
+                        found = true;
+                    }
+                }
+                while (found);
+
+                return nestedPopups;
             }
 
             /// <summary>Shows the popups that <see cref="Hide"/> hid.</summary>
@@ -745,7 +849,13 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 // The target can move in its view without a layout of the host view, for example when it scrolls.
                 _openTarget.LayoutUpdated += OnTargetLayoutUpdated;
                 s_open.Add(this);
-                AddOverlayUser(Overlay, host.Host);
+
+                // The overlay is not shown for a host that is not in a window, and a shared overlay must not count
+                // the popup as shown. The popup shows when the host is added to a window.
+                if (host.Host.IsInWindow)
+                    AddOverlayUser(Overlay, host.Host);
+                else
+                    HideHosts();
 
                 if (_popup.Placement == PlacementMode.Pointer)
                 {
@@ -759,6 +869,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 }
 
                 UpdatePosition();
+                FollowHost(HostTopLevel, host);
             }
 
             private void OnClosed(object? sender, EventArgs e)

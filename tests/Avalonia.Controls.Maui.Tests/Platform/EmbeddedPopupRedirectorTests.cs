@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Maui.Platforms.EmbeddedPopups;
 using Avalonia.Controls.Primitives;
+using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
 using Avalonia.Layout;
 using Avalonia.Threading;
@@ -64,9 +65,19 @@ public class EmbeddedPopupRedirectorTests
     {
         public FakeOverlay Overlay { get; set; } = overlay;
 
+        public Point Origin { get; set; } = origin;
+
+        public bool IsInWindow { get; set; } = true;
+
+        public bool FollowsMovesEachFrame { get; set; }
+
+        public Size WindowSize { get; set; } = new(800, 600);
+
+        public Size? GetWindowSize() => IsInWindow ? WindowSize : null;
+
         public IEmbeddedPopupOverlay GetOverlay() => Overlay;
 
-        public Point? GetOriginInOverlay() => origin;
+        public Point? GetOriginInOverlay() => IsInWindow ? Origin : null;
     }
 
     private static (Window Host, Button Target, Popup Popup, FakeOverlay Overlay) CreateEmbeddedPopup(bool register = true) =>
@@ -478,6 +489,142 @@ public class EmbeddedPopupRedirectorTests
         Assert.True(PopupHostOf(popup).IsVisible);
         Assert.True(newOverlay.IsShown);
         Assert.False(overlay.IsShown);
+    }
+
+    [AvaloniaFact(DisplayName = "Popups opened from popups at any depth are hidden when their host leaves its window")]
+    public void Deeply_Nested_Popups_Hidden_When_Host_Leaves_Window()
+    {
+        var (host, _, popup, overlay) = CreateEmbeddedPopup();
+        var secondTarget = new Button();
+        var thirdTarget = new Button();
+        var third = new Popup { PlacementTarget = thirdTarget, IsLightDismissEnabled = false, Child = new Border() };
+        var thirdLightDismiss = new Popup { PlacementTarget = thirdTarget, IsLightDismissEnabled = true, Child = new Border() };
+        var second = new Popup
+        {
+            PlacementTarget = secondTarget,
+            IsLightDismissEnabled = false,
+            Child = new StackPanel { Children = { thirdTarget, third, thirdLightDismiss } },
+        };
+        popup.IsLightDismissEnabled = false;
+        popup.Child = new StackPanel { Children = { secondTarget, second } };
+        popup.Open();
+        second.Open();
+        third.Open();
+        thirdLightDismiss.Open();
+        var thirdHost = PopupHostOf(third);
+
+        EmbeddedPopupRedirector.OnHostLeftWindow(host);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.True(third.IsOpen);
+        Assert.False(thirdHost.IsVisible);
+        Assert.False(thirdLightDismiss.IsOpen);
+
+        EmbeddedPopupRedirector.OnHostEnteredWindow(host);
+        Assert.True(thirdHost.IsVisible);
+        Assert.True(overlay.IsShown);
+    }
+
+    [AvaloniaFact(DisplayName = "Popup of a host that is not in a window does not keep the shared overlay from showing")]
+    public void Popup_Of_Detached_Host_Does_Not_Count_As_Shown()
+    {
+        var (detachedView, _, detachedPopup, overlay) = CreateEmbeddedPopup(out var detachedHost);
+        detachedPopup.IsLightDismissEnabled = false;
+        detachedHost.IsInWindow = false;
+
+        var target = new Button();
+        var popup = CreatePopup(target);
+        var view = new Window { Content = new StackPanel { Children = { target, popup } } };
+        EmbeddedPopupRedirector.Register(view, new FakeHost(overlay, default));
+        view.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        detachedPopup.Open();
+        Assert.True(detachedPopup.IsOpen);
+        Assert.False(PopupHostOf(detachedPopup).IsVisible);
+        Assert.False(overlay.IsShown);
+
+        popup.Open();
+        Assert.True(overlay.IsShown);
+
+        popup.Close();
+        Dispatcher.UIThread.RunJobs();
+        Assert.False(overlay.IsShown);
+
+        // The host was added to a window.
+        detachedHost.IsInWindow = true;
+        EmbeddedPopupRedirector.OnHostEnteredWindow(detachedView);
+        Assert.True(PopupHostOf(detachedPopup).IsVisible);
+        Assert.True(overlay.IsShown);
+    }
+
+    [AvaloniaFact(DisplayName = "Moving host closes its light-dismiss popups and moves the others")]
+    public void Moving_Host_Closes_Light_Dismiss_Popups_And_Moves_Others()
+    {
+        var (_, target, popup, overlay) = CreateEmbeddedPopup(out var fakeHost);
+        fakeHost.FollowsMovesEachFrame = true;
+        var lightDismiss = CreatePopup(target);
+        lightDismiss.IsLightDismissEnabled = true;
+        ((StackPanel)target.Parent!).Children.Add(lightDismiss);
+        Dispatcher.UIThread.RunJobs();
+        popup.IsLightDismissEnabled = false;
+        popup.Open();
+        lightDismiss.Open();
+        var anchor = popup.PlacementTarget!;
+        var top = Canvas.GetTop(anchor);
+
+        // A frame without a move changes nothing.
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        Dispatcher.UIThread.RunJobs();
+        Assert.True(lightDismiss.IsOpen);
+
+        // For example, a native scroll view that contains the host scrolls, which does not lay out the host.
+        fakeHost.Origin = new Point(10, -30);
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.False(lightDismiss.IsOpen);
+        Assert.True(popup.IsOpen);
+        Assert.Equal(top - 50, Canvas.GetTop(anchor));
+        Assert.True(overlay.IsShown);
+    }
+
+    [AvaloniaFact(DisplayName = "Host moved by a window resize moves popups without closing light-dismiss popups")]
+    public void Window_Resize_Moves_Popups_Without_Closing()
+    {
+        var (_, _, popup, _) = CreateEmbeddedPopup(out var fakeHost);
+        fakeHost.FollowsMovesEachFrame = true;
+        popup.IsLightDismissEnabled = true;
+        popup.Open();
+        var anchor = popup.PlacementTarget!;
+        var left = Canvas.GetLeft(anchor);
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        Dispatcher.UIThread.RunJobs();
+
+        // For example, a centered host after the window got wider.
+        fakeHost.WindowSize = new Size(900, 600);
+        fakeHost.Origin = new Point(60, 20);
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.True(popup.IsOpen);
+        Assert.Equal(left + 50, Canvas.GetLeft(anchor));
+    }
+
+    [AvaloniaFact(DisplayName = "Host layout moves popups without closing light-dismiss popups")]
+    public void Host_Layout_Moves_Popups_Without_Closing()
+    {
+        var (host, _, popup, _) = CreateEmbeddedPopup(out var fakeHost);
+        fakeHost.FollowsMovesEachFrame = true;
+        popup.IsLightDismissEnabled = true;
+        popup.Open();
+
+        fakeHost.Origin = new Point(10, -30);
+        EmbeddedPopupRedirector.OnHostLayoutChanged(host);
+        AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.True(popup.IsOpen);
     }
 
     [AvaloniaFact(DisplayName = "Popups move to the new overlay of their host")]

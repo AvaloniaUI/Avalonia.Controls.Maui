@@ -61,6 +61,15 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
 
         public IEmbeddedPopupOverlay GetOverlay() => EmbeddedPopupOverlay.ForWindow(_view.Window);
 
+        public bool IsInWindow => _view.Window is not null;
+
+        // A scroll view that scrolls changes its bounds, which does not lay out the views in it.
+        public bool FollowsMovesEachFrame => true;
+
+        public Size? GetWindowSize() => _view.Window is { } window
+            ? new Size(window.Bounds.Width, window.Bounds.Height)
+            : null;
+
         public Point? GetOriginInOverlay() => EmbeddedPopupOverlay.ForWindow(_view.Window).GetOrigin(_view);
     }
 
