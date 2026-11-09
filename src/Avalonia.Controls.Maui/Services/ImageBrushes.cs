@@ -19,6 +19,14 @@ internal static class ImageBrushes
             case Bitmap bitmap:
                 return new ImageBrush(bitmap);
 
+            case ScaledBitmapImage scaled:
+                // An ImageBrush would size the bitmap in pixels; the drawing keeps its device-independent size
+                var bounds = new Rect(scaled.Size);
+                return new DrawingBrush(new ImageDrawing { ImageSource = scaled, Rect = bounds })
+                {
+                    SourceRect = new RelativeRect(bounds, RelativeUnit.Absolute)
+                };
+
             case DrawingImage { Drawing: { } drawing } drawingImage:
                 // Use the image's viewbox so the brush keeps the image's border and lines up with it
                 var viewbox = drawingImage.Viewbox ?? drawing.GetBounds();

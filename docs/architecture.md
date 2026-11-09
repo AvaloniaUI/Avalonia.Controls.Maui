@@ -274,6 +274,8 @@ Controls never call the services directly. Each one loads its image through the 
 
 `AvaloniaFileImageSourceService` first attempts to resolve the filename as an Avalonia embedded resource using the `avares://` URI scheme. If that fails, it falls back to a direct filesystem read. This two-step approach means that images declared as `MauiImage` in the project file, which are embedded as Avalonia resources at build time, are resolved the same way as images loaded from disk.
 
+On a display that scales, the service looks for a variant of the file for the scale before it loads the file itself: `icon@2x.png` or `icon@3x.png` for `icon.png`, found in the same two places. At a scale of 2 it looks for `@2x`; above 2 it looks for `@3x`, then `@2x`. A variant loads as a `ScaledBitmapImage`, which has the same size in device-independent units as the base image, so layouts do not change. It is not a `Bitmap` with a DPI of 96 × its scale, because Avalonia draws a bitmap's source rectangle in pixels and an `Image` would show only part of such a bitmap. When the scale changes, an image loads again if another scale could load a different file: a variant, a base image standing in for a missing variant, or a base image whose file has variants. URI and stream images have no variants.
+
 ### URI image caching
 
 `AvaloniaUriImageSourceService` downloads remote images and caches them to disk using an SHA-256 hash of the URI as the cache key. In-flight requests for the same URI are coalesced so that only one download occurs even if multiple controls request the same image simultaneously. Cache lifetime is controlled by the `CacheValidity` property on `UriImageSource`.

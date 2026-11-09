@@ -66,7 +66,11 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
     /// Loads a bitmap from the specified file image source, first trying Avalonia resources and then the filesystem.
     /// </summary>
     /// <param name="imageSource">The file image source containing the file name or path to load.</param>
-    /// <param name="scale">The display scale factor applied during image loading.</param>
+    /// <param name="scale">
+    /// The display scale. Above 1, an <c>@2x</c> or <c>@3x</c> variant of the file (for example <c>icon@2x.png</c>)
+    /// is loaded when it exists, as a <see cref="ScaledBitmapImage"/> with the base image's size in
+    /// device-independent units. The result is resolution-dependent when another scale could load a different file.
+    /// </param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
     /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
@@ -83,24 +87,23 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
         try
         {
             var fileName = imageSource.File;
-            Bitmap? bitmap = null;
 
-            // First try to load as an Avalonia resource
-            if (TryLoadFromAvaloniaResource(fileName, out bitmap) && bitmap != null)
+            for (var variantScale = Math.Clamp((int)Math.Ceiling(scale), 1, 3); variantScale >= 2; variantScale--)
             {
-                _logger?.LogDebug($"Loaded image from Avalonia resource: {fileName}");
-                return Task.FromResult<IImageSourceServiceResult<IImage>?>(
-                    new ImageSourceServiceResult(bitmap));
+                if (TryLoad(GetVariantFileName(fileName, variantScale)) is { } variant)
+                {
+                    return Task.FromResult<IImageSourceServiceResult<IImage>?>(
+                        new ImageSourceServiceResult(new ScaledBitmapImage(variant, variantScale), resolutionDependent: true));
+                }
             }
 
-            // Try to load from file system
-            var filePath = Path.IsPathRooted(fileName) ? fileName : Path.Combine(AppContext.BaseDirectory, fileName);
-            if (File.Exists(filePath))
+            // Above 1x the base image stands in for a missing variant; at 1x a variant suits a higher scale
+            var resolutionDependent = scale > 1 || HasVariant(fileName, 2) || HasVariant(fileName, 3);
+
+            if (TryLoad(fileName) is { } bitmap)
             {
-                bitmap = new Bitmap(filePath);
-                _logger?.LogDebug($"Loaded image from file: {filePath}");
                 return Task.FromResult<IImageSourceServiceResult<IImage>?>(
-                    new ImageSourceServiceResult(bitmap));
+                    new ImageSourceServiceResult(bitmap, resolutionDependent));
             }
 
             _logger?.LogWarning($"Could not find image: {fileName}");
@@ -111,6 +114,37 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             _logger?.LogError(ex, $"Error loading image: {imageSource.File}");
             throw;
         }
+    }
+
+    private Bitmap? TryLoad(string fileName)
+    {
+        if (TryLoadFromAvaloniaResource(fileName, out var bitmap) && bitmap != null)
+        {
+            _logger?.LogDebug($"Loaded image from Avalonia resource: {fileName}");
+            return bitmap;
+        }
+
+        var filePath = Path.IsPathRooted(fileName) ? fileName : Path.Combine(AppContext.BaseDirectory, fileName);
+        if (File.Exists(filePath))
+        {
+            _logger?.LogDebug($"Loaded image from file: {filePath}");
+            return new Bitmap(filePath);
+        }
+
+        return null;
+    }
+
+    private static bool HasVariant(string fileName, int scale)
+    {
+        var variant = GetVariantFileName(fileName, scale);
+        return AvaloniaResourceHelper.TryResolveResourceUri(variant, out _)
+            || File.Exists(Path.IsPathRooted(variant) ? variant : Path.Combine(AppContext.BaseDirectory, variant));
+    }
+
+    private static string GetVariantFileName(string fileName, int scale)
+    {
+        var extension = Path.GetExtension(fileName);
+        return $"{fileName[..^extension.Length]}@{scale}x{extension}";
     }
 
     private bool TryLoadFromAvaloniaResource(string fileName, out Bitmap? bitmap)

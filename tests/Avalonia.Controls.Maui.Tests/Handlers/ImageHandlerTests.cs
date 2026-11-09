@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
@@ -257,6 +258,63 @@ public partial class ImageHandlerTests : HandlerTestBase<MauiImageHandler, Image
         Assert.Equal(12, clip.RadiusY);
     }
     
+    [AvaloniaFact(DisplayName = "Image loads the file variant for a new display scale")]
+    public async Task ImageLoadsFileVariantForNewScale()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "Avalonia.Controls.Maui.Tests", $"image-scale-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            var file = await InvokeOnMainThreadAsync(() =>
+            {
+                SavePng(Path.Combine(directory, "icon.png"), new PixelSize(4, 3));
+                SavePng(Path.Combine(directory, "icon@2x.png"), new PixelSize(8, 6));
+                SavePng(Path.Combine(directory, "icon@3x.png"), new PixelSize(12, 9));
+                return Path.Combine(directory, "icon.png");
+            });
+
+            var image = new ImageStub { Source = new FileImageSource { File = file } };
+            var handler = await CreateHandlerAsync(image);
+
+            var sizes = await InvokeOnMainThreadAsync(() =>
+            {
+                var window = ShowInWindow(handler.PlatformView);
+                var staticImage = handler.PlatformView.Children.OfType<Image>().First();
+                var loaded = new List<PixelSize>();
+
+                foreach (var scale in new[] { 1.0, 2.0, 3.0, 1.0, 2.0 })
+                {
+                    Avalonia.Headless.HeadlessWindowExtensions.SetRenderScaling(window, scale);
+                    Threading.Dispatcher.UIThread.RunJobs();
+                    loaded.Add(staticImage.Source switch
+                    {
+                        ScaledBitmapImage scaled => scaled.Bitmap.PixelSize,
+                        var source => Assert.IsAssignableFrom<Media.Imaging.Bitmap>(source).PixelSize
+                    });
+                }
+
+                return loaded;
+            });
+
+            // Each scale shows its own file, including 1x back to 2x
+            Assert.Equal(
+                [new PixelSize(4, 3), new PixelSize(8, 6), new PixelSize(12, 9), new PixelSize(4, 3), new PixelSize(8, 6)],
+                sizes);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    static void SavePng(string path, PixelSize size)
+    {
+        using var bitmap = new Media.Imaging.RenderTargetBitmap(size);
+        using (var context = bitmap.CreateDrawingContext())
+            context.FillRectangle(Brushes.Red, new Rect(bitmap.Size));
+        bitmap.Save(path);
+    }
+
     static async Task WaitForLoadingStateAsync(ImageStub image, bool expected, int timeoutMs = 1000)
     {
         var sw = Stopwatch.StartNew();

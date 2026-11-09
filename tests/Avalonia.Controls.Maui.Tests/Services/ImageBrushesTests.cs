@@ -47,4 +47,17 @@ public class ImageBrushesTests
 
         Assert.Equal(new RelativeRect(drawing.GetBounds(), RelativeUnit.Absolute), brush.SourceRect);
     }
+
+    [AvaloniaFact(DisplayName = "A scaled bitmap gives a drawing brush at its device-independent size")]
+    public void ScaledBitmapGivesDrawingBrush()
+    {
+        using var image = new ScaledBitmapImage(new RenderTargetBitmap(new PixelSize(8, 6), new Vector(96, 96)), 2);
+
+        var brush = Assert.IsType<DrawingBrush>(ImageBrushes.Create(image));
+
+        var drawing = Assert.IsType<ImageDrawing>(brush.Drawing);
+        Assert.Same(image, drawing.ImageSource);
+        Assert.Equal(new Rect(0, 0, 4, 3), drawing.Rect);
+        Assert.Equal(new RelativeRect(0, 0, 4, 3, RelativeUnit.Absolute), brush.SourceRect);
+    }
 }
