@@ -14,58 +14,14 @@ namespace Avalonia.Controls.Maui.RenderTests.Tests;
 
 public class ShellTabRenderTests : RenderTestBase
 {
-    private async Task RenderShellToFile(Shell shell, double width = 400, double height = 300, [CallerMemberName] string testName = "")
+    private async Task RenderShellToFile(Shell shell, double width = 400, double height = 300, double scale = 1, [CallerMemberName] string testName = "")
     {
         EnsureHandlerCreated();
 
         await Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            var mauiContext = MauiContext;
-            var handler = shell.ToHandler(mauiContext);
-            var platformView = (Control)handler.PlatformView!;
-
-            platformView.Margin = new Avalonia.Thickness(20);
-
-            var container = new Panel
-            {
-                Children = { platformView },
-                Background = AvaloniaBrushes.White,
-                Width = width + 40,
-                Height = height + 40
-            };
-
-            var window = new Window
-            {
-                Content = container,
-                Width = width + 40,
-                Height = height + 40,
-                Title = testName,
-                SystemDecorations = WindowDecorations.None,
-                Background = AvaloniaBrushes.White,
-                CanResize = false,
-                WindowStartupLocation = WindowStartupLocation.Manual
-            };
-
-            window.Show();
-
-            for (int i = 0; i < 5; i++)
-            {
-                Dispatcher.UIThread.RunJobs(DispatcherPriority.Normal);
-                Dispatcher.UIThread.RunJobs(DispatcherPriority.Render);
-                await Task.Delay(20);
-            }
-
-            var pixelSize = new PixelSize((int)width + 40, (int)height + 40);
-            var dpi = new Vector(96, 96);
-            using var bitmap = new RenderTargetBitmap(pixelSize, dpi);
-            bitmap.Render(window);
-
-            var fileName = $"{GetType().Name}_{testName}.out.png";
-            var outputPath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
-
-            bitmap.Save(outputPath);
-
-            window.Close();
+            var handler = shell.ToHandler(MauiContext);
+            await RenderControlToFile((Control)handler.PlatformView!, width, height, scale, testName);
         });
     }
 
@@ -131,5 +87,83 @@ public class ShellTabRenderTests : RenderTestBase
 
         await RenderShellToFile(shell);
         CompareImages(tolerance: 0.050);
+    }
+
+    static Shell CreateShellWithGlyphTabIcons()
+    {
+        static FontImageSource Icon(string glyph) => new() { Glyph = glyph, Size = 16, Color = Colors.Black };
+
+        var shell = new Shell
+        {
+            Items =
+            {
+                new TabBar
+                {
+                    Items =
+                    {
+                        new ShellContent { Title = "Home", Icon = Icon("H"), Content = new MauiContentPage { Content = new Microsoft.Maui.Controls.Label { Text = "Home Page", TextColor = Colors.Black } } },
+                        new ShellContent { Title = "Mail", Icon = Icon("M"), Content = new MauiContentPage { Content = new Microsoft.Maui.Controls.Label { Text = "Mail Page", TextColor = Colors.Black } } }
+                    }
+                }
+            }
+        };
+
+        // The icons are tinted through an opacity mask, so the tab colours show in them
+        Shell.SetTabBarForegroundColor(shell, Colors.DarkRed);
+        Shell.SetTabBarUnselectedColor(shell, Colors.SteelBlue);
+        return shell;
+    }
+
+    [AvaloniaFact]
+    public async Task Render_Shell_TabIcons_FontImageSource()
+    {
+        await RenderShellToFile(CreateShellWithGlyphTabIcons(), height: 120);
+        CompareImages(tolerance: 0.045);
+    }
+
+    [AvaloniaFact]
+    public async Task Render_Shell_TabIcons_FontImageSource_2x()
+    {
+        await RenderShellToFile(CreateShellWithGlyphTabIcons(), height: 120, scale: 2);
+        CompareImages(tolerance: 0.045);
+    }
+
+    static Shell CreateShellWithGlyphFlyoutIcons()
+    {
+        static FontImageSource Icon(string glyph) => new() { Glyph = glyph, Size = 16, Color = Colors.DarkRed };
+
+        return new Shell
+        {
+            FlyoutBehavior = FlyoutBehavior.Locked,
+            Items =
+            {
+                new FlyoutItem
+                {
+                    Title = "Home",
+                    Icon = Icon("H"),
+                    Items = { new ShellContent { Content = new MauiContentPage { Content = new Microsoft.Maui.Controls.Label { Text = "Home Page", TextColor = Colors.Black } } } }
+                },
+                new FlyoutItem
+                {
+                    Title = "Mail",
+                    Icon = Icon("M"),
+                    Items = { new ShellContent { Content = new MauiContentPage { Content = new Microsoft.Maui.Controls.Label { Text = "Mail Page", TextColor = Colors.Black } } } }
+                }
+            }
+        };
+    }
+
+    [AvaloniaFact]
+    public async Task Render_Shell_FlyoutItemIcons_FontImageSource()
+    {
+        await RenderShellToFile(CreateShellWithGlyphFlyoutIcons(), height: 160);
+        CompareImages(tolerance: 0.045);
+    }
+
+    [AvaloniaFact]
+    public async Task Render_Shell_FlyoutItemIcons_FontImageSource_2x()
+    {
+        await RenderShellToFile(CreateShellWithGlyphFlyoutIcons(), height: 160, scale: 2);
+        CompareImages(tolerance: 0.045);
     }
 }

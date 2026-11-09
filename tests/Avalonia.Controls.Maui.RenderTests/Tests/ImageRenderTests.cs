@@ -96,7 +96,7 @@ public class ImageRenderTests : RenderTestBase
         };
 
         await RenderToFile(control);
-        // The glyph is drawn into a bitmap of its own, which is hinted on Linux and not on macOS
+        // Glyph hinting differs between Linux and macOS
         CompareImages(tolerance: 0.03);
     }
 }

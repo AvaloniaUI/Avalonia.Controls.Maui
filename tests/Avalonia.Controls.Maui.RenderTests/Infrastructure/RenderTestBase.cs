@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using Avalonia.Headless;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
@@ -48,7 +49,10 @@ public class RenderTestBase : IAsyncDisposable
         }
     }
 
-    protected async Task RenderToFile(View view, Action<IViewHandler>? setupPlatformView = null, [CallerMemberName] string testName = "")
+    protected Task RenderToFile(View view, Action<IViewHandler>? setupPlatformView = null, [CallerMemberName] string testName = "") =>
+        RenderToFile(view, 1, setupPlatformView, testName);
+
+    protected async Task RenderToFile(View view, double scale, Action<IViewHandler>? setupPlatformView = null, [CallerMemberName] string testName = "")
     {
         EnsureHandlerCreated();
         
@@ -67,53 +71,62 @@ public class RenderTestBase : IAsyncDisposable
             view.Measure(width, height);
             view.Arrange(new Microsoft.Maui.Graphics.Rect(0, 0, width, height));
 
-            // Wrap in Window for Rendering
-            platformView.Margin = new Avalonia.Thickness(20);
-            
-            var container = new Panel
-            {
-                Children = { platformView },
-                Background = Brushes.White,
-                Width = width + 40,
-                Height = height + 40
-            };
-
-            var window = new Window
-            {
-                Content = container,
-                Width = width + 40,
-                Height = height + 40,
-                Title = testName,
-                SystemDecorations = WindowDecorations.None,
-                Background = Brushes.White,
-                CanResize = false,
-                WindowStartupLocation = WindowStartupLocation.Manual
-            };
-            
-            window.Show();
-
-            // Give layout system time to run
-            for (int i = 0; i < 5; i++)
-            {
-                Dispatcher.UIThread.RunJobs(DispatcherPriority.Normal);
-                Dispatcher.UIThread.RunJobs(DispatcherPriority.Render);
-                await Task.Delay(20);
-            }
-
-            // Render
-            var pixelSize = new PixelSize((int)width + 40, (int)height + 40);
-            var dpi = new Vector(96, 96);
-            using var bitmap = new RenderTargetBitmap(pixelSize, dpi);
-            bitmap.Render(window);
-            
-            var fileName = $"{GetType().Name}_{testName}.out.png";
-            var outputPath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
-            
-            bitmap.Save(outputPath);
-            
-            window.Close();
+            await RenderControlToFile(platformView, width, height, scale, testName);
         });
     }
+
+    /// <summary>
+    /// Shows <paramref name="content"/> in a window at <paramref name="scale"/>, and saves the window
+    /// rendered at that scale.
+    /// </summary>
+    protected async Task RenderControlToFile(Control content, double width, double height, double scale, string testName)
+    {
+        content.Margin = new Avalonia.Thickness(20);
+
+        var container = new Panel
+        {
+            Children = { content },
+            Background = Brushes.White,
+            Width = width + 40,
+            Height = height + 40
+        };
+
+        var window = new Window
+        {
+            Content = container,
+            Width = width + 40,
+            Height = height + 40,
+            Title = testName,
+            SystemDecorations = WindowDecorations.None,
+            Background = Brushes.White,
+            CanResize = false,
+            WindowStartupLocation = WindowStartupLocation.Manual
+        };
+
+        window.SetRenderScaling(scale);
+        window.Show();
+
+        // Give layout system time to run
+        for (int i = 0; i < 5; i++)
+        {
+            Dispatcher.UIThread.RunJobs(DispatcherPriority.Normal);
+            Dispatcher.UIThread.RunJobs(DispatcherPriority.Render);
+            await Task.Delay(20);
+        }
+
+        // Render
+        var pixelSize = new PixelSize((int)Math.Round((width + 40) * scale), (int)Math.Round((height + 40) * scale));
+        var dpi = new Vector(96 * scale, 96 * scale);
+        using var bitmap = new RenderTargetBitmap(pixelSize, dpi);
+        bitmap.Render(window);
+
+        bitmap.Save(GetOutputPath(testName));
+
+        window.Close();
+    }
+
+    protected string GetOutputPath(string testName) =>
+        Path.Combine(Directory.GetCurrentDirectory(), $"{GetType().Name}_{testName}.out.png");
 
     protected void CompareImages(double? tolerance = null, [CallerMemberName] string testName = "")
     {

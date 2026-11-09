@@ -3,8 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
+using Avalonia.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
@@ -15,11 +14,11 @@ using IImage = Avalonia.Media.IImage;
 namespace Avalonia.Controls.Maui.Services;
 
 /// <summary>
-/// Avalonia implementation of <see cref="IImageSourceService"/> that renders font glyphs as bitmap images.
+/// Avalonia implementation of <see cref="IImageSourceService"/> that creates vector images of font glyphs.
 /// </summary>
 /// <remarks>
-/// The service uses Avalonia's text rendering pipeline to draw a single glyph onto a
-/// <see cref="RenderTargetBitmap"/>, applying the specified color, font family, weight, and style.
+/// The glyph is recorded as glyph runs in a <see cref="DrawingImage"/>, with the specified color, font family,
+/// weight, and style. The image is sharp at every display scale.
 /// </remarks>
 public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IFontImageSource>
 {
@@ -59,14 +58,14 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
     }
 
     /// <summary>
-    /// Attempts to render a bitmap from the specified image source by casting it to <see cref="IFontImageSource"/>.
+    /// Attempts to create a vector image from the specified image source by casting it to <see cref="IFontImageSource"/>.
     /// </summary>
     /// <param name="imageSource">The image source to render. Must implement <see cref="IFontImageSource"/> to produce a result.</param>
-    /// <param name="scale">The display scale factor applied during glyph rendering.</param>
+    /// <param name="scale">Not used: the glyph is a vector image that is sharp at every display scale.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the rendered glyph bitmap, or <see langword="null"/>
-    /// if the source is not a font image source.
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the glyph as a <see cref="DrawingImage"/>,
+    /// or <see langword="null"/> if the source is not a font image source.
     /// </returns>
     public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IImageSource imageSource,
@@ -82,15 +81,18 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
     }
 
     /// <summary>
-    /// Renders the font glyph specified by the <see cref="IFontImageSource"/> into an Avalonia bitmap.
+    /// Creates a vector image of the font glyph specified by the <see cref="IFontImageSource"/>.
     /// </summary>
     /// <param name="imageSource">The font image source containing the glyph, font, and color information.</param>
-    /// <param name="scale">The display scale factor applied during glyph rendering.</param>
+    /// <param name="scale">Not used: the glyph is a vector image that is sharp at every display scale.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the rendered glyph bitmap, or <see langword="null"/>
-    /// if the source or its glyph is <see langword="null"/> or empty.
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the glyph as a <see cref="DrawingImage"/>,
+    /// or <see langword="null"/> if the source or its glyph is <see langword="null"/> or empty.
     /// </returns>
+    /// <remarks>
+    /// The image is sized to the glyph's ink bounds plus a one-unit border on each side, as MAUI does on Windows.
+    /// </remarks>
     public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IFontImageSource imageSource,
         float scale = 1,
@@ -99,9 +101,18 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
         if (imageSource == null || string.IsNullOrEmpty(imageSource.Glyph))
             return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
 
+        // DrawingImage and DrawingGroup are AvaloniaObjects, so they are built on the UI thread
+        if (!Dispatcher.UIThread.CheckAccess())
+            return Dispatcher.UIThread.InvokeAsync(() => CreateImage(imageSource), DispatcherPriority.Normal, cancellationToken).GetTask();
+
+        return Task.FromResult(CreateImage(imageSource));
+    }
+
+    private IImageSourceServiceResult<IImage>? CreateImage(IFontImageSource imageSource)
+    {
         try
         {
-            _logger?.LogDebug("Rendering font glyph: {Glyph}", imageSource.Glyph);
+            _logger?.LogDebug("Creating font glyph image: {Glyph}", imageSource.Glyph);
 
             var font = imageSource.Font;
             var fontSize = font.Size > 0 ? font.Size : DefaultSize;
@@ -127,7 +138,6 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
             var typeface = new Typeface(fontFamily, fontStyle, fontWeight);
             var avaloniaColor = GetAvaloniaColor(imageSource.Color);
 
-            // Create formatted text, sized in device-independent units; the bitmap's DPI applies the scale
             var formattedText = new FormattedText(
                 imageSource.Glyph,
                 System.Globalization.CultureInfo.CurrentCulture,
@@ -136,36 +146,49 @@ public partial class AvaloniaFontImageSourceService : IAvaloniaImageSourceServic
                 fontSize,
                 new SolidColorBrush(avaloniaColor));
 
-            // Size the image to the glyph's drawn bounds plus a one-unit border, as MAUI does on
-            // Windows. A glyph with no outline (such as a space) keeps its layout box.
+            // A glyph with no outline (such as a space) keeps its layout box
             var glyphBounds = formattedText.BuildGeometry(default)?.Bounds ?? default;
             if (glyphBounds.Width <= 0 || glyphBounds.Height <= 0)
                 glyphBounds = new Rect(0, 0, formattedText.WidthIncludingTrailingWhitespace, formattedText.Height);
 
-            // Work in whole pixels so anti-aliased edges stay inside the border
-            var borderPixels = (int)Math.Ceiling(scale);
-            var left = (int)Math.Floor(glyphBounds.X * scale) - borderPixels;
-            var top = (int)Math.Floor(glyphBounds.Y * scale) - borderPixels;
-            var right = (int)Math.Ceiling(glyphBounds.Right * scale) + borderPixels;
-            var bottom = (int)Math.Ceiling(glyphBounds.Bottom * scale) + borderPixels;
+            // Whole units keep antialiased edges inside the border, and match the size of the bitmap this replaced
+            var left = Math.Floor(glyphBounds.X) - 1;
+            var top = Math.Floor(glyphBounds.Y) - 1;
+            var right = Math.Ceiling(glyphBounds.Right) + 1;
+            var bottom = Math.Ceiling(glyphBounds.Bottom) + 1;
+            var imageRect = new Rect(left, top, Math.Max(1, right - left), Math.Max(1, bottom - top));
 
-            var pixelSize = new PixelSize(Math.Max(1, right - left), Math.Max(1, bottom - top));
-            var dpi = new Vector(96 * scale, 96 * scale);
-            var renderTarget = new RenderTargetBitmap(pixelSize, dpi);
-
-            // Render to bitmap, moving the glyph's pixel-aligned bounds to the origin
-            using (var context = renderTarget.CreateDrawingContext())
+            // Greyscale, as on every MAUI platform
+            var glyphs = new DrawingGroup();
+            using (var context = glyphs.Open())
+            using (context.PushTextOptions(new TextOptions { TextRenderingMode = TextRenderingMode.Antialias }))
             {
-                context.DrawText(formattedText, new Point(-left / scale, -top / scale));
+                context.DrawText(formattedText, default);
             }
 
-            _logger?.LogDebug("Successfully rendered font glyph");
+            // A host's own text mode overrides a pushed one, but brush content renders in a context of its own
+            var group = new DrawingGroup
+            {
+                Children =
+                {
+                    new GeometryDrawing
+                    {
+                        Geometry = new RectangleGeometry(imageRect),
+                        Brush = new DrawingBrush(glyphs)
+                        {
+                            SourceRect = new RelativeRect(imageRect, RelativeUnit.Absolute),
+                            Stretch = Stretch.Fill
+                        }
+                    }
+                }
+            };
 
-            return Task.FromResult<IImageSourceServiceResult<IImage>?>(new ImageSourceServiceResult(renderTarget));
+            var image = new DrawingImage(group) { Viewbox = imageRect };
+            return new ImageSourceServiceResult(image, resolutionDependent: false);
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error rendering font glyph: {Glyph}", imageSource.Glyph);
+            _logger?.LogError(ex, "Error creating font glyph image: {Glyph}", imageSource.Glyph);
             throw;
         }
     }
