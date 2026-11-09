@@ -10,13 +10,19 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
     public partial class AvaloniaControlHostView : Avalonia.WinUI.AvaloniaSwapChainPanel, IAvaloniaControlHost
     {
         readonly Avalonia.Controls.Border _backgroundBorder = new();
+        readonly EmbeddedPopupHost _popupHost;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AvaloniaControlHostView"/> class.
         /// </summary>
         public AvaloniaControlHostView()
         {
+            // Embedded views are not at the window edges, so skip the safe area padding.
+            Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
+            _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
+            AvaloniaPanelFocus.Attach(this);
+            AvaloniaPanelReload.Attach(this, _backgroundBorder);
         }
 
         /// <inheritdoc/>

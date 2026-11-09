@@ -11,6 +11,7 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
     {
         readonly AvaloniaView _mauiView;
         readonly Avalonia.Controls.Border _backgroundBorder = new();
+        readonly EmbeddedPopupHost _popupHost;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MauiAvaloniaView"/> class.
@@ -19,7 +20,32 @@ namespace Avalonia.Controls.Maui.Platforms.Windows.Handlers
         public MauiAvaloniaView(AvaloniaView mauiView)
         {
             _mauiView = mauiView;
+            // Embedded views are not at the window edges, so skip the safe area padding.
+            Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
+            _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
+            AvaloniaPanelFocus.Attach(this);
+            AvaloniaPanelReload.Attach(this, _backgroundBorder);
+
+            // The panel creates its top level when it is loaded, during a WinUI layout pass after MAUI first
+            // measured the content. The content gets its template and styles then, so it is measured again after.
+            _backgroundBorder.AttachedToVisualTree += (_, _) =>
+                DispatcherQueue.TryEnqueue(InvalidateMauiMeasure);
+        }
+
+        private void InvalidateMauiMeasure()
+        {
+            ((Microsoft.Maui.IView)_mauiView).InvalidateMeasure();
+
+            // The MAUI layouts above the panel ask the handler for the size of the content. The desired size of the
+            // panel itself does not depend on its content, so they are invalidated directly.
+            Microsoft.UI.Xaml.DependencyObject? element = this;
+            while (element is not null)
+            {
+                if (element is Microsoft.UI.Xaml.UIElement uiElement)
+                    uiElement.InvalidateMeasure();
+                element = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(element);
+            }
         }
 
         /// <summary>
