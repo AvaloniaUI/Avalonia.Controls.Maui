@@ -160,6 +160,22 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
         }
 
         /// <summary>
+        /// Moves the closed popups of <paramref name="topLevel"/> to the current overlay of its host, for example
+        /// after the host view moved to another window. Open popups move when they close.
+        /// </summary>
+        public static void OnHostOverlayChanged(TopLevel? topLevel)
+        {
+            if (topLevel is null)
+                return;
+
+            foreach (var (_, state) in s_popups)
+            {
+                if (state.HostTopLevel == topLevel)
+                    state.Redirect();
+            }
+        }
+
+        /// <summary>
         /// Moves all open popups of <paramref name="overlay"/>, for example after the overlay resized.
         /// </summary>
         public static void OnOverlayLayoutChanged(IEmbeddedPopupOverlay overlay)
@@ -183,6 +199,11 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             s_initialized = true;
             Popup.PlacementTargetProperty.Changed.AddClassHandler<Popup>(OnPlacementTargetChanged);
             Control.LoadedEvent.AddClassHandler<Popup>((popup, _) => GetState(popup).Redirect());
+            Control.UnloadedEvent.AddClassHandler<Popup>((popup, _) =>
+            {
+                if (s_popups.TryGetValue(popup, out var state))
+                    state.Release();
+            });
         }
 
         private static PopupState GetState(Popup popup) => s_popups.GetValue(popup, p => new PopupState(p));
@@ -195,6 +216,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
 
             state.OriginalTarget = e.NewValue as Control;
             state.Redirect();
+            state.ReopenIfClosedForNewTarget();
         }
 
         private static void AddOverlayUser(IEmbeddedPopupOverlay overlay, IEmbeddedPopupHost host)
@@ -232,11 +254,18 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             public Point? LastPointer { get; set; }
         }
 
+        /// <summary>An invisible control in the overlay that stands in for the placement target of a popup.</summary>
+        private sealed class OverlayAnchor(Popup popup) : Control
+        {
+            public WeakReference<Popup> Popup { get; } = new(popup);
+        }
+
         private sealed class PopupState
         {
             private readonly Popup _popup;
-            private readonly Control _anchor = new() { IsHitTestVisible = false };
+            private readonly OverlayAnchor _anchor;
             private Control? _openTarget;
+            private bool _closedForNewTarget;
             private bool _placementOverridden;
             private PlacementMode _savedPlacement;
             private PopupAnchor _savedAnchor;
@@ -245,6 +274,7 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
             public PopupState(Popup popup)
             {
                 _popup = popup;
+                _anchor = new OverlayAnchor(popup) { IsHitTestVisible = false };
                 OriginalTarget = popup.PlacementTarget;
                 popup.Opened += OnOpened;
                 popup.Closed += OnClosed;
@@ -281,17 +311,62 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                     if (_anchor.Parent is Canvas oldLayer && oldLayer != overlay.AnchorLayer)
                         oldLayer.Children.Remove(_anchor);
                     if (_anchor.Parent is null)
+                    {
+                        RemoveCollectedAnchors(overlay.AnchorLayer);
                         overlay.AnchorLayer.Children.Add(_anchor);
+                    }
 
                     Overlay = overlay;
                     HostTopLevel = topLevel;
                     SetTarget(_anchor);
                 }
-                else if (_popup.PlacementTarget == _anchor)
+                else
                 {
-                    Overlay = null;
-                    HostTopLevel = null;
+                    Release();
+                }
+            }
+
+            /// <summary>
+            /// Removes the anchor from the overlay and points the popup back at its original target. The popup is
+            /// redirected again when it is loaded or gets a new target.
+            /// </summary>
+            public void Release()
+            {
+                // An open popup is released when it closes.
+                if (_openTarget is not null)
+                    return;
+
+                if (_anchor.Parent is Canvas layer)
+                    layer.Children.Remove(_anchor);
+
+                Overlay = null;
+                HostTopLevel = null;
+                if (_popup.PlacementTarget == _anchor)
                     SetTarget(OriginalTarget);
+            }
+
+            /// <summary>Opens the popup again if it closed because it got a new placement target.</summary>
+            /// <remarks>
+            /// A popup closes itself when its new placement target is in another top level than the one it is open
+            /// in. A redirected popup is open in the overlay, so that is always the case.
+            /// </remarks>
+            public void ReopenIfClosedForNewTarget()
+            {
+                if (!_closedForNewTarget)
+                    return;
+
+                _closedForNewTarget = false;
+                if (!_popup.IsOpen)
+                    _popup.Open();
+            }
+
+            /// <summary>Removes the anchors of popups that no longer exist from <paramref name="layer"/>.</summary>
+            private static void RemoveCollectedAnchors(Canvas layer)
+            {
+                for (var i = layer.Children.Count - 1; i >= 0; i--)
+                {
+                    if (layer.Children[i] is OverlayAnchor anchor && !anchor.Popup.TryGetTarget(out _))
+                        layer.Children.RemoveAt(i);
                 }
             }
 
@@ -373,6 +448,9 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 _openTarget = null;
                 s_open.Remove(this);
 
+                // The popup was redirected, so a target other than the anchor means that it got a new one.
+                _closedForNewTarget = _popup.PlacementTarget != _anchor;
+
                 if (_placementOverridden)
                 {
                     _placementOverridden = false;
@@ -384,8 +462,10 @@ namespace Avalonia.Controls.Maui.Platforms.EmbeddedPopups
                 if (Overlay is not null)
                     RemoveOverlayUser(Overlay);
 
-                // The target may have moved to another view while the popup was open.
-                Redirect();
+                // The target may have moved to another view while the popup was open. A new target is redirected
+                // when its change is handled.
+                if (!_closedForNewTarget)
+                    Redirect();
             }
 
             private void OnTargetDetached(object? sender, VisualTreeAttachmentEventArgs e) => _popup.Close();

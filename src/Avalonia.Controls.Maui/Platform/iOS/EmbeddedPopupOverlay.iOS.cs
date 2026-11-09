@@ -3,6 +3,7 @@ using Avalonia.Controls.Maui.Platforms.EmbeddedPopups;
 using Avalonia.Input;
 using Avalonia.VisualTree;
 using System;
+using System.Runtime.CompilerServices;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -32,42 +33,50 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             return host;
         }
 
-        /// <summary>Gets the window that contains the host.</summary>
-        public UIWindow? Window => _view.Window;
-
         /// <summary>Call when the host view was laid out.</summary>
         public void OnLayout()
         {
             // The window may have been resized.
-            EmbeddedPopupOverlay.Instance.Prepare(_view.Window);
+            EmbeddedPopupOverlay.ForWindow(_view.Window).Prepare();
             EmbeddedPopupRedirector.OnHostLayoutChanged(_topLevel);
         }
 
         /// <summary>Call when the host view was added to or removed from a window.</summary>
         /// <remarks>MAUI can lay out the host before it is in a window, and not again after.</remarks>
-        public void OnMovedToWindow() => EmbeddedPopupOverlay.Instance.Prepare(_view.Window);
+        public void OnMovedToWindow()
+        {
+            EmbeddedPopupOverlay.ForWindow(_view.Window).Prepare();
+            // The popups of the host were redirected to the overlay of the window it was in before, if any.
+            EmbeddedPopupRedirector.OnHostOverlayChanged(_topLevel);
+        }
 
-        // The host may not be in a window yet when its popups are redirected, so all hosts share one
-        // overlay. The overlay moves to the window of the host that shows it.
-        public IEmbeddedPopupOverlay GetOverlay() => EmbeddedPopupOverlay.Instance;
+        public IEmbeddedPopupOverlay GetOverlay() => EmbeddedPopupOverlay.ForWindow(_view.Window);
 
-        public Point? GetOriginInOverlay() => EmbeddedPopupOverlay.Instance.GetOrigin(_view);
+        public Point? GetOriginInOverlay() => EmbeddedPopupOverlay.ForWindow(_view.Window).GetOrigin(_view);
     }
 
     /// <summary>
-    /// A transparent view on top of the window that shows the popups of embedded Avalonia views.
+    /// A transparent view on top of a window that shows the popups of embedded Avalonia views.
     /// </summary>
+    /// <remarks>
+    /// Each window has its own overlay, so that popups can be open in several windows at once. Hosts that are not
+    /// in a window yet share a detached overlay, which is never shown. Their popups move to the overlay of the
+    /// window when the host is added to one.
+    /// </remarks>
     internal sealed class EmbeddedPopupOverlay : IEmbeddedPopupOverlay
     {
-        private static EmbeddedPopupOverlay? s_instance;
+        private static readonly ConditionalWeakTable<UIWindow, EmbeddedPopupOverlay> s_overlays = new();
+        private static EmbeddedPopupOverlay? s_detached;
 
+        private readonly WeakReference<UIWindow>? _window;
         private readonly OverlayView _view;
         private readonly EmbeddableControlRoot _root;
         private readonly AvaloniaViewHover? _hover;
         private bool _hidePending;
 
-        private EmbeddedPopupOverlay()
+        private EmbeddedPopupOverlay(UIWindow? window)
         {
+            _window = window is null ? null : new WeakReference<UIWindow>(window);
             AnchorLayer = new Canvas();
             TopLevel.SetAutoSafeAreaPadding(AnchorLayer, false);
             AnchorLayer.SizeChanged += (_, _) => EmbeddedPopupRedirector.OnOverlayLayoutChanged(this);
@@ -94,13 +103,17 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             _root.StopRendering();
         }
 
-        public static EmbeddedPopupOverlay Instance => s_instance ??= new EmbeddedPopupOverlay();
+        /// <summary>Gets the overlay of <paramref name="window"/>, or the detached overlay if it is null.</summary>
+        public static EmbeddedPopupOverlay ForWindow(UIWindow? window) =>
+            window is null
+                ? s_detached ??= new EmbeddedPopupOverlay(null)
+                : s_overlays.GetValue(window, w => new EmbeddedPopupOverlay(w));
 
         public Canvas AnchorLayer { get; }
 
         public void Show(IEmbeddedPopupHost host)
         {
-            if (((EmbeddedPopupHost)host).Window is not { } window)
+            if (_window is null || !_window.TryGetTarget(out var window))
                 return;
 
             _hidePending = false;
@@ -116,14 +129,14 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             _root.StartRendering();
         }
 
-        /// <summary>Gives the hidden overlay the size and scale of <paramref name="window"/>.</summary>
+        /// <summary>Gives the hidden overlay the size and scale of its window.</summary>
         /// <remarks>
         /// A popup is laid out while it opens, before the overlay is shown. Without this, the first popup is laid
         /// out for an overlay with no size, and controls such as the date picker keep the wrong layout.
         /// </remarks>
-        public void Prepare(UIWindow? window)
+        public void Prepare()
         {
-            if (window is null || _view.Superview is not null)
+            if (_window is null || !_window.TryGetTarget(out var window) || _view.Superview is not null)
                 return;
 
             // A view that is not in a window has a scale of 1. Avalonia gets the scaling from it, so set the scale

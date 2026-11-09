@@ -33,12 +33,18 @@ public class EmbeddedPopupRedirectorTests
 
     private sealed class FakeHost(FakeOverlay overlay, Point origin) : IEmbeddedPopupHost
     {
-        public IEmbeddedPopupOverlay GetOverlay() => overlay;
+        public FakeOverlay Overlay { get; set; } = overlay;
+
+        public IEmbeddedPopupOverlay GetOverlay() => Overlay;
 
         public Point? GetOriginInOverlay() => origin;
     }
 
-    private static (Window Host, Button Target, Popup Popup, FakeOverlay Overlay) CreateEmbeddedPopup(bool register = true)
+    private static (Window Host, Button Target, Popup Popup, FakeOverlay Overlay) CreateEmbeddedPopup(bool register = true) =>
+        CreateEmbeddedPopup(out _, register);
+
+    private static (Window Host, Button Target, Popup Popup, FakeOverlay Overlay) CreateEmbeddedPopup(
+        out FakeHost fakeHost, bool register = true)
     {
         var target = new Button { Width = 100, Height = 30, Margin = new Thickness(5, 40, 0, 0) };
         var popup = new Popup
@@ -52,8 +58,9 @@ public class EmbeddedPopupRedirectorTests
         var host = new Window { Width = 200, Height = 100, Content = panel };
         var overlay = new FakeOverlay();
 
+        fakeHost = new FakeHost(overlay, new Point(10, 20));
         if (register)
-            EmbeddedPopupRedirector.Register(host, new FakeHost(overlay, new Point(10, 20)));
+            EmbeddedPopupRedirector.Register(host, fakeHost);
 
         host.Show();
         Dispatcher.UIThread.RunJobs();
@@ -170,5 +177,108 @@ public class EmbeddedPopupRedirectorTests
         comboBox.IsDropDownOpen = false;
         Dispatcher.UIThread.RunJobs();
         Assert.Equal(1, overlay.HideCount);
+    }
+
+    [AvaloniaFact(DisplayName = "Open popup follows a new placement target in the same embedded view")]
+    public void Open_Popup_Follows_New_Target()
+    {
+        var (_, target, popup, overlay) = CreateEmbeddedPopup();
+        var anchor = popup.PlacementTarget!;
+        var other = new Button { Width = 40, Height = 20 };
+        ((StackPanel)target.Parent!).Children.Add(other);
+        Dispatcher.UIThread.RunJobs();
+
+        popup.Open();
+        popup.PlacementTarget = other;
+
+        Assert.True(popup.IsOpen);
+        Assert.Same(anchor, popup.PlacementTarget);
+        Assert.Same(overlay.Window, TopLevel.GetTopLevel(popup.Child));
+        var otherOrigin = other.TranslatePoint(default, TopLevel.GetTopLevel(other)!)!.Value;
+        Assert.Equal(20 + otherOrigin.Y, Canvas.GetTop(anchor));
+        Assert.Equal(other.Bounds.Size, anchor.Bounds.Size);
+
+        // The old target is no longer tracked, so removing it does not close the popup.
+        ((StackPanel)target.Parent!).Children.Remove(target);
+        Assert.True(popup.IsOpen);
+
+        // The overlay stays shown while the popup reopens.
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal(0, overlay.HideCount);
+    }
+
+    [AvaloniaFact(DisplayName = "Open popup moves out of the overlay for a target outside embedded views")]
+    public void Open_Popup_Leaves_Overlay_For_Target_Outside_Embedded_View()
+    {
+        var (_, _, popup, overlay) = CreateEmbeddedPopup();
+        var outsideTarget = new Button { Width = 40, Height = 20 };
+        var outside = new Window { Width = 200, Height = 100, Content = outsideTarget };
+        outside.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        popup.Open();
+        var anchor = popup.PlacementTarget!;
+        popup.PlacementTarget = outsideTarget;
+
+        Assert.True(popup.IsOpen);
+        Assert.Same(outsideTarget, popup.PlacementTarget);
+        Assert.Same(outside, TopLevel.GetTopLevel(popup.Child));
+        Assert.Null(anchor.Parent);
+
+        Dispatcher.UIThread.RunJobs();
+        Assert.Equal(1, overlay.HideCount);
+    }
+
+    [AvaloniaFact(DisplayName = "Anchor is removed when its popup unloads, and added again when it loads")]
+    public void Anchor_Removed_On_Unload()
+    {
+        var (_, target, popup, overlay) = CreateEmbeddedPopup();
+        var anchor = popup.PlacementTarget!;
+        var panel = (StackPanel)popup.Parent!;
+        Assert.Same(overlay.AnchorLayer, anchor.Parent);
+
+        panel.Children.Remove(popup);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Null(anchor.Parent);
+        Assert.Same(target, popup.PlacementTarget);
+
+        panel.Children.Add(popup);
+        Dispatcher.UIThread.RunJobs();
+
+        Assert.Same(anchor, popup.PlacementTarget);
+        Assert.Same(overlay.AnchorLayer, anchor.Parent);
+    }
+
+    [AvaloniaFact(DisplayName = "Anchor is removed when the popup's target leaves the embedded views")]
+    public void Anchor_Removed_When_Target_Not_Embedded()
+    {
+        var (_, target, popup, _) = CreateEmbeddedPopup();
+        var anchor = popup.PlacementTarget!;
+        var outsideTarget = new Button();
+        var outside = new Window { Content = outsideTarget };
+        outside.Show();
+        Dispatcher.UIThread.RunJobs();
+
+        popup.PlacementTarget = outsideTarget;
+
+        Assert.Null(anchor.Parent);
+        Assert.Same(outsideTarget, popup.PlacementTarget);
+    }
+
+    [AvaloniaFact(DisplayName = "Popups move to the new overlay of their host")]
+    public void Popups_Move_To_New_Overlay()
+    {
+        var (host, _, popup, _) = CreateEmbeddedPopup(out var fakeHost);
+        var anchor = popup.PlacementTarget!;
+        var newOverlay = new FakeOverlay();
+
+        fakeHost.Overlay = newOverlay;
+        EmbeddedPopupRedirector.OnHostOverlayChanged(host);
+
+        Assert.Same(newOverlay.AnchorLayer, anchor.Parent);
+        popup.Open();
+        Assert.Same(newOverlay.Window, TopLevel.GetTopLevel(popup.Child));
+        Assert.Equal(1, newOverlay.ShowCount);
     }
 }

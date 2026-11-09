@@ -62,7 +62,7 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
         private PopupWindow? _window;
         private AndroidView? _windowRoot;
         private bool _hidePending;
-        private bool _warmedUp;
+        private (int Width, int Height)? _preparedSize;
         private bool _warmingUp;
 
         private EmbeddedPopupOverlay(Context context)
@@ -108,27 +108,37 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
 
             _window.Dismiss();
             _windowRoot = windowRoot;
+            _preparedSize = (windowRoot.Width, windowRoot.Height);
             _window.ShowAtLocation(windowRoot, GravityFlags.NoGravity, 0, 0);
         }
 
-        /// <summary>Shows the overlay once, so that its top level gets the size and scaling of the window.</summary>
+        /// <summary>Shows the overlay briefly, so that its top level gets the size and scaling of the window.</summary>
         /// <remarks>
         /// A popup is laid out while it opens, before the overlay is shown. Avalonia gets the size and the scaling
         /// of a view from its surface, which only exists while the view is in a window. Without this, the first
         /// popup is laid out for an overlay with no size, and controls such as the time picker keep the wrong
-        /// layout. The overlay is not touchable while it warms up, and it has no content.
+        /// layout. The overlay is not touchable while it warms up, and it has no content. It warms up again when
+        /// the size of the window changes, for example after a rotation.
         /// </remarks>
         public void Prepare(AndroidView? windowRoot)
         {
-            if (_warmedUp || windowRoot is not { WindowToken: not null } || _window?.IsShowing == true)
+            if (windowRoot is not { WindowToken: not null } || _window?.IsShowing == true
+                || windowRoot.Width <= 0 || windowRoot.Height <= 0)
                 return;
 
-            _warmedUp = true;
+            var size = (windowRoot.Width, windowRoot.Height);
+            if (_preparedSize == size)
+                return;
+
+            _preparedSize = size;
             _warmingUp = true;
             _window ??= CreateWindow();
             _window.Touchable = false;
             _windowRoot = windowRoot;
             _window.ShowAtLocation(windowRoot, GravityFlags.NoGravity, 0, 0);
+
+            // The warm-up ends when the top level gets its size. If it already had that size, it gets no new one.
+            Avalonia.Threading.DispatcherTimer.RunOnce(EndWarmUp, System.TimeSpan.FromSeconds(1));
         }
 
         private void EndWarmUp()
