@@ -7,12 +7,6 @@ namespace Avalonia.Controls.Maui.Services;
 /// <summary>
 /// A bitmap with more than one device pixel per device-independent unit, such as an <c>@2x</c> file variant.
 /// </summary>
-/// <remarks>
-/// The image has the size of the base image in device-independent units, like an iOS <c>UIImage</c> with a scale.
-/// A <see cref="Bitmap"/> with a DPI other than 96 does not do this: Avalonia draws its source rectangle in pixels,
-/// so an <see cref="Avalonia.Controls.Image"/> shows only part of it. This image converts the source rectangle to
-/// pixels when it draws. Disposing it disposes <see cref="Bitmap"/>.
-/// </remarks>
 public sealed class ScaledBitmapImage : IImage, IDisposable
 {
     /// <summary>
