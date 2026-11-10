@@ -9,17 +9,6 @@
             <Label StyleClass="h2"
                    Text="Drags content from a source and drops it on a target." />
 
-            <Border Background="#33FFA500"
-                    Stroke="Orange"
-                    StrokeThickness="1"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <Label Text="⚠ Temporarily unavailable: drag &amp; drop gesture recognizers are pending a public MAUI IGesturePlatformManager API (dotnet/maui#33364), so the samples below will not respond. See docs/known-issues.md."
-                       FontSize="13"/>
-            </Border>
-
             <!-- Text Drag/Drop -->
             <VerticalStackLayout StyleClass="section">
                 <Label StyleClass="h1"
