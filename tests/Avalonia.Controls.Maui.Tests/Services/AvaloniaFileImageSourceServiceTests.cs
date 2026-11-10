@@ -120,8 +120,10 @@ public sealed class AvaloniaFileImageSourceServiceTests : IDisposable
             handle.Free();
         }
 
-        // Rendered bitmaps are BGRA
-        return Avalonia.Media.Color.FromArgb(pixel[3], pixel[2], pixel[1], pixel[0]);
+        // Rendered bitmaps are RGBA or BGRA, which depends on the platform
+        return bitmap.Format == Avalonia.Platform.PixelFormat.Rgba8888
+            ? Avalonia.Media.Color.FromArgb(pixel[3], pixel[0], pixel[1], pixel[2])
+            : Avalonia.Media.Color.FromArgb(pixel[3], pixel[2], pixel[1], pixel[0]);
     }
 
     /// <summary>

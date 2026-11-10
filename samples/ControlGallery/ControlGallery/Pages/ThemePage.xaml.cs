@@ -30,6 +30,29 @@ public partial class ThemePage : ContentPage
         }
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (Application.Current is { } app)
+            app.RequestedThemeChanged += OnRequestedThemeChanged;
+
+        UpdateCurrentTheme();
+    }
+
+    protected override void OnDisappearing()
+    {
+        if (Application.Current is { } app)
+            app.RequestedThemeChanged -= OnRequestedThemeChanged;
+
+        base.OnDisappearing();
+    }
+
+    private void OnRequestedThemeChanged(object? sender, AppThemeChangedEventArgs e)
+    {
+        UpdateCurrentTheme();
+    }
+
     private void OnToggleThemeClicked(object? sender, EventArgs e)
     {
         var app = Application.Current;
