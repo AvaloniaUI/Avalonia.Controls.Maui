@@ -68,8 +68,9 @@ public class CollectionViewLogicalParentTests : HandlerTestBase
         });
 
         var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
-        var window = new Window { Content = handler.PlatformView, Width = 300, Height = 400 };
-        window.Show();
+        var window = ShowInWindow(handler.PlatformView);
+        window.Width = 300;
+        window.Height = 400;
         Threading.Dispatcher.UIThread.RunJobs();
 
         var item = itemViews.First(view => view.Handler?.PlatformView is Control control && TopLevel.GetTopLevel(control) != null);
@@ -98,8 +99,9 @@ public class CollectionViewLogicalParentTests : HandlerTestBase
         });
 
         var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
-        var window = new Window { Content = handler.PlatformView, Width = 300, Height = 400 };
-        window.Show();
+        var window = ShowInWindow(handler.PlatformView);
+        window.Width = 300;
+        window.Height = 400;
         Threading.Dispatcher.UIThread.RunJobs();
 
         var removed = itemViews["One"];
