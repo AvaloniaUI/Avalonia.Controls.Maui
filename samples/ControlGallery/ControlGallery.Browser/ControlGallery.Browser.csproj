@@ -6,7 +6,13 @@
 		<Nullable>enable</Nullable>
 		<UseMaui>true</UseMaui>
 		<RootNamespace>ControlGallery</RootNamespace>
+		<WarningsNotAsErrors>$(WarningsNotAsErrors);IL2104</WarningsNotAsErrors>
 	</PropertyGroup>
+
+	<!-- Keep the members that ControlGallery's third-party controls bind to by name -->
+	<ItemGroup>
+		<TrimmerRootDescriptor Include="../ControlGallery/TrimmerRoots.xml" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<AvaloniaResource Include="Assets\**" />
