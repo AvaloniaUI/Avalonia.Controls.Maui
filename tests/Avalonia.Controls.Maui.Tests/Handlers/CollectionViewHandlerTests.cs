@@ -1038,6 +1038,36 @@ public partial class CollectionViewHandlerTests : HandlerTestBase
         Assert.Equal(new object[] { firstItem, secondItem }, collectionView.SelectedItems);
     }
 
+    [AvaloniaFact(DisplayName = "Shadow Set On A Shown Item Wraps It In Place")]
+    public async Task ShadowSetOnAShownItemWrapsItInPlace()
+    {
+        var itemViews = new List<Microsoft.Maui.Controls.Border>();
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = new List<string> { "One", "Two" };
+        collectionView.SelectionMode = MauiSelectionMode.None;
+        collectionView.ItemTemplate = new Microsoft.Maui.Controls.DataTemplate(() =>
+        {
+            var border = new Microsoft.Maui.Controls.Border { HeightRequest = 30 };
+            itemViews.Add(border);
+            return border;
+        });
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+        var window = new Window { Content = handler.PlatformView, Width = 300, Height = 400 };
+        window.Show();
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        var item = itemViews.First(view => view.Handler?.PlatformView is Control control && TopLevel.GetTopLevel(control) != null);
+        var platformView = (Control)item.Handler!.PlatformView!;
+
+        item.Shadow = new Microsoft.Maui.Controls.Shadow { Brush = Microsoft.Maui.Controls.Brush.Black, Radius = 2, Opacity = 0.5f };
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        var container = Assert.IsAssignableFrom<Control>(((Microsoft.Maui.IViewHandler)item.Handler).ContainerView);
+        Assert.Same(container, platformView.GetVisualParent());
+        Assert.NotNull(TopLevel.GetTopLevel(container));
+    }
+
     [AvaloniaFact(DisplayName = "Multiple Selection Event Preserves CurrentSelection")]
     public async Task MultipleSelectionEventPreservesCurrentSelection()
     {
