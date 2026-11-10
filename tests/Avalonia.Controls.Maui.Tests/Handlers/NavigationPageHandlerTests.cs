@@ -542,6 +542,27 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
             });
         }
 
+        [AvaloniaFact(DisplayName = "NavigationPage Frame Follows Its Container When It Has A Shadow")]
+        public async Task NavigationPage_Frame_Follows_Its_Container_When_It_Has_A_Shadow()
+        {
+            var navigationPage = new MauiNavigationPage(new PageStub { Title = "Root" })
+            {
+                Shadow = new Microsoft.Maui.Controls.Shadow { Brush = Microsoft.Maui.Controls.Brush.Black, Radius = 3 },
+            };
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                var container = Assert.IsAssignableFrom<Control>(handler.ContainerView);
+                ShowInWindow(new Decorator { Padding = new Thickness(20), Child = container });
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                Assert.Equal(new Microsoft.Maui.Graphics.Rect(20, 20, 280, 200), navigationPage.Frame);
+                Assert.Equal(new Rect(20, 20, 280, 200), container.Bounds);
+            });
+        }
+
         [AvaloniaFact(DisplayName = "Push Pop Push Results In Correct Stack Depth")]
         public async Task Push_Pop_Push_Results_In_Correct_Stack_Depth()
         {

@@ -102,7 +102,8 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, A
         if (((IElementHandler)this).VirtualView is not IView view || ((IElementHandler)this).PlatformView is not AvaloniaNavigationPage platformView)
             return;
 
-        var slot = platformView.Bounds.Inflate(platformView.Margin);
+        var arrangedView = ContainerView ?? platformView;
+        var slot = arrangedView.Bounds.Inflate(arrangedView.Margin);
         var bounds = new Microsoft.Maui.Graphics.Rect(slot.X, slot.Y, slot.Width, slot.Height);
         if (_arrangedSlot == bounds)
             return;
