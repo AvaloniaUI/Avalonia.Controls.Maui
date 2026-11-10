@@ -75,6 +75,31 @@ public class PointerOverReparentTests : HandlerTestBase
         Assert.Equal(["Entered", "Exited"], events);
     }
 
+    [AvaloniaFact(DisplayName = "PointerEntered Is Sent Again After The Last Pointer Recognizer Is Removed While Hovered")]
+    public async Task PointerEnteredIsSentAgainAfterTheLastPointerRecognizerIsRemovedWhileHovered()
+    {
+        var events = new List<string>();
+        var recognizer = new Microsoft.Maui.Controls.PointerGestureRecognizer();
+        recognizer.PointerEntered += (_, _) => events.Add("Entered");
+        recognizer.PointerExited += (_, _) => events.Add("Exited");
+        var border = new ControlsBorder { WidthRequest = 100, HeightRequest = 50, BackgroundColor = Colors.White };
+        border.GestureRecognizers.Add(recognizer);
+        var handler = await CreateHandlerAsync<MauiLayoutHandler>(new ControlsGrid { Children = { border } });
+        var window = ShowInWindow((Control)handler.PlatformView!);
+        RenderFrames(window);
+        var platformView = (Control)border.Handler!.PlatformView!;
+        var position = platformView.TranslatePoint(new Point(40, 25), window)!.Value;
+
+        RaisePointerEvent(InputElement.PointerEnteredEvent, platformView, window, position);
+        RenderFrames(window);
+        border.GestureRecognizers.Remove(recognizer);
+        RaisePointerEvent(InputElement.PointerExitedEvent, platformView, window, position);
+        border.GestureRecognizers.Add(recognizer);
+        RaisePointerEvent(InputElement.PointerEnteredEvent, platformView, window, position);
+
+        Assert.Equal(["Entered", "Entered"], events);
+    }
+
     private async Task<(ControlsBorder Border, Window Window, List<string> Events)> ShowHoverBorderAsync()
     {
         var border = new ControlsBorder

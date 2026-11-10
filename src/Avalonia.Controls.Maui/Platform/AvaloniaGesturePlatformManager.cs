@@ -48,6 +48,12 @@ internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
         if (_platformView is not AvaloniaControl control || _view is not View view)
             return;
 
+        if (view.GetCompositeGestureRecognizers()?.OfType<PointerGestureRecognizer>().Any() != true)
+        {
+            ReleaseHeldExit();
+            _pointerOver = false;
+        }
+
         // Check if drop recognizers were added or removed
         bool hasDropRecognizers = view.GetCompositeGestureRecognizers()
             ?.OfType<DropGestureRecognizer>()
