@@ -31,6 +31,7 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
     {
         [nameof(IWindow.Title)] = mapTitle,
         [nameof(IWindow.Content)] = mapContent,
+        [nameof(IWindow.FlowDirection)] = mapFlowDirection,
         // X, Y, Width, Height, Min/Max dimensions are not relevant for single-view platforms
     };
 
@@ -85,6 +86,7 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
         // Scaling belongs to the top level that hosts the content, which can change
         platformView.AttachedToVisualTree += OnContentAttachedToVisualTree;
         platformView.DetachedFromVisualTree += OnContentDetachedFromVisualTree;
+        platformView.SizeChanged += OnContentSizeChanged;
         SetTopLevel(TopLevel.GetTopLevel(platformView));
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
@@ -108,6 +110,7 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
 
         platformView.AttachedToVisualTree -= OnContentAttachedToVisualTree;
         platformView.DetachedFromVisualTree -= OnContentDetachedFromVisualTree;
+        platformView.SizeChanged -= OnContentSizeChanged;
         SetTopLevel(null);
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
@@ -147,6 +150,9 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
         if (_topLevel != null)
             VirtualView?.DisplayDensityChanged((float)_topLevel.RenderScaling);
     }
+
+    private void OnContentSizeChanged(object? sender, SizeChangedEventArgs e) =>
+        VirtualView?.FrameChanged(new Microsoft.Maui.Graphics.Rect(0, 0, e.NewSize.Width, e.NewSize.Height));
 
     private void OnModalPushed(object? sender, Microsoft.Maui.Controls.ModalPushedEventArgs e)
     {
@@ -227,6 +233,20 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
         var avContent = GetMauiContent(handler);
         var content = window.Content?.ToPlatform(handler.MauiContext!);
         avContent.SetMainContent(content);
+    }
+
+    static void mapFlowDirection(SingleViewWindowHandler handler, IWindow window)
+    {
+        switch (window.FlowDirection)
+        {
+            case FlowDirection.MatchParent:
+            case FlowDirection.LeftToRight:
+                handler.PlatformView.FlowDirection = Avalonia.Media.FlowDirection.LeftToRight;
+                break;
+            case FlowDirection.RightToLeft:
+                handler.PlatformView.FlowDirection = Avalonia.Media.FlowDirection.RightToLeft;
+                break;
+        }
     }
 
     /// <summary>
