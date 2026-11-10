@@ -187,11 +187,28 @@ public abstract class MauiAvaloniaApplication : Application, IPlatformApplicatio
     /// </summary>
     private void OnActualThemeVariantChanged(object? sender, EventArgs e)
     {
-        Application?.ThemeChanged();
+        OnThemeChanged();
     }
 
     private void OnPlatformColorValuesChanged(object? sender, Avalonia.Platform.PlatformColorValues e)
     {
-        Application?.ThemeChanged();
+        OnThemeChanged();
+    }
+
+    /// <summary>
+    /// Applies the MAUI app theme to Avalonia again, then notifies MAUI's theme system.
+    /// </summary>
+    /// <remarks>
+    /// MAUI reports a change of <see cref="IApplication.UserAppTheme"/> only if the theme in effect changes.
+    /// An app theme that is set to the current platform theme is therefore not applied to Avalonia, which
+    /// continues to follow the platform. The app theme is applied here, when the platform theme changes.
+    /// </remarks>
+    private void OnThemeChanged()
+    {
+        if (Application is not { } application)
+            return;
+
+        application.Handler?.UpdateValue(nameof(IApplication.UserAppTheme));
+        application.ThemeChanged();
     }
 }
