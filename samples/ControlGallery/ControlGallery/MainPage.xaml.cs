@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using CommunityToolkit.Maui.Core;
 using ControlGallery.Pages;
 using ControlGallery.Pages.ShellSamples;
@@ -9,6 +10,7 @@ using Microsoft.Maui.Controls.Shapes;
 
 namespace ControlGallery;
 
+[UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "The property Expander binds to is kept by TrimmerRoots.xml")]
 public partial class MainPage : FlyoutPage
 {
     private const double WideBreakpoint = 1008;
