@@ -12,22 +12,9 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
     /// the same frame as the view.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// Avalonia starts to render a view when the view is created. An embedded view has no size until UIKit lays
-    /// it out, and a Metal layer without a size has no drawable. Avalonia fails the whole render pass when it
-    /// cannot get a drawable, which also stops the other embedded views from rendering. This class keeps
-    /// rendering off while the view has no size.
-    /// </para>
-    /// <para>
-    /// Avalonia renders on its own thread, some frames after the layout that sizes the view. This class renders
-    /// the first frame before Core Animation commits that layout. Core Animation displays layers after it lays
-    /// out all of them, so a marker layer that needs display renders the first frame of all new views at once.
-    /// </para>
-    /// <para>
-    /// Metal presents a frame asynchronously, and Avalonia does not report when the frame is on screen. After
-    /// the first frame is rendered, this class waits for one refresh of the display, so that the frame is
-    /// presented before Core Animation commits the layout.
-    /// </para>
+    /// Rendering stays off while the view has no size or no window, because a Metal layer without a drawable
+    /// blocks the shared render loop. The first frame renders from a marker layer's display pass, before Core
+    /// Animation commits the layout, then waits one display refresh so Metal presents it in time.
     /// </remarks>
     internal sealed class AvaloniaViewRendering
     {
@@ -57,8 +44,8 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             => topLevel is EmbeddableControlRoot root ? new AvaloniaViewRendering(view, root) : null;
 
         /// <summary>
-        /// Starts or stops rendering to match the size of the view, and requests the first frame once the view is
-        /// in a window. Call this after the view is laid out and after it moves to a window.
+        /// Starts or stops rendering to match the size of the view and whether it is in a window, and requests the
+        /// first frame. Call this after the view is laid out and after it moves to or from a window.
         /// </summary>
         public void Update()
         {
@@ -66,18 +53,18 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
                 return;
 
             var bounds = _view.Bounds;
-            var hasSize = bounds.Width > 0 && bounds.Height > 0;
+            var canRender = bounds.Width > 0 && bounds.Height > 0 && _view.Window is not null;
 
-            if (hasSize != _isRendering)
+            if (canRender != _isRendering)
             {
-                _isRendering = hasSize;
-                if (hasSize)
+                _isRendering = canRender;
+                if (canRender)
                     _root.StartRendering();
                 else
                     _root.StopRendering();
             }
 
-            if (!hasSize || !_firstFramePending || _view.Window is null)
+            if (!canRender || !_firstFramePending)
                 return;
 
             if (UIApplication.SharedApplication.ApplicationState == UIApplicationState.Background)
