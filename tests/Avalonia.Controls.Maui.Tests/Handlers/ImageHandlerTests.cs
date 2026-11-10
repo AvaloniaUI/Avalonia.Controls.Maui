@@ -1,10 +1,12 @@
 using System.Diagnostics;
+using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Headless.XUnit;
 using Avalonia.Media;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
+using Microsoft.Maui.Primitives;
 using MauiCornerRadius = Microsoft.Maui.CornerRadius;
 using MauiImageHandler = Avalonia.Controls.Maui.Handlers.ImageHandler;
 using MauiIImage = Microsoft.Maui.IImage;
@@ -197,6 +199,7 @@ public partial class ImageHandlerTests : HandlerTestBase<MauiImageHandler, Image
 
         await InvokeOnMainThreadAsync(() =>
         {
+            ShowInWindow(handler.PlatformView);
             MauiImageHandler.MapSource(handler, image);
         });
 
@@ -256,6 +259,176 @@ public partial class ImageHandlerTests : HandlerTestBase<MauiImageHandler, Image
         Assert.Equal(12, clip.RadiusY);
     }
     
+    [AvaloniaFact(DisplayName = "Image loads the file variant for a new display scale")]
+    public async Task ImageLoadsFileVariantForNewScale()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "Avalonia.Controls.Maui.Tests", $"image-scale-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            var file = await InvokeOnMainThreadAsync(() =>
+            {
+                SavePng(Path.Combine(directory, "icon.png"), new PixelSize(4, 3));
+                SavePng(Path.Combine(directory, "icon@2x.png"), new PixelSize(8, 6));
+                SavePng(Path.Combine(directory, "icon@3x.png"), new PixelSize(12, 9));
+                return Path.Combine(directory, "icon.png");
+            });
+
+            var image = new ImageStub { Source = new FileImageSource { File = file } };
+            var handler = await CreateHandlerAsync(image);
+
+            var sizes = await InvokeOnMainThreadAsync(() =>
+            {
+                var window = ShowInWindow(handler.PlatformView);
+                var staticImage = handler.PlatformView.Children.OfType<Image>().First();
+                var loaded = new List<PixelSize>();
+
+                foreach (var scale in new[] { 1.0, 2.0, 3.0, 1.0, 2.0 })
+                {
+                    Avalonia.Headless.HeadlessWindowExtensions.SetRenderScaling(window, scale);
+                    Threading.Dispatcher.UIThread.RunJobs();
+                    loaded.Add(staticImage.Source switch
+                    {
+                        ScaledBitmapImage scaled => scaled.Bitmap.PixelSize,
+                        var source => Assert.IsAssignableFrom<Media.Imaging.Bitmap>(source).PixelSize
+                    });
+                }
+
+                return loaded;
+            });
+
+            // Each scale shows its own file, including 1x back to 2x
+            Assert.Equal(
+                [new PixelSize(4, 3), new PixelSize(8, 6), new PixelSize(12, 9), new PixelSize(4, 3), new PixelSize(8, 6)],
+                sizes);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [AvaloniaTheory(DisplayName = "An image measures as MAUI's SizeThatFitsImage does")]
+    // Unsized AspectFit: natural size, shrunk to fit, never enlarged
+    [InlineData(Aspect.AspectFit, 1000, double.PositiveInfinity, false, false, 32, 24)]
+    [InlineData(Aspect.AspectFit, 16, double.PositiveInfinity, false, false, 16, 12)]
+    [InlineData(Aspect.AspectFit, 1000, 12, false, false, 16, 12)]
+    [InlineData(Aspect.AspectFit, double.PositiveInfinity, double.PositiveInfinity, false, false, 32, 24)]
+    // A request on either axis lets AspectFit grow; the other axis follows the aspect ratio
+    [InlineData(Aspect.AspectFit, 64, double.PositiveInfinity, true, false, 64, 48)]
+    [InlineData(Aspect.AspectFit, 1000, 48, false, true, 64, 48)]
+    // Other aspects take the natural size, cut to the constraints, on each axis
+    [InlineData(Aspect.AspectFill, 1000, 1000, false, false, 32, 24)]
+    [InlineData(Aspect.Fill, 16, 1000, false, false, 16, 24)]
+    [InlineData(Aspect.Center, 1000, 10, false, false, 32, 10)]
+    public void FitImageMatchesMaui(Aspect aspect, double widthConstraint, double heightConstraint,
+        bool widthIsExplicit, bool heightIsExplicit, double expectedWidth, double expectedHeight)
+    {
+        var size = MauiImageHandler.FitImage(new Microsoft.Maui.Graphics.Size(32, 24), widthConstraint, heightConstraint, aspect, widthIsExplicit, heightIsExplicit);
+
+        Assert.Equal(new Microsoft.Maui.Graphics.Size(expectedWidth, expectedHeight), size);
+    }
+
+    [AvaloniaTheory(DisplayName = "An image with no size request is not enlarged")]
+    [InlineData(double.NaN, double.NaN, 1000, double.PositiveInfinity, 32, 24)]
+    [InlineData(double.NaN, double.NaN, 16, double.PositiveInfinity, 16, 12)]
+    [InlineData(64, double.NaN, 1000, double.PositiveInfinity, 64, 48)]
+    [InlineData(64, 64, 1000, double.PositiveInfinity, 64, 64)]
+    [InlineData(double.NaN, double.NaN, double.NaN, double.NaN, 32, 24)]
+    public Task UnsizedImageIsNotEnlarged(double width, double height, double widthConstraint, double heightConstraint,
+        double expectedWidth, double expectedHeight) =>
+        AssertDesiredSize(width, height, Dimension.Maximum, Dimension.Maximum, widthConstraint, heightConstraint, expectedWidth, expectedHeight);
+
+    [AvaloniaTheory(DisplayName = "A size request is clamped to its maximum before the image is fitted")]
+    [InlineData(64, double.NaN, 32, Dimension.Maximum, 32, 24)]
+    [InlineData(double.NaN, 48, Dimension.Maximum, 12, 16, 12)]
+    public Task RequestIsClampedBeforeFitting(double width, double height, double maximumWidth, double maximumHeight,
+        double expectedWidth, double expectedHeight) =>
+        AssertDesiredSize(width, height, maximumWidth, maximumHeight, 1000, double.PositiveInfinity, expectedWidth, expectedHeight);
+
+    async Task AssertDesiredSize(double width, double height, double maximumWidth, double maximumHeight,
+        double widthConstraint, double heightConstraint, double expectedWidth, double expectedHeight)
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "Avalonia.Controls.Maui.Tests", $"image-size-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            var file = Path.Combine(directory, "icon.png");
+            await InvokeOnMainThreadAsync(() => SavePng(file, new PixelSize(32, 24)));
+
+            var image = new ImageStub
+            {
+                Source = new FileImageSource { File = file },
+                Width = width,
+                Height = height,
+                MaximumWidth = maximumWidth,
+                MaximumHeight = maximumHeight
+            };
+            var handler = await CreateHandlerAsync(image);
+
+            var desired = await InvokeOnMainThreadAsync(() =>
+            {
+                ShowInWindow(handler.PlatformView);
+                return handler.GetDesiredSize(widthConstraint, heightConstraint);
+            });
+
+            Assert.Equal(new Microsoft.Maui.Graphics.Size(expectedWidth, expectedHeight), desired);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    [AvaloniaFact(DisplayName = "A GIF replaced by a static image before it shows does not hide the static image")]
+    public async Task StaleGifLoadDoesNotReplaceNewerStaticImage()
+    {
+        var directory = Path.Combine(Path.GetTempPath(), "Avalonia.Controls.Maui.Tests", $"image-gif-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(directory);
+        try
+        {
+            // GifImage reads GIFs through AssetLoader, so the GIF is an embedded resource
+            var gif = new Uri($"avares://{typeof(ImageHandlerTests).Assembly.GetName().Name}/Images/tiny.gif");
+            var png = Path.Combine(directory, "still.png");
+            await InvokeOnMainThreadAsync(() => SavePng(png, new PixelSize(8, 8)));
+
+            var image = new ImageStub();
+            var handler = await CreateHandlerAsync(image);
+
+            var (staticImage, gifVisible) = await InvokeOnMainThreadAsync(() =>
+            {
+                ShowInWindow(handler.PlatformView);
+
+                // The GIF load yields once before it shows the GIF; the PNG replaces it in the same turn
+                image.Source = new UriImageSource { Uri = gif };
+                MauiImageHandler.MapSource(handler, image);
+                image.Source = new FileImageSource { File = png };
+                MauiImageHandler.MapSource(handler, image);
+                Threading.Dispatcher.UIThread.RunJobs();
+
+                var still = handler.PlatformView.Children.OfType<Image>().First();
+                var animated = handler.PlatformView.Children.OfType<Avalonia.Controls.Maui.Controls.Gif.GifImage>().FirstOrDefault();
+                return (still, animated?.IsVisible == true);
+            });
+
+            Assert.True(staticImage.IsVisible);
+            Assert.IsAssignableFrom<Media.Imaging.Bitmap>(staticImage.Source);
+            Assert.False(gifVisible);
+        }
+        finally
+        {
+            Directory.Delete(directory, recursive: true);
+        }
+    }
+
+    static void SavePng(string path, PixelSize size)
+    {
+        using var bitmap = new Media.Imaging.RenderTargetBitmap(size);
+        using (var context = bitmap.CreateDrawingContext())
+            context.FillRectangle(Brushes.Red, new Rect(bitmap.Size));
+        bitmap.Save(path);
+    }
+
     static async Task WaitForLoadingStateAsync(ImageStub image, bool expected, int timeoutMs = 1000)
     {
         var sw = Stopwatch.StartNew();

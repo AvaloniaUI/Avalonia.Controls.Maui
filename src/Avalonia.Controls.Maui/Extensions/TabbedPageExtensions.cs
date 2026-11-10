@@ -252,76 +252,43 @@ public static class TabbedPageExtensions
         if (page.IconImageSource == null || platformPage.Header is not StackPanel headerPanel)
             return;
 
-        _ = LoadTabIconAsync(tabbedPage, platformPage, headerPanel, page.IconImageSource, mauiContext);
-    }
-
-    /// <summary>
-    /// Loads the tab icon asynchronously.
-    /// </summary>
-    private static async Task LoadTabIconAsync(AvaloniaTabbedPage tabbedPage, AvaloniaPage platformPage, StackPanel headerPanel, ImageSource imageSource, IMauiContext mauiContext)
-    {
-        try
+        ImageSourceLoader.Set(headerPanel, mauiContext, page.IconImageSource, icon =>
         {
-            var services = mauiContext.Services;
-            var imageSourceServiceProvider = services.GetRequiredService<IImageSourceServiceProvider>();
-            var imageSourceService = imageSourceServiceProvider.ResolveImageSourceService(imageSource);
+            var image = headerPanel.Children.OfType<AvaloniaImage>().FirstOrDefault();
 
-            if (imageSourceService is IAvaloniaImageSourceService avaloniaImageSourceService)
+            if (icon == null)
             {
-                var result = await avaloniaImageSourceService.GetImageAsync(imageSource);
-                if (result?.Value != null)
-                {
-                    if (!ReferenceEquals(platformPage.Header, headerPanel) ||
-                        tabbedPage.Pages?.Contains(platformPage) != true)
-                    {
-                        (result as IDisposable)?.Dispose();
-                        return;
-                    }
-
-                    var image = new AvaloniaImage
-                    {
-                        Source = result.Value,
-                        Width = 16,
-                        Height = 16,
-                        VerticalAlignment = Layout.VerticalAlignment.Center
-                    };
-
-                    if (result is IDisposable disposable)
-                    {
-                        image.Tag = disposable;
-                    }
-
-                    if (headerPanel.Children.Count > 0)
-                    {
-                        headerPanel.Children.Insert(0, image);
-                    }
-                    else
-                    {
-                        headerPanel.Children.Add(image);
-                    }
-                }
+                if (image != null)
+                    headerPanel.Children.Remove(image);
+                return;
             }
-        }
-        catch
-        {
-            // Silently ignore icon loading failures
-        }
+
+            if (!ReferenceEquals(platformPage.Header, headerPanel) ||
+                tabbedPage.Pages?.Contains(platformPage) != true)
+            {
+                ImageSourceLoader.Clear(headerPanel);
+                return;
+            }
+
+            if (image == null)
+            {
+                image = new AvaloniaImage
+                {
+                    Width = 16,
+                    Height = 16,
+                    VerticalAlignment = Layout.VerticalAlignment.Center
+                };
+                headerPanel.Children.Insert(0, image);
+            }
+
+            image.Source = icon;
+        });
     }
 
     private static void DisposeHeaderIconImages(object? header)
     {
-        if (header is not StackPanel panel)
-            return;
-
-        foreach (var image in panel.Children.OfType<AvaloniaImage>())
-        {
-            if (image.Tag is IDisposable disposable)
-            {
-                image.Tag = null;
-                image.Source = null;
-                disposable.Dispose();
-            }
-        }
+        if (header is StackPanel panel)
+            ImageSourceLoader.Clear(panel);
     }
 
     internal static void DisposeTabHeaderIcons(this AvaloniaTabbedPage tabbedPage)

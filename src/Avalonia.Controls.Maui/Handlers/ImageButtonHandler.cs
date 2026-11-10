@@ -13,7 +13,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>Avalonia handler for <see cref="IImageButton"/>.</summary>
 public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView>
 {
-    private CancellationTokenSource? _imageSourceCts;
+    private ImageSourceLoader? _imageLoader;
     private ImageSourcePartLoader? _imageSourcePartLoader;
 
     /// <summary>Property mapper for <see cref="ImageButtonHandler"/>.</summary>
@@ -142,23 +142,7 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         if (handler is not ImageButtonHandler imageButtonHandler || handler.VirtualView is null)
             return;
 
-        imageButtonHandler._imageSourceCts?.Cancel();
-        imageButtonHandler._imageSourceCts = null;
-
-        var imageSource = imageButton.Source;
-
-        if (imageSource == null)
-        {
-            if (handler.PlatformView is PlatformView pv)
-            {
-                pv.UpdateImageSource(null);
-            }
-            return;
-        }
-
-        var cts = new CancellationTokenSource();
-        imageButtonHandler._imageSourceCts = cts;
-        _ = imageButtonHandler.LoadImageSourceAsync(imageSource, cts.Token);
+        imageButtonHandler._imageLoader?.SetSource(imageButton.Source);
     }
 
     /// <inheritdoc/>
@@ -169,6 +153,7 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         platformView.AddHandler(InputElement.PointerPressedEvent, OnPointerPressed, RoutingStrategies.Tunnel);
         platformView.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Tunnel);
         platformView.Click += OnClick;
+        _imageLoader = new ImageSourceLoader(platformView, MauiContext!, platformView.UpdateImageSource);
     }
 
     /// <inheritdoc/>
@@ -177,8 +162,8 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         platformView.RemoveHandler(InputElement.PointerPressedEvent, OnPointerPressed);
         platformView.RemoveHandler(InputElement.PointerReleasedEvent, OnPointerReleased);
         platformView.Click -= OnClick;
-        _imageSourceCts?.Cancel();
-        _imageSourceCts = null;
+        _imageLoader?.Dispose();
+        _imageLoader = null;
 
         base.DisconnectHandler(platformView);
     }
@@ -204,36 +189,6 @@ public partial class ImageButtonHandler : ViewHandler<IImageButton, PlatformView
         if (VirtualView is IImageButton imageButton)
         {
             imageButton.Released();
-        }
-    }
-
-    private async Task LoadImageSourceAsync(IImageSource imageSource, CancellationToken token)
-    {
-        try
-        {
-            var provider = this.GetRequiredService<IImageSourceServiceProvider>();
-            if (provider.ResolveImageSourceService(imageSource) is IAvaloniaImageSourceService service)
-            {
-                var result = await service.GetImageAsync(imageSource, 1.0f, token);
-                if (token.IsCancellationRequested)
-                    return;
-
-                if (PlatformView is PlatformView platformView)
-                {
-                    platformView.UpdateImageSource(result?.Value as Avalonia.Media.IImage);
-                }
-            }
-            else if (PlatformView is PlatformView platformView)
-            {
-                platformView.UpdateImageSource(null);
-            }
-        }
-        catch
-        {
-            if (PlatformView is PlatformView platformView)
-            {
-                platformView.UpdateImageSource(null);
-            }
         }
     }
 

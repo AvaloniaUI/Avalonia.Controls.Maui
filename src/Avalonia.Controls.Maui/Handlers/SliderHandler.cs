@@ -11,7 +11,7 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>Avalonia handler for <see cref="ISlider"/>.</summary>
 public class SliderHandler : ViewHandler<ISlider, PlatformView>
 {
-    private CancellationTokenSource? _thumbImageCts;
+    private ImageSourceLoader? _thumbImageLoader;
 
     /// <summary>Property mapper for <see cref="SliderHandler"/>.</summary>
     public static IPropertyMapper<ISlider, SliderHandler> Mapper = new PropertyMapper<ISlider, SliderHandler>(ViewHandler.ViewMapper)
@@ -63,6 +63,7 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
     protected override void ConnectHandler(PlatformView platformView)
     {
         platformView.PropertyChanged += OnSliderPropertyChanged;
+        _thumbImageLoader = new ImageSourceLoader(platformView, MauiContext!, image => ApplyThumbImage(platformView, image));
         base.ConnectHandler(platformView);
     }
 
@@ -70,8 +71,8 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
     protected override void DisconnectHandler(PlatformView platformView)
     {
         platformView.PropertyChanged -= OnSliderPropertyChanged;
-        _thumbImageCts?.Cancel();
-        _thumbImageCts = null;
+        _thumbImageLoader?.Dispose();
+        _thumbImageLoader = null;
         base.DisconnectHandler(platformView);
     }
 
@@ -151,51 +152,24 @@ public class SliderHandler : ViewHandler<ISlider, PlatformView>
             if (handler is not SliderHandler sh)
                 return;
 
-            sh._thumbImageCts?.Cancel();
-            sh._thumbImageCts = null;
-
-            if (slider.ThumbImageSource == null)
-            {
-                platformView.UpdateThumbImageSource(null);
-                platformView.UpdateThumbColor(slider);
-                return;
-            }
-
-            var cts = new CancellationTokenSource();
-            sh._thumbImageCts = cts;
-            _ = sh.LoadThumbImageAsync(slider.ThumbImageSource, cts.Token);
+            sh._thumbImageLoader?.SetSource(slider.ThumbImageSource);
         }
-    }  
+    }
+
+    // With no image, from a cleared source or a failed load, the thumb shows its color again
+    private void ApplyThumbImage(PlatformView platformView, Avalonia.Media.IImage? image)
+    {
+        platformView.UpdateThumbImageSource(image);
+
+        if (image == null && ((IElementHandler)this).VirtualView is ISlider slider)
+            platformView.UpdateThumbColor(slider);
+    }
     
     private void OnSliderPropertyChanged(object? sender, AvaloniaPropertyChangedEventArgs e)
     {
         if (e.Property == PlatformView.ValueProperty && VirtualView != null)
         {
             VirtualView.Value = (double)(e.NewValue ?? 0);
-        }
-    }
-
-    private async Task LoadThumbImageAsync(IImageSource imageSource, CancellationToken token)
-    {
-        try
-        {
-            var provider = this.GetRequiredService<IImageSourceServiceProvider>();
-            if (provider.ResolveImageSourceService(imageSource) is IAvaloniaImageSourceService service)
-            {
-                var result = await service.GetImageAsync(imageSource, 1.0f, token);
-                if (token.IsCancellationRequested)
-                    return;
-
-                PlatformView?.UpdateThumbImageSource(result?.Value as Avalonia.Media.IImage);
-            }
-            else
-            {
-                PlatformView?.UpdateThumbImageSource(null);
-            }
-        }
-        catch
-        {
-            PlatformView?.UpdateThumbImageSource(null);
         }
     }
 }

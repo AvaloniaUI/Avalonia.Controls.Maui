@@ -255,7 +255,7 @@ Because the URI includes the font family name extracted from the file itself, th
 
 ## Image source services
 
-.NET MAUI resolves images through `IImageSourceServiceProvider`, which selects the appropriate `IImageSourceService` implementation based on the type of `IImageSource`. `Avalonia.Controls.Maui` registers four services that each return an Avalonia `Bitmap` rather than a platform-native image type:
+.NET MAUI resolves images through `IImageSourceServiceProvider`, which selects the appropriate `IImageSourceService` implementation based on the type of `IImageSource`. `Avalonia.Controls.Maui` registers four services that each return an Avalonia `IImage` rather than a platform-native image type:
 
 | Image source type | Service |
 |---|---|
@@ -264,9 +264,17 @@ Because the URI includes the font family name extracted from the file itself, th
 | `IFontImageSource` | `AvaloniaFontImageSourceService` |
 | `IStreamImageSource` | `AvaloniaStreamImageSourceService` |
 
+Controls never call the services directly. Each one loads its image through the internal `ImageSourceLoader`, which waits for the control to attach to a `TopLevel`, asks for the image at that `TopLevel`'s `RenderScaling`, and cancels a load that a newer source makes stale. When the scale changes, for example when the window moves to another monitor, the loader loads a bitmap again at the new scale. A vector image is not loaded again.
+
+### Font images
+
+`AvaloniaFontImageSourceService` returns a `DrawingImage` of glyph runs, not a bitmap, so a `FontImageSource` glyph is sharp at every display scale. The glyph runs are drawn with greyscale antialiasing, as on the .NET MAUI platforms. The image is sized to the glyph's ink bounds plus a one-unit border on each side, as .NET MAUI does on Windows. Where an image is used as a brush (a page background or a tinted Shell tab icon), the brush is a `DrawingBrush`, so it stays sharp too.
+
 ### File image resolution
 
 `AvaloniaFileImageSourceService` first attempts to resolve the filename as an Avalonia embedded resource using the `avares://` URI scheme. If that fails, it falls back to a direct filesystem read. This two-step approach means that images declared as `MauiImage` in the project file, which are embedded as Avalonia resources at build time, are resolved the same way as images loaded from disk.
+
+On a display that scales, the service looks for a variant of the file for the scale before it loads the file itself: `icon@2x.png` or `icon@3x.png` for `icon.png`, found in the same two places. At a scale of 2 it looks for `@2x`; above 2 it looks for `@3x`, then `@2x`. A variant loads as a `ScaledBitmapImage`, which has the same size in device-independent units as the base image, so layouts do not change. It is not a `Bitmap` with a DPI of 96 × its scale, because Avalonia draws a bitmap's source rectangle in pixels and an `Image` would show only part of such a bitmap. When the scale changes, an image loads again if another scale could load a different file: a variant, a base image standing in for a missing variant, or a base image whose file has variants. URI and stream images have no variants.
 
 ### URI image caching
 
@@ -286,7 +294,16 @@ The `Avalonia.Controls.Maui.targets` file runs three MSBuild targets that conver
 
 ### Images
 
-`ConvertMauiImagesToAvaloniaResources` runs after Resizetizer has processed the declared `MauiImage` items. It selects the appropriate resolution output for each platform (for example, `drawable-mdpi` on Android and `scale-100` on Windows) and converts those files into `AvaloniaResource` items with a link path of `Images/<filename>`. The result is a single embedded image per platform at the base resolution, resolved at runtime by `AvaloniaFileImageSourceService`.
+`ConvertMauiImagesToAvaloniaResources` runs after Resizetizer has processed the declared `MauiImage` items. It converts Resizetizer's outputs into `AvaloniaResource` items under `Images/`, named as `AvaloniaFileImageSourceService` looks them up at runtime:
+
+| Platform | 1× | `@2x` | `@3x` | `@4x` |
+|---|---|---|---|---|
+| Android | `drawable-mdpi` | `drawable-xhdpi` | `drawable-xxhdpi` | |
+| iOS, Mac Catalyst | base file | `@2x` file | `@3x` file | |
+| Windows | `.scale-100` | `.scale-200` | | |
+| Desktop and browser | copied images | | | resized images |
+
+On desktop and in the browser, Resizetizer uses its `wpf` profile, which renders a resized image (an SVG, or an image with `BaseSize` or `Resize="true"`) once, at 4× its base size. The service loads that file as a `ScaledBitmapImage` with a scale of 4, so it has its base size in device-independent units and stays sharp up to a display scale of 4. An image that Resizetizer only copies keeps its own name and size.
 
 The build order is:
 

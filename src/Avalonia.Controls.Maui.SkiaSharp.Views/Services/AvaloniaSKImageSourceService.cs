@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
 using SkiaSharp;
 using SkiaSharp.Views.Maui;
+using IImage = Avalonia.Media.IImage;
 
 namespace Avalonia.Controls.Maui.SkiaSharp.Views.Services;
 
@@ -40,7 +41,7 @@ public class AvaloniaSKImageSourceService : IAvaloniaImageSourceService,
     }
 
     /// <inheritdoc/>
-    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
@@ -56,11 +57,11 @@ public class AvaloniaSKImageSourceService : IAvaloniaImageSourceService,
 
         if (bitmap != null)
         {
-            return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(
+            return Task.FromResult<IImageSourceServiceResult<IImage>?>(
                 new Avalonia.Controls.Maui.Services.ImageSourceServiceResult(bitmap));
         }
 
-        return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+        return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
     }
 
     private WriteableBitmap? ConvertFromSKBitmap(SKBitmap? skBitmap)

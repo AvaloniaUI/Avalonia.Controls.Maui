@@ -13,7 +13,6 @@ using Avalonia.VisualTree;
 using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Avalonia.Controls.Maui.Handlers.Shell
 {
@@ -24,7 +23,6 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
     {
         private readonly MauiSearchHandler _mauiSearchHandler;
         private readonly IMauiContext _mauiContext;
-        private readonly ILogger<ShellSearchControl>? _logger;
 
         /// <summary>
         /// Gets the underlying MAUI SearchHandler.
@@ -46,7 +44,6 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
         {
             _mauiSearchHandler = mauiSearchHandler ?? throw new ArgumentNullException(nameof(mauiSearchHandler));
             _mauiContext = mauiContext ?? throw new ArgumentNullException(nameof(mauiContext));
-            _logger = mauiContext.Services.GetService<ILoggerFactory>()?.CreateLogger<ShellSearchControl>();
 
             _mauiSearchHandler.PropertyChanged += OnMauiSearchHandlerPropertyChanged;
             _mauiSearchHandler.FocusChangeRequested += OnFocusChangeRequested;
@@ -407,15 +404,19 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             _searchBar.CharacterSpacing = _mauiSearchHandler.CharacterSpacing;
         }
 
-        private async void UpdateIcons()
+        private void UpdateIcons()
         {
             if (_searchBar == null) return;
 
+            if (_searchBar.SearchIcon is Avalonia.Controls.Image oldSearchIcon)
+                ImageSourceLoader.Clear(oldSearchIcon);
+
+            if (_searchBar.ClearIcon is Avalonia.Controls.Image oldClearIcon)
+                ImageSourceLoader.Clear(oldClearIcon);
+
             if (_mauiSearchHandler.QueryIcon != null)
             {
-                var image = new Avalonia.Controls.Image { Width = 16, Height = 16 };
-                await LoadIconAsync(image, _mauiSearchHandler.QueryIcon);
-                _searchBar.SearchIcon = image;
+                _searchBar.SearchIcon = CreateIcon(_mauiSearchHandler.QueryIcon);
             }
             else
             {
@@ -424,9 +425,7 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
 
             if (_mauiSearchHandler.ClearIcon != null)
             {
-                var image = new Avalonia.Controls.Image { Width = 16, Height = 16 };
-                await LoadIconAsync(image, _mauiSearchHandler.ClearIcon);
-                _searchBar.ClearIcon = image;
+                _searchBar.ClearIcon = CreateIcon(_mauiSearchHandler.ClearIcon);
             }
             else
             {
@@ -434,29 +433,11 @@ namespace Avalonia.Controls.Maui.Handlers.Shell
             }
         }
 
-        private async Task LoadIconAsync(Avalonia.Controls.Image image, ImageSource imageSource)
+        private Avalonia.Controls.Image CreateIcon(ImageSource imageSource)
         {
-            if (_mauiContext == null || imageSource == null || image == null)
-                return;
-
-            try
-            {
-                var imageSourceServiceProvider = _mauiContext.Services.GetRequiredService<IImageSourceServiceProvider>();
-                var serviceSource = imageSourceServiceProvider.ResolveImageSourceService(imageSource);
-
-                if (serviceSource is IAvaloniaImageSourceService avaloniaService)
-                {
-                    var result = await avaloniaService.GetImageAsync(imageSource, 1.0f);
-                    if (result?.Value is Media.Imaging.Bitmap bitmap)
-                    {
-                        image.Source = bitmap;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Error loading search icon");
-            }
+            var image = new Avalonia.Controls.Image { Width = 16, Height = 16 };
+            ImageSourceLoader.Set(image, _mauiContext, imageSource, icon => image.Source = icon);
+            return image;
         }
         
         private void UpdateBackground()

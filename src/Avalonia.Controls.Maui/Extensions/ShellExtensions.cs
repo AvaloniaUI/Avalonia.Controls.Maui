@@ -290,7 +290,7 @@ public static class ShellExtensions
                 Height = 24
             };
             handler._hamburgerButton.Content = imageControl;
-            handler.LoadIconAsync(imageControl, flyoutIcon).ConfigureAwait(false);
+            handler.LoadIcon(imageControl, flyoutIcon);
         }
         else
         {
@@ -303,72 +303,30 @@ public static class ShellExtensions
     /// </summary>
     /// <param name="handler">The <see cref="ShellHandler"/> instance.</param>
     /// <param name="shell">The <see cref="MauiShell"/> instance to update from.</param>
-    public static async void UpdateFlyoutBackgroundImage(this ShellHandler handler, MauiShell shell)
+    public static void UpdateFlyoutBackgroundImage(this ShellHandler handler, MauiShell shell)
     {
         if (handler._flyoutPaneContainer == null || shell == null || handler.MauiContext == null)
             return;
 
-        var dispatcher = handler._flyoutPaneContainer.Dispatcher;
-        var backgroundImage = shell.FlyoutBackgroundImage;
-
-        if (backgroundImage != null)
+        var container = handler._flyoutPaneContainer;
+        ImageSourceLoader.Set(container, handler.MauiContext, shell.FlyoutBackgroundImage, image =>
         {
-            var provider = handler.MauiContext.Services.GetService(typeof(IImageSourceServiceProvider)) as IImageSourceServiceProvider;
-            if (provider != null)
+            if (image == null)
             {
-                var service = provider.ResolveImageSourceService(backgroundImage);
-
-                if (service is IAvaloniaImageSourceService avaloniaService)
-                {
-                    try
-                    {
-                        var result = await avaloniaService.GetImageAsync(backgroundImage, 1.0f);
-                        
-                        await dispatcher.InvokeAsync(() =>
-                        {
-                            if (result != null)
-                            {
-                                var brush = new Media.ImageBrush(result.Value);
-                                
-                                switch (shell.FlyoutBackgroundImageAspect)
-                                {
-                                    case Aspect.AspectFill:
-                                        brush.Stretch = Stretch.UniformToFill;
-                                        break;
-                                    case Aspect.AspectFit:
-                                        brush.Stretch = Stretch.Uniform;
-                                        break;
-                                    case Aspect.Center:
-                                        brush.Stretch = Stretch.None;
-                                        break;
-                                    case Aspect.Fill:
-                                        brush.Stretch = Stretch.Fill;
-                                        break;
-                                }
-
-                                handler._flyoutPaneContainer.Background = brush;
-                            }
-                            else
-                            {
-                                handler.UpdateFlyoutBackground(shell);
-                            }
-                        });
-
-                        if (result != null) return;
-                    }
-                    catch (Exception ex)
-                    {
-                        handler.MauiContext?.Services.GetService<ILoggerFactory>()
-                            ?.CreateLogger(typeof(ShellExtensions))
-                            ?.LogError(ex, "Error loading flyout background image");
-                    }
-                }
+                container.ClearValue(Avalonia.Controls.Panel.BackgroundProperty);
+                handler.UpdateFlyoutBackground(shell);
+                return;
             }
-        }
 
-        await dispatcher.InvokeAsync(() =>
-        {
-            handler.UpdateFlyoutBackground(shell);
+            var brush = ImageBrushes.Create(image);
+            brush.Stretch = shell.FlyoutBackgroundImageAspect switch
+            {
+                Aspect.AspectFill => Stretch.UniformToFill,
+                Aspect.Center => Stretch.None,
+                Aspect.Fill => Stretch.Fill,
+                _ => Stretch.Uniform
+            };
+            container.Background = brush;
         });
     }
 
@@ -851,7 +809,7 @@ public static class ShellExtensions
                 Height = 24
             };
             handler._backButton.Content = imageControl;
-            handler.LoadIconAsync(imageControl, behavior.IconOverride).ConfigureAwait(false);
+            handler.LoadIcon(imageControl, behavior.IconOverride);
         }
         else if (!string.IsNullOrEmpty(behavior?.TextOverride))
         {
@@ -972,7 +930,7 @@ public static class ShellExtensions
                 var image = contentPanel.Children.OfType<Image>().FirstOrDefault();
                 if (image != null)
                 {
-                    handler.LoadIconAsync(image, icon).ConfigureAwait(false);
+                    handler.LoadIcon(image, icon);
                 }
             }
         }
@@ -985,31 +943,12 @@ public static class ShellExtensions
     /// <param name="image">The target <see cref="Image"/> control.</param>
     /// <param name="imageSource">The source <see cref="ImageSource"/> to load.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    internal static async Task LoadIconAsync(this ShellHandler handler, Image image, ImageSource imageSource)
+    internal static void LoadIcon(this ShellHandler handler, Image image, ImageSource imageSource)
     {
         if (handler.MauiContext == null || imageSource == null || image == null)
             return;
 
-        try
-        {
-            var imageSourceServiceProvider = handler.GetRequiredService<IImageSourceServiceProvider>();
-            var serviceSource = imageSourceServiceProvider.ResolveImageSourceService(imageSource);
-
-            if (serviceSource is IAvaloniaImageSourceService avaloniaService)
-            {
-                var result = await avaloniaService.GetImageAsync(imageSource, 1.0f);
-                if (result?.Value is Media.Imaging.Bitmap bitmap)
-                {
-                    image.Source = bitmap;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            handler.MauiContext?.Services.GetService<ILoggerFactory>()
-                ?.CreateLogger(typeof(ShellExtensions))
-                ?.LogError(ex, "Error loading shell icon");
-        }
+        ImageSourceLoader.Set(image, handler.MauiContext, imageSource, icon => image.Source = icon);
     }
 
     /// <summary>

@@ -1,3 +1,5 @@
+using System.Runtime.CompilerServices;
+using Avalonia.Controls.Maui.Services;
 using Avalonia.Controls.Primitives;
 using Avalonia.Controls.Templates;
 using Avalonia.Media;
@@ -112,18 +114,16 @@ public static class SliderExtensions
         RemoveTaggedStyles(control, ThumbPointerOverStyleTag);
         RemoveTaggedStyles(control, ThumbPressedStyleTag);
 
-        if (image == null || image is not IImageBrushSource brushSource)
+        if (image == null)
         {
-            // Reset to default visuals; thumb color mapping (if any) will reapply styling.
+            // Drop the image template before the loader disposes the image; thumb color mapping (if any) will reapply styling.
+            ResetThumbTemplate(control);
             ClearThumbResources(control);
             return;
         }
 
-        var brush = new ImageBrush
-        {
-            Source = brushSource,
-            Stretch = Stretch.UniformToFill
-        };
+        var brush = ImageBrushes.Create(image);
+        brush.Stretch = Stretch.UniformToFill;
 
         ApplyThumbImage(control, brush, image);
     }
@@ -258,6 +258,30 @@ public static class SliderExtensions
             });
     }
 
+    // A slider has at most one pending thumb template, so a newer one or a reset replaces it
+    private static readonly ConditionalWeakTable<AvaloniaSlider, EventHandler<TemplateAppliedEventArgs>> PendingThumbTemplates = new();
+
+    private static void SetPendingThumbTemplate(AvaloniaSlider control, EventHandler<TemplateAppliedEventArgs>? handler)
+    {
+        if (PendingThumbTemplates.TryGetValue(control, out var pending))
+        {
+            control.TemplateApplied -= pending;
+            PendingThumbTemplates.Remove(control);
+        }
+
+        if (handler != null)
+        {
+            control.TemplateApplied += handler;
+            PendingThumbTemplates.Add(control, handler);
+        }
+    }
+
+    private static void ResetThumbTemplate(AvaloniaSlider control)
+    {
+        SetPendingThumbTemplate(control, null);
+        FindThumb(control, null)?.ClearValue(TemplatedControl.TemplateProperty);
+    }
+
     // The track's Thumb is set as soon as the template is applied, before the thumb joins
     // the visual tree, and the themes name the thumb differently
     private static Thumb? FindThumb(AvaloniaSlider slider, TemplateAppliedEventArgs? args) =>
@@ -304,12 +328,12 @@ public static class SliderExtensions
         }
 
         Apply(control);
-        control.TemplateApplied += OnTemplateApplied;
+        SetPendingThumbTemplate(control, OnTemplateApplied);
 
         void OnTemplateApplied(object? sender, TemplateAppliedEventArgs e)
         {
+            SetPendingThumbTemplate(control, null);
             Apply(control, e);
-            control.TemplateApplied -= OnTemplateApplied;
         }
     }
 
@@ -339,12 +363,12 @@ public static class SliderExtensions
         }
 
         Apply(control);
-        control.TemplateApplied += OnTemplateApplied;
+        SetPendingThumbTemplate(control, OnTemplateApplied);
 
         void OnTemplateApplied(object? sender, TemplateAppliedEventArgs e)
         {
+            SetPendingThumbTemplate(control, null);
             Apply(control, e);
-            control.TemplateApplied -= OnTemplateApplied;
         }
     }
 }

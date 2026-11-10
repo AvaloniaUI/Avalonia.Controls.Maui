@@ -3,10 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
+using IImage = Avalonia.Media.IImage;
 
 namespace Avalonia.Controls.Maui.Services;
 
@@ -19,6 +21,8 @@ namespace Avalonia.Controls.Maui.Services;
 /// </remarks>
 public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IFileImageSource>
 {
+    private const int DesktopResizetizerScale = 4;
+
     private readonly ILogger<AvaloniaFileImageSourceService>? _logger;
 
     /// <summary>
@@ -44,10 +48,10 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
     /// <param name="scale">The display scale factor applied during image loading.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
     /// if the source is not a file image source.
     /// </returns>
-    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
@@ -57,58 +61,99 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             return GetImageAsync(fileImageSource, scale, cancellationToken);
         }
 
-        return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+        return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
     }
 
     /// <summary>
     /// Loads a bitmap from the specified file image source, first trying Avalonia resources and then the filesystem.
     /// </summary>
     /// <param name="imageSource">The file image source containing the file name or path to load.</param>
-    /// <param name="scale">The display scale factor applied during image loading.</param>
+    /// <param name="scale">
+    /// The display scale. Above 1, an <c>@2x</c> or <c>@3x</c> variant of the file (for example <c>icon@2x.png</c>)
+    /// is loaded when it exists, as a <see cref="ScaledBitmapImage"/> with the base image's size in
+    /// device-independent units. The result is resolution-dependent when another scale could load a different file.
+    /// </param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
     /// if the file could not be found.
     /// </returns>
-    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IFileImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
     {
         if (imageSource == null || string.IsNullOrEmpty(imageSource.File))
-            return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+            return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
 
         try
         {
             var fileName = imageSource.File;
-            Bitmap? bitmap = null;
 
-            // First try to load as an Avalonia resource
-            if (TryLoadFromAvaloniaResource(fileName, out bitmap) && bitmap != null)
+            for (var variantScale = Math.Clamp((int)Math.Ceiling(scale), 1, 3); variantScale >= 2; variantScale--)
             {
-                _logger?.LogDebug($"Loaded image from Avalonia resource: {fileName}");
-                return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(
-                    new ImageSourceServiceResult(bitmap));
+                if (TryLoad(GetVariantFileName(fileName, variantScale)) is { } variant)
+                {
+                    return Task.FromResult<IImageSourceServiceResult<IImage>?>(
+                        new ImageSourceServiceResult(new ScaledBitmapImage(variant, variantScale), resolutionDependent: true));
+                }
             }
 
-            // Try to load from file system
-            var filePath = Path.IsPathRooted(fileName) ? fileName : Path.Combine(AppContext.BaseDirectory, fileName);
-            if (File.Exists(filePath))
+            // Above 1x the base image stands in for a missing variant; at 1x a variant suits a higher scale
+            var resolutionDependent = scale > 1 || HasVariant(fileName, 2) || HasVariant(fileName, 3);
+
+            if (TryLoad(fileName) is { } bitmap)
             {
-                bitmap = new Bitmap(filePath);
-                _logger?.LogDebug($"Loaded image from file: {filePath}");
-                return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(
-                    new ImageSourceServiceResult(bitmap));
+                return Task.FromResult<IImageSourceServiceResult<IImage>?>(
+                    new ImageSourceServiceResult(bitmap, resolutionDependent));
+            }
+
+            // On desktop, Resizetizer renders a resized MauiImage once, at 4x its base size
+            if (TryLoad(GetVariantFileName(fileName, DesktopResizetizerScale)) is { } desktop)
+            {
+                return Task.FromResult<IImageSourceServiceResult<IImage>?>(
+                    new ImageSourceServiceResult(new ScaledBitmapImage(desktop, DesktopResizetizerScale), resolutionDependent));
             }
 
             _logger?.LogWarning($"Could not find image: {fileName}");
-            return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+            return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, $"Error loading image: {imageSource.File}");
             throw;
         }
+    }
+
+    private Bitmap? TryLoad(string fileName)
+    {
+        if (TryLoadFromAvaloniaResource(fileName, out var bitmap) && bitmap != null)
+        {
+            _logger?.LogDebug($"Loaded image from Avalonia resource: {fileName}");
+            return bitmap;
+        }
+
+        var filePath = Path.IsPathRooted(fileName) ? fileName : Path.Combine(AppContext.BaseDirectory, fileName);
+        if (File.Exists(filePath))
+        {
+            _logger?.LogDebug($"Loaded image from file: {filePath}");
+            return new Bitmap(filePath);
+        }
+
+        return null;
+    }
+
+    private static bool HasVariant(string fileName, int scale)
+    {
+        var variant = GetVariantFileName(fileName, scale);
+        return AvaloniaResourceHelper.TryResolveResourceUri(variant, out _)
+            || File.Exists(Path.IsPathRooted(variant) ? variant : Path.Combine(AppContext.BaseDirectory, variant));
+    }
+
+    private static string GetVariantFileName(string fileName, int scale)
+    {
+        var extension = Path.GetExtension(fileName);
+        return $"{fileName[..^extension.Length]}@{scale}x{extension}";
     }
 
     private bool TryLoadFromAvaloniaResource(string fileName, out Bitmap? bitmap)
@@ -128,57 +173,5 @@ public partial class AvaloniaFileImageSourceService : IAvaloniaImageSourceServic
             _logger?.LogDebug(ex, $"Resource URI resolved but failed to load bitmap: {uri}");
             return false;
         }
-    }
-}
-
-/// <summary>
-/// Wraps an Avalonia <see cref="Bitmap"/> as an <see cref="IImageSourceServiceResult{Bitmap}"/>.
-/// </summary>
-/// <remarks>
-/// This type manages the lifetime of the bitmap and an optional disposal action, ensuring
-/// resources are released when the result is no longer needed.
-/// </remarks>
-public class ImageSourceServiceResult : IImageSourceServiceResult<Bitmap>
-{
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ImageSourceServiceResult"/> class.
-    /// </summary>
-    /// <param name="value">The loaded <see cref="Bitmap"/> instance.</param>
-    /// <param name="resolutionDependent">Indicates whether the image varies with display resolution.</param>
-    /// <param name="dispose">An optional callback invoked during disposal for additional cleanup.</param>
-    public ImageSourceServiceResult(Bitmap value, bool resolutionDependent = false, Action? dispose = null)
-    {
-        Value = value;
-        IsResolutionDependent = resolutionDependent;
-        DisposeAction = dispose;
-    }
-
-    /// <summary>
-    /// Gets the loaded <see cref="Bitmap"/> image.
-    /// </summary>
-    public Bitmap Value { get; }
-
-    /// <summary>
-    /// Gets a value indicating whether the image is resolution-dependent.
-    /// </summary>
-    public bool IsResolutionDependent { get; }
-    private Action? DisposeAction { get; }
-
-    /// <summary>
-    /// Gets a value indicating whether this result has been disposed.
-    /// </summary>
-    public bool IsDisposed { get; private set; }
-
-    /// <summary>
-    /// Disposes the bitmap and invokes any additional cleanup action.
-    /// </summary>
-    public void Dispose()
-    {
-        if (IsDisposed)
-            return;
-
-        IsDisposed = true;
-        DisposeAction?.Invoke();
-        Value?.Dispose();
     }
 }

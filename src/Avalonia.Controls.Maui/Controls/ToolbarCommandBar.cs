@@ -70,6 +70,7 @@ public class ToolbarCommandBar : StackPanel
             {
                 btn.Click -= OnToolbarItemClicked;
                 oldItem.PropertyChanged -= OnToolbarItemPropertyChanged;
+                ImageSourceLoader.Clear(btn);
             }
         }
 
@@ -185,51 +186,31 @@ public class ToolbarCommandBar : StackPanel
         }
     }
 
-    private static async void UpdateToolbarItemIcon(Button button, ToolbarItem item)
+    private static void UpdateToolbarItemIcon(Button button, ToolbarItem item)
     {
-        if (item.IconImageSource == null)
+        var mauiContext = (item.Parent?.Handler ?? (item as Element)?.Parent?.Handler)?.MauiContext;
+        if (item.IconImageSource == null || mauiContext == null)
         {
+            ImageSourceLoader.Clear(button);
             button.Content = item.Text;
             return;
         }
 
-        try
+        ImageSourceLoader.Set(button, mauiContext, item.IconImageSource, icon =>
         {
-            var handler = item.Parent?.Handler ?? (item as Element)?.Parent?.Handler;
-            var mauiContext = handler?.MauiContext;
-            if (mauiContext == null)
-                return;
-
-            var imageSourceServiceProvider = mauiContext.Services.GetService<IImageSourceServiceProvider>();
-            var service = imageSourceServiceProvider?.ResolveImageSourceService(item.IconImageSource);
-
-            if (service is IAvaloniaImageSourceService avaloniaService)
-            {
-                var result = await avaloniaService.GetImageAsync(item.IconImageSource, 1.0f);
-                if (result?.Value is Avalonia.Media.Imaging.Bitmap bitmap)
-                {
-                    var image = new Image
-                    {
-                        Source = bitmap,
-                        Width = 20,
-                        Height = 20
-                    };
-                    button.Content = image;
-                    ToolTip.SetTip(button, item.Text);
-                }
-                else
-                {
-                    button.Content = item.Text;
-                }
-            }
-            else
+            if (icon == null)
             {
                 button.Content = item.Text;
+                return;
             }
-        }
-        catch
-        {
-            button.Content = item.Text;
-        }
+
+            button.Content = new Image
+            {
+                Source = icon,
+                Width = 20,
+                Height = 20
+            };
+            ToolTip.SetTip(button, item.Text);
+        });
     }
 }

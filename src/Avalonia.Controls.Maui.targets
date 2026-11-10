@@ -82,44 +82,81 @@
       <_AvMauiPlatformId>$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)'))</_AvMauiPlatformId>
     </PropertyGroup>
 
-    <!-- Collect resizetizer images based on platform output structure.
-         On net11.0 (wpf mode), images are flat in the intermediate dir.
-         On Android, images are in drawable-mdpi/ (1x), drawable-hdpi/ (1.5x), etc. We pick 1x.
-         On iOS/macCatalyst, images are flat with @2x/@3x suffixes. We pick base (no suffix).
-         On Windows, images have .scale-NNN suffixes. We pick scale-100 (1x).
+    <!-- Collect resizetizer images based on platform output structure, and name each one as the
+         Avalonia image service looks it up: name.png at 1x, name@2x.png and name@3x.png for the
+         display scale, and name@4x.png for desktop.
+         On Android, drawable-mdpi is 1x, drawable-xhdpi 2x and drawable-xxhdpi 3x.
+         On iOS/macCatalyst, images are flat with @2x/@3x suffixes already.
+         On Windows, images have .scale-NNN suffixes: scale-100 is 1x and scale-200 is 2x.
+         On net11.0 (wpf mode), images are flat in the intermediate dir. Resizetizer renders a resized
+         image once, at 4x its base size, and copies other images unchanged.
          App icons (mipmap-* on Android, Assets.xcassets on iOS) are in subdirs and excluded
          by the non-recursive glob. -->
-    <ItemGroup>
+    <PropertyGroup>
+      <_AvMauiIsApple Condition="'$(_AvMauiPlatformId)' == 'ios' Or '$(_AvMauiPlatformId)' == 'maccatalyst'">true</_AvMauiIsApple>
+      <_AvMauiIsWindows Condition="$(_AvMauiPlatformId.Contains('windows'))">true</_AvMauiIsWindows>
+      <_AvMauiIsDesktop Condition="'$(_AvMauiPlatformId)' != 'android' And '$(_AvMauiIsApple)' != 'true' And '$(_AvMauiIsWindows)' != 'true'">true</_AvMauiIsDesktop>
+    </PropertyGroup>
+
+    <!-- Collect each platform's outputs into an item type of its own first: an unqualified
+         %(Filename) in new item metadata would batch over the items already in the list -->
+    <ItemGroup Condition="Exists('$(_MauiIntermediateImages)')">
       <!-- Clear any stale items from prior incremental builds or resizetizer output tracking -->
       <_ResizetizerCollectedImages Remove="@(_ResizetizerCollectedImages)" />
 
-      <!-- Android: use drawable-mdpi (1x base resolution) -->
-      <_ResizetizerCollectedImages
-          Condition="'$(_AvMauiPlatformId)' == 'android' And Exists('$(_MauiIntermediateImages)')"
+      <_AvMauiImage1x Condition="'$(_AvMauiPlatformId)' == 'android'"
           Include="$(_MauiIntermediateImages)drawable-mdpi\*"
           Exclude="$(_MauiIntermediateImages)drawable-mdpi\*.xml;$(_MauiIntermediateImages)drawable-mdpi\*.json" />
+      <_AvMauiImage2x Condition="'$(_AvMauiPlatformId)' == 'android'"
+          Include="$(_MauiIntermediateImages)drawable-xhdpi\*"
+          Exclude="$(_MauiIntermediateImages)drawable-xhdpi\*.xml;$(_MauiIntermediateImages)drawable-xhdpi\*.json" />
+      <_AvMauiImage3x Condition="'$(_AvMauiPlatformId)' == 'android'"
+          Include="$(_MauiIntermediateImages)drawable-xxhdpi\*"
+          Exclude="$(_MauiIntermediateImages)drawable-xxhdpi\*.xml;$(_MauiIntermediateImages)drawable-xxhdpi\*.json" />
 
-      <!-- iOS/macCatalyst: flat files in intermediate dir (non-recursive excludes xcassets subdirs) -->
-      <_ResizetizerCollectedImages
-          Condition="('$(_AvMauiPlatformId)' == 'ios' Or '$(_AvMauiPlatformId)' == 'maccatalyst') And Exists('$(_MauiIntermediateImages)')"
+      <!-- iOS/macCatalyst: flat files whose names already carry @2x/@3x (non-recursive excludes xcassets subdirs) -->
+      <_AvMauiImage1x Condition="'$(_AvMauiIsApple)' == 'true'"
           Include="$(_MauiIntermediateImages)*"
           Exclude="$(_MauiIntermediateImages)*.xml;$(_MauiIntermediateImages)*.json" />
 
-      <!-- Windows: flat files with .scale-NNN suffix; keep only scale-100 (1x) -->
-      <_ResizetizerCollectedImages
-          Condition="$(_AvMauiPlatformId.Contains('windows')) And Exists('$(_MauiIntermediateImages)')"
-          Include="$(_MauiIntermediateImages)*.scale-100.*" />
+      <!-- Windows: .scale-NNN suffixes, stripped below -->
+      <_AvMauiWindowsImage1x Condition="'$(_AvMauiIsWindows)' == 'true'" Include="$(_MauiIntermediateImages)*.scale-100.*" />
+      <_AvMauiWindowsImage2x Condition="'$(_AvMauiIsWindows)' == 'true'" Include="$(_MauiIntermediateImages)*.scale-200.*" />
 
       <!-- Default/WPF (net11.0, net11.0-browser, etc.): flat files directly in intermediate dir -->
-      <_ResizetizerCollectedImages
-          Condition="'$(_AvMauiPlatformId)' != 'android' And '$(_AvMauiPlatformId)' != 'ios' And '$(_AvMauiPlatformId)' != 'maccatalyst' And !$(_AvMauiPlatformId.Contains('windows')) And Exists('$(_MauiIntermediateImages)')"
+      <_AvMauiDesktopImage Condition="'$(_AvMauiIsDesktop)' == 'true'"
           Include="$(_MauiIntermediateImages)*"
           Exclude="$(_MauiIntermediateImages)*.xml;$(_MauiIntermediateImages)*.json" />
 
-      <!-- Remove @2x/@3x retina variants (iOS/macCatalyst) and any xcassets/platform artifacts
-           that may have been added by the resizetizer's output tracking -->
-      <_ResizetizerCollectedImages Remove="@(_ResizetizerCollectedImages)"
-          Condition="$([System.String]::new('%(Filename)').Contains('@'))" />
+      <!-- Resizetizer resizes an image with Resize="true", a BaseSize, or a vector source -->
+      <_AvMauiResizedImage Include="@(MauiImage)"
+          Condition="'%(MauiImage.Resize)' == 'true' Or ('%(MauiImage.Resize)' == '' And ('%(MauiImage.BaseSize)' != '' Or '%(MauiImage.Extension)' == '.svg'))" />
+      <_AvMauiDesktopCopiedImage Include="@(_AvMauiDesktopImage)" />
+      <_AvMauiDesktopCopiedImage Remove="@(_AvMauiResizedImage)" MatchOnMetadata="Filename" />
+      <_AvMauiImage1x Include="@(_AvMauiDesktopCopiedImage)" />
+      <_AvMauiImage4x Include="@(_AvMauiDesktopImage)" Exclude="@(_AvMauiDesktopCopiedImage)" />
+
+      <_ResizetizerCollectedImages Include="@(_AvMauiImage1x)">
+        <_AvMauiImageName>%(_AvMauiImage1x.Filename)%(_AvMauiImage1x.Extension)</_AvMauiImageName>
+      </_ResizetizerCollectedImages>
+      <_ResizetizerCollectedImages Include="@(_AvMauiImage2x)">
+        <_AvMauiImageName>%(_AvMauiImage2x.Filename)@2x%(_AvMauiImage2x.Extension)</_AvMauiImageName>
+      </_ResizetizerCollectedImages>
+      <_ResizetizerCollectedImages Include="@(_AvMauiImage3x)">
+        <_AvMauiImageName>%(_AvMauiImage3x.Filename)@3x%(_AvMauiImage3x.Extension)</_AvMauiImageName>
+      </_ResizetizerCollectedImages>
+      <!-- Resizetizer renders a resized desktop image once, at 4x its base size -->
+      <_ResizetizerCollectedImages Include="@(_AvMauiImage4x)">
+        <_AvMauiImageName>%(_AvMauiImage4x.Filename)@4x%(_AvMauiImage4x.Extension)</_AvMauiImageName>
+      </_ResizetizerCollectedImages>
+      <_ResizetizerCollectedImages Include="@(_AvMauiWindowsImage1x)">
+        <_AvMauiImageName>$([System.IO.Path]::GetFileNameWithoutExtension('%(_AvMauiWindowsImage1x.Filename)'))%(_AvMauiWindowsImage1x.Extension)</_AvMauiImageName>
+      </_ResizetizerCollectedImages>
+      <_ResizetizerCollectedImages Include="@(_AvMauiWindowsImage2x)">
+        <_AvMauiImageName>$([System.IO.Path]::GetFileNameWithoutExtension('%(_AvMauiWindowsImage2x.Filename)'))@2x%(_AvMauiWindowsImage2x.Extension)</_AvMauiImageName>
+      </_ResizetizerCollectedImages>
+
+      <!-- Remove any xcassets/platform artifacts that may have been added by the resizetizer's output tracking -->
       <_ResizetizerCollectedImages Remove="@(_ResizetizerCollectedImages)"
           Condition="$([System.String]::new('%(Identity)').Contains('Assets.xcassets'))" />
       <_ResizetizerCollectedImages Remove="@(_ResizetizerCollectedImages)"
@@ -132,7 +169,7 @@
 
     <ItemGroup>
       <AvaloniaResource Include="@(_ResizetizerCollectedImages)" Condition="'@(_ResizetizerCollectedImages)' != ''">
-        <Link>Images/%(Filename)%(Extension)</Link>
+        <Link>Images/%(_ResizetizerCollectedImages._AvMauiImageName)</Link>
       </AvaloniaResource>
     </ItemGroup>
 

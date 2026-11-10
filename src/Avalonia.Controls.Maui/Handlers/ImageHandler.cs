@@ -13,6 +13,7 @@ using AImage = Avalonia.Controls.Image;
 using AGrid = Avalonia.Controls.Grid;
 using IImage = Microsoft.Maui.IImage;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Primitives;
 
 namespace Avalonia.Controls.Maui.Handlers;
 
@@ -22,7 +23,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     private readonly AImage _staticImage;
     private GifImage? _gifImage;
     private CancellationTokenSource? _loadCts;
-    private IDisposable? _currentImageResult;
+    private ImageSourceLoader? _staticImageLoader;
 
     private static readonly ConcurrentDictionary<string, Uri?> AssetCache = new();
 
@@ -70,14 +71,21 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
     }
 
     /// <inheritdoc/>
+    protected override void ConnectHandler(AGrid platformView)
+    {
+        base.ConnectHandler(platformView);
+        _staticImageLoader = new ImageSourceLoader(_staticImage, MauiContext!, ApplyStaticImage);
+    }
+
+    /// <inheritdoc/>
     protected override void DisconnectHandler(AGrid platformView)
     {
         _loadCts?.Cancel();
         _loadCts?.Dispose();
         _loadCts = null;
 
-        _currentImageResult?.Dispose();
-        _currentImageResult = null;
+        _staticImageLoader?.Dispose();
+        _staticImageLoader = null;
 
         ResetClip(_staticImage);
         _staticImage.Source = null;
@@ -90,6 +98,89 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
 
         base.DisconnectHandler(platformView);
+    }
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// As on iOS and Android, an image with no size request measures at most its natural size: it shrinks to fit
+    /// the constraints but does not grow. A width or height request lets an <see cref="Aspect.AspectFit"/> image grow.
+    /// </remarks>
+    public override Microsoft.Maui.Graphics.Size GetDesiredSize(double widthConstraint, double heightConstraint)
+    {
+        // NaN means unconstrained, as in the base measure
+        if (double.IsNaN(widthConstraint))
+            widthConstraint = double.PositiveInfinity;
+        if (double.IsNaN(heightConstraint))
+            heightConstraint = double.PositiveInfinity;
+
+        var desired = base.GetDesiredSize(widthConstraint, heightConstraint);
+
+        var dispatcher = PlatformViewOrNull?.Dispatcher;
+        if (dispatcher is null)
+            return desired;
+
+        return dispatcher.CheckAccess()
+            ? MeasureStaticImage(widthConstraint, heightConstraint, desired)
+            : dispatcher.InvokeAsync(() => MeasureStaticImage(widthConstraint, heightConstraint, desired)).GetAwaiter().GetResult();
+    }
+
+    private Microsoft.Maui.Graphics.Size MeasureStaticImage(double widthConstraint, double heightConstraint, Microsoft.Maui.Graphics.Size desired)
+    {
+        // Avalonia's Image scales up to the constraints, so a static image measures from its natural size instead
+        if (VirtualView is not { } view || !_staticImage.IsVisible || _staticImage.Source is not { } source)
+            return desired;
+
+        var natural = new Microsoft.Maui.Graphics.Size(source.Size.Width, source.Size.Height);
+        if (natural.Width <= 0 || natural.Height <= 0)
+            return desired;
+
+        var widthIsExplicit = Dimension.IsExplicitSet(view.Width);
+        var heightIsExplicit = Dimension.IsExplicitSet(view.Height);
+        // A request is clamped before fitting, as Android does, so the other axis follows the clamped size
+        widthConstraint = widthIsExplicit
+            ? Math.Min(Math.Max(view.Width, Dimension.ResolveMinimum(view.MinimumWidth)), view.MaximumWidth)
+            : Math.Min(widthConstraint, view.MaximumWidth);
+        heightConstraint = heightIsExplicit
+            ? Math.Min(Math.Max(view.Height, Dimension.ResolveMinimum(view.MinimumHeight)), view.MaximumHeight)
+            : Math.Min(heightConstraint, view.MaximumHeight);
+
+        var size = FitImage(natural, widthConstraint, heightConstraint, view.Aspect, widthIsExplicit, heightIsExplicit);
+
+        return new Microsoft.Maui.Graphics.Size(
+            ResolveConstraints(size.Width, view.Width, view.MinimumWidth, view.MaximumWidth),
+            ResolveConstraints(size.Height, view.Height, view.MinimumHeight, view.MaximumHeight));
+    }
+
+    /// <summary>
+    /// The size an image asks for within the constraints, as MAUI's <c>SizeThatFitsImage</c> computes it on iOS.
+    /// </summary>
+    internal static Microsoft.Maui.Graphics.Size FitImage(
+        Microsoft.Maui.Graphics.Size natural,
+        double widthConstraint,
+        double heightConstraint,
+        Aspect aspect,
+        bool widthIsExplicit,
+        bool heightIsExplicit)
+    {
+        if (aspect != Aspect.AspectFit)
+            return new Microsoft.Maui.Graphics.Size(Math.Min(natural.Width, widthConstraint), Math.Min(natural.Height, heightConstraint));
+
+        // An unconstrained axis never limits the scale
+        var widthRatio = double.IsPositiveInfinity(widthConstraint) ? double.PositiveInfinity : widthConstraint / natural.Width;
+        var heightRatio = double.IsPositiveInfinity(heightConstraint) ? double.PositiveInfinity : heightConstraint / natural.Height;
+        var scale = Math.Min(widthRatio, heightRatio);
+
+        if (!widthIsExplicit && !heightIsExplicit)
+            scale = Math.Min(scale, 1);
+
+        return new Microsoft.Maui.Graphics.Size(natural.Width * scale, natural.Height * scale);
+    }
+
+    private static double ResolveConstraints(double measured, double explicitSize, double minimum, double maximum)
+    {
+        var resolved = Dimension.IsExplicitSet(explicitSize) ? explicitSize : measured;
+        resolved = Math.Max(resolved, Dimension.ResolveMinimum(minimum));
+        return Math.Min(resolved, maximum);
     }
 
     /// <summary>Maps the Source property to the platform view.</summary>
@@ -172,27 +263,22 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
                 _ => false
             };
 
-            if (isGif)
+            if (isGif && await TryLoadGifAsync(image.Source, image.IsAnimationPlaying, token))
             {
-                await LoadGifAsync(image.Source, image.IsAnimationPlaying, token);
+                if (!token.IsCancellationRequested)
+                    UpdateIsLoading(false);
+                return;
             }
-            else
-            {
-                await LoadStaticAsync(image.Source, token);
-            }
+
+            // The static loader clears the loading state when it applies the image
+            if (!token.IsCancellationRequested)
+                LoadStatic(image.Source);
         }
         catch (Exception ex)
         {
             Log(LogLevel.Error, ex, "Fatal error loading image source");
             ClearImages();
-        }
-        finally
-        {
-            // Clear loading state on success (unless cancelled)
-            if (!token.IsCancellationRequested)
-            {
-                UpdateIsLoading(false);
-            }
+            UpdateIsLoading(false);
         }
     }
 
@@ -204,7 +290,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
     }
 
-    private async Task LoadGifAsync(IImageSource source, bool shouldPlay, CancellationToken token)
+    private async Task<bool> TryLoadGifAsync(IImageSource source, bool shouldPlay, CancellationToken token)
     {
         Uri? gifUri = null;
         
@@ -218,20 +304,15 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
 
         if (gifUri == null)
-        {
-            // Fallback to static
-            await LoadStaticAsync(source, token);
-            return;
-        }
+            return false;
 
-        if (token.IsCancellationRequested) return;
+        if (token.IsCancellationRequested) return true;
         
         // This check prevents the NullReferenceException inside GifImage.InitializeGif
         if (gifUri.Scheme == "avares" && !AssetLoader.Exists(gifUri))
         {
             Log(LogLevel.Warning, null, $"GIF asset missing in bundle: {gifUri}. Falling back.");
-            await LoadStaticAsync(source, token);
-            return;
+            return false;
         }
 
         EnsureGifControl(VirtualView);
@@ -245,13 +326,19 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         {
             _gifImage!.Source = GifStreamSource.FromUri(gifUri);
             await Task.Yield();
-            
+
+            // A newer source took over during the yield; the loader and visibility are now its to set
+            if (token.IsCancellationRequested)
+                return true;
+
             _gifImage.IterationCount = shouldPlay
                 ? IterationCount.Infinite
                 : new IterationCount(0);
 
+            _staticImageLoader?.SetSource(null);
             _staticImage.IsVisible = false;
             _gifImage.IsVisible = true;
+            return true;
         }
         catch (Exception ex)
         {
@@ -259,7 +346,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
             _gifImage = null; 
             
             Log(LogLevel.Error, ex, "GifImage crashed during property assignment.");
-            await LoadStaticAsync(source, token);
+            return false;
         }
     }
     
@@ -286,7 +373,7 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
         }
     }
 
-    private async Task LoadStaticAsync(IImageSource source, CancellationToken token)
+    private void LoadStatic(IImageSource source)
     {
         if (_gifImage != null)
         {
@@ -294,50 +381,29 @@ public partial class ImageHandler : ViewHandler<IImage, AGrid>
             try { _gifImage.Source = null!; } catch { }
         }
 
-        var provider = this.GetRequiredService<IImageSourceServiceProvider>();
-
-        if (provider.ResolveImageSourceService(source) is IAvaloniaImageSourceService service)
+        if (_staticImageLoader == null)
         {
-            try
-            {
-                var result = await service.GetImageAsync(source, 1.0f, token);
-                if (token.IsCancellationRequested)
-                {
-                    (result as IDisposable)?.Dispose();
-                    return;
-                }
-
-                var previousResult = _currentImageResult;
-
-                if (result?.Value is { } bitmap)
-                {
-                    _staticImage.Source = bitmap;
-                    _staticImage.IsVisible = true;
-                    _currentImageResult = result as IDisposable;
-                }
-                else
-                {
-                    _staticImage.Source = null;
-                    _currentImageResult = null;
-                }
-
-                // Dispose previous image result after replacing to avoid displaying a disposed bitmap
-                previousResult?.Dispose();
-            }
-            catch (Exception ex)
-            {
-                Log(LogLevel.Warning, ex, "Failed to load static image fallback.");
-                _staticImage.Source = null;
-            }
+            UpdateIsLoading(false);
+            return;
         }
+
+        _staticImageLoader.SetSource(source);
+    }
+
+    private void ApplyStaticImage(Avalonia.Media.IImage? image)
+    {
+        _staticImage.Source = image;
+        if (image != null)
+            _staticImage.IsVisible = true;
+
+        UpdateIsLoading(false);
     }
 
     private void ClearImages()
     {
+        _staticImageLoader?.SetSource(null);
         _staticImage.Source = null;
         _staticImage.IsVisible = false;
-        _currentImageResult?.Dispose();
-        _currentImageResult = null;
         if (_gifImage != null)
         {
             _gifImage.Source = null!;

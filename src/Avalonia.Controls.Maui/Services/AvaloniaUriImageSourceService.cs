@@ -6,9 +6,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui;
+using IImage = Avalonia.Media.IImage;
 
 namespace Avalonia.Controls.Maui.Services;
 
@@ -18,13 +20,13 @@ namespace Avalonia.Controls.Maui.Services;
 /// <remarks>
 /// Supports HTTP/HTTPS and file URIs. When caching is enabled on the image source, downloaded images
 /// are persisted to a temporary directory and reused until the configured cache validity period expires.
-/// Concurrent requests for the same URI are coalesced to avoid duplicate downloads.
+/// Concurrent requests for the same URI share one download, and each request gets a bitmap of its own.
 /// </remarks>
 public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService, IImageSourceService<IUriImageSource>
 {
     private readonly ILogger<AvaloniaUriImageSourceService>? _logger;
     private readonly HttpClient _httpClient;
-    private readonly ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>> _inFlightCache;
+    private readonly ConcurrentDictionary<string, Lazy<Task<byte[]>>> _inFlightDownloads;
 
     private static readonly string CacheDirectory =
         Path.Combine(Path.GetTempPath(), "AvaloniaMauiImageCache");
@@ -46,7 +48,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     {
         _logger = logger;
         _httpClient = httpClient ?? new HttpClient();
-        _inFlightCache = new ConcurrentDictionary<string, Task<IImageSourceServiceResult<Bitmap>?>>();
+        _inFlightDownloads = new ConcurrentDictionary<string, Lazy<Task<byte[]>>>();
 
         EnsureCacheDirectory();
     }
@@ -58,10 +60,10 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     /// <param name="scale">The display scale factor applied during image loading.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
     /// if the source is not a URI image source.
     /// </returns>
-    public Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
@@ -71,7 +73,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
             return GetImageAsync(uriImageSource, scale, cancellationToken);
         }
 
-        return Task.FromResult<IImageSourceServiceResult<Bitmap>?>(null);
+        return Task.FromResult<IImageSourceServiceResult<IImage>?>(null);
     }
 
     /// <summary>
@@ -81,10 +83,10 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     /// <param name="scale">The display scale factor applied during image loading.</param>
     /// <param name="cancellationToken">A token that can be used to cancel the asynchronous operation.</param>
     /// <returns>
-    /// An <see cref="IImageSourceServiceResult{Bitmap}"/> containing the loaded bitmap, or <see langword="null"/>
+    /// An <see cref="IImageSourceServiceResult{IImage}"/> containing the loaded bitmap, or <see langword="null"/>
     /// if the URI is <see langword="null"/> or uses an unsupported scheme.
     /// </returns>
-    public async Task<IImageSourceServiceResult<Bitmap>?> GetImageAsync(
+    public async Task<IImageSourceServiceResult<IImage>?> GetImageAsync(
         IUriImageSource imageSource,
         float scale = 1,
         CancellationToken cancellationToken = default)
@@ -95,7 +97,6 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         try
         {
             var uri = imageSource.Uri;
-            var cacheKey = uri.ToString();
 
             // Try disk cache first when enabled
             if (imageSource.CachingEnabled &&
@@ -104,26 +105,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
                 return cachedResult;
             }
 
-            // Prevent duplicate downloads for the same URI while still respecting cache validity
-            var loadTask = LoadImageInternalAsync(uri, imageSource, cancellationToken);
-
-            if (imageSource.CachingEnabled)
-            {
-                var resultTask = _inFlightCache.GetOrAdd(cacheKey, loadTask);
-                try
-                {
-                    var result = await resultTask;
-                    _inFlightCache.TryRemove(cacheKey, out _);
-                    return result;
-                }
-                catch
-                {
-                    _inFlightCache.TryRemove(cacheKey, out _);
-                    throw;
-                }
-            }
-
-            return await loadTask;
+            return await LoadImageInternalAsync(uri, imageSource, cancellationToken);
         }
         catch (Exception ex)
         {
@@ -132,7 +114,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         }
     }
 
-    private async Task<IImageSourceServiceResult<Bitmap>?> LoadImageInternalAsync(Uri uri, IUriImageSource imageSource, CancellationToken cancellationToken)
+    private async Task<IImageSourceServiceResult<IImage>?> LoadImageInternalAsync(Uri uri, IUriImageSource imageSource, CancellationToken cancellationToken)
     {
         // Handle different URI schemes
         if (uri.IsAbsoluteUri)
@@ -151,18 +133,16 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         return null;
     }
 
-    private async Task<IImageSourceServiceResult<Bitmap>?> LoadFromHttpAsync(Uri uri, IUriImageSource imageSource, CancellationToken cancellationToken)
+    private async Task<IImageSourceServiceResult<IImage>?> LoadFromHttpAsync(Uri uri, IUriImageSource imageSource, CancellationToken cancellationToken)
     {
         try
         {
             _logger?.LogDebug($"Loading image from HTTP: {uri}");
 
-            var bytes = await _httpClient.GetByteArrayAsync(uri, cancellationToken).ConfigureAwait(false);
-
-            if (imageSource.CachingEnabled)
-            {
-                TryWriteCache(uri, bytes);
-            }
+            // Each caller decodes its own bitmap, because the loader that receives the result disposes it
+            var bytes = imageSource.CachingEnabled
+                ? await DownloadSharedAsync(uri).WaitAsync(cancellationToken).ConfigureAwait(false)
+                : await DownloadAsync(uri, writeCache: false, cancellationToken).ConfigureAwait(false);
 
             await using var memoryStream = new MemoryStream(bytes);
             var bitmap = new Bitmap(memoryStream);
@@ -177,7 +157,43 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         }
     }
 
-    private IImageSourceServiceResult<Bitmap>? LoadFromFile(Uri uri)
+    private async Task<byte[]> DownloadAsync(Uri uri, bool writeCache, CancellationToken cancellationToken)
+    {
+        var bytes = await _httpClient.GetByteArrayAsync(uri, cancellationToken).ConfigureAwait(false);
+
+        if (writeCache)
+        {
+            TryWriteCache(uri, bytes);
+        }
+
+        return bytes;
+    }
+
+    // One download per URI in flight. No single caller cancels it, so the others still get the bytes.
+    private Task<byte[]> DownloadSharedAsync(Uri uri)
+    {
+        var key = uri.ToString();
+        Lazy<Task<byte[]>>? created = null;
+        var download = _inFlightDownloads.GetOrAdd(key, _ =>
+            created = new Lazy<Task<byte[]>>(() => DownloadOnceAsync(key, created!, uri)));
+
+        return download.Value;
+    }
+
+    private async Task<byte[]> DownloadOnceAsync(string key, Lazy<Task<byte[]>> download, Uri uri)
+    {
+        try
+        {
+            return await DownloadAsync(uri, writeCache: true, CancellationToken.None).ConfigureAwait(false);
+        }
+        finally
+        {
+            // Remove only this download, not a newer one for the same URI
+            _inFlightDownloads.TryRemove(new KeyValuePair<string, Lazy<Task<byte[]>>>(key, download));
+        }
+    }
+
+    private IImageSourceServiceResult<IImage>? LoadFromFile(Uri uri)
     {
         try
         {
@@ -207,7 +223,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     public void ClearCache()
     {
         _logger?.LogDebug("Clearing image cache");
-        _inFlightCache.Clear();
+        _inFlightDownloads.Clear();
         try
         {
             if (Directory.Exists(CacheDirectory))
@@ -227,7 +243,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
     public bool RemoveFromCache(Uri uri)
     {
         var cacheKey = uri.ToString();
-        var removed = _inFlightCache.TryRemove(cacheKey, out _);
+        var removed = _inFlightDownloads.TryRemove(cacheKey, out _);
         if (removed)
         {
             _logger?.LogDebug($"Removed image from cache: {uri}");
@@ -260,7 +276,7 @@ public partial class AvaloniaUriImageSourceService : IAvaloniaImageSourceService
         return Path.Combine(CacheDirectory, $"{safeName}{ext}");
     }
 
-    private bool TryLoadFromCache(Uri uri, TimeSpan cacheValidity, out IImageSourceServiceResult<Bitmap>? result)
+    private bool TryLoadFromCache(Uri uri, TimeSpan cacheValidity, out IImageSourceServiceResult<IImage>? result)
     {
         result = null;
         var cachePath = GetCachePath(uri);

@@ -63,7 +63,6 @@ public class ImageStub : StubBase, Microsoft.Maui.IImage, Microsoft.Maui.Control
 
     public void PlatformSizeChanged()
     {
-        throw new NotImplementedException();
     }
 
     public void SetIsLoading(bool isLoading)

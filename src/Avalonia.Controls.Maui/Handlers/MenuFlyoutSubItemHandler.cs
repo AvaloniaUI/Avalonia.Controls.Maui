@@ -13,6 +13,8 @@ namespace Avalonia.Controls.Maui.Handlers;
 /// <summary>Avalonia handler for <see cref="IMenuFlyoutSubItem"/>.</summary>
 public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubItem, PlatformView>
 {
+    ImageSourceLoader? _iconLoader;
+
     /// <summary>Property mapper for <see cref="MenuFlyoutSubItemHandler"/>.</summary>
     public static IPropertyMapper<IMenuFlyoutSubItem, MenuFlyoutSubItemHandler> Mapper = new PropertyMapper<IMenuFlyoutSubItem, MenuFlyoutSubItemHandler>(ElementMapper)
     {
@@ -54,6 +56,7 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
     {
         base.ConnectHandler(platformView);
         platformView.Click += OnClicked;
+        _iconLoader = new ImageSourceLoader(platformView, MauiContext!, icon => ApplyIcon(platformView, icon));
     }
 
     /// <inheritdoc/>
@@ -67,6 +70,8 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
             }
         }
 
+        _iconLoader?.Dispose();
+        _iconLoader = null;
         base.DisconnectHandler(platformView);
         platformView.Click -= OnClicked;
     }
@@ -91,58 +96,20 @@ public partial class MenuFlyoutSubItemHandler : ElementHandler<IMenuFlyoutSubIte
     public static void MapSource(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view) =>
         MapSourceAsync(handler, view).FireAndForget(handler.MauiContext?.Services?.CreateLogger<MenuFlyoutSubItemHandler>());
 
-    /// <summary>Asynchronously maps the Source property to the platform view.</summary>
+    /// <summary>Maps the Source property to the platform view. The icon loads when the item is shown.</summary>
     /// <param name="handler">The handler.</param>
     /// <param name="view">The menu flyout sub-item.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    public static async Task MapSourceAsync(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
+    public static Task MapSourceAsync(MenuFlyoutSubItemHandler handler, IMenuFlyoutSubItem view)
     {
-        if (handler.PlatformView is not PlatformView platformView)
-            return;
-
-        if (view.Source == null)
-        {
-            platformView.Icon = null;
-            return;
-        }
-
-        try
-        {
-            var imageSourceServiceProvider = handler.GetRequiredService<IImageSourceServiceProvider>();
-            var serviceSource = imageSourceServiceProvider?.ResolveImageSourceService(view.Source);
-
-            if (serviceSource is IAvaloniaImageSourceService service)
-            {
-                var result = await service.GetImageAsync(view.Source, 1.0f);
-                if (result?.Value is global::Avalonia.Media.Imaging.Bitmap bitmap)
-                {
-                    // Create an Image control to display as the icon
-                    var iconImage = new global::Avalonia.Controls.Image
-                    {
-                        Source = bitmap,
-                        Width = 16,
-                        Height = 16
-                    };
-                    platformView.Icon = iconImage;
-                }
-                else
-                {
-                    platformView.Icon = null;
-                }
-            }
-            else
-            {
-                platformView.Icon = null;
-            }
-        }
-        catch (Exception ex)
-        {
-            handler.GetRequiredService<ILoggerFactory>()
-                ?.CreateLogger<MenuFlyoutSubItemHandler>()
-                ?.LogError(ex, "Error loading menu icon source");
-            platformView.Icon = null;
-        }
+        handler._iconLoader?.SetSource(view.Source);
+        return Task.CompletedTask;
     }
+
+    static void ApplyIcon(PlatformView platformView, Avalonia.Media.IImage? icon) =>
+        platformView.Icon = icon == null
+            ? null
+            : new global::Avalonia.Controls.Image { Source = icon, Width = 16, Height = 16 };
 
     /// <summary>Maps the KeyboardAccelerators property to the platform view.</summary>
     /// <param name="handler">The handler.</param>

@@ -174,6 +174,91 @@ public class AvaloniaUriImageSourceServiceTests
         return Assert.IsType<HttpClient>(field?.GetValue(service));
     }
 
+    [AvaloniaFact(DisplayName = "Concurrent loads of one URI share a download and get bitmaps of their own")]
+    public async Task ConcurrentLoadsShareDownloadNotBitmap()
+    {
+        var handler = new GatedHandler(CreatePng());
+        var service = new AvaloniaUriImageSourceService(null, new HttpClient(handler));
+        var source = new UriImageSource { Uri = new Uri($"http://example.com/{Guid.NewGuid():N}.png"), CachingEnabled = true };
+
+        try
+        {
+            var first = service.GetImageAsync(source);
+            var second = service.GetImageAsync(source);
+            handler.Release();
+
+            using var firstResult = await first;
+            using var secondResult = await second;
+
+            Assert.Equal(1, handler.RequestCount);
+            Assert.NotSame(firstResult!.Value, secondResult!.Value);
+
+            // Disposing one control's image leaves the other's usable
+            firstResult.Dispose();
+            Assert.Equal(new PixelSize(1, 1), Assert.IsAssignableFrom<Avalonia.Media.Imaging.Bitmap>(secondResult.Value).PixelSize);
+        }
+        finally
+        {
+            File.Delete(service.GetCachePath(source.Uri));
+        }
+    }
+
+    [AvaloniaFact(DisplayName = "A cancelled load does not cancel another load of the same URI")]
+    public async Task CancelledLoadDoesNotCancelSharedDownload()
+    {
+        var handler = new GatedHandler(CreatePng());
+        var service = new AvaloniaUriImageSourceService(null, new HttpClient(handler));
+        var source = new UriImageSource { Uri = new Uri($"http://example.com/{Guid.NewGuid():N}.png"), CachingEnabled = true };
+        using var cancellation = new CancellationTokenSource();
+
+        try
+        {
+            var cancelled = service.GetImageAsync(source, 1, cancellation.Token);
+            var other = service.GetImageAsync(source);
+
+            cancellation.Cancel();
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => cancelled);
+
+            handler.Release();
+            using var result = await other;
+
+            Assert.NotNull(result?.Value);
+            Assert.Equal(1, handler.RequestCount);
+        }
+        finally
+        {
+            File.Delete(service.GetCachePath(source.Uri));
+        }
+    }
+
+    static byte[] CreatePng()
+    {
+        using var bitmap = new Avalonia.Media.Imaging.RenderTargetBitmap(new PixelSize(1, 1));
+        using var stream = new MemoryStream();
+        bitmap.Save(stream);
+        return stream.ToArray();
+    }
+
+    private sealed class GatedHandler : HttpMessageHandler
+    {
+        private readonly byte[] _payload;
+        private readonly TaskCompletionSource _gate = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private int _requestCount;
+
+        public GatedHandler(byte[] payload) => _payload = payload;
+
+        public int RequestCount => _requestCount;
+
+        public void Release() => _gate.TrySetResult();
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Interlocked.Increment(ref _requestCount);
+            await _gate.Task.WaitAsync(cancellationToken);
+            return new HttpResponseMessage(HttpStatusCode.OK) { Content = new ByteArrayContent(_payload) };
+        }
+    }
+
     private sealed class CountingHandler : HttpMessageHandler
     {
         private readonly byte[] _payload;

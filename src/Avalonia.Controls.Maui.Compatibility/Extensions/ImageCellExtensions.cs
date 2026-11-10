@@ -77,38 +77,17 @@ public static class ImageCellExtensions
     {
         if (context == null) return;
 
-        if (cell.ImageSource != null)
-        {
-            platformView.ImageView.IsVisible = true;
-            _ = LoadImageAsync(platformView, cell, context);
-        }
-        else
-        {
-            platformView.ImageView.IsVisible = false;
-            platformView.ImageView.Source = null;
-        }
-    }
+        var imageView = platformView.ImageView;
+        imageView.IsVisible = cell.ImageSource != null;
 
-    private static async Task LoadImageAsync(MauiImageCell platformView, ImageCell cell, IMauiContext context)
-    {
-        try
+        if (cell.ImageSource == null)
         {
-            var services = context.Services;
-            var imageSourceServiceProvider = services.GetRequiredService<IImageSourceServiceProvider>();
-            var imageSourceService = imageSourceServiceProvider.GetRequiredImageSourceService(cell.ImageSource);
-
-            var result = await imageSourceService.GetImageAsync(cell.ImageSource, 1.0f);
-
-            if (result is IImageSourceServiceResult<Avalonia.Media.Imaging.Bitmap> bitmapResult)
-            {
-                platformView.ImageView.Source = bitmapResult.Value;
-            }
+            ImageSourceLoader.Clear(imageView);
+            imageView.Source = null;
+            return;
         }
-        catch
-        {
-            platformView.ImageView.IsVisible = false;
-            platformView.ImageView.Source = null;
-        }
+
+        ImageSourceLoader.Set(imageView, context, cell.ImageSource, image => imageView.Source = image);
     }
 
     /// <summary>
