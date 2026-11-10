@@ -1,146 +1,77 @@
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using CommunityToolkit.Maui.Core;
 using ControlGallery.Pages;
 using ControlGallery.Pages.ShellSamples;
 using ControlGallery.Pages.ShellSamples.ShellPlayground;
 using ControlGallery.Pages.WebView;
+using Microsoft.Maui.Controls.Shapes;
 
 namespace ControlGallery;
 
+[UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "The property Expander binds to is kept by TrimmerRoots.xml")]
 public partial class MainPage : FlyoutPage
 {
-    private List<SampleGroup> _allSamples = new List<SampleGroup>();
-    private string _lastSearchText = string.Empty;
+    private const double WideBreakpoint = 1008;
 
-    private static readonly Dictionary<Type, Func<Page>> PageFactory = new()
-    {
-        // Apps
-        [typeof(RpnCalculator.MainPage)] = () => new RpnCalculator.MainPage(),
-        [typeof(SolitaireEncryption.SolitairePage)] = () => new SolitaireEncryption.SolitairePage(),
-        [typeof(TipCalc.TipCalcPage)] = () => new TipCalc.TipCalcPage(),
-        [typeof(Weather.MainPage)] = () => new Weather.MainPage(),
-        [typeof(WordPuzzle.MainPage)] = () => new WordPuzzle.MainPage(),
-        // Services
-        [typeof(FontsPage)] = () => new FontsPage(),
-        // Pages
-        [typeof(PageBasePage)] = () => new PageBasePage(),
-        [typeof(NavigationDemoPage)] = () => new NavigationDemoPage(),
-        [typeof(ControlGallery.Pages.TabbedPage)] = () => new ControlGallery.Pages.TabbedPage(),
-        [typeof(TitleBarPage)] = () => new TitleBarPage(),
-        [typeof(ModalPage)] = () => new ModalPage(),
-        [typeof(PopupsPage)] = () => new PopupsPage(),
-        [typeof(ToolbarItemPage)] = () => new ToolbarItemPage(),
-        [typeof(ShellPage)] = () => new ShellPage(),
-        [typeof(ShellPlaygroundPage)] = () => new ShellPlaygroundPage(),
-        // Views
-        [typeof(ActivityIndicatorPage)] = () => new ActivityIndicatorPage(),
-        [typeof(BorderPage)] = () => new BorderPage(),
-        [typeof(BoxViewPage)] = () => new BoxViewPage(),
-        [typeof(ButtonPage)] = () => new ButtonPage(),
-        [typeof(CheckBoxPage)] = () => new CheckBoxPage(),
-        [typeof(CarouselViewPage)] = () => new CarouselViewPage(),
-        [typeof(CollectionViewPage)] = () => new CollectionViewPage(),
-        [typeof(ContentViewPage)] = () => new ContentViewPage(),
-        [typeof(DatePickerPage)] = () => new DatePickerPage(),
-        [typeof(EntryPage)] = () => new EntryPage(),
-        [typeof(EditorPage)] = () => new EditorPage(),
-        [typeof(FramePage)] = () => new FramePage(),
-        [typeof(GraphicsViewPage)] = () => new GraphicsViewPage(),
-        [typeof(SkiaSharpPage)] = () => new SkiaSharpPage(),
-        [typeof(IndicatorViewPage)] = () => new IndicatorViewPage(),
-        [typeof(ImagePage)] = () => new ImagePage(),
-        [typeof(ImageButtonPage)] = () => new ImageButtonPage(),
-        [typeof(ListViewPage)] = () => new ListViewPage(),
-        [typeof(MapPage)] = () => new MapPage(),
-        [typeof(PickerPage)] = () => new PickerPage(),
-        [typeof(ProgressBarPage)] = () => new ProgressBarPage(),
-        [typeof(RadioButtonPage)] = () => new RadioButtonPage(),
-        [typeof(ScrollViewPage)] = () => new ScrollViewPage(),
-        [typeof(SearchBarPage)] = () => new SearchBarPage(),
-        [typeof(SliderPage)] = () => new SliderPage(),
-        [typeof(StepperPage)] = () => new StepperPage(),
-        [typeof(RefreshViewPage)] = () => new RefreshViewPage(),
-        [typeof(SwipeViewPage)] = () => new SwipeViewPage(),
-        [typeof(SwitchPage)] = () => new SwitchPage(),
-        [typeof(TableViewPage)] = () => new TableViewPage(),
-        [typeof(TimePickerPage)] = () => new TimePickerPage(),
-        // Community Toolkit
-        [typeof(ExpanderPage)] = () => new ExpanderPage(),
-        [typeof(AnimationBehaviorsPage)] = () => new AnimationBehaviorsPage(),
-        [typeof(AvatarViewPage)] = () => new AvatarViewPage(),
-        [typeof(DockLayoutPage)] = () => new DockLayoutPage(),
-        [typeof(InputBehaviorsPage)] = () => new InputBehaviorsPage(),
-        [typeof(LazyViewPage)] = () => new LazyViewPage(),
-        [typeof(RatingViewPage)] = () => new RatingViewPage(),
-        [typeof(StateContainerPage)] = () => new StateContainerPage(),
-        [typeof(ToolkitPopupPage)] = () => new ToolkitPopupPage(),
-        [typeof(UniformItemsLayoutPage)] = () => new UniformItemsLayoutPage(),
-        [typeof(ValidationBehaviorsPage)] = () => new ValidationBehaviorsPage(),
-        // WebView
-        [typeof(WebViewLoadWebPage)] = () => new WebViewLoadWebPage(),
-        [typeof(WebViewLoadLocalPage)] = () => new WebViewLoadLocalPage(),
-        [typeof(WebViewInlineHtmlPage)] = () => new WebViewInlineHtmlPage(),
-        [typeof(WebViewNavigationPage)] = () => new WebViewNavigationPage(),
-        [typeof(WebViewEventsPage)] = () => new WebViewEventsPage(),
-        [typeof(WebViewCookiesPage)] = () => new WebViewCookiesPage(),
-        [typeof(WebViewPlaygroundPage)] = () => new WebViewPlaygroundPage(),
-        // Effects
-        [typeof(ClipPage)] = () => new ClipPage(),
-        [typeof(EffectsPage)] = () => new EffectsPage(),
-        [typeof(ShadowPage)] = () => new ShadowPage(),
-        // Layout
-        [typeof(StackLayoutPage)] = () => new StackLayoutPage(),
-        [typeof(GridPage)] = () => new GridPage(),
-        [typeof(FlexLayoutPage)] = () => new FlexLayoutPage(),
-        [typeof(AbsoluteLayoutPage)] = () => new AbsoluteLayoutPage(),
-        [typeof(TransformationsPage)] = () => new TransformationsPage(),
-        // Shapes
-        [typeof(RectanglePage)] = () => new RectanglePage(),
-        [typeof(EllipsePage)] = () => new EllipsePage(),
-        [typeof(LinePage)] = () => new LinePage(),
-        [typeof(PolygonPage)] = () => new PolygonPage(),
-        [typeof(PolylinePage)] = () => new PolylinePage(),
-        [typeof(PathPage)] = () => new PathPage(),
-        [typeof(RoundRectanglePage)] = () => new RoundRectanglePage(),
-        // Core
-        [typeof(AnimationPage)] = () => new AnimationPage(),
-        [typeof(BehaviorsPage)] = () => new BehaviorsPage(),
-        [typeof(BrushesPage)] = () => new BrushesPage(),
-        [typeof(DragAndDropPage)] = () => new DragAndDropPage(),
-        [typeof(GesturesPage)] = () => new GesturesPage(),
-        [typeof(StylesPage)] = () => new StylesPage(),
-        [typeof(TooltipsPage)] = () => new TooltipsPage(),
-        [typeof(TriggersPage)] = () => new TriggersPage(),
-        [typeof(VisualStateManagerPage)] = () => new VisualStateManagerPage(),
-        [typeof(LifecycleEventsPage)] = () => new LifecycleEventsPage(),
-        // Essentials
-        [typeof(ScreenshotPage)] = () => new ScreenshotPage(),
-        [typeof(PreferencesPage)] = () => new PreferencesPage(),
-        [typeof(FilePickerPage)] = () => new FilePickerPage(),
-        [typeof(MediaPickerPage)] = () => new MediaPickerPage(),
-        // Settings
-        [typeof(ThemePage)] = () => new ThemePage(),
-        // Embedding
-        [typeof(AvaloniaEmbedPage)] = () => new AvaloniaEmbedPage(),
-        [typeof(MauiAvaloniaViewPage)] = () => new MauiAvaloniaViewPage(),
-    };
+    private readonly List<SampleGroup> _allSamples;
+    private SampleItem? _currentItem;
+    private Window? _window;
 
-    public ObservableCollection<SampleGroup> FilteredSamples { get; private set; } = new ObservableCollection<SampleGroup>();
-    public ICommand NavigateCommand { get; private set; }
+    public ObservableCollection<SampleGroup> FilteredSamples { get; } = new();
 
     public MainPage()
     {
         InitializeComponent();
 
         BindingContext = this;
-        NavigateCommand = new Command<Type>(NavigateToPage);
 
-        InitializeSamples();
+        _allSamples = CreateSamples();
         UpdateMenu(string.Empty);
 
-        // Navigate to Welcome Page by default
-        Detail = new NavigationPage(new WelcomePage());
+        ThemePicker.SelectedIndex = ToThemeIndex(Application.Current?.UserAppTheme ?? AppTheme.Unspecified);
+        FlowDirectionPicker.SelectedIndex = 0;
+        if (Application.Current is { } app)
+            app.RequestedThemeChanged += (_, _) => ThemePicker.SelectedIndex = ToThemeIndex(app.UserAppTheme);
+
+        NavigateTo(_allSamples[0][0]);
+    }
+
+    protected override void OnParentSet()
+    {
+        base.OnParentSet();
+
+        if (_window is not null)
+            _window.SizeChanged -= OnWindowSizeChanged;
+
+        _window = Parent as Window;
+
+        if (_window is not null)
+        {
+            _window.SizeChanged += OnWindowSizeChanged;
+            UpdateAdaptiveLayout(_window.Width);
+        }
+    }
+
+    private void OnWindowSizeChanged(object? sender, EventArgs e)
+    {
+        UpdateAdaptiveLayout(_window?.Width ?? 0);
+    }
+
+    private void UpdateAdaptiveLayout(double width)
+    {
+        if (width <= 0)
+            return;
+
+        var behavior = width >= WideBreakpoint ? FlyoutLayoutBehavior.Split : FlyoutLayoutBehavior.Popover;
+        if (FlyoutLayoutBehavior == behavior)
+            return;
+
+        FlyoutLayoutBehavior = behavior;
+
+        if (behavior == FlyoutLayoutBehavior.Popover)
+            IsPresented = false;
     }
 
     private void UpdateMenu(string searchText)
@@ -152,235 +83,273 @@ public partial class MainPage : FlyoutPage
             var filteredItems = group.Where(item =>
                 string.IsNullOrWhiteSpace(searchText) ||
                 item.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase) ||
-                item.Detail.Contains(searchText, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+                item.Detail.Contains(searchText, StringComparison.OrdinalIgnoreCase));
 
-            if (filteredItems.Count > 0)
-            {
-                FilteredSamples.Add(new SampleGroup(group.Name, filteredItems));
-            }
+            var filteredGroup = new SampleGroup(group.Name, filteredItems);
+            if (filteredGroup.Count > 0)
+                FilteredSamples.Add(filteredGroup);
         }
-    }
-
-    private void OnMenuSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        if (e.CurrentSelection.FirstOrDefault() is SampleItem selectedItem)
-        {
-            NavigateToPage(selectedItem.PageType);
-
-            // Clear selection so the same item can be tapped again
-            if (sender is CollectionView cv)
-                cv.SelectedItem = null;
-        }
-    }
-
-    private void InitializeSamples()
-    {
-        _allSamples = new List<SampleGroup>
-        {
-            new SampleGroup("Apps", new List<SampleItem>
-            {
-                new("RpnCalculator", "A Reverse Polish Notation calc", typeof(RpnCalculator.MainPage)),
-                new("SolitaireEncryption", "Solitaire encryption algorithm", typeof(SolitaireEncryption.SolitairePage)),
-                new("Tip Calc", "TipCalc application", typeof(TipCalc.TipCalcPage)),
-                new("Weather", "Retrieves weather data", typeof(Weather.MainPage)),
-                new("Word Puzzle", "A word puzzle game", typeof(WordPuzzle.MainPage))
-            }),
-
-            new SampleGroup("Services", new List<SampleItem>
-            {
-                new("Fonts", "Font integration test", typeof(FontsPage))
-            }),
-
-            new SampleGroup("Pages", new List<SampleItem>
-            {
-                new("Page", "Base page background and padding", typeof(PageBasePage)),
-                new("NavigationPage", "Navigation stack with animated transitions", typeof(NavigationDemoPage)),
-                new("TabbedPage", "Tabbed navigation", typeof(ControlGallery.Pages.TabbedPage)),
-                new("TitleBar", "Custom window title bar", typeof(TitleBarPage)),
-                new("ToolbarItems", "Toolbar items and interactions", typeof(ToolbarItemPage)),
-                new("Modal Pages", "Present pages modally with PushModalAsync", typeof(ModalPage)),
-                new("Popups", "Alerts, ActionSheets, and Prompts", typeof(PopupsPage)),
-                new("Lifecycle Events", "View & VisualElement event tracing", typeof(LifecycleEventsPage))
-            }),
-
-            new SampleGroup("Layout", new List<SampleItem>
-            {
-                new("StackLayout", "Vertical and horizontal stacking", typeof(StackLayoutPage)),
-                new("Grid", "Rows, columns, and spanning", typeof(GridPage)),
-                new("FlexLayout", "Flexible box layout", typeof(FlexLayoutPage)),
-                new("AbsoluteLayout", "Absolute positioning of elements", typeof(AbsoluteLayoutPage))
-            }),
-
-            new SampleGroup("Views", new List<SampleItem>
-            {
-                new("ActivityIndicator", "Animated busy indicator", typeof(ActivityIndicatorPage)),
-                new("Border", "Custom strikes and shapes", typeof(BorderPage)),
-                new("BoxView", "Decorative colored rectangles", typeof(BoxViewPage)),
-                new("Button", "Standard clickable button", typeof(ButtonPage)),
-                new("CheckBox", "Toggle selection control", typeof(CheckBoxPage)),
-                new("CarouselView", "A carousel for paged content", typeof(CarouselViewPage)),
-                new("CollectionView", "Modern templated list", typeof(CollectionViewPage)),
-                new("ContentView", "Reusable custom content", typeof(ContentViewPage)),
-                new("DatePicker", "Date selection picker", typeof(DatePickerPage)),
-                new("Entry", "Single-line text entry", typeof(EntryPage)),
-                new("Editor", "Multi-line text editor", typeof(EditorPage)),
-                new("Frame", "Bordered layout container", typeof(FramePage)),
-                new("GraphicsView", "Custom 2D drawing canvas", typeof(GraphicsViewPage)),
-                new("SkiaSharp", "SKCanvasView and SKGLView drawing and touch", typeof(SkiaSharpPage)),
-                new("IndicatorView", "Page position indicators for CarouselView", typeof(IndicatorViewPage)),
-                new("Image", "Visual content display", typeof(ImagePage)),
-                new("ImageButton", "Interactive image button", typeof(ImageButtonPage)),
-                new("ListView", "Scrolling data items", typeof(ListViewPage)),
-                // TODO: Re-enable when Map is ready
-                //new("Map", "Interactive maps and pins", typeof(MapPage)),
-                new("Picker", "Item selection dropdown", typeof(PickerPage)),
-                new("ProgressBar", "Visual progress status", typeof(ProgressBarPage)),
-                new("RadioButton", "Single-select option list", typeof(RadioButtonPage)),
-                new("RefreshView", "Pull-to-refresh container", typeof(RefreshViewPage)),
-                new("ScrollView", "Scrollable layout container", typeof(ScrollViewPage)),
-                new("SearchBar", "Search text input", typeof(SearchBarPage)),
-                new("Slider", "Range value selection", typeof(SliderPage)),
-                new("Stepper", "Discrete incremental changes", typeof(StepperPage)),
-                new("SwipeView", "Swipe action container", typeof(SwipeViewPage)),
-                new("Switch", "Binary toggle switch", typeof(SwitchPage)),
-                new("TableView", "Form-based data table", typeof(TableViewPage)),
-                new("TimePicker", "Time selection picker", typeof(TimePickerPage))
-            }),
-
-            new SampleGroup("Community Toolkit", new List<SampleItem>
-            {
-                new("Expander", "Content that shows and hides", typeof(ExpanderPage)),
-                new("Animation Behaviors", "Event commands and animations", typeof(AnimationBehaviorsPage)),
-                new("AvatarView", "Initials or image avatars", typeof(AvatarViewPage)),
-                new("DockLayout", "Dock children to the edges", typeof(DockLayoutPage)),
-                new("Input Behaviors", "Masks, length and typing events", typeof(InputBehaviorsPage)),
-                new("LazyView", "Create content on demand", typeof(LazyViewPage)),
-                new("Popup", "Popups over the page", typeof(ToolkitPopupPage)),
-                new("RatingView", "Star and shape ratings", typeof(RatingViewPage)),
-                new("StateContainer", "Loading, empty and error states", typeof(StateContainerPage)),
-                new("UniformItemsLayout", "Equal-size cells", typeof(UniformItemsLayoutPage)),
-                new("Validation Behaviors", "Validate text input", typeof(ValidationBehaviorsPage))
-            }),
-
-            new SampleGroup("WebView", new List<SampleItem>
-            {
-                new("Load Web", "Load remote web content", typeof(WebViewLoadWebPage)),
-                new("Load Local", "Load packaged HTML assets", typeof(WebViewLoadLocalPage)),
-                new("Inline HTML", "Render HtmlWebViewSource content", typeof(WebViewInlineHtmlPage)),
-                new("Navigation", "Back, forward, and reload", typeof(WebViewNavigationPage)),
-                new("Events", "Navigating and Navigated events", typeof(WebViewEventsPage)),
-                new("Cookies", "CookieContainer integration", typeof(WebViewCookiesPage)),
-                new("Playground", "Freeform WebView testing", typeof(WebViewPlaygroundPage))
-            }),
-
-            new SampleGroup("Effects", new List<SampleItem>
-            {
-                new("Effects", "RoutingEffect and PlatformEffect sample", typeof(EffectsPage)),
-                new("Clip", "Shape-based clipping samples", typeof(ClipPage)),
-                new("Shadow", "Soft elevation and offsets", typeof(ShadowPage)),
-                new("Transformations", "Play with scale, rotation, translation, anchors", typeof(TransformationsPage))
-            }),
-
-            new SampleGroup("Shapes", new List<SampleItem>
-            {
-                new("Rectangle", "Filled and rounded rectangles", typeof(RectanglePage)),
-                new("Ellipse", "Ellipses with fills and strokes", typeof(EllipsePage)),
-                new("Line", "Simple and dashed lines", typeof(LinePage)),
-                new("Polygon", "Closed polygon shapes", typeof(PolygonPage)),
-                new("Polyline", "Open polyline shapes", typeof(PolylinePage)),
-                new("Path", "Paths with custom geometry", typeof(PathPage)),
-                new("RoundRectangle", "Custom corner radii", typeof(RoundRectanglePage))
-            }),
-
-            new SampleGroup("Core", new List<SampleItem>
-            {
-                new("Animations", "ViewExtensions animations", typeof(AnimationPage)),
-                new("Behaviors", "Validation Behaviors", typeof(BehaviorsPage)),
-                new("Brushes", "Solid and Gradient brushes", typeof(BrushesPage)),
-                new("Drag & Drop", "Drag and drop gestures", typeof(DragAndDropPage)),
-                new("Gestures", "Tap, Swipe, Pan and more", typeof(GesturesPage)),
-                new("Styles", "Styles and Style Classes", typeof(StylesPage)),
-                new("Tooltips", "Tooltips on various elements", typeof(TooltipsPage)),
-                new("Triggers", "Visual states and actions", typeof(TriggersPage)),
-                new("Visual States", "VisualStateManager examples", typeof(VisualStateManagerPage)),
-            }),
-
-            new SampleGroup("Shell", new List<SampleItem>
-            {
-                new("Shell", "Shell samples", typeof(ShellPlaygroundPage)),
-                new("Xaminals", "Shell with navigation and search", typeof(ShellPage)),
-            }),
-
-            new SampleGroup("Essentials", new List<SampleItem>
-            {
-                new("File Picker", "Pick files from the device", typeof(FilePickerPage)),
-                new("Media Picker", "Pick photos and videos from the device", typeof(MediaPickerPage)),
-                new("Preferences", "Key/value storage for app settings", typeof(PreferencesPage)),
-                new("Screenshot", "Capture window screenshots", typeof(ScreenshotPage)),
-            }),
-
-            new SampleGroup("Embedding", new List<SampleItem>
-            {
-                new("Avalonia Embed", "Embedding an Avalonia control in a MAUI app", typeof(AvaloniaEmbedPage)),
-                new("MAUI Avalonia View", "Create MAUI control with Avalonia", typeof(MauiAvaloniaViewPage))
-            }),
-
-            new SampleGroup("Settings", new List<SampleItem>
-            {
-                new("Theme", "Theme toggle and AppThemeBinding", typeof(ThemePage))
-            })
-        };
     }
 
     private void OnSearchBarTextChanged(object? sender, TextChangedEventArgs e)
     {
-        _lastSearchText = e.NewTextValue ?? string.Empty;
-        UpdateMenu(_lastSearchText);
+        UpdateMenu(e.NewTextValue ?? string.Empty);
     }
 
-    private async void NavigateToPage(Type pageType)
+    private void OnSampleTapped(object? sender, TappedEventArgs e)
     {
-        if (PageFactory.TryGetValue(pageType, out var factory))
+        if (sender is BindableObject { BindingContext: SampleItem item })
+            NavigateTo(item);
+    }
+
+    private void OnSettingsExpandedChanged(object? sender, ExpandedChangedEventArgs e)
+    {
+        SettingsChevron.Rotation = e.IsExpanded ? 180 : 0;
+    }
+
+    private void OnThemePickerSelectedIndexChanged(object? sender, EventArgs e)
+    {
+        if (Application.Current is not { } app)
+            return;
+
+        app.UserAppTheme = ThemePicker.SelectedIndex switch
         {
+            1 => AppTheme.Light,
+            2 => AppTheme.Dark,
+            _ => AppTheme.Unspecified,
+        };
+    }
+
+    private void OnFlowDirectionPickerSelectedIndexChanged(object? sender, EventArgs e)
+    {
+        if (Window is { } window)
+            window.FlowDirection = FlowDirectionPicker.SelectedIndex == 1 ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
+    }
+
+    private static int ToThemeIndex(AppTheme theme) => theme switch
+    {
+        AppTheme.Light => 1,
+        AppTheme.Dark => 2,
+        _ => 0,
+    };
+
+    private async void NavigateTo(SampleItem item)
+    {
+        if (_currentItem is not null)
+            _currentItem.IsSelected = false;
+
+        _currentItem = item;
+        item.IsSelected = true;
+
+        if (FlyoutLayoutBehavior != FlyoutLayoutBehavior.Split)
             IsPresented = false;
-            await Task.Yield();
 
-            var page = factory();
+        await Task.Yield();
 
-            if (Detail is NavigationPage navPage)
-            {
-                navPage.Navigation.InsertPageBefore(page, navPage.RootPage);
-                await navPage.Navigation.PopToRootAsync(animated: false);
-            }
-            else
-            {
-                Detail = new NavigationPage(page);
-            }
+        var page = item.CreatePage();
+
+        if (Detail is NavigationPage navPage)
+        {
+            navPage.Navigation.InsertPageBefore(page, navPage.RootPage);
+            await navPage.Navigation.PopToRootAsync(animated: false);
+        }
+        else
+        {
+            Detail = new NavigationPage(page);
         }
     }
+
+    private static List<SampleGroup> CreateSamples() =>
+    [
+        new("", [
+            new("Welcome", "About this gallery", Icons.Home, () => new WelcomePage()),
+        ]),
+
+        new("Apps", [
+            new("RpnCalculator", "A Reverse Polish Notation calc", Icons.Calculator, () => new RpnCalculator.MainPage()),
+            new("SolitaireEncryption", "Solitaire encryption algorithm", Icons.Shield, () => new SolitaireEncryption.SolitairePage()),
+            new("Tip Calc", "TipCalc application", Icons.Number, () => new TipCalc.TipCalcPage()),
+            new("Weather", "Retrieves weather data", Icons.Cloud, () => new Weather.MainPage()),
+            new("Word Puzzle", "A word puzzle game", Icons.Puzzle, () => new WordPuzzle.MainPage()),
+        ]),
+
+        new("Services", [
+            new("Fonts", "Font integration test", Icons.Header, () => new FontsPage()),
+        ]),
+
+        new("Pages", [
+            new("Page", "Base page background and padding", Icons.Document, () => new PageBasePage()),
+            new("NavigationPage", "Navigation stack with animated transitions", Icons.Navigation, () => new NavigationDemoPage()),
+            new("TabbedPage", "Tabbed navigation", Icons.Tab, () => new ControlGallery.Pages.TabbedPage()),
+            new("TitleBar", "Custom window title bar", Icons.Window, () => new TitleBarPage()),
+            new("ToolbarItems", "Toolbar items and interactions", Icons.Menu, () => new ToolbarItemPage()),
+            new("Modal Pages", "Present pages modally with PushModalAsync", Icons.Dialog, () => new ModalPage()),
+            new("Popups", "Alerts, ActionSheets, and Prompts", Icons.Flyout, () => new PopupsPage()),
+            new("Lifecycle Events", "View & VisualElement event tracing", Icons.Bell, () => new LifecycleEventsPage()),
+        ]),
+
+        new("Layout", [
+            new("StackLayout", "Vertical and horizontal stacking", Icons.List, () => new StackLayoutPage()),
+            new("Grid", "Rows, columns, and spanning", Icons.Grid, () => new GridPage()),
+            new("FlexLayout", "Flexible box layout", Icons.Layout, () => new FlexLayoutPage()),
+            new("AbsoluteLayout", "Absolute positioning of elements", Icons.Container, () => new AbsoluteLayoutPage()),
+        ]),
+
+        new("Views", [
+            new("ActivityIndicator", "Animated busy indicator", Icons.Spinner, () => new ActivityIndicatorPage()),
+            new("Border", "Custom strikes and shapes", Icons.Border, () => new BorderPage()),
+            new("BoxView", "Decorative colored rectangles", Icons.Rectangle, () => new BoxViewPage()),
+            new("Button", "Standard clickable button", Icons.CursorClick, () => new ButtonPage()),
+            new("CheckBox", "Toggle selection control", Icons.Checkbox, () => new CheckBoxPage()),
+            new("CarouselView", "A carousel for paged content", Icons.Slides, () => new CarouselViewPage()),
+            new("CollectionView", "Modern templated list", Icons.List, () => new CollectionViewPage()),
+            new("ContentView", "Reusable custom content", Icons.Container, () => new ContentViewPage()),
+            new("DatePicker", "Date selection picker", Icons.Calendar, () => new DatePickerPage()),
+            new("Entry", "Single-line text entry", Icons.TextInput, () => new EntryPage()),
+            new("Editor", "Multi-line text editor", Icons.Document, () => new EditorPage()),
+            new("Frame", "Bordered layout container", Icons.Viewbox, () => new FramePage()),
+            new("GraphicsView", "Custom 2D drawing canvas", Icons.Canvas, () => new GraphicsViewPage()),
+            new("SkiaSharp", "SKCanvasView and SKGLView drawing and touch", Icons.Brush, () => new SkiaSharpPage()),
+            new("IndicatorView", "Page position indicators for CarouselView", Icons.HorizontalDots, () => new IndicatorViewPage()),
+            new("Image", "Visual content display", Icons.Image, () => new ImagePage()),
+            new("ImageButton", "Interactive image button", Icons.Image, () => new ImageButtonPage()),
+            new("ListView", "Scrolling data items", Icons.List, () => new ListViewPage()),
+            // TODO: Re-enable when Map is ready
+            //new("Map", "Interactive maps and pins", Icons.Navigation, () => new MapPage()),
+            new("Picker", "Item selection dropdown", Icons.Dropdown, () => new PickerPage()),
+            new("ProgressBar", "Visual progress status", Icons.Progress, () => new ProgressBarPage()),
+            new("RadioButton", "Single-select option list", Icons.Radio, () => new RadioButtonPage()),
+            new("RefreshView", "Pull-to-refresh container", Icons.Refresh, () => new RefreshViewPage()),
+            new("ScrollView", "Scrollable layout container", Icons.Scroll, () => new ScrollViewPage()),
+            new("SearchBar", "Search text input", Icons.TextInput, () => new SearchBarPage()),
+            new("Slider", "Range value selection", Icons.Slider, () => new SliderPage()),
+            new("Stepper", "Discrete incremental changes", Icons.Number, () => new StepperPage()),
+            new("SwipeView", "Swipe action container", Icons.Gesture, () => new SwipeViewPage()),
+            new("Switch", "Binary toggle switch", Icons.Toggle, () => new SwitchPage()),
+            new("TableView", "Form-based data table", Icons.Grid, () => new TableViewPage()),
+            new("TimePicker", "Time selection picker", Icons.Clock, () => new TimePickerPage()),
+        ]),
+
+        new("Community Toolkit", [
+            new("Expander", "Content that shows and hides", Icons.Expand, () => new ExpanderPage()),
+            new("Animation Behaviors", "Event commands and animations", Icons.Transition, () => new AnimationBehaviorsPage()),
+            new("AvatarView", "Initials or image avatars", Icons.Person, () => new AvatarViewPage()),
+            new("DockLayout", "Dock children to the edges", Icons.Split, () => new DockLayoutPage()),
+            new("Input Behaviors", "Masks, length and typing events", Icons.Keyboard, () => new InputBehaviorsPage()),
+            new("LazyView", "Create content on demand", Icons.Lightning, () => new LazyViewPage()),
+            new("Popup", "Popups over the page", Icons.Flyout, () => new ToolkitPopupPage()),
+            new("RatingView", "Star and shape ratings", Icons.Star, () => new RatingViewPage()),
+            new("StateContainer", "Loading, empty and error states", Icons.Layers, () => new StateContainerPage()),
+            new("UniformItemsLayout", "Equal-size cells", Icons.Dots, () => new UniformItemsLayoutPage()),
+            new("Validation Behaviors", "Validate text input", Icons.Shield, () => new ValidationBehaviorsPage()),
+        ]),
+
+        new("WebView", [
+            new("Load Web", "Load remote web content", Icons.Window, () => new WebViewLoadWebPage()),
+            new("Load Local", "Load packaged HTML assets", Icons.Document, () => new WebViewLoadLocalPage()),
+            new("Inline HTML", "Render HtmlWebViewSource content", Icons.Terminal, () => new WebViewInlineHtmlPage()),
+            new("Navigation", "Back, forward, and reload", Icons.Navigation, () => new WebViewNavigationPage()),
+            new("Events", "Navigating and Navigated events", Icons.Bell, () => new WebViewEventsPage()),
+            new("Cookies", "CookieContainer integration", Icons.Clipboard, () => new WebViewCookiesPage()),
+            new("Playground", "Freeform WebView testing", Icons.Puzzle, () => new WebViewPlaygroundPage()),
+        ]),
+
+        new("Effects", [
+            new("Effects", "RoutingEffect and PlatformEffect sample", Icons.Sparkle, () => new EffectsPage()),
+            new("Clip", "Shape-based clipping samples", Icons.Viewbox, () => new ClipPage()),
+            new("Shadow", "Soft elevation and offsets", Icons.Blur, () => new ShadowPage()),
+            new("Transformations", "Play with scale, rotation, translation, anchors", Icons.Transform, () => new TransformationsPage()),
+        ]),
+
+        new("Shapes", [
+            new("Rectangle", "Filled and rounded rectangles", Icons.Rectangle, () => new RectanglePage()),
+            new("Ellipse", "Ellipses with fills and strokes", Icons.Ellipse, () => new EllipsePage()),
+            new("Line", "Simple and dashed lines", Icons.Line, () => new LinePage()),
+            new("Polygon", "Closed polygon shapes", Icons.Polygon, () => new PolygonPage()),
+            new("Polyline", "Open polyline shapes", Icons.Polyline, () => new PolylinePage()),
+            new("Path", "Paths with custom geometry", Icons.Brush, () => new PathPage()),
+            new("RoundRectangle", "Custom corner radii", Icons.RoundRectangle, () => new RoundRectanglePage()),
+        ]),
+
+        new("Core", [
+            new("Animations", "ViewExtensions animations", Icons.Transition, () => new AnimationPage()),
+            new("Behaviors", "Validation Behaviors", Icons.Target, () => new BehaviorsPage()),
+            new("Brushes", "Solid and Gradient brushes", Icons.Palette, () => new BrushesPage()),
+            new("Drag & Drop", "Drag and drop gestures", Icons.DragDrop, () => new DragAndDropPage()),
+            new("Gestures", "Tap, Swipe, Pan and more", Icons.Gesture, () => new GesturesPage()),
+            new("Styles", "Styles and Style Classes", Icons.Theme, () => new StylesPage()),
+            new("Tooltips", "Tooltips on various elements", Icons.Tooltip, () => new TooltipsPage()),
+            new("Triggers", "Visual states and actions", Icons.Lightning, () => new TriggersPage()),
+            new("Visual States", "VisualStateManager examples", Icons.Layers, () => new VisualStateManagerPage()),
+        ]),
+
+        new("Shell", [
+            new("Shell", "Shell samples", Icons.Drawer, () => new ShellPlaygroundPage()),
+            new("Xaminals", "Shell with navigation and search", Icons.Tree, () => new ShellPage()),
+        ]),
+
+        new("Essentials", [
+            new("File Picker", "Pick files from the device", Icons.Document, () => new FilePickerPage()),
+            new("Media Picker", "Pick photos and videos from the device", Icons.Image, () => new MediaPickerPage()),
+            new("Preferences", "Key/value storage for app settings", Icons.Tune, () => new PreferencesPage()),
+            new("Screenshot", "Capture window screenshots", Icons.Monitor, () => new ScreenshotPage()),
+        ]),
+
+        new("Embedding", [
+            new("Avalonia Embed", "Embedding an Avalonia control in a MAUI app", Icons.Puzzle, () => new AvaloniaEmbedPage()),
+            new("MAUI Avalonia View", "Create MAUI control with Avalonia", Icons.Cube, () => new MauiAvaloniaViewPage()),
+        ]),
+
+        new("Settings", [
+            new("Theme", "Theme toggle and AppThemeBinding", Icons.Theme, () => new ThemePage()),
+        ]),
+    ];
 }
 
-public class SampleItem
+/// <summary>A sample page in the gallery menu.</summary>
+public sealed class SampleItem : INotifyPropertyChanged
 {
-    public string Title { get; }
-    public string Detail { get; }
-    public Type PageType { get; }
+    private static readonly PathGeometryConverter GeometryConverter = new();
 
-    public SampleItem(string title, string detail, Type pageType)
+    private bool _isSelected;
+
+    public SampleItem(string title, string detail, string iconData, Func<Page> createPage)
     {
         Title = title;
         Detail = detail;
-        PageType = pageType;
+        Icon = (Geometry?)GeometryConverter.ConvertFromInvariantString(iconData);
+        CreatePage = createPage;
     }
+
+    public string Title { get; }
+
+    public string Detail { get; }
+
+    public Geometry? Icon { get; }
+
+    public Func<Page> CreatePage { get; }
+
+    /// <summary>Whether this sample is the page shown in the detail area.</summary>
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            if (_isSelected == value)
+                return;
+
+            _isSelected = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+        }
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 }
 
-public class SampleGroup : List<SampleItem>
+/// <summary>A titled group of samples in the gallery menu. A group with no name has no header.</summary>
+public sealed class SampleGroup(string name, IEnumerable<SampleItem> items) : List<SampleItem>(items)
 {
-    public string Name { get; }
+    public string Name { get; } = name;
 
-    public SampleGroup(string name, List<SampleItem> items) : base(items)
-    {
-        Name = name;
-    }
+    public bool HasName => !string.IsNullOrEmpty(Name);
 }

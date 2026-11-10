@@ -2,52 +2,156 @@
 <FlyoutPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
 			xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			xmlns:local="clr-namespace:ControlGallery"
+			xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
 			x:DataType="local:MainPage"
 			FlyoutLayoutBehavior="Popover"
 			x:Class="ControlGallery.MainPage">
 	<FlyoutPage.Flyout>
-		<ContentPage
-			BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-			x:Name="FlyoutPageMenu"
-			Title="Gallery">
-			<Grid RowDefinitions="Auto,*">
-				<SearchBar Placeholder="Search..."
-						   TextChanged="OnSearchBarTextChanged"
-						   BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
-						   Margin="6"/>
+		<ContentPage x:Name="FlyoutPageMenu"
+					 Title="Gallery"
+					 BackgroundColor="{AppThemeBinding Light={StaticResource CatalogDrawerLight}, Dark={StaticResource CatalogDrawerDark}}">
+			<Grid RowDefinitions="Auto,Auto,*,Auto">
 
-				<CollectionView Grid.Row="1"
-					x:Name="MenuCollectionView"
-					ItemsSource="{Binding FilteredSamples}"
-					IsGrouped="True"
-					SelectionMode="Single"
-					SelectionChanged="OnMenuSelectionChanged"
-					BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}">
+				<!-- Logo -->
+				<Border Margin="10,10,10,4"
+						HeightRequest="80"
+						StrokeThickness="0"
+						StrokeShape="RoundRectangle 8"
+						BackgroundColor="{AppThemeBinding Light={StaticResource BannerLight}, Dark={StaticResource BannerDark}}">
+					<Image Source="{AppThemeBinding Light='banner_light.png', Dark='banner_dark.png'}"
+						   Aspect="AspectFill" />
+				</Border>
+
+				<SearchBar Grid.Row="1"
+						   Placeholder="Search..."
+						   TextChanged="OnSearchBarTextChanged"
+						   Margin="6,4,8,4" />
+
+				<CollectionView Grid.Row="2"
+								x:Name="MenuCollectionView"
+								ItemsSource="{Binding FilteredSamples}"
+								IsGrouped="True"
+								SelectionMode="None"
+								Margin="0,4,0,8">
 					<CollectionView.GroupHeaderTemplate>
 						<DataTemplate x:DataType="local:SampleGroup">
 							<Label Text="{Binding Name}"
-								   FontSize="14"
+								   IsVisible="{Binding HasName}"
+								   FontSize="12"
 								   FontAttributes="Bold"
-								   Padding="16,12,16,4"
-								   TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+								   Padding="18,14,8,4"
+								   TextColor="{AppThemeBinding Light={StaticResource CatalogBaseMediumLight}, Dark={StaticResource CatalogBaseMediumDark}}" />
 						</DataTemplate>
 					</CollectionView.GroupHeaderTemplate>
 					<CollectionView.ItemTemplate>
 						<DataTemplate x:DataType="local:SampleItem">
-							<Grid Padding="16,8">
-								<VerticalStackLayout Spacing="2">
-									<Label Text="{Binding Title}"
-										   FontSize="16"
-										   TextColor="{AppThemeBinding Light=Black, Dark=White}" />
-									<Label Text="{Binding Detail}"
-										   FontSize="13"
-										   Opacity="0.7"
-										   TextColor="{AppThemeBinding Light=Gray, Dark=LightGray}" />
-								</VerticalStackLayout>
-							</Grid>
+							<Border HeightRequest="36"
+									Margin="4,2,8,0"
+									Padding="0,0,4,0"
+									Stroke="Transparent"
+									StrokeThickness="1"
+									StrokeShape="RoundRectangle 8"
+									BackgroundColor="Transparent">
+								<Border.GestureRecognizers>
+									<TapGestureRecognizer Tapped="OnSampleTapped" />
+								</Border.GestureRecognizers>
+								<VisualStateManager.VisualStateGroups>
+									<VisualStateGroupList>
+										<VisualStateGroup x:Name="CommonStates">
+											<VisualState x:Name="Normal" />
+											<VisualState x:Name="PointerOver">
+												<VisualState.Setters>
+													<Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CatalogDrawerLight}, Dark={StaticResource CatalogDrawerDark}}" />
+													<Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource CatalogHoverStrokeLight}, Dark={StaticResource CatalogHoverStrokeDark}}" />
+													<Setter Property="Shadow">
+														<Shadow Brush="Black" Offset="0,0" Radius="3" Opacity="0.12" />
+													</Setter>
+													<Setter TargetName="ItemIcon" Property="Path.Fill" Value="{AppThemeBinding Light={StaticResource CatalogBaseMediumLight}, Dark={StaticResource CatalogBaseMediumDark}}" />
+													<Setter TargetName="ItemLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource CatalogBaseMediumLight}, Dark={StaticResource CatalogBaseMediumDark}}" />
+												</VisualState.Setters>
+											</VisualState>
+										</VisualStateGroup>
+									</VisualStateGroupList>
+								</VisualStateManager.VisualStateGroups>
+								<Grid ColumnDefinitions="14,20,*">
+									<BoxView WidthRequest="3"
+											 HeightRequest="18"
+											 CornerRadius="2"
+											 Margin="5,0,0,0"
+											 HorizontalOptions="Start"
+											 VerticalOptions="Center"
+											 Color="{StaticResource CatalogAccent}"
+											 IsVisible="{Binding IsSelected}" />
+									<Path x:Name="ItemIcon"
+										  Grid.Column="1"
+										  Data="{Binding Icon}"
+										  Aspect="Uniform"
+										  WidthRequest="16"
+										  HeightRequest="16"
+										  HorizontalOptions="Center"
+										  VerticalOptions="Center"
+										  Fill="{AppThemeBinding Light={StaticResource CatalogBaseHighLight}, Dark={StaticResource CatalogBaseHighDark}}" />
+									<Label x:Name="ItemLabel"
+										   Grid.Column="2"
+										   Text="{Binding Title}"
+										   Margin="12,0,0,0"
+										   VerticalOptions="Center"
+										   LineBreakMode="TailTruncation" />
+								</Grid>
+							</Border>
 						</DataTemplate>
 					</CollectionView.ItemTemplate>
 				</CollectionView>
+
+				<!-- Settings -->
+				<VerticalStackLayout Grid.Row="3"
+									 BackgroundColor="{AppThemeBinding Light={StaticResource CatalogFooterLight}, Dark={StaticResource CatalogFooterDark}}">
+					<BoxView HeightRequest="1"
+							 Color="{AppThemeBinding Light={StaticResource CatalogBaseLowLight}, Dark={StaticResource CatalogBaseLowDark}}"
+							 Opacity="0.5" />
+					<toolkit:Expander x:Name="SettingsExpander"
+									  Direction="Up"
+									  ExpandedChanged="OnSettingsExpandedChanged">
+						<toolkit:Expander.Header>
+							<Grid ColumnDefinitions="*,Auto"
+								  HeightRequest="40"
+								  Padding="14,0,12,0">
+								<Label Text="Settings"
+									   VerticalOptions="Center" />
+								<Path x:Name="SettingsChevron"
+									  Grid.Column="1"
+									  Data="M7.41,15.41L12,10.83L16.59,15.41L18,14L12,8L6,14L7.41,15.41Z"
+									  Aspect="Uniform"
+									  WidthRequest="12"
+									  HeightRequest="12"
+									  VerticalOptions="Center"
+									  Fill="{AppThemeBinding Light={StaticResource CatalogBaseHighLight}, Dark={StaticResource CatalogBaseHighDark}}" />
+							</Grid>
+						</toolkit:Expander.Header>
+						<VerticalStackLayout Spacing="8"
+											 Padding="0,12"
+											 WidthRequest="152"
+											 HorizontalOptions="Center">
+							<Picker x:Name="ThemePicker"
+									ToolTipProperties.Text="Theme Variant"
+									SelectedIndexChanged="OnThemePickerSelectedIndexChanged">
+								<Picker.Items>
+									<x:String>Default</x:String>
+									<x:String>Light</x:String>
+									<x:String>Dark</x:String>
+								</Picker.Items>
+							</Picker>
+							<Picker x:Name="FlowDirectionPicker"
+									ToolTipProperties.Text="Flow Direction"
+									SelectedIndexChanged="OnFlowDirectionPickerSelectedIndexChanged">
+								<Picker.Items>
+									<x:String>LeftToRight</x:String>
+									<x:String>RightToLeft</x:String>
+								</Picker.Items>
+							</Picker>
+						</VerticalStackLayout>
+					</toolkit:Expander>
+				</VerticalStackLayout>
 			</Grid>
 		</ContentPage>
 	</FlyoutPage.Flyout>

@@ -1,6 +1,8 @@
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using Avalonia.Rendering.Composition;
+using Avalonia.Threading;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Platform;
@@ -18,6 +20,10 @@ internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
     private readonly View? _view;
     private readonly AvaloniaControl? _platformView;
     private bool _disposed;
+    private bool _pointerOver;
+    private bool _recentlyAttached;
+    private int _attachGeneration;
+    private AvaloniaTopLevel? _heldExitTopLevel;
 
     public AvaloniaGesturePlatformManager(IViewHandler handler)
     {
@@ -41,6 +47,12 @@ internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
     {
         if (_platformView is not AvaloniaControl control || _view is not View view)
             return;
+
+        if (view.GetCompositeGestureRecognizers()?.OfType<PointerGestureRecognizer>().Any() != true)
+        {
+            ReleaseHeldExit();
+            _pointerOver = false;
+        }
 
         // Check if drop recognizers were added or removed
         bool hasDropRecognizers = view.GetCompositeGestureRecognizers()
@@ -78,6 +90,7 @@ internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
         control.AddHandler(InputElement.PointerReleasedEvent, OnPointerReleased, RoutingStrategies.Bubble);
         control.AddHandler(InputElement.PointerEnteredEvent, OnPointerEntered, RoutingStrategies.Direct | RoutingStrategies.Bubble);
         control.AddHandler(InputElement.PointerExitedEvent, OnPointerExited, RoutingStrategies.Direct | RoutingStrategies.Bubble);
+        control.AttachedToVisualTree += OnPlatformViewAttachedToVisualTree;
     }
 
     private void UnsubscribeFromGestureEvents(AvaloniaControl control)
@@ -87,6 +100,69 @@ internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
         control.RemoveHandler(InputElement.PointerReleasedEvent, OnPointerReleased);
         control.RemoveHandler(InputElement.PointerEnteredEvent, OnPointerEntered);
         control.RemoveHandler(InputElement.PointerExitedEvent, OnPointerExited);
+        control.AttachedToVisualTree -= OnPlatformViewAttachedToVisualTree;
+    }
+
+    private void OnPlatformViewAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+    {
+        if (_platformView is null || ElementComposition.GetElementVisual(_platformView) is not { } visual)
+            return;
+
+        // Avalonia hit tests against the last rendered frame, so a view that was just attached cannot be hit
+        // until a frame with it is rendered. A pointer move before then raises PointerExited on it, and once the
+        // frame is rendered Avalonia raises PointerEntered again if the pointer is still over it.
+        var generation = ++_attachGeneration;
+        _recentlyAttached = true;
+        visual.Compositor.RequestCompositionBatchCommitAsync().Rendered.ContinueWith(
+            _ => Dispatcher.UIThread.Post(() =>
+            {
+                if (generation == _attachGeneration)
+                    _recentlyAttached = false;
+            }, DispatcherPriority.Background),
+            CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+    }
+
+    private void HoldExit(AvaloniaTopLevel topLevel)
+    {
+        if (_heldExitTopLevel is not null)
+            return;
+
+        _heldExitTopLevel = topLevel;
+        topLevel.AddHandler(InputElement.PointerMovedEvent, OnHeldExitPointerMoved, RoutingStrategies.Tunnel, handledEventsToo: true);
+        topLevel.AddHandler(InputElement.PointerExitedEvent, OnHeldExitPointerLeftTopLevel, RoutingStrategies.Direct, handledEventsToo: true);
+    }
+
+    private bool ReleaseHeldExit()
+    {
+        if (_heldExitTopLevel is not { } topLevel)
+            return false;
+
+        _heldExitTopLevel = null;
+        topLevel.RemoveHandler(InputElement.PointerMovedEvent, OnHeldExitPointerMoved);
+        topLevel.RemoveHandler(InputElement.PointerExitedEvent, OnHeldExitPointerLeftTopLevel);
+        return true;
+    }
+
+    private void OnHeldExitPointerMoved(object? sender, Input.PointerEventArgs e)
+    {
+        if (_platformView is not { } control)
+            return;
+
+        var point = e.GetPosition(control);
+        if (new Rect(control.Bounds.Size).Contains(point))
+            return;
+
+        ReleaseHeldExit();
+        SendPointerExited(point);
+    }
+
+    private void OnHeldExitPointerLeftTopLevel(object? sender, Input.PointerEventArgs e)
+    {
+        if (_platformView is not { } control || !ReferenceEquals(e.Source, sender))
+            return;
+
+        ReleaseHeldExit();
+        SendPointerExited(e.GetPosition(control));
     }
 
     private CancellationTokenSource? _singleTapCts;
@@ -433,14 +509,18 @@ internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
         if (pointerRecognizers.Count == 0)
             return;
 
-        var point = e.GetPosition(sender as Visual);
-        var args = GetPointerArgs(point);
+        e.Handled = true;
+
+        if (ReleaseHeldExit() || _pointerOver)
+            return;
+
+        _pointerOver = true;
+        var args = GetPointerArgs(e.GetPosition(sender as Visual));
 
         foreach (var recognizer in pointerRecognizers)
         {
             recognizer.SendPointerEntered(view, args.GetPosition, null, args.Buttons);
         }
-        e.Handled = true;
     }
 
     private void OnPointerExited(object? sender, Input.PointerEventArgs e)
@@ -456,14 +536,39 @@ internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
         if (pointerRecognizers.Count == 0)
             return;
 
-        var point = e.GetPosition(sender as Visual);
+        e.Handled = true;
+
+        if (_platformView is not { } control)
+            return;
+
+        var point = e.GetPosition(control);
+        if (_recentlyAttached &&
+            new Rect(control.Bounds.Size).Contains(point) &&
+            AvaloniaTopLevel.GetTopLevel(control) is { } topLevel)
+        {
+            HoldExit(topLevel);
+            return;
+        }
+
+        SendPointerExited(point);
+    }
+
+    private void SendPointerExited(Point point)
+    {
+        if (!_pointerOver || _view is not View view)
+            return;
+
+        _pointerOver = false;
+        var pointerRecognizers = view.GetCompositeGestureRecognizers()?.OfType<PointerGestureRecognizer>().ToList();
+        if (pointerRecognizers is not { Count: > 0 })
+            return;
+
         var args = GetPointerArgs(point);
 
         foreach (var recognizer in pointerRecognizers)
         {
             recognizer.SendPointerExited(view, args.GetPosition, null, args.Buttons);
         }
-        e.Handled = true;
     }
 
     // --- Drag Source Logic ---
@@ -844,6 +949,8 @@ internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
 
         _singleTapCts?.Cancel();
         _singleTapCts = null;
+
+        ReleaseHeldExit();
 
         if (_platformView is { } control)
         {

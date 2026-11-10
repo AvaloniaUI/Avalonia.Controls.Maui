@@ -1,52 +1,42 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.FilePickerPage"
              Title="FilePicker">
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="20">
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="Picks one or more files from the device and shows their details." />
 
             <!-- Pick Files -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Pick Files"
-                           FontAttributes="Bold"/>
-                    <Button Text="Pick Single File"
-                            Clicked="OnPickSingleClicked"/>
-                    <Button Text="Pick Multiple Files"
-                            Clicked="OnPickMultipleClicked"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Pick Files" />
+                <Button Text="Pick Single File"
+                        Clicked="OnPickSingleClicked"/>
+                <Button Text="Pick Multiple Files"
+                        Clicked="OnPickMultipleClicked"/>
+            </VerticalStackLayout>
 
             <!-- File Details -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="File Details"
-                           FontAttributes="Bold"/>
-                    <Label x:Name="StatusLabel"
-                           Text="Status: idle"
-                           FontAttributes="Italic"/>
-                    <Label x:Name="DetailsLabel"
-                           Text="No file selected."
-                           FontFamily="Courier New"/>
-                    <Label Text="Image Preview:"
-                           FontAttributes="Bold"
-                           Margin="0,10,0,0"/>
-                    <Image x:Name="PreviewImage"
-                           HeightRequest="200"
-                           Aspect="AspectFit"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="File Details" />
+                <Label x:Name="StatusLabel"
+                       Text="Status: idle"
+                       FontAttributes="Italic"/>
+                <Label x:Name="DetailsLabel"
+                       Text="No file selected."
+                       FontFamily="Courier New"/>
+                <Label Text="Image Preview:"
+                       FontAttributes="Bold"
+                       Margin="0,10,0,0"/>
+                <Image x:Name="PreviewImage"
+                       HeightRequest="200"
+                       Aspect="AspectFit"/>
+            </VerticalStackLayout>
 
-        </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

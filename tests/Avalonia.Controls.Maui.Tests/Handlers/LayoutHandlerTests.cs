@@ -886,6 +886,38 @@ public class LayoutHandlerTests : HandlerTestBase<MauiLayoutHandler, LayoutStub>
         Assert.Same(hit.Layout, hit.Element);
     }
 
+    [AvaloniaFact(DisplayName = "Layout Away From The Window Origin Catches Input")]
+    public async Task LayoutAwayFromTheWindowOriginCatchesInput()
+    {
+        var grid = new Microsoft.Maui.Controls.Grid { WidthRequest = 100, HeightRequest = 50 };
+
+        var element = await InvokeOnMainThreadAsync(() =>
+        {
+            var handler = CreateHandler<MauiLayoutHandler>(grid);
+            var layout = (Control)handler.PlatformView!;
+            var window = new Window
+            {
+                Width = 200,
+                Height = 200,
+                Content = new Avalonia.Controls.Border { Padding = new Thickness(0, 120, 0, 0), Child = layout }
+            };
+            window.Show();
+
+            try
+            {
+                window.UpdateLayout();
+                Avalonia.Headless.HeadlessWindowExtensions.CaptureRenderedFrame(window);
+                return (Layout: layout, Hit: Avalonia.Input.InputExtensions.InputHitTest(window, new Avalonia.Point(100, 160)));
+            }
+            finally
+            {
+                window.Close();
+            }
+        });
+
+        Assert.Same(element.Layout, element.Hit);
+    }
+
     async Task<(Avalonia.Input.IInputElement? Element, Control Layout, Control Child)> HitTestLayoutAsync(
         bool inputTransparent, bool cascade, Avalonia.Point point, Action<Microsoft.Maui.Controls.Grid>? update = null,
         Action<Microsoft.Maui.Controls.Grid>? configure = null)

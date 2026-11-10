@@ -32,7 +32,7 @@ public partial class PolygonHandler : ShapeViewHandler<Polygon, PlatformView>
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformView()
     {
-        return new PlatformView();
+        return new Avalonia.Controls.Maui.Platform.MauiPolygon();
     }
 
     /// <summary>Maps the Shape property to the platform view.</summary>

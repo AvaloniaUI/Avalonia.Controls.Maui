@@ -6,8 +6,8 @@
              xmlns:controls="clr-namespace:ControlGallery.Controls"
              Title="Avalonia Embed Page">
              <ScrollView>
-             <Grid Margin="10" RowDefinitions="Auto, Auto, Auto, Auto, Auto, 220" RowSpacing="8">
-                <Label LineBreakMode="WordWrap"
+             <Grid Padding="20" RowDefinitions="Auto, Auto, Auto, Auto, Auto, 220" RowSpacing="8">
+                <Label StyleClass="h2"
                     Text="This is an example of hosting an Avalonia control within a .NET MAUI application using the AvaloniaControlHost." />
                 <Label Grid.Row="1" LineBreakMode="WordWrap"
                     Text="A picker-sized AvaloniaView with an Avalonia ComboBox. Its drop-down extends past the view's bounds:" />

@@ -1,251 +1,194 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.PickerPage"
              Title="Picker">
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="24">
-
-
-            <Label Text="The Title property displays a header above the Picker, and TitleColor allows customizing its color."
-                   FontSize="14"
-                   TextColor="Gray"
-                   HorizontalOptions="Center"
-                   Margin="0,0,0,12" />
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="The Title property displays a header above the Picker, and TitleColor allows customizing its color." />
 
             <!-- Basic Picker -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Basic Picker"
-                           FontAttributes="Bold" />
-                    <Picker x:Name="BasicPicker"
-                            Title="Select a fruit"
-                            SelectedIndexChanged="OnBasicPickerChanged">
-                        <Picker.Items>
-                            <x:String>Apple</x:String>
-                            <x:String>Banana</x:String>
-                            <x:String>Cherry</x:String>
-                            <x:String>Dragonfruit</x:String>
-                        </Picker.Items>
-                    </Picker>
-                    <Label x:Name="SelectedFruitLabel"
-                           Text="Selected item: none"
-                           FontAttributes="Italic" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Basic Picker" />
+                <Picker x:Name="BasicPicker"
+                        Title="Select a fruit"
+                        SelectedIndexChanged="OnBasicPickerChanged">
+                    <Picker.Items>
+                        <x:String>Apple</x:String>
+                        <x:String>Banana</x:String>
+                        <x:String>Cherry</x:String>
+                        <x:String>Dragonfruit</x:String>
+                    </Picker.Items>
+                </Picker>
+                <Label x:Name="SelectedFruitLabel"
+                       Text="Selected item: none"
+                       FontAttributes="Italic" />
+            </VerticalStackLayout>
 
             <!-- Preselected SelectedIndex -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Preselected SelectedIndex"
-                           FontAttributes="Bold" />
-                    <Picker x:Name="IndexedPicker"
-                            Title="Choose a color"
-                            SelectedIndexChanged="OnIndexedPickerChanged">
-                        <Picker.Items>
-                            <x:String>Red</x:String>
-                            <x:String>Green</x:String>
-                            <x:String>Blue</x:String>
-                            <x:String>Purple</x:String>
-                        </Picker.Items>
-                    </Picker>
-                    <Label x:Name="PreselectedIndexLabel"
-                           Text="Selected item: Blue"
-                           FontAttributes="Italic" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Preselected SelectedIndex" />
+                <Picker x:Name="IndexedPicker"
+                        Title="Choose a color"
+                        SelectedIndexChanged="OnIndexedPickerChanged">
+                    <Picker.Items>
+                        <x:String>Red</x:String>
+                        <x:String>Green</x:String>
+                        <x:String>Blue</x:String>
+                        <x:String>Purple</x:String>
+                    </Picker.Items>
+                </Picker>
+                <Label x:Name="PreselectedIndexLabel"
+                       Text="Selected item: Blue"
+                       FontAttributes="Italic" />
+            </VerticalStackLayout>
 
             <!-- Preselected SelectedItem -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Preselected SelectedItem"
-                           FontAttributes="Bold" />
-                    <Picker x:Name="ItemPicker"
-                            Title="Choose a drink"
-                            SelectedIndexChanged="OnItemPickerChanged">
-                        <Picker.Items>
-                            <x:String>Espresso</x:String>
-                            <x:String>Latte</x:String>
-                            <x:String>Cappuccino</x:String>
-                            <x:String>Mocha</x:String>
-                        </Picker.Items>
-                    </Picker>
-                    <Label x:Name="SelectedItemLabel"
-                           Text="Selected item: Latte"
-                           FontAttributes="Italic" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Preselected SelectedItem" />
+                <Picker x:Name="ItemPicker"
+                        Title="Choose a drink"
+                        SelectedIndexChanged="OnItemPickerChanged">
+                    <Picker.Items>
+                        <x:String>Espresso</x:String>
+                        <x:String>Latte</x:String>
+                        <x:String>Cappuccino</x:String>
+                        <x:String>Mocha</x:String>
+                    </Picker.Items>
+                </Picker>
+                <Label x:Name="SelectedItemLabel"
+                       Text="Selected item: Latte"
+                       FontAttributes="Italic" />
+            </VerticalStackLayout>
 
             <!-- Title and Text Colors -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Title and Text Colors"
-                           FontAttributes="Bold" />
-                    <Label Text="Title displays as a header above the Picker. TitleColor sets the header color, and TextColor sets the selected item color."
-                           FontSize="12"
-                           TextColor="Gray"
-                           Margin="0,0,0,4" />
-                    <Picker Title="Favorite season"
-                            TitleColor="#4b5563"
-                            TextColor="#2563eb"
-                            SelectedIndex="1">
-                        <Picker.Items>
-                            <x:String>Spring</x:String>
-                            <x:String>Summer</x:String>
-                            <x:String>Autumn</x:String>
-                            <x:String>Winter</x:String>
-                        </Picker.Items>
-                    </Picker>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Title and Text Colors" />
+                <Label StyleClass="h3"
+                       Text="Title displays as a header above the Picker. TitleColor sets the header color, and TextColor sets the selected item color." />
+                <Picker Title="Favorite season"
+                        TitleColor="#4b5563"
+                        TextColor="#2563eb"
+                        SelectedIndex="1">
+                    <Picker.Items>
+                        <x:String>Spring</x:String>
+                        <x:String>Summer</x:String>
+                        <x:String>Autumn</x:String>
+                        <x:String>Winter</x:String>
+                    </Picker.Items>
+                </Picker>
+            </VerticalStackLayout>
 
             <!-- Multiple Title Color Examples -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Custom Title Colors"
-                           FontAttributes="Bold" />
-                    <Label Text="Examples showing different TitleColor values"
-                           FontSize="12"
-                           TextColor="Gray"
-                           Margin="0,0,0,4" />
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Custom Title Colors" />
+                <Label StyleClass="h3"
+                       Text="Examples showing different TitleColor values" />
 
-                    <Picker Title="Red Title"
-                            TitleColor="Red"
-                            SelectedIndex="0">
-                        <Picker.Items>
-                            <x:String>Option 1</x:String>
-                            <x:String>Option 2</x:String>
-                        </Picker.Items>
-                    </Picker>
+                <Picker Title="Red Title"
+                        TitleColor="Red"
+                        SelectedIndex="0">
+                    <Picker.Items>
+                        <x:String>Option 1</x:String>
+                        <x:String>Option 2</x:String>
+                    </Picker.Items>
+                </Picker>
 
-                    <Picker Title="Green Title"
-                            TitleColor="Green"
-                            SelectedIndex="0">
-                        <Picker.Items>
-                            <x:String>Option A</x:String>
-                            <x:String>Option B</x:String>
-                        </Picker.Items>
-                    </Picker>
+                <Picker Title="Green Title"
+                        TitleColor="Green"
+                        SelectedIndex="0">
+                    <Picker.Items>
+                        <x:String>Option A</x:String>
+                        <x:String>Option B</x:String>
+                    </Picker.Items>
+                </Picker>
 
-                    <Picker Title="Blue Title"
-                            TitleColor="Blue"
-                            SelectedIndex="0">
-                        <Picker.Items>
-                            <x:String>Item X</x:String>
-                            <x:String>Item Y</x:String>
-                        </Picker.Items>
-                    </Picker>
+                <Picker Title="Blue Title"
+                        TitleColor="Blue"
+                        SelectedIndex="0">
+                    <Picker.Items>
+                        <x:String>Item X</x:String>
+                        <x:String>Item Y</x:String>
+                    </Picker.Items>
+                </Picker>
 
-                    <Picker Title="Purple Title with Colored Text"
-                            TitleColor="#9333ea"
-                            TextColor="#c026d3"
-                            SelectedIndex="0">
-                        <Picker.Items>
-                            <x:String>Choice 1</x:String>
-                            <x:String>Choice 2</x:String>
-                        </Picker.Items>
-                    </Picker>
-                </VerticalStackLayout>
-            </Border>
+                <Picker Title="Purple Title with Colored Text"
+                        TitleColor="#9333ea"
+                        TextColor="#c026d3"
+                        SelectedIndex="0">
+                    <Picker.Items>
+                        <x:String>Choice 1</x:String>
+                        <x:String>Choice 2</x:String>
+                    </Picker.Items>
+                </Picker>
+            </VerticalStackLayout>
 
             <!-- Fonts and Character Spacing -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Fonts and Character Spacing"
-                           FontAttributes="Bold" />
-                    <Picker Title="Bold headline style"
-                            FontAttributes="Bold"
-                            FontSize="22"
-                            CharacterSpacing="4"
-                            TextColor="#7c3aed">
-                        <Picker.Items>
-                            <x:String>New York</x:String>
-                            <x:String>Paris</x:String>
-                            <x:String>Tokyo</x:String>
-                            <x:String>Barcelona</x:String>
-                        </Picker.Items>
-                    </Picker>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Fonts and Character Spacing" />
+                <Picker Title="Bold headline style"
+                        FontAttributes="Bold"
+                        FontSize="22"
+                        CharacterSpacing="4"
+                        TextColor="#7c3aed">
+                    <Picker.Items>
+                        <x:String>New York</x:String>
+                        <x:String>Paris</x:String>
+                        <x:String>Tokyo</x:String>
+                        <x:String>Barcelona</x:String>
+                    </Picker.Items>
+                </Picker>
+            </VerticalStackLayout>
 
             <!-- Text Alignment -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Text Alignment"
-                           FontAttributes="Bold" />
-                    <Picker x:Name="AlignmentPicker"
-                            Title="Centered text"
-                            HorizontalTextAlignment="Center"
-                            VerticalTextAlignment="Center"
-                            SelectedIndexChanged="OnAlignmentPickerChanged">
-                        <Picker.Items>
-                            <x:String>Left</x:String>
-                            <x:String>Center</x:String>
-                            <x:String>Right</x:String>
-                        </Picker.Items>
-                    </Picker>
-                    <Label x:Name="AlignmentStatusLabel"
-                           Text="HorizontalTextAlignment: Center"
-                           FontAttributes="Italic" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Text Alignment" />
+                <Picker x:Name="AlignmentPicker"
+                        Title="Centered text"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center"
+                        SelectedIndexChanged="OnAlignmentPickerChanged">
+                    <Picker.Items>
+                        <x:String>Left</x:String>
+                        <x:String>Center</x:String>
+                        <x:String>Right</x:String>
+                    </Picker.Items>
+                </Picker>
+                <Label x:Name="AlignmentStatusLabel"
+                       Text="HorizontalTextAlignment: Center"
+                       FontAttributes="Italic" />
+            </VerticalStackLayout>
 
             <!-- Vertical Text Alignment -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Vertical Text Alignment"
-                           FontAttributes="Bold" />
-                    <Picker x:Name="VerticalAlignmentPicker"
-                            Title="Vertically aligned text"
-                            HeightRequest="80"
-                            HorizontalTextAlignment="Center"
-                            VerticalTextAlignment="Center"
-                            SelectedIndex="1"
-                            SelectedIndexChanged="OnVerticalAlignmentPickerChanged">
-                        <Picker.Items>
-                            <x:String>Start</x:String>
-                            <x:String>Center</x:String>
-                            <x:String>End</x:String>
-                        </Picker.Items>
-                    </Picker>
-                    <Label x:Name="VerticalAlignmentStatusLabel"
-                           Text="VerticalTextAlignment: Center"
-                           FontAttributes="Italic" />
-                </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Vertical Text Alignment" />
+                <Picker x:Name="VerticalAlignmentPicker"
+                        Title="Vertically aligned text"
+                        HeightRequest="80"
+                        HorizontalTextAlignment="Center"
+                        VerticalTextAlignment="Center"
+                        SelectedIndex="1"
+                        SelectedIndexChanged="OnVerticalAlignmentPickerChanged">
+                    <Picker.Items>
+                        <x:String>Start</x:String>
+                        <x:String>Center</x:String>
+                        <x:String>End</x:String>
+                    </Picker.Items>
+                </Picker>
+                <Label x:Name="VerticalAlignmentStatusLabel"
+                       Text="VerticalTextAlignment: Center"
+                       FontAttributes="Italic" />
+            </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

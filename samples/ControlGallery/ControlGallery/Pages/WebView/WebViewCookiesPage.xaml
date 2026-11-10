@@ -8,9 +8,8 @@
           RowSpacing="10">
 
         <Label Grid.Row="0"
-               Text="Seeds MauiCookie into a dedicated CookieContainer and loads httpbin's /cookies echo endpoint so the response proves what the server received."
-               FontSize="12"
-               TextColor="Gray" />
+               StyleClass="h2"
+               Text="Seeds MauiCookie into a dedicated CookieContainer and loads httpbin's /cookies echo endpoint so the response proves what the server received." />
 
         <FlexLayout Grid.Row="1"
                     Wrap="Wrap"

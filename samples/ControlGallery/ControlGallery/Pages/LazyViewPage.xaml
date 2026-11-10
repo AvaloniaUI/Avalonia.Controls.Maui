@@ -1,55 +1,43 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="ControlGallery.Pages.LazyViewPage"
              Title="LazyView">
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="20">
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="Creates its content only when it is needed." />
 
             <!-- Load on Demand -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Load on Demand"
-                           FontAttributes="Bold"/>
-                    <Label Text="The view inside a LazyView is created only when LoadViewAsync is called."
-                           FontSize="12"
-                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
-                    <Button Text="Load View"
-                            HorizontalOptions="Start"
-                            Clicked="OnLoadViewClicked"/>
-                    <Label x:Name="OnDemandStatusLabel"
-                           Text="HasLazyViewLoaded: False"/>
-                    <ContentView x:Name="OnDemandHost"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Load on Demand" />
+                <Label StyleClass="h3"
+                       Text="The view inside a LazyView is created only when LoadViewAsync is called." />
+                <Button Text="Load View"
+                        HorizontalOptions="Start"
+                        Clicked="OnLoadViewClicked"/>
+                <Label x:Name="OnDemandStatusLabel"
+                       Text="HasLazyViewLoaded: False"/>
+                <ContentView x:Name="OnDemandHost"/>
+            </VerticalStackLayout>
 
             <!-- Slow Loading -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Slow Loading"
-                           FontAttributes="Bold"/>
-                    <Label Text="A custom LazyView shows an activity indicator while it prepares its content."
-                           FontSize="12"
-                           TextColor="{AppThemeBinding Light=#757575, Dark=#BDBDBD}"/>
-                    <Button Text="Load Slow View"
-                            HorizontalOptions="Start"
-                            Clicked="OnLoadSlowViewClicked"/>
-                    <Label x:Name="SlowStatusLabel"
-                           Text="HasLazyViewLoaded: False"/>
-                    <ContentView x:Name="SlowHost"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Slow Loading" />
+                <Label StyleClass="h3"
+                       Text="A custom LazyView shows an activity indicator while it prepares its content." />
+                <Button Text="Load Slow View"
+                        HorizontalOptions="Start"
+                        Clicked="OnLoadSlowViewClicked"/>
+                <Label x:Name="SlowStatusLabel"
+                       Text="HasLazyViewLoaded: False"/>
+                <ContentView x:Name="SlowHost"/>
+            </VerticalStackLayout>
 
-        </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

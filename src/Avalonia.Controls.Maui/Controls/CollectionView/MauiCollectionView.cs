@@ -457,7 +457,7 @@ public class MauiCollectionView : TemplatedControl
 
                 content ??= new TextBlock { Text = obj?.ToString() ?? string.Empty };
 
-                return WrapItemIfSelectable(content, obj);
+                return WrapItem(content, obj);
             });
 
             _itemsControl.ItemTemplate = template;
@@ -469,7 +469,7 @@ public class MauiCollectionView : TemplatedControl
                 var content = ItemTemplate.Build(obj);
                 if (content != null)
                 {
-                    return WrapItemIfSelectable(content, obj);
+                    return WrapItem(content, obj);
                 }
 
                 return null;
@@ -478,11 +478,11 @@ public class MauiCollectionView : TemplatedControl
         }
     }
 
-    private Control WrapItemIfSelectable(Control content, object? item)
+    private Control WrapItem(Control content, object? item)
     {
         if (!ShouldWrapItemForSelection(item))
         {
-            return content;
+            return new Decorator { Child = content };
         }
 
         return new SelectionContainer(this)
@@ -1648,6 +1648,14 @@ public class MauiCollectionView : TemplatedControl
 
     internal static void CleanupLogicalChild(Control content)
     {
+        Dispatcher.UIThread.Post(static state => RemoveLogicalChildIfDetached((Control)state!), content);
+    }
+
+    private static void RemoveLogicalChildIfDetached(Control content)
+    {
+        if (TopLevel.GetTopLevel(content) is not null)
+            return;
+
         if (content.Tag is Microsoft.Maui.Controls.Element mauiElement &&
             mauiElement.Parent is Microsoft.Maui.Controls.Element parentElement)
         {

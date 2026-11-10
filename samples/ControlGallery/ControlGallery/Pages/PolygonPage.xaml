@@ -2,136 +2,109 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.PolygonPage"
              Title="Polygon">
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="16">
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="Draws a closed shape from a series of connected lines." />
 
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Triangle"
-                           FontAttributes="Bold" />
-                    <Polygon Points="20,100 120,10 220,100"
-                             Fill="#60A5FA"
-                             Stroke="#1E3A8A"
-                             StrokeThickness="3" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Triangle" />
+                <Polygon Points="20,100 120,10 220,100"
+                         Fill="#60A5FA"
+                         Stroke="#1E3A8A"
+                         StrokeThickness="3" />
+            </VerticalStackLayout>
 
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Pentagon" />
+                <Polygon Points="110,10 200,70 170,170 50,170 20,70"
+                         Fill="#34D399"
+                         Stroke="#065F46"
+                         StrokeThickness="4" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Line Joins" />
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="Pentagon"
-                           FontAttributes="Bold" />
-                    <Polygon Points="110,10 200,70 170,170 50,170 20,70"
-                             Fill="#34D399"
-                             Stroke="#065F46"
-                             StrokeThickness="4" />
+                    <Polygon Points="20,60 120,10 220,60"
+                             Stroke="#8B5CF6"
+                             StrokeThickness="10"
+                             StrokeLineJoin="Miter"
+                             Fill="Transparent" />
+                    <Polygon Points="20,60 120,10 220,60"
+                             Stroke="#EF4444"
+                             StrokeThickness="10"
+                             StrokeLineJoin="Round"
+                             Fill="Transparent" />
+                    <Polygon Points="20,60 120,10 220,60"
+                             Stroke="#22C55E"
+                             StrokeThickness="10"
+                             StrokeLineJoin="Bevel"
+                             Fill="Transparent" />
                 </VerticalStackLayout>
-            </Border>
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Line Joins"
-                           FontAttributes="Bold" />
-                    <VerticalStackLayout Spacing="12">
-                        <Polygon Points="20,60 120,10 220,60"
-                                 Stroke="#8B5CF6"
-                                 StrokeThickness="10"
-                                 StrokeLineJoin="Miter"
-                                 Fill="Transparent" />
-                        <Polygon Points="20,60 120,10 220,60"
+            </VerticalStackLayout>
+
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="FillRule" />
+                <HorizontalStackLayout Spacing="20">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="EvenOdd"
+                               FontSize="12"
+                               TextColor="Gray" />
+                        <Polygon Points="60,10 90,90 10,40 110,40 30,90"
+                                 Fill="#60A5FA"
+                                 Stroke="#1E3A8A"
+                                 StrokeThickness="2"
+                                 FillRule="EvenOdd" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Nonzero"
+                               FontSize="12"
+                               TextColor="Gray" />
+                        <Polygon Points="60,10 90,90 10,40 110,40 30,90"
+                                 Fill="#60A5FA"
+                                 Stroke="#1E3A8A"
+                                 StrokeThickness="2"
+                                 FillRule="Nonzero" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="StrokeMiterLimit" />
+                <HorizontalStackLayout Spacing="20">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Limit = 1"
+                               FontSize="12"
+                               TextColor="Gray" />
+                        <Polygon Points="20,80 70,10 120,80"
                                  Stroke="#EF4444"
                                  StrokeThickness="10"
-                                 StrokeLineJoin="Round"
-                                 Fill="Transparent" />
-                        <Polygon Points="20,60 120,10 220,60"
-                                 Stroke="#22C55E"
-                                 StrokeThickness="10"
-                                 StrokeLineJoin="Bevel"
+                                 StrokeLineJoin="Miter"
+                                 StrokeMiterLimit="1"
                                  Fill="Transparent" />
                     </VerticalStackLayout>
-                </VerticalStackLayout>
-            </Border>
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="FillRule"
-                           FontAttributes="Bold" />
-                    <HorizontalStackLayout Spacing="20">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="EvenOdd"
-                                   FontSize="12"
-                                   TextColor="Gray" />
-                            <Polygon Points="60,10 90,90 10,40 110,40 30,90"
-                                     Fill="#60A5FA"
-                                     Stroke="#1E3A8A"
-                                     StrokeThickness="2"
-                                     FillRule="EvenOdd" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Nonzero"
-                                   FontSize="12"
-                                   TextColor="Gray" />
-                            <Polygon Points="60,10 90,90 10,40 110,40 30,90"
-                                     Fill="#60A5FA"
-                                     Stroke="#1E3A8A"
-                                     StrokeThickness="2"
-                                     FillRule="Nonzero" />
-                        </VerticalStackLayout>
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
-
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="StrokeMiterLimit"
-                           FontAttributes="Bold" />
-                    <HorizontalStackLayout Spacing="20">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Limit = 1"
-                                   FontSize="12"
-                                   TextColor="Gray" />
-                            <Polygon Points="20,80 70,10 120,80"
-                                     Stroke="#EF4444"
-                                     StrokeThickness="10"
-                                     StrokeLineJoin="Miter"
-                                     StrokeMiterLimit="1"
-                                     Fill="Transparent" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Limit = 10"
-                                   FontSize="12"
-                                   TextColor="Gray" />
-                            <Polygon Points="20,80 70,10 120,80"
-                                     Stroke="#22C55E"
-                                     StrokeThickness="10"
-                                     StrokeLineJoin="Miter"
-                                     StrokeMiterLimit="10"
-                                     Fill="Transparent" />
-                        </VerticalStackLayout>
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
-
-        </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Limit = 10"
+                               FontSize="12"
+                               TextColor="Gray" />
+                        <Polygon Points="20,80 70,10 120,80"
+                                 Stroke="#22C55E"
+                                 StrokeThickness="10"
+                                 StrokeLineJoin="Miter"
+                                 StrokeMiterLimit="10"
+                                 Fill="Transparent" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

@@ -74,7 +74,6 @@ public class LayoutPanel : Panel, ICustomHitTest
         if (InputTransparent || Background is null)
             return false;
 
-        var localPoint = TopLevel.GetTopLevel(this)?.TranslatePoint(point, this);
-        return localPoint is { } p && new Rect(Bounds.Size).Contains(p);
+        return new Rect(Bounds.Size).Contains(point);
     }
 }

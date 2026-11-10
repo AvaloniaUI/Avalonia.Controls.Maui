@@ -3,12 +3,31 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <Color x:Key="Primary">#512BD4</Color>
-    <Color x:Key="PrimaryDark">#ac99ea</Color>
+    <!-- Accent family: the Fluent theme's default system accent (#0078D7) and its light/dark steps -->
+    <Color x:Key="Primary">#0078D7</Color>
+    <Color x:Key="PrimaryDark">#429CE3</Color>
     <Color x:Key="PrimaryDarkText">#242424</Color>
-    <Color x:Key="Secondary">#DFD8F7</Color>
-    <Color x:Key="SecondaryDarkText">#9880e5</Color>
-    <Color x:Key="Tertiary">#2B0B98</Color>
+    <Color x:Key="Secondary">#A6D8FF</Color>
+    <Color x:Key="SecondaryDarkText">#76B9ED</Color>
+    <Color x:Key="Tertiary">#005A9E</Color>
+
+    <Color x:Key="CatalogAccent">#0078D7</Color>
+    <Color x:Key="CatalogPageLight">#FFFFFF</Color>
+    <Color x:Key="CatalogPageDark">#000000</Color>
+    <Color x:Key="CatalogDrawerLight">#F2F2F2</Color>
+    <Color x:Key="CatalogDrawerDark">#171717</Color>
+    <Color x:Key="CatalogNavBarLight">#E6E6E6</Color>
+    <Color x:Key="CatalogNavBarDark">#1F1F1F</Color>
+    <Color x:Key="CatalogFooterLight">#FCFCFC</Color>
+    <Color x:Key="CatalogFooterDark">#050505</Color>
+    <Color x:Key="CatalogBaseHighLight">#FF000000</Color>
+    <Color x:Key="CatalogBaseHighDark">#FFFFFFFF</Color>
+    <Color x:Key="CatalogBaseMediumLight">#99000000</Color>
+    <Color x:Key="CatalogBaseMediumDark">#99FFFFFF</Color>
+    <Color x:Key="CatalogBaseLowLight">#33000000</Color>
+    <Color x:Key="CatalogBaseLowDark">#33FFFFFF</Color>
+    <SolidColorBrush x:Key="CatalogHoverStrokeLight" Color="#14000000" />
+    <SolidColorBrush x:Key="CatalogHoverStrokeDark" Color="#2FFFFFFF" />
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>

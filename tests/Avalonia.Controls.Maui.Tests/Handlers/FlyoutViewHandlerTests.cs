@@ -45,6 +45,27 @@ public partial class FlyoutViewHandlerTests : HandlerTestBase
         Assert.Equal(DrawerBehavior.Locked, drawerPage.DrawerBehavior);
     }
 
+    [AvaloniaFact(DisplayName = "Changing FlyoutLayoutBehavior Updates Drawer Behavior")]
+    public async Task ChangingFlyoutLayoutBehaviorUpdatesDrawerBehavior()
+    {
+        var flyoutPage = CreateBasicFlyoutPage();
+        flyoutPage.FlyoutLayoutBehavior = FlyoutLayoutBehavior.Popover;
+
+        var handler = await CreateHandlerAsync<FlyoutViewHandler>(flyoutPage);
+        var drawerPage = Assert.IsType<DrawerPage>(handler.PlatformView);
+
+        await InvokeOnMainThreadAsync(() => flyoutPage.FlyoutLayoutBehavior = FlyoutLayoutBehavior.Split);
+
+        Assert.Equal(DrawerBehavior.Locked, drawerPage.DrawerBehavior);
+        Assert.Equal(SplitViewDisplayMode.Inline, drawerPage.DisplayMode);
+        Assert.True(drawerPage.IsOpen);
+
+        await InvokeOnMainThreadAsync(() => flyoutPage.FlyoutLayoutBehavior = FlyoutLayoutBehavior.Popover);
+
+        Assert.Equal(DrawerBehavior.Flyout, drawerPage.DrawerBehavior);
+        Assert.Equal(SplitViewDisplayMode.Overlay, drawerPage.DisplayMode);
+    }
+
     [AvaloniaFact(DisplayName = "IsPresented True Opens Flyout")]
     public async Task IsPresentedTrueOpensFlyout()
     {

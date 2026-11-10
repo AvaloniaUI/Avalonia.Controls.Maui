@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.PageBasePage"
              Title="Page">
     <ContentPage.BackgroundImageSource>
         <FileImageSource File="dotnet_bot.png" />
     </ContentPage.BackgroundImageSource>
     <ScrollView>
-        <VerticalStackLayout Spacing="20" Padding="20">
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="Sets the padding, background image and background color of a page."/>
+
             <!-- Padding Section -->
             <Border Stroke="Gray"
                     Padding="10"
@@ -16,8 +20,8 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Padding"
-                           FontAttributes="Bold"
+                    <Label StyleClass="h1"
+                           Text="Padding"
                            TextColor="White"/>
                     <Label x:Name="PaddingLabel"
                            Text="Page padding: 0, 0, 0, 0"
@@ -77,8 +81,8 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Status"
-                           FontAttributes="Bold"
+                    <Label StyleClass="h1"
+                           Text="Status"
                            TextColor="White"/>
                     <Label x:Name="StatusLabel" 
                            Text="This page has a BackgroundImageSource set via FileImageSource." 
@@ -94,8 +98,8 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Background Image"
-                           FontAttributes="Bold"
+                    <Label StyleClass="h1"
+                           Text="Background Image"
                            TextColor="White"/>
                     <Button Text="Change Background Image" 
                             Clicked="OnChangeBackground" />
@@ -112,8 +116,8 @@
                     <RoundRectangle CornerRadius="10"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="10">
-                    <Label Text="Background Color"
-                           FontAttributes="Bold"
+                    <Label StyleClass="h1"
+                           Text="Background Color"
                            TextColor="White"/>
                     <Button Text="Set Red Background" 
                             Clicked="OnSetRedBackground" />
@@ -123,8 +127,6 @@
                             Clicked="OnClearBackground" />
                 </VerticalStackLayout>
             </Border>
-
-
-        </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

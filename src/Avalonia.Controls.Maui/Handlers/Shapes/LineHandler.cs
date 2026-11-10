@@ -33,7 +33,7 @@ public partial class LineHandler : ShapeViewHandler<Line, PlatformView>
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformView()
     {
-        return new PlatformView();
+        return new Avalonia.Controls.Maui.Platform.MauiLine();
     }
 
     /// <summary>Maps the X1 property to the platform view.</summary>

@@ -7,39 +7,36 @@
              x:DataType="pages:ContentViewPage"
              Title="ContentView">
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="A ContentView holds a single child view and is used to build custom, reusable controls." />
 
-            <Border Stroke="Gray" Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Card List Example" FontAttributes="Bold" />
-                    <StackLayout Spacing="6">
-                        <controls:CardView BorderColor="DarkGray"
-                                           CardTitle="Slavko Vlasic"
-                                           CardDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elit dolor, convallis non interdum."
-                                           IconBackgroundColor="SlateGray"
-                                           IconImageSource="dotnet_bot.png" />
-                        <controls:CardView BorderColor="DarkGray"
-                                           CardTitle="Carolina Pena"
-                                           CardDescription="Phasellus eu convallis mi. In tempus augue eu dignissim fermentum. Morbi ut lacus vitae eros lacinia."
-                                           IconBackgroundColor="SlateGray"
-                                           IconImageSource="dotnet_bot.png" />
-                        <controls:CardView BorderColor="DarkGray"
-                                           CardTitle="Wade Blanks"
-                                           CardDescription="Aliquam sagittis, odio lacinia fermentum dictum, mi erat scelerisque erat, quis aliquet arcu."
-                                           IconBackgroundColor="SlateGray"
-                                           IconImageSource="dotnet_bot.png" />
-                        <controls:CardView BorderColor="DarkGray"
-                                           CardTitle="Colette Quint"
-                                           CardDescription="In pellentesque odio eget augue elementum lobortis. Sed augue massa, rhoncus eu nisi vitae, egestas."
-                                           IconBackgroundColor="SlateGray"
-                                           IconImageSource="dotnet_bot.png" />
-                    </StackLayout>
-                </VerticalStackLayout>
-            </Border>
-
-        </VerticalStackLayout>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Card List Example" />
+                <StackLayout Spacing="6">
+                    <controls:CardView BorderColor="DarkGray"
+                                       CardTitle="Slavko Vlasic"
+                                       CardDescription="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla elit dolor, convallis non interdum."
+                                       IconBackgroundColor="SlateGray"
+                                       IconImageSource="dotnet_bot.png" />
+                    <controls:CardView BorderColor="DarkGray"
+                                       CardTitle="Carolina Pena"
+                                       CardDescription="Phasellus eu convallis mi. In tempus augue eu dignissim fermentum. Morbi ut lacus vitae eros lacinia."
+                                       IconBackgroundColor="SlateGray"
+                                       IconImageSource="dotnet_bot.png" />
+                    <controls:CardView BorderColor="DarkGray"
+                                       CardTitle="Wade Blanks"
+                                       CardDescription="Aliquam sagittis, odio lacinia fermentum dictum, mi erat scelerisque erat, quis aliquet arcu."
+                                       IconBackgroundColor="SlateGray"
+                                       IconImageSource="dotnet_bot.png" />
+                    <controls:CardView BorderColor="DarkGray"
+                                       CardTitle="Colette Quint"
+                                       CardDescription="In pellentesque odio eget augue elementum lobortis. Sed augue massa, rhoncus eu nisi vitae, egestas."
+                                       IconBackgroundColor="SlateGray"
+                                       IconImageSource="dotnet_bot.png" />
+                </StackLayout>
+            </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

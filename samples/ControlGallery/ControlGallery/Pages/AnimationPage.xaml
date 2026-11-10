@@ -1,224 +1,181 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.AnimationPage"
              Title="Animations">
     <ContentPage.Resources>
-        <Color x:Key="SectionBorderLight">#CCCCCC</Color>
-        <Color x:Key="SectionBorderDark">#444444</Color>
-        <Color x:Key="SectionBackgroundLight">#FFFFFF</Color>
-        <Color x:Key="SectionBackgroundDark">#1E1E1E</Color>
         <Color x:Key="AccentPrimary">#6200EE</Color>
         <Color x:Key="AccentSecondary">#03DAC5</Color>
     </ContentPage.Resources>
     
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="20">
-
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="Animates the rotation, scale, position and opacity of views." />
 
             <!-- Rotation -->
-            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
-                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Rotation"
-                           FontAttributes="Bold"/>
-                    <Label Text="RotateTo, RelRotateTo, RotateXTo, RotateYTo"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    
-                    <Grid HeightRequest="150" HorizontalOptions="Center">
-                        <Image x:Name="RotateImage"
-                               Source="dotnet_logo.png"
-                               HeightRequest="100"
-                               WidthRequest="100"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-                    </Grid>
-                    
-                    <FlexLayout Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
-                        <Button Text="Rotate 360"
-                                Margin="4"
-                                Clicked="OnRotate360Clicked"/>
-                        <Button Text="RotateX 360"
-                                Margin="4"
-                                Clicked="OnRotateX360Clicked"/>
-                        <Button Text="RotateY 360"
-                                Margin="4"
-                                Clicked="OnRotateY360Clicked"/>
-                        <Button Text="Reset"
-                                Margin="4"
-                                Clicked="OnRotateResetClicked"/>
-                    </FlexLayout>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Rotation" />
+                <Label StyleClass="h3"
+                       Text="RotateTo, RelRotateTo, RotateXTo, RotateYTo" />
+                
+                <Grid HeightRequest="150" HorizontalOptions="Center">
+                    <Image x:Name="RotateImage"
+                           Source="dotnet_logo.png"
+                           HeightRequest="100"
+                           WidthRequest="100"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Grid>
+                
+                <FlexLayout Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
+                    <Button Text="Rotate 360"
+                            Margin="4"
+                            Clicked="OnRotate360Clicked"/>
+                    <Button Text="RotateX 360"
+                            Margin="4"
+                            Clicked="OnRotateX360Clicked"/>
+                    <Button Text="RotateY 360"
+                            Margin="4"
+                            Clicked="OnRotateY360Clicked"/>
+                    <Button Text="Reset"
+                            Margin="4"
+                            Clicked="OnRotateResetClicked"/>
+                </FlexLayout>
+            </VerticalStackLayout>
 
             <!-- Scaling -->
-            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
-                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Scaling"
-                           FontAttributes="Bold"/>
-                    <Label Text="ScaleTo, RelScaleTo, ScaleXTo, ScaleYTo"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    
-                    <Grid HeightRequest="150" HorizontalOptions="Center">
-                        <BoxView x:Name="ScaleBox"
-                                 Color="{AppThemeBinding Light={StaticResource AccentPrimary}, Dark={StaticResource AccentSecondary}}"
-                                 HeightRequest="80"
-                                 WidthRequest="80"
-                                 CornerRadius="10"
-                                 HorizontalOptions="Center"
-                                 VerticalOptions="Center"/>
-                    </Grid>
-                    
-                    <FlexLayout Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
-                        <Button Text="Scale 2x"
-                                Margin="4"
-                                Clicked="OnScale2xClicked"/>
-                        <Button Text="Scale 0.5x"
-                                Margin="4"
-                                Clicked="OnScaleHalfClicked"/>
-                         <Button Text="Pulsate"
-                                Margin="4"
-                                Clicked="OnScalePulsateClicked"/>
-                        <Button Text="Reset"
-                                Margin="4"
-                                Clicked="OnScaleResetClicked"/>
-                    </FlexLayout>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Scaling" />
+                <Label StyleClass="h3"
+                       Text="ScaleTo, RelScaleTo, ScaleXTo, ScaleYTo" />
+                
+                <Grid HeightRequest="150" HorizontalOptions="Center">
+                    <BoxView x:Name="ScaleBox"
+                             Color="{AppThemeBinding Light={StaticResource AccentPrimary}, Dark={StaticResource AccentSecondary}}"
+                             HeightRequest="80"
+                             WidthRequest="80"
+                             CornerRadius="10"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"/>
+                </Grid>
+                
+                <FlexLayout Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
+                    <Button Text="Scale 2x"
+                            Margin="4"
+                            Clicked="OnScale2xClicked"/>
+                    <Button Text="Scale 0.5x"
+                            Margin="4"
+                            Clicked="OnScaleHalfClicked"/>
+                     <Button Text="Pulsate"
+                            Margin="4"
+                            Clicked="OnScalePulsateClicked"/>
+                    <Button Text="Reset"
+                            Margin="4"
+                            Clicked="OnScaleResetClicked"/>
+                </FlexLayout>
+            </VerticalStackLayout>
 
             <!-- Translation -->
-            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
-                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Translation"
-                           FontAttributes="Bold"/>
-                    <Label Text="TranslateTo"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    
-                    <Border Stroke="{AppThemeBinding Light=Gray, Dark=LightGray}"
-                            StrokeThickness="1"
-                            StrokeDashArray="4,4"
-                            HeightRequest="150"
-                            VerticalOptions="Center">
-                        <Grid>
-                             <Label x:Name="TranslateLabel"
-                                   Text="Move Me!"
-                                   TextColor="White"
-                                   BackgroundColor="{AppThemeBinding Light={StaticResource AccentPrimary}, Dark={StaticResource AccentSecondary}}"
-                                   Padding="10"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center">
-                             </Label>
-                        </Grid>
-                    </Border>
-                    
-                    <FlexLayout Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
-                        <Button Text="Left"
-                                Margin="4"
-                                Clicked="OnTranslateLeftClicked"/>
-                        <Button Text="Right"
-                                Margin="4"
-                                Clicked="OnTranslateRightClicked"/>
-                        <Button Text="Up"
-                                Margin="4"
-                                Clicked="OnTranslateUpClicked"/>
-                        <Button Text="Down"
-                                Margin="4"
-                                Clicked="OnTranslateDownClicked"/>
-                         <Button Text="Shake"
-                                Margin="4"
-                                Clicked="OnTranslateShakeClicked"/>
-                        <Button Text="Reset"
-                                Margin="4"
-                                Clicked="OnTranslateResetClicked"/>
-                    </FlexLayout>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Translation" />
+                <Label StyleClass="h3"
+                       Text="TranslateTo" />
+                
+                <Border Stroke="{AppThemeBinding Light=Gray, Dark=LightGray}"
+                        StrokeThickness="1"
+                        StrokeDashArray="4,4"
+                        HeightRequest="150"
+                        VerticalOptions="Center">
+                    <Grid>
+                         <Label x:Name="TranslateLabel"
+                               Text="Move Me!"
+                               TextColor="White"
+                               BackgroundColor="{AppThemeBinding Light={StaticResource AccentPrimary}, Dark={StaticResource AccentSecondary}}"
+                               Padding="10"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center">
+                         </Label>
+                    </Grid>
+                </Border>
+                
+                <FlexLayout Wrap="Wrap" JustifyContent="Center" AlignItems="Center">
+                    <Button Text="Left"
+                            Margin="4"
+                            Clicked="OnTranslateLeftClicked"/>
+                    <Button Text="Right"
+                            Margin="4"
+                            Clicked="OnTranslateRightClicked"/>
+                    <Button Text="Up"
+                            Margin="4"
+                            Clicked="OnTranslateUpClicked"/>
+                    <Button Text="Down"
+                            Margin="4"
+                            Clicked="OnTranslateDownClicked"/>
+                     <Button Text="Shake"
+                            Margin="4"
+                            Clicked="OnTranslateShakeClicked"/>
+                    <Button Text="Reset"
+                            Margin="4"
+                            Clicked="OnTranslateResetClicked"/>
+                </FlexLayout>
+            </VerticalStackLayout>
 
             <!-- Fading -->
-            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
-                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Fading"
-                           FontAttributes="Bold"/>
-                    <Label Text="FadeTo"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    
-                    <Grid HeightRequest="150" HorizontalOptions="Center">
-                        <Image x:Name="FadeImage"
-                               Source="dotnet_logo.png"
-                               HeightRequest="100"
-                               WidthRequest="100"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-                    </Grid>
-                    
-                    <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
-                         <Button Text="Fade Out"
-                                Grid.Column="0"
-                                Clicked="OnFadeOutClicked"/>
-                         <Label Text="Opacity:"
-                                Grid.Column="1"
-                                VerticalOptions="Center"/>
-                         <Button Text="Fade In"
-                                Grid.Column="2"
-                                Clicked="OnFadeInClicked"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Fading" />
+                <Label StyleClass="h3"
+                       Text="FadeTo" />
+                
+                <Grid HeightRequest="150" HorizontalOptions="Center">
+                    <Image x:Name="FadeImage"
+                           Source="dotnet_logo.png"
+                           HeightRequest="100"
+                           WidthRequest="100"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Grid>
+                
+                <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="10">
+                     <Button Text="Fade Out"
+                            Grid.Column="0"
+                            Clicked="OnFadeOutClicked"/>
+                     <Label Text="Opacity:"
+                            Grid.Column="1"
+                            VerticalOptions="Center"/>
+                     <Button Text="Fade In"
+                            Grid.Column="2"
+                            Clicked="OnFadeInClicked"/>
+                </Grid>
+            </VerticalStackLayout>
             
             <!-- Compound Animations -->
-            <Border Stroke="{AppThemeBinding Light={StaticResource SectionBorderLight}, Dark={StaticResource SectionBorderDark}}"
-                    Background="{AppThemeBinding Light={StaticResource SectionBackgroundLight}, Dark={StaticResource SectionBackgroundDark}}"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Compound Animations"
-                           FontAttributes="Bold"/>
-                    <Label Text="Combining multiple animations asynchronously"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    
-                    <Grid HeightRequest="150" HorizontalOptions="Center">
-                         <BoxView x:Name="CompoundBox"
-                                 Color="OrangeRed"
-                                 HeightRequest="60"
-                                 WidthRequest="60"
-                                 CornerRadius="30"
-                                 HorizontalOptions="Center"
-                                 VerticalOptions="Center"/>
-                    </Grid>
-                    
-                    <Button Text="Run Complex Animation"
-                            HorizontalOptions="Center"
-                            Clicked="OnCompoundAnimationClicked"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Compound Animations" />
+                <Label StyleClass="h3"
+                       Text="Combining multiple animations asynchronously" />
+                
+                <Grid HeightRequest="150" HorizontalOptions="Center">
+                     <BoxView x:Name="CompoundBox"
+                             Color="OrangeRed"
+                             HeightRequest="60"
+                             WidthRequest="60"
+                             CornerRadius="30"
+                             HorizontalOptions="Center"
+                             VerticalOptions="Center"/>
+                </Grid>
+                
+                <Button Text="Run Complex Animation"
+                        HorizontalOptions="Center"
+                        Clicked="OnCompoundAnimationClicked"/>
+            </VerticalStackLayout>
 
-        </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

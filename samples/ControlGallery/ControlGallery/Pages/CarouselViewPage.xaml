@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pages="clr-namespace:ControlGallery.Pages"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.CarouselViewPage"
              x:DataType="pages:CarouselViewPage"
              Title="CarouselView">
@@ -106,443 +107,349 @@
     </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="20">
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Basic CarouselView"
-                           FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="A minimal carousel using ItemsSource and ItemTemplate."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <CarouselView ItemsSource="{Binding BasicItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  HeightRequest="220"/>
-                </VerticalStackLayout>
-            </Border>
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="Displays a collection of items that the user can swipe through one at a time."/>
 
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="IndicatorView"
-                           FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="Connects CarouselView.IndicatorView to item count and selected position."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <HorizontalStackLayout Spacing="12"
-                                           VerticalOptions="Center">
-                        <Button Text="Previous"
-                                VerticalOptions="Center"
-                                Clicked="OnIndicatorPreviousClicked"/>
-                        <Button Text="Next"
-                                VerticalOptions="Center"
-                                Clicked="OnIndicatorNextClicked"/>
-                    </HorizontalStackLayout>
-                    <CarouselView x:Name="IndicatorCarousel"
-                                  ItemsSource="{Binding IndicatorItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  IndicatorView="CarouselIndicator"
-                                  Position="{Binding IndicatorPosition, Mode=TwoWay}"
-                                  HeightRequest="220"/>
-                    <IndicatorView x:Name="CarouselIndicator"
-                                   HorizontalOptions="Center"
-                                   IndicatorColor="#9CA3AF"
-                                   SelectedIndicatorColor="#2563EB"/>
-                    <HorizontalStackLayout Spacing="16"
-                                           HorizontalOptions="Center">
-                        <Label Text="{Binding IndicatorPosition, StringFormat='Position: {0}'}"
-                               FontAttributes="Bold"/>
-                        <Label Text="{Binding Source={x:Reference CarouselIndicator}, Path=Count, StringFormat='Count: {0}'}"/>
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Basic CarouselView"/>
+                <Label StyleClass="h3"
+                       Text="A minimal carousel using ItemsSource and ItemTemplate."/>
+                <CarouselView ItemsSource="{Binding BasicItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              HeightRequest="220"/>
+            </VerticalStackLayout>
 
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="ItemsSource"
-                           FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="Binds CarouselView.ItemsSource to a collection of MAUI data items."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <CarouselView ItemsSource="{Binding SourceItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  HeightRequest="220"/>
-                </VerticalStackLayout>
-            </Border>
-
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="EmptyView"
-                           FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="Shows EmptyView and EmptyViewTemplate when ItemsSource has no items."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <HorizontalStackLayout Spacing="12"
-                                           VerticalOptions="Center">
-                        <Button Text="Add item"
-                                VerticalOptions="Center"
-                                Clicked="OnAddEmptyItemClicked"/>
-                        <Button Text="Clear items"
-                                VerticalOptions="Center"
-                                Clicked="OnClearEmptyItemsClicked"/>
-                        <Label Text="{Binding EmptyItems.Count, StringFormat='Items: {0}'}"
-                               FontAttributes="Bold"
-                               VerticalOptions="Center"/>
-                    </HorizontalStackLayout>
-                    <CarouselView ItemsSource="{Binding EmptyItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  EmptyView="No items yet. Add an item to populate the carousel."
-                                  EmptyViewTemplate="{StaticResource CarouselEmptyTemplate}"
-                                  HeightRequest="220"/>
-                </VerticalStackLayout>
-            </Border>
-
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Changing ItemsSource at Runtime"
-                           FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="Switches the ItemsSource binding to a different collection while the carousel is connected."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <HorizontalStackLayout Spacing="12"
-                                           VerticalOptions="Center">
-                        <Button Text="Source A"
-                                VerticalOptions="Center"
-                                Clicked="OnUseFirstItemsSourceClicked"/>
-                        <Button Text="Source B"
-                                VerticalOptions="Center"
-                                Clicked="OnUseSecondItemsSourceClicked"/>
-                        <Button Text="Add item"
-                                VerticalOptions="Center"
-                                Clicked="OnAddRuntimeSourceItemClicked"/>
-                    </HorizontalStackLayout>
-                    <CarouselView ItemsSource="{Binding RuntimeSourceItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  Position="{Binding RuntimeSourcePosition, Mode=TwoWay}"
-                                  HeightRequest="220"/>
-                    <HorizontalStackLayout Spacing="16"
-                                           VerticalOptions="Center">
-                        <Label Text="{Binding RuntimeSourceName, StringFormat='Source: {0}'}"
-                               FontAttributes="Bold"
-                               VerticalOptions="Center"/>
-                        <Label Text="{Binding RuntimeSourceItems.Count, StringFormat='Items: {0}'}"
-                               VerticalOptions="Center"/>
-                        <Label Text="{Binding RuntimeSourcePosition, StringFormat='Position: {0}'}"
-                               VerticalOptions="Center"/>
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
-
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Changing ItemTemplate at Runtime"
-                           FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="Changes the ItemTemplate binding while keeping the same ItemsSource and position."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <HorizontalStackLayout Spacing="12"
-                                           VerticalOptions="Center">
-                        <Button Text="Card template"
-                                VerticalOptions="Center"
-                                Clicked="OnUseCardTemplateClicked"/>
-                        <Button Text="Compact template"
-                                VerticalOptions="Center"
-                                Clicked="OnUseCompactTemplateClicked"/>
-                    </HorizontalStackLayout>
-                    <CarouselView ItemsSource="{Binding RuntimeTemplateItems}"
-                                  ItemTemplate="{Binding RuntimeItemTemplate}"
-                                  Position="{Binding RuntimeTemplatePosition, Mode=TwoWay}"
-                                  HeightRequest="220"/>
-                    <HorizontalStackLayout Spacing="16"
-                                           VerticalOptions="Center">
-                        <Label Text="{Binding RuntimeTemplateName, StringFormat='Template: {0}'}"
-                               FontAttributes="Bold"
-                               VerticalOptions="Center"/>
-                        <Label Text="{Binding RuntimeTemplatePosition, StringFormat='Position: {0}'}"
-                               VerticalOptions="Center"/>
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
-
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Gestures"
-                           FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="Swipe with touch, pen, or mouse drag when IsSwipeEnabled is true."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <HorizontalStackLayout Spacing="12"
-                                           VerticalOptions="Center">
-                        <HorizontalStackLayout Spacing="8"
-                                               VerticalOptions="Center">
-                            <Label Text="Swipe enabled"
-                                   VerticalOptions="Center"/>
-                            <Switch IsToggled="{Binding IsGestureSwipeEnabled, Mode=TwoWay}"
-                                    VerticalOptions="Center"/>
-                        </HorizontalStackLayout>
-                        <Button Text="Previous"
-                                VerticalOptions="Center"
-                                Clicked="OnGesturePreviousClicked"/>
-                        <Button Text="Next"
-                                VerticalOptions="Center"
-                                Clicked="OnGestureNextClicked"/>
-                    </HorizontalStackLayout>
-                    <CarouselView ItemsSource="{Binding GestureItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  Position="{Binding GesturePosition, Mode=TwoWay}"
-                                  IsSwipeEnabled="{Binding IsGestureSwipeEnabled}"
-                                  HeightRequest="220"/>
-                    <Label Text="{Binding GesturePosition, StringFormat='Position: {0}'}"
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="IndicatorView"/>
+                <Label StyleClass="h3"
+                       Text="Connects CarouselView.IndicatorView to item count and selected position."/>
+                <HorizontalStackLayout Spacing="12"
+                                       VerticalOptions="Center">
+                    <Button Text="Previous"
+                            VerticalOptions="Center"
+                            Clicked="OnIndicatorPreviousClicked"/>
+                    <Button Text="Next"
+                            VerticalOptions="Center"
+                            Clicked="OnIndicatorNextClicked"/>
+                </HorizontalStackLayout>
+                <CarouselView x:Name="IndicatorCarousel"
+                              ItemsSource="{Binding IndicatorItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              IndicatorView="CarouselIndicator"
+                              Position="{Binding IndicatorPosition, Mode=TwoWay}"
+                              HeightRequest="220"/>
+                <IndicatorView x:Name="CarouselIndicator"
+                               HorizontalOptions="Center"
+                               IndicatorColor="#9CA3AF"
+                               SelectedIndicatorColor="#2563EB"/>
+                <HorizontalStackLayout Spacing="16"
+                                       HorizontalOptions="Center">
+                    <Label Text="{Binding IndicatorPosition, StringFormat='Position: {0}'}"
                            FontAttributes="Bold"/>
-                </VerticalStackLayout>
-            </Border>
+                    <Label Text="{Binding Source={x:Reference CarouselIndicator}, Path=Count, StringFormat='Count: {0}'}"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
 
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Loop"
-                           FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="Loop wraps navigation from the last item back to the first item."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <HorizontalStackLayout Spacing="12"
-                                           VerticalOptions="Center">
-                        <HorizontalStackLayout Spacing="8"
-                                               VerticalOptions="Center">
-                            <Label Text="Loop enabled"
-                                   VerticalOptions="Center"/>
-                            <Switch IsToggled="{Binding IsLoopEnabled, Mode=TwoWay}"
-                                    VerticalOptions="Center"/>
-                        </HorizontalStackLayout>
-                        <Button Text="Previous"
-                                VerticalOptions="Center"
-                                Clicked="OnLoopPreviousClicked"/>
-                        <Button Text="Next"
-                                VerticalOptions="Center"
-                                Clicked="OnLoopNextClicked"/>
-                    </HorizontalStackLayout>
-                    <CarouselView x:Name="LoopCarousel"
-                                  ItemsSource="{Binding LoopItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  Position="{Binding LoopPosition, Mode=TwoWay}"
-                                  Loop="{Binding IsLoopEnabled}"
-                                  HeightRequest="220"/>
-                    <Label Text="{Binding LoopPosition, StringFormat='Loop position: {0}'}"
-                           FontAttributes="Bold"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="ItemsSource"/>
+                <Label StyleClass="h3"
+                       Text="Binds CarouselView.ItemsSource to a collection of MAUI data items."/>
+                <CarouselView ItemsSource="{Binding SourceItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              HeightRequest="220"/>
+            </VerticalStackLayout>
 
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Peek Area and Animation"
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="EmptyView"/>
+                <Label StyleClass="h3"
+                       Text="Shows EmptyView and EmptyViewTemplate when ItemsSource has no items."/>
+                <HorizontalStackLayout Spacing="12"
+                                       VerticalOptions="Center">
+                    <Button Text="Add item"
+                            VerticalOptions="Center"
+                            Clicked="OnAddEmptyItemClicked"/>
+                    <Button Text="Clear items"
+                            VerticalOptions="Center"
+                            Clicked="OnClearEmptyItemsClicked"/>
+                    <Label Text="{Binding EmptyItems.Count, StringFormat='Items: {0}'}"
                            FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="PeekAreaInsets reveals adjacent pages. IsScrollAnimated controls animated page changes."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                <CarouselView ItemsSource="{Binding EmptyItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              EmptyView="No items yet. Add an item to populate the carousel."
+                              EmptyViewTemplate="{StaticResource CarouselEmptyTemplate}"
+                              HeightRequest="220"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Changing ItemsSource at Runtime"/>
+                <Label StyleClass="h3"
+                       Text="Switches the ItemsSource binding to a different collection while the carousel is connected."/>
+                <HorizontalStackLayout Spacing="12"
+                                       VerticalOptions="Center">
+                    <Button Text="Source A"
+                            VerticalOptions="Center"
+                            Clicked="OnUseFirstItemsSourceClicked"/>
+                    <Button Text="Source B"
+                            VerticalOptions="Center"
+                            Clicked="OnUseSecondItemsSourceClicked"/>
+                    <Button Text="Add item"
+                            VerticalOptions="Center"
+                            Clicked="OnAddRuntimeSourceItemClicked"/>
+                </HorizontalStackLayout>
+                <CarouselView ItemsSource="{Binding RuntimeSourceItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              Position="{Binding RuntimeSourcePosition, Mode=TwoWay}"
+                              HeightRequest="220"/>
+                <HorizontalStackLayout Spacing="16"
+                                       VerticalOptions="Center">
+                    <Label Text="{Binding RuntimeSourceName, StringFormat='Source: {0}'}"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center"/>
+                    <Label Text="{Binding RuntimeSourceItems.Count, StringFormat='Items: {0}'}"
+                           VerticalOptions="Center"/>
+                    <Label Text="{Binding RuntimeSourcePosition, StringFormat='Position: {0}'}"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Changing ItemTemplate at Runtime"/>
+                <Label StyleClass="h3"
+                       Text="Changes the ItemTemplate binding while keeping the same ItemsSource and position."/>
+                <HorizontalStackLayout Spacing="12"
+                                       VerticalOptions="Center">
+                    <Button Text="Card template"
+                            VerticalOptions="Center"
+                            Clicked="OnUseCardTemplateClicked"/>
+                    <Button Text="Compact template"
+                            VerticalOptions="Center"
+                            Clicked="OnUseCompactTemplateClicked"/>
+                </HorizontalStackLayout>
+                <CarouselView ItemsSource="{Binding RuntimeTemplateItems}"
+                              ItemTemplate="{Binding RuntimeItemTemplate}"
+                              Position="{Binding RuntimeTemplatePosition, Mode=TwoWay}"
+                              HeightRequest="220"/>
+                <HorizontalStackLayout Spacing="16"
+                                       VerticalOptions="Center">
+                    <Label Text="{Binding RuntimeTemplateName, StringFormat='Template: {0}'}"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center"/>
+                    <Label Text="{Binding RuntimeTemplatePosition, StringFormat='Position: {0}'}"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Gestures"/>
+                <Label StyleClass="h3"
+                       Text="Swipe with touch, pen, or mouse drag when IsSwipeEnabled is true."/>
+                <HorizontalStackLayout Spacing="12"
+                                       VerticalOptions="Center">
                     <HorizontalStackLayout Spacing="8"
                                            VerticalOptions="Center">
-                        <Label Text="Animated"
+                        <Label Text="Swipe enabled"
                                VerticalOptions="Center"/>
-                        <Switch IsToggled="{Binding IsAnimationEnabled, Mode=TwoWay}"
+                        <Switch IsToggled="{Binding IsGestureSwipeEnabled, Mode=TwoWay}"
                                 VerticalOptions="Center"/>
                     </HorizontalStackLayout>
-                    <HorizontalStackLayout Spacing="12"
+                    <Button Text="Previous"
+                            VerticalOptions="Center"
+                            Clicked="OnGesturePreviousClicked"/>
+                    <Button Text="Next"
+                            VerticalOptions="Center"
+                            Clicked="OnGestureNextClicked"/>
+                </HorizontalStackLayout>
+                <CarouselView ItemsSource="{Binding GestureItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              Position="{Binding GesturePosition, Mode=TwoWay}"
+                              IsSwipeEnabled="{Binding IsGestureSwipeEnabled}"
+                              HeightRequest="220"/>
+                <Label Text="{Binding GesturePosition, StringFormat='Position: {0}'}"
+                       FontAttributes="Bold"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Loop"/>
+                <Label StyleClass="h3"
+                       Text="Loop wraps navigation from the last item back to the first item."/>
+                <HorizontalStackLayout Spacing="12"
+                                       VerticalOptions="Center">
+                    <HorizontalStackLayout Spacing="8"
                                            VerticalOptions="Center">
-                        <Label Text="{Binding PeekInset, StringFormat='Peek: {0:F0}px'}"
-                               FontAttributes="Bold"
-                               WidthRequest="96"
+                        <Label Text="Loop enabled"
                                VerticalOptions="Center"/>
-                        <Slider Minimum="0"
-                                Maximum="96"
-                                Value="{Binding PeekInset, Mode=TwoWay}"
-                                WidthRequest="240"
+                        <Switch IsToggled="{Binding IsLoopEnabled, Mode=TwoWay}"
                                 VerticalOptions="Center"/>
                     </HorizontalStackLayout>
-                    <CarouselView ItemsSource="{Binding PeekItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  Position="{Binding PeekPosition, Mode=TwoWay}"
-                                  IsScrollAnimated="{Binding IsAnimationEnabled}"
-                                  PeekAreaInsets="{Binding DynamicPeekAreaInsets}"
-                                  HeightRequest="220"/>
-                </VerticalStackLayout>
-            </Border>
+                    <Button Text="Previous"
+                            VerticalOptions="Center"
+                            Clicked="OnLoopPreviousClicked"/>
+                    <Button Text="Next"
+                            VerticalOptions="Center"
+                            Clicked="OnLoopNextClicked"/>
+                </HorizontalStackLayout>
+                <CarouselView x:Name="LoopCarousel"
+                              ItemsSource="{Binding LoopItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              Position="{Binding LoopPosition, Mode=TwoWay}"
+                              Loop="{Binding IsLoopEnabled}"
+                              HeightRequest="220"/>
+                <Label Text="{Binding LoopPosition, StringFormat='Loop position: {0}'}"
+                       FontAttributes="Bold"/>
+            </VerticalStackLayout>
 
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Vertical Carousel"
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Peek Area and Animation"/>
+                <Label StyleClass="h3"
+                       Text="PeekAreaInsets reveals adjacent pages. IsScrollAnimated controls animated page changes."/>
+                <HorizontalStackLayout Spacing="8"
+                                       VerticalOptions="Center">
+                    <Label Text="Animated"
+                           VerticalOptions="Center"/>
+                    <Switch IsToggled="{Binding IsAnimationEnabled, Mode=TwoWay}"
+                            VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="12"
+                                       VerticalOptions="Center">
+                    <Label Text="{Binding PeekInset, StringFormat='Peek: {0:F0}px'}"
                            FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="ItemsLayout can switch carousel gestures and transitions to the vertical axis."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <CarouselView ItemsSource="{Binding VerticalItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  IsSwipeEnabled="True"
-                                  PeekAreaInsets="24"
-                                  HeightRequest="320">
-                        <CarouselView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Vertical"/>
-                        </CarouselView.ItemsLayout>
-                    </CarouselView>
-                </VerticalStackLayout>
-            </Border>
+                           WidthRequest="96"
+                           VerticalOptions="Center"/>
+                    <Slider Minimum="0"
+                            Maximum="96"
+                            Value="{Binding PeekInset, Mode=TwoWay}"
+                            WidthRequest="240"
+                            VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                <CarouselView ItemsSource="{Binding PeekItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              Position="{Binding PeekPosition, Mode=TwoWay}"
+                              IsScrollAnimated="{Binding IsAnimationEnabled}"
+                              PeekAreaInsets="{Binding DynamicPeekAreaInsets}"
+                              HeightRequest="220"/>
+            </VerticalStackLayout>
 
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Position and CurrentItem"
-                           FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="Position and CurrentItem stay synchronized with platform selection."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <HorizontalStackLayout Spacing="12"
-                                           VerticalOptions="Center">
-                        <Button Text="First"
-                                VerticalOptions="Center"
-                                Clicked="OnSelectFirstClicked"/>
-                        <Button Text="Last"
-                                VerticalOptions="Center"
-                                Clicked="OnSelectLastClicked"/>
-                    </HorizontalStackLayout>
-                    <CarouselView ItemsSource="{Binding BoundItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  Position="{Binding BoundPosition, Mode=TwoWay}"
-                                  CurrentItem="{Binding BoundCurrentItem, Mode=TwoWay}"
-                                  HeightRequest="220"/>
-                    <Grid ColumnDefinitions="Auto,*"
-                          RowDefinitions="Auto,Auto"
-                          ColumnSpacing="8"
-                          RowSpacing="4">
-                        <Label Text="Position:"
-                               FontAttributes="Bold"/>
-                        <Label Grid.Column="1"
-                               Text="{Binding BoundPosition}"/>
-                        <Label Grid.Row="1"
-                               Text="Current item:"
-                               FontAttributes="Bold"/>
-                        <Label Grid.Row="1"
-                               Grid.Column="1"
-                               Text="{Binding BoundCurrentItem.Title}"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Vertical Carousel"/>
+                <Label StyleClass="h3"
+                       Text="ItemsLayout can switch carousel gestures and transitions to the vertical axis."/>
+                <CarouselView ItemsSource="{Binding VerticalItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              IsSwipeEnabled="True"
+                              PeekAreaInsets="24"
+                              HeightRequest="320">
+                    <CarouselView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical"/>
+                    </CarouselView.ItemsLayout>
+                </CarouselView>
+            </VerticalStackLayout>
 
-            <Border Stroke="Gray"
-                    Padding="16">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Events and Logs"
-                           FontAttributes="Bold"
-                           FontSize="20"/>
-                    <Label Text="Logs PositionChanged and CurrentItemChanged while navigating by button or gesture."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <HorizontalStackLayout Spacing="12"
-                                           VerticalOptions="Center">
-                        <Button Text="Previous"
-                                VerticalOptions="Center"
-                                Clicked="OnEventsPreviousClicked"/>
-                        <Button Text="Next"
-                                VerticalOptions="Center"
-                                Clicked="OnEventsNextClicked"/>
-                        <Button Text="Clear log"
-                                VerticalOptions="Center"
-                                Clicked="OnClearEventsLogClicked"/>
-                    </HorizontalStackLayout>
-                    <CarouselView ItemsSource="{Binding EventItems}"
-                                  ItemTemplate="{StaticResource CarouselCardTemplate}"
-                                  Position="{Binding EventPosition, Mode=TwoWay}"
-                                  CurrentItem="{Binding EventCurrentItem, Mode=TwoWay}"
-                                  CurrentItemChanged="OnEventsCurrentItemChanged"
-                                  PositionChanged="OnEventsPositionChanged"
-                                  IsSwipeEnabled="True"
-                                  HeightRequest="220"/>
-                    <Grid ColumnDefinitions="Auto,*"
-                          RowDefinitions="Auto,Auto"
-                          ColumnSpacing="8"
-                          RowSpacing="4">
-                        <Label Text="Position:"
-                               FontAttributes="Bold"/>
-                        <Label Grid.Column="1"
-                               Text="{Binding EventPosition}"/>
-                        <Label Grid.Row="1"
-                               Text="Current item:"
-                               FontAttributes="Bold"/>
-                        <Label Grid.Row="1"
-                               Grid.Column="1"
-                               Text="{Binding EventCurrentItem.Title}"/>
-                    </Grid>
-                    <Border Stroke="{AppThemeBinding Light=#DDDDDD, Dark=#555555}"
-                            Padding="8"
-                            HeightRequest="150">
-                        <Border.StrokeShape>
-                            <RoundRectangle CornerRadius="8"/>
-                        </Border.StrokeShape>
-                        <CollectionView ItemsSource="{Binding EventLogs}">
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="x:String">
-                                    <Label Text="{Binding .}"
-                                           FontSize="12"
-                                           Padding="4,2"/>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </Border>
-                </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Position and CurrentItem"/>
+                <Label StyleClass="h3"
+                       Text="Position and CurrentItem stay synchronized with platform selection."/>
+                <HorizontalStackLayout Spacing="12"
+                                       VerticalOptions="Center">
+                    <Button Text="First"
+                            VerticalOptions="Center"
+                            Clicked="OnSelectFirstClicked"/>
+                    <Button Text="Last"
+                            VerticalOptions="Center"
+                            Clicked="OnSelectLastClicked"/>
+                </HorizontalStackLayout>
+                <CarouselView ItemsSource="{Binding BoundItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              Position="{Binding BoundPosition, Mode=TwoWay}"
+                              CurrentItem="{Binding BoundCurrentItem, Mode=TwoWay}"
+                              HeightRequest="220"/>
+                <Grid ColumnDefinitions="Auto,*"
+                      RowDefinitions="Auto,Auto"
+                      ColumnSpacing="8"
+                      RowSpacing="4">
+                    <Label Text="Position:"
+                           FontAttributes="Bold"/>
+                    <Label Grid.Column="1"
+                           Text="{Binding BoundPosition}"/>
+                    <Label Grid.Row="1"
+                           Text="Current item:"
+                           FontAttributes="Bold"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           Text="{Binding BoundCurrentItem.Title}"/>
+                </Grid>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Events and Logs"/>
+                <Label StyleClass="h3"
+                       Text="Logs PositionChanged and CurrentItemChanged while navigating by button or gesture."/>
+                <HorizontalStackLayout Spacing="12"
+                                       VerticalOptions="Center">
+                    <Button Text="Previous"
+                            VerticalOptions="Center"
+                            Clicked="OnEventsPreviousClicked"/>
+                    <Button Text="Next"
+                            VerticalOptions="Center"
+                            Clicked="OnEventsNextClicked"/>
+                    <Button Text="Clear log"
+                            VerticalOptions="Center"
+                            Clicked="OnClearEventsLogClicked"/>
+                </HorizontalStackLayout>
+                <CarouselView ItemsSource="{Binding EventItems}"
+                              ItemTemplate="{StaticResource CarouselCardTemplate}"
+                              Position="{Binding EventPosition, Mode=TwoWay}"
+                              CurrentItem="{Binding EventCurrentItem, Mode=TwoWay}"
+                              CurrentItemChanged="OnEventsCurrentItemChanged"
+                              PositionChanged="OnEventsPositionChanged"
+                              IsSwipeEnabled="True"
+                              HeightRequest="220"/>
+                <Grid ColumnDefinitions="Auto,*"
+                      RowDefinitions="Auto,Auto"
+                      ColumnSpacing="8"
+                      RowSpacing="4">
+                    <Label Text="Position:"
+                           FontAttributes="Bold"/>
+                    <Label Grid.Column="1"
+                           Text="{Binding EventPosition}"/>
+                    <Label Grid.Row="1"
+                           Text="Current item:"
+                           FontAttributes="Bold"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           Text="{Binding EventCurrentItem.Title}"/>
+                </Grid>
+                <Border Stroke="{AppThemeBinding Light=#DDDDDD, Dark=#555555}"
+                        Padding="8"
+                        HeightRequest="150">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <CollectionView ItemsSource="{Binding EventLogs}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="x:String">
+                                <Label Text="{Binding .}"
+                                       FontSize="12"
+                                       Padding="4,2"/>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </Border>
+            </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

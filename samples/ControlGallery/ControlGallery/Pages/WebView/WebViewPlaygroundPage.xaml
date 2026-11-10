@@ -8,9 +8,8 @@
           RowSpacing="10">
 
         <Label Grid.Row="0"
-               Text="A larger freeform WebView for trying remote URLs or packaged assets."
-               FontSize="12"
-               TextColor="Gray" />
+               StyleClass="h2"
+               Text="A larger freeform WebView for trying remote URLs or packaged assets." />
 
         <FlexLayout Grid.Row="1"
                     Wrap="Wrap"
