@@ -86,6 +86,7 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
         // Scaling belongs to the top level that hosts the content, which can change
         platformView.AttachedToVisualTree += OnContentAttachedToVisualTree;
         platformView.DetachedFromVisualTree += OnContentDetachedFromVisualTree;
+        platformView.SizeChanged += OnContentSizeChanged;
         SetTopLevel(TopLevel.GetTopLevel(platformView));
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
@@ -109,6 +110,7 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
 
         platformView.AttachedToVisualTree -= OnContentAttachedToVisualTree;
         platformView.DetachedFromVisualTree -= OnContentDetachedFromVisualTree;
+        platformView.SizeChanged -= OnContentSizeChanged;
         SetTopLevel(null);
 
         if (VirtualView is Microsoft.Maui.Controls.Window window)
@@ -148,6 +150,9 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
         if (_topLevel != null)
             VirtualView?.DisplayDensityChanged((float)_topLevel.RenderScaling);
     }
+
+    private void OnContentSizeChanged(object? sender, SizeChangedEventArgs e) =>
+        VirtualView?.FrameChanged(new Microsoft.Maui.Graphics.Rect(0, 0, e.NewSize.Width, e.NewSize.Height));
 
     private void OnModalPushed(object? sender, Microsoft.Maui.Controls.ModalPushedEventArgs e)
     {

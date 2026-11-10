@@ -45,4 +45,32 @@ public class SingleViewWindowHandlerTests : HandlerTestBase
             host.Close();
         });
     }
+
+    [AvaloniaFact(DisplayName = "The single-view content's size is reported as the Window frame")]
+    public async Task ContentSizeUpdatesWindowFrame()
+    {
+        await InvokeOnMainThreadAsync(() =>
+        {
+            var (window, content) = CreateWindow();
+            var sizeChanged = 0;
+            window.SizeChanged += (_, _) => sizeChanged++;
+
+            var host = new Window { Width = 1280, Height = 800, Content = content };
+            host.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Equal(1280, window.Width);
+            Assert.Equal(800, window.Height);
+            Assert.Equal(1, sizeChanged);
+
+            host.Width = 900;
+            Dispatcher.UIThread.RunJobs();
+
+            Assert.Equal(900, window.Width);
+            Assert.Equal(800, window.Height);
+            Assert.Equal(2, sizeChanged);
+
+            host.Close();
+        });
+    }
 }
