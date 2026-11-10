@@ -15,7 +15,7 @@ internal sealed class MauiPolygon : global::Avalonia.Controls.Shapes.Polygon
         ShapeAspect.Apply(base.CreateDefiningGeometry(), _arrangedSize, Stretch, ShapeAspect.GetStrokeInset(this));
 
     protected override Size MeasureOverride(Size availableSize) =>
-        ShapeAspect.Measure(base.CreateDefiningGeometry(), availableSize, Stretch);
+        ShapeAspect.Measure(base.CreateDefiningGeometry(), availableSize, Stretch, ShapeAspect.GetStrokeInset(this));
 
     protected override Size ArrangeOverride(Size finalSize)
     {

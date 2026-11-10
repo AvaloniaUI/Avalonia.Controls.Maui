@@ -80,44 +80,50 @@ internal static class ShapeAspect
         }
     }
 
-    public static Size Measure(Geometry? source, Size availableSize, Stretch stretch)
+    public static Size Measure(Geometry? source, Size availableSize, Stretch stretch, double strokeInset)
     {
         if (source is null)
             return default;
 
         var shapeBounds = source.Bounds;
-        var shapeSize = stretch == Stretch.None ? new Size(shapeBounds.Right, shapeBounds.Bottom) : shapeBounds.Size;
-        var desiredX = double.IsInfinity(availableSize.Width) ? shapeSize.Width : availableSize.Width;
-        var desiredY = double.IsInfinity(availableSize.Height) ? shapeSize.Height : availableSize.Height;
-        var sx = shapeBounds.Width > 0 ? desiredX / shapeSize.Width : 0;
-        var sy = shapeBounds.Height > 0 ? desiredY / shapeSize.Height : 0;
-
-        if (double.IsInfinity(availableSize.Width))
-            sx = sy;
-
-        if (double.IsInfinity(availableSize.Height))
-            sy = sx;
+        var width = shapeBounds.Width;
+        var height = shapeBounds.Height;
+        var widthConstraint = availableSize.Width - strokeInset;
+        var heightConstraint = availableSize.Height - strokeInset;
+        var widthScale = Finite(widthConstraint / width);
+        var heightScale = Finite(heightConstraint / height);
 
         switch (stretch)
         {
-            case Stretch.Uniform:
-                sx = sy = Math.Min(sx, sy);
+            case Stretch.None:
+                width += shapeBounds.X;
+                height += shapeBounds.Y;
                 break;
-            case Stretch.UniformToFill:
-                sx = sy = Math.Max(sx, sy);
-                break;
+
             case Stretch.Fill:
-                if (double.IsInfinity(availableSize.Width))
-                    sx = 1;
-                if (double.IsInfinity(availableSize.Height))
-                    sy = 1;
+                if (!double.IsInfinity(widthConstraint))
+                    width = widthConstraint;
+                if (!double.IsInfinity(heightConstraint))
+                    height = heightConstraint;
                 break;
-            default:
-                sx = sy = 1;
+
+            case Stretch.Uniform:
+                var minScale = Math.Min(widthScale, heightScale);
+                width *= minScale;
+                height *= minScale;
+                break;
+
+            case Stretch.UniformToFill:
+                var maxScale = Math.Max(widthScale, heightScale);
+                if (maxScale != 0)
+                {
+                    width *= maxScale;
+                    height *= maxScale;
+                }
                 break;
         }
 
-        return new Size(shapeSize.Width * sx, shapeSize.Height * sy);
+        return new Size(Math.Max(0, width + strokeInset), Math.Max(0, height + strokeInset));
     }
 
     private static double Finite(double value) =>

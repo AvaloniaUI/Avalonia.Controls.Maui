@@ -71,6 +71,59 @@ public class ShapeAspectTests : HandlerTestBase
         AssertRect(new Rect(0, 4, 16, 8), bounds);
     }
 
+    [AvaloniaFact(DisplayName = "Unstretched Path Measures With Its Stroke")]
+    public async Task UnstretchedPathMeasuresWithItsStroke()
+    {
+        var path = CreateStrokedPath("M0,0 H100 V100 H0 Z", Stretch.None, strokeThickness: 10);
+        await CreateHandlerAsync<PathHandler>(path);
+
+        var size = ((Microsoft.Maui.IView)path).Measure(double.PositiveInfinity, double.PositiveInfinity);
+
+        Assert.Equal(new Microsoft.Maui.Graphics.Size(110, 110), size);
+    }
+
+    [AvaloniaFact(DisplayName = "Uniform Path Measures To Its Stroke When A Constraint Is Unbounded")]
+    public async Task UniformPathMeasuresToItsStrokeWhenAConstraintIsUnbounded()
+    {
+        var path = CreateStrokedPath("M0,0 H100 V100 H0 Z", Stretch.Uniform, strokeThickness: 10);
+        await CreateHandlerAsync<PathHandler>(path);
+
+        var size = ((Microsoft.Maui.IView)path).Measure(300, double.PositiveInfinity);
+
+        Assert.Equal(new Microsoft.Maui.Graphics.Size(10, 10), size);
+    }
+
+    [AvaloniaFact(DisplayName = "Uniform Path Measures Inside Its Constraints With Its Stroke")]
+    public async Task UniformPathMeasuresInsideItsConstraintsWithItsStroke()
+    {
+        var path = CreateStrokedPath("M0,0 H100 V50 H0 Z", Stretch.Uniform, strokeThickness: 10);
+        await CreateHandlerAsync<PathHandler>(path);
+
+        var size = ((Microsoft.Maui.IView)path).Measure(210, 400);
+
+        Assert.Equal(new Microsoft.Maui.Graphics.Size(210, 110), size);
+    }
+
+    [AvaloniaFact(DisplayName = "Horizontal Line Measures With Its Stroke")]
+    public async Task HorizontalLineMeasuresWithItsStroke()
+    {
+        var line = new Line { X1 = 10, Y1 = 0, X2 = 210, Y2 = 0, Stroke = Brush.Black, StrokeThickness = 12 };
+        await CreateHandlerAsync<LineHandler>(line);
+
+        var size = ((Microsoft.Maui.IView)line).Measure(double.PositiveInfinity, double.PositiveInfinity);
+
+        Assert.Equal(new Microsoft.Maui.Graphics.Size(222, 12), size);
+    }
+
+    private static MauiPath CreateStrokedPath(string data, Stretch aspect, double strokeThickness) => new()
+    {
+        Data = (Geometry)new PathGeometryConverter().ConvertFromInvariantString(data)!,
+        Aspect = aspect,
+        Fill = Brush.Red,
+        Stroke = Brush.Black,
+        StrokeThickness = strokeThickness,
+    };
+
     private static MauiPath CreatePath(string data, Stretch aspect, double size) => new()
     {
         Data = (Geometry)new PathGeometryConverter().ConvertFromInvariantString(data)!,
