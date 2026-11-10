@@ -119,7 +119,7 @@ internal sealed class AvaloniaGesturePlatformManager : IGesturePlatformManager
                 if (generation == _attachGeneration)
                     _recentlyAttached = false;
             }, DispatcherPriority.Background),
-            TaskScheduler.Default);
+            CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
     }
 
     private void HoldExit(AvaloniaTopLevel topLevel)
