@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.PopupsPage"
              Title="Popups">
 
     <ScrollView>
-        <VerticalStackLayout Spacing="24" Padding="20">
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="Shows alerts, action sheets, prompts and a busy indicator." />
 
             <Border Background="#33FFA500"
                     Stroke="Orange"
@@ -24,71 +27,42 @@
                    HorizontalOptions="Center" />
 
             <!-- Alerts Section -->
-            <Border Stroke="{DynamicResource SeparatorColor}"
-                    StrokeThickness="1"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Alerts"
-                           FontAttributes="Bold" />
-                    <Button Text="Simple alert"
-                            Clicked="OnSimpleAlertClicked" />
-                    <Button Text="Question (Yes/No)"
-                            Clicked="OnAlertYesNoClicked" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Alerts" />
+                <Button Text="Simple alert"
+                        Clicked="OnSimpleAlertClicked" />
+                <Button Text="Question (Yes/No)"
+                        Clicked="OnAlertYesNoClicked" />
+            </VerticalStackLayout>
 
             <!-- Action Sheets Section -->
-            <Border Stroke="{DynamicResource SeparatorColor}"
-                    StrokeThickness="1"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Action Sheets"
-                           FontAttributes="Bold" />
-                    <Button Text="Share options"
-                            Clicked="OnSimpleActionSheetClicked" />
-                    <Button Text="Save or delete (destructive)"
-                            Clicked="OnActionSheetCancelDeleteClicked" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Action Sheets" />
+                <Button Text="Share options"
+                        Clicked="OnSimpleActionSheetClicked" />
+                <Button Text="Save or delete (destructive)"
+                        Clicked="OnActionSheetCancelDeleteClicked" />
+            </VerticalStackLayout>
 
             <!-- Prompts Section -->
-            <Border Stroke="{DynamicResource SeparatorColor}"
-                    StrokeThickness="1"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Prompts"
-                           FontAttributes="Bold" />
-                    <Button Text="Enter your name"
-                            Clicked="OnSimplePromptClicked" />
-                    <Button Text="Enter a number (default 10)"
-                            Clicked="OnNumberPromptClicked" />
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Prompts" />
+                <Button Text="Enter your name"
+                        Clicked="OnSimplePromptClicked" />
+                <Button Text="Enter a number (default 10)"
+                        Clicked="OnNumberPromptClicked" />
             </VerticalStackLayout>
-            </Border>
 
             <!-- Busy Indicator Section -->
-            <Border Stroke="{DynamicResource SeparatorColor}"
-                    StrokeThickness="1"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Busy Indicator"
-                           FontAttributes="Bold" />
-                    <Button Text="Show busy (2 seconds)"
-                            Clicked="OnShowBusyClicked" />
-                </VerticalStackLayout>
-            </Border>
-
-        </VerticalStackLayout>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Busy Indicator" />
+                <Button Text="Show busy (2 seconds)"
+                        Clicked="OnShowBusyClicked" />
+            </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

@@ -1,117 +1,88 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.TitleBarPage"
              Title="TitleBar Demo">
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
-
-
-            <Label Text="TitleBar provides a customizable title bar for windows. On desktop platforms, it can replace the default system title bar with custom content."
-                   TextColor="Gray" />
-
-            <BoxView Color="LightGray" HeightRequest="1" />
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="TitleBar provides a customizable title bar for windows. On desktop platforms, it can replace the default system title bar with custom content." />
 
             <!-- Basic TitleBar Section -->
-            <Label Text="Basic TitleBar"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   Margin="0,10,0,0" />
-
-            <Label Text="Set a simple title and subtitle for the window's title bar."
-                   TextColor="Gray" />
-
-            <Button Text="Set Simple TitleBar"
-                    Clicked="OnSetSimpleTitleBar" />
-
-            <BoxView Color="LightGray" HeightRequest="1" />
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Basic TitleBar" />
+                <Label StyleClass="h3"
+                       Text="Set a simple title and subtitle for the window's title bar." />
+                <Button Text="Set Simple TitleBar"
+                        Clicked="OnSetSimpleTitleBar" />
+            </VerticalStackLayout>
 
             <!-- TitleBar with Icon Section -->
-            <Label Text="TitleBar with Icon"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   Margin="0,10,0,0" />
-
-            <Label Text="Add an icon to the title bar."
-                   TextColor="Gray" />
-
-            <Button Text="Set TitleBar with Icon"
-                    Clicked="OnSetTitleBarWithIcon" />
-
-            <BoxView Color="LightGray" HeightRequest="1" />
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="TitleBar with Icon" />
+                <Label StyleClass="h3"
+                       Text="Add an icon to the title bar." />
+                <Button Text="Set TitleBar with Icon"
+                        Clicked="OnSetTitleBarWithIcon" />
+            </VerticalStackLayout>
 
             <!-- TitleBar with Custom Content Section -->
-            <Label Text="TitleBar with Custom Content"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   Margin="0,10,0,0" />
-
-            <Label Text="Add custom content like a search box to the title bar."
-                   TextColor="Gray" />
-
-            <Button Text="Set TitleBar with Search Box"
-                    Clicked="OnSetTitleBarWithContent" />
-
-            <BoxView Color="LightGray" HeightRequest="1" />
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="TitleBar with Custom Content" />
+                <Label StyleClass="h3"
+                       Text="Add custom content like a search box to the title bar." />
+                <Button Text="Set TitleBar with Search Box"
+                        Clicked="OnSetTitleBarWithContent" />
+            </VerticalStackLayout>
 
             <!-- TitleBar with Leading/Trailing Content Section -->
-            <Label Text="TitleBar with Leading/Trailing Content"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   Margin="0,10,0,0" />
-
-            <Label Text="Add buttons or other controls to the leading and trailing areas."
-                   TextColor="Gray" />
-
-            <Button Text="Set TitleBar with Buttons"
-                    Clicked="OnSetTitleBarWithButtons" />
-
-            <BoxView Color="LightGray" HeightRequest="1" />
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="TitleBar with Leading/Trailing Content" />
+                <Label StyleClass="h3"
+                       Text="Add buttons or other controls to the leading and trailing areas." />
+                <Button Text="Set TitleBar with Buttons"
+                        Clicked="OnSetTitleBarWithButtons" />
+            </VerticalStackLayout>
 
             <!-- TitleBar Visibility Section -->
-            <Label Text="TitleBar Visibility"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   Margin="0,10,0,0" />
-
-            <Label Text="Toggle the visibility of the title bar."
-                   TextColor="Gray" />
-
-            <HorizontalStackLayout Spacing="10">
-                <Button Text="Hide TitleBar"
-                        Clicked="OnHideTitleBar" />
-                <Button Text="Show TitleBar"
-                        Clicked="OnShowTitleBar" />
-            </HorizontalStackLayout>
-
-            <BoxView Color="LightGray" HeightRequest="1" />
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="TitleBar Visibility" />
+                <Label StyleClass="h3"
+                       Text="Toggle the visibility of the title bar." />
+                <HorizontalStackLayout Spacing="10">
+                    <Button Text="Hide TitleBar"
+                            Clicked="OnHideTitleBar" />
+                    <Button Text="Show TitleBar"
+                            Clicked="OnShowTitleBar" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
 
             <!-- Remove TitleBar Section -->
-            <Label Text="Remove TitleBar"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   Margin="0,10,0,0" />
-
-            <Label Text="Remove the custom title bar and revert to system default."
-                   TextColor="Gray" />
-
-            <Button Text="Remove Custom TitleBar"
-                    Clicked="OnRemoveTitleBar"
-                    BackgroundColor="DarkRed"
-                    TextColor="White" />
-
-            <BoxView Color="LightGray" HeightRequest="1" />
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Remove TitleBar" />
+                <Label StyleClass="h3"
+                       Text="Remove the custom title bar and revert to system default." />
+                <Button Text="Remove Custom TitleBar"
+                        Clicked="OnRemoveTitleBar"
+                        BackgroundColor="DarkRed"
+                        TextColor="White" />
+            </VerticalStackLayout>
 
             <!-- Current TitleBar Info -->
-            <Label Text="Current TitleBar Info"
-                   FontSize="18"
-                   FontAttributes="Bold"
-                   Margin="0,10,0,0" />
-
-            <Label x:Name="TitleBarInfoLabel"
-                   Text="No custom TitleBar set"
-                   TextColor="Gray" />
-
-        </VerticalStackLayout>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Current TitleBar Info" />
+                <Label x:Name="TitleBarInfoLabel"
+                       Text="No custom TitleBar set"
+                       TextColor="Gray" />
+            </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>
