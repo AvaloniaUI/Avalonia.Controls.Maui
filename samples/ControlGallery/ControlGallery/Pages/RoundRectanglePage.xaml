@@ -2,45 +2,35 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.RoundRectanglePage"
              Title="RoundRectangle">
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="16">
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="Draws a rectangle with rounded corners." />
 
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Even Corners"
-                           FontAttributes="Bold" />
-                    <RoundRectangle WidthRequest="200"
-                                    HeightRequest="120"
-                                    Fill="#22C55E"
-                                    Stroke="#166534"
-                                    StrokeThickness="4"
-                                    CornerRadius="20" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Even Corners" />
+                <RoundRectangle WidthRequest="200"
+                                HeightRequest="120"
+                                Fill="#22C55E"
+                                Stroke="#166534"
+                                StrokeThickness="4"
+                                CornerRadius="20" />
+            </VerticalStackLayout>
 
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Per-Corner Radii"
-                           FontAttributes="Bold" />
-                    <RoundRectangle WidthRequest="220"
-                                    HeightRequest="120"
-                                    Fill="#F97316"
-                                    Stroke="#9A3412"
-                                    StrokeThickness="4"
-                                    CornerRadius="40,10,30,4" />
-                </VerticalStackLayout>
-            </Border>
-        </VerticalStackLayout>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Per-Corner Radii" />
+                <RoundRectangle WidthRequest="220"
+                                HeightRequest="120"
+                                Fill="#F97316"
+                                Stroke="#9A3412"
+                                StrokeThickness="4"
+                                CornerRadius="40,10,30,4" />
+            </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

@@ -18,10 +18,9 @@
 
     <Grid RowDefinitions="Auto,Auto,Auto,*" Padding="20">
         
-        <Label Grid.Row="1" 
-               Text="Experiment with scale, rotation, translation, and anchor transformations using the options below" 
-               HorizontalOptions="Center"
-               HorizontalTextAlignment="Center"
+        <Label Grid.Row="1"
+               StyleClass="h2"
+               Text="Experiment with scale, rotation, translation, and anchor transformations using the options below"
                Margin="0,0,0,30" />
 
         <!-- Transform Target -->
@@ -66,9 +65,8 @@
             <VerticalStackLayout Padding="10" Spacing="14">
 
                 <!-- Scale Options -->
-                <Label Text="Scale Transformations"
-                       FontSize="16"
-                       FontAttributes="Bold" />
+                <Label StyleClass="h1"
+                       Text="Scale Transformations" />
 
                 <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
                     <Label Text="Uniform Scale"
@@ -110,10 +108,8 @@
                        FontSize="12" />
 
                 <!-- Rotation Options -->
-                <Label Text="Rotation Transformations"
-                       FontSize="16"
-                       FontAttributes="Bold"
-                       Margin="0,6,0,0" />
+                <Label StyleClass="h1"
+                       Text="Rotation Transformations" />
 
                 <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
                     <Label Text="Rotation (degrees)"
@@ -155,10 +151,8 @@
                        FontSize="12" />
 
                 <!-- Translation Options -->
-                <Label Text="Translation Transformations"
-                       FontSize="16"
-                       FontAttributes="Bold"
-                       Margin="0,10,0,0" />
+                <Label StyleClass="h1"
+                       Text="Translation Transformations" />
 
                 <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
                     <Label Text="Translation X"
@@ -187,10 +181,8 @@
                        FontSize="12" />
 
                 <!-- Anchor Point Options -->
-                <Label Text="Anchor Point Transformations"
-                       FontSize="16"
-                       FontAttributes="Bold"
-                       Margin="0,10,0,0" />
+                <Label StyleClass="h1"
+                       Text="Anchor Point Transformations" />
 
                 <Grid ColumnDefinitions="120,*" ColumnSpacing="12">
                     <Label Text="Anchor X"

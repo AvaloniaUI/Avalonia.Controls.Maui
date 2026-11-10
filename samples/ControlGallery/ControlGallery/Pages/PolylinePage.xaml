@@ -2,94 +2,71 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.PolylinePage"
              Title="Polyline">
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="16">
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="Draws a series of connected straight lines." />
 
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Open Zig-Zag"
-                           FontAttributes="Bold" />
-                    <Polyline Points="10,80 60,20 120,100 180,20 230,80"
-                              Stroke="#F59E0B"
-                              StrokeThickness="6"
-                              Fill="Transparent"
-                              StrokeLineJoin="Round" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Open Zig-Zag" />
+                <Polyline Points="10,80 60,20 120,100 180,20 230,80"
+                          Stroke="#F59E0B"
+                          StrokeThickness="6"
+                          Fill="Transparent"
+                          StrokeLineJoin="Round" />
+            </VerticalStackLayout>
 
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Polyline Outline"
-                           FontAttributes="Bold" />
-                    <Polyline Points="10,20 70,60 110,20 170,70 230,30"
-                              Stroke="#10B981"
-                              StrokeThickness="4"
-                              StrokeDashArray="10,5" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Polyline Outline" />
+                <Polyline Points="10,20 70,60 110,20 170,70 230,30"
+                          Stroke="#10B981"
+                          StrokeThickness="4"
+                          StrokeDashArray="10,5" />
+            </VerticalStackLayout>
 
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="Animated Dash Offset"
-                           FontAttributes="Bold" />
-                    <Polyline x:Name="AnimatedPolyline"
-                              Points="10,50 80,10 150,50 220,10"
-                              Stroke="#6366F1"
-                              StrokeThickness="6"
-                              StrokeDashArray="6,4" />
-                    <Label Text="Dash offset is animated on a loop."
-                           FontSize="12"
-                           TextColor="Gray" />
-                </VerticalStackLayout>
-            </Border>
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="12" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="12">
-                    <Label Text="FillRule"
-                           FontAttributes="Bold" />
-                    <HorizontalStackLayout Spacing="20">
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="EvenOdd"
-                                   FontSize="12"
-                                   TextColor="Gray" />
-                            <Polyline Points="60,10 90,90 10,40 110,40 30,90"
-                                      Fill="#F59E0B"
-                                      Stroke="#92400E"
-                                      StrokeThickness="2"
-                                      FillRule="EvenOdd" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Spacing="4">
-                            <Label Text="Nonzero"
-                                   FontSize="12"
-                                   TextColor="Gray" />
-                            <Polyline Points="60,10 90,90 10,40 110,40 30,90"
-                                      Fill="#F59E0B"
-                                      Stroke="#92400E"
-                                      StrokeThickness="2"
-                                      FillRule="Nonzero" />
-                        </VerticalStackLayout>
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Animated Dash Offset" />
+                <Polyline x:Name="AnimatedPolyline"
+                          Points="10,50 80,10 150,50 220,10"
+                          Stroke="#6366F1"
+                          StrokeThickness="6"
+                          StrokeDashArray="6,4" />
+                <Label StyleClass="h3"
+                       Text="Dash offset is animated on a loop." />
+            </VerticalStackLayout>
 
-        </VerticalStackLayout>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="FillRule" />
+                <HorizontalStackLayout Spacing="20">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="EvenOdd"
+                               FontSize="12"
+                               TextColor="Gray" />
+                        <Polyline Points="60,10 90,90 10,40 110,40 30,90"
+                                  Fill="#F59E0B"
+                                  Stroke="#92400E"
+                                  StrokeThickness="2"
+                                  FillRule="EvenOdd" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Nonzero"
+                               FontSize="12"
+                               TextColor="Gray" />
+                        <Polyline Points="60,10 90,90 10,40 110,40 30,90"
+                                  Fill="#F59E0B"
+                                  Stroke="#92400E"
+                                  StrokeThickness="2"
+                                  FillRule="Nonzero" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

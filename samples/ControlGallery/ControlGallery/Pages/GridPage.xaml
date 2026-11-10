@@ -1,428 +1,370 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.GridPage"
              Title="Grid">
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="20">
-
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="A layout that arranges its children in rows and columns."/>
 
             <!-- Basic Grid -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Basic Grid"
-                           FontAttributes="Bold"/>
-                    <Label Text="2 columns, 3 rows with proportional sizing"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Basic Grid"/>
+                <Label StyleClass="h3"
+                       Text="2 columns, 3 rows with proportional sizing"/>
+                
+                <Grid HeightRequest="200">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
                     
-                    <Grid HeightRequest="200">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="2*"/>
-                            <RowDefinition/>
-                            <RowDefinition Height="50"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <BoxView Color="Green"/>
-                        <Label Text="Row 0, Column 0"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-                        
-                        <BoxView Grid.Column="1"
-                                 Color="Blue"/>
-                        <Label Grid.Column="1"
-                               Text="Row 0, Column 1"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-                        
-                        <BoxView Grid.Row="1"
-                                 Color="Teal"/>
-                        <Label Grid.Row="1"
-                               Text="Row 1, Column 0"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-                        
-                        <BoxView Grid.Row="1"
-                                 Grid.Column="1"
-                                 Color="Purple"/>
-                        <Label Grid.Row="1"
-                               Grid.Column="1"
-                               Text="Row 1, Column 1"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-                        
-                        <BoxView Grid.Row="2"
-                                 Grid.ColumnSpan="2"
-                                 Color="Red"/>
-                        <Label Grid.Row="2"
-                               Grid.ColumnSpan="2"
-                               Text="Row 2, Columns 0 and 1"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+                    <BoxView Color="Green"/>
+                    <Label Text="Row 0, Column 0"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                    
+                    <BoxView Grid.Column="1"
+                             Color="Blue"/>
+                    <Label Grid.Column="1"
+                           Text="Row 0, Column 1"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                    
+                    <BoxView Grid.Row="1"
+                             Color="Teal"/>
+                    <Label Grid.Row="1"
+                           Text="Row 1, Column 0"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                    
+                    <BoxView Grid.Row="1"
+                             Grid.Column="1"
+                             Color="Purple"/>
+                    <Label Grid.Row="1"
+                           Grid.Column="1"
+                           Text="Row 1, Column 1"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                    
+                    <BoxView Grid.Row="2"
+                             Grid.ColumnSpan="2"
+                             Color="Red"/>
+                    <Label Grid.Row="2"
+                           Grid.ColumnSpan="2"
+                           Text="Row 2, Columns 0 and 1"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Grid>
+            </VerticalStackLayout>
 
             <!-- Simplified Syntax -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Simplified Syntax"
-                           FontAttributes="Bold"/>
-                    <Label Text="Using RowDefinitions='*,*,50' and ColumnDefinitions='*,*'"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    
-                    <Grid HeightRequest="150"
-                          RowDefinitions="*,*,50"
-                          ColumnDefinitions="*,*">
-                        <BoxView Color="LightBlue"/>
-                        <BoxView Grid.Column="1" Color="LightGreen"/>
-                        <BoxView Grid.Row="1" Color="LightCoral"/>
-                        <BoxView Grid.Row="1" Grid.Column="1" Color="LightYellow"/>
-                        <BoxView Grid.Row="2" Grid.ColumnSpan="2" Color="LightGray"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Simplified Syntax"/>
+                <Label StyleClass="h3"
+                       Text="Using RowDefinitions='*,*,50' and ColumnDefinitions='*,*'"/>
+                
+                <Grid HeightRequest="150"
+                      RowDefinitions="*,*,50"
+                      ColumnDefinitions="*,*">
+                    <BoxView Color="LightBlue"/>
+                    <BoxView Grid.Column="1" Color="LightGreen"/>
+                    <BoxView Grid.Row="1" Color="LightCoral"/>
+                    <BoxView Grid.Row="1" Grid.Column="1" Color="LightYellow"/>
+                    <BoxView Grid.Row="2" Grid.ColumnSpan="2" Color="LightGray"/>
+                </Grid>
+            </VerticalStackLayout>
 
             <!-- Grid Spacing -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Grid Spacing"
-                           FontAttributes="Bold"/>
-                    
-                    <Label Text="RowSpacing=0, ColumnSpacing=0"/>
-                    <Grid HeightRequest="80"
-                          RowSpacing="0"
-                          ColumnSpacing="0"
-                          RowDefinitions="*,*"
-                          ColumnDefinitions="*,*">
-                        <BoxView Color="Red"/>
-                        <BoxView Grid.Column="1" Color="Green"/>
-                        <BoxView Grid.Row="1" Color="Blue"/>
-                        <BoxView Grid.Row="1" Grid.Column="1" Color="Yellow"/>
-                    </Grid>
-                    
-                    <Label Text="RowSpacing=6, ColumnSpacing=6"/>
-                    <Grid HeightRequest="80"
-                          RowSpacing="6"
-                          ColumnSpacing="6"
-                          RowDefinitions="*,*"
-                          ColumnDefinitions="*,*">
-                        <BoxView Color="Red"/>
-                        <BoxView Grid.Column="1" Color="Green"/>
-                        <BoxView Grid.Row="1" Color="Blue"/>
-                        <BoxView Grid.Row="1" Grid.Column="1" Color="Yellow"/>
-                    </Grid>
-                    
-                    <Label Text="RowSpacing=15, ColumnSpacing=15"/>
-                    <Grid HeightRequest="80"
-                          RowSpacing="15"
-                          ColumnSpacing="15"
-                          RowDefinitions="*,*"
-                          ColumnDefinitions="*,*">
-                        <BoxView Color="Red"/>
-                        <BoxView Grid.Column="1" Color="Green"/>
-                        <BoxView Grid.Row="1" Color="Blue"/>
-                        <BoxView Grid.Row="1" Grid.Column="1" Color="Yellow"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Grid Spacing"/>
+                
+                <Label Text="RowSpacing=0, ColumnSpacing=0"/>
+                <Grid HeightRequest="80"
+                      RowSpacing="0"
+                      ColumnSpacing="0"
+                      RowDefinitions="*,*"
+                      ColumnDefinitions="*,*">
+                    <BoxView Color="Red"/>
+                    <BoxView Grid.Column="1" Color="Green"/>
+                    <BoxView Grid.Row="1" Color="Blue"/>
+                    <BoxView Grid.Row="1" Grid.Column="1" Color="Yellow"/>
+                </Grid>
+                
+                <Label Text="RowSpacing=6, ColumnSpacing=6"/>
+                <Grid HeightRequest="80"
+                      RowSpacing="6"
+                      ColumnSpacing="6"
+                      RowDefinitions="*,*"
+                      ColumnDefinitions="*,*">
+                    <BoxView Color="Red"/>
+                    <BoxView Grid.Column="1" Color="Green"/>
+                    <BoxView Grid.Row="1" Color="Blue"/>
+                    <BoxView Grid.Row="1" Grid.Column="1" Color="Yellow"/>
+                </Grid>
+                
+                <Label Text="RowSpacing=15, ColumnSpacing=15"/>
+                <Grid HeightRequest="80"
+                      RowSpacing="15"
+                      ColumnSpacing="15"
+                      RowDefinitions="*,*"
+                      ColumnDefinitions="*,*">
+                    <BoxView Color="Red"/>
+                    <BoxView Grid.Column="1" Color="Green"/>
+                    <BoxView Grid.Row="1" Color="Blue"/>
+                    <BoxView Grid.Row="1" Grid.Column="1" Color="Yellow"/>
+                </Grid>
+            </VerticalStackLayout>
 
             <!-- Row and Column Spanning -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Row and Column Spanning"
-                           FontAttributes="Bold"/>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Row and Column Spanning"/>
+                
+                <Grid HeightRequest="150"
+                      RowSpacing="5"
+                      ColumnSpacing="5"
+                      RowDefinitions="*,*,*"
+                      ColumnDefinitions="*,*,*">
                     
-                    <Grid HeightRequest="150"
-                          RowSpacing="5"
-                          ColumnSpacing="5"
-                          RowDefinitions="*,*,*"
-                          ColumnDefinitions="*,*,*">
-                        
-                        <!-- RowSpan example -->
-                        <BoxView Color="Navy"
-                                 Grid.RowSpan="2"/>
-                        <Label Text="RowSpan=2"
-                               Grid.RowSpan="2"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               TextColor="White"/>
-                        
-                        <!-- ColumnSpan example -->
-                        <BoxView Color="Maroon"
-                                 Grid.Column="1"
-                                 Grid.ColumnSpan="2"/>
-                        <Label Text="ColumnSpan=2"
-                               Grid.Column="1"
-                               Grid.ColumnSpan="2"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               TextColor="White"/>
-                        
-                        <!-- Regular cells -->
-                        <BoxView Color="Teal"
-                                 Grid.Row="1"
-                                 Grid.Column="1"/>
-                        <BoxView Color="Olive"
-                                 Grid.Row="1"
-                                 Grid.Column="2"/>
-                        
-                        <!-- Both spans -->
-                        <BoxView Color="Purple"
-                                 Grid.Row="2"
-                                 Grid.ColumnSpan="3"/>
-                        <Label Text="Row 2, ColumnSpan=3"
-                               Grid.Row="2"
-                               Grid.ColumnSpan="3"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"
-                               TextColor="White"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+                    <!-- RowSpan example -->
+                    <BoxView Color="Navy"
+                             Grid.RowSpan="2"/>
+                    <Label Text="RowSpan=2"
+                           Grid.RowSpan="2"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="White"/>
+                    
+                    <!-- ColumnSpan example -->
+                    <BoxView Color="Maroon"
+                             Grid.Column="1"
+                             Grid.ColumnSpan="2"/>
+                    <Label Text="ColumnSpan=2"
+                           Grid.Column="1"
+                           Grid.ColumnSpan="2"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="White"/>
+                    
+                    <!-- Regular cells -->
+                    <BoxView Color="Teal"
+                             Grid.Row="1"
+                             Grid.Column="1"/>
+                    <BoxView Color="Olive"
+                             Grid.Row="1"
+                             Grid.Column="2"/>
+                    
+                    <!-- Both spans -->
+                    <BoxView Color="Purple"
+                             Grid.Row="2"
+                             Grid.ColumnSpan="3"/>
+                    <Label Text="Row 2, ColumnSpan=3"
+                           Grid.Row="2"
+                           Grid.ColumnSpan="3"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           TextColor="White"/>
+                </Grid>
+            </VerticalStackLayout>
 
             <!-- Star Sizing -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Star Sizing (Proportional)"
-                           FontAttributes="Bold"/>
-                    <Label Text="ColumnDefinitions='1*,2*,3*' - proportional widths"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Star Sizing (Proportional)"/>
+                <Label StyleClass="h3"
+                       Text="ColumnDefinitions='1*,2*,3*' - proportional widths"/>
+                
+                <Grid HeightRequest="60"
+                      ColumnDefinitions="1*,2*,3*"
+                      ColumnSpacing="5">
+                    <BoxView Color="Red"/>
+                    <Label Text="1*" HorizontalOptions="Center" VerticalOptions="Center"/>
                     
-                    <Grid HeightRequest="60"
-                          ColumnDefinitions="1*,2*,3*"
-                          ColumnSpacing="5">
-                        <BoxView Color="Red"/>
-                        <Label Text="1*" HorizontalOptions="Center" VerticalOptions="Center"/>
-                        
-                        <BoxView Grid.Column="1" Color="Green"/>
-                        <Label Grid.Column="1" Text="2*" HorizontalOptions="Center" VerticalOptions="Center"/>
-                        
-                        <BoxView Grid.Column="2" Color="Blue"/>
-                        <Label Grid.Column="2" Text="3*" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+                    <BoxView Grid.Column="1" Color="Green"/>
+                    <Label Grid.Column="1" Text="2*" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    
+                    <BoxView Grid.Column="2" Color="Blue"/>
+                    <Label Grid.Column="2" Text="3*" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Grid>
+            </VerticalStackLayout>
 
             <!-- Auto Sizing -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Auto Sizing"
-                           FontAttributes="Bold"/>
-                    <Label Text="RowDefinitions='Auto,Auto,*' - content-based rows"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Auto Sizing"/>
+                <Label StyleClass="h3"
+                       Text="RowDefinitions='Auto,Auto,*' - content-based rows"/>
+                
+                <Grid HeightRequest="150"
+                      RowDefinitions="Auto,Auto,*"
+                      RowSpacing="5"
+                      BackgroundColor="LightGray">
+                    <Label Text="Auto row - sized to content"
+                           BackgroundColor="LightBlue"
+                           Padding="10"/>
                     
-                    <Grid HeightRequest="150"
-                          RowDefinitions="Auto,Auto,*"
-                          RowSpacing="5"
-                          BackgroundColor="LightGray">
-                        <Label Text="Auto row - sized to content"
-                               BackgroundColor="LightBlue"
-                               Padding="10"/>
-                        
-                        <Label Grid.Row="1"
-                               Text="Another Auto row"
-                               BackgroundColor="LightGreen"
-                               Padding="10"/>
-                        
-                        <BoxView Grid.Row="2"
-                                 Color="LightCoral"/>
-                        <Label Grid.Row="2"
-                               Text="Star row - fills remaining space"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+                    <Label Grid.Row="1"
+                           Text="Another Auto row"
+                           BackgroundColor="LightGreen"
+                           Padding="10"/>
+                    
+                    <BoxView Grid.Row="2"
+                             Color="LightCoral"/>
+                    <Label Grid.Row="2"
+                           Text="Star row - fills remaining space"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+                </Grid>
+            </VerticalStackLayout>
 
             <!-- Grid Alignment -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Cell Alignment"
-                           FontAttributes="Bold"/>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Cell Alignment"/>
+                
+                <Grid HeightRequest="200"
+                      RowDefinitions="*,*,*"
+                      ColumnDefinitions="*,*,*"
+                      RowSpacing="5"
+                      ColumnSpacing="5"
+                      BackgroundColor="LightGray">
                     
-                    <Grid HeightRequest="200"
-                          RowDefinitions="*,*,*"
-                          ColumnDefinitions="*,*,*"
-                          RowSpacing="5"
-                          ColumnSpacing="5"
-                          BackgroundColor="LightGray">
-                        
-                        <BoxView Color="Red" WidthRequest="40" HeightRequest="40"
-                                 HorizontalOptions="Start" VerticalOptions="Start"/>
-                        <Label Text="Start/Start" FontSize="10"/>
-                        
-                        <BoxView Grid.Column="1" Color="Green" WidthRequest="40" HeightRequest="40"
-                                 HorizontalOptions="Center" VerticalOptions="Start"/>
-                        <Label Grid.Column="1" Text="Center/Start" FontSize="10" HorizontalOptions="Center"/>
-                        
-                        <BoxView Grid.Column="2" Color="Blue" WidthRequest="40" HeightRequest="40"
-                                 HorizontalOptions="End" VerticalOptions="Start"/>
-                        <Label Grid.Column="2" Text="End/Start" FontSize="10" HorizontalOptions="End"/>
-                        
-                        <BoxView Grid.Row="1" Color="Yellow" WidthRequest="40" HeightRequest="40"
-                                 HorizontalOptions="Start" VerticalOptions="Center"/>
-                        
-                        <BoxView Grid.Row="1" Grid.Column="1" Color="Purple" WidthRequest="40" HeightRequest="40"
-                                 HorizontalOptions="Center" VerticalOptions="Center"/>
-                        
-                        <BoxView Grid.Row="1" Grid.Column="2" Color="Orange" WidthRequest="40" HeightRequest="40"
-                                 HorizontalOptions="End" VerticalOptions="Center"/>
-                        
-                        <BoxView Grid.Row="2" Color="Teal" WidthRequest="40" HeightRequest="40"
-                                 HorizontalOptions="Start" VerticalOptions="End"/>
-                        
-                        <BoxView Grid.Row="2" Grid.Column="1" Color="Maroon" WidthRequest="40" HeightRequest="40"
-                                 HorizontalOptions="Center" VerticalOptions="End"/>
-                        
-                        <BoxView Grid.Row="2" Grid.Column="2" Color="Navy" WidthRequest="40" HeightRequest="40"
-                                 HorizontalOptions="End" VerticalOptions="End"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+                    <BoxView Color="Red" WidthRequest="40" HeightRequest="40"
+                             HorizontalOptions="Start" VerticalOptions="Start"/>
+                    <Label Text="Start/Start" FontSize="10"/>
+                    
+                    <BoxView Grid.Column="1" Color="Green" WidthRequest="40" HeightRequest="40"
+                             HorizontalOptions="Center" VerticalOptions="Start"/>
+                    <Label Grid.Column="1" Text="Center/Start" FontSize="10" HorizontalOptions="Center"/>
+                    
+                    <BoxView Grid.Column="2" Color="Blue" WidthRequest="40" HeightRequest="40"
+                             HorizontalOptions="End" VerticalOptions="Start"/>
+                    <Label Grid.Column="2" Text="End/Start" FontSize="10" HorizontalOptions="End"/>
+                    
+                    <BoxView Grid.Row="1" Color="Yellow" WidthRequest="40" HeightRequest="40"
+                             HorizontalOptions="Start" VerticalOptions="Center"/>
+                    
+                    <BoxView Grid.Row="1" Grid.Column="1" Color="Purple" WidthRequest="40" HeightRequest="40"
+                             HorizontalOptions="Center" VerticalOptions="Center"/>
+                    
+                    <BoxView Grid.Row="1" Grid.Column="2" Color="Orange" WidthRequest="40" HeightRequest="40"
+                             HorizontalOptions="End" VerticalOptions="Center"/>
+                    
+                    <BoxView Grid.Row="2" Color="Teal" WidthRequest="40" HeightRequest="40"
+                             HorizontalOptions="Start" VerticalOptions="End"/>
+                    
+                    <BoxView Grid.Row="2" Grid.Column="1" Color="Maroon" WidthRequest="40" HeightRequest="40"
+                             HorizontalOptions="Center" VerticalOptions="End"/>
+                    
+                    <BoxView Grid.Row="2" Grid.Column="2" Color="Navy" WidthRequest="40" HeightRequest="40"
+                             HorizontalOptions="End" VerticalOptions="End"/>
+                </Grid>
+            </VerticalStackLayout>
 
             <!-- Calculator-style Layout -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Calculator-style Layout"
-                           FontAttributes="Bold"/>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Calculator-style Layout"/>
+                
+                <Grid RowDefinitions="50,50,50,50,50"
+                      ColumnDefinitions="*,*,*,*"
+                      RowSpacing="2"
+                      ColumnSpacing="2"
+                      WidthRequest="280"
+                      HorizontalOptions="Center">
                     
-                    <Grid RowDefinitions="50,50,50,50,50"
-                          ColumnDefinitions="*,*,*,*"
-                          RowSpacing="2"
-                          ColumnSpacing="2"
-                          WidthRequest="280"
-                          HorizontalOptions="Center">
-                        
-                        <Label Grid.ColumnSpan="4"
-                               Text="0"
-                               FontSize="24"
-                               BackgroundColor="DarkGray"
-                               TextColor="White"
-                               HorizontalTextAlignment="End"
-                               VerticalTextAlignment="Center"
-                               Padding="10,0"/>
-                        
-                        <Button Grid.Row="1" Text="C" BackgroundColor="LightGray"/>
-                        <Button Grid.Row="1" Grid.Column="1" Text="±" BackgroundColor="LightGray"/>
-                        <Button Grid.Row="1" Grid.Column="2" Text="%" BackgroundColor="LightGray"/>
-                        <Button Grid.Row="1" Grid.Column="3" Text="÷" BackgroundColor="Orange" TextColor="White"/>
-                        
-                        <Button Grid.Row="2" Text="7"/>
-                        <Button Grid.Row="2" Grid.Column="1" Text="8"/>
-                        <Button Grid.Row="2" Grid.Column="2" Text="9"/>
-                        <Button Grid.Row="2" Grid.Column="3" Text="×" BackgroundColor="Orange" TextColor="White"/>
-                        
-                        <Button Grid.Row="3" Text="4"/>
-                        <Button Grid.Row="3" Grid.Column="1" Text="5"/>
-                        <Button Grid.Row="3" Grid.Column="2" Text="6"/>
-                        <Button Grid.Row="3" Grid.Column="3" Text="-" BackgroundColor="Orange" TextColor="White"/>
-                        
-                        <Button Grid.Row="4" Text="1"/>
-                        <Button Grid.Row="4" Grid.Column="1" Text="2"/>
-                        <Button Grid.Row="4" Grid.Column="2" Text="3"/>
-                        <Button Grid.Row="4" Grid.Column="3" Text="+" BackgroundColor="Orange" TextColor="White"/>
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
+                    <Label Grid.ColumnSpan="4"
+                           Text="0"
+                           FontSize="24"
+                           BackgroundColor="DarkGray"
+                           TextColor="White"
+                           HorizontalTextAlignment="End"
+                           VerticalTextAlignment="Center"
+                           Padding="10,0"/>
+                    
+                    <Button Grid.Row="1" Text="C" BackgroundColor="LightGray"/>
+                    <Button Grid.Row="1" Grid.Column="1" Text="±" BackgroundColor="LightGray"/>
+                    <Button Grid.Row="1" Grid.Column="2" Text="%" BackgroundColor="LightGray"/>
+                    <Button Grid.Row="1" Grid.Column="3" Text="÷" BackgroundColor="Orange" TextColor="White"/>
+                    
+                    <Button Grid.Row="2" Text="7"/>
+                    <Button Grid.Row="2" Grid.Column="1" Text="8"/>
+                    <Button Grid.Row="2" Grid.Column="2" Text="9"/>
+                    <Button Grid.Row="2" Grid.Column="3" Text="×" BackgroundColor="Orange" TextColor="White"/>
+                    
+                    <Button Grid.Row="3" Text="4"/>
+                    <Button Grid.Row="3" Grid.Column="1" Text="5"/>
+                    <Button Grid.Row="3" Grid.Column="2" Text="6"/>
+                    <Button Grid.Row="3" Grid.Column="3" Text="-" BackgroundColor="Orange" TextColor="White"/>
+                    
+                    <Button Grid.Row="4" Text="1"/>
+                    <Button Grid.Row="4" Grid.Column="1" Text="2"/>
+                    <Button Grid.Row="4" Grid.Column="2" Text="3"/>
+                    <Button Grid.Row="4" Grid.Column="3" Text="+" BackgroundColor="Orange" TextColor="White"/>
+                </Grid>
+            </VerticalStackLayout>
 
             <!-- Input Transparency -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Input Transparency"
-                           FontAttributes="Bold"/>
-                    <Label Text="A tinted overlay grid lies over the buttons below it. An input transparent overlay lets clicks reach the buttons below. With CascadeInputTransparent off, the overlay's own button still takes clicks."
-                           FontSize="12"
-                           FontAttributes="Italic"/>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Input Transparency"/>
+                <Label StyleClass="h3"
+                       Text="A tinted overlay grid lies over the buttons below it. An input transparent overlay lets clicks reach the buttons below. With CascadeInputTransparent off, the overlay's own button still takes clicks."/>
 
-                    <HorizontalStackLayout Spacing="10">
-                        <Switch x:Name="InputTransparentSwitch"
-                                IsToggled="True"
-                                Toggled="OnOverlayInputToggled"/>
-                        <Label Text="InputTransparent"
-                               VerticalOptions="Center"/>
-                    </HorizontalStackLayout>
-                    <HorizontalStackLayout Spacing="10">
-                        <Switch x:Name="CascadeSwitch"
-                                IsToggled="False"
-                                Toggled="OnOverlayInputToggled"/>
-                        <Label Text="CascadeInputTransparent"
-                               VerticalOptions="Center"/>
-                    </HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="10">
+                    <Switch x:Name="InputTransparentSwitch"
+                            IsToggled="True"
+                            Toggled="OnOverlayInputToggled"/>
+                    <Label Text="InputTransparent"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                <HorizontalStackLayout Spacing="10">
+                    <Switch x:Name="CascadeSwitch"
+                            IsToggled="False"
+                            Toggled="OnOverlayInputToggled"/>
+                    <Label Text="CascadeInputTransparent"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
 
-                    <Grid HeightRequest="140">
-                        <Grid ColumnDefinitions="*,*"
-                              ColumnSpacing="10"
-                              VerticalOptions="End">
-                            <Button Text="Below 1"
-                                    Clicked="OnInputTargetClicked"/>
-                            <Button Grid.Column="1"
-                                    Text="Below 2"
-                                    Clicked="OnInputTargetClicked"/>
-                        </Grid>
-
-                        <Grid x:Name="InputOverlay"
-                              BackgroundColor="#4000A0FF"
-                              InputTransparent="True"
-                              CascadeInputTransparent="False">
-                            <Button Text="Overlay Button"
-                                    HorizontalOptions="Center"
-                                    VerticalOptions="Start"
-                                    Margin="0,8"
-                                    Clicked="OnInputTargetClicked"/>
-                        </Grid>
+                <Grid HeightRequest="140">
+                    <Grid ColumnDefinitions="*,*"
+                          ColumnSpacing="10"
+                          VerticalOptions="End">
+                        <Button Text="Below 1"
+                                Clicked="OnInputTargetClicked"/>
+                        <Button Grid.Column="1"
+                                Text="Below 2"
+                                Clicked="OnInputTargetClicked"/>
                     </Grid>
 
-                    <Label x:Name="InputTargetLabel"
-                           Text="Last clicked: (none)"
-                           FontAttributes="Italic"/>
-                </VerticalStackLayout>
-            </Border>
+                    <Grid x:Name="InputOverlay"
+                          BackgroundColor="#4000A0FF"
+                          InputTransparent="True"
+                          CascadeInputTransparent="False">
+                        <Button Text="Overlay Button"
+                                HorizontalOptions="Center"
+                                VerticalOptions="Start"
+                                Margin="0,8"
+                                Clicked="OnInputTargetClicked"/>
+                    </Grid>
+                </Grid>
 
-        </VerticalStackLayout>
+                <Label x:Name="InputTargetLabel"
+                       Text="Last clicked: (none)"
+                       FontAttributes="Italic"/>
+            </VerticalStackLayout>
+
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>
