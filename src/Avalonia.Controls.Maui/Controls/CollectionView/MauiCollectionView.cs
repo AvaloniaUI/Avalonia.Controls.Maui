@@ -1648,6 +1648,14 @@ public class MauiCollectionView : TemplatedControl
 
     internal static void CleanupLogicalChild(Control content)
     {
+        Dispatcher.UIThread.Post(static state => RemoveLogicalChildIfDetached((Control)state!), content);
+    }
+
+    private static void RemoveLogicalChildIfDetached(Control content)
+    {
+        if (TopLevel.GetTopLevel(content) is not null)
+            return;
+
         if (content.Tag is Microsoft.Maui.Controls.Element mauiElement &&
             mauiElement.Parent is Microsoft.Maui.Controls.Element parentElement)
         {

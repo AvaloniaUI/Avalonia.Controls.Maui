@@ -3,6 +3,7 @@ using Avalonia.Controls.Maui.Extensions;
 using Avalonia.Controls.Maui.Tests.TestUtilities;
 using Microsoft.Maui.Controls;
 using System.Collections.ObjectModel;
+using ControlsBorder = Microsoft.Maui.Controls.Border;
 using MauiCollectionViewHandler = Avalonia.Controls.Maui.Handlers.CollectionViewHandler;
 
 namespace Avalonia.Controls.Maui.Tests.Handlers;
@@ -51,6 +52,63 @@ public class CollectionViewLogicalParentTests : HandlerTestBase
         Assert.NotNull(mauiElement);
         Assert.NotNull(mauiElement.Parent);
         Assert.Same(collectionView, mauiElement.Parent);
+    }
+
+    [AvaloniaFact(DisplayName = "Template Item Keeps Its Parent When A Shadow Wraps It")]
+    public async Task TemplateItemKeepsItsParentWhenAShadowWrapsIt()
+    {
+        var itemViews = new List<ControlsBorder>();
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = new List<string> { "One", "Two" };
+        collectionView.ItemTemplate = new DataTemplate(() =>
+        {
+            var border = new ControlsBorder { HeightRequest = 30 };
+            itemViews.Add(border);
+            return border;
+        });
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+        var window = new Window { Content = handler.PlatformView, Width = 300, Height = 400 };
+        window.Show();
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        var item = itemViews.First(view => view.Handler?.PlatformView is Control control && TopLevel.GetTopLevel(control) != null);
+        item.Shadow = new Shadow { Brush = Brush.Black, Radius = 2, Opacity = 0.5f };
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        Assert.Same(collectionView, item.Parent);
+    }
+
+    [AvaloniaFact(DisplayName = "Removed Template Item Leaves The Logical Tree")]
+    public async Task RemovedTemplateItemLeavesTheLogicalTree()
+    {
+        var itemViews = new Dictionary<string, ControlsBorder>();
+        var items = new ObservableCollection<string> { "One", "Two" };
+        var collectionView = CreateCollectionView();
+        collectionView.ItemsSource = items;
+        collectionView.ItemTemplate = new DataTemplate(() =>
+        {
+            var border = new ControlsBorder { HeightRequest = 30 };
+            border.BindingContextChanged += (_, _) =>
+            {
+                if (border.BindingContext is string text)
+                    itemViews[text] = border;
+            };
+            return border;
+        });
+
+        var handler = await CreateHandlerAsync<MauiCollectionViewHandler>(collectionView);
+        var window = new Window { Content = handler.PlatformView, Width = 300, Height = 400 };
+        window.Show();
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        var removed = itemViews["One"];
+        Assert.Same(collectionView, removed.Parent);
+
+        items.Remove("One");
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        Assert.Null(removed.Parent);
     }
 
     [AvaloniaFact(DisplayName = "Multiple Template Items All Have CollectionView As Parent")]
