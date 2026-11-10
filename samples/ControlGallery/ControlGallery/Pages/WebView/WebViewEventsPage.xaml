@@ -8,9 +8,8 @@
           RowSpacing="10">
 
         <Label Grid.Row="0"
-               Text="Captures Navigating and Navigated events in order on a dedicated WebView."
-               FontSize="12"
-               TextColor="Gray" />
+               StyleClass="h2"
+               Text="Captures Navigating and Navigated events in order on a dedicated WebView." />
 
         <FlexLayout Grid.Row="1"
                     Wrap="Wrap"

@@ -4,8 +4,8 @@
              x:Class="ControlGallery.Pages.MauiAvaloniaViewPage"
              xmlns:views="clr-namespace:ControlGallery.Views"
              Title="Maui Avalonia View">
-    <Grid Margin="10" RowDefinitions="Auto, *">
-    <Label LineBreakMode="WordWrap"
+    <Grid Padding="20" RowDefinitions="Auto, *">
+    <Label StyleClass="h2"
         Text="This is an example of a .NET MAUI Control written using Avalonia. This can be used in any .NET MAUI application." />
     <views:CounterView Grid.Row="1" Count="5" HeightRequest="200" />
     </Grid>
