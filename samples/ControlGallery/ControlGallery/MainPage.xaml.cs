@@ -120,12 +120,8 @@ public partial class MainPage : FlyoutPage
 
     private void OnFlowDirectionPickerSelectedIndexChanged(object? sender, EventArgs e)
     {
-        var flowDirection = FlowDirectionPicker.SelectedIndex == 1 ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
-
         if (Window is { } window)
-            window.FlowDirection = flowDirection;
-        else
-            FlowDirection = flowDirection;
+            window.FlowDirection = FlowDirectionPicker.SelectedIndex == 1 ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
     }
 
     private static int ToThemeIndex(AppTheme theme) => theme switch
