@@ -528,7 +528,7 @@ public class StackNavigationManager
         // At root with flyout parent: show hamburger as back button content
         if (showHamburger && GetContentPageFromHandler(_currentPage!) is { } rootWrapper)
         {
-            AvaloniaNavigationPage.SetBackButtonContent(rootWrapper, "\u2630");
+            AvaloniaNavigationPage.SetBackButtonContent(rootWrapper, CreateThemeIcon("NavigationPageMenuIcon"));
             AvaloniaNavigationPage.SetHasBackButton(rootWrapper, true);
             _navigationPage.IsBackButtonVisible = true;
 
@@ -552,10 +552,18 @@ public class StackNavigationManager
             showBackButton, showHamburger);
     }
 
+    private static PathIcon CreateThemeIcon(string resourceKey)
+    {
+        var icon = new PathIcon();
+        icon.Bind(PathIcon.DataProperty, icon.GetResourceObservable(resourceKey));
+        return icon;
+    }
+
     private static Control CreateBackButtonTitleContent(string title)
     {
-        var icon = new PathIcon { Width = 16, Height = 16 };
-        icon.Bind(PathIcon.DataProperty, icon.GetResourceObservable("NavigationPageBackIcon"));
+        var icon = CreateThemeIcon("NavigationPageBackIcon");
+        icon.Width = 16;
+        icon.Height = 16;
 
         return new StackPanel
         {

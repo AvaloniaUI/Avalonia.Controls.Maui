@@ -135,6 +135,30 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
             });
         }
 
+        [AvaloniaFact(DisplayName = "Hamburger Uses The Theme Menu Icon")]
+        public async Task Hamburger_Uses_The_Theme_Menu_Icon()
+        {
+            var navigationPage = new MauiNavigationPage(new PageStub { Title = "Root" });
+            var flyoutPage = new MauiFlyoutPage
+            {
+                Flyout = new MauiContentPage { Title = "Menu" },
+                Detail = navigationPage,
+                FlyoutLayoutBehavior = Microsoft.Maui.Controls.FlyoutLayoutBehavior.Popover
+            };
+
+            var flyoutHandler = await CreateHandlerAsync<FlyoutViewHandler>(flyoutPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                ShowInWindow((Control)flyoutHandler.PlatformView!);
+
+                var avaloniaNavigationPage = (AvaloniaNavigationPage)navigationPage.Handler!.PlatformView!;
+                var icon = Assert.IsType<PathIcon>(AvaloniaNavigationPage.GetBackButtonContent(avaloniaNavigationPage.CurrentPage!));
+                Assert.NotNull(icon.Data);
+                Assert.Equal(icon.FindResource("NavigationPageMenuIcon"), icon.Data);
+            });
+        }
+
         [AvaloniaFact(DisplayName = "Hamburger Present When Inside FlyoutPage Popover At Root")]
         public async Task Hamburger_Present_When_Inside_FlyoutPage_Popover_At_Root()
         {
