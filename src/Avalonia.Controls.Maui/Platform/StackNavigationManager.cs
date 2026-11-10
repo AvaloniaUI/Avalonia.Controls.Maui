@@ -513,7 +513,7 @@ public class StackNavigationManager
                     // Set back button content on the current ContentPage
                     if (GetContentPageFromHandler(_currentPage!) is { } wrapper)
                     {
-                        AvaloniaNavigationPage.SetBackButtonContent(wrapper, $"\u2190 {backButtonTitle}");
+                        AvaloniaNavigationPage.SetBackButtonContent(wrapper, CreateBackButtonTitleContent(backButtonTitle));
                     }
                 }
             }
@@ -550,6 +550,23 @@ public class StackNavigationManager
 
         _logger?.LogDebug("Back button visible: {IsVisible}, hamburger: {HamburgerVisible}",
             showBackButton, showHamburger);
+    }
+
+    private static Control CreateBackButtonTitleContent(string title)
+    {
+        var icon = new PathIcon { Width = 16, Height = 16 };
+        icon.Bind(PathIcon.DataProperty, icon.GetResourceObservable("NavigationPageBackIcon"));
+
+        return new StackPanel
+        {
+            Orientation = Layout.Orientation.Horizontal,
+            Spacing = 6,
+            Children =
+            {
+                icon,
+                new TextBlock { Text = title, VerticalAlignment = Layout.VerticalAlignment.Center },
+            },
+        };
     }
 
     private void UpdateNavigationBarColors()

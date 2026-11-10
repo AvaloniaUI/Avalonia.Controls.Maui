@@ -112,6 +112,29 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
             });
         }
 
+        [AvaloniaFact(DisplayName = "BackButtonTitle Uses The Mirrorable Back Icon")]
+        public async Task BackButtonTitle_Uses_The_Mirrorable_Back_Icon()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            MauiNavigationPage.SetBackButtonTitle(rootPage, "Demo");
+            var navigationPage = new MauiNavigationPage(rootPage);
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(async () =>
+            {
+                ShowInWindow(handler.PlatformView);
+                await navigationPage.PushAsync(new MauiContentPage { Title = "Detail" });
+
+                var wrapper = handler.PlatformView.CurrentPage!;
+                var content = Assert.IsAssignableFrom<Panel>(AvaloniaNavigationPage.GetBackButtonContent(wrapper));
+                var icon = Assert.IsType<PathIcon>(content.Children[0]);
+                Assert.NotNull(icon.Data);
+                Assert.Equal(icon.FindResource("NavigationPageBackIcon"), icon.Data);
+                Assert.Equal("Demo", Assert.IsType<TextBlock>(content.Children[1]).Text);
+            });
+        }
+
         [AvaloniaFact(DisplayName = "Hamburger Present When Inside FlyoutPage Popover At Root")]
         public async Task Hamburger_Present_When_Inside_FlyoutPage_Popover_At_Root()
         {
