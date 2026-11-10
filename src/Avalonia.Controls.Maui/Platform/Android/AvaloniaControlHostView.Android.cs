@@ -12,6 +12,7 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
     {
         readonly Avalonia.Controls.Border _backgroundBorder = new();
         readonly EmbeddedPopupHost _popupHost;
+        readonly AvaloniaViewFirstFrame _firstFrame;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AvaloniaControlHostView"/> class.
@@ -24,6 +25,7 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
             Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
             _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
+            _firstFrame = AvaloniaViewFirstFrame.Attach(this, _backgroundBorder);
         }
 
         /// <inheritdoc/>
@@ -32,6 +34,13 @@ namespace Avalonia.Controls.Maui.Platforms.Android.Handlers
             AvaloniaHostLayout.MeasureChildrenExactly(this, right - left, bottom - top);
             base.OnLayout(changed, left, top, right, bottom);
             _popupHost.OnLayout();
+        }
+
+        /// <inheritdoc/>
+        protected override void DispatchDraw(global::Android.Graphics.Canvas canvas)
+        {
+            _firstFrame.OnDraw();
+            base.DispatchDraw(canvas);
         }
 
         /// <inheritdoc/>

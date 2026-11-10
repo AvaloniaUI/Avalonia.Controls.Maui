@@ -13,6 +13,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
     {
         readonly Avalonia.Controls.Border _backgroundBorder = new();
         readonly EmbeddedPopupHost _popupHost;
+        readonly AvaloniaViewRendering? _rendering;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AvaloniaControlHostView"/> class.
@@ -27,6 +28,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
             Avalonia.Controls.TopLevel.SetAutoSafeAreaPadding(_backgroundBorder, false);
             Content = _backgroundBorder;
             _popupHost = EmbeddedPopupHost.Attach(this, _backgroundBorder);
+            _rendering = AvaloniaViewRendering.Attach(this, Avalonia.Controls.TopLevel.GetTopLevel(_backgroundBorder));
             AvaloniaViewHover.Attach(this, Avalonia.Controls.TopLevel.GetTopLevel(_backgroundBorder));
         }
 
@@ -35,6 +37,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
         {
             base.LayoutSubviews();
             _popupHost.OnLayout();
+            _rendering?.Update();
         }
 
         /// <inheritdoc/>
@@ -42,6 +45,7 @@ namespace Avalonia.Controls.Maui.Platforms.iOS.Handlers
         {
             base.MovedToWindow();
             _popupHost.OnMovedToWindow();
+            _rendering?.Update();
         }
 
         private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
