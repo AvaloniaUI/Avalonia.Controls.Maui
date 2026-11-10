@@ -71,6 +71,20 @@ public class ShapeAspectTests : HandlerTestBase
         AssertRect(new Rect(0, 4, 16, 8), bounds);
     }
 
+    [AvaloniaFact(DisplayName = "Changing Aspect Re-places A Path That Keeps Its Size")]
+    public async Task ChangingAspectReplacesAPathThatKeepsItsSize()
+    {
+        var path = CreatePath("M0,0 H20 V10 H0 Z", Stretch.Uniform, size: 16);
+        var handler = await CreateHandlerAsync<PathHandler>(path);
+        var platformView = Assert.IsAssignableFrom<AvaloniaShape>(handler.PlatformView);
+        ShowInWindow(platformView);
+
+        path.Aspect = Stretch.UniformToFill;
+        Threading.Dispatcher.UIThread.RunJobs();
+
+        AssertRect(new Rect(0, 0, 32, 16), platformView.RenderedGeometry!.Bounds);
+    }
+
     [AvaloniaFact(DisplayName = "Unstretched Path Measures With Its Stroke")]
     public async Task UnstretchedPathMeasuresWithItsStroke()
     {

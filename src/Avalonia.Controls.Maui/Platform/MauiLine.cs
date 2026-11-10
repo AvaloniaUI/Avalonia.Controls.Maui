@@ -8,7 +8,7 @@ internal sealed class MauiLine : global::Avalonia.Controls.Shapes.Line
 
     static MauiLine()
     {
-        AffectsGeometry<MauiLine>(StrokeProperty, StrokeThicknessProperty);
+        AffectsGeometry<MauiLine>(StretchProperty, StrokeProperty, StrokeThicknessProperty);
     }
 
     protected override Geometry CreateDefiningGeometry() =>

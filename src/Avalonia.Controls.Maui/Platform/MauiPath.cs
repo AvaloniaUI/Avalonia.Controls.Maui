@@ -8,7 +8,7 @@ internal sealed class MauiPath : global::Avalonia.Controls.Shapes.Path
 
     static MauiPath()
     {
-        AffectsGeometry<MauiPath>(StrokeProperty, StrokeThicknessProperty);
+        AffectsGeometry<MauiPath>(StretchProperty, StrokeProperty, StrokeThicknessProperty);
     }
 
     protected override Geometry? CreateDefiningGeometry() =>

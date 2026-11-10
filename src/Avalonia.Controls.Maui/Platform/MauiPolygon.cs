@@ -8,7 +8,7 @@ internal sealed class MauiPolygon : global::Avalonia.Controls.Shapes.Polygon
 
     static MauiPolygon()
     {
-        AffectsGeometry<MauiPolygon>(StrokeProperty, StrokeThicknessProperty);
+        AffectsGeometry<MauiPolygon>(StretchProperty, StrokeProperty, StrokeThicknessProperty);
     }
 
     protected override Geometry CreateDefiningGeometry() =>
