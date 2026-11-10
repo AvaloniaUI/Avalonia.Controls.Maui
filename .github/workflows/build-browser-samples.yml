@@ -31,6 +31,12 @@ jobs:
         run: |
           dotnet workload restore ${{github.workspace}}/Avalonia.Controls.Maui.slnx --source https://api.nuget.org/v3/index.json
 
+      # Workload restore does not pick up wasm-tools. Without it, the native libraries (SkiaSharp, HarfBuzz)
+      # are not linked into dotnet.native.wasm, so the publish succeeds but the app fails at startup.
+      - name: Install wasm-tools workload
+        run: |
+          dotnet workload install wasm-tools --source https://api.nuget.org/v3/index.json
+
       # GitHub Pages cannot serve precompressed assets, so skip generating the .br/.gz copies.
       - name: Publish
         run: |

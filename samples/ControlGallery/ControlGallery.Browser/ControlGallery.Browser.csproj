@@ -7,6 +7,8 @@
 		<UseMaui>true</UseMaui>
 		<RootNamespace>ControlGallery</RootNamespace>
 		<WarningsNotAsErrors>$(WarningsNotAsErrors);IL2104</WarningsNotAsErrors>
+		<!-- Fail the build when wasm-tools is missing, instead of publishing an app that cannot start -->
+		<WasmBuildNative>true</WasmBuildNative>
 	</PropertyGroup>
 
 	<!-- Keep the members that ControlGallery's third-party controls bind to by name -->
