@@ -3,6 +3,7 @@ using Avalonia.Controls.Maui.Handlers;
 using Avalonia.Headless.XUnit;
 using Avalonia.Controls.Maui.Tests.Stubs;
 using Avalonia.Media;
+using Avalonia.Threading;
 using MauiColors = Microsoft.Maui.Graphics.Colors;
 using MauiContentPage = Microsoft.Maui.Controls.ContentPage;
 using MauiNavigationPage = Microsoft.Maui.Controls.NavigationPage;
@@ -112,26 +113,37 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
             });
         }
 
-        [AvaloniaFact(DisplayName = "BackButtonTitle Uses The Mirrorable Back Icon")]
-        public async Task BackButtonTitle_Uses_The_Mirrorable_Back_Icon()
+        [AvaloniaTheory(DisplayName = "BackButtonTitle Arrow Follows The Flow Direction")]
+        [InlineData(Microsoft.Maui.FlowDirection.LeftToRight, false)]
+        [InlineData(Microsoft.Maui.FlowDirection.RightToLeft, true)]
+        public async Task BackButtonTitle_Arrow_Follows_The_Flow_Direction(Microsoft.Maui.FlowDirection flowDirection, bool arrowMirrored)
         {
             var rootPage = new PageStub { Title = "Root" };
             MauiNavigationPage.SetBackButtonTitle(rootPage, "Demo");
-            var navigationPage = new MauiNavigationPage(rootPage);
+            var navigationPage = new MauiNavigationPage(rootPage) { FlowDirection = flowDirection };
 
             var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
 
             await InvokeOnMainThreadAsync(async () =>
             {
-                ShowInWindow(handler.PlatformView);
-                await navigationPage.PushAsync(new MauiContentPage { Title = "Detail" });
+                var window = ShowInWindow(handler.PlatformView);
+                await navigationPage.PushAsync(new MauiContentPage { Title = "Detail" }, animated: false);
+                Dispatcher.UIThread.RunJobs();
 
                 var wrapper = handler.PlatformView.CurrentPage!;
                 var content = Assert.IsAssignableFrom<Panel>(AvaloniaNavigationPage.GetBackButtonContent(wrapper));
                 var icon = Assert.IsType<PathIcon>(content.Children[0]);
+                var title = Assert.IsType<TextBlock>(content.Children[1]);
                 Assert.NotNull(icon.Data);
                 Assert.Equal(icon.FindResource("NavigationPageBackIcon"), icon.Data);
-                Assert.Equal("Demo", Assert.IsType<TextBlock>(content.Children[1]).Text);
+                Assert.Equal("Demo", title.Text);
+
+                var iconTransform = icon.TransformToVisual(window);
+                var titleTransform = title.TransformToVisual(window);
+                Assert.NotNull(iconTransform);
+                Assert.NotNull(titleTransform);
+                Assert.Equal(arrowMirrored, iconTransform.Value.M11 < 0);
+                Assert.True(titleTransform.Value.M11 > 0);
             });
         }
 
