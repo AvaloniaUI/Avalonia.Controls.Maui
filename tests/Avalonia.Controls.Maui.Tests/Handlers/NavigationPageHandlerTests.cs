@@ -520,6 +520,28 @@ namespace Avalonia.Controls.Maui.Tests.Handlers
             });
         }
 
+        [AvaloniaFact(DisplayName = "NavigationPage Frame Follows Its Platform Bounds")]
+        public async Task NavigationPage_Frame_Follows_Its_Platform_Bounds()
+        {
+            var rootPage = new PageStub { Title = "Root" };
+            var navigationPage = new MauiNavigationPage(rootPage);
+            var sizeChangedCount = 0;
+            navigationPage.SizeChanged += (_, _) => sizeChangedCount++;
+
+            var handler = await CreateHandlerAsync<NavigationViewHandler>(navigationPage);
+
+            await InvokeOnMainThreadAsync(() =>
+            {
+                var window = ShowInWindow(handler.PlatformView);
+                Assert.Equal(new Microsoft.Maui.Graphics.Rect(0, 0, 320, 240), navigationPage.Frame);
+                Assert.True(sizeChangedCount > 0);
+
+                window.Width = 500;
+                Threading.Dispatcher.UIThread.RunJobs();
+                Assert.Equal(500, navigationPage.Width);
+            });
+        }
+
         [AvaloniaFact(DisplayName = "Push Pop Push Results In Correct Stack Depth")]
         public async Task Push_Pop_Push_Results_In_Correct_Stack_Depth()
         {

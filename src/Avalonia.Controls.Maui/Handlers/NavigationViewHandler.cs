@@ -12,6 +12,7 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, A
 {
     private StackNavigationManager? _navigationManager;
     private ILogger<NavigationViewHandler>? _logger;
+    private Microsoft.Maui.Graphics.Rect? _arrangedSlot;
 
     /// <summary>Property mapper for <see cref="NavigationViewHandler"/>.</summary>
     public static IPropertyMapper<IStackNavigationView, NavigationViewHandler> Mapper =
@@ -71,6 +72,7 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, A
     {
         base.ConnectHandler(platformView);
         _navigationManager?.Connect(VirtualView, platformView);
+        platformView.LayoutUpdated += OnPlatformViewLayoutUpdated;
 
         // Initialize navigation stack if pages already exist
         // NavigationPage adds pages before the handler is connected
@@ -88,9 +90,25 @@ public partial class NavigationViewHandler : ViewHandler<IStackNavigationView, A
     /// <inheritdoc/>
     protected override void DisconnectHandler(AvaloniaNavigationPage platformView)
     {
+        platformView.LayoutUpdated -= OnPlatformViewLayoutUpdated;
+        _arrangedSlot = null;
         _navigationManager?.Disconnect(VirtualView, platformView);
         base.DisconnectHandler(platformView);
         Logger?.LogDebug("Disconnected NavigationViewHandler");
+    }
+
+    private void OnPlatformViewLayoutUpdated(object? sender, EventArgs e)
+    {
+        if (((IElementHandler)this).VirtualView is not IView view || ((IElementHandler)this).PlatformView is not AvaloniaNavigationPage platformView)
+            return;
+
+        var slot = platformView.Bounds.Inflate(platformView.Margin);
+        var bounds = new Microsoft.Maui.Graphics.Rect(slot.X, slot.Y, slot.Width, slot.Height);
+        if (_arrangedSlot == bounds)
+            return;
+
+        _arrangedSlot = bounds;
+        view.Arrange(bounds);
     }
 
     /// <inheritdoc/>
