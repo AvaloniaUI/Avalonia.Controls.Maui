@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              x:Class="ControlGallery.Pages.ImagePage"
              Title="Image">
     <ContentPage.Resources>
@@ -49,263 +50,211 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="24">
-
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="Displays an image from a local file or a URI." />
 
             <!-- File Image Source -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="File Image Source"
-                           FontAttributes="Bold" />
-                    <Label Text="Loads an image from the app's resources"
-                           FontSize="12"
-                           TextColor="Gray" />
-                    <Image x:Name="FileImage"
-                           Source="dotnet_bot.png"
-                           Aspect="AspectFit"
-                           HeightRequest="200"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource LightImageBackground}, Dark={StaticResource DarkImageBackground}}" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="File Image Source" />
+                <Label StyleClass="h3"
+                       Text="Loads an image from the app's resources" />
+                <Image x:Name="FileImage"
+                       Source="dotnet_bot.png"
+                       Aspect="AspectFit"
+                       HeightRequest="200"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource LightImageBackground}, Dark={StaticResource DarkImageBackground}}" />
+            </VerticalStackLayout>
 
             <!-- URI Image Source -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="URI Image Source"
-                           FontAttributes="Bold" />
-                    <Label Text="Loads an image from a URL"
-                           FontSize="12"
-                           TextColor="Gray" />
-                    <Image x:Name="UriImage"
-                           Source="https://framerusercontent.com/images/9tXJ0X4yPgCHwR0ZXbMZekNnR18.png"
-                           Aspect="AspectFit"
-                           HeightRequest="200"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource LightImageBackground}, Dark={StaticResource DarkImageBackground}}" />
-                    <Label x:Name="UriStatusLabel"
-                           Text="Status: Loading..."
-                           FontSize="12"
-                           FontAttributes="Italic" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="URI Image Source" />
+                <Label StyleClass="h3"
+                       Text="Loads an image from a URL" />
+                <Image x:Name="UriImage"
+                       Source="https://framerusercontent.com/images/9tXJ0X4yPgCHwR0ZXbMZekNnR18.png"
+                       Aspect="AspectFit"
+                       HeightRequest="200"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource LightImageBackground}, Dark={StaticResource DarkImageBackground}}" />
+                <Label x:Name="UriStatusLabel"
+                       Text="Status: Loading..."
+                       FontSize="12"
+                       FontAttributes="Italic" />
+            </VerticalStackLayout>
 
             <!-- Aspect Modes -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Aspect Modes"
-                           FontAttributes="Bold" />
-                    <Label Text="AspectFit - Maintains aspect ratio, fits within bounds"
-                           FontSize="12" />
-                    <Image Source="dotnet_bot.png"
-                           Aspect="AspectFit"
-                           HeightRequest="150"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource LightGreenTint}, Dark={StaticResource DarkGreenTint}}" />
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Aspect Modes" />
+                <Label Text="AspectFit - Maintains aspect ratio, fits within bounds"
+                       FontSize="12" />
+                <Image Source="dotnet_bot.png"
+                       Aspect="AspectFit"
+                       HeightRequest="150"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource LightGreenTint}, Dark={StaticResource DarkGreenTint}}" />
 
-                    <Label Text="AspectFill - Maintains aspect ratio, fills bounds"
-                           FontSize="12"
-                           Margin="0,16,0,0" />
-                    <Image Source="dotnet_bot.png"
-                           Aspect="AspectFill"
-                           HeightRequest="150"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource LightOrangeTint}, Dark={StaticResource DarkOrangeTint}}" />
+                <Label Text="AspectFill - Maintains aspect ratio, fills bounds"
+                       FontSize="12"
+                       Margin="0,16,0,0" />
+                <Image Source="dotnet_bot.png"
+                       Aspect="AspectFill"
+                       HeightRequest="150"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource LightOrangeTint}, Dark={StaticResource DarkOrangeTint}}" />
 
-                    <Label Text="Fill - Stretches to fill bounds"
-                           FontSize="12"
-                           Margin="0,16,0,0" />
-                    <Image Source="dotnet_bot.png"
-                           Aspect="Fill"
-                           HeightRequest="150"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource LightBlueTint}, Dark={StaticResource DarkBlueTint}}" />
+                <Label Text="Fill - Stretches to fill bounds"
+                       FontSize="12"
+                       Margin="0,16,0,0" />
+                <Image Source="dotnet_bot.png"
+                       Aspect="Fill"
+                       HeightRequest="150"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource LightBlueTint}, Dark={StaticResource DarkBlueTint}}" />
 
-                    <Label Text="Center - Centers without scaling"
-                           FontSize="12"
-                           Margin="0,16,0,0" />
-                    <Image Source="dotnet_bot.png"
-                           Aspect="Center"
-                           HeightRequest="150"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource LightPurpleTint}, Dark={StaticResource DarkPurpleTint}}" />
-                </VerticalStackLayout>
-            </Border>
+                <Label Text="Center - Centers without scaling"
+                       FontSize="12"
+                       Margin="0,16,0,0" />
+                <Image Source="dotnet_bot.png"
+                       Aspect="Center"
+                       HeightRequest="150"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource LightPurpleTint}, Dark={StaticResource DarkPurpleTint}}" />
+            </VerticalStackLayout>
 
             <!-- Interactive Aspect Switcher -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Interactive Aspect Switcher"
-                           FontAttributes="Bold" />
-                    <Label Text="Click buttons to change the aspect mode"
-                           FontSize="12"
-                           TextColor="Gray" />
-                    <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
-                        <Button Text="AspectFit"
-                                Clicked="OnAspectButtonClicked"
-                                CommandParameter="AspectFit" />
-                        <Button Text="AspectFill"
-                                Clicked="OnAspectButtonClicked"
-                                CommandParameter="AspectFill" />
-                        <Button Text="Fill"
-                                Clicked="OnAspectButtonClicked"
-                                CommandParameter="Fill" />
-                        <Button Text="Center"
-                                Clicked="OnAspectButtonClicked"
-                                CommandParameter="Center" />
-                    </HorizontalStackLayout>
-                    <Image x:Name="InteractiveImage"
-                           Source="dotnet_bot.png"
-                           Aspect="AspectFit"
-                           HeightRequest="200"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource LightPinkTint}, Dark={StaticResource DarkPinkTint}}" />
-                    <Label x:Name="AspectStatusLabel"
-                           Text="Current Aspect: AspectFit"
-                           FontAttributes="Italic"
-                           FontSize="12"
-                           HorizontalOptions="Center" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Interactive Aspect Switcher" />
+                <Label StyleClass="h3"
+                       Text="Click buttons to change the aspect mode" />
+                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Button Text="AspectFit"
+                            Clicked="OnAspectButtonClicked"
+                            CommandParameter="AspectFit" />
+                    <Button Text="AspectFill"
+                            Clicked="OnAspectButtonClicked"
+                            CommandParameter="AspectFill" />
+                    <Button Text="Fill"
+                            Clicked="OnAspectButtonClicked"
+                            CommandParameter="Fill" />
+                    <Button Text="Center"
+                            Clicked="OnAspectButtonClicked"
+                            CommandParameter="Center" />
+                </HorizontalStackLayout>
+                <Image x:Name="InteractiveImage"
+                       Source="dotnet_bot.png"
+                       Aspect="AspectFit"
+                       HeightRequest="200"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource LightPinkTint}, Dark={StaticResource DarkPinkTint}}" />
+                <Label x:Name="AspectStatusLabel"
+                       Text="Current Aspect: AspectFit"
+                       FontAttributes="Italic"
+                       FontSize="12"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
 
             <!-- Opacity Control -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Opacity"
-                           FontAttributes="Bold" />
-                    <Label x:Name="OpacityLabel"
-                           Text="Opacity: 1.0"
-                           FontSize="12" />
-                    <Slider x:Name="OpacitySlider"
-                            Minimum="0"
-                            Maximum="1"
-                            Value="1"
-                            ValueChanged="OnOpacityChanged" />
-                    <Image x:Name="OpacityImage"
-                           Source="dotnet_bot.png"
-                           Aspect="AspectFit"
-                           HeightRequest="150"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource LightCyanTint}, Dark={StaticResource DarkCyanTint}}" />
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Opacity" />
+                <Label x:Name="OpacityLabel"
+                       Text="Opacity: 1.0"
+                       FontSize="12" />
+                <Slider x:Name="OpacitySlider"
+                        Minimum="0"
+                        Maximum="1"
+                        Value="1"
+                        ValueChanged="OnOpacityChanged" />
+                <Image x:Name="OpacityImage"
+                       Source="dotnet_bot.png"
+                       Aspect="AspectFit"
+                       HeightRequest="150"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource LightCyanTint}, Dark={StaticResource DarkCyanTint}}" />
+            </VerticalStackLayout>
 
             <!-- Dynamic Source Loading -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Dynamic Source Loading"
-                           FontAttributes="Bold" />
-                    <Button Text="Load Random Image"
-                            Clicked="OnLoadRandomImage"
-                            HorizontalOptions="Center" />
-                    <Image x:Name="DynamicImage"
-                           Aspect="AspectFit"
-                           HeightRequest="200"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource LightYellowTint}, Dark={StaticResource DarkYellowTint}}" />
-                    <Label x:Name="DynamicStatusLabel"
-                           FontSize="12"
-                           FontAttributes="Italic"
-                           HorizontalOptions="Center">
-                        <Label.Triggers>
-                            <DataTrigger TargetType="Label"
-                                         Binding="{Binding Source={x:Reference DynamicImage}, Path=IsLoading, x:DataType=Image}"
-                                         Value="True">
-                                <Setter Property="Text" Value="Loading..." />
-                                <Setter Property="TextColor" Value="Orange" />
-                            </DataTrigger>
-                            <DataTrigger TargetType="Label"
-                                         Binding="{Binding Source={x:Reference DynamicImage}, Path=IsLoading, x:DataType=Image}"
-                                         Value="False">
-                                <Setter Property="Text" Value="Image loaded successfully" />
-                                <Setter Property="TextColor" Value="Green" />
-                            </DataTrigger>
-                        </Label.Triggers>
-                    </Label>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Dynamic Source Loading" />
+                <Button Text="Load Random Image"
+                        Clicked="OnLoadRandomImage"
+                        HorizontalOptions="Center" />
+                <Image x:Name="DynamicImage"
+                       Aspect="AspectFit"
+                       HeightRequest="200"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource LightYellowTint}, Dark={StaticResource DarkYellowTint}}" />
+                <Label x:Name="DynamicStatusLabel"
+                       FontSize="12"
+                       FontAttributes="Italic"
+                       HorizontalOptions="Center">
+                    <Label.Triggers>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding Source={x:Reference DynamicImage}, Path=IsLoading, x:DataType=Image}"
+                                     Value="True">
+                            <Setter Property="Text" Value="Loading..." />
+                            <Setter Property="TextColor" Value="Orange" />
+                        </DataTrigger>
+                        <DataTrigger TargetType="Label"
+                                     Binding="{Binding Source={x:Reference DynamicImage}, Path=IsLoading, x:DataType=Image}"
+                                     Value="False">
+                            <Setter Property="Text" Value="Image loaded successfully" />
+                            <Setter Property="TextColor" Value="Green" />
+                        </DataTrigger>
+                    </Label.Triggers>
+                </Label>
+            </VerticalStackLayout>
 
             <!-- GIF Image -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Animated GIF"
-                           FontAttributes="Bold" />
-                    <Label Text="Supports play / pause via IsAnimationPlaying"
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Animated GIF" />
+                <Label StyleClass="h3"
+                       Text="Supports play / pause via IsAnimationPlaying" />
+                <Image x:Name="GifImage"
+                       Source="loader.gif"
+                       Aspect="AspectFit"
+                       HeightRequest="200"
+                       IsAnimationPlaying="True"
+                       BackgroundColor="{AppThemeBinding Light={StaticResource LightBlueTint2}, Dark={StaticResource DarkBlueTint2}}" />
+                <HorizontalStackLayout Spacing="12">
+                    <Button Text="Toggle Animation"
+                            Clicked="OnToggleGifAnimation" />
+                    <Label x:Name="GifStatusLabel"
+                           Text="Status: Playing"
+                           VerticalOptions="Center"
                            FontSize="12" />
-                    <Image x:Name="GifImage"
-                           Source="loader.gif"
-                           Aspect="AspectFit"
-                           HeightRequest="200"
-                           IsAnimationPlaying="True"
-                           BackgroundColor="{AppThemeBinding Light={StaticResource LightBlueTint2}, Dark={StaticResource DarkBlueTint2}}" />
-                    <HorizontalStackLayout Spacing="12">
-                        <Button Text="Toggle Animation"
-                                Clicked="OnToggleGifAnimation" />
-                        <Label x:Name="GifStatusLabel"
-                               Text="Status: Playing"
-                               VerticalOptions="Center"
-                               FontSize="12" />
-                    </HorizontalStackLayout>
-                </VerticalStackLayout>
-            </Border>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
 
             <!-- Multiple Images Grid -->
-            <Border Stroke="Gray"
-                    Padding="12">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Image Gallery"
-                           FontAttributes="Bold" />
-                    <Grid ColumnDefinitions="*,*"
-                          RowDefinitions="150,150"
-                          ColumnSpacing="8"
-                          RowSpacing="8">
-                        <Image Source="https://picsum.photos/200/200?random=1"
-                               Aspect="AspectFill"
-                               BackgroundColor="{AppThemeBinding Light={StaticResource LightRedTint}, Dark={StaticResource DarkRedTint}}"
-                               Grid.Row="0"
-                               Grid.Column="0" />
-                        <Image Source="https://picsum.photos/200/200?random=2"
-                               Aspect="AspectFill"
-                               BackgroundColor="{AppThemeBinding Light={StaticResource LightIndigoTint}, Dark={StaticResource DarkIndigoTint}}"
-                               Grid.Row="0"
-                               Grid.Column="1" />
-                        <Image Source="https://picsum.photos/200/200?random=3"
-                               Aspect="AspectFill"
-                               BackgroundColor="{AppThemeBinding Light={StaticResource LightCyanTint2}, Dark={StaticResource DarkCyanTint2}}"
-                               Grid.Row="1"
-                               Grid.Column="0" />
-                        <Image Source="https://picsum.photos/200/200?random=4"
-                               Aspect="AspectFill"
-                               BackgroundColor="{AppThemeBinding Light={StaticResource LightLimeTint}, Dark={StaticResource DarkLimeTint}}"
-                               Grid.Row="1"
-                               Grid.Column="1" />
-                    </Grid>
-                </VerticalStackLayout>
-            </Border>
-
-        </VerticalStackLayout>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Image Gallery" />
+                <Grid ColumnDefinitions="*,*"
+                      RowDefinitions="150,150"
+                      ColumnSpacing="8"
+                      RowSpacing="8">
+                    <Image Source="https://picsum.photos/200/200?random=1"
+                           Aspect="AspectFill"
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightRedTint}, Dark={StaticResource DarkRedTint}}"
+                           Grid.Row="0"
+                           Grid.Column="0" />
+                    <Image Source="https://picsum.photos/200/200?random=2"
+                           Aspect="AspectFill"
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightIndigoTint}, Dark={StaticResource DarkIndigoTint}}"
+                           Grid.Row="0"
+                           Grid.Column="1" />
+                    <Image Source="https://picsum.photos/200/200?random=3"
+                           Aspect="AspectFill"
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightCyanTint2}, Dark={StaticResource DarkCyanTint2}}"
+                           Grid.Row="1"
+                           Grid.Column="0" />
+                    <Image Source="https://picsum.photos/200/200?random=4"
+                           Aspect="AspectFill"
+                           BackgroundColor="{AppThemeBinding Light={StaticResource LightLimeTint}, Dark={StaticResource DarkLimeTint}}"
+                           Grid.Row="1"
+                           Grid.Column="1" />
+                </Grid>
+            </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>

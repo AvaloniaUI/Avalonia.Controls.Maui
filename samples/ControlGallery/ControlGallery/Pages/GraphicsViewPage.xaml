@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:ControlGallery.Controls"
              xmlns:pages="clr-namespace:ControlGallery.Pages"
              x:Class="ControlGallery.Pages.GraphicsViewPage"
              x:DataType="pages:GraphicsViewPage"
@@ -13,113 +14,76 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ScrollView>
-        <VerticalStackLayout Padding="20"
-                             Spacing="20">
-
+        <controls:PageLayout>
+            <Label StyleClass="h2"
+                   Text="A canvas for drawing 2D graphics, such as shapes, gradients and text."/>
 
             <!-- Basic GraphicsView -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Basic Drawing"
-                           FontAttributes="Bold"/>
-                    <GraphicsView x:Name="basicGraphicsView"
-                                  HeightRequest="300"
-                                  BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
-                                  Drawable="{Binding BasicDrawable}"/>
-                    <Button Text="Invalidate"
-                            Clicked="OnInvalidateClicked"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Basic Drawing"/>
+                <GraphicsView x:Name="basicGraphicsView"
+                              HeightRequest="300"
+                              BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
+                              Drawable="{Binding BasicDrawable}"/>
+                <Button Text="Invalidate"
+                        Clicked="OnInvalidateClicked"/>
+            </VerticalStackLayout>
 
             <!-- Shapes Drawing -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Shapes and Lines"
-                           FontAttributes="Bold"/>
-                    <GraphicsView HeightRequest="300"
-                                  BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
-                                  Drawable="{Binding ShapesDrawable}"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Shapes and Lines"/>
+                <GraphicsView HeightRequest="300"
+                              BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
+                              Drawable="{Binding ShapesDrawable}"/>
+            </VerticalStackLayout>
 
             <!-- Gradients and Effects -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Gradients and Effects"
-                           FontAttributes="Bold"/>
-                    <GraphicsView HeightRequest="300"
-                                  BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
-                                  Drawable="{Binding GradientsDrawable}"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Gradients and Effects"/>
+                <GraphicsView HeightRequest="300"
+                              BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
+                              Drawable="{Binding GradientsDrawable}"/>
+            </VerticalStackLayout>
 
             <!-- Text Rendering -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Text Rendering"
-                           FontAttributes="Bold"/>
-                    <GraphicsView HeightRequest="200"
-                                  BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
-                                  Drawable="{Binding TextDrawable}"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Text Rendering"/>
+                <GraphicsView HeightRequest="200"
+                              BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
+                              Drawable="{Binding TextDrawable}"/>
+            </VerticalStackLayout>
 
             <!-- Transformations -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Transformations"
-                           FontAttributes="Bold"/>
-                    <GraphicsView HeightRequest="300"
-                                  BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
-                                  Drawable="{Binding TransformationsDrawable}"/>
-                </VerticalStackLayout>
-            </Border>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Transformations"/>
+                <GraphicsView HeightRequest="300"
+                              BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
+                              Drawable="{Binding TransformationsDrawable}"/>
+            </VerticalStackLayout>
 
             <!-- Interactive GraphicsView -->
-            <Border Stroke="Gray"
-                    Padding="10">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10"/>
-                </Border.StrokeShape>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="Interactive Drawing"
-                           FontAttributes="Bold"/>
-                    <Label x:Name="InteractionLabel"
-                           Text="Touch or drag to draw"
-                           FontSize="12"
-                           FontAttributes="Italic"/>
-                    <GraphicsView x:Name="interactiveGraphicsView"
-                                  HeightRequest="300"
-                                  BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
-                                  Drawable="{Binding InteractiveDrawable}"
-                                  StartInteraction="OnStartInteraction"
-                                  DragInteraction="OnDragInteraction"
-                                  EndInteraction="OnEndInteraction"/>
-                    <Button Text="Clear Drawing"
-                            Clicked="OnClearClicked"/>
-                </VerticalStackLayout>
-            </Border>
-
-        </VerticalStackLayout>
+            <VerticalStackLayout StyleClass="section">
+                <Label StyleClass="h1"
+                       Text="Interactive Drawing"/>
+                <Label x:Name="InteractionLabel"
+                       Text="Touch or drag to draw"
+                       FontSize="12"
+                       FontAttributes="Italic"/>
+                <GraphicsView x:Name="interactiveGraphicsView"
+                              HeightRequest="300"
+                              BackgroundColor="{AppThemeBinding Light={StaticResource LightCanvasBackground}, Dark={StaticResource DarkCanvasBackground}}"
+                              Drawable="{Binding InteractiveDrawable}"
+                              StartInteraction="OnStartInteraction"
+                              DragInteraction="OnDragInteraction"
+                              EndInteraction="OnEndInteraction"/>
+                <Button Text="Clear Drawing"
+                        Clicked="OnClearClicked"/>
+            </VerticalStackLayout>
+        </controls:PageLayout>
     </ScrollView>
 </ContentPage>
