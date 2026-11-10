@@ -31,6 +31,7 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
     {
         [nameof(IWindow.Title)] = mapTitle,
         [nameof(IWindow.Content)] = mapContent,
+        [nameof(IWindow.FlowDirection)] = mapFlowDirection,
         // X, Y, Width, Height, Min/Max dimensions are not relevant for single-view platforms
     };
 
@@ -227,6 +228,20 @@ public partial class SingleViewWindowHandler : ElementHandler<IWindow, Avalonia.
         var avContent = GetMauiContent(handler);
         var content = window.Content?.ToPlatform(handler.MauiContext!);
         avContent.SetMainContent(content);
+    }
+
+    static void mapFlowDirection(SingleViewWindowHandler handler, IWindow window)
+    {
+        switch (window.FlowDirection)
+        {
+            case FlowDirection.MatchParent:
+            case FlowDirection.LeftToRight:
+                handler.PlatformView.FlowDirection = Avalonia.Media.FlowDirection.LeftToRight;
+                break;
+            case FlowDirection.RightToLeft:
+                handler.PlatformView.FlowDirection = Avalonia.Media.FlowDirection.RightToLeft;
+                break;
+        }
     }
 
     /// <summary>
