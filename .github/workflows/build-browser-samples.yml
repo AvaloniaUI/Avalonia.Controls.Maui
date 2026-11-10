@@ -1,0 +1,73 @@
+name: Build Browser Samples
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: ControlGallery (Browser)
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '11.0.x'
+          dotnet-quality: 'preview'
+
+      - name: Restore dotnet workloads
+        run: |
+          dotnet workload restore ${{github.workspace}}/Avalonia.Controls.Maui.slnx --source https://api.nuget.org/v3/index.json
+
+      # GitHub Pages cannot serve precompressed assets, so skip generating the .br/.gz copies.
+      - name: Publish
+        run: |
+          dotnet publish samples/ControlGallery/ControlGallery.Browser/ControlGallery.Browser.csproj \
+            -c Release \
+            -o ./artifacts/ControlGallery.Browser \
+            /p:CompressionEnabled=false
+
+      # Jekyll would drop the _framework folder, which holds the runtime and assemblies.
+      - name: Disable Jekyll
+        run: touch ./artifacts/ControlGallery.Browser/wwwroot/.nojekyll
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./artifacts/ControlGallery.Browser/wwwroot
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    name: Deploy to GitHub Pages
+
+    permissions:
+      pages: write
+      id-token: write
+
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
