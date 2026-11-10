@@ -48,7 +48,8 @@
 							<Border HeightRequest="36"
 									Margin="4,2,8,0"
 									Padding="0,0,4,0"
-									StrokeThickness="0"
+									Stroke="Transparent"
+									StrokeThickness="1"
 									StrokeShape="RoundRectangle 8"
 									BackgroundColor="Transparent">
 								<Border.GestureRecognizers>
@@ -62,7 +63,6 @@
 												<VisualState.Setters>
 													<Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CatalogDrawerLight}, Dark={StaticResource CatalogDrawerDark}}" />
 													<Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource CatalogHoverStrokeLight}, Dark={StaticResource CatalogHoverStrokeDark}}" />
-													<Setter Property="StrokeThickness" Value="1" />
 													<Setter Property="Shadow">
 														<Shadow Brush="Black" Offset="0,0" Radius="3" Opacity="0.12" />
 													</Setter>
