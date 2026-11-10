@@ -32,7 +32,7 @@ public partial class PolylineHandler : ShapeViewHandler<Polyline, PlatformView>
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformView()
     {
-        return new PlatformView();
+        return new Avalonia.Controls.Maui.Platform.MauiPolyline();
     }
 
     /// <summary>Maps the Shape property to the platform view.</summary>

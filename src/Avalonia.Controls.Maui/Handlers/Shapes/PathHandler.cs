@@ -33,7 +33,7 @@ public partial class PathHandler : ShapeViewHandler<Path, PlatformView>
     /// <summary>Creates the Avalonia platform view for this handler.</summary>
     protected override PlatformView CreatePlatformView()
     {
-        return new PlatformView();
+        return new Avalonia.Controls.Maui.Platform.MauiPath();
     }
 
     /// <inheritdoc/>
