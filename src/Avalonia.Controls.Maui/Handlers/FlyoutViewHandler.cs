@@ -27,6 +27,7 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
         {
             [nameof(IFlyoutView.IsPresented)] = MapIsPresented,
             [nameof(IFlyoutView.FlyoutBehavior)] = MapFlyoutBehavior,
+            [nameof(Microsoft.Maui.Controls.FlyoutPage.FlyoutLayoutBehavior)] = MapFlyoutLayoutBehavior,
             [nameof(IFlyoutView.FlyoutWidth)] = MapFlyoutWidth,
             [nameof(IFlyoutView.IsGestureEnabled)] = MapIsGestureEnabled,
         };
@@ -186,6 +187,18 @@ public partial class FlyoutViewHandler : ViewHandler<IFlyoutView, PlatformView>
                 platformView.IsOpen = true;
                 break;
         }
+    }
+
+    /// <summary>Maps the FlyoutPage.FlyoutLayoutBehavior property to the platform view.</summary>
+    /// <remarks>
+    /// <see cref="IFlyoutView.FlyoutBehavior"/> is computed from FlyoutLayoutBehavior, but changing
+    /// FlyoutLayoutBehavior raises a change for that property only.
+    /// </remarks>
+    /// <param name="handler">The handler for the flyout view.</param>
+    /// <param name="flyoutView">The virtual flyout view.</param>
+    public static void MapFlyoutLayoutBehavior(FlyoutViewHandler handler, IFlyoutView flyoutView)
+    {
+        MapFlyoutBehavior(handler, flyoutView);
     }
 
     /// <summary>Maps the FlyoutWidth property to the platform view.</summary>
