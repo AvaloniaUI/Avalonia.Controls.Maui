@@ -64,7 +64,7 @@
 													<Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource CatalogHoverStrokeLight}, Dark={StaticResource CatalogHoverStrokeDark}}" />
 													<Setter Property="StrokeThickness" Value="1" />
 													<Setter Property="Shadow">
-														<Shadow Brush="Black" Offset="1,1" Radius="2" Opacity="0.15" />
+														<Shadow Brush="Black" Offset="0,0" Radius="3" Opacity="0.12" />
 													</Setter>
 													<Setter TargetName="ItemIcon" Property="Path.Fill" Value="{AppThemeBinding Light={StaticResource CatalogBaseMediumLight}, Dark={StaticResource CatalogBaseMediumDark}}" />
 													<Setter TargetName="ItemLabel" Property="Label.TextColor" Value="{AppThemeBinding Light={StaticResource CatalogBaseMediumLight}, Dark={StaticResource CatalogBaseMediumDark}}" />
